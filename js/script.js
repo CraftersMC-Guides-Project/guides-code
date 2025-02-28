@@ -27,87 +27,166 @@ if(darkmode === "active") enableDarkmode ()
 })
 */
 
-// Toggle dark and light mode
 document.addEventListener("DOMContentLoaded", () => {
-  const sidebar = document.getElementById("sidebar");
-  const loader = document.getElementById("loader");
-  const sidebarLink = document.querySelectorAll(".sidebar-link");
-  const close = document.querySelectorAll(".sidebar-close");
-  const card = document.querySelectorAll(".card");
-  const content = document.querySelectorAll(".content");
-  const bottomNav = document.querySelectorAll(".bottom-nav");
-  const bottomNavItem = document.querySelectorAll(".nav-item");
-  const bottomNavIcon = document.querySelectorAll(".botton-nav-icon");
-  const ctaBtn = document.querySelectorAll(".cta-btn");
-  const nav = document.querySelectorAll(".navbar");
-  const unicode = document.querySelectorAll(".container");
-  const unicodeSection = document.querySelectorAll(".section");
-  const list = document.querySelectorAll(".seller-list");
-  const listCard = document.querySelectorAll(".seller-card");
-  const listCardInactive = document.querySelectorAll(".seller-card-inactive");
   const toggleButton = document.getElementById("darkModeToggle");
+  const elementsToStyle = {
+    sidebar: document.getElementById("sidebar"),
+    loader: document.getElementById("loader"),
+    sidebarLinks: document.querySelectorAll(".sidebar-link"),
+    closeButtons: document.querySelectorAll(".sidebar-close"),
+    cards: document.querySelectorAll(".card"),
+    collectionItem: document.querySelectorAll(".collection-item"),
+    contentSections: document.querySelectorAll(".content"),
+    bottomNavs: document.querySelectorAll(".bottom-nav"),
+    bottomNavItems: document.querySelectorAll(".nav-item"),
+    bottomNavIcons: document.querySelectorAll(".bottom-nav-icon"),
+    ctaButtons: document.querySelectorAll(".cta-btn"),
+    navbars: document.querySelectorAll(".navbar"),
+    unicodeContainers: document.querySelectorAll(".container"),
+    unicodeSections: document.querySelectorAll(".section"),
+    sellerLists: document.querySelectorAll(".seller-list"),
+    sellerCards: document.querySelectorAll(".seller-card"),
+    sellerCardsInactive: document.querySelectorAll(".seller-card-inactive"),
+    tables: document.querySelectorAll("table"),
+    tableHeaders: document.querySelectorAll("table th"),
+    tableCells: document.querySelectorAll("table td"),
+  };
 
-  // Check if the theme is stored in localStorage
   let isDarkMode = localStorage.getItem("darkMode") === "true";
 
+  const removeHoverEffects = () => {
+    elementsToStyle.tables.forEach(table => {
+      table.querySelectorAll("tr").forEach(row => {
+        row.onmouseenter = null;
+        row.onmouseleave = null;
+      });
+    });
+  };
+
   const applyTheme = () => {
+    document.body.classList.toggle("dark-mode", isDarkMode);
+
     if (isDarkMode) {
-      // Dark Mode
       document.body.style.backgroundColor = "#1e1e2e";
       document.body.style.color = "white";
-      sidebar.style.backgroundColor = "#111111";
-      loader.style.backgroundColor = "#333333";
-      sidebar.style.color = "white";
-      card.forEach(card => card.style.backgroundColor = "#222222");
-      content.forEach(content => content.style.backgroundColor = "#222222");
-      bottomNav.forEach(nav => nav.style.backgroundColor = "#111111");
-      list.forEach(nav => nav.style.backgroundColor = "#111111");
-      sidebarLink.forEach(link => link.style.color = "#fff");
-      close.forEach(button => button.style.color = "white");
-      bottomNavItem.forEach(nav => nav.style.color = "white");
-      bottomNavIcon.forEach(nav => nav.style.color = "white");
-      ctaBtn.forEach(nav => nav.style.backgroundColor = "#111111");
-      nav.forEach(nav => nav.style.backgroundColor = "#111111");
-      unicode.forEach(nav => nav.style.backgroundColor = "#111111");
-      unicodeSection.forEach(nav => nav.style.backgroundColor = "#222222");
-      listCard.forEach(nav => nav.style.backgroundColor = "#45454547");
-      listCardInactive.forEach(nav => nav.style.backgroundColor = "#dd22221f");
+
+      elementsToStyle.sidebar.style.backgroundColor = "#111111";
+      elementsToStyle.loader.style.backgroundColor = "#333333";
+
+      elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "#222222"));
+      elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#222222"));
+      elementsToStyle.collectionItem.forEach(collectionItem => (collectionItem.style.backgroundColor = "#1e1e3e"));
+      elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "#111111"));
+      elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "#111111"));
+      elementsToStyle.sidebarLinks.forEach(link => (link.style.color = "#fff"));
+      elementsToStyle.closeButtons.forEach(button => (button.style.color = "white"));
+      elementsToStyle.bottomNavItems.forEach(item => (item.style.color = "white"));
+      elementsToStyle.bottomNavIcons.forEach(icon => (icon.style.color = "white"));
+      elementsToStyle.ctaButtons.forEach(btn => (btn.style.backgroundColor = "#111111"));
+      elementsToStyle.navbars.forEach(nav => (nav.style.backgroundColor = "#111111"));
+      elementsToStyle.unicodeContainers.forEach(container => (container.style.backgroundColor = "rgb(17, 17, 28)", container.style.backdropFilter = "blur(15px)"));
+      elementsToStyle.unicodeSections.forEach(section => (section.style.backgroundColor = "#222222"));
+      elementsToStyle.sellerCards.forEach(card => (card.style.backgroundColor = "#45454547"));
+      elementsToStyle.sellerCardsInactive.forEach(card => (card.style.backgroundColor = "#dd22221f"));
+
+      elementsToStyle.tables.forEach(table => {
+        table.style.backgroundColor = "#282838";
+        table.style.color = "white";
+        table.style.border = "1px solid #444";
+      });
+
+      elementsToStyle.tableHeaders.forEach(header => {
+        header.style.backgroundColor = "#33334d";
+        header.style.color = "white";
+      });
+
+      elementsToStyle.tableCells.forEach(cell => {
+        cell.style.border = "1px solid #444";
+      });
+
+      removeHoverEffects();
+
+      elementsToStyle.tables.forEach(table => {
+        table.querySelectorAll("tr").forEach(row => {
+          row.addEventListener("mouseenter", () => {
+            row.style.backgroundColor = "#3a3a4a";
+          });
+
+          row.addEventListener("mouseleave", () => {
+            row.style.backgroundColor = "#282838";
+          });
+        });
+      });
+
       toggleButton.textContent = "light_mode";
     } else {
-      // Light Mode
       document.body.style.backgroundColor = "white";
       document.body.style.color = "black";
-      sidebar.style.backgroundColor = "white";
-      loader.style.backgroundColor = "white";
-      card.forEach(card => card.style.backgroundColor = "white");
-      content.forEach(content => content.style.backgroundColor = "#f9f9f9");
-      sidebar.style.color = "black";
-      bottomNav.forEach(nav => nav.style.backgroundColor = "white");
-      list.forEach(nav => nav.style.backgroundColor = "white");
-      sidebarLink.forEach(link => link.style.color = "#000");
-      close.forEach(button => button.style.color = "black");
-      bottomNavItem.forEach(nav => nav.style.color = "#333333");
-      bottomNavIcon.forEach(nav => nav.style.color = "#333333");
-      ctaBtn.forEach(nav => nav.style.backgroundColor = "#007bff");
-      nav.forEach(nav => nav.style.backgroundColor = "#007bff");
-      unicode.forEach(nav => nav.style.backgroundColor = "#ffffff");
-      unicodeSection.forEach(nav => nav.style.backgroundColor = "#f1f1f1");
-      listCard.forEach(nav => nav.style.backgroundColor = "#f1f1f1");
-      listCardInactive.forEach(nav => nav.style.border = "2px solid rgb(221, 34, 34)");
+
+      elementsToStyle.sidebar.style.backgroundColor = "white";
+      elementsToStyle.loader.style.backgroundColor = "white";
+
+      elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "white"));
+      elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#f9f9f9"));
+      elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "white"));
+      elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "white"));
+      elementsToStyle.sidebarLinks.forEach(link => (link.style.color = "#000"));
+      elementsToStyle.closeButtons.forEach(button => (button.style.color = "black"));
+      elementsToStyle.bottomNavItems.forEach(item => (item.style.color = "#333333"));
+      elementsToStyle.bottomNavIcons.forEach(icon => (icon.style.color = "#333333"));
+      elementsToStyle.ctaButtons.forEach(btn => (btn.style.backgroundColor = "#007bff"));
+      elementsToStyle.navbars.forEach(nav => (nav.style.backgroundColor = "#007bff"));
+      elementsToStyle.unicodeContainers.forEach(container => (container.style.backgroundColor = "#f1f1f1"));
+      elementsToStyle.unicodeSections.forEach(section => (section.style.backgroundColor = "#f1f1f1"));
+      elementsToStyle.sellerCards.forEach(card => (card.style.backgroundColor = "#f1f1f1"));
+      elementsToStyle.sellerCardsInactive.forEach(card => {
+        card.style.border = "2px solid rgb(221, 34, 34)";
+        card.style.backgroundColor = "white";
+      });
+
+      elementsToStyle.tables.forEach(table => {
+        table.style.backgroundColor = "white";
+        table.style.color = "black";
+        table.style.border = "1px solid #ccc";
+      });
+
+      elementsToStyle.tableHeaders.forEach(header => {
+        header.style.backgroundColor = "#007bff";
+        header.style.color = "black";
+      });
+
+      elementsToStyle.tableCells.forEach(cell => {
+        cell.style.border = "1px solid #ccc";
+      });
+
+      removeHoverEffects();
+
+      elementsToStyle.tables.forEach(table => {
+        table.querySelectorAll("tr").forEach(row => {
+          row.addEventListener("mouseenter", () => {
+            row.style.backgroundColor = "#f0f0f0";
+          });
+
+          row.addEventListener("mouseleave", () => {
+            row.style.backgroundColor = "white";
+          });
+        });
+      });
+
       toggleButton.textContent = "dark_mode";
     }
   };
 
-  // Apply the stored theme on page load
   applyTheme();
 
   if (toggleButton) {
     toggleButton.addEventListener("click", () => {
-      // Toggle the mode and apply the theme
       isDarkMode = !isDarkMode;
-      applyTheme();
-      // Store the preference in localStorage
       localStorage.setItem("darkMode", isDarkMode);
+      location.reload();
+      applyTheme();
     });
   }
 });
+
+
