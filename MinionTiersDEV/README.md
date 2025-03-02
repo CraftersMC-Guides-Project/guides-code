@@ -1,1 +1,0 @@
-# craftersmc-collection-leaderboard.github.io
