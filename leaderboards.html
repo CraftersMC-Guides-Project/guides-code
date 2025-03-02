@@ -382,35 +382,37 @@
         };
 
         function switchCategory(category) {
-            document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
-            document.querySelector(`.tab:nth-child(${Object.keys(collectionsData).indexOf(category) + 1})`).classList.add("active");
-            loadCollections(category);
-        }
+    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+    document.querySelector(`.tab:nth-child(${Object.keys(collectionsData).indexOf(category) + 1})`).classList.add("active");
+    loadCollections(category);
+}
 
-        function loadCollections(category) {
-            const collectionGrid = document.getElementById("collectionGrid");
-            collectionGrid.innerHTML = "";
+function loadCollections(category) {
+    const collectionGrid = document.getElementById("collectionGrid");
+    collectionGrid.innerHTML = "";
 
-            collectionsData[category].forEach((collection, index) => {
-                let item = document.createElement("div");
-                item.classList.add("collection-item");
-                item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`;
-                item.onclick = () => loadLeaderboard(category, index);
-                collectionGrid.appendChild(item);
-            });
-        }
+    collectionsData[category].forEach((collection, index) => {
+        let item = document.createElement("div");
+        item.classList.add("collection-item");
+        item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`;
+        item.onclick = () => loadLeaderboard(category, index);
+        collectionGrid.appendChild(item);
+    });
+}
 
-        function loadLeaderboard(category, index) {
-            const collection = collectionsData[category][index];
-            document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
+function loadLeaderboard(category, index) {
+    const collection = collectionsData[category][index];
+    document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
 
-            const leaderboardData = document.getElementById("leaderboardData");
-            leaderboardData.innerHTML = collection.players.length
-                ? collection.players.map(player => `<tr><td>${player.rank}</td><td>${player.name}</td><td>${player.score}</td></tr>`).join("")
-                : "<tr><td>1</td><td>???</td><td>???</td></tr>".repeat(5);
-        }
+    const leaderboardData = document.getElementById("leaderboardData");
+    leaderboardData.innerHTML = collection.players.length
+        ? collection.players.map(player => `<tr><td>${player.rank}</td><td>${player.name}</td><td>${player.score}</td></tr>`).join("")
+        : "<tr><td>1</td><td>???</td><td>???</td></tr>".repeat(5);
 
-        loadCollections("Mining");
+    document.querySelector('.leaderboard').scrollIntoView({ behavior: 'smooth' });
+}
+
+loadCollections("Mining");
     </script>
     <footer style="background: #666; color: #999; text-align: center; padding: 10px; margin-top: 20px;">
         &copy; 2025 David_R06, NumberOne230564, TGJASSIYT, TechonTheDev. All rights reserved.
