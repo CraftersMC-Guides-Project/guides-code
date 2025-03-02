@@ -19,18 +19,6 @@
 });
 */
 
-document.addEventListener('DOMContentLoaded', function () {
-  document.querySelector('#loader').style.display = 'flex';
-  setTimeout(function () {
-    document.querySelector('#loader').style.display = 'none';
-  }, 5000);
-});
-
-function toggleSidebar() {
-  const sidebar = document.getElementById("sidebar");
-  sidebar.classList.toggle("open");
-}
-
 let darkmode = localStorage.getItem ('darkmode' )
 const themeSwitch = document.getElementById('theme-switch')
 const enableDarkmode = () => {
