@@ -1,0 +1,294 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Techonator58 - Rank Seller</title>
+  <link rel="shortcut icon" type="image/x-icon" href="../assets/cmc-guides.png">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../css/essential.css">
+  <link rel="stylesheet" href="../css/rank-sellers-v2-dev.css">
+  <script src="../js/rank-sellers-v2.js"></script>
+  <style>
+    .seller-profile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 90%;
+      max-width: 800px;
+      margin: 114px auto 20px;
+      padding: 30px;
+      backdrop-filter: blur(12px) saturate(200%);
+      -webkit-backdrop-filter: blur(12px) saturate(200%);
+      background-color: rgba(50, 25, 75, 0.49);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.125);
+      box-shadow: 0 4px 8px var(--box-shadow-color);
+      color: var(--text-color);
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 12px;
+      margin-right: 20px;
+      background-color: #9c27b0;
+      padding: 5px;
+      border: 2px solid gold;
+    }
+
+    .profile-info {
+      flex-grow: 1;
+    }
+
+    .profile-name {
+      font-size: 2.2rem;
+      margin: 0;
+      color: white;
+      text-shadow: 2px 2px var(--text-shadow-color);
+    }
+
+    .profile-title {
+      font-size: 1.3rem;
+      margin: 5px 0;
+      color: #f5b8ff;
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      width: 100%;
+      margin: 20px 0;
+    }
+
+    .stat-card {
+      backdrop-filter: blur(8px) saturate(180%);
+      -webkit-backdrop-filter: blur(8px) saturate(180%);
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+      border: 1px solid rgba(255, 255, 255, 0.125);
+    }
+
+    .darkmode .stat-card {
+      background-color: rgba(36, 36, 36, 0.6);
+    }
+
+    .stat-card:hover {
+      transform: scale(1.05);
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin: 5px 0;
+      color: white;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      color: #ccc;
+    }
+
+    .seller-details {
+      width: 100%;
+      backdrop-filter: blur(8px) saturate(180%);
+      -webkit-backdrop-filter: blur(8px) saturate(180%);
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.125);
+    }
+
+    .darkmode .seller-details {
+      background-color: rgba(36, 36, 36, 0.6);
+    }
+
+    .details-title {
+      font-size: 1.5rem;
+      margin-top: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      padding-bottom: 10px;
+      color: white;
+    }
+
+    .detail-item {
+      margin: 15px 0;
+    }
+
+    .detail-label {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .available {
+      color: #82EB53;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    .status-badge.Selling {
+      background-color: rgba(0, 128, 0, 0.3);
+      color: #82EB53;
+    }
+
+    .status-badge.Paused {
+      background-color: rgba(218, 81, 0, 0.3);
+      color: #ff9b59;
+    }
+
+    .status-badge.Inactive {
+      background-color: rgba(255, 0, 0, 0.3);
+      color: #ff6b6b;
+    }
+
+    .badge {
+      display: inline-block;
+      background-color: #9c27b0;
+      color: white;
+      padding: 3px 10px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    @media (max-width: 600px) {
+      .profile-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .profile-avatar {
+        margin-right: 0;
+        margin-bottom: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body class="image">
+
+  <div id="loader">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  <!-- Top Navbar -->
+  <div class="navbar">
+    <span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
+    <div class="right">
+      <span class="menu-icon material-icons" id="darkModeToggle">dark_mode</span>
+      <a href="../index.html"><img src="../assets/cmc-guides.png"></a>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <span class="sidebar-close material-icons" onclick="toggleSidebar()">close</span>
+    <img src="../assets/cmc-guides.png" alt="CMC Guides Logo">
+    <hr>
+    <a class="sidebar-link" href="../rank-sellers.html">Rank Sellers</a>
+    <a class="sidebar-link" href="../unicode.html">Unicode</a>
+    <a class="sidebar-link" href="../journey-guides.html">Guides</a>
+    <a class="sidebar-link" href="../bankInterestV2.html">Bank Interest Timer (Beta)</a>
+    <a class="sidebar-link" href="../leaderboards.html">Collection Leaderboards</a>
+    <a class="sidebar-link" href="https://craftersmc.wiki.gg/wiki/">CraftersMC Wiki</a>
+    <a class="sidebar-link" href="https://craftersmc.net/">CraftersMC Website</a>
+  </div>
+
+  <div class="seller-profile">
+    <div class="profile-header">
+      <img src="../rank/emerald.png" alt="PLUS" class="profile-avatar">
+      <div class="profile-info">
+        <h1 class="profile-name">techonator58 <span class="badge">PLUS</span></h1>
+        <p class="profile-title">Lord of the Dance</p>
+      </div>
+    </div>
+
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-value">0</div>
+        <div class="stat-label">Login Streak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">445</div>
+        <div class="stat-label">Quests Completed</div>
+      </div>
+    </div>
+
+    <div class="seller-details">
+      <h2 class="details-title">Seller Information</h2>
+      <div class="detail-item">
+        <span class="detail-label">Minecraft Username:</span>
+        <span>techonator58</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Rank:</span>
+        <span>Emerald</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Gems:</span>
+        <span class="available">Available</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Status:</span>
+        <span class="status-badge Selling">Selling</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Discord:</span>
+        <span>techonator58</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="warning">
+    Beware of scammers and impersonators. Make sure you are buying from the right people and not fakes.
+  </p>
+
+  <footer>
+    &copy; 2025 TGJASSIYT, TechonTheDev. All rights reserved.
+    We are not responsible if anything bad happens as in a refunding of all ranks (snax). This is a GUIDE for getting
+    good sellers.
+  </footer>
+
+  <script>
+    // Script to handle dark mode toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const darkModeToggle = document.getElementById('darkModeToggle');
+      const body = document.body;
+
+      // Check if user preference is stored
+      const isDarkMode = localStorage.getItem('darkMode') === 'true';
+      if (isDarkMode) {
+        body.classList.add('darkmode');
+      }
+
+      // Toggle dark mode
+      darkModeToggle.addEventListener('click', function() {
+        body.classList.toggle('darkmode');
+        localStorage.setItem('darkMode', body.classList.contains('darkmode'));
+      });
+    });
+  </script>
+</body>
+
+</html>
