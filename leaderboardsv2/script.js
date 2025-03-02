@@ -5,7 +5,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const itemListSection = document.getElementById('item-list');
     const leaderboardSection = document.getElementById('leaderboard');
 
-    showDefaultView();
+    // Create a variable to store the data
+    let data = {};
+
+    // Fetch the JSON data first
+    fetch('data.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(jsonData => {
+            // Store the fetched data
+            data = jsonData;
+            // Initialize the view after data is loaded
+            showDefaultView();
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            categoryOverviewSection.innerHTML = `<div class="error">Failed to load leaderboard data. Please try again later.</div>`;
+        });
 
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
