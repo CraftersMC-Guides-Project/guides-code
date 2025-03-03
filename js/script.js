@@ -7,7 +7,12 @@ function toggleSidebar() {
     const sidebar = document.getElementById("sidebar");
     sidebar.classList.toggle("open");
 
-    document.body.classList.toggle("no-scroll", sidebar.classList.contains("open"));
+    if (sidebar.classList.contains("open")) {
+        document.body.style.overflow = "hidden";
+        sidebar.style.overflowY = "auto";
+    } else {
+        document.body.style.overflow = "";
+    }
 }
 /*
 //better dark mode
