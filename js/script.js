@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.loader.style.backgroundColor = "#333333";
 
       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "#222222"));
-      elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#222222"));
+      elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#222222", section.style.borderTop = "1px solid #898989"));
       elementsToStyle.collectionItem.forEach(collectionItem => (collectionItem.style.backgroundColor = "#1e1e3e"));
       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "#111111"));
       elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "#111111"));
