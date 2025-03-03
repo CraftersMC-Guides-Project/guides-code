@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.ctaButtons.forEach(btn => (btn.style.backgroundColor = "#111111"));
       elementsToStyle.navbars.forEach(nav => (nav.style.backgroundColor = "#111111"));
       elementsToStyle.unicodeContainers.forEach(container => (container.style.backgroundColor = "rgb(17, 17, 28)", container.style.backdropFilter = "blur(15px)"));
-      elementsToStyle.unicodeSections.forEach(section => (section.style.backgroundColor = "#222222"));
+      elementsToStyle.unicodeSections.forEach(section => (section.style.backgroundColor = "#222222", section.style.border = "#1px solid #898989"));
       elementsToStyle.sellerCards.forEach(card => (card.style.backgroundColor = "#45454547"));
       elementsToStyle.sellerCardsInactive.forEach(card => (card.style.backgroundColor = "#dd22221f"));
 
