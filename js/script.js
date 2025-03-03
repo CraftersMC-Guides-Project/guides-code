@@ -4,8 +4,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 function toggleSidebar() {
-  const sidebar = document.getElementById("sidebar");
-  sidebar.classList.toggle("open");
+    const sidebar = document.getElementById("sidebar");
+    sidebar.classList.toggle("open");
+
+    document.body.classList.toggle("no-scroll", sidebar.classList.contains("open"));
 }
 /*
 //better dark mode
@@ -190,3 +192,12 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+document.addEventListener("click", (event) => {
+    const sidebar = document.getElementById("sidebar");
+    const menuIcon = document.querySelector(".menu-icon");
+
+    if (!sidebar.contains(event.target) && !menuIcon.contains(event.target) && sidebar.classList.contains("open")) {
+        sidebar.classList.remove("open");
+        document.body.classList.remove("no-scroll");
+    }
+});
