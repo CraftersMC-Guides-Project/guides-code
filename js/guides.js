@@ -2,6 +2,17 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelector('#loader').style.display = 'none';
 });
 
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    sidebar.classList.toggle("open");
+
+    if (sidebar.classList.contains("open")) {
+        document.body.style.overflow = "hidden";
+        sidebar.style.overflowY = "auto";
+    } else {
+        document.body.style.overflow = "";
+    }
+}
 /*document.getElementById('dark-mode-toggle').addEventListener('click', (event) => {
   const button = event.target;
   const isDarkMode = document.body.classList.toggle('dark-mode');
