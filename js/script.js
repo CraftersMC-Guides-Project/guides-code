@@ -11,7 +11,10 @@ function toggleSidebar() {
         document.body.style.overflow = "hidden";
         sidebar.style.overflowY = "auto";
     } else {
-        document.body.style.overflow = "";
+        document.body.style.overflow = ""; 
+        setTimeout(() => {
+            sidebar.scrollTop = 0;
+        }, 300);
     }
 }
 
@@ -21,7 +24,7 @@ document.addEventListener("click", (event) => {
 
     if (!sidebar.contains(event.target) && !menuIcon.contains(event.target) && sidebar.classList.contains("open")) {
         sidebar.classList.remove("open");
-        document.body.classList.remove("no-scroll");
+        document.body.style.overflow = ""; 
 
         setTimeout(() => {
             sidebar.scrollTop = 0;
