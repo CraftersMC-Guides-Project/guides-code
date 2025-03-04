@@ -1,3 +1,7 @@
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelector('#loader').style.display = 'none';
+});
+
 /*document.getElementById('dark-mode-toggle').addEventListener('click', (event) => {
   const button = event.target;
   const isDarkMode = document.body.classList.toggle('dark-mode');
