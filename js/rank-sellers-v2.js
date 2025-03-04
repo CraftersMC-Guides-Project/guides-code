@@ -42,10 +42,10 @@ function toggleSidebar() {
 function changeBackground(type) {
   const backgrounds = {
       'default': 'linear-gradient(135deg, #1a1a1a, #333333)',
-      'forest': 'url(IMG_4498.jpeg) no-repeat center center fixed',
-      'mountain': 'url(IMG_4499.jpeg) no-repeat center center fixed',
-      'desert': 'url(IMG_4500.jpeg) no-repeat center center fixed',
-      'ocean': 'url(IMG_4502.jpeg) no-repeat center center fixed',
+      'forest': 'url("../Backgrounds/IMG_4498.jpeg") no-repeat center center fixed',
+      'mountain': 'url("../Backgrounds/IMG_4499.jpeg") no-repeat center center fixed',
+      'desert': 'url("../Backgrounds/IMG_4500.jpeg") no-repeat center center fixed',
+      'ocean': 'url("../Backgrounds/IMG_4502.jpeg") no-repeat center center fixed',
       'cyberpunk': 'linear-gradient(135deg, #ff00ff, #00ffff)',
       'sunset': 'linear-gradient(135deg, #ff6b6b, #4ecdc4)',
       'random': () => {
