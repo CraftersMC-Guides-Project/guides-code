@@ -54,6 +54,7 @@ This static web package is powered by:
 This project is brought to you by:  
 - **Coder:** TGJASSIYT (Discord: jassi_xc)
 - **Coder:** TechonTheDev (Discord: techonthedev)
+- **Coder:** Pg Network (Discord: pgnetwork01)
 - **Writer:** ieduoo (Discord: ieduoo)
 - **Advisor:** Aakash Gupta (Discord: aakashgupta12)
 
