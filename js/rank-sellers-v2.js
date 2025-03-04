@@ -47,7 +47,7 @@ function changeBackground(type) {
       'desert': 'url("../Backgrounds/IMG_4500.jpeg") no-repeat center center fixed',
       'ocean': 'url("../Backgrounds/IMG_4502.jpeg") no-repeat center center fixed',
       'cyberpunk': 'linear-gradient(135deg, #ff00ff, #00ffff)',
-      'sunset': 'linear-gradient(135deg, #ff6f3f, #e5df3f)',
+      'sunset': 'linear-gradient(135deg, #ff5f3f, #e5df3f)',
       'random': () => {
           // Generate a random gradient
           const randomColor1 = `hsl(${Math.random() * 360}, 70%, 50%)`;
