@@ -66,8 +66,10 @@ document.addEventListener("DOMContentLoaded", () => {
     darkmode = localStorage.getItem("darkmode");
     if (darkmode !== "active") {
       enableDarkmode();
+      toggleButton.textContent = "light_mode";
     } else {
       disableDarkmode();
+      toggleButton.textContent = "dark_mode";
     }
   });
 
