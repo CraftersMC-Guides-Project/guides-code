@@ -22,9 +22,13 @@ document.addEventListener("click", (event) => {
     if (!sidebar.contains(event.target) && !menuIcon.contains(event.target) && sidebar.classList.contains("open")) {
         sidebar.classList.remove("open");
         document.body.classList.remove("no-scroll");
-        sidebar.scrollTop = 0;
+
+        setTimeout(() => {
+            sidebar.scrollTop = 0;
+        }, 300);
     }
 });
+
 /*
 //better dark mode
 
