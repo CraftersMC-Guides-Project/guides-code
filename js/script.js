@@ -14,6 +14,17 @@ function toggleSidebar() {
         document.body.style.overflow = "";
     }
 }
+
+document.addEventListener("click", (event) => {
+    const sidebar = document.getElementById("sidebar");
+    const menuIcon = document.querySelector(".menu-icon");
+
+    if (!sidebar.contains(event.target) && !menuIcon.contains(event.target) && sidebar.classList.contains("open")) {
+        sidebar.classList.remove("open");
+        document.body.classList.remove("no-scroll");
+        sidebar.scrollTop = 0;
+    }
+});
 /*
 //better dark mode
 
@@ -194,15 +205,4 @@ document.addEventListener("DOMContentLoaded", () => {
       applyTheme();
     });
   }
-});
-
-
-document.addEventListener("click", (event) => {
-    const sidebar = document.getElementById("sidebar");
-    const menuIcon = document.querySelector(".menu-icon");
-
-    if (!sidebar.contains(event.target) && !menuIcon.contains(event.target) && sidebar.classList.contains("open")) {
-        sidebar.classList.remove("open");
-        document.body.classList.remove("no-scroll");
-    }
 });
