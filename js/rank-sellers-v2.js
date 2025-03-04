@@ -46,6 +46,12 @@ function changeBackground(type) {
       'mountain': 'url("../Backgrounds/IMG_4499.jpeg") no-repeat center center fixed',
       'desert': 'url("../Backgrounds/IMG_4500.jpeg") no-repeat center center fixed',
       'ocean': 'url("../Backgrounds/IMG_4502.jpeg") no-repeat center center fixed',
+    'rose': 'url("../Backgrounds/IMG_0007.jpeg") no-repeat center center fixed',
+    'bush': 'url("../Backgrounds/IMG_0004.jpeg") no-repeat center center fixed',
+    'fireworks': 'url("../Backgrounds/IMG_0097.jpeg") no-repeat center center fixed',
+    'snowdrops': 'url("../Backgrounds/IMG_0669.jpeg") no-repeat center center fixed',
+    'fountain': 'url("../Backgrounds/IMG_0179.jpeg") no-repeat center center fixed',
+    'skylights': 'url("../Backgrounds/IMG_0205.jpeg") no-repeat center center fixed',
       'cyberpunk': 'linear-gradient(135deg, #ff00ff, #00ffff)',
       'sunset': 'linear-gradient(135deg, #ff5f3f, #e5df3f)',
       'random': () => {
