@@ -55,14 +55,14 @@ function changeBackground(type) {
       'cyberpunk': 'linear-gradient(135deg, #ff00ff, #00ffff)',
       'sunset': 'linear-gradient(135deg, #ff5f3f, #e5df3f)',
       'random': () => {
-          // Generate a random gradient
+          //random gradient lol
           const randomColor1 = `hsl(${Math.random() * 360}, 70%, 50%)`;
           const randomColor2 = `hsl(${Math.random() * 360}, 70%, 50%)`;
           return `linear-gradient(135deg, ${randomColor1}, ${randomColor2})`;
       }
   };
 
-  // Check if background is a function (like 'random')
+  //check if is a function
   const background = typeof backgrounds[type] === 'function' 
       ? backgrounds[type]() 
       : backgrounds[type];
@@ -71,7 +71,7 @@ function changeBackground(type) {
   document.body.style.backgroundSize = 'cover';
 }
 
-// Optional: Add background selector dropdown functionality
+// dropdown code
 document.addEventListener('DOMContentLoaded', () => {
   const backgroundSelect = document.getElementById('backgroundSelect');
   if (backgroundSelect) {
@@ -80,3 +80,4 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 });
+//hello
