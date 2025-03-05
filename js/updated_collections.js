@@ -751,13 +751,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "GMG_games",
-                    "score": "25M+"
+                    "name": "Notenderman9677",
+                    "score": "26.4M+"
                 },
                 {
                     "rank": 5,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": GMG_games",
+                    "score": "25M+"
                 },
                 {
                     "rank": 6,
