@@ -17,7 +17,7 @@ const collectionsData = {
                 {
                     "rank": 3,
                     "name": "Unknown",
-                    "score": "~122000000+"
+                    "score": "122M+"
                 },
                 {
                     "rank": 4,
@@ -625,12 +625,12 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "AK_GAMERR5398",
-                    "score": "65000000++"
+                    "score": "65M+"
                 },
                 {
                     "rank": 2,
                     "name": "Gelacktic",
-                    "score": "45000000++"
+                    "score": "45M+"
                 },
                 {
                     "rank": 3,
@@ -736,7 +736,7 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "Madstar0401YT",
+                    "name": "Madstar118YT",
                     "score": "62M+"
                 },
                 {
@@ -752,7 +752,7 @@ const collectionsData = {
                 {
                     "rank": 4,
                     "name": "GMG_games",
-                    "score": "~25000000+"
+                    "score": "25M+"
                 },
                 {
                     "rank": 5,
@@ -1139,7 +1139,7 @@ const collectionsData = {
                 {
                     "rank": 3,
                     "name": "Unknown",
-                    "score": "~95000000+"
+                    "score": "95M+"
                 },
                 {
                     "rank": 4,
@@ -1241,12 +1241,12 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "sagnikisawesome",
-                    "score": "4000000++"
+                    "score": "4M+"
                 },
                 {
                     "rank": 2,
                     "name": "AweomedudeW10",
-                    "score": "4000000++"
+                    "score": "4M+"
                 },
                 {
                     "rank": 3,
@@ -1864,7 +1864,7 @@ const collectionsData = {
                 {
                     "rank": 2,
                     "name": "Unknown",
-                    "score": "<95000000+"
+                    "score": "95M+"
                 },
                 {
                     "rank": 3,
