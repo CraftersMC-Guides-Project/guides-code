@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Dark mode disabled.");
   };
   
-  if (darkMode === "active") {
+  if (darkMode === "true") {
     enableDarkmode();
   }
 
