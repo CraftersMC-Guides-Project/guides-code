@@ -1848,7 +1848,7 @@ const collectionsData = {
                 {
                     "rank": 10,
                     "name": "Dipanshu_FF",
-                    "score": "1M+"
+                    "score": "1.8M+"
                 }
             ]
         },
