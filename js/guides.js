@@ -49,12 +49,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const enableDarkmode = () => {
     document.body.classList.add("darkmode");
     localStorage.setItem("darkmode", "active");
+    themeSwitch.textContent = "light_mode";
     console.log("Dark mode enabled.");
   };
 
   const disableDarkmode = () => {
     document.body.classList.remove("darkmode");
     localStorage.setItem("darkmode", "inactive");
+    themeSwitch.textContent = "dark_mode";
     console.log("Dark mode disabled.");
   };
   
@@ -66,13 +68,10 @@ document.addEventListener("DOMContentLoaded", () => {
     darkmode = localStorage.getItem("darkmode");
     if (darkmode !== "active") {
       enableDarkmode();
-      toggleButton.textContent = "light_mode";
     } else {
       disableDarkmode();
-      toggleButton.textContent = "dark_mode";
     }
   });
 
   console.log("Event listener added.");
 });
-
