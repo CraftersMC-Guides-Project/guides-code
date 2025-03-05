@@ -55,7 +55,7 @@ if(darkmode === "active") enableDarkmode ()
 document.addEventListener("DOMContentLoaded", () => {
   const toggleButton = document.getElementById("darkModeToggle");
   const elementsToStyle = {
-    sidebar: document.getElementById("sidebar"),
+    // sidebar: document.getElementById("sidebar"),
     loader: document.getElementById("loader"),
     sidebarLinks: document.querySelectorAll(".sidebar-link"),
     closeButtons: document.querySelectorAll(".sidebar-close"),
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.style.backgroundColor = "#1e1e2e";
       document.body.style.color = "white";
 
-      elementsToStyle.sidebar.style.backgroundColor = "#111111";
+      // elementsToStyle.sidebar.style.backgroundColor = "#111111";
       elementsToStyle.loader.style.backgroundColor = "#333333";
 
       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "#222222"));
@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.style.backgroundColor = "white";
       document.body.style.color = "black";
 
-      elementsToStyle.sidebar.style.backgroundColor = "white";
+      // elementsToStyle.sidebar.style.backgroundColor = "white";
       elementsToStyle.loader.style.backgroundColor = "white";
 
       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "white"));
