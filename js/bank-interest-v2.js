@@ -9,20 +9,22 @@ function toggleSidebar() {
 }
 
 
-let darkmode = localStorage.getItem ('darkmode' )
+let darkMode = localStorage.getItem ('darkMode')
 const themeSwitch = document.getElementById('theme-switch')
-const enableDarkmode = () => {
+const enabledarkMode = () => {
   document.body.classList.add('darkmode')
-  localStorage.setItem('darkmode', 'active')
+  themeSwitch.textContent = "light_mode";
+  localStorage.setItem('darkMode', 'true')
 }
-const disableDarkmode = () => {
-  document.body.classList.remove ('darkmode')
-  localStorage.setItem ('darkmode', 'null')
+const disabledarkMode = () => {
+  document.body.classList.remove('darkmode')
+  themeSwitch.textContent = "dark_mode";
+  localStorage.setItem ('darkMode', 'null')
 }
-if(darkmode === "active") enableDarkmode ()
+if(darkMode === "true") enabledarkMode ()
   themeSwitch.addEventListener ("click", () => {
-  darkmode = localStorage.getItem( 'darkmode')
-  darkmode !== "active" ? enableDarkmode() : disableDarkmode()
+  darkMode = localStorage.getItem( 'darkMode')
+  darkMode !== "true" ? enabledarkMode() : disabledarkMode()
 })
 
 const interestInterval = 31 * 60 * 60 * 1000;
