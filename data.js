@@ -1,5 +1,4 @@
-        {
-  "collections":
+const collectionsData = {
             Mining: [
                 { name: "Cobblestone", image: "assets/mining/Cobblestone_JE5_BE3.png", players: [
                     { rank: 1, name: "Unknown", score: "N/A" },
@@ -300,8 +299,6 @@
                     { rank: 3, name: "NumberOne230564", score: "13M+" },
                     { rank: 4, name: "TRIGUN2212", score: "N/A" },
                     { rank: 5, name: "Unknown", score: "N/A" }
-        ]
-      }
+        ] }
     ]
-  }
-}
+};
