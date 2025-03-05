@@ -44,18 +44,18 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  let darkmode = localStorage.getItem("darkmode");
+  let darkMode = localStorage.getItem("darkMode");
 
   const enableDarkmode = () => {
     document.body.classList.add("darkmode");
-    localStorage.setItem("darkmode", "active");
+    localStorage.setItem("darkMode", "true");
     themeSwitch.textContent = "light_mode";
     console.log("Dark mode enabled.");
   };
 
   const disableDarkmode = () => {
     document.body.classList.remove("darkmode");
-    localStorage.setItem("darkmode", "inactive");
+    localStorage.setItem("darkMode", "false");
     themeSwitch.textContent = "dark_mode";
     console.log("Dark mode disabled.");
   };
@@ -65,8 +65,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   themeSwitch.addEventListener("click", () => {
-    darkmode = localStorage.getItem("darkmode");
-    if (darkmode !== "active") {
+    darkMode = localStorage.getItem("darkMode");
+    if (darkMode !== "true") {
       enableDarkmode();
     } else {
       disableDarkmode();
