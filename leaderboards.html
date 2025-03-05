@@ -83,24 +83,16 @@
 
     <script>
 document.addEventListener("DOMContentLoaded", () => {
-    let jsonData = {};
-    let defaultCategory = null;
+    let defaultCategory = Object.keys(collectionsData)[0];
 
-    fetch("data.json")
-        .then(response => response.json())
-        .then(data => {
-            jsonData = data.collections;
-            defaultCategory = Object.keys(jsonData)[0]; 
-            loadCategories();
-            loadCollections(defaultCategory);
-        })
-        .catch(error => console.error("Error loading JSON:", error));
+    loadCategories();
+    loadCollections(defaultCategory);
 
     function loadCategories() {
         const tabsContainer = document.querySelector(".tabs");
         tabsContainer.innerHTML = "";
 
-        Object.keys(jsonData).forEach((category, index) => {
+        Object.keys(collectionsData).forEach((category, index) => {
             let tab = document.createElement("button");
             tab.classList.add("tab");
             if (index === 0) tab.classList.add("active");
@@ -112,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function switchCategory(category) {
         document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
-        document.querySelector(`.tab:nth-child(${Object.keys(jsonData).indexOf(category) + 1})`).classList.add("active");
+        document.querySelector(`.tab:nth-child(${Object.keys(collectionsData).indexOf(category) + 1})`).classList.add("active");
         loadCollections(category);
     }
 
@@ -120,9 +112,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const collectionGrid = document.getElementById("collectionGrid");
         collectionGrid.innerHTML = "";
 
-        if (!jsonData[category]) return;
+        if (!collectionsData[category]) return;
 
-        jsonData[category].forEach((collection, index) => {
+        collectionsData[category].forEach((collection, index) => {
             let item = document.createElement("div");
             item.classList.add("collection-item");
             item.innerHTML = `<img src="${collection.image}" alt="${collection.name}"><p>${collection.name}</p>`;
@@ -132,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function loadLeaderboard(category, index) {
-        const collection = jsonData[category][index];
+        const collection = collectionsData[category][index];
         document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
 
         const leaderboardData = document.getElementById("leaderboardData");
