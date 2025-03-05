@@ -63,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // sidebar: document.getElementById("sidebar"),
     loader: document.getElementById("loader"),
     sidebarLinks: document.querySelectorAll(".sidebar-link"),
-    closeButtons: document.querySelectorAll(".sidebar-close"),
     cards: document.querySelectorAll(".card"),
     collectionItem: document.querySelectorAll(".collection-item"),
     contentSections: document.querySelectorAll(".content"),
@@ -109,7 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "#111111"));
       elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "#111111"));
       elementsToStyle.sidebarLinks.forEach(link => (link.style.color = "#fff"));
-      elementsToStyle.closeButtons.forEach(button => (button.style.color = "white"));
       elementsToStyle.bottomNavItems.forEach(item => (item.style.color = "white"));
       elementsToStyle.bottomNavIcons.forEach(icon => (icon.style.color = "white"));
       elementsToStyle.ctaButtons.forEach(btn => (btn.style.backgroundColor = "#111111"));
@@ -161,7 +159,6 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "white"));
       elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "white"));
       elementsToStyle.sidebarLinks.forEach(link => (link.style.color = "#000"));
-      elementsToStyle.closeButtons.forEach(button => (button.style.color = "black"));
       elementsToStyle.bottomNavItems.forEach(item => (item.style.color = "#333333"));
       elementsToStyle.bottomNavIcons.forEach(icon => (icon.style.color = "#333333"));
       elementsToStyle.ctaButtons.forEach(btn => (btn.style.backgroundColor = "#007bff"));
