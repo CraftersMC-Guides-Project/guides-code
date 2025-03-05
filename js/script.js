@@ -5,26 +5,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function toggleSidebar() {
     const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("sidebar-overlay");
     sidebar.classList.toggle("open");
 
     if (sidebar.classList.contains("open")) {
         document.body.style.overflow = "hidden";
         sidebar.style.overflowY = "auto";
+        overlay.style.display = "block";
     } else {
-        document.body.style.overflow = ""; 
+        document.body.style.overflow = "";
         setTimeout(() => {
             sidebar.scrollTop = 0;
         }, 300);
+        overlay.style.display = "none";
     }
 }
 
 document.addEventListener("click", (event) => {
     const sidebar = document.getElementById("sidebar");
     const menuIcon = document.querySelector(".menu-icon");
+    const overlay = document.getElementById("sidebar-overlay");
 
     if (!sidebar.contains(event.target) && !menuIcon.contains(event.target) && sidebar.classList.contains("open")) {
         sidebar.classList.remove("open");
-        document.body.style.overflow = ""; 
+        document.body.style.overflow = "";
+        overlay.style.display = "none";
 
         setTimeout(() => {
             sidebar.scrollTop = 0;
