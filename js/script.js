@@ -4,37 +4,60 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 function toggleSidebar() {
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("sidebar-overlay");
-    sidebar.classList.toggle("open");
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebar-overlay");
+  sidebar.classList.toggle("open");
 
-    if (sidebar.classList.contains("open")) {
-        document.body.style.overflow = "hidden";
-        sidebar.style.overflowY = "auto";
-        overlay.style.display = "block";
-    } else {
-        document.body.style.overflow = "";
-        setTimeout(() => {
-            sidebar.scrollTop = 0;
-        }, 300);
-        overlay.style.display = "none";
-    }
+  if (sidebar.classList.contains("open")) {
+    document.body.style.overflow = "hidden";
+    sidebar.style.overflowY = "auto";
+    overlay.style.display = "block";
+  } else {
+    document.body.style.overflow = "";
+    setTimeout(() => {
+      sidebar.scrollTop = 0;
+    }, 300);
+    overlay.style.display = "none";
+  }
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+  const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+
+  if (!scrollToTopBtn) {
+      console.error("scrollToTopBtn not found in the DOM");
+      return;
+  }
+
+  window.onscroll = function () {
+      if (document.documentElement.scrollTop > 300) {
+          scrollToTopBtn.style.display = "block";
+      } else {
+          scrollToTopBtn.style.display = "none";
+      }
+  };
+
+  scrollToTopBtn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+});
+
+
+
 document.addEventListener("click", (event) => {
-    const sidebar = document.getElementById("sidebar");
-    const menuIcon = document.querySelector(".menu-icon");
-    const overlay = document.getElementById("sidebar-overlay");
+  const sidebar = document.getElementById("sidebar");
+  const menuIcon = document.querySelector(".menu-icon");
+  const overlay = document.getElementById("sidebar-overlay");
 
-    if (!sidebar.contains(event.target) && !menuIcon.contains(event.target) && sidebar.classList.contains("open")) {
-        sidebar.classList.remove("open");
-        document.body.style.overflow = "";
-        overlay.style.display = "none";
+  if (!sidebar.contains(event.target) && !menuIcon.contains(event.target) && sidebar.classList.contains("open")) {
+    sidebar.classList.remove("open");
+    document.body.style.overflow = "";
+    overlay.style.display = "none";
 
-        setTimeout(() => {
-            sidebar.scrollTop = 0;
-        }, 300);
-    }
+    setTimeout(() => {
+      sidebar.scrollTop = 0;
+    }, 300);
+  }
 });
 
 /*

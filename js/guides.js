@@ -13,6 +13,27 @@ function toggleSidebar() {
         document.body.style.overflow = "";
     }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+  const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+
+  if (!scrollToTopBtn) {
+      console.error("scrollToTopBtn not found in the DOM");
+      return;
+  }
+
+  window.onscroll = function () {
+      if (document.documentElement.scrollTop > 300) {
+          scrollToTopBtn.style.display = "block";
+      } else {
+          scrollToTopBtn.style.display = "none";
+      }
+  };
+
+  scrollToTopBtn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+});
 /*document.getElementById('dark-mode-toggle').addEventListener('click', (event) => {
   const button = event.target;
   const isDarkMode = document.body.classList.toggle('dark-mode');
