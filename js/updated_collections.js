@@ -2005,8 +2005,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 8,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Rehan2038",
+                    "score": "36.3M+"
                 },
                 {
                     "rank": 9,
