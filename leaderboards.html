@@ -110,10 +110,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function switchCategory(category) {
-        document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
-        document.querySelector(`.tab:nth-child(${Object.keys(collectionsData).indexOf(category) + 1})`).classList.add("active");
-        loadCollections(category);
+    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+    
+    const tabs = document.querySelectorAll(".tab");
+    const categoryIndex = Object.keys(collectionsData).indexOf(category);
+    
+    if (categoryIndex !== -1) {
+        tabs[categoryIndex].classList.add("active");
     }
+
+    loadCollections(category);
+}
 
     function loadCollections(category) {
         const collectionGrid = document.getElementById("collectionGrid");
