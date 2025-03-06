@@ -128,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!collectionsData[category]) return;
 
-        collectionsData[category].forEach((collection, index) => {
+         collectionsData[category].forEach((collection, index) => {
             let item = document.createElement("div");
             item.classList.add("collection-item");
             item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`; /*<p>${collection.name}</p>*/
@@ -138,25 +138,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function loadLeaderboard(category, index) {
-    const collection = collectionsData[category][index];
-    document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
+        const collection = collectionsData[category][index];
+        document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
 
-    const leaderboardData = document.getElementById("leaderboardData");
-    leaderboardData.innerHTML = collection.players.length
-        ? collection.players.map(player => 
-            `<tr>
-                <td>${player.rank}</td>
-                <td style="color: ${player.name === "Unknown" ? "#9897A9" : "inherit"};">
-                    ${player.name}
-                </td>
-                <td style="color: ${player.score === "N/A" ? "#9897A9" : "inherit"};">
-                    ${player.score}
-                </td>
-            </tr>`).join("")
-        : "<tr><td>1</td><td style='color:#9897A9;'>????</td><td style='color:#9897A9;'>????</td></tr>".repeat(10);
-
-    document.querySelector('.leaderboard').scrollIntoView({ behavior: 'smooth' });
-}
+        const leaderboardData = document.getElementById("leaderboardData");
+        leaderboardData.innerHTML = collection.players.length
+            ? collection.players.map(player => `<tr><td>${player.rank}</td><td>${player.name}</td><td>${player.score}</td></tr>`).join("")
+            : "<tr><td>1</td><td>???</td><td>???</td></tr>".repeat(10);
+        document.querySelector('.leaderboard').scrollIntoView({ behavior: 'smooth' });
+    }
+});
     </script>
     <footer style="background: #666; color: #999; text-align: center; padding: 10px; margin-top: 20px;">
         &copy; 2025 TGJASSIYT, TechonTheDev, PG Network, Aakash Gupta, ieduoo. All rights reserved.
