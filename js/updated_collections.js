@@ -1469,7 +1469,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 2,
-                    "name": "Unknown",
+                    "name": "Meetgamer76",
                     "score": "N/A"
                 },
                 {
