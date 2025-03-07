@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.loader.style.backgroundColor = "white";
 
       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "white"));
-      elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#f9f9f9", section.style.borderTop = "1px solid #898989"));
+      elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#f9f9f9"));
       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "white"));
       elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "white"));
       elementsToStyle.sidebarLinks.forEach(link => (link.style.color = "#000"));
