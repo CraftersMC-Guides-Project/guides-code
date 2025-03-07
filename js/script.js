@@ -113,6 +113,10 @@ document.addEventListener("DOMContentLoaded", () => {
     tables: document.querySelectorAll("table"),
     tableHeaders: document.querySelectorAll("table th"),
     tableCells: document.querySelectorAll("table td"),
+    statsBox:    document.querySelectorAll(".stats-box"),
+    statCard: document.querySelectorAll(".stat-card"),
+    sellerDetails: document.querySelectorAll(".seller-details"),
+    sellerProfile: document.querySelectorAll(".seller-profile"),
   };
 
   let isDarkMode = localStorage.getItem("darkMode") === "true";
@@ -179,6 +183,10 @@ document.addEventListener("DOMContentLoaded", () => {
             row.style.backgroundColor = "#282838";
           });
         });
+        elementsToStyle.statsBox.forEach(stat => (stat.style.backgroundColor = "rgba(0, 0, 0, 0.7)"));
+        elementsToStyle.statCard.forEach(card => (card.style.backgroundColor = "rgba(34, 34, 34, 0.4)"));
+        elementsToStyle.sellerDetails.forEach(detail => (detail.style.backgroundColor = "rgba(34, 34, 34, 0.4)"))
+        elementsToStyle.sellerProfile.forEach(profile => (profile.style.backgroundColor = "rgba(68, 68, 68, 0.2)"));
       });
 
       toggleButton.textContent = "light_mode";
@@ -186,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.style.backgroundColor = "white";
       document.body.style.color = "black";
 
-      // elementsToStyle.sidebar.style.backgroundColor = "white";
+       //elementsToStyle.sidebar.style.backgroundColor = "white";
       elementsToStyle.loader.style.backgroundColor = "white";
 
       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "white"));
@@ -221,6 +229,11 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.tableCells.forEach(cell => {
         cell.style.border = "1px solid #ccc";
       });
+
+      elementsToStyle.statsBox.forEach(stat => (stat.style.backgroundColor = "rgba(0, 123, 255, 0.7)"));
+      elementsToStyle.statCard.forEach(card => (card.style.backgroundColor = "rgba(80, 80, 80, 0.4)"));
+      elementsToStyle.sellerDetails.forEach(detail => (detail.style.backgroundColor = "rgba(80, 80, 80, 0.4)"))
+      elementsToStyle.sellerProfile.forEach(profile => (profile.style.backgroundColor = "rgba(170, 170, 170, 0.2)"));
 
       removeHoverEffects();
 
