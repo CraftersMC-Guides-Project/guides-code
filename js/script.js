@@ -183,11 +183,11 @@ document.addEventListener("DOMContentLoaded", () => {
             row.style.backgroundColor = "#282838";
           });
         });
-        elementsToStyle.statsBox.forEach(stat => (stat.style.backgroundColor = "rgba(0, 0, 0, 0.7)"));
-        elementsToStyle.statCard.forEach(card => (card.style.backgroundColor = "rgba(34, 34, 34, 0.4)"));
-        elementsToStyle.sellerDetails.forEach(detail => (detail.style.backgroundColor = "rgba(34, 34, 34, 0.4)"))
-        elementsToStyle.sellerProfile.forEach(profile => (profile.style.backgroundColor = "rgba(68, 68, 68, 0.2)"));
       });
+      elementsToStyle.statsBox.forEach(stat => (stat.style.backgroundColor = "rgba(0, 0, 0, 0.7)"));
+      elementsToStyle.statCard.forEach(card => (card.style.backgroundColor = "rgba(34, 34, 34, 0.4)"));
+      elementsToStyle.sellerDetails.forEach(detail => (detail.style.backgroundColor = "rgba(34, 34, 34, 0.4)"))
+      elementsToStyle.sellerProfile.forEach(profile => (profile.style.backgroundColor = "rgba(68, 68, 68, 0.2)"));
 
       toggleButton.textContent = "light_mode";
     } else {
