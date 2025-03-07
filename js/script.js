@@ -149,8 +149,8 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.navbars.forEach(nav => (nav.style.backgroundColor = "#111111"));
       elementsToStyle.unicodeContainers.forEach(container => (container.style.backgroundColor = "rgb(17, 17, 28)", container.style.backdropFilter = "blur(15px)"));
       elementsToStyle.unicodeSections.forEach(section => (section.style.backgroundColor = "#222222"));
-      elementsToStyle.sellerCards.forEach(card => (card.style.backgroundColor = "#45454547"));
-      elementsToStyle.sellerCardsInactive.forEach(card => (card.style.backgroundColor = "#dd22221f"));
+      elementsToStyle.sellerCards.forEach(card => (card.style.backgroundColor = "rgba(0, 0, 0, 0.4)"));
+      elementsToStyle.sellerCardsInactive.forEach(card => (card.style.backgroundColor = "rgba(70, 0, 0, 0.4)"));
 
       elementsToStyle.tables.forEach(table => {
         table.style.backgroundColor = "#282838";
@@ -201,10 +201,10 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.navbars.forEach(nav => (nav.style.backgroundColor = "#007bff"));
       elementsToStyle.unicodeContainers.forEach(container => (container.style.backgroundColor = "#f1f1f1"));
       elementsToStyle.unicodeSections.forEach(section => (section.style.backgroundColor = "#f1f1f1", section.style.border = "1px solid #898989"));
-      elementsToStyle.sellerCards.forEach(card => (card.style.backgroundColor = "#f1f1f1"));
+      elementsToStyle.sellerCards.forEach(card => (card.style.backgroundColor = "#rgba(255, 255, 255, 0.1)"));
       elementsToStyle.sellerCardsInactive.forEach(card => {
         card.style.border = "2px solid rgb(221, 34, 34)";
-        card.style.backgroundColor = "white";
+        card.style.backgroundColor = "rgba(221, 34, 34, 0.1)";
       });
 
       elementsToStyle.tables.forEach(table => {
@@ -248,6 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("darkMode", isDarkMode);
       location.reload();
       applyTheme();
+      document.body.classList.toggle("darkmode", isDarkMode);
     });
   }
 });
