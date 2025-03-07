@@ -245,8 +245,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "LORDXGASTER1508",
+                    "score": "9.2M+"
                 },
                 {
                     "rank": 5,
