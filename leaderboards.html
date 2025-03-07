@@ -1,156 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:title" content="Collection Leaderboards">
-    <meta property="og:description" content="Find out who is at what position with how much collection by our friendly-ui tool.">
-    <meta property="og:image" content="https://cdn.discordapp.com/attachments/1320310626232569887/1346040574616010752/collclb384.png?ex=67c6bd79&is=67c56bf9&hm=555f9d6bea96134f32f623e63b67fdbf2b9641ebfe5ee6ab265cc20ae3534ea7&">
+    <meta property="og:description"
+        content="Find out who is at what position with how much collection by our friendly-ui tool.">
+    <meta property="og:image"
+        content="https://cdn.discordapp.com/attachments/1320310626232569887/1346040574616010752/collclb384.png?ex=67c6bd79&is=67c56bf9&hm=555f9d6bea96134f32f623e63b67fdbf2b9641ebfe5ee6ab265cc20ae3534ea7&">
     <meta property="og:url" content="https://craftersmc-guides-project.github.io/leaderboards.html">
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#007bff">
     <title>Collection Leaderboards</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="css/essential.css">
     <link rel="stylesheet" href="css/leaderboards.css">
+    <link rel="stylesheet" href="css/essential.css">
     <script src="js/script.js"></script>
     <script src="js/updated_collections.js"></script>
 </head>
+
 <body>
     <div id="loader">
         <div></div>
         <div></div>
         <div></div>
     </div>
-    <!-- Top Navbar -->
-    <div class="navbar">
-        <span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
-        <div class="right">
-            <span class="menu-icon material-icons" id="darkModeToggle">dark_mode</span>
-            <a href="index.html"><img src="assets/cmc-guides.png"></a>
-        </div>
-    </div>
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <span class="sidebar-close material-icons" onclick="toggleSidebar()">close</span>
-        <img src="assets/cmc-guides.png" alt="CMC Guides Logo">
-        <hr>
-        <a class="sidebar-link" href="rank-sellers.html">Rank Sellers</a>
-        <a class="sidebar-link" href="unicode.html">Unicode</a>
-        <a class="sidebar-link" href="journey-guides.html">Guides</a>
-        <a class="sidebar-link" href="bankInterestV2.html">Bank Interest Timer (Beta)</a>
-        <a class="sidebar-link" href="leaderboards.html">Collection Leaderboards</a>
-        <a class="sidebar-link" href="https://craftersmc.wiki.gg/wiki/">CraftersMC Wiki</a>
-        <a class="sidebar-link" href="https://craftersmc.net/">CraftersMC Website</a>
-    </div>
     <div id="sidebar-overlay"></div>
-    <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
-    <!-- <script src="js/rank-sellers.js" defer></script>
+    <div id="sidelid" class="sidelid">
+        <h2>Select Category</h2>
+        <div class="tabs">
+            <button class="tab active" onclick="switchCategory('Mining')"><img src="assets/mining/pickaxe.png"
+                    width="40px"></button>
+            <button class="tab" onclick="switchCategory('Farming')"><img src="assets/farming/hoe.png"
+                    width="40px"></button>
+            <button class="tab" onclick="switchCategory('Combat')"><img src="assets/combat/sword.png"
+                    width="40px"></button>
+            <button class="tab" onclick="switchCategory('Foraging')"><img src="assets/foraging/axe.png"
+                    width="40px"></button>
+        </div>
+        <h2>Select Item</h2>
+        <div class="collections" id="collectionGrid"></div>
+    </div>
+    <!-- Top Navbar -->
+    <div class="content">
+        <div class="navbar">
+            <div class="left">
+                <span class="openbtn menu-icon material-icons" onclick="toggleLid()">double_arrow</span>
+                <span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
+            </div>
+            <div class="right">
+                <span class="menu-icon material-icons" id="darkModeToggle">dark_mode</span>
+                <a href="index.html"><img src="assets/cmc-guides.png"></a>
+            </div>
+        </div>
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <span class="sidebar-close material-icons" onclick="toggleSidebar()">close</span>
+            <img src="assets/cmc-guides.png" alt="CMC Guides Logo">
+            <hr>
+            <a class="sidebar-link" href="rank-sellers.html">Rank Sellers</a>
+            <a class="sidebar-link" href="unicode.html">Unicode</a>
+            <a class="sidebar-link" href="journey-guides.html">Guides</a>
+            <a class="sidebar-link" href="bankInterestV2.html">Bank Interest Timer (Beta)</a>
+            <a class="sidebar-link" href="leaderboards.html">Collection Leaderboards</a>
+            <a class="sidebar-link" href="https://craftersmc.wiki.gg/wiki/">CraftersMC Wiki</a>
+            <a class="sidebar-link" href="https://craftersmc.net/">CraftersMC Website</a>
+        </div>
+        <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
+        <!-- <script src="js/rank-sellers.js" defer></script>
     <button id="theme-switch">
         dark icon
         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z"/></svg>
         light icon
         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M480-280q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Z"/></svg>
       </button> -->
-    
-    <div class="container">
-        <h1>CraftersMC Collection Leaderboards</h1>
-        <p>Select a category and collection to view the top 10 players.</p>
 
-        <div class="tabs">
-            <button class="tab active" onclick="switchCategory('Mining')">Mining</button>
-            <button class="tab" onclick="switchCategory('Farming')">Farming</button>
-            <button class="tab" onclick="switchCategory('Combat')">Combat</button>
-            <button class="tab" onclick="switchCategory('Foraging')">Foraging</button>
+        <div class="container">
+            <h1>CraftersMC Collection Leaderboards</h1>
+            <p>Select a category and collection to view the top 10 players.</p>
+
+            <div class="leaderboard">
+                <h2 id="collectionTitle">Select a Collection</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Player</th>
+                            <th>Collection</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardData">
+                        <tr>
+                            <td>1</td>
+                            <td>???</td>
+                            <td>???</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>???</td>
+                            <td>???</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>???</td>
+                            <td>???</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>???</td>
+                            <td>???</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>???</td>
+                            <td>???</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>???</td>
+                            <td>???</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>???</td>
+                            <td>???</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>???</td>
+                            <td>???</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>???</td>
+                            <td>???</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>???</td>
+                            <td>???</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-
-        <div class="collections" id="collectionGrid"></div>
-
-        <div class="leaderboard">
-            <h2 id="collectionTitle">Select a Collection</h2>
-            <table>
-                <thead>
-                    <tr><th>Rank</th><th>Player</th><th>Collection</th></tr>
-                </thead>
-                <tbody id="leaderboardData">
-                    <tr><td>1</td><td>???</td><td>???</td></tr>
-                    <tr><td>2</td><td>???</td><td>???</td></tr>
-                    <tr><td>3</td><td>???</td><td>???</td></tr>
-                    <tr><td>4</td><td>???</td><td>???</td></tr>
-                    <tr><td>5</td><td>???</td><td>???</td></tr>
-                    <tr><td>6</td><td>???</td><td>???</td></tr>
-                    <tr><td>7</td><td>???</td><td>???</td></tr>
-                    <tr><td>8</td><td>???</td><td>???</td></tr>
-                    <tr><td>9</td><td>???</td><td>???</td></tr>
-                    <tr><td>10</td><td>???</td><td>???</td></tr>
-                </tbody>
-            </table>
-        </div>
+        <footer style="background: #666; color: #999; text-align: center; padding: 10px; margin-top: 20px;">
+            &copy; 2025 TGJASSIYT, TechonTheDev, PG Network, Aakash Gupta, ieduoo. All rights reserved.
+        </footer>
     </div>
-
     <script>
-document.addEventListener("DOMContentLoaded", () => {
-    let defaultCategory = Object.keys(collectionsData)[0];
+        document.addEventListener("DOMContentLoaded", () => {
+            let defaultCategory = Object.keys(collectionsData)[0];
 
-    loadCategories();
-    loadCollections(defaultCategory);
+            loadCategories();
+            loadCollections(defaultCategory);
 
-    function loadCategories() {
-        const tabsContainer = document.querySelector(".tabs");
-        tabsContainer.innerHTML = "";
+            function loadCategories() {
+                const tabsContainer = document.querySelector(".tabs");
+                tabsContainer.innerHTML = "";
 
-        Object.keys(collectionsData).forEach((category, index) => {
-            let tab = document.createElement("button");
-            tab.classList.add("tab");
-            if (index === 0) tab.classList.add("active");
-            tab.innerText = category;
-            tab.onclick = () => switchCategory(category);
-            tabsContainer.appendChild(tab);
+                Object.keys(collectionsData).forEach((category, index) => {
+                    let tab = document.createElement("button");
+                    tab.classList.add("tab");
+                    if (index === 0) tab.classList.add("active");
+                    tab.innerText = category;
+                    tab.onclick = () => switchCategory(category);
+                    tabsContainer.appendChild(tab);
+                });
+            }
+
+            function switchCategory(category) {
+                document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+
+                const tabs = document.querySelectorAll(".tab");
+                const categoryIndex = Object.keys(collectionsData).indexOf(category);
+
+                if (categoryIndex !== -1) {
+                    tabs[categoryIndex].classList.add("active");
+                }
+
+                loadCollections(category);
+            }
+
+            function loadCollections(category) {
+                const collectionGrid = document.getElementById("collectionGrid");
+                collectionGrid.innerHTML = "";
+
+                if (!collectionsData[category]) return;
+
+                collectionsData[category].forEach((collection, index) => {
+                    let item = document.createElement("div");
+                    item.classList.add("collection-item");
+                    item.innerHTML = `<img src="${collection.image}" alt="${collection.name}"><p>${collection.name}</p>`;
+                    item.onclick = () => loadLeaderboard(category, index);
+                    collectionGrid.appendChild(item);
+                });
+            }
+
+            function loadLeaderboard(category, index) {
+                const collection = collectionsData[category][index];
+                document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
+
+                const leaderboardData = document.getElementById("leaderboardData");
+                leaderboardData.innerHTML = collection.players.length
+                    ? collection.players.map(player => `<tr><td>${player.rank}</td><td>${player.name}</td><td>${player.score}</td></tr>`).join("")
+                    : "<tr><td>1</td><td>???</td><td>???</td></tr>".repeat(10);
+                document.querySelector('.leaderboard').scrollIntoView({ behavior: 'smooth' });
+            }
         });
-    }
-
-    function switchCategory(category) {
-    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
-    
-    const tabs = document.querySelectorAll(".tab");
-    const categoryIndex = Object.keys(collectionsData).indexOf(category);
-    
-    if (categoryIndex !== -1) {
-        tabs[categoryIndex].classList.add("active");
-    }
-
-    loadCollections(category);
-}
-
-    function loadCollections(category) {
-        const collectionGrid = document.getElementById("collectionGrid");
-        collectionGrid.innerHTML = "";
-
-        if (!collectionsData[category]) return;
-
-         collectionsData[category].forEach((collection, index) => {
-            let item = document.createElement("div");
-            item.classList.add("collection-item");
-            item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`; /*<p>${collection.name}</p>*/
-            item.onclick = () => loadLeaderboard(category, index);
-            collectionGrid.appendChild(item);
-        });
-    }
-
-    function loadLeaderboard(category, index) {
-        const collection = collectionsData[category][index];
-        document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
-
-        const leaderboardData = document.getElementById("leaderboardData");
-        leaderboardData.innerHTML = collection.players.length
-            ? collection.players.map(player => `<tr><td>${player.rank}</td><td>${player.name}</td><td>${player.score}</td></tr>`).join("")
-            : "<tr><td>1</td><td>???</td><td>???</td></tr>".repeat(10);
-        document.querySelector('.leaderboard').scrollIntoView({ behavior: 'smooth' });
-    }
-});
     </script>
-    <footer style="background: #666; color: #999; text-align: center; padding: 10px; margin-top: 20px;">
-        &copy; 2025 TGJASSIYT, TechonTheDev, PG Network, Aakash Gupta, ieduoo. All rights reserved.
-    </footer>
 </body>
+
 </html>

@@ -2,6 +2,16 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelector('#loader').style.display = 'none';
 });
 
+function toggleLid() {
+  const sidelid = document.getElementById("sidelid");
+
+  if (!sidelid) {
+    console.error("Element with ID 'sidelid' not found.");
+    return;
+  }
+
+  sidelid.classList.toggle("open");
+}
 
 function toggleSidebar() {
   const sidebar = document.getElementById("sidebar");
@@ -89,6 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cards: document.querySelectorAll(".card"),
     collectionItem: document.querySelectorAll(".collection-item"),
     contentSections: document.querySelectorAll(".content"),
+    sidelid: document.querySelectorAll(".sidelid"),
     bottomNavs: document.querySelectorAll(".bottom-nav"),
     bottomNavItems: document.querySelectorAll(".nav-item"),
     bottomNavIcons: document.querySelectorAll(".bottom-nav-icon"),
@@ -130,6 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.collectionItem.forEach(collectionItem => (collectionItem.style.backgroundColor = "#1e1e3e"));
       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "#111111"));
       elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "#111111"));
+      elementsToStyle.sidelid.forEach(sidelid => (sidelid.style.backgroundColor = "#1e1e3e", sidelid.style.color = "white"));
       elementsToStyle.sidebarLinks.forEach(link => (link.style.color = "#fff"));
       elementsToStyle.bottomNavItems.forEach(item => (item.style.color = "white"));
       elementsToStyle.bottomNavIcons.forEach(icon => (icon.style.color = "white"));
@@ -181,6 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#f9f9f9"));
       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "white"));
       elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "white"));
+      elementsToStyle.sidelid.forEach(sidelid => (sidelid.style.backgroundColor = "rgb(241, 241, 241)", sidelid.style.color = "black"));
       elementsToStyle.sidebarLinks.forEach(link => (link.style.color = "#000"));
       elementsToStyle.bottomNavItems.forEach(item => (item.style.color = "#333333"));
       elementsToStyle.bottomNavIcons.forEach(icon => (icon.style.color = "#333333"));

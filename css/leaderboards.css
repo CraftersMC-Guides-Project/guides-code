@@ -1,11 +1,11 @@
 :root {
-    --guides-blue: #007bff;
-    --white: #ffffff;
-    --guides-blue-hover: #0056b3;
-    --background: #f4f4f4;
-    --item-background: #e0e0e0;
-    --sidebar-text: #2f2f2f;
-    --text: black;
+  --guides-blue: #007bff;
+  --white: #ffffff;
+  --guides-blue-hover: #0056b3;
+  --background: #f4f4f4;
+  --item-background: #e0e0e0;
+  --sidebar-text: #2f2f2f;
+  --text: black;
 }
 
 
@@ -93,7 +93,7 @@ h1 {
 .tab {
   background: var(--guides-blue);
   color: white;
-  padding: 10px 20px;
+  padding: 2px;
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
@@ -106,30 +106,31 @@ h1 {
 }
 
 .collections {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 12px;
   justify-items: center;
-  color: #000;
 }
 
 .collection-item {
-  width: 110px;
-  height: 110px;
+  height: 42px;
+  padding: 0 25px;
   background: var(--item-background);
   border-radius: 10px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   cursor: pointer;
   transition: 0.3s;
   border: 3px solid transparent;
-  flex-direction: column;
+}
+
+.collection-item p {
+  color: var(--text);
 }
 
 .collection-item img {
-  width: 80px;
-  height: 80px;
+  width: 30px;
 }
 
 .collection-item:hover,
@@ -150,7 +151,8 @@ table {
   overflow: hidden;
 }
 
-th, td {
+th,
+td {
   padding: 12px;
   border: 1px solid #ddd;
   text-align: left;
@@ -182,20 +184,103 @@ tbody tr:nth-child(3) {
 
 @media (max-width: 600px) {
   .collections {
-      grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .collection-item {
-      width: 90px;
-      height: 90px;
+    width: 90px;
+    height: 90px;
   }
 
   .collection-item img {
-      width: 70px;
-      height: 70px;
+    width: 70px;
+    height: 70px;
   }
 
   .tab {
-      padding: 8px 15px;
+    padding: 8px 15px;
+  }
+}
+
+.sidelid {
+  width: 250px;
+  height: 100vh;
+  background-color: rgb(241, 241, 241);
+  padding: 20px;
+  color: var(--text);
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+  transition: 0.3s;
+  z-index: 5000;
+}
+
+.sidelid h2 {
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+.sidelid a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  padding: 10px;
+  transition: 0.2s;
+  font-size: 18px;
+}
+
+.sidelid a:hover {
+  background-color: #575757;
+}
+
+/* Main Content */
+.content {
+  margin-left: 250px;
+  /* Push content to the right */
+  flex: 1;
+}
+
+/* Open button (for small screens) */
+.openbtn {
+  display: none;
+}
+
+.openbtn:hover {
+  cursor: pointer;
+}
+
+.navbar {
+  width: calc(100% - 250px) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar {
+    width: 100% !important;
+  }
+  .sidelid {
+    margin-top: 60px;
+    width: 0;
+    padding: 0;
+    left: -250px;
+  }
+
+  .sidelid.open {
+    width: 250px;
+    padding: 20px;
+    left: 0;
+  }
+
+  .closebtn {
+    display: block;
+  }
+
+  .content {
+    margin-left: 0;
+  }
+
+  .openbtn {
+    display: block;
   }
 }
