@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
         cell.style.border = "1px solid #ccc";
       });
 
-      elementsToStyle.statsBox.forEach(stat => (stat.style.backgroundColor = "rgba(0, 123, 255, 0.7)"));
+      elementsToStyle.statsBox.forEach(stat => (stat.style.backgroundColor = "rgba(0, 87, 179, 0.7)"));
       elementsToStyle.statCard.forEach(card => (card.style.backgroundColor = "rgba(80, 80, 80, 0.4)"));
       elementsToStyle.sellerDetails.forEach(detail => (detail.style.backgroundColor = "rgba(80, 80, 80, 0.4)"))
       elementsToStyle.sellerProfile.forEach(profile => (profile.style.backgroundColor = "rgba(170, 170, 170, 0.2)"));
