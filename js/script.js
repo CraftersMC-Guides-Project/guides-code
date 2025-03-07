@@ -186,7 +186,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       elementsToStyle.statsBox.forEach(stat => (stat.style.backgroundColor = "rgba(0, 0, 0, 0.7)"));
       elementsToStyle.statCard.forEach(card => (card.style.backgroundColor = "rgba(34, 34, 34, 0.4)"));
-      elementsToStyle.sellerDetails.forEach(detail => (detail.style.backgroundColor = "rgba(34, 34, 34, 0.4)"))
+      elementsToStyle.sellerDetails.forEach(detail => (detail.style.backgroundColor = "rgba(34, 34, 34, 0.4)"));
+      elementsToStyle.sellerProfile.forEach(profile => (profile.style.color = "white"));
       elementsToStyle.sellerProfile.forEach(profile => (profile.style.backgroundColor = "rgba(68, 68, 68, 0.2)"));
 
       toggleButton.textContent = "light_mode";
@@ -259,7 +260,8 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleButton.addEventListener("click", () => {
       isDarkMode = !isDarkMode;
       localStorage.setItem("darkMode", isDarkMode);
-      location.reload();
+      //got rid of auto reload for a bit mb if any issues
+      //location.reload();
       applyTheme();
     });
   }
