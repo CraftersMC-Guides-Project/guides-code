@@ -261,7 +261,6 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("darkMode", isDarkMode);
       location.reload();
       applyTheme();
-      document.body.classList.toggle("darkmode", isDarkMode);
     });
   }
 });
