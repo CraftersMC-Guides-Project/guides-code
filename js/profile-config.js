@@ -15,7 +15,7 @@ function toggleSidebar() {
 
 function changeBackground(type) {
   const backgrounds = {
-      'default': 'linear-gradient(135deg, #1a1a1a, #333333)',
+      'default': 'url("../Backgrounds/IMG_4504.jpeg")',
       'forest': 'url("../Backgrounds/IMG_4498.jpeg")',
       'mountain': 'url("../Backgrounds/IMG_4499.jpeg")',
       'desert': 'url("../Backgrounds/IMG_4500.jpeg")',
@@ -26,6 +26,9 @@ function changeBackground(type) {
     'snowdrops': 'url("../Backgrounds/IMG_0669.jpeg")',
     'fountain': 'url("../Backgrounds/IMG_0179.jpeg")',
     'skylights': 'url("../Backgrounds/IMG_0205.jpeg")',
+    'crocus': 'url("../Backgrounds/Crocus.jpeg")',
+    'daisy': 'url("../Backgrounds/Daisy.jpeg")',
+    'oldtree': 'url("../Backgrounds/OldTree.jpeg")',
       'cyberpunk': 'linear-gradient(135deg, #ff00ff, #00ffff)',
       'sunset': 'linear-gradient(135deg, #ff5f3f, #e5df3f)',
       'random': () => {
@@ -90,6 +93,9 @@ function changeProfileBannerBackground(type) {
     'snowdrops': 'url("../Backgrounds/IMG_0669.jpeg")',
     'fountain': 'url("../Backgrounds/IMG_0179.jpeg")',
     'skylights': 'url("../Backgrounds/IMG_0205.jpeg")',
+    'periwinkle': 'url("../Backgrounds/PeriwinkleBanner.jpeg")',
+    'flowerBanner': 'url("../Backgrounds/FlowerBanner.jpeg")',
+    'daisy': 'url("../Backgrounds/daisy.jpeg")',
   };
 
   const profileBanner = document.querySelector('.profile-banner');
