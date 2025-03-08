@@ -75,12 +75,13 @@ document.addEventListener("click", (event) => {
 
   if (!sidebar || !menuIcon || !left || !overlay) return;
 
-  if (sidebar.classList.contains("openSbar") && 
-      !sidebar.contains(event.target) && 
+  if (
+    (sidebar.classList.contains("openSbar") &&
+      !sidebar.contains(event.target) &&
       !menuIcon.contains(event.target) &&
-      !left.contains(event.target)) || 
-      event.target === overlay) {
-    
+      !left.contains(event.target)) ||
+    event.target === overlay
+  ) {
     sidebar.classList.remove("openSbar");
     document.body.style.overflow = "";
     overlay.style.display = "none";
@@ -90,6 +91,8 @@ document.addEventListener("click", (event) => {
     }, 300);
   }
 });
+
+
 
 
 // outside click will close the sidelid
