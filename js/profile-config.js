@@ -54,29 +54,62 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 });
+/*
+function changeProfileBannerBackground(type) {
+  const bannerBackgrounds = {
+    'default': 'url("../Backgrounds/IMG_4500.jpeg")',
+    'forest': 'url("../Backgrounds/IMG_4498.jpeg")',
+    'mountain': 'url("../Backgrounds/IMG_4499.jpeg")',
+    'desert': 'url("../Backgrounds/IMG_4500.jpeg")',
+    'ocean': 'url("../Backgrounds/IMG_4502.jpeg")',
+    'rose': 'url("../Backgrounds/IMG_0007.jpeg")',
+    'bush': 'url("../Backgrounds/IMG_0004.jpeg")',
+    'fireworks': 'url("../Backgrounds/IMG_0097.jpeg")',
+    'snowdrops': 'url("../Backgrounds/IMG_0669.jpeg")',
+    'fountain': 'url("../Backgrounds/IMG_0179.jpeg")',
+    'skylights': 'url("../Backgrounds/IMG_0205.jpeg")',
+  };
+  const profileBanner = document.querySelector('.profile-banner');
+  const bannerBackground = bannerBackgrounds[type];
+  if (bannerBackground) {
+    profileBanner.style.backgroundImage = bannerBackground;
+  }
+}
+*/
 
 function changeProfileBannerBackground(type) {
-  const backgrounds = {
-      'default': 'url("../Backgrounds/IMG_4500.jpeg")',
-      'forest': 'url("../Backgrounds/IMG_4498.jpeg")',
-      'mountain': 'url("../Backgrounds/IMG_4499.jpeg")',
-      'desert': 'url("../Backgrounds/IMG_4500.jpeg")',
-      'ocean': 'url("../Backgrounds/IMG_4502.jpeg")',
-      'rose': 'url("../Backgrounds/IMG_0007.jpeg")',
-      'bush': 'url("../Backgrounds/IMG_0004.jpeg")',
-      'fireworks': 'url("../Backgrounds/IMG_0097.jpeg")',
-      'snowdrops': 'url("../Backgrounds/IMG_0669.jpeg")',
-      'fountain': 'url("../Backgrounds/IMG_0179.jpeg")',
-      'skylights': 'url("../Backgrounds/IMG_0205.jpeg")',
+  const bannerBackgrounds = {
+    'default': 'url("../Backgrounds/IMG_4500.jpeg")',
+    'forest': 'url("../Backgrounds/IMG_4498.jpeg")',
+    'mountain': 'url("../Backgrounds/IMG_4499.jpeg")',
+    'desert': 'url("../Backgrounds/IMG_4500.jpeg")',
+    'ocean': 'url("../Backgrounds/IMG_4502.jpeg")',
+    'rose': 'url("../Backgrounds/IMG_0007.jpeg")',
+    'bush': 'url("../Backgrounds/IMG_0004.jpeg")',
+    'fireworks': 'url("../Backgrounds/IMG_0097.jpeg")',
+    'snowdrops': 'url("../Backgrounds/IMG_0669.jpeg")',
+    'fountain': 'url("../Backgrounds/IMG_0179.jpeg")',
+    'skylights': 'url("../Backgrounds/IMG_0205.jpeg")',
   };
 
   const profileBanner = document.querySelector('.profile-banner');
-  const background = backgrounds[type];
-
-  if (background) {
-    profileBanner.style.backgroundImage = background;
+  const bannerBackground = bannerBackgrounds[type];
+  if (bannerBackground) {
+    profileBanner.style.backgroundImage = bannerBackground;
   }
 }
+
+//profile banner dropdown
+//yea turns out i alr used backgroundSelect im a bit silly
+
+document.addEventListener('DOMContentLoaded', () => {
+  const bannerBackgroundSelect = document.getElementById('bannerBackgroundSelect');
+  if (bannerBackgroundSelect) {
+    bannerBackgroundSelect.addEventListener('change', (e) => {
+      changeProfileBannerBackground(e.target.value);
+    });
+  }
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM fully loaded.");
