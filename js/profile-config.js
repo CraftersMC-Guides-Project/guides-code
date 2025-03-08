@@ -55,6 +55,29 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+function changeProfileBannerBackground(type) {
+  const backgrounds = {
+      'default': 'url("../Backgrounds/IMG_4500.jpeg")',
+      'forest': 'url("../Backgrounds/IMG_4498.jpeg")',
+      'mountain': 'url("../Backgrounds/IMG_4499.jpeg")',
+      'desert': 'url("../Backgrounds/IMG_4500.jpeg")',
+      'ocean': 'url("../Backgrounds/IMG_4502.jpeg")',
+      'rose': 'url("../Backgrounds/IMG_0007.jpeg")',
+      'bush': 'url("../Backgrounds/IMG_0004.jpeg")',
+      'fireworks': 'url("../Backgrounds/IMG_0097.jpeg")',
+      'snowdrops': 'url("../Backgrounds/IMG_0669.jpeg")',
+      'fountain': 'url("../Backgrounds/IMG_0179.jpeg")',
+      'skylights': 'url("../Backgrounds/IMG_0205.jpeg")',
+  };
+
+  const profileBanner = document.querySelector('.profile-banner');
+  const background = backgrounds[type];
+
+  if (background) {
+    profileBanner.style.backgroundImage = background;
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM fully loaded.");
 
