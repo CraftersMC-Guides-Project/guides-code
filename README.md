@@ -24,13 +24,13 @@ Join an active and diverse community of players as you explore everything **Craf
 
 The **CraftersMC Guides** almost covers every aspect of progression in SkyBlock, these are the current guides available:
 
-1. **Starter Guide**
-2. **Intermediate Guide (2 Parts)**
-3. **Advanced Guide**
-4. **Bazaar Guide**
-5. **Accessories Guide**
-6. **Queries related to Guides**
-7. **Rank Sellers Lists**
+1. **[Starter Guide](https://craftersmc-guides-project.github.io/guide/starter-guide.html)**
+2. **[Intermediate Guide (2 Parts)](https://craftersmc-guides-project.github.io/guide/intermediate-guide.html)**
+3. **[Advanced Guide](https://craftersmc-guides-project.github.io/guide/advanced-guide.html)**
+4. **[Bazaar Guide](https://craftersmc-guides-project.github.io/guide/bazaar-guide.html)**
+5. **[Accessories Guide](https://craftersmc-guides-project.github.io/guide/accessories-guide.html)**
+6. **[Queries related to Guides](https://craftersmc-guides-project.github.io/guide/queries.html)**
+7. **[Rank Sellers Lists](https://craftersmc-guides-project.github.io/rank-sellers.html)**
 
 ---
 
