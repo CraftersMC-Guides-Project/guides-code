@@ -10,15 +10,15 @@ function toggleLid() {
     return;
   }
 
-  sidelid.classList.toggle("open");
+  sidelid.classList.toggle("openlid");
 }
 
 function toggleSidebar() {
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("sidebar-overlay");
-  sidebar.classList.toggle("open");
+  sidebar.classList.toggle("openSbar");
 
-  if (sidebar.classList.contains("open")) {
+  if (sidebar.classList.contains("openSbar")) {
     document.body.style.overflow = "hidden";
     sidebar.style.overflowY = "auto";
     overlay.style.display = "block";
