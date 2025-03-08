@@ -1311,8 +1311,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "NINTIN7238",
+                    "score": "19.2M+"
                 },
                 {
                     "rank": 5,
