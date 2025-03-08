@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function toggleLid() {
   const sidelid = document.getElementById("sidelid");
+  const overlay = document.getElementById("sidebar-overlay");
 
   if (!sidelid) {
     console.error("Element with ID 'sidelid' not found.");
@@ -11,6 +12,18 @@ function toggleLid() {
   }
 
   sidelid.classList.toggle("openlid");
+
+  if (sidelid.classList.contains("openlid")) {
+    document.body.style.overflow = "hidden";
+    sidebar.style.overflowY = "auto";
+    overlay.style.display = "block";
+  } else {
+    document.body.style.overflow = "";
+    setTimeout(() => {
+      sidelid.scrollTop = 0;
+    }, 300);
+    overlay.style.display = "none";
+  }
 }
 
 function toggleSidebar() {
@@ -53,14 +66,21 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-
+// outside click will close the sidebar
 document.addEventListener("click", (event) => {
   const sidebar = document.getElementById("sidebar");
   const menuIcon = document.querySelector(".menu-icon");
+  const left = document.querySelector(".left");
   const overlay = document.getElementById("sidebar-overlay");
 
-  if (!sidebar.contains(event.target) && !menuIcon.contains(event.target) && sidebar.classList.contains("open")) {
-    sidebar.classList.remove("open");
+  if (!sidebar || !menuIcon || !left || !overlay) return;
+
+  if (sidebar.classList.contains("openSbar") && 
+      !sidebar.contains(event.target) && 
+      !menuIcon.contains(event.target) &&
+      !left.contains(event.target)) {
+    
+    sidebar.classList.remove("openSbar");
     document.body.style.overflow = "";
     overlay.style.display = "none";
 
@@ -69,6 +89,32 @@ document.addEventListener("click", (event) => {
     }, 300);
   }
 });
+
+// outside click will close the sidelid
+document.addEventListener("click", (event) => {
+  const sidelid = document.getElementById("sidelid");
+  const menuIcon = document.querySelector(".menu-icon");
+  const left = document.querySelector(".left");
+  const overlay = document.getElementById("sidebar-overlay");
+
+  if (!sidelid || !menuIcon || !left || !overlay) return;
+
+  if (sidelid.classList.contains("openlid") && 
+      (!sidelid.contains(event.target) && 
+       !menuIcon.contains(event.target) &&
+       !left.contains(event.target)) || 
+      event.target === overlay) {
+
+    sidelid.classList.remove("openlid");
+    document.body.style.overflow = "";
+    overlay.style.display = "none";
+
+    setTimeout(() => {
+      sidelid.scrollTop = 0;
+    }, 300);
+  }
+});
+
 
 /*
 //better dark mode
