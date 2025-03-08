@@ -3,15 +3,21 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function toggleSidebar() {
-    const sidebar = document.getElementById("sidebar");
-    sidebar.classList.toggle("open");
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebar-overlay");
+  sidebar.classList.toggle("openSbar");
 
-    if (sidebar.classList.contains("open")) {
-        document.body.style.overflow = "hidden";
-        sidebar.style.overflowY = "auto";
-    } else {
-        document.body.style.overflow = "";
-    }
+  if (sidebar.classList.contains("openSbar")) {
+    document.body.style.overflow = "hidden";
+    sidebar.style.overflowY = "auto";
+    overlay.style.display = "block";
+  } else {
+    document.body.style.overflow = "";
+    setTimeout(() => {
+      sidebar.scrollTop = 0;
+    }, 300);
+    overlay.style.display = "none";
+  }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -33,6 +39,40 @@ document.addEventListener("DOMContentLoaded", function () {
   scrollToTopBtn.addEventListener("click", function () {
       window.scrollTo({ top: 0, behavior: "smooth" });
   });
+});
+
+
+// outside click will close the sidebar
+document.addEventListener("click", (event) => {
+  const sidebar = document.getElementById("sidebar");
+  const menuIcon = document.querySelector(".menu-icon");
+  const left = document.querySelector(".left");
+  const overlay = document.getElementById("sidebar-overlay");
+
+  if (!sidebar || !menuIcon || !left || !overlay) return;
+
+  if (
+    sidebar.classList.contains("openSbar") &&
+    !sidebar.contains(event.target) &&
+    !menuIcon.contains(event.target) &&
+    !left.contains(event.target)
+  ) {
+    sidebar.classList.remove("openSbar");
+    document.body.style.overflow = "";
+    overlay.style.display = "none";
+
+    setTimeout(() => {
+      sidebar.scrollTop = 0;
+    }, 300);
+  } else if (event.target === overlay) {
+    sidebar.classList.remove("openSbar");
+    document.body.style.overflow = "";
+    overlay.style.display = "none";
+
+    setTimeout(() => {
+      sidebar.scrollTop = 0;
+    }, 300);
+  }
 });
 /*document.getElementById('dark-mode-toggle').addEventListener('click', (event) => {
   const button = event.target;
