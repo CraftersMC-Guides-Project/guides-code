@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.collectionItem.forEach(collectionItem => (collectionItem.style.backgroundColor = "#1e1e3e"));
       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "#111111"));
       elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "#111111"));
-      elementsToStyle.sidelid.forEach(sidelid => (sidelid.style.backgroundColor = "#1e1e3e", sidelid.style.color = "white"));
+      elementsToStyle.sidelid.forEach(sidelid => (sidelid.style.backgroundColor = "rgb(17, 17, 28)", sidelid.style.color = "white"));
       elementsToStyle.sidebarLinks.forEach(link => (link.style.color = "#fff"));
       elementsToStyle.bottomNavItems.forEach(item => (item.style.color = "white"));
       elementsToStyle.bottomNavIcons.forEach(icon => (icon.style.color = "white"));
