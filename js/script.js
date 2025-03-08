@@ -78,7 +78,8 @@ document.addEventListener("click", (event) => {
   if (sidebar.classList.contains("openSbar") && 
       !sidebar.contains(event.target) && 
       !menuIcon.contains(event.target) &&
-      !left.contains(event.target)) {
+      !left.contains(event.target)) || 
+      event.target === overlay) {
     
     sidebar.classList.remove("openSbar");
     document.body.style.overflow = "";
@@ -89,6 +90,7 @@ document.addEventListener("click", (event) => {
     }, 300);
   }
 });
+
 
 // outside click will close the sidelid
 document.addEventListener("click", (event) => {
