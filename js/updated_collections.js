@@ -1878,13 +1878,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "SeaborneClamp18",
-                    "score": "42M+"
+                    "name": "Savage_Shrey781",
+                    "score": "42.4M+"
                 },
                 {
                     "rank": 6,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "SeaborneClamp18",
+                    "score": "42M+"
                 },
                 {
                     "rank": 7,
