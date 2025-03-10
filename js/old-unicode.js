@@ -3,21 +3,23 @@
 //     content.classList.toggle("active");
 // }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const collapsibles = document.querySelectorAll(".collapsible");
+document.addEventListener("DOMContentLoaded", function () {
+    const sections = document.querySelectorAll(".section");
 
-    collapsibles.forEach(button => {
-        button.addEventListener("click", function () {
-            this.classList.toggle("active");
-
-            const content = this.nextElementSibling;
-            if (content.classList.contains("open")) {
-                content.classList.remove("open");
-                content.style.maxHeight = null;
-            } else {
-                content.classList.add("open");
-                content.style.maxHeight = content.scrollHeight + "px";
-            }
+    sections.forEach(section => {
+        section.addEventListener("click", function () {
+            toggleContent(this);
         });
     });
 });
+
+function toggleContent(section) {
+    const content = section.nextElementSibling;
+
+    if (!content || !content.classList.contains("content")) return;
+    document.querySelectorAll(".content").forEach(c => {
+        if (c !== content) c.style.display = "none";
+    });
+
+    content.style.display = content.style.display === "block" ? "none" : "block";
+}
