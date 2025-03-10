@@ -41,16 +41,16 @@
         <h2>Select Category</h2>
         <div class="tabs">
             <a class="tab active" href="javascript:void(0)" onclick="switchCategory('Mining')">
-                <img src="assets/mining/pickaxe.png" width="40" alt="Pickaxe">
+                <img src="assets/mining/pickaxe.png" width="30" alt="Pickaxe">
             </a>
             <a class="tab" href="javascript:void(0)" onclick="switchCategory('Farming')">
-                <img src="assets/farming/hoe.png" width="40" alt="Hoe">
+                <img src="assets/farming/hoe.png" width="30" alt="Hoe">
             </a>
             <a class="tab" href="javascript:void(0)" onclick="switchCategory('Combat')">
-                <img src="assets/combat/sword.png" width="40" alt="Sword">
+                <img src="assets/combat/sword.png" width="30" alt="Sword">
             </a>
             <a class="tab" href="javascript:void(0)" onclick="switchCategory('Foraging')">
-                <img src="assets/foraging/axe.png" width="40" alt="Axe">
+                <img src="assets/foraging/axe.png" width="30" alt="Axe">
             </a>
         </div>
         <h2>Select Item</h2>
@@ -167,12 +167,26 @@
                 const tabsContainer = document.querySelector(".tabs");
                 tabsContainer.innerHTML = "";
 
+                const categoryIcons = {
+                    "Mining": "assets/mining/pickaxe.png",
+                    "Farming": "assets/farming/hoe.png",
+                    "Combat": "assets/combat/sword.png",
+                    "Foraging": "assets/foraging/axe.png"
+                };
+
                 Object.keys(collectionsData).forEach((category, index) => {
-                    let tab = document.createElement("button");
+                    let tab = document.createElement("a");
                     tab.classList.add("tab");
                     if (index === 0) tab.classList.add("active");
-                    tab.innerText = category;
+                    tab.href = "javascript:void(0)";
                     tab.onclick = () => switchCategory(category);
+
+                    let img = document.createElement("img");
+                    img.src = categoryIcons[category] || "default-icon.png"; // Use default if missing
+                    img.width = 30;
+                    img.alt = category;
+
+                    tab.appendChild(img);
                     tabsContainer.appendChild(tab);
                 });
             }
