@@ -4,10 +4,9 @@
 // }
 
 function toggleContent(element) {
-    const section = element.parentElement;
-    const content = section.querySelector(".content");
+    const content = element.nextElementSibling;
 
-    if (content) {
+    if (content && content.classList.contains("content")) {
         content.classList.toggle("active");
     }
 }
