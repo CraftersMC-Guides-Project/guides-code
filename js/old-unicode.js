@@ -4,7 +4,7 @@
 // }
 
 function toggleContent(element) {
-    const content = element.closest(".container").querySelector(".content");
+    const content = element.querySelector(".content");
     if (content) {
         content.classList.toggle("active");
     }
