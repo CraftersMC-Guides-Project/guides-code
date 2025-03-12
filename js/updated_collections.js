@@ -2273,7 +2273,7 @@ const collectionsData = {
                 {
                     "rank": 5,
                     "name": "IRONMAN1237721",
-                    "score": "10.1M"
+                    "score": "10.1M+"
                 },
                 {
                     "rank": 6,
