@@ -149,6 +149,8 @@ if(darkmode === "active") enableDarkmode ()
 })
 */
 
+// Darkmode by Pg network totally using Js
+
 document.addEventListener("DOMContentLoaded", () => {
   const toggleButton = document.getElementById("darkModeToggle");
   const elementsToStyle = {
@@ -156,6 +158,8 @@ document.addEventListener("DOMContentLoaded", () => {
     loader: document.getElementById("loader"),
     sidebarLinks: document.querySelectorAll(".sidebar-link"),
     cards: document.querySelectorAll(".card"),
+    pCards: document.querySelectorAll(".pack-card"),
+    panel: document.querySelectorAll(".panel"),
     collectionItem: document.querySelectorAll(".collection-item"),
     contentSections: document.querySelectorAll(".content"),
     sidelid: document.querySelectorAll(".sidelid"),
@@ -200,6 +204,8 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.loader.style.backgroundColor = "#333333";
 
       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "#222222"));
+      elementsToStyle.pCards.forEach(pCard => (pCard.style.backgroundColor = "#222222"));
+      elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "#222222"));
       elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#222222"));
       elementsToStyle.collectionItem.forEach(collectionItem => (collectionItem.style.backgroundColor = "#1e1e3e"));
       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "#111111"));
@@ -258,6 +264,8 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.loader.style.backgroundColor = "white";
 
       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "white"));
+      elementsToStyle.pCards.forEach(pCard => (pCard.style.backgroundColor = "white"));
+      elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "white"));
       elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#f9f9f9"));
       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "white"));
       elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "white"));
