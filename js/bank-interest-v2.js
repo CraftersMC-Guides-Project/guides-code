@@ -1,3 +1,4 @@
+/*
 document.addEventListener('DOMContentLoaded', function () {
   document.querySelector('#loader').style.display = 'none';
 });
@@ -25,7 +26,7 @@ if(darkMode === "true") enabledarkMode ()
   themeSwitch.addEventListener ("click", () => {
   darkMode = localStorage.getItem( 'darkMode')
   darkMode !== "true" ? enabledarkMode() : disabledarkMode()
-})
+})*/
 
 const interestInterval = 31 * 60 * 60 * 1000;
 
