@@ -1,5 +1,8 @@
 function showDownloadPanel(file) {
-    document.getElementById('downloadLink').href = file;
+    document.getElementById('confirmDownloadBtn').onclick = function () {
+        window.open(file, '_blank');
+        closeDownloadPanel();
+    };
     document.getElementById('downloadPanel').classList.add('show');
     document.getElementById('overlay').classList.add('show');
 }
