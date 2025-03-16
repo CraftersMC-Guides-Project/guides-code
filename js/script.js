@@ -207,7 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "#222222"));
       elementsToStyle.pCards.forEach(pCard => (pCard.style.backgroundColor = "#222222"));
       elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "#222222"));
-      elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(99, 80, 255, 0.3), #1e1e2e 70%)", footer.style.boxShadow = "0 -4px 20px 20px #1e1e2e", footer.style.boderTop = "transparent"));
+      elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(99, 80, 255, 0.3), transparent 70%)", footer.style.boxShadow = "0 0 0 0 transparent", footer.style.boderTop = "1px solid #333"));
       elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#222222"));
       elementsToStyle.collectionItem.forEach(collectionItem => (collectionItem.style.backgroundColor = "#1e1e3e"));
       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "#111111"));
@@ -268,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "white"));
       elementsToStyle.pCards.forEach(pCard => (pCard.style.backgroundColor = "white"));
       elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "white"));
-            elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(99, 80, 255, 0.3), transparent 70%)", footer.style.boxShadow = "0 0 0 0 transparent", footer.style.boderTop = "1px solid #333"));
+      elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(99, 80, 255, 0.3), #1e1e2e 70%)", footer.style.boxShadow = "0 -4px 20px 20px #1e1e2e", footer.style.borderTop = "transparent"));
       elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#f9f9f9"));
       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "white"));
       elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "white"));
