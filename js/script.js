@@ -128,28 +128,8 @@ document.addEventListener("click", (event) => {
   }
 });
 
-
-/*
-//better dark mode
-
-let darkmode = localStorage.getItem ('darkmode' )
-const themeSwitch = document.getElementById('theme-switch')
-const enableDarkmode = () => {
-  document.body.classList.add('darkmode')
-  localStorage.setItem('darkmode', 'active')
-}
-const disableDarkmode = () => {
-  document.body.classList.remove ('darkmode')
-  localStorage.setItem ('darkmode', 'null')
-}
-if(darkmode === "active") enableDarkmode ()
-  themeSwitch.addEventListener ("click", () => {
-  darkmode = localStorage.getItem( 'darkmode')
-  darkmode !== "active" ? enableDarkmode() : disableDarkmode()
-})
-*/
-
 // Darkmode by Pg network totally using Js
+//declare the elements here otherwise won't work + error
 
 document.addEventListener("DOMContentLoaded", () => {
   const toggleButton = document.getElementById("darkModeToggle");
