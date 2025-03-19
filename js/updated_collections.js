@@ -367,13 +367,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 6,
-                    "name": "aPumpkinGod2",
-                    "score": "46M+"
+                    "name": "C4P2L",
+                    "score": "61M+"
                 },
                 {
                     "rank": 7,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "aPumpkinGod2",
+                    "score": "46M+"
                 },
                 {
                     "rank": 8,
@@ -659,12 +659,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 8,
-                    "name": "Hefty6428",
-                    "score": "N/A"
+                    "name": "C4P2L",
+                    "score": "13M+"
                 },
                 {
                     "rank": 9,
-                    "name": "Unknown",
+                    "name": "Hefty6428",
                     "score": "N/A"
                 },
                 {
@@ -1408,13 +1408,13 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "SammyMishu",
-                    "score": "17M+"
+                    "name": "The_Winchi",
+                    "score": "26.5M+"
                 },
                 {
                     "rank": 2,
-                    "name": "The_Winchi",
-                    "score": "N/A"
+                    "name": "SammyMishu",
+                    "score": "17M+"
                 },
                 {
                     "rank": 3,
@@ -2226,13 +2226,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 7,
-                    "name": "Moerderfisch",
-                    "score": "20M+"
+                    "name": "GRAVITY8303",
+                    "score": "23.1M+"
                 },
                 {
                     "rank": 8,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Moerderfisch",
+                    "score": "20M+"
                 },
                 {
                     "rank": 9,
