@@ -510,13 +510,13 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "Copingo",
-                    "score": "125M+"
+                    "name": "KaosTheChaos",
+                    "score": "N/A"
                 },
                 {
                     "rank": 2,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Copingo",
+                    "score": "125M+"
                 },
                 {
                     "rank": 3,
