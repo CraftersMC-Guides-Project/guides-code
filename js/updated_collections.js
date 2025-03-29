@@ -573,7 +573,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 2,
-                    "name": "Hefty6428",
+                    "name": "Hefty6248",
                     "score": "N/A"
                 },
                 {
@@ -664,7 +664,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "Hefty6428",
+                    "name": "Hefty6248",
                     "score": "N/A"
                 },
                 {
@@ -1077,7 +1077,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 2,
-                    "name": "Hefty6428",
+                    "name": "Hefty6248",
                     "score": "N/A"
                 },
                 {
@@ -1357,7 +1357,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 2,
-                    "name": "Hefty6428",
+                    "name": "Hefty6248",
                     "score": "N/A"
                 },
                 {
@@ -1868,8 +1868,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "SYTHERJOD",
-                    "score": "39M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 4,
@@ -1909,7 +1909,7 @@ const collectionsData = {
             ]
         },
         {
-            "name": "Blaze Rod",
+            "name": " Rod",
             "image": "assets/combat/Blaze_Rod_JE1_BE1.png",
             "players": [
                 {
@@ -2084,13 +2084,13 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "TRIGUN2212",
-                    "score": "N/A"
+                    "name": "Darkshadow52195",
+                    "score": "15.8M+"
                 },
                 {
                     "rank": 2,
-                    "name": "Darkshadow52195",
-                    "score": "11M+"
+                    "name": "TRIGUN2212",
+                    "score": "N/A"
                 },
                 {
                     "rank": 3,
@@ -2109,7 +2109,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 6,
-                    "name": "Unknown",
+                    "name": "NumberOne230564",
                     "score": "N/A"
                 },
                 {
@@ -2211,7 +2211,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "Hefty6428",
+                    "name": "Hefty6248",
                     "score": "N/A"
                 },
                 {
