@@ -296,8 +296,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Firegod174",
+                    "score": "80M+"
                 },
                 {
                     "rank": 4,
@@ -1056,8 +1056,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Moerderfisch",
+                    "score": "39.4M+"
                 },
                 {
                     "rank": 10,
