@@ -200,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.bottomNavIcons.forEach(icon => (icon.style.color = "white"));
       elementsToStyle.ctaButtons.forEach(btn => (btn.style.backgroundColor = "#111111"));
       elementsToStyle.navbars.forEach(nav => (nav.style.backgroundColor = "#111111"));
-      elementsToStyle.unicodeContainers.forEach(container => (container.style.backgroundColor = "rgb(17, 17, 28)", container.style.backdropFilter = "blur(15px)"));
+      elementsToStyle.unicodeContainers.forEach(container => (container.style.backgroundColor = "rgba(17, 17, 28, 0.7)"));
       elementsToStyle.unicodeSections.forEach(section => (section.style.backgroundColor = "#222222"));
       elementsToStyle.sellerCards.forEach(card => (card.style.backgroundColor = "rgba(0, 0, 0, 0.4)"));
       elementsToStyle.sellerCardsInactive.forEach(card => (card.style.backgroundColor = "rgba(70, 0, 0, 0.4)"));
@@ -261,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.bottomNavIcons.forEach(icon => (icon.style.color = "#333333"));
       elementsToStyle.ctaButtons.forEach(btn => (btn.style.backgroundColor = "#007bff"));
       elementsToStyle.navbars.forEach(nav => (nav.style.backgroundColor = "#007bff"));
-      elementsToStyle.unicodeContainers.forEach(container => (container.style.backgroundColor = "#f1f1f1"));
+      elementsToStyle.unicodeContainers.forEach(container => (container.style.backgroundColor = "rgb(241,241,241,0.6)"));
       elementsToStyle.unicodeSections.forEach(section => (section.style.backgroundColor = "#f1f1f1", section.style.border = "1px solid #898989"));
       elementsToStyle.sellerCards.forEach(card => (card.style.backgroundColor = "#rgba(255, 255, 255, 0.1)"));
       elementsToStyle.sellerCardsInactive.forEach(card => {
