@@ -48,20 +48,20 @@ document.addEventListener("DOMContentLoaded", function () {
   const scrollToTopBtn = document.getElementById("scrollToTopBtn");
 
   if (!scrollToTopBtn) {
-      console.error("scrollToTopBtn not found in the DOM");
-      return;
+    console.error("scrollToTopBtn not found in the DOM");
+    return;
   }
 
   window.onscroll = function () {
-      if (document.documentElement.scrollTop > 300) {
-          scrollToTopBtn.style.display = "block";
-      } else {
-          scrollToTopBtn.style.display = "none";
-      }
+    if (document.documentElement.scrollTop > 300) {
+      scrollToTopBtn.style.display = "block";
+    } else {
+      scrollToTopBtn.style.display = "none";
+    }
   };
 
   scrollToTopBtn.addEventListener("click", function () {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   });
 });
 
@@ -112,11 +112,11 @@ document.addEventListener("click", (event) => {
 
   if (!sidelid || !menuIcon || !left || !overlay) return;
 
-  if (sidelid.classList.contains("openlid") && 
-      (!sidelid.contains(event.target) && 
-       !menuIcon.contains(event.target) &&
-       !left.contains(event.target)) || 
-      event.target === overlay) {
+  if (sidelid.classList.contains("openlid") &&
+    (!sidelid.contains(event.target) &&
+      !menuIcon.contains(event.target) &&
+      !left.contains(event.target)) ||
+    event.target === overlay) {
 
     sidelid.classList.remove("openlid");
     document.body.style.overflow = "";
@@ -155,9 +155,10 @@ document.addEventListener("DOMContentLoaded", () => {
     sellerCardsInactive: document.querySelectorAll(".seller-card-inactive"),
     tables: document.querySelectorAll("table"),
     footer: document.querySelectorAll("footer"),
+    footerLinks: document.querySelectorAll(".links a"),
     tableHeaders: document.querySelectorAll("table th"),
     tableCells: document.querySelectorAll("table td"),
-    statsBox:    document.querySelectorAll(".stats-box"),
+    statsBox: document.querySelectorAll(".stats-box"),
     statCard: document.querySelectorAll(".stat-card"),
     sellerDetails: document.querySelectorAll(".seller-details"),
     sellerProfile: document.querySelectorAll(".seller-profile"),
@@ -187,7 +188,8 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "#222222"));
       elementsToStyle.pCards.forEach(pCard => (pCard.style.backgroundColor = "#222222"));
       elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "#222222"));
-      elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(99, 80, 255, 0.3), transparent 70%)", footer.style.boxShadow = "0 0 0 0 transparent", footer.style.boderTop = "1px solid #333"));
+      elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(99, 80, 255, 0.3), transparent 70%)", footer.style.boderTop = "1px solid #333", footer.style.color = "#fff"));
+      elementsToStyle.footerLinks.forEach(footerLinks => (footerLinks.style.color = "#fff"))
       elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#222222"));
       elementsToStyle.collectionItem.forEach(collectionItem => (collectionItem.style.backgroundColor = "#1e1e3e"));
       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "#111111"));
@@ -242,13 +244,14 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.style.backgroundColor = "white";
       document.body.style.color = "black";
 
-       //elementsToStyle.sidebar.style.backgroundColor = "white";
+      //elementsToStyle.sidebar.style.backgroundColor = "white";
       elementsToStyle.loader.style.backgroundColor = "white";
 
       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "white"));
       elementsToStyle.pCards.forEach(pCard => (pCard.style.backgroundColor = "white"));
       elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "white"));
-      elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(99, 80, 255, 0.3), #1e1e2e 70%)", footer.style.boxShadow = "0 -4px 20px 20px #1e1e2e", footer.style.borderTop = "transparent"));
+      elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(100, 80, 255, 0.6), #fff 70%)", footer.style.borderTop = "transparent", footer.style.color = "#000"));
+      elementsToStyle.footerLinks.forEach(footerLinks => (footerLinks.style.color = "#000"))
       elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#f9f9f9"));
       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "white"));
       elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "white"));
