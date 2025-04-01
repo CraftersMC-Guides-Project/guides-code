@@ -2359,7 +2359,7 @@ const collectionsData = {
             ]
         }
     ],
-    slayers: [
+    "slayers": [
         {
             "name": "Zombie Slayer",
             "image": "assets/slayers/Zombie_Slayer.png",
