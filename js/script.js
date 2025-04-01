@@ -138,7 +138,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loader: document.getElementById("loader"),
     sidebarLinks: document.querySelectorAll(".sidebar-link"),
     cards: document.querySelectorAll(".card"),
-    cardsContainer: document.querySelectorAll(".card-container"),
     pCards: document.querySelectorAll(".pack-card"),
     panel: document.querySelectorAll(".panel"),
     collectionItem: document.querySelectorAll(".collection-item"),
@@ -186,7 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.loader.style.backgroundColor = "#333333";
 
       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "#222222"));
-      elementsToStyle.cardsContainer.forEach(cardsContainer => (cardsContainer.style.backgroundColor = "#222222"));
       elementsToStyle.pCards.forEach(pCard => (pCard.style.backgroundColor = "#222222"));
       elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "#222222"));
       elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(99, 80, 255, 0.3), transparent 70%)", footer.style.boxShadow = "0 0 0 0 transparent", footer.style.boderTop = "1px solid #333"));
@@ -248,7 +246,6 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.loader.style.backgroundColor = "white";
 
       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "white"));
-      elementsToStyle.cardsContainer.forEach(cardsContainer => (cardsContainer.style.backgroundColor = "white"));
       elementsToStyle.pCards.forEach(pCard => (pCard.style.backgroundColor = "white"));
       elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "white"));
       elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(99, 80, 255, 0.3), #1e1e2e 70%)", footer.style.boxShadow = "0 -4px 20px 20px #1e1e2e", footer.style.borderTop = "transparent"));
