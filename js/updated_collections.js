@@ -965,8 +965,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 2,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "EdaPuq",
+                    "score": "11.8M+"
                 },
                 {
                     "rank": 3,
@@ -1695,23 +1695,23 @@ const collectionsData = {
                 },
                 {
                     "rank": 2,
+                    "name": "Unknown",
+                    "score": "N/A"
+                },
+                {
+                    "rank": 3,
+                    "name": "EdaPuq",
+                    "score": "23M+"
+                },
+                {
+                    "rank": 4,
                     "name": "M47230",
                     "score": "21M+"
                 },
                 {
-                    "rank": 3,
-                    "name": "Unknown",
-                    "score": "18M+"
-                },
-                {
-                    "rank": 4,
-                    "name": "Unknown",
-                    "score": "N/A"
-                },
-                {
                     "rank": 5,
                     "name": "Unknown",
-                    "score": "N/A"
+                    "score": "18M+"
                 },
                 {
                     "rank": 6,
@@ -1756,8 +1756,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "EdaPuq",
+                    "score": "16M+"
                 },
                 {
                     "rank": 4,
@@ -2396,12 +2396,12 @@ const collectionsData = {
     //             },
     //             {
     //                 "rank": 7,
-    //                 "name": "Unknown",
+    //                 "name": "Kg_lcky_01",
     //                 "score": "N/A"
     //             },
     //             {
     //                 "rank": 8,
-    //                 "name": "Kg_lcky_01",
+    //                 "name": "Unknown",
     //                 "score": "N/A"
     //             },
     //             {
