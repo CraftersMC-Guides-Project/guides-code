@@ -65,7 +65,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-
 // outside click will close the sidebar
 document.addEventListener("click", (event) => {
   const sidebar = document.getElementById("sidebar");
@@ -99,10 +98,6 @@ document.addEventListener("click", (event) => {
   }
 });
 
-
-
-
-
 // outside click will close the sidelid
 document.addEventListener("click", (event) => {
   const sidelid = document.getElementById("sidelid");
@@ -128,11 +123,40 @@ document.addEventListener("click", (event) => {
   }
 });
 
+// navbar
+document.addEventListener("DOMContentLoaded", function () {
+  fetch('navbar.html')
+    .then(response => response.text())
+    .then(data => document.querySelector('.navbar').innerHTML = data)
+    .catch(error => console.error('Error loading the navbar:', error));
+});
+
+// sidebar
+document.addEventListener("DOMContentLoaded", function () {
+  fetch('sidebar.html')
+    .then(response => response.text())
+    .then(data => document.querySelector('.sidebar').innerHTML = data)
+    .catch(error => console.error('Error loading the sidebar:', error));
+});
+
+// footer
+document.addEventListener("DOMContentLoaded", function () {
+  fetch('footer.html')
+    .then(response => response.text())
+    .then(data => document.getElementById('footer').innerHTML = data)
+    .catch(error => console.error('Error loading the footer:', error));
+});
+
 // Darkmode by Pg network totally using Js
 //declare the elements here otherwise won't work + error
-
 document.addEventListener("DOMContentLoaded", () => {
   const toggleButton = document.getElementById("darkModeToggle");
+
+  if (!toggleButton) {
+    console.error("Element with ID 'darkModeToggle' not found.");
+    return;
+  }
+
   const elementsToStyle = {
     // sidebar: document.getElementById("sidebar"),
     loader: document.getElementById("loader"),
@@ -250,7 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "white"));
       elementsToStyle.pCards.forEach(pCard => (pCard.style.backgroundColor = "white"));
       elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "white"));
-      elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(100, 80, 255, 0.6), #fff 70%)", footer.style.borderTop = "transparent", footer.style.color = "#000"));
+      elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(100, 80, 255, 0.6), transparent 70%)", footer.style.borderTop = "transparent", footer.style.color = "#000"));
       elementsToStyle.footerLinks.forEach(footerLinks => (footerLinks.style.color = "#000"))
       elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#f9f9f9"));
       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "white"));

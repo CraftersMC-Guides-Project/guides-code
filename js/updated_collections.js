@@ -807,8 +807,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "RanuTheAxo",
+                    "score": "99.6M+"
                 },
                 {
                     "rank": 5,
@@ -2358,119 +2358,5 @@ const collectionsData = {
                 }
             ]
         }
-    ],
-    // "slayers": [
-    //     {
-    //         "name": "Zombie Slayer",
-    //         "image": "assets/slayers/Zombie_Slayer.png",
-    //         "players": [
-    //             {
-    //                 "rank": 1,
-    //                 "name": "SphinxWraith",
-    //                 "score": "40M+"
-    //             },
-    //             {
-    //                 "rank": 2,
-    //                 "name": "DueBacon2007102",
-    //                 "score": "25M+"
-    //             },
-    //             {
-    //                 "rank": 3,
-    //                 "name": "HeGzoStRqFe",
-    //                 "score": "N/A"
-    //             },
-    //             {
-    //                 "rank": 4,
-    //                 "name": "Itzomkar1232891",
-    //                 "score": "17M+"
-    //             },
-    //             {
-    //                 "rank": 5,
-    //                 "name": "SoundClover8088",
-    //                 "score": "N/A"
-    //             },
-    //             {
-    //                 "rank": 6,
-    //                 "name": "uatitan580",
-    //                 "score": "N/A"
-    //             },
-    //             {
-    //                 "rank": 7,
-    //                 "name": "Unknown",
-    //                 "score": "N/A"
-    //             },
-    //             {
-    //                 "rank": 8,
-    //                 "name": "Kg_lcky_01",
-    //                 "score": "N/A"
-    //             },
-    //             {
-    //                 "rank": 9,
-    //                 "name": "Shubh_gamer9497",
-    //                 "score": "12M+"
-    //             },
-    //             {
-    //                 "rank": 10,
-    //                 "name": "Unknown",
-    //                 "score": "N/A"
-    //             }
-    //         ]
-    //     },
-    //     {
-    //         "name": "Wolf Slayer",
-    //         "image": "assets/slayers/wolf_Slayer.png",
-    //         "players": [
-    //             {
-    //                 "rank": 1,
-    //                 "name": "SphinxWraith",
-    //                 "score": "6M+"
-    //             },
-    //             {
-    //                 "rank": 2,
-    //                 "name": "Herejefferson",
-    //                 "score": "6M+"
-    //             },
-    //             {
-    //                 "rank": 3,
-    //                 "name": "HeGzoStRqFe",
-    //                 "score": "3M+"
-    //             },
-    //             {
-    //                 "rank": 4,
-    //                 "name": "Itzomkar1232891",
-    //                 "score": "N/A"
-    //             },
-    //             {
-    //                 "rank": 5,
-    //                 "name": "Shakilbaby",
-    //                 "score": "2.5M+"
-    //             },
-    //             {
-    //                 "rank": 6,
-    //                 "name": "SoundClover8088",
-    //                 "score": "N/A"
-    //             },
-    //             {
-    //                 "rank": 7,
-    //                 "name": "Duebacon2007102",
-    //                 "score": "N/A"
-    //             },
-    //             {
-    //                 "rank": 8,
-    //                 "name": "op_moraya5598",
-    //                 "score": "1.9M+"
-    //             },
-    //             {
-    //                 "rank": 9,
-    //                 "name": "uatitan580",
-    //                 "score": "N/A"
-    //             },
-    //             {
-    //                 "rank": 10,
-    //                 "name": "Unknown",
-    //                 "score": "N/A"
-    //             }
-    //         ]
-    //     }
-    // ]
+    ]
 };
