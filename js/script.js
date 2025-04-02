@@ -99,10 +99,6 @@ document.addEventListener("click", (event) => {
   }
 });
 
-
-
-
-
 // outside click will close the sidelid
 document.addEventListener("click", (event) => {
   const sidelid = document.getElementById("sidelid");
@@ -128,11 +124,40 @@ document.addEventListener("click", (event) => {
   }
 });
 
+// navbar
+document.addEventListener("DOMContentLoaded", function () {
+  fetch('navbar.html')
+    .then(response => response.text())
+    .then(data => document.querySelector('.navbar').innerHTML = data)
+    .catch(error => console.error('Error loading the navbar:', error));
+});
+// sidebar
+document.addEventListener("DOMContentLoaded", function () {
+  fetch('sidebar.html')
+    .then(response => response.text())
+    .then(data => document.querySelector('.sidebar').innerHTML = data)
+    .catch(error => console.error('Error loading the sidebar:', error));
+});
+
+// footer
+document.addEventListener("DOMContentLoaded", function () {
+  fetch('footer.html')
+    .then(response => response.text())
+    .then(data => document.getElementById('footer').innerHTML = data)
+    .catch(error => console.error('Error loading the footer:', error));
+});
+
 // Darkmode by Pg network totally using Js
 //declare the elements here otherwise won't work + error
 
 document.addEventListener("DOMContentLoaded", () => {
   const toggleButton = document.getElementById("darkModeToggle");
+
+  if (!toggleButton) {
+    console.error("Element with ID 'darkModeToggle' not found.");
+    return;
+  }
+
   const elementsToStyle = {
     // sidebar: document.getElementById("sidebar"),
     loader: document.getElementById("loader"),
