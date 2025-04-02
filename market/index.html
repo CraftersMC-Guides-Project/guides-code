@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="Craftersmc, guide, craftersmc guide">
+    <meta name="google-site-verification" content="Wr3jatMv-sfXhgBy5jBfiX8Nwn6k8P1k_jPubQzBcTY" />
+    <meta property="og:title" content="CraftersMC Guides">
+    <meta property="og:description"
+        content="Just like a captain needs a map to navigate the seas, mastering SkyBlock in CraftersMC requires a guide and the right tools to succeed!">
+    <meta property="og:image"
+        content="https://cdn.discordapp.com/attachments/1320319896286007297/1344939793208967230/10000064822.jpg?ex=67c40dca&is=67c2bc4a&hm=f3d66953e8bb3923c504113137957212eb6c6fab05fba9d43bd81574fbd714b7&">
+    <meta property="og:url" content="https://craftersmc-guides-project.github.io/market/index.html">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#007bff">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CraftersMC Guides">
+    <meta name="twitter:description"
+        content="Just like a captain needs a map to navigate the seas, mastering SkyBlock in CraftersMC requires a guide and the right tools to succeed!">
+    <meta name="twitter:image"
+        content="https://cdn.discordapp.com/attachments/1320319896286007297/1344939793208967230/10000064822.jpg?ex=67c40dca&is=67c2bc4a&hm=f3d66953e8bb3923c504113137957212eb6c6fab05fba9d43bd81574fbd714b7&">
+    <title>Market - CraftersMC Guides</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../css/essential.css">
+    <link rel="stylesheet" href="../css/home.css">
+    <style>
+        /* Your existing CSS here */
+    </style>
+</head>
+
+<body>
+    <div id="loader">
+        <div> </div>
+        <div> </div>
+        <div> </div>
+    </div>
+    <!-- Top Navbar -->
+    <div class="navbar"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar"></div>
+
+    <div id="sidebar-overlay"></div>
+    <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
+
+    <h1>‎ </h1>
+    <h1>‎ </h1>
+    
+    <input type="text" id="searchBox" placeholder="Search Items..." onkeyup="searchItems()">
+    <div id="results"></div>
+    
+    <div class="divider"></div>
+    
+    <div class="category-section">
+        <h2>Categories</h2>
+        <div class="category-grid">
+            <div class="category-item"><img src="../img/rookie_hoe.png" alt="farming"></div>
+            <div class="category-item"><img src="../img/zombie_pic.png" alt="combat"></div>
+            <div class="category-item"><img src="../img/reap_falc.png" alt="Combat"></div>
+            <div class="category-item"><img src="../img/treecapitor.png" alt="foraging"></div>
+            <div class="category-item"><img src="../img/Wrench_02.png" alt="miscellaneous"></div>
+        </div>
+    </div>
+
+    <script>
+        let items = [];
+
+        async function loadItems() {
+            const response = await fetch('../items.txt');
+            const text = await response.text();
+            items = JSON.parse(text);
+        }
+
+        function searchItems() {
+            const query = document.getElementById('searchBox').value.toLowerCase();
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            
+            items.filter(item => item.name.toLowerCase().includes(query))
+                .forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'result';
+                    div.innerHTML = `
+                        <img src="${item.picture}" alt="${item.name}">
+                        <div class="info">
+                            <b>${item.name}</b>
+                            <span>ID: ${item.id}</span>
+                        </div>`;
+                    div.onclick = () => window.location.href = item.url;
+                    resultsDiv.appendChild(div);
+                });
+        }
+
+        loadItems();
+    </script>
+    <script src="../js/script.js"></script>
+    <script src="../js/home.js"></script>
+</body>
+  </html>
+  
