@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "white"));
       elementsToStyle.pCards.forEach(pCard => (pCard.style.backgroundColor = "white"));
       elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "white"));
-      elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(100, 80, 255, 0.6), #fff 70%)", footer.style.borderTop = "transparent", footer.style.color = "#000"));
+      elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(100, 80, 255, 0.6), transparent 70%)", footer.style.borderTop = "transparent", footer.style.color = "#000"));
       elementsToStyle.footerLinks.forEach(footerLinks => (footerLinks.style.color = "#000"))
       elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#f9f9f9"));
       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "white"));
