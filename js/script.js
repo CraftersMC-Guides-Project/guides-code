@@ -147,8 +147,8 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch(error => console.error('Error loading the footer:', error));
 });
 
-// Darkmode by Pg network totally using Js
-//declare the elements here otherwise won't work + error
+// Darkmode by Pg network 
+// declare the elements here otherwise won't work + error
 document.addEventListener("DOMContentLoaded", () => {
   const toggleButton = document.getElementById("darkModeToggle");
 
@@ -208,7 +208,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // elementsToStyle.sidebar.style.backgroundColor = "#111111";
       elementsToStyle.loader.style.backgroundColor = "#333333";
-
       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "#222222"));
       elementsToStyle.pCards.forEach(pCard => (pCard.style.backgroundColor = "#222222"));
       elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "#222222"));
@@ -239,6 +238,8 @@ document.addEventListener("DOMContentLoaded", () => {
         header.style.backgroundColor = "#33334d";
         header.style.color = "white";
       });
+
+      
 
       elementsToStyle.tableCells.forEach(cell => {
         cell.style.border = "1px solid #444";
