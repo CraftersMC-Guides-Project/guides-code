@@ -65,7 +65,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-
 // outside click will close the sidebar
 document.addEventListener("click", (event) => {
   const sidebar = document.getElementById("sidebar");
@@ -131,6 +130,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(data => document.querySelector('.navbar').innerHTML = data)
     .catch(error => console.error('Error loading the navbar:', error));
 });
+
 // sidebar
 document.addEventListener("DOMContentLoaded", function () {
   fetch('sidebar.html')
@@ -149,7 +149,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Darkmode by Pg network totally using Js
 //declare the elements here otherwise won't work + error
-
 document.addEventListener("DOMContentLoaded", () => {
   const toggleButton = document.getElementById("darkModeToggle");
 
