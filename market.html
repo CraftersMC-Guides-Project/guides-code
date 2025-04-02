@@ -24,8 +24,159 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="css/essential.css">
     <link rel="stylesheet" href="css/home.css">
-    <script src="js/script.js"></script>
-    <script src="js/home.js"></script>
+    <style>
+        /* Main Styles */
+        @font-face {
+            font-family: 'MinecraftTen';
+            src: url('https://craftersmc.opendevsflow.xyz/src/font.woff2') format('woff2');
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Search Box */
+        #searchBox {
+            width: 80%;
+            max-width: 600px;
+            padding: 12px 15px;
+            margin: 20px auto;
+            display: block;
+            border: 1px solid #444;
+            font-size: 16px;
+            background-color: #222;
+            color: white;
+            border-radius: 8px;
+            outline: none;
+        }
+        
+        #searchBox:focus {
+            border-color: #00a3cc;
+            box-shadow: 0 0 5px rgba(0, 163, 204, 0.5);
+        }
+        
+        /* Results Container */
+        #results {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Item Cards */
+        .result {
+            width: 100%;
+            max-width: 350px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #0a0a2a;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .result:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 163, 204, 0.3);
+            border-color: #00a3cc;
+        }
+        
+        .result img {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            background-color: #111;
+            border-bottom: 1px solid #444;
+        }
+        
+        .result .info {
+            padding: 15px;
+        }
+        
+        .result .info b {
+            font-size: 18px;
+            display: block;
+            margin-bottom: 5px;
+            color: #00a3cc;
+        }
+        
+        /* Category Section */
+        .category-section {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .category-item {
+            height: 120px;
+            background: #333;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            transition: all 0.3s;
+            text-transform: capitalize;
+        }
+        
+        .category-item:hover {
+            background: #00a3cc;
+            transform: scale(1.02);
+        }
+        
+        .category-item img {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+        }
+        
+        /* Divider Line */
+        .divider {
+            width: 100%;
+            height: 1px;
+            background-color: #444;
+            margin: 40px 0;
+        }
+        
+        /* Responsive Layout */
+        @media (min-width: 600px) {
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 900px) {
+            .result {
+                width: calc(50% - 20px);
+            }
+            
+            .category-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (min-width: 1200px) {
+            .result {
+                width: calc(33.33% - 20px);
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -43,49 +194,19 @@
     <div id="sidebar-overlay"></div>
     <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
 
-    <style>
-        @font-face {
-            font-family: 'MinecraftTen';
-            src: url('https://craftersmc.opendevsflow.xyz/src/font.woff2') format('woff2');
-        }
-        body { max-width:100%; font-family: Arial, sans-serif; text-align: center; background-color: #1a1a1a; color: white; margin: 0; padding:0;}
-        #searchBox { width: 80%; padding: 10px; margin: 20px; border: 0px solid white; font-size: 16px; background-color: black; }
-        .result { display: flex; align-items: center; border: 1px solid #444; padding: 10px; margin: 10px auto; cursor: pointer; text-align: left; background-color: #0a0a2a; border-radius: 8px; max-width: 600px; }
-        .result img { width: 100px; height: 100px; margin-right: 15px; border-radius: 5px; }
-        .result .info { flex: 1; }
-        #head { display:flex; width:100%; height:80%; background:#00a3cc;}
-        #logo { position:absolute; overflow:hidden;}
-        #logo img { width:100%; height:50px; justify-content:center; margin-top:12.5%;}
-        #cmc-logo { display:flex; width : 70px; height:60px ; background-color: #008fb3; border-radius:0px 50px 0px 0px; box-shadow:0.1px 0px 40px black;}
-        #cmc-bazaar { font-family: 'MinecraftTen', sans-serif; font-size:30px; color:white; display:table-cell; vertical-align:center; text-align:center; width:60%; height:40px; margin-top:5px; }
-        #line-1 { width: 100% ; height: 1px ; background-color: gray;}
-        .catagory { margin-top: 100px; flex-warp:warp; flex-grow:1;}
-        #farming { width:30%; height: 100px; background:gray; margin-left:0px; border-radius:10px;}
-        #mining { width:30%; height: 100px; background:gray; margin-left:5px; border-radius:10px ;}
-        #combat { width:30%; height: 100px; background:gray; margin-left:5px ; border-radius: 10px;}
-        #combat img { overflow:hidden; width:80%; height:90px; left:50%; transform:translate(0%, 0%) margin-top:10px; }
-        #foraging { width:30%; height: 90px; background:gray; margin-left: 0px;border-radius:10px;}
-        #miscellaneous { width:30%; height: 100px; background:gray; margin-left: 5px; border-radius:10px;}
-        #flex { display:flex; margin-bottom:15px; text-align:center; justify-content:center;}
-        #flex1 { display:flex; text-align:center; justify-content:center; align-item:center;}
-    </style>
-</head>
-    <body>
-        <p>.</p>
-        <p>.</p>
-        <p>.</p>
     <input type="text" id="searchBox" placeholder="Search Items..." onkeyup="searchItems()">
     <div id="results"></div>
-    <div id="line-1"></div>
-    <div class="catagory">
-        <div id="flex">
-        <div id="farming">farming</div>
-        <div id="mining">mining</div>
-        <div id="combat"><img src="img/g_sword.png"></div>
-        </div>
-        <div id="flex1">
-        <div id="foraging">foraging</div>
-        <div id="miscellaneous">mis</div>
+    
+    <div class="divider"></div>
+    
+    <div class="category-section">
+        <h2>Categories</h2>
+        <div class="category-grid">
+            <div class="category-item">Farming</div>
+            <div class="category-item">Mining</div>
+            <div class="category-item"><img src="img/g_sword.png" alt="Combat"></div>
+            <div class="category-item">Foraging</div>
+            <div class="category-item">Miscellaneous</div>
         </div>
     </div>
 
@@ -110,7 +231,8 @@
                     div.innerHTML = `
                         <img src="${item.picture}" alt="${item.name}">
                         <div class="info">
-                            <b>${item.name}</b> (ID: ${item.id})
+                            <b>${item.name}</b>
+                            <span>ID: ${item.id}</span>
                         </div>`;
                     div.onclick = () => window.location.href = item.url;
                     resultsDiv.appendChild(div);
@@ -119,5 +241,7 @@
 
         loadItems();
     </script>
+    <script src="js/script.js"></script>
+    <script src="js/home.js"></script>
 </body>
 </html>
