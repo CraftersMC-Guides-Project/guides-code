@@ -55,10 +55,7 @@
         .price img {
             width: 20px;
             height: 20px;
-        }
-
-        a {
-            color: #00a3cc;
+            vertical-align: middle;
         }
 
         .rarity-display {
@@ -69,6 +66,44 @@
             display: inline-block;
             color: white;
             margin-bottom: 10px;
+        }
+
+        .attribute-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .attribute-box {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            min-width: 100px;
+            justify-content: center;
+        }
+
+        .yes {
+            background-color: green;
+            color: white;
+        }
+
+        .no {
+            background-color: red;
+            color: white;
+        }
+
+        .attribute-box img {
+            width: 16px;
+            height: 16px;
+        }
+
+        a {
+            color: #00a3cc;
         }
     </style>
 </head>
@@ -99,12 +134,14 @@
                             ${item.price ? `<p class="price"><strong>Price:</strong> ${formatPrice(item.price)}</p>` : ''}
                             ${item.description ? `<p><strong>Description:</strong> ${item.description}</p>` : ''}
                             <p><strong>Category:</strong> ${item.category}</p>
-                            ${item.craftable !== undefined ? `<p><strong>Craftable:</strong> ${item.craftable ? 'Yes' : 'No'}</p>` : ''}
-                            ${item.enchantable !== undefined ? `<p><strong>Enchantable:</strong> ${item.enchantable ? 'Yes' : 'No'}</p>` : ''}
-                            ${item.tradable !== undefined ? `<p><strong>Tradable:</strong> ${item.tradable ? 'Yes' : 'No'}</p>` : ''}
-                            ${item.auctionable !== undefined ? `<p><strong>Auctionable:</strong> ${item.auctionable ? 'Yes' : 'No'}</p>` : ''}
-                            ${item.bazaarable !== undefined ? `<p><strong>Bazaarable:</strong> ${item.bazaarable ? 'Yes' : 'No'}</p>` : ''}
-                            ${item.reforgable !== undefined ? `<p><strong>Reforgable:</strong> ${item.reforgable ? 'Yes' : 'No'}</p>` : ''}
+                            <div class="attribute-container">
+                                ${generateAttributeBox('Craftable', item.craftable)}
+                                ${generateAttributeBox('Enchantable', item.enchantable)}
+                                ${generateAttributeBox('Tradable', item.tradable)}
+                                ${generateAttributeBox('Auctionable', item.auctionable)}
+                                ${generateAttributeBox('Bazaarable', item.bazaarable)}
+                                ${generateAttributeBox('Reforgable', item.reforgable)}
+                            </div>
                             <a href="index.html">Back to Home</a>
                         `;
 
@@ -150,6 +187,16 @@
 
         function formatPrice(price) {
             return `<span class="price">${Number(price).toLocaleString()} <img src="img/coin.png" alt="Coin"></span>`;
+        }
+
+        function generateAttributeBox(label, value) {
+            if (value === undefined) return '';
+            return `
+                <div class="attribute-box ${value ? 'yes' : 'no'}">
+                    <img src="${value ? 'img/check.png' : 'img/cross.png'}" alt="${value ? 'Yes' : 'No'}">
+                    ${label}
+                </div>
+            `;
         }
 
         loadItemDetails();
