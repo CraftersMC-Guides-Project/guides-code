@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Items</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="css/essential.css">
+    <link rel="stylesheet" href="css/categories.css">
+    <script src="js/script.js"></script>
+</head>
+
+<body>
+    <div id="loader">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div class="navbar"></div>
+    <div class="sidebar" id="sidebar"></div>
+    <div id="sidebar-overlay"></div>
+    <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
+
+    <div id="categoryItems">
+        <p>Loading items...</p>
+    </div>
+
+    <div id="footer"></div>
+    <script>
+        async function loadCategoryItems() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('cat');
+
+            if (category) {
+                try {
+                    const response = await fetch('market.txt');
+                    const items = await response.json();
+                    const categoryItems = items.filter(item => item.category && item.category.toLowerCase() === category.toLowerCase());
+
+                    if (categoryItems.length > 0) {
+                        const itemsHTML = categoryItems.map(item => `
+                            <div class="item-card" onclick="window.location.href='item.html?item=${item.id}'">
+                                <h2>${item.name}</h2>
+                                ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}">` : ''}
+                                <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
+                                ${item.price ? `<p><strong>Price:</strong> ${item.price}</p></div></div>` : ''}
+                                ${item.description ? `<p>${item.description}</p>` : ''}
+                            </div>
+                        `).join('');
+
+                        document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
+                    } else {
+                        document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
+                    }
+                } catch (error) {
+                    console.error('Error loading category items:', error);
+                    document.getElementById('categoryItems').innerHTML = '<p>Failed to load items.</p>';
+                }
+            } else {
+                document.getElementById('categoryItems').innerHTML = '<p>No category specified.</p>';
+            }
+        }
+
+        loadCategoryItems();
+    </script>
+</body>
+
+</html>
