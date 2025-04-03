@@ -203,6 +203,9 @@ function applyTheme(isDarkMode) {
     sellerLists: document.querySelectorAll(".seller-list"),
     sellerCards: document.querySelectorAll(".seller-card"),
     sellerCardsInactive: document.querySelectorAll(".seller-card-inactive"),
+    sellerLists2: document.querySelectorAll(".seller-list2"),
+    sellerCards2: document.querySelectorAll(".seller-card2"),
+    sellerCardsInactive2: document.querySelectorAll(".seller-card-inactive2"),
     tables: document.querySelectorAll("table"),
     footer: document.querySelectorAll("footer"),
     footerLinks: document.querySelectorAll(".links a"),
@@ -252,6 +255,8 @@ function applyTheme(isDarkMode) {
     elementsToStyle.unicodeSections.forEach(section => (section.style.backgroundColor = "#222222"));
     elementsToStyle.sellerCards.forEach(card => (card.style.backgroundColor = "rgba(0, 0, 0, 0.4)"));
     elementsToStyle.sellerCardsInactive.forEach(card => (card.style.backgroundColor = "rgba(70, 0, 0, 0.4)"));
+    elementsToStyle.sellerCards2.forEach(card => (card.style.backgroundColor = "rgba(36, 36, 36, 0.6);"));
+    elementsToStyle.sellerCardsInactive2.forEach(card => (card.style.backgroundColor = "rgba(70, 0, 0, 0.4)"));
 
     elementsToStyle.tables.forEach(table => {
       table.style.backgroundColor = "#282838";
@@ -291,6 +296,7 @@ function applyTheme(isDarkMode) {
 
     toggleButton.textContent = "light_mode";
   } else {
+    //THIS IS WHeRE THE LIGHT MODE STUFF GOES OK
     document.body.style.backgroundColor = "white";
     document.body.style.color = "black";
 
@@ -322,6 +328,8 @@ function applyTheme(isDarkMode) {
       card.style.border = "2px solid rgb(221, 34, 34)";
       card.style.backgroundColor = "rgba(221, 34, 34, 0.1)";
     });
+    elementsToStyle.sellerCards2.forEach(card => (card.style.backgroundColor = "#rgba(255, 255, 255, 0.0)"));
+    elementsToStyle.sellerCardsInactive2.forEach(card => (card.style.backgroundColor = "#rgba(255, 255, 255, 0.0)"));
 
     elementsToStyle.tables.forEach(table => {
       table.style.backgroundColor = "white";
