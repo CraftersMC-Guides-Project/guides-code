@@ -58,8 +58,12 @@
             text-align: center;
             font-weight: bold;
             margin-bottom: 10px;
-            color: white;
             font-size: 1.2em;
+            color: white;
+            padding: 5px 10px;
+            display: inline-block;
+            border: 2px solid white;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -85,7 +89,7 @@
                         itemDetailsDiv.innerHTML = `
                             <h1>${item.name}</h1>
                             ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
-                            ${item.rarity ? `<p class="rarity-display" id="rarityDisplay" style="color: white;">${item.rarity}</p>` : ''}
+                            ${item.rarity ? `<p class="rarity-display" id="rarityDisplay">${item.rarity}</p>` : ''}
                             <p><strong>ID:</strong> ${item.id}</p>
                             ${item.price ? `<p class="price"><strong>Price:</strong> ${item.price}</p>` : ''}
                             ${item.description ? `<p><strong>Description:</strong> ${item.description}</p>` : ''}
@@ -100,8 +104,6 @@
                         `;
 
                         applyRarityBorderColor(item.rarity);
-                        applyRarityTextColor(item.rarity); // Call the new text color function.
-
                     } else {
                         document.getElementById('itemDetails').innerHTML = '<p>Item not found.</p> <a href="index.html">Back to Home</a>';
                     }
@@ -115,52 +117,27 @@
         }
 
         function applyRarityBorderColor(rarity) {
-            const itemContainer = document.getElementById('itemDetails').parentElement;
-            if (!rarity) return;
-
-            switch (rarity.toLowerCase()) {
-                case 'common':
-                    itemContainer.style.borderColor = 'white';
-                    break;
-                case 'uncommon':
-                    itemContainer.style.borderColor = 'green';
-                    break;
-                case 'rare':
-                    itemContainer.style.borderColor = 'blue';
-                    break;
-                case 'epic':
-                    itemContainer.style.borderColor = 'darkblue';
-                    break;
-                case 'legendary':
-                    itemContainer.style.borderColor = 'gold';
-                    break;
-                default:
-                    itemContainer.style.borderColor = 'transparent';
-            }
-        }
-
-        function applyRarityTextColor(rarity) {
             const rarityDisplay = document.getElementById('rarityDisplay');
             if (!rarityDisplay) return;
 
             switch (rarity.toLowerCase()) {
                 case 'common':
-                    rarityDisplay.style.color = 'white';
+                    rarityDisplay.style.borderColor = 'white';
                     break;
                 case 'uncommon':
-                    rarityDisplay.style.color = 'green';
+                    rarityDisplay.style.borderColor = 'green';
                     break;
                 case 'rare':
-                    rarityDisplay.style.color = 'blue';
+                    rarityDisplay.style.borderColor = 'blue';
                     break;
                 case 'epic':
-                    rarityDisplay.style.color = 'darkblue';
+                    rarityDisplay.style.borderColor = 'darkblue';
                     break;
                 case 'legendary':
-                    rarityDisplay.style.color = 'gold';
+                    rarityDisplay.style.borderColor = 'gold';
                     break;
                 default:
-                    rarityDisplay.style.color = 'white';
+                    rarityDisplay.style.borderColor = 'white';
             }
         }
 
