@@ -42,13 +42,19 @@
             text-align: center;
         }
 
-        .item-container p {
-            margin-bottom: 10px;
+        .price {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: yellow;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
         }
 
-        .item-container .price {
-            font-weight: bold;
-            color: #00a3cc;
+        .price img {
+            width: 20px;
+            height: 20px;
         }
 
         a {
@@ -90,7 +96,7 @@
                             ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
                             ${item.rarity ? `<p class="rarity-display" id="rarityDisplay">${item.rarity}</p>` : ''}
                             <p><strong>ID:</strong> ${item.id}</p>
-                            ${item.price ? `<p class="price"><strong>Price:</strong> ${item.price}</p>` : ''}
+                            ${item.price ? `<p class="price"><strong>Price:</strong> ${formatPrice(item.price)}</p>` : ''}
                             ${item.description ? `<p><strong>Description:</strong> ${item.description}</p>` : ''}
                             <p><strong>Category:</strong> ${item.category}</p>
                             ${item.craftable !== undefined ? `<p><strong>Craftable:</strong> ${item.craftable ? 'Yes' : 'No'}</p>` : ''}
@@ -103,7 +109,6 @@
                         `;
 
                         applyRarityBackgroundColor(item.rarity);
-
                     } else {
                         document.getElementById('itemDetails').innerHTML = '<p>Item not found.</p> <a href="index.html">Back to Home</a>';
                     }
@@ -141,6 +146,10 @@
                 default:
                     rarityDisplay.style.backgroundColor = 'gray';
             }
+        }
+
+        function formatPrice(price) {
+            return `<span class="price">${Number(price).toLocaleString()} <img src="img/coin.png" alt="Coin"></span>`;
         }
 
         loadItemDetails();
