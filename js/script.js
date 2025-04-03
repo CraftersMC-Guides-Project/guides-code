@@ -187,7 +187,6 @@ function applyTheme(isDarkMode) {
     pCards: document.querySelectorAll(".pack-card"),
     panel: document.querySelectorAll(".panel"),
     collectionItem: document.querySelectorAll(".collection-item"),
-    contentSections: document.querySelectorAll(".content"),
     sidelid: document.querySelectorAll(".sidelid"),
     bottomNavs: document.querySelectorAll(".bottom-nav"),
     bottomNavItems: document.querySelectorAll(".nav-item"),
@@ -240,7 +239,6 @@ function applyTheme(isDarkMode) {
     elementsToStyle.categoryItem.forEach(categoryItem => (categoryItem.style.backgroundColor = "#2222227c"));
     elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(99, 80, 255, 0.3), transparent 70%)", footer.style.boderTop = "1px solid #333", footer.style.color = "#fff"));
     elementsToStyle.footerLinks.forEach(footerLinks => (footerLinks.style.color = "#fff"))
-    elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#222222"));
     elementsToStyle.collectionItem.forEach(collectionItem => (collectionItem.style.backgroundColor = "#1e1e3e"));
     elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "#111111"));
     elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "#111111"));
@@ -309,7 +307,6 @@ function applyTheme(isDarkMode) {
     elementsToStyle.categoryItem.forEach(categoryItem => (categoryItem.style.backgroundColor = "#ffffff7c"));
     elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(100, 80, 255, 0.6), transparent 70%)", footer.style.borderTop = "transparent", footer.style.color = "#000"));
     elementsToStyle.footerLinks.forEach(footerLinks => (footerLinks.style.color = "#000"))
-    elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#f9f9f9"));
     elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "white"));
     elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "white"));
     elementsToStyle.sidelid.forEach(sidelid => (sidelid.style.backgroundColor = "rgb(241, 241, 241)", sidelid.style.color = "black"));
