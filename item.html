@@ -25,6 +25,7 @@
             max-width: 600px;
             width: 100%;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            border: 3px solid transparent; /* Initialize border */
         }
 
         .item-container img {
@@ -48,8 +49,9 @@
             font-weight: bold;
             color: #00a3cc;
         }
-        a{
-          color: #00a3cc;
+
+        a {
+            color: #00a3cc;
         }
     </style>
 </head>
@@ -79,8 +81,18 @@
                             ${item.price ? `<p class="price"><strong>Price:</strong> ${item.price}</p>` : ''}
                             ${item.description ? `<p><strong>Description:</strong> ${item.description}</p>` : ''}
                             <p><strong>Category:</strong> ${item.category}</p>
+                            ${item.rarity ? `<p><strong>Rarity:</strong> ${item.rarity}</p>` : ''}
+                            ${item.craftable !== undefined ? `<p><strong>Craftable:</strong> ${item.craftable ? 'Yes' : 'No'}</p>` : ''}
+                            ${item.enchantable !== undefined ? `<p><strong>Enchantable:</strong> ${item.enchantable ? 'Yes' : 'No'}</p>` : ''}
+                            ${item.tradable !== undefined ? `<p><strong>Tradable:</strong> ${item.tradable ? 'Yes' : 'No'}</p>` : ''}
+                            ${item.auctionable !== undefined ? `<p><strong>Auctionable:</strong> ${item.auctionable ? 'Yes' : 'No'}</p>` : ''}
+                            ${item.bazaarable !== undefined ? `<p><strong>Bazaarable:</strong> ${item.bazaarable ? 'Yes' : 'No'}</p>` : ''}
+                            ${item.reforgable !== undefined ? `<p><strong>Reforgable:</strong> ${item.reforgable ? 'Yes' : 'No'}</p>` : ''}
                             <a href="index.html">Back to Home</a>
                         `;
+
+                        applyRarityBorder(item.rarity);
+
                     } else {
                         document.getElementById('itemDetails').innerHTML = '<p>Item not found.</p> <a href="index.html">Back to Home</a>';
                     }
@@ -90,6 +102,31 @@
                 }
             } else {
                 document.getElementById('itemDetails').innerHTML = '<p>No item ID specified.</p> <a href="index.html">Back to Home</a>';
+            }
+        }
+
+        function applyRarityBorder(rarity) {
+            const itemContainer = document.getElementById('itemDetails').parentElement;
+            if (!rarity) return; // Exit if rarity is undefined.
+
+            switch (rarity.toLowerCase()) {
+                case 'common':
+                    itemContainer.style.borderColor = 'white';
+                    break;
+                case 'uncommon':
+                    itemContainer.style.borderColor = 'green';
+                    break;
+                case 'rare':
+                    itemContainer.style.borderColor = 'blue';
+                    break;
+                case 'epic':
+                    itemContainer.style.borderColor = 'darkblue';
+                    break;
+                case 'legendary':
+                    itemContainer.style.borderColor = 'gold';
+                    break;
+                default:
+                    itemContainer.style.borderColor = 'transparent'; // Reset to default if rarity is unknown.
             }
         }
 
