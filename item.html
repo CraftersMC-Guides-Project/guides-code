@@ -24,7 +24,7 @@
             padding: 20px;
             max-width: 600px;
             width: 100%;
-            border: 3px solid transparent; /* Added border */
+            border: 3px solid transparent;
         }
 
         .item-container img {
@@ -58,8 +58,8 @@
             text-align: center;
             font-weight: bold;
             margin-bottom: 10px;
-            color: white; /* Rarity text always white */
-            font-size: 1.2em; /* Increase font size */
+            color: white;
+            font-size: 1.2em;
         }
     </style>
 </head>
@@ -85,7 +85,7 @@
                         itemDetailsDiv.innerHTML = `
                             <h1>${item.name}</h1>
                             ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
-                            ${item.rarity ? `<p class="rarity-display" id="rarityDisplay">${item.rarity}</p>` : ''}
+                            ${item.rarity ? `<p class="rarity-display" id="rarityDisplay" style="color: white;">${item.rarity}</p>` : ''}
                             <p><strong>ID:</strong> ${item.id}</p>
                             ${item.price ? `<p class="price"><strong>Price:</strong> ${item.price}</p>` : ''}
                             ${item.description ? `<p><strong>Description:</strong> ${item.description}</p>` : ''}
@@ -100,6 +100,7 @@
                         `;
 
                         applyRarityBorderColor(item.rarity);
+                        applyRarityTextColor(item.rarity); // Call the new text color function.
 
                     } else {
                         document.getElementById('itemDetails').innerHTML = '<p>Item not found.</p> <a href="index.html">Back to Home</a>';
@@ -135,6 +136,31 @@
                     break;
                 default:
                     itemContainer.style.borderColor = 'transparent';
+            }
+        }
+
+        function applyRarityTextColor(rarity) {
+            const rarityDisplay = document.getElementById('rarityDisplay');
+            if (!rarityDisplay) return;
+
+            switch (rarity.toLowerCase()) {
+                case 'common':
+                    rarityDisplay.style.color = 'white';
+                    break;
+                case 'uncommon':
+                    rarityDisplay.style.color = 'green';
+                    break;
+                case 'rare':
+                    rarityDisplay.style.color = 'blue';
+                    break;
+                case 'epic':
+                    rarityDisplay.style.color = 'darkblue';
+                    break;
+                case 'legendary':
+                    rarityDisplay.style.color = 'gold';
+                    break;
+                default:
+                    rarityDisplay.style.color = 'white';
             }
         }
 
