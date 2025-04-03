@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Items</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .item-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .item-card {
+            width: 100%;
+            max-width: 300px;
+            background-color: #222;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        .item-card img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .item-card h2 {
+            color: #00a3cc;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .item-card p {
+            margin-bottom: 10px;
+        }
+
+        a {
+            color: #00a3cc;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="categoryItems">
+        <p>Loading items...</p>
+    </div>
+
+    <script>
+        async function loadCategoryItems() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('cat');
+
+            if (category) {
+                try {
+                    const response = await fetch('market.txt');
+                    const items = await response.json();
+                    const categoryItems = items.filter(item => item.category && item.category.toLowerCase() === category.toLowerCase());
+
+                    if (categoryItems.length > 0) {
+                        const itemsHTML = categoryItems.map(item => `
+                            <div class="item-card" onclick="window.location.href='item.html?item=${item.id}'">
+                                <h2>${item.name}</h2>
+                                ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
+                                <p><strong>ID:</strong> ${item.id}</p>
+                                ${item.price ? `<p><strong>Price:</strong> ${item.price}</p>` : ''}
+                                ${item.description ? `<p>${item.description}</p>` : ''}
+                            </div>
+                        `).join('');
+
+                        document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
+                    } else {
+                        document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
+                    }
+                } catch (error) {
+                    console.error('Error loading category items:', error);
+                    document.getElementById('categoryItems').innerHTML = '<p>Failed to load items.</p>';
+                }
+            } else {
+                document.getElementById('categoryItems').innerHTML = '<p>No category specified.</p>';
+            }
+        }
+
+        loadCategoryItems();
+    </script>
+</body>
+
+</html>
