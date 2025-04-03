@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .item-container {
+            background-color: #222;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .item-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto 20px;
+            border-radius: 4px;
+        }
+
+        .item-container h1 {
+            color: #00a3cc;
+            margin-bottom: 10px;
+        }
+
+        .item-container p {
+            margin-bottom: 10px;
+        }
+
+        .item-container .price {
+            font-weight: bold;
+            color: #00a3cc;
+        }
+        a{
+          color: #00a3cc;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="item-container" id="itemDetails">
+        <p>Loading item details...</p>
+    </div>
+
+    <script>
+        async function loadItemDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const itemId = urlParams.get('item');
+
+            if (itemId) {
+                try {
+                    const response = await fetch('market.txt');
+                    const items = await response.json();
+                    const item = items.find(item => item.id === itemId);
+
+                    if (item) {
+                        const itemDetailsDiv = document.getElementById('itemDetails');
+                        itemDetailsDiv.innerHTML = `
+                            <h1>${item.name}</h1>
+                            ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
+                            <p><strong>ID:</strong> ${item.id}</p>
+                            ${item.price ? `<p class="price"><strong>Price:</strong> ${item.price}</p>` : ''}
+                            ${item.description ? `<p><strong>Description:</strong> ${item.description}</p>` : ''}
+                            <p><strong>Category:</strong> ${item.category}</p>
+                            <a href="index.html">Back to Home</a>
+                        `;
+                    } else {
+                        document.getElementById('itemDetails').innerHTML = '<p>Item not found.</p> <a href="index.html">Back to Home</a>';
+                    }
+                } catch (error) {
+                    console.error('Error loading item details:', error);
+                    document.getElementById('itemDetails').innerHTML = '<p>Failed to load item details.</p> <a href="index.html">Back to Home</a>';
+                }
+            } else {
+                document.getElementById('itemDetails').innerHTML = '<p>No item ID specified.</p> <a href="index.html">Back to Home</a>';
+            }
+        }
+
+        loadItemDetails();
+    </script>
+</body>
+
+</html>
