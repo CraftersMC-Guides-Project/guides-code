@@ -196,6 +196,7 @@ function applyTheme(isDarkMode) {
     navbars: document.querySelectorAll(".navbar"),
     unicodeContainers: document.querySelectorAll(".container"),
     itemContainer: document.querySelectorAll(".item-container"),
+    itemCard: document.querySelectorAll(".item-card"),
     unicodeSections: document.querySelectorAll(".section"),
     sellerLists: document.querySelectorAll(".seller-list"),
     sellerCards: document.querySelectorAll(".seller-card"),
@@ -230,6 +231,7 @@ function applyTheme(isDarkMode) {
     elementsToStyle.pCards.forEach(pCard => (pCard.style.backgroundColor = "#222222"));
     elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "#222222"));
     elementsToStyle.itemContainer.forEach(itemContainer => (itemContainer.style.backgroundColor = "#2222227c"));
+    elementsToStyle.itemCard.forEach(itemCard => (itemCard.style.backgroundColor = "#2222227c"));
     elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(99, 80, 255, 0.3), transparent 70%)", footer.style.boderTop = "1px solid #333", footer.style.color = "#fff"));
     elementsToStyle.footerLinks.forEach(footerLinks => (footerLinks.style.color = "#fff"))
     elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#222222"));
@@ -295,6 +297,7 @@ function applyTheme(isDarkMode) {
     elementsToStyle.pCards.forEach(pCard => (pCard.style.backgroundColor = "white"));
     elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "white"));
     elementsToStyle.itemContainer.forEach(itemContainer => (itemContainer.style.backgroundColor = "#ffffff7c"));
+    elementsToStyle.itemCard.forEach(itemCard => (itemCard.style.backgroundColor = "#ffffff7c"));
     elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(100, 80, 255, 0.6), transparent 70%)", footer.style.borderTop = "transparent", footer.style.color = "#000"));
     elementsToStyle.footerLinks.forEach(footerLinks => (footerLinks.style.color = "#000"))
     elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#f9f9f9"));
