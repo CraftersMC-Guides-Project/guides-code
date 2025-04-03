@@ -158,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(5000);
     // Retry after 5 seconds
     const toggleButton = document.getElementById("darkModeToggle");
-    
+
     if (!toggleButton) {
       console.error("Element with ID 'darkModeToggle' still not found.");
       return;
@@ -344,12 +344,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   applyTheme();
 
-  if (!toggleButton) {
-    console.error("Element with ID 'darkModeToggle' not found.");
-    console.warn("Retrying...");
-    setTimeout(applyTheme, 5000);
-    return;
-  }
+  // if (!toggleButton) {
+  //   console.error("Element with ID 'darkModeToggle' not found.");
+  //   console.warn("Retrying...");
+  //   setTimeout(applyTheme, 5000);
+  //   return;
+  // }
 
   if (toggleButton) {
     toggleButton.addEventListener("click", () => {
