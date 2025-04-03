@@ -25,6 +25,7 @@
             max-width: 600px;
             width: 100%;
             border: 3px solid transparent;
+            text-align: center;
         }
 
         .item-container img {
@@ -55,15 +56,13 @@
         }
 
         .rarity-display {
-            text-align: center;
             font-weight: bold;
-            margin-bottom: 10px;
             font-size: 1.2em;
-            color: white;
-            padding: 5px 10px;
-            display: inline-block;
-            border: 2px solid white;
+            padding: 5px 15px;
             border-radius: 5px;
+            display: inline-block;
+            color: white;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -103,7 +102,8 @@
                             <a href="index.html">Back to Home</a>
                         `;
 
-                        applyRarityBorderColor(item.rarity);
+                        applyRarityBackgroundColor(item.rarity);
+
                     } else {
                         document.getElementById('itemDetails').innerHTML = '<p>Item not found.</p> <a href="index.html">Back to Home</a>';
                     }
@@ -116,28 +116,30 @@
             }
         }
 
-        function applyRarityBorderColor(rarity) {
+        function applyRarityBackgroundColor(rarity) {
             const rarityDisplay = document.getElementById('rarityDisplay');
             if (!rarityDisplay) return;
 
             switch (rarity.toLowerCase()) {
                 case 'common':
-                    rarityDisplay.style.borderColor = 'white';
+                    rarityDisplay.style.backgroundColor = 'white';
+                    rarityDisplay.style.color = 'black';
                     break;
                 case 'uncommon':
-                    rarityDisplay.style.borderColor = 'green';
+                    rarityDisplay.style.backgroundColor = 'green';
                     break;
                 case 'rare':
-                    rarityDisplay.style.borderColor = 'blue';
+                    rarityDisplay.style.backgroundColor = 'blue';
                     break;
                 case 'epic':
-                    rarityDisplay.style.borderColor = 'darkblue';
+                    rarityDisplay.style.backgroundColor = 'darkblue';
                     break;
                 case 'legendary':
-                    rarityDisplay.style.borderColor = 'gold';
+                    rarityDisplay.style.backgroundColor = 'gold';
+                    rarityDisplay.style.color = 'black';
                     break;
                 default:
-                    rarityDisplay.style.borderColor = 'white';
+                    rarityDisplay.style.backgroundColor = 'gray';
             }
         }
 
