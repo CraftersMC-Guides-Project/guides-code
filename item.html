@@ -24,21 +24,20 @@
             padding: 20px;
             max-width: 600px;
             width: 100%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            border: 3px solid transparent; /* Initialize border */
         }
 
         .item-container img {
             max-width: 100%;
             height: auto;
             display: block;
-            margin: 0 auto 20px;
+            margin: 0 auto 10px;
             border-radius: 4px;
         }
 
         .item-container h1 {
             color: #00a3cc;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            text-align: center;
         }
 
         .item-container p {
@@ -52,6 +51,12 @@
 
         a {
             color: #00a3cc;
+        }
+
+        .rarity-display {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -77,11 +82,11 @@
                         itemDetailsDiv.innerHTML = `
                             <h1>${item.name}</h1>
                             ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
+                            ${item.rarity ? `<p class="rarity-display" id="rarityDisplay">${item.rarity}</p>` : ''}
                             <p><strong>ID:</strong> ${item.id}</p>
                             ${item.price ? `<p class="price"><strong>Price:</strong> ${item.price}</p>` : ''}
                             ${item.description ? `<p><strong>Description:</strong> ${item.description}</p>` : ''}
                             <p><strong>Category:</strong> ${item.category}</p>
-                            ${item.rarity ? `<p><strong>Rarity:</strong> ${item.rarity}</p>` : ''}
                             ${item.craftable !== undefined ? `<p><strong>Craftable:</strong> ${item.craftable ? 'Yes' : 'No'}</p>` : ''}
                             ${item.enchantable !== undefined ? `<p><strong>Enchantable:</strong> ${item.enchantable ? 'Yes' : 'No'}</p>` : ''}
                             ${item.tradable !== undefined ? `<p><strong>Tradable:</strong> ${item.tradable ? 'Yes' : 'No'}</p>` : ''}
@@ -91,7 +96,7 @@
                             <a href="index.html">Back to Home</a>
                         `;
 
-                        applyRarityBorder(item.rarity);
+                        applyRarityColor(item.rarity);
 
                     } else {
                         document.getElementById('itemDetails').innerHTML = '<p>Item not found.</p> <a href="index.html">Back to Home</a>';
@@ -105,28 +110,28 @@
             }
         }
 
-        function applyRarityBorder(rarity) {
-            const itemContainer = document.getElementById('itemDetails').parentElement;
-            if (!rarity) return; // Exit if rarity is undefined.
+        function applyRarityColor(rarity) {
+            const rarityDisplay = document.getElementById('rarityDisplay');
+            if (!rarityDisplay) return;
 
             switch (rarity.toLowerCase()) {
                 case 'common':
-                    itemContainer.style.borderColor = 'white';
+                    rarityDisplay.style.color = 'white';
                     break;
                 case 'uncommon':
-                    itemContainer.style.borderColor = 'green';
+                    rarityDisplay.style.color = 'green';
                     break;
                 case 'rare':
-                    itemContainer.style.borderColor = 'blue';
+                    rarityDisplay.style.color = 'blue';
                     break;
                 case 'epic':
-                    itemContainer.style.borderColor = 'darkblue';
+                    rarityDisplay.style.color = 'darkblue';
                     break;
                 case 'legendary':
-                    itemContainer.style.borderColor = 'gold';
+                    rarityDisplay.style.color = 'gold';
                     break;
                 default:
-                    itemContainer.style.borderColor = 'transparent'; // Reset to default if rarity is unknown.
+                    rarityDisplay.style.color = 'white';
             }
         }
 
