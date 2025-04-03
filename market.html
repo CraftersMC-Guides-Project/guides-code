@@ -160,29 +160,6 @@
             background-color: #444;
             margin: 0px 0px 20px 0px;
         }
-
-        /* Responsive Layout */
-        @media (min-width: 600px) {
-            .category-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 900px) {
-            .result {
-                width: calc(50% - 20px);
-            }
-
-            .category-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (min-width: 1200px) {
-            .result {
-                width: calc(33.33% - 20px);
-            }
-        }
     </style>
     <script src="js/script.js"></script>
     <script src="js/home.js"></script>
@@ -245,43 +222,12 @@
                             <span>ID: ${item.id}</span>
                         </div>`;
                     div.onclick = () => {
-                        window.location.href = `?item=${item.id}`;
-                        displayItemPage(item.id);
+                        window.location.href = `item.html?item=${item.id}`;
                     };
                     resultsDiv.appendChild(div);
                 });
         }
-        function displayItemPage(itemId) {
-          const item = items.find(item => item.id === itemId);
-          if (item) {
-              const newWindow = window.open('', '_blank');
-              newWindow.document.write(`
-                  <!DOCTYPE html>
-                  <html>
-                  <head>
-                      <title>${item.name}</title>
-                  </head>
-                  <body>
-                      <h1>${item.name}</h1>
-                      <img src="${item.picture}" alt="${item.name}" style="max-width: 300px;">
-                      <p>ID: ${item.id}</p>
-                      <p>Price: ${item.price || 'N/A'}</p>
-                      <p>Description: ${item.description || 'N/A'}</p>
-                      <a href="index.html">Back to Home</a>
-                  </body>
-                  </html>
-              `);
-              newWindow.document.close();
-          }
-      }
-
         loadItems();
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const itemId = urlParams.get('item');
-        if (itemId) {
-            displayItemPage(itemId);
-        }
     </script>
 </body>
-</html>
+    </html>
