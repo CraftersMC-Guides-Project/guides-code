@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // sidebar
 document.addEventListener("DOMContentLoaded", function () {
-  fetch('sidebar.html')
+  fetch('../sidebar.html')
     .then(response => response.text())
     .then(data => {
       document.getElementById('sidebar').innerHTML = data;
@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // footer
 document.addEventListener("DOMContentLoaded", function () {
-  fetch('footer.html')
+  fetch('../footer.html')
     .then(response => response.text())
     .then(data => {
       document.getElementById('footer').innerHTML = data;
