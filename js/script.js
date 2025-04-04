@@ -240,7 +240,7 @@ function applyTheme(isDarkMode) {
     elementsToStyle.result.forEach(result => (result.style.backgroundColor = "#0a0a2a"));
     elementsToStyle.searchBox.forEach(searchBox => (searchBox.style.backgroundColor = "#222", searchBox.style.color = "white"));
     elementsToStyle.categoryItem.forEach(categoryItem => (categoryItem.style.backgroundColor = "#2222227c"));
-    elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(99, 80, 255, 0.3), transparent 70%)", footer.style.boderTop = "1px solid #333", footer.style.color = "#fff"));
+    elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(99, 80, 255, 0.3), transparent 70%)", footer.style.borderTop = "1px solid #333", footer.style.color = "#fff"));
     elementsToStyle.footerLinks.forEach(footerLinks => (footerLinks.style.color = "#fff"))
     elementsToStyle.collectionItem.forEach(collectionItem => (collectionItem.style.backgroundColor = "#1e1e3e"));
     elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "#111111"));
