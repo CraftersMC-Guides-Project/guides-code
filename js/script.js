@@ -192,7 +192,7 @@ function applyTheme(isDarkMode) {
     bottomNavItems: document.querySelectorAll(".nav-item"),
     bottomNavIcons: document.querySelectorAll(".bottom-nav-icon"),
     ctaButtons: document.querySelectorAll(".cta-btn"),
-    navbars: document.querySelectorAll(".navbar"),
+    navbars: document.querySelectorAll(".navbar, .custom-navbar"),
     unicodeContainers: document.querySelectorAll(".container"),
     itemContainer: document.querySelectorAll(".item-container"),
     itemCard: document.querySelectorAll(".item-card"),
