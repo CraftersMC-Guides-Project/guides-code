@@ -1046,18 +1046,18 @@ const collectionsData = {
                 },
                 {
                     "rank": 7,
+                    "name": "Moerderfisch",
+                    "score": "49.4M+"
+                },
+                {
+                    "rank": 8,
                     "name": "John9678",
                     "score": "N/A"
                 },
                 {
-                    "rank": 8,
+                    "rank": 9,
                     "name": "Unknown",
                     "score": "N/A"
-                },
-                {
-                    "rank": 9,
-                    "name": "Moerderfisch",
-                    "score": "39.4M+"
                 },
                 {
                     "rank": 10,
@@ -1540,13 +1540,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "Moerderfisch",
-                    "score": "6M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 6,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Moerderfisch",
+                    "score": "6.3M+"
                 },
                 {
                     "rank": 7,
