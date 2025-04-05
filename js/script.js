@@ -125,7 +125,7 @@ document.addEventListener("click", (event) => {
 
 // navbar
 document.addEventListener("DOMContentLoaded", function () {
-  fetch('../navbar.html')
+  fetch('../page-assets/navbar.html')
     .then(response => response.text())
     .then(data => {
       document.querySelector('.navbar').innerHTML = data;
@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // sidebar
 document.addEventListener("DOMContentLoaded", function () {
-  fetch('../sidebar.html')
+  fetch('../page-assets/sidebar.html')
     .then(response => response.text())
     .then(data => {
       document.getElementById('sidebar').innerHTML = data;
@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // footer
 document.addEventListener("DOMContentLoaded", function () {
-  fetch('../footer.html')
+  fetch('../page-assets/footer.html')
     .then(response => response.text())
     .then(data => {
       document.getElementById('footer').innerHTML = data;
