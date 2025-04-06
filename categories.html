@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Category Items</title>
@@ -33,34 +32,65 @@
             const urlParams = new URLSearchParams(window.location.search);
             const category = urlParams.get('cat');
 
-            if (category) {
-                try {
-                    const response = await fetch('market.json');
-                    const items = await response.json();
-                    const categoryItems = items.filter(item => item.category && item.category.toLowerCase() === category.toLowerCase());
+            if (!category) {
+                document.getElementById('categoryItems').innerHTML = '<p>No category specified.</p>';
+                return;
+            }
 
-                    if (categoryItems.length > 0) {
-                        const itemsHTML = categoryItems.map(item => `
+            try {
+                const [marketRes, pricesRes] = await Promise.all([
+                    fetch('market.json'),
+                    fetch('mprices.txt')
+                ]);
+
+                const marketData = await marketRes.json();
+                const pricesData = await pricesRes.text();
+
+                const pricesMap = new Map();
+                pricesData.split('\n').forEach(line => {
+                    const [id, arrayStr] = line.split(':').map(part => part.trim());
+                    if (id && arrayStr) {
+                        try {
+                            const parsedArray = JSON.parse(arrayStr);
+                            if (Array.isArray(parsedArray) && parsedArray.length === 2) {
+                                pricesMap.set(id, parsedArray[1]);
+                            }
+                        } catch (e) {
+                            console.warn(`Invalid price format for ID ${id}`, e);
+                        }
+                    }
+                });
+
+                const categoryItems = marketData.filter(item =>
+                    item.category && item.category.toLowerCase() === category.toLowerCase()
+                );
+
+                if (categoryItems.length > 0) {
+                    const itemsHTML = categoryItems.map(item => {
+                        const price = pricesMap.get(item.id) || item.price || "Unknown";
+                        return `
                             <div class="item-card" onclick="window.location.href='item.html?item=${item.id}'">
                                 <h2>${item.name}</h2>
                                 ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}">` : ''}
                                 <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
-                                ${item.price ? `<p><strong>Price:</strong> ${item.price}</p></div></div>` : ''}
+                                <p><strong>Price:</strong> ${formatPrice(price)}</p></div></div>
                                 ${item.description ? `<p>${item.description}</p>` : ''}
                             </div>
-                        `).join('');
+                        `;
+                    }).join('');
 
-                        document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
-                    } else {
-                        document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
-                    }
-                } catch (error) {
-                    console.error('Error loading category items:', error);
-                    document.getElementById('categoryItems').innerHTML = '<p>Failed to load items.</p>';
+                    document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
+                } else {
+                    document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
                 }
-            } else {
-                document.getElementById('categoryItems').innerHTML = '<p>No category specified.</p>';
+            } catch (error) {
+                console.error('Error loading category items:', error);
+                document.getElementById('categoryItems').innerHTML = '<p>Failed to load items.</p>';
             }
+        }
+
+        function formatPrice(price) {
+            return `${Number(price).toLocaleString()} <img src="img/coin.png" alt="Coin">`;
         }
 
         loadCategoryItems();
