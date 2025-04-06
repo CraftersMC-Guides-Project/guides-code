@@ -46,9 +46,16 @@
 
                     const pricesMap = new Map();
                     pricesData.split('\n').forEach(line => {
-                        const [id, price] = line.split(':').map(part => part.trim());
-                        if (id && price) {
-                            pricesMap.set(id, price);
+                        const [id, arrayStr] = line.split(':').map(part => part.trim());
+                        if (id && arrayStr) {
+                            try {
+                                const parsedArray = JSON.parse(arrayStr);
+                                if (Array.isArray(parsedArray) && parsedArray.length === 2) {
+                                    pricesMap.set(id, parsedArray[1]);
+                                }
+                            } catch (e) {
+                                console.warn(`Invalid JSON format in mprices.txt for ID ${id}:`, e);
+                            }
                         }
                     });
 
