@@ -21,11 +21,11 @@
     <div id="sidebar-overlay"></div>
     <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
 
-
     <div class="item-container" id="itemDetails">
         <p>Loading item details...</p>
     </div>
     <div id="footer"></div>
+
     <script>
         async function loadItemDetails() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -33,18 +33,35 @@
 
             if (itemId) {
                 try {
-                    const response = await fetch('market.json');
-                    const items = await response.json();
+                    const [marketRes, pricesRes] = await Promise.all([
+                        fetch('market.txt'),
+                        fetch('mprices.txt')
+                    ]);
+
+                    const marketData = await marketRes.text();
+                    const pricesData = await pricesRes.text();
+
+                    const items = JSON.parse(marketData);
                     const item = items.find(item => item.id === itemId);
+
+                    const pricesMap = new Map();
+                    pricesData.split('\n').forEach(line => {
+                        const [id, price] = line.split(':').map(part => part.trim());
+                        if (id && price) {
+                            pricesMap.set(id, price);
+                        }
+                    });
 
                     if (item) {
                         const itemDetailsDiv = document.getElementById('itemDetails');
+                        const price = pricesMap.get(item.id) || item.price || "Unknown";
+
                         itemDetailsDiv.innerHTML = `
                             <h1>${item.name}</h1>
                             ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
                             ${item.rarity ? `<p class="rarity-display" id="rarityDisplay">${item.rarity}</p>` : ''}
                             <p><strong>ID:</strong> ${item.id}</p>
-                            ${item.price ? `<p class="price"><strong>Price:</strong> ${item.price}</p>` : ''}
+                            <p class="price"><strong>Price:</strong> ${formatPrice(price)}</p>
                             ${item.description ? `<p><strong>Description:</strong> ${item.description}</p>` : ''}
                             <p><strong>Category:</strong> ${item.category}</p>
                             <div class="attribute-container">
@@ -113,6 +130,7 @@
 
         loadItemDetails();
     </script>
+
     <script src="js/script.js"></script>
 </body>
 
