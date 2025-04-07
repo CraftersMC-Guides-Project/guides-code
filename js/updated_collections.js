@@ -1408,13 +1408,13 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "The_Winchi",
-                    "score": "26.5M+"
+                    "name": "SammyMishu",
+                    "score": "29.5M"
                 },
                 {
                     "rank": 2,
-                    "name": "SammyMishu",
-                    "score": "17M+"
+                    "name": "The_Winchi",
+                    "score": "26.5M+"
                 },
                 {
                     "rank": 3,
