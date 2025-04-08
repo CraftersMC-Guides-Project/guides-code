@@ -19,17 +19,20 @@
     <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
     
     <div class="search-container">
-        <input type="text" id="searchInput" class="search-box" placeholder="Search the wiki...">
-        <button class="search-btn" onclick="searchWiki()">🔍</button>
+    <div class="search-wrapper">
+    <input type="text" id="searchInput" placeholder="Search the Wiki...">
     </div>
+</div>
+<div id="resultsContainer" class="results"></div>
 
-    <div class="results" id="resultsContainer"></div>
+<div id="confirmBox" class="confirm-box">
+    <p>Are you sure you want to visit this page?</p>
+    <button class="confirm-go" onclick="goToPage()">Proceed</button>
+    <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
+</div>
+
+    <!--Footer-->
     <div id="footer"></div>
-    <div class="confirm-box" id="confirmBox">
-        <p>Do you want to visit this page?</p>
-        <button class="confirm-go" onclick="goToPage()">Go</button>
-        <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
-    </div>
 
     <script>
         let selectedLink = "";
@@ -39,7 +42,7 @@
             if (!query) return;
 
             const resultsContainer = document.getElementById("resultsContainer");
-            resultsContainer.innerHTML = "Searching...";
+            resultsContainer.innerHTML = "Searching the query...";
 
             const apiUrl = `https://craftersmc.wiki.gg/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
             
@@ -95,6 +98,13 @@ function closeConfirm() {
             window.open(selectedLink, "_blank");
             closeConfirm();
         }
+        
+        document.getElementById("searchInput").addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        searchWiki();
+    }
+});
     </script>
 
 </body>
