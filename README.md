@@ -46,7 +46,7 @@ This static web package is powered by:
 
 ## **Preview**
 
-[CraftersMC Guides](https://craftersmc-guides-project.github.io/)
+[CraftersMC Guides](https://craftersmc-guides.pages.dev)
 
 ---
 
@@ -56,8 +56,13 @@ This project is brought to you by:
 - **Coder:** TGJASSIYT (Discord: jassi_xc)
 - **Coder:** TechonTheDev (Discord: techonthedev)
 - **Coder:** Pg Network (Discord: pgnetwork01)
+- **Coder:** Dev. (Discord: dev.odf)
+- **Coder:** Dipanshu FF (Discord: dipanshuff)
+- **Coder:** Dipanshu FF (Discord: dipanshuff)
 - **Writer:** ieduoo (Discord: ieduoo)
 - **Advisor:** Aakash Gupta (Discord: aakashgupta12)
+- **Data Skimmer:** C69P2W (Discord: c69p2w)
+- **Data Skimmer:** Kautilya Garg (Discord: gargkautilya)
 
 ---
 
