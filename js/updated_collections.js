@@ -118,7 +118,7 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "Jrian8733",
+                    "name": "Meetgamer76",
                     "score": "50M+"
                 },
                 {
@@ -128,7 +128,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "Meetgamer76",
+                    "name": "Jrian8733",
                     "score": "N/A"
                 },
                 {
@@ -357,7 +357,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "Unknown",
+                    "name": "HeGzoStRqFe",
                     "score": "N/A"
                 },
                 {
@@ -377,13 +377,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 8,
-                    "name": "KaosTheChaos",
-                    "score": "43M+"
+                    "name": "HeGzoStRqFe",
+                    "score": "N/A"
                 },
                 {
                     "rank": 9,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "KaosTheChaos",
+                    "score": "43M+"
                 },
                 {
                     "rank": 10,
