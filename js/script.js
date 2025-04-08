@@ -215,6 +215,7 @@ function applyTheme(isDarkMode) {
     statCard: document.querySelectorAll(".stat-card"),
     sellerDetails: document.querySelectorAll(".seller-details"),
     sellerProfile: document.querySelectorAll(".seller-profile"),
+    itemContainer2: document.querySelectorAll(".item-container p"),
   };
 
   const removeHoverEffects = () => {
@@ -257,6 +258,7 @@ function applyTheme(isDarkMode) {
     elementsToStyle.sellerCardsInactive.forEach(card => (card.style.backgroundColor = "rgba(70, 0, 0, 0.4)"));
     elementsToStyle.sellerCards2.forEach(card => (card.style.backgroundColor = "rgba(36, 36, 36, 0.6);"));
     elementsToStyle.sellerCardsInactive2.forEach(card => (card.style.backgroundColor = "rgba(70, 0, 0, 0.4)"));
+    elementsToStyle.itemContainer2.forEach(itemContainer2 => (itemContainer2.style.color = "white"));
 
     elementsToStyle.tables.forEach(table => {
       table.style.backgroundColor = "#282838";
@@ -330,6 +332,7 @@ function applyTheme(isDarkMode) {
     });
     elementsToStyle.sellerCards2.forEach(card => (card.style.backgroundColor = "#rgba(255, 255, 255, 0.0)"));
     elementsToStyle.sellerCardsInactive2.forEach(card => (card.style.backgroundColor = "#rgba(255, 255, 255, 0.0)"));
+    elementsToStyle.itemContainer2.forEach(itemContainer2 => (itemContainer2.style.color = "black"));
 
     elementsToStyle.tables.forEach(table => {
       table.style.backgroundColor = "white";
