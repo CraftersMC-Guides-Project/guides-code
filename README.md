@@ -22,15 +22,16 @@ Join an active and diverse community of players as you explore everything **Craf
 
 ## **Features of This Guide**
 
-The **CraftersMC Guides** almost covers every aspect of progression in SkyBlock, these are the current guides available:
+The **CraftersMC Guides** almost covers every aspect of progression in SkyBlock, these are the current tools and guides available:
 
-1. **[Starter Guide](https://craftersmc-guides-project.github.io/guide/starter-guide.html)**
-2. **[Intermediate Guide (2 Parts)](https://craftersmc-guides-project.github.io/guide/intermediate-guide.html)**
-3. **[Advanced Guide](https://craftersmc-guides-project.github.io/guide/advanced-guide.html)**
-4. **[Bazaar Guide](https://craftersmc-guides-project.github.io/guide/bazaar-guide.html)**
-5. **[Accessories Guide](https://craftersmc-guides-project.github.io/guide/accessories-guide.html)**
-6. **[Queries related to Guides](https://craftersmc-guides-project.github.io/guide/queries.html)**
-7. **[Rank Sellers Lists](https://craftersmc-guides-project.github.io/rank-sellers.html)**
+## Available Tools:
+- **[Journey Guides](https://craftersmc-guides.pages.dev/journey-guides)**
+- **[Rank Sellers Page](https://craftersmc-guides.pages.dev/ranksellersv2)**
+- **[Unicode Guide Page](https://craftersmc-guides.pages.dev/unicode)**
+- **[Collection Leaderboards Page](https://craftersmc-guides.pages.dev/leaderboards)**
+- **[Bank Interest Countdown (Beta)](https://craftersmc-guides.pages.dev/bankInterestV2)**
+- **[Bazaar Prices (Beta)](https://craftersmc-guides.pages.dev/market)**
+- **[Texture Packs](https://craftersmc-guides.pages.dev/texture-packs)**
 
 ---
 
