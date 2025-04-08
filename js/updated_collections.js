@@ -347,7 +347,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 2,
-                    "name": "Unknown",
+                    "name": "HeGzoStRqFe",
                     "score": "N/A"
                 },
                 {
@@ -1185,7 +1185,7 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "SammyMishu",
-                    "score": "N/A"
+                    "score": "29.6M+"
                 },
                 {
                     "rank": 2,
@@ -1409,7 +1409,7 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "SammyMishu",
-                    "score": "29.5M"
+                    "score": "29.5M+"
                 },
                 {
                     "rank": 2,
