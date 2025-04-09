@@ -1,101 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Market</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #fff;
-      padding: 20px;
-    }
-    input[type="text"] {
-      padding: 10px;
-      width: 100%;
-      font-size: 16px;
-      margin-bottom: 20px;
-      border: none;
-      border-radius: 5px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #1e1e1e;
-    }
-    th, td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #333;
-    }
-    th {
-      background-color: #272727;
-    }
-    tr:hover {
-      background-color: #2e2e2e;
-    }
-  </style>
-</head>
-<body>
 
-  <input type="text" id="searchBox" placeholder="Search item, category, or seller...">
-  <table>
-    <thead>
-      <tr>
-        <th>Item</th>
-        <th>Category</th>
-        <th>Seller</th>
-        <th>Quantity</th>
-        <th>Price</th>
-      </tr>
-    </thead>
-    <tbody id="marketData"></tbody>
-  </table>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Market Prices - CraftersMC Guides</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="stylesheet" href="css/essential.css" />
+  <link rel="stylesheet" href="css/market.css" />
+  <script src="js/script.js"></script>
+  <script src="js/market.js"></script>
+</head>
+
+<body>
+  <div id="loader"><div></div><div></div><div></div></div>
+  <div class="navbar"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay"></div>
+  <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
+
+  <br /><br />
+  <h1>‎ </h1>
+  <h1>‎ </h1>
+
+  <input type="text" id="searchBox" placeholder="Search Items..." onkeyup="searchItems()" disabled />
+  <div id="results"></div>
+
+  <div class="categories">Categories</div>
+  <div class="divider"></div>
+
+  <div class="category-section">
+    <div class="category-grid">
+      <div class="category-item" onclick="goToCategory('farming')">
+        <img src="assets/ui-icons/ui_bazaar_category_farming_active.png" alt="farming" />
+        <div class="category-name"><p>Farming</p></div>
+      </div>
+      <div class="category-item" onclick="goToCategory('mining')">
+        <img src="assets/ui-icons/ui_bazaar_category_mining_active.png" alt="mining" />
+        <div class="category-name"><p>Mining</p></div>
+      </div>
+      <div class="category-item" onclick="goToCategory('combat')">
+        <img src="assets/ui-icons/ui_bazaar_category_combat_active.png" alt="Combat" />
+        <div class="category-name"><p>Combat</p></div>
+      </div>
+      <div class="category-item" onclick="goToCategory('foraging')">
+        <img src="assets/ui-icons/ui_bazaar_category_foraging_active.png" alt="foraging" />
+        <div class="category-name"><p>Foraging</p></div>
+      </div>
+      <div class="category-item" onclick="goToCategory('miscellaneous')">
+        <img src="assets/ui-icons/ui_bazaar_category_oddities_active.png" alt="miscellaneous" />
+        <div class="category-name"><p>Miscellaneous</p></div>
+      </div>
+      <div class="category-item" onclick="goToCategory('special')">
+        <img src="assets/ui-icons/ui_star_active.png" alt="special" />
+        <div class="category-name"><p>Special</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer"></div>
 
   <script>
-    async function loadMarketData() {
+    let items = [];
+
+    async function loadItems() {
       const response = await fetch('market.txt');
       const text = await response.text();
-      const lines = text.trim().split('\n');
 
-      const data = lines.map(line => {
-        const [item, category, seller, quantity, price] = line.split(',').map(s => s.trim());
-        return { item, category, seller, quantity, price };
-      });
-
-      const tbody = document.getElementById('marketData');
-      const searchBox = document.getElementById('searchBox');
-
-      function renderTable(filteredData) {
-        tbody.innerHTML = '';
-        filteredData.forEach(({ item, category, seller, quantity, price }) => {
-          const row = `
-            <tr>
-              <td>${item}</td>
-              <td>${category}</td>
-              <td>${seller}</td>
-              <td>${quantity}</td>
-              <td>${price}</td>
-            </tr>
-          `;
-          tbody.innerHTML += row;
+      // Assuming market.txt has lines like: id|name|picture
+      items = text
+        .trim()
+        .split('\n')
+        .map(line => {
+          const [id, name, picture] = line.split('|');
+          return { id, name, picture };
         });
+
+      document.getElementById('searchBox').disabled = false;
+    }
+
+    function searchItems() {
+      const query = document.getElementById('searchBox').value.toLowerCase();
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      const filteredItems = items.filter(item => item.name.toLowerCase().includes(query));
+
+      if (filteredItems.length === 0) {
+        resultsDiv.innerHTML = '<p>No results found.</p>';
+        return;
       }
 
-      renderTable(data);
-
-      searchBox.addEventListener('input', () => {
-        const keyword = searchBox.value.toLowerCase();
-        const filtered = data.filter(entry =>
-          entry.item.toLowerCase().includes(keyword) ||
-          entry.category.toLowerCase().includes(keyword) ||
-          entry.seller.toLowerCase().includes(keyword)
-        );
-        renderTable(filtered);
+      filteredItems.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'result';
+        div.innerHTML = `
+          <img src="${item.picture}" alt="${item.name}">
+          <div class="info">
+            <b>${item.name}</b>
+            <span>ID: ${item.id}</span>
+          </div>`;
+        div.onclick = () => {
+          window.location.href = `item.html?item=${item.id}`;
+        };
+        resultsDiv.appendChild(div);
       });
     }
 
-    loadMarketData();
+    function goToCategory(category) {
+      window.location.href = `categories.html?cat=${category}`;
+    }
+
+    loadItems();
   </script>
 </body>
+
 </html>
