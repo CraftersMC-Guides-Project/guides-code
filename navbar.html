@@ -1,5 +1,77 @@
+<!-- Navbar/Header -->
 <span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
 <div class="right">
     <span class="menu-icon material-icons" id="darkModeToggle">dark_mode</span>
-    <a href="../index.html"><img src="../assets/cmc-guides.png"></a>
+    <a href="../index.html"><img src="../assets/cmc-guides.png" alt="Logo"></a>
+
+    <!-- Profile Dropdown (hidden if not logged in) -->
+    <div id="profileContainer" style="position: relative; display: none;">
+        <img id="userPfp" src="" alt="Profile" style="width: 35px; height: 35px; border-radius: 50%; cursor: pointer;" onclick="toggleProfileDropdown()">
+        <div id="profileDropdown" style="display: none; position: absolute; right: 0; background: #1e1e1e; color: white; border-radius: 10px; padding: 10px; min-width: 200px; box-shadow: 0 0 10px rgba(0,0,0,0.5); z-index: 10;">
+            <div style="text-align: center;">
+                <img id="dropdownPfp" src="" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px;">
+                <div id="dropdownUsername" style="font-weight: bold;"></div>
+                <div id="dropdownEmail" style="font-size: 0.9em; opacity: 0.8;"></div>
+            </div>
+            <hr style="margin: 10px 0; border-color: #444;">
+            <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="window.location.href = '../settings.html'">
+                <span>Settings</span>
+                <span class="material-icons">settings</span>
+            </div>
+            <div style="margin-top: 10px; text-align: center; cursor: pointer; color: red;" onclick="logoutUser()">Logout</div>
+        </div>
+    </div>
 </div>
+
+<!-- Firebase Auth Script -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
+    authDomain: "craftersmc-guides.firebaseapp.com",
+    projectId: "craftersmc-guides",
+    storageBucket: "craftersmc-guides.firebasestorage.app",
+    messagingSenderId: "647290515320",
+    appId: "1:647290515320:web:44e1be1528c86af00d628d",
+    measurementId: "G-K3WGXSF9DQ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, (user) => {
+    const profileContainer = document.getElementById("profileContainer");
+    const userPfp = document.getElementById("userPfp");
+    const dropdownPfp = document.getElementById("dropdownPfp");
+    const dropdownUsername = document.getElementById("dropdownUsername");
+    const dropdownEmail = document.getElementById("dropdownEmail");
+
+    if (user) {
+      const photoURL = user.photoURL || "../assets/default-pfp.png";
+      const displayName = user.displayName || "User";
+      const email = user.email;
+
+      userPfp.src = photoURL;
+      dropdownPfp.src = photoURL;
+      dropdownUsername.textContent = displayName;
+      dropdownEmail.textContent = email;
+      profileContainer.style.display = "inline-block";
+    } else {
+      profileContainer.style.display = "none";
+    }
+  });
+
+  window.toggleProfileDropdown = () => {
+    const dropdown = document.getElementById("profileDropdown");
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+  };
+
+  window.logoutUser = () => {
+    const auth = getAuth();
+    signOut(auth).then(() => {
+      window.location.href = "../login.html";
+    });
+  };
+</script>
