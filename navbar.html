@@ -1,31 +1,3 @@
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-<nav class="navbar">
-    <span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
-    <div class="right">
-        <div id="authContainer">
-            <button id="authButton" class="auth-button">
-                <span class="material-icons">help_outline</span> </button>
-            <div id="userDropdown" class="dropdown-content">
-                <a href="#" id="logoutButton">Logout</a>
-                </div>
-        </div>
-    </div>
-</nav>
-
-<div id="loginModal" class="modal" style="display: none;"> <div class="modal-content">
-        <span class="close-button" onclick="closeLoginModal()">&times;</span>
-        <h2>Login / Sign Up</h2>
-        <div id="authError" class="error-message"></div>
-        <form id="emailPasswordForm" onsubmit="return false;">
-            <input type="email" id="emailInput" placeholder="Email" required>
-            <input type="password" id="passwordInput" placeholder="Password" required>
-            <button type="button" id="loginButton">Login</button>
-            <button type="button" id="signupButton">Sign Up</button>
-        </form>
-    </div>
-</div>
-
 <script>
     if (!window.firebaseInitialized) {
         window.firebaseInitialized = true;
@@ -78,16 +50,17 @@
             }
         }
 
-        auth.onAuthStateChanged(user => {
+        function updateAuthButton(user) {
             if (!authButton) {
                 console.warn("Auth button not found, cannot update state.");
                 return;
-             }
+            }
+            authButton.innerHTML = ''; // Clear previous content
+            authButton.onclick = null; // Remove any existing click handler
 
             if (user) {
                 // --- USER IS LOGGED IN ---
                 closeLoginModal(); // Ensure login modal is closed
-                authButton.innerHTML = ''; // Clear default icon
 
                 // Display PFP or Icon
                 if (user.photoURL) {
@@ -103,22 +76,25 @@
                     authButton.appendChild(userIcon);
                 }
 
-                authButton.onclick = (e) => {
+                // Click to toggle dropdown
+                authButton.addEventListener('click', (e) => {
                     e.stopPropagation();
                     if (userDropdown) {
                        userDropdown.style.display = userDropdown.style.display === 'block' ? 'none' : 'block';
                     }
-                };
-                if (userDropdown) userDropdown.style.display = 'none'; // Ensure dropdown is hidden on login
+                });
+                if (userDropdown) userDropdown.style.display = 'none'; // Ensure dropdown is initially hidden
             } else {
                 // --- USER IS LOGGED OUT ---
                 authButton.innerHTML = '<span class="material-icons">help_outline</span>';
-                if (userDropdown) userDropdown.style.display = 'none'; // Ensure dropdown is hidden on logout
 
-                // Only set the click handler to open the modal when logged out
-                authButton.onclick = openLoginModal;
+                // Click to open login modal
+                authButton.addEventListener('click', openLoginModal);
+                if (userDropdown) userDropdown.style.display = 'none'; // Ensure dropdown is hidden
             }
-        });
+        }
+
+        auth.onAuthStateChanged(updateAuthButton);
 
         function attachEventListeners() {
             // Login Button
@@ -131,7 +107,7 @@
                 auth.signInWithEmailAndPassword(email, password)
                     .then(() => console.log("Login successful"))
                     .catch(error => { authError.textContent = `Login failed: ${error.message.replace('Firebase: ', '')}`; });
-            });
+                });
 
             // Signup Button
             signupButton?.addEventListener('click', () => {
