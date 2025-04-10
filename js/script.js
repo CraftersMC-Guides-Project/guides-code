@@ -198,6 +198,7 @@ function applyTheme(isDarkMode) {
     itemCard: document.querySelectorAll(".item-card"),
     categoryItem: document.querySelectorAll(".category-item"),
     searchBox: document.querySelectorAll("#searchBox"),
+    searchInput: document.querySelectorAll("#searchInput"),
     result: document.querySelectorAll(".result"),
     unicodeSections: document.querySelectorAll(".section"),
     sellerLists: document.querySelectorAll(".seller-list"),
@@ -240,6 +241,7 @@ function applyTheme(isDarkMode) {
     elementsToStyle.itemCard.forEach(itemCard => (itemCard.style.backgroundColor = "#2222227c"));
     elementsToStyle.result.forEach(result => (result.style.backgroundColor = "#0a0a2a"));
     elementsToStyle.searchBox.forEach(searchBox => (searchBox.style.backgroundColor = "#222", searchBox.style.color = "white"));
+    elementsToStyle.searchInput.forEach(searchInput => (searchInput.style.backgroundColor = "#222", searchInput.style.color = "white"));
     elementsToStyle.categoryItem.forEach(categoryItem => (categoryItem.style.backgroundColor = "#2222227c"));
     elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(99, 80, 255, 0.3), transparent 70%)", footer.style.borderTop = "1px solid #333", footer.style.color = "#fff"));
     elementsToStyle.footerLinks.forEach(footerLinks => (footerLinks.style.color = "#fff"))
@@ -312,6 +314,7 @@ function applyTheme(isDarkMode) {
     elementsToStyle.itemCard.forEach(itemCard => (itemCard.style.backgroundColor = "#ffffff7c"));
     elementsToStyle.result.forEach(result => (result.style.backgroundColor = "#ffffff7c"));
     elementsToStyle.searchBox.forEach(searchBox => (searchBox.style.backgroundColor = "transparent", searchBox.style.color = "black"));
+    elementsToStyle.searchInput.forEach(searchInput => (searchInput.style.backgroundColor = "transparent", searchInput.style.color = "black"));
     elementsToStyle.categoryItem.forEach(categoryItem => (categoryItem.style.backgroundColor = "#ffffff7c"));
     elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(100, 80, 255, 0.6), transparent 70%)", footer.style.borderTop = "transparent", footer.style.color = "#000"));
     elementsToStyle.footerLinks.forEach(footerLinks => (footerLinks.style.color = "#000"))
