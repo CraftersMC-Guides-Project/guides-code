@@ -2,7 +2,6 @@
 
 <nav class="navbar">
     <span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
-
     <div class="right">
         <div id="authContainer">
             <button id="authButton" class="auth-button">
@@ -19,8 +18,8 @@
         <span class="close-button" onclick="closeLoginModal()">&times;</span>
         <h2>Login / Sign Up</h2>
         <div id="authError" class="error-message"></div>
-
-        <form id="emailPasswordForm" onsubmit="return false;"> <input type="email" id="emailInput" placeholder="Email" required>
+        <form id="emailPasswordForm" onsubmit="return false;">
+            <input type="email" id="emailInput" placeholder="Email" required>
             <input type="password" id="passwordInput" placeholder="Password" required>
             <button type="button" id="loginButton">Login</button>
             <button type="button" id="signupButton">Sign Up</button>
@@ -32,13 +31,11 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
 
 <script>
-    // Ensure this script runs only once, even if navbar is included multiple times improperly
     if (!window.firebaseInitialized) {
         window.firebaseInitialized = true;
 
-        // Your Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg", // Keep secure via backend rules/App Check
+            apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
             authDomain: "craftersmc-guides.firebaseapp.com",
             projectId: "craftersmc-guides",
             storageBucket: "craftersmc-guides.appspot.com",
@@ -47,12 +44,9 @@
             measurementId: "G-K3WGXSF9DQ"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // DOM Elements (ensure these IDs are unique on the final page)
-        // Use try/catch or check for existence if elements might not be present when script runs
         let authContainer, authButton, userDropdown, logoutButton, loginModal, emailInput, passwordInput, loginButton, signupButton, authError, closeButton;
 
         function initializeAuthDOMElements() {
@@ -66,18 +60,18 @@
             loginButton = document.getElementById('loginButton');
             signupButton = document.getElementById('signupButton');
             authError = document.getElementById('authError');
-            // Find close button relative to modal only if modal exists
             closeButton = loginModal ? loginModal.querySelector('.close-button') : null;
+            attachEventListeners();
 
-             // Add event listeners only if elements exist
-             attachEventListeners();
+            // *** Ensure initial states are set correctly ***
+            if (loginModal) loginModal.style.display = 'none'; // Ensure modal is hidden initially
+            if (userDropdown) userDropdown.style.display = 'none'; // Ensure dropdown is hidden initially
         }
 
-        // --- Modal Functions ---
         function openLoginModal() {
             if (loginModal) {
-                loginModal.style.display = 'block'; // Assumes CSS handles the appearance
-                 if (authError) authError.textContent = ''; // Clear previous errors
+                loginModal.style.display = 'block';
+                if (authError) authError.textContent = '';
             } else {
                 console.error("Login modal element not found.");
             }
@@ -85,148 +79,116 @@
 
         function closeLoginModal() {
             if (loginModal) {
-                loginModal.style.display = 'none'; // Assumes CSS handles hiding
+                loginModal.style.display = 'none';
             }
         }
 
-        // --- Auth State Change Handler ---
         auth.onAuthStateChanged(user => {
-            // Ensure elements are available before trying to manipulate them
-             if (!authButton || !userDropdown) {
-                console.warn("Auth UI elements not found, cannot update state.");
-                 return;
+            if (!authButton) {
+                console.warn("Auth button not found, cannot update state.");
+                return;
              }
 
             if (user) {
-                // --- User is Signed In ---
-                closeLoginModal(); // Close modal if it was open
-                authButton.innerHTML = ''; // Clear previous content
+                // --- USER IS LOGGED IN ---
+                closeLoginModal(); // Ensure login modal is closed if it was somehow open
+                authButton.innerHTML = ''; // Clear default icon
 
-                // Display PFP or Icon (relies on CSS for '.profile-pic' class)
-                if (user.photoURL) {
+                // Display PFP or Icon
+                if (user.photoURL) { /* ... PFP logic ... */
                     const img = document.createElement('img');
                     img.src = user.photoURL;
-                    img.alt = "P"; // Profile Alt
-                    img.classList.add('profile-pic'); // CSS class for styling
+                    img.alt = "P";
+                    img.classList.add('profile-pic');
                     authButton.appendChild(img);
-                } else {
-                    // Fallback Icon
+                } else { /* ... Fallback icon logic ... */
                     const userIcon = document.createElement('span');
                     userIcon.classList.add('material-icons');
                     userIcon.textContent = 'person';
                     authButton.appendChild(userIcon);
                 }
 
-                // Configure auth button for logged-in state (toggle dropdown)
+                // *** Requirement: Clicking PFP shows Logout ***
+                // Assign click handler to TOGGLE the dropdown visibility
                 authButton.onclick = (e) => {
-                    e.stopPropagation(); // Prevent window click handler from closing it immediately
-                    // Toggle display (relies on CSS for '.dropdown-content' visibility)
-                    userDropdown.style.display = userDropdown.style.display === 'block' ? 'none' : 'block';
+                    e.stopPropagation(); // Prevent window click handler closing it
+                    if (userDropdown) { // Check if dropdown exists
+                       // Toggle display based on current state
+                       userDropdown.style.display = userDropdown.style.display === 'block' ? 'none' : 'block';
+                    }
                 };
-                userDropdown.style.display = 'none'; // Hide dropdown initially
+                // *** Requirement: Logout button hidden initially ***
+                // Ensure dropdown (containing logout) is hidden when state changes to logged in
+                if (userDropdown) userDropdown.style.display = 'none';
 
             } else {
-                // --- User is Signed Out ---
-                authButton.innerHTML = '<span class="material-icons">help_outline</span>'; // Show login icon
-                if (userDropdown) userDropdown.style.display = 'none'; // Hide dropdown
+                // --- USER IS LOGGED OUT ---
+                // Set PFP button to show login icon
+                authButton.innerHTML = '<span class="material-icons">help_outline</span>';
+                // *** Requirement: Logout button not shown when logged out ***
+                // Ensure dropdown (containing logout) is hidden
+                 if (userDropdown) userDropdown.style.display = 'none';
 
-                // Configure auth button for logged-out state (open modal)
+                // *** Requirement: Clicking PFP opens Login Modal ***
+                // Assign click handler to OPEN the login modal
                 authButton.onclick = openLoginModal;
             }
         });
 
-        // --- Event Listeners ---
         function attachEventListeners() {
-            // Login
-            loginButton?.addEventListener('click', () => {
+            // Login Button (inside modal)
+            loginButton?.addEventListener('click', () => { /* ... login logic ... */
                 if (!emailInput || !passwordInput || !authError) return;
                 const email = emailInput.value;
                 const password = passwordInput.value;
                 authError.textContent = '';
-
-                if (!email || !password) {
-                    authError.textContent = 'Please enter email and password.'; return;
-                }
-
+                if (!email || !password) { authError.textContent = 'Please enter email and password.'; return; }
                 auth.signInWithEmailAndPassword(email, password)
-                    .then(() => console.log("Login successful")) // UI updates via onAuthStateChanged
-                    .catch(error => {
-                        console.error("Login Error:", error);
-                        authError.textContent = `Login failed: ${error.message.replace('Firebase: ', '')}`;
-                    });
+                    .then(() => console.log("Login successful"))
+                    .catch(error => { authError.textContent = `Login failed: ${error.message.replace('Firebase: ', '')}`; });
             });
 
-            // Sign Up
-            signupButton?.addEventListener('click', () => {
+            // Signup Button (inside modal)
+            signupButton?.addEventListener('click', () => { /* ... signup logic ... */
                 if (!emailInput || !passwordInput || !authError) return;
                 const email = emailInput.value;
                 const password = passwordInput.value;
                 authError.textContent = '';
-
-                if (!email || !password) {
-                    authError.textContent = 'Please enter email and password.'; return;
-                }
-                if (password.length < 6) {
-                    authError.textContent = 'Password must be at least 6 characters.'; return;
-                }
-
+                if (!email || !password) { authError.textContent = 'Please enter email and password.'; return; }
+                if (password.length < 6) { authError.textContent = 'Password must be at least 6 characters.'; return; }
                 auth.createUserWithEmailAndPassword(email, password)
-                    .then(() => console.log("Sign up successful")) // UI updates via onAuthStateChanged
-                    .catch(error => {
-                        console.error("Sign Up Error:", error);
-                        authError.textContent = `Sign up failed: ${error.message.replace('Firebase: ', '')}`;
-                    });
+                    .then(() => console.log("Sign up successful"))
+                    .catch(error => { authError.textContent = `Sign up failed: ${error.message.replace('Firebase: ', '')}`; });
             });
 
-            // Logout
-            logoutButton?.addEventListener('click', (e) => {
-                e.preventDefault(); // Prevent default link behavior
+            // Logout Button (inside dropdown)
+            logoutButton?.addEventListener('click', (e) => { /* ... logout logic ... */
+                e.preventDefault();
                 auth.signOut()
                     .then(() => console.log("Logout successful"))
                     .catch(error => console.error("Logout Error:", error));
-                if(userDropdown) userDropdown.style.display = 'none'; // Hide immediately
+                if(userDropdown) userDropdown.style.display = 'none'; // Hide dropdown after logout
             });
 
             // Close modal listeners
             closeButton?.addEventListener('click', closeLoginModal);
-
-            // Close modal/dropdown on clicks outside or ESC key
-            window.addEventListener('click', function(event) {
-                 // Close modal if clicked outside content
-                 if (loginModal && event.target == loginModal) {
-                     closeLoginModal();
-                 }
-                 // Close dropdown if clicked outside auth container
-                 if (authContainer && userDropdown && !authContainer.contains(event.target)) {
-                     userDropdown.style.display = 'none';
+             window.addEventListener('click', function(event) {
+                 if (loginModal && event.target == loginModal) closeLoginModal();
+                 if (authContainer && userDropdown && !authContainer.contains(event.target)) userDropdown.style.display = 'none';
+             });
+            window.addEventListener('keydown', function(event) { /* ... ESC key logic ... */
+                 if (event.key === 'Escape' || event.key === 'Esc') {
+                     if (loginModal && loginModal.style.display === 'block') closeLoginModal();
+                     if (userDropdown && userDropdown.style.display === 'block') userDropdown.style.display = 'none';
                  }
              });
-
-            window.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape' || event.key === 'Esc') {
-                    if (loginModal && loginModal.style.display === 'block') { // Check if modal is open
-                        closeLoginModal();
-                    }
-                    if (userDropdown && userDropdown.style.display === 'block') { // Check if dropdown is open
-                        userDropdown.style.display = 'none';
-                    }
-                }
-            });
         } // end attachEventListeners
 
-        // Initialize DOM elements and listeners after the DOM is ready
-        // Use DOMContentLoaded to ensure elements exist before trying to access them
+        // Initialize after DOM is ready
         document.addEventListener('DOMContentLoaded', initializeAuthDOMElements);
-        // Or if this script might be placed *after* the HTML:
-        // initializeAuthDOMElements();
 
     } // End of window.firebaseInitialized check
 
-    // --- Sidebar Function Placeholder ---
-    // Define this function in your main site's script
-    function toggleSidebar() {
-        console.log("Toggle Sidebar clicked (define this function)");
-        // Example: document.getElementById('mySidebar').classList.toggle('active');
-    }
-
-                    </script>
+    // Define elsewhere
+    function toggleSidebar() { console.log("Toggle Sidebar clicked (define this function)"); }
+                        </script>
