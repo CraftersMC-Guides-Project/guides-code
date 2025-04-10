@@ -1,12 +1,9 @@
-<!-- navbar.html -->
 <div class="navbar">
   <span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
   <div class="right">
     <span class="menu-icon material-icons" id="darkModeToggle">dark_mode</span>
-    <a href="../index.html"><img src="../assets/cmc-guides.png" alt="Home"></a>
     <div class="user-menu" id="userMenuContainer">
-      <!-- Populated dynamically -->
-    </div>
+      </div>
   </div>
 </div>
 
@@ -45,7 +42,8 @@
     word-break: break-word;
   }
 
-  .dropdown button, .dropdown a {
+  .dropdown button,
+  .dropdown a {
     background: none;
     border: none;
     color: white;
@@ -57,7 +55,8 @@
     text-decoration: none;
   }
 
-  .dropdown button:hover, .dropdown a:hover {
+  .dropdown button:hover,
+  .dropdown a:hover {
     background-color: #333;
   }
 
@@ -72,74 +71,88 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
+  // Replace with your actual Firebase configuration
   const firebaseConfig = {
-    apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
-    authDomain: "craftersmc-guides.firebaseapp.com",
-    projectId: "craftersmc-guides",
-    storageBucket: "craftersmc-guides.appspot.com",
-    messagingSenderId: "647290515320",
-    appId: "1:647290515320:web:44e1be1528c86af00d628d",
-    measurementId: "G-K3WGXSF9DQ"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID",
+    measurementId: "YOUR_MEASUREMENT_ID",
   };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+  try {
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const container = document.getElementById("userMenuContainer");
 
-  const container = document.getElementById("userMenuContainer");
-
-  function createDropdownHTML(pfp, name = "", email = "", isGuest = false) {
-    return `
-      <img src="${pfp}" class="user-avatar" id="userAvatar" onclick="toggleDropdown()" />
-      <div class="dropdown" id="userDropdown">
-        ${
-          isGuest
-            ? `
-          <p>You are not logged in.</p>
-          <a href="/login.html">Login</a>
-          <a href="/signup.html">Sign Up</a>
-        `
-            : `
-          <p><strong>${name}</strong></p>
-          <p>${email}</p>
-          <hr />
-          <a href="/settings.html"><span class="material-icons" style="vertical-align: middle;">settings</span> Settings</a>
-          <button onclick="logout()">Logout</button>
-        `
-        }
-      </div>
-    `;
-  }
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      const pfp = user.photoURL || "https://upload.wikimedia.org/wikipedia/commons/5/55/Question_Mark.svg";
-      container.innerHTML = createDropdownHTML(pfp, user.displayName || "User", user.email);
-    } else {
-      const guestIcon = "https://upload.wikimedia.org/wikipedia/commons/5/55/Question_Mark.svg";
-      container.innerHTML = createDropdownHTML(guestIcon, "", "", true);
+    function createDropdownHTML(pfp, name = "", email = "", isGuest = false) {
+      return `
+        <img src="${pfp}" class="user-avatar" id="userAvatar" onclick="toggleDropdown()" />
+        <div class="dropdown" id="userDropdown">
+          ${
+            isGuest
+              ? `
+            <p>You are not logged in.</p>
+            <a href="/login.html">Login</a>
+            <a href="/signup.html">Sign Up</a>
+          `
+              : `
+            <p><strong>${name}</strong></p>
+            <p>${email}</p>
+            <hr />
+            <a href="/settings.html"><span class="material-icons" style="vertical-align: middle;">settings</span> Settings</a>
+            <button onclick="logout()">Logout</button>
+          `
+          }
+        </div>
+      `;
     }
-  });
 
-  window.toggleDropdown = () => {
-    const dropdown = document.getElementById("userDropdown");
-    if (dropdown) {
-      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    function updateAuthUI(user) {
+      if (user) {
+        const pfp = user.photoURL || "https://upload.wikimedia.org/wikipedia/commons/5/55/Question_Mark.svg";
+        container.innerHTML = createDropdownHTML(pfp, user.displayName || "User", user.email);
+      } else {
+        const guestIcon = "https://upload.wikimedia.org/wikipedia/commons/5/55/Question_Mark.svg";
+        container.innerHTML = createDropdownHTML(guestIcon, "", "", true);
+      }
     }
-  };
 
-  window.logout = () => {
-    const auth = getAuth();
-    signOut(auth).then(() => {
-      location.reload();
+    onAuthStateChanged(auth, updateAuthUI);
+
+    window.toggleDropdown = () => {
+      const dropdown = document.getElementById("userDropdown");
+      if (dropdown) {
+        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+      }
+    };
+
+    window.logout = () => {
+      signOut(auth)
+        .then(() => {
+          // Sign-out successful.
+          console.log("User signed out");
+          // Optionally redirect or reload the page
+          location.reload();
+        })
+        .catch((error) => {
+          // An error happened.
+          console.error("Error signing out:", error);
+        });
+    };
+
+    // Hide dropdown if clicked outside
+    document.addEventListener("click", (e) => {
+      const dropdown = document.getElementById("userDropdown");
+      const avatar = document.getElementById("userAvatar");
+      if (dropdown && !dropdown.contains(e.target) && e.target !== avatar) {
+        dropdown.style.display = "none";
+      }
     });
-  };
-
-  // Hide dropdown if clicked outside
-  document.addEventListener("click", (e) => {
-    const dropdown = document.getElementById("userDropdown");
-    const avatar = document.getElementById("userAvatar");
-    if (dropdown && !dropdown.contains(e.target) && e.target !== avatar) {
-      dropdown.style.display = "none";
-    }
-  });
-</script>
+  } catch (error) {
+    console.error("Firebase initialization error:", error);
+    // Optionally display an error message to the user
+  }
+      </script>
