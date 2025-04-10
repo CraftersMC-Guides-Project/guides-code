@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - CraftersMC Guides</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: #1c1c1c;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #000;
+      width: 300px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 6px;
+      background-color: #2a2a2a;
+      color: white;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #ff4444;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    button:hover {
+      background-color: #e63c3c;
+    }
+    .message {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 14px;
+      color: #bbb;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Login</h2>
+  <input type="email" id="email" placeholder="Email" />
+  <input type="password" id="password" placeholder="Password" />
+  <button onclick="login()">Login</button>
+  <div class="message" id="message"></div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
+    authDomain: "craftersmc-guides.firebaseapp.com",
+    projectId: "craftersmc-guides",
+    storageBucket: "craftersmc-guides.firebasestorage.app",
+    messagingSenderId: "647290515320",
+    appId: "1:647290515320:web:44e1be1528c86af00d628d",
+    measurementId: "G-K3WGXSF9DQ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  window.login = function () {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const msg = document.getElementById("message");
+
+    if (!email || !password) {
+      msg.textContent = "Please fill out both fields.";
+      return;
+    }
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        msg.textContent = `Logged in as ${userCredential.user.email}`;
+        // Redirect or perform further actions here
+      })
+      .catch((error) => {
+        msg.textContent = error.message;
+      });
+  };
+</script>
+
+</body>
+</html>

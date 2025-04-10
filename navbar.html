@@ -1,5 +1,144 @@
-<span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
-<div class="right">
+<!-- navbar.html -->
+<div class="navbar">
+  <span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
+  <div class="right">
     <span class="menu-icon material-icons" id="darkModeToggle">dark_mode</span>
-    <a href="../index.html"><img src="../assets/cmc-guides.png"></a>
+    <div class="user-menu" id="userMenuContainer">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
 </div>
+
+<style>
+  .user-menu {
+    position: relative;
+    display: inline-block;
+  }
+
+  .user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    object-fit: cover;
+    background: #444;
+  }
+
+  .dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 45px;
+    background-color: #222;
+    color: white;
+    min-width: 200px;
+    border-radius: 8px;
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    padding: 10px;
+  }
+
+  .dropdown p {
+    margin: 8px 0;
+    font-size: 14px;
+    word-break: break-word;
+  }
+
+  .dropdown button, .dropdown a {
+    background: none;
+    border: none;
+    color: white;
+    padding: 8px 0;
+    text-align: left;
+    cursor: pointer;
+    width: 100%;
+    display: block;
+    text-decoration: none;
+  }
+
+  .dropdown button:hover, .dropdown a:hover {
+    background-color: #333;
+  }
+
+  .dropdown hr {
+    border: 0;
+    border-top: 1px solid #444;
+    margin: 10px 0;
+  }
+</style>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
+    authDomain: "craftersmc-guides.firebaseapp.com",
+    projectId: "craftersmc-guides",
+    storageBucket: "craftersmc-guides.appspot.com",
+    messagingSenderId: "647290515320",
+    appId: "1:647290515320:web:44e1be1528c86af00d628d",
+    measurementId: "G-K3WGXSF9DQ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const container = document.getElementById("userMenuContainer");
+
+  function createDropdownHTML(pfp, name = "", email = "", isGuest = false) {
+    return `
+      <img src="${pfp}" class="user-avatar" id="userAvatar" onclick="toggleDropdown()" />
+      <div class="dropdown" id="userDropdown">
+        ${
+          isGuest
+            ? `
+          <p>You are not logged in.</p>
+          <a href="/login.html">Login</a>
+          <a href="/signup.html">Sign Up</a>
+        `
+            : `
+          <p><strong>${name}</strong></p>
+          <p>${email}</p>
+          <hr />
+          <a href="/settings.html"><span class="material-icons" style="vertical-align: middle;">settings</span> Settings</a>
+          <button onclick="logout()">Logout</button>
+        `
+        }
+      </div>
+    `;
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const pfp = user.photoURL || "https://upload.wikimedia.org/wikipedia/commons/5/55/Question_Mark.svg";
+      container.innerHTML = createDropdownHTML(pfp, user.displayName || "User", user.email);
+    } else {
+      const guestIcon = "https://upload.wikimedia.org/wikipedia/commons/5/55/Question_Mark.svg";
+      container.innerHTML = createDropdownHTML(guestIcon, "", "", true);
+    }
+  });
+
+  window.toggleDropdown = () => {
+    const dropdown = document.getElementById("userDropdown");
+    if (dropdown) {
+      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    }
+  };
+
+  window.logout = () => {
+    const auth = getAuth();
+    signOut(auth).then(() => {
+      location.reload();
+    });
+  };
+
+  // Hide dropdown if clicked outside
+  document.addEventListener("click", (e) => {
+    const dropdown = document.getElementById("userDropdown");
+    const avatar = document.getElementById("userAvatar");
+    if (dropdown && !dropdown.contains(e.target) && e.target !== avatar) {
+      dropdown.style.display = "none";
+    }
+  });
+</script>
