@@ -3,7 +3,9 @@
   <span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
   <div class="right">
     <span class="menu-icon material-icons" id="darkModeToggle">dark_mode</span>
-    <div class="user-menu" id="userMenuContainer"></div>
+    <div class="user-menu" id="userMenuContainer">
+      <!-- Populated dynamically -->
+    </div>
   </div>
 </div>
 
@@ -19,7 +21,7 @@
     border-radius: 50%;
     cursor: pointer;
     object-fit: cover;
-    background: #ccc;
+    background: #444;
   }
 
   .dropdown {
@@ -39,7 +41,7 @@
   .dropdown p {
     margin: 8px 0;
     font-size: 14px;
-    word-break: break-all;
+    word-break: break-word;
   }
 
   .dropdown button, .dropdown a {
@@ -84,56 +86,59 @@
 
   const container = document.getElementById("userMenuContainer");
 
-  function createUserDropdown(user) {
-    const avatarURL = user.photoURL || "https://upload.wikimedia.org/wikipedia/commons/5/55/Question_Mark.svg";
-
-    container.innerHTML = `
-      <img src="${avatarURL}" class="user-avatar" id="userAvatar" onclick="toggleDropdown()" />
+  function createDropdownHTML(pfp, name = "", email = "", isGuest = false) {
+    return `
+      <img src="${pfp}" class="user-avatar" id="userAvatar" onclick="toggleDropdown()" />
       <div class="dropdown" id="userDropdown">
-        <p><strong>${user.displayName || "No Name"}</strong></p>
-        <p>${user.email}</p>
-        <hr />
-        <a href="/settings.html"><span class="material-icons" style="vertical-align: middle;">settings</span> Settings</a>
-        <button onclick="logout()">Logout</button>
-      </div>
-    `;
-  }
-
-  function createGuestDropdown() {
-    container.innerHTML = `
-      <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Question_Mark.svg" class="user-avatar" onclick="toggleDropdown()" />
-      <div class="dropdown" id="userDropdown">
-        <p>You're not logged in.</p>
-        <a href="/login.html">Login</a>
-        <a href="/signup.html">Sign Up</a>
+        ${
+          isGuest
+            ? `
+          <p>You are not logged in.</p>
+          <a href="/login.html">Login</a>
+          <a href="/signup.html">Sign Up</a>
+        `
+            : `
+          <p><strong>${name}</strong></p>
+          <p>${email}</p>
+          <hr />
+          <a href="/settings.html"><span class="material-icons" style="vertical-align: middle;">settings</span> Settings</a>
+          <button onclick="logout()">Logout</button>
+        `
+        }
       </div>
     `;
   }
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      createUserDropdown(user);
+      const pfp = user.photoURL || "https://upload.wikimedia.org/wikipedia/commons/5/55/Question_Mark.svg";
+      container.innerHTML = createDropdownHTML(pfp, user.displayName || "User", user.email);
     } else {
-      createGuestDropdown();
+      const guestIcon = "https://upload.wikimedia.org/wikipedia/commons/5/55/Question_Mark.svg";
+      container.innerHTML = createDropdownHTML(guestIcon, "", "", true);
     }
   });
 
   window.toggleDropdown = () => {
     const dropdown = document.getElementById("userDropdown");
-    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    if (dropdown) {
+      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    }
   };
 
   window.logout = () => {
+    const auth = getAuth();
     signOut(auth).then(() => {
-      window.location.reload();
+      location.reload();
     });
   };
 
-  document.addEventListener("click", function (e) {
+  // Hide dropdown if clicked outside
+  document.addEventListener("click", (e) => {
     const dropdown = document.getElementById("userDropdown");
     const avatar = document.getElementById("userAvatar");
-    if (!container.contains(e.target)) {
-      dropdown && (dropdown.style.display = "none");
+    if (dropdown && !dropdown.contains(e.target) && e.target !== avatar) {
+      dropdown.style.display = "none";
     }
   });
 </script>
