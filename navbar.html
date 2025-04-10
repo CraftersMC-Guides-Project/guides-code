@@ -1,50 +1,79 @@
-<span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
-<div class="right">
-  <span class="menu-icon material-icons" id="darkModeToggle">dark_mode</span>
-
-  <div id="profileContainer" style="position: relative;">
-    <!-- Guest icon -->
-    <div id="guestIcon" style="width: 35px; height: 35px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; color: white; cursor: pointer;" onclick="toggleGuestDropdown()">?</div>
-
-    <!-- Logged-in profile image -->
-    <img id="userPfp" src="" alt="Profile" style="width: 35px; height: 35px; border-radius: 50%; cursor: pointer; display: none;" onclick="toggleProfileDropdown()" />
-
-    <!-- Logged-in dropdown -->
-    <div id="profileDropdown" style="display: none; position: absolute; right: 0; background: #1e1e1e; color: white; border-radius: 10px; padding: 10px; min-width: 200px; box-shadow: 0 0 10px rgba(0,0,0,0.5); z-index: 10;">
-      <div style="text-align: center;">
-        <img id="dropdownPfp" src="" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px;">
-        <div id="dropdownUsername" style="font-weight: bold;"></div>
-        <div id="dropdownEmail" style="font-size: 0.9em; opacity: 0.8;"></div>
-      </div>
-      <hr style="margin: 10px 0; border-color: #444;">
-      <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="window.location.href = '../settings.html'">
-        <span>Settings</span>
-        <span class="material-icons">settings</span>
-      </div>
-      <div style="margin-top: 10px; text-align: center; cursor: pointer; color: red;" onclick="logoutUser()">Logout</div>
-    </div>
-
-    <!-- Guest login/signup form -->
-    <div id="guestDropdown" style="display: none; position: absolute; right: 0; background: #1e1e1e; color: white; border-radius: 10px; padding: 15px; min-width: 250px; box-shadow: 0 0 10px rgba(0,0,0,0.5); z-index: 10;">
-      <input id="authEmail" type="email" placeholder="Email" style="width: 100%; padding: 8px; margin-bottom: 8px; border-radius: 5px; border: none; outline: none;">
-      <input id="authPassword" type="password" placeholder="Password" style="width: 100%; padding: 8px; margin-bottom: 12px; border-radius: 5px; border: none; outline: none;">
-
-      <button onclick="loginUser()" id="loginBtn" style="width: 100%; padding: 8px; background-color: #4caf50; color: white; border: none; border-radius: 5px;">Login</button>
-      <button onclick="switchToSignup()" id="switchBtn" style="width: 100%; padding: 8px; background-color: #2196F3; color: white; border: none; border-radius: 5px; margin-top: 8px;">Switch to Sign Up</button>
-    </div>
+<!-- navbar.html -->
+<div class="navbar">
+  <span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
+  <div class="right">
+    <span class="menu-icon material-icons" id="darkModeToggle">dark_mode</span>
+    <div class="user-menu" id="userMenuContainer"></div>
   </div>
 </div>
 
-<!-- Firebase Auth Script -->
+<style>
+  .user-menu {
+    position: relative;
+    display: inline-block;
+  }
+
+  .user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    object-fit: cover;
+    background: #ccc;
+  }
+
+  .dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 45px;
+    background-color: #222;
+    color: white;
+    min-width: 200px;
+    border-radius: 8px;
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    padding: 10px;
+  }
+
+  .dropdown p {
+    margin: 8px 0;
+    font-size: 14px;
+    word-break: break-all;
+  }
+
+  .dropdown button, .dropdown a {
+    background: none;
+    border: none;
+    color: white;
+    padding: 8px 0;
+    text-align: left;
+    cursor: pointer;
+    width: 100%;
+    display: block;
+    text-decoration: none;
+  }
+
+  .dropdown button:hover, .dropdown a:hover {
+    background-color: #333;
+  }
+
+  .dropdown hr {
+    border: 0;
+    border-top: 1px solid #444;
+    margin: 10px 0;
+  }
+</style>
+
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
     authDomain: "craftersmc-guides.firebaseapp.com",
     projectId: "craftersmc-guides",
-    storageBucket: "craftersmc-guides.firebasestorage.app",
+    storageBucket: "craftersmc-guides.appspot.com",
     messagingSenderId: "647290515320",
     appId: "1:647290515320:web:44e1be1528c86af00d628d",
     measurementId: "G-K3WGXSF9DQ"
@@ -53,73 +82,58 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  const userPfp = document.getElementById("userPfp");
-  const guestIcon = document.getElementById("guestIcon");
-  const dropdownPfp = document.getElementById("dropdownPfp");
-  const dropdownUsername = document.getElementById("dropdownUsername");
-  const dropdownEmail = document.getElementById("dropdownEmail");
+  const container = document.getElementById("userMenuContainer");
+
+  function createUserDropdown(user) {
+    const avatarURL = user.photoURL || "https://upload.wikimedia.org/wikipedia/commons/5/55/Question_Mark.svg";
+
+    container.innerHTML = `
+      <img src="${avatarURL}" class="user-avatar" id="userAvatar" onclick="toggleDropdown()" />
+      <div class="dropdown" id="userDropdown">
+        <p><strong>${user.displayName || "No Name"}</strong></p>
+        <p>${user.email}</p>
+        <hr />
+        <a href="/settings.html"><span class="material-icons" style="vertical-align: middle;">settings</span> Settings</a>
+        <button onclick="logout()">Logout</button>
+      </div>
+    `;
+  }
+
+  function createGuestDropdown() {
+    container.innerHTML = `
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Question_Mark.svg" class="user-avatar" onclick="toggleDropdown()" />
+      <div class="dropdown" id="userDropdown">
+        <p>You're not logged in.</p>
+        <a href="/login.html">Login</a>
+        <a href="/signup.html">Sign Up</a>
+      </div>
+    `;
+  }
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      const photoURL = user.photoURL || "../assets/default-pfp.png";
-      const displayName = user.displayName || "User";
-      const email = user.email;
-
-      guestIcon.style.display = "none";
-      userPfp.style.display = "inline-block";
-      userPfp.src = photoURL;
-
-      dropdownPfp.src = photoURL;
-      dropdownUsername.textContent = displayName;
-      dropdownEmail.textContent = email;
+      createUserDropdown(user);
     } else {
-      userPfp.style.display = "none";
-      guestIcon.style.display = "flex";
+      createGuestDropdown();
     }
   });
 
-  window.toggleProfileDropdown = () => {
-    document.getElementById("profileDropdown").style.display ^= "block";
-    document.getElementById("guestDropdown").style.display = "none";
+  window.toggleDropdown = () => {
+    const dropdown = document.getElementById("userDropdown");
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
   };
 
-  window.toggleGuestDropdown = () => {
-    document.getElementById("guestDropdown").style.display ^= "block";
-    document.getElementById("profileDropdown").style.display = "none";
+  window.logout = () => {
+    signOut(auth).then(() => {
+      window.location.reload();
+    });
   };
 
-  window.logoutUser = () => {
-    signOut(auth).then(() => location.reload());
-  };
-
-  window.loginUser = () => {
-    const email = document.getElementById("authEmail").value;
-    const password = document.getElementById("authPassword").value;
-    signInWithEmailAndPassword(auth, email, password)
-      .then(() => location.reload())
-      .catch(err => alert("Login Failed: " + err.message));
-  };
-
-  window.signupUser = () => {
-    const email = document.getElementById("authEmail").value;
-    const password = document.getElementById("authPassword").value;
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(() => location.reload())
-      .catch(err => alert("Signup Failed: " + err.message));
-  };
-
-  window.switchToSignup = () => {
-    const loginBtn = document.getElementById("loginBtn");
-    const switchBtn = document.getElementById("switchBtn");
-
-    if (loginBtn.textContent === "Login") {
-      loginBtn.textContent = "Sign Up";
-      loginBtn.onclick = signupUser;
-      switchBtn.textContent = "Switch to Login";
-    } else {
-      loginBtn.textContent = "Login";
-      loginBtn.onclick = loginUser;
-      switchBtn.textContent = "Switch to Sign Up";
+  document.addEventListener("click", function (e) {
+    const dropdown = document.getElementById("userDropdown");
+    const avatar = document.getElementById("userAvatar");
+    if (!container.contains(e.target)) {
+      dropdown && (dropdown.style.display = "none");
     }
-  };
+  });
 </script>
