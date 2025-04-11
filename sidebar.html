@@ -1,6 +1,11 @@
 <span class="sidebar-close material-icons" onclick="toggleSidebar()">close</span>
+
+<!-- Default Profile Image (Replaced if logged in) -->
 <img id="sidebarProfilePic" src="assets/cmc-guides.png" alt="CMC Guides Logo" style="border-radius: 50%; width: 100px; height: 100px; object-fit: cover; display: block; margin: 10px auto;">
+
+<!-- Username Placeholder -->
 <p id="sidebarUsername" style="text-align: center; font-size: 14px; color: #ccc;"></p>
+
 <hr>
 <a class="sidebar-link" href="rank-sellers.html">Rank Sellers</a>
 <a class="sidebar-link" href="unicode.html">Unicode</a>
@@ -10,19 +15,24 @@
 <a class="sidebar-link" href="https://craftersmc.wiki.gg/wiki/">CraftersMC Wiki</a>
 <a class="sidebar-link" href="https://craftersmc.net/">CraftersMC Website</a>
 
+<!-- Script to update PFP and username -->
 <script>
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (user && user.email) {
-    const settingsKey = `userSettings_${user.email}`;
-    const settings = JSON.parse(localStorage.getItem(settingsKey)) || {};
+  document.addEventListener("DOMContentLoaded", () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user && user.email) {
+      const settingsKey = `userSettings_${user.email}`;
+      const userSettings = JSON.parse(localStorage.getItem(settingsKey)) || {};
 
-    if (settings.profilePic) {
-      const img = document.getElementById("sidebarProfilePic");
-      img.src = settings.profilePic;
-    }
+      const profileImg = document.getElementById("sidebarProfilePic");
+      const usernameField = document.getElementById("sidebarUsername");
 
-    if (settings.username) {
-      document.getElementById("sidebarUsername").textContent = settings.username;
+      if (userSettings.profilePic) {
+        profileImg.src = userSettings.profilePic;
+      }
+
+      if (userSettings.username) {
+        usernameField.textContent = userSettings.username;
+      }
     }
-  }
+  });
 </script>
