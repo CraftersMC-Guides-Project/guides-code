@@ -1,15 +1,5 @@
 
-document.addEventListener('DOMContentLoaded', function () {
-  // Hide loader when content is loaded
-  document.querySelector('#loader').style.display = 'none';
 
-});
-
-// Sidebar toggle function from script.js
-function toggleSidebar() {
-  const sidebar = document.getElementById("sidebar");
-  sidebar.classList.toggle("open");
-}
 
 //Background changer i hope
 
@@ -38,8 +28,6 @@ function changeBackground(type) {
           return `linear-gradient(135deg, ${randomColor1}, ${randomColor2})`;
       }
   };
-
-  //check if is a function
   const background = typeof backgrounds[type] === 'function' 
       ? backgrounds[type]() 
       : backgrounds[type];
@@ -56,49 +44,4 @@ document.addEventListener('DOMContentLoaded', () => {
           changeBackground(e.target.value);
       });
   }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM fully loaded.");
-
-  const themeSwitch = document.getElementById("theme-switch");
-
-  if (!themeSwitch) {
-    console.error("Error: #theme-switch button not found!");
-    return;
-  }
-
-  let darkMode = localStorage.getItem("darkMode");
-
-  const enableDarkmode = () => {
-    document.body.classList.add("darkmode");
-    localStorage.setItem("darkMode", "true");
-    themeSwitch.textContent = "light_mode";
-    console.log("Dark mode enabled.");
-    
-  };
-
-  const disableDarkmode = () => {
-    document.body.classList.remove("darkmode");
-    localStorage.setItem("darkMode", "false");
-    themeSwitch.textContent = "dark_mode";
-    console.log("Dark mode disabled.");
-  };
-  
-  if (darkMode === "true") {
-    enableDarkmode();
-  }
-
-  themeSwitch.addEventListener("click", () => {
-    darkMode = localStorage.getItem("darkMode");
-    if (darkMode !== "true") {
-      enableDarkmode();
-      location.reload();
-    } else {
-      disableDarkmode();
-      location.reload();
-    }
-  });
-
-  console.log("Event listener added.");
 });

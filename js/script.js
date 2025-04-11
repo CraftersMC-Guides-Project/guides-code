@@ -334,7 +334,7 @@ function applyTheme(isDarkMode) {
       card.style.backgroundColor = "rgba(221, 34, 34, 0.1)";
     });
     elementsToStyle.sellerCards2.forEach(card => (card.style.backgroundColor = "#rgba(255, 255, 255, 0.0)"));
-    elementsToStyle.sellerCardsInactive2.forEach(card => (card.style.backgroundColor = "#rgba(255, 255, 255, 0.0)"));
+    elementsToStyle.sellerCardsInactive2.forEach(card => (card.style.backgroundColor = "#rgba(255, 255, 255, 0.3)"));
     elementsToStyle.itemContainer2.forEach(itemContainer2 => (itemContainer2.style.color = "black"));
 
     elementsToStyle.tables.forEach(table => {
