@@ -1,6 +1,6 @@
 <span class="sidebar-close material-icons" onclick="toggleSidebar()">close</span>
-<img id="sidebarProfilePic" src="assets/cmc-guides.png" alt="CMC Guides Logo" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 10px auto; display: block;">
-<p id="sidebarUsername" style="text-align: center; font-weight: bold;"></p>
+<img id="sidebarProfilePic" src="assets/cmc-guides.png" alt="CMC Guides Logo" style="border-radius: 50%; width: 100px; height: 100px; object-fit: cover; display: block; margin: 10px auto;">
+<p id="sidebarUsername" style="text-align: center; font-size: 14px; color: #ccc;"></p>
 <hr>
 <a class="sidebar-link" href="rank-sellers.html">Rank Sellers</a>
 <a class="sidebar-link" href="unicode.html">Unicode</a>
@@ -13,16 +13,16 @@
 <script>
   const user = JSON.parse(localStorage.getItem("user"));
   if (user && user.email) {
-    const settings = JSON.parse(localStorage.getItem(`userSettings_${user.email}`)) || {};
-    const profilePic = settings.profilePic;
-    const username = settings.username;
+    const settingsKey = `userSettings_${user.email}`;
+    const settings = JSON.parse(localStorage.getItem(settingsKey)) || {};
 
-    if (profilePic) {
-      document.getElementById("sidebarProfilePic").src = profilePic;
+    if (settings.profilePic) {
+      const img = document.getElementById("sidebarProfilePic");
+      img.src = settings.profilePic;
     }
 
-    if (username) {
-      document.getElementById("sidebarUsername").textContent = username;
+    if (settings.username) {
+      document.getElementById("sidebarUsername").textContent = settings.username;
     }
   }
 </script>
