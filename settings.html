@@ -74,16 +74,24 @@
 </div>
 
 <script>
+  // Check login
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user || !user.token) {
+    alert("You're not logged in!");
+    window.location.href = "login.html";
+  }
+
+  const userKey = `userSettings_${user.email}`; // unique key per user
+  const saved = JSON.parse(localStorage.getItem(userKey)) || {};
+
   const profilePicInput = document.getElementById("profilePicInput");
   const previewImg = document.getElementById("previewImg");
   const usernameInput = document.getElementById("username");
   const bioInput = document.getElementById("bio");
 
-  // Load settings
-  const settings = JSON.parse(localStorage.getItem("userSettings")) || {};
-  if (settings.profilePic) previewImg.src = settings.profilePic;
-  if (settings.username) usernameInput.value = settings.username;
-  if (settings.bio) bioInput.value = settings.bio;
+  if (saved.profilePic) previewImg.src = saved.profilePic;
+  if (saved.username) usernameInput.value = saved.username;
+  if (saved.bio) bioInput.value = saved.bio;
 
   profilePicInput.addEventListener("change", function () {
     const file = this.files[0];
@@ -97,12 +105,13 @@
   });
 
   function saveSettings() {
-    const userSettings = {
+    const updated = {
       profilePic: previewImg.src,
       username: usernameInput.value.trim(),
       bio: bioInput.value.trim(),
     };
-    localStorage.setItem("userSettings", JSON.stringify(userSettings));
+
+    localStorage.setItem(userKey, JSON.stringify(updated));
     alert("Settings saved!");
   }
 </script>
