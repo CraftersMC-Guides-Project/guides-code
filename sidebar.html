@@ -1,9 +1,9 @@
 <span class="sidebar-close material-icons" onclick="toggleSidebar()">close</span>
 
-<!-- Default Profile Image (Replaced if logged in) -->
-<img id="sidebarProfilePic" src="assets/cmc-guides.png" alt="CMC Guides Logo" style="border-radius: 50%; width: 100px; height: 100px; object-fit: cover; display: block; margin: 10px auto;">
+<!-- Profile Picture Display -->
+<img id="sidebarProfilePic" src="" alt="User Profile" style="border-radius: 50%; width: 100px; height: 100px; object-fit: cover; display: block; margin: 10px auto;">
 
-<!-- Username Placeholder -->
+<!-- Username Display -->
 <p id="sidebarUsername" style="text-align: center; font-size: 14px; color: #ccc;"></p>
 
 <hr>
@@ -15,24 +15,38 @@
 <a class="sidebar-link" href="https://craftersmc.wiki.gg/wiki/">CraftersMC Wiki</a>
 <a class="sidebar-link" href="https://craftersmc.net/">CraftersMC Website</a>
 
-<!-- Script to update PFP and username -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user && user.email) {
-      const settingsKey = `userSettings_${user.email}`;
-      const userSettings = JSON.parse(localStorage.getItem(settingsKey)) || {};
+    const profileImg = document.getElementById("sidebarProfilePic");
+    const usernameText = document.getElementById("sidebarUsername");
 
-      const profileImg = document.getElementById("sidebarProfilePic");
-      const usernameField = document.getElementById("sidebarUsername");
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user || !user.email) {
+        profileImg.style.display = "none";
+        usernameText.textContent = "Not logged in.";
+        usernameText.style.color = "red";
+        return;
+      }
+
+      const userSettings = JSON.parse(localStorage.getItem(`userSettings_${user.email}`)) || {};
 
       if (userSettings.profilePic) {
         profileImg.src = userSettings.profilePic;
+      } else {
+        profileImg.style.display = "none";
+        usernameText.textContent = "No profile picture set.";
+        usernameText.style.color = "orange";
       }
 
       if (userSettings.username) {
-        usernameField.textContent = userSettings.username;
+        usernameText.textContent = userSettings.username;
       }
+
+    } catch (err) {
+      profileImg.style.display = "none";
+      usernameText.textContent = "Error loading profile.";
+      usernameText.style.color = "red";
     }
   });
 </script>
