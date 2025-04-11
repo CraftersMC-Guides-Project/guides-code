@@ -3,32 +3,33 @@
 
 <head>
     <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
-    authDomain: "craftersmc-guides.firebaseapp.com",
-    projectId: "craftersmc-guides",
-    storageBucket: "craftersmc-guides.firebasestorage.app",
-    messagingSenderId: "647290515320",
-    appId: "1:647290515320:web:44e1be1528c86af00d628d",
-    measurementId: "G-K3WGXSF9DQ"
-  };
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
+            authDomain: "craftersmc-guides.firebaseapp.com",
+            projectId: "craftersmc-guides",
+            storageBucket: "craftersmc-guides.firebasestorage.app",
+            messagingSenderId: "647290515320",
+            appId: "1:647290515320:web:44e1be1528c86af00d628d",
+            measurementId: "G-K3WGXSF9DQ"
+        };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
     </script>
-    
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="keywords" content="Craftersmc, guide, craftersmc guide, cmc, craftersmc guides, craftersmc guides project, craftersmc guides project, craftersmc guides project github, craftersmc guides project github io, craftersmc wiki, craftersmc wiki, craftersmc wiki gg, skyblock, craftersmc rank, craftersmc rank sellers, craftersmc rank sellers guide, craftersmc rank sellers list, craftersmc leaderboards, craftersmc leaderboards, craftersmc leaderboards guide, craftersmc leaderboards list, craftersmc event log, craftersmc event log guide, craftersmc event log list, craftersmc unicode, craftersmc unicode guide, craftersmc unicode list, craftersmc">
+    <meta name="keywords"
+        content="Craftersmc, guide, craftersmc guide, cmc, craftersmc guides, craftersmc guides project, craftersmc guides project, craftersmc guides project github, craftersmc guides project github io, craftersmc wiki, craftersmc wiki, craftersmc wiki gg, skyblock, craftersmc rank, craftersmc rank sellers, craftersmc rank sellers guide, craftersmc rank sellers list, craftersmc leaderboards, craftersmc leaderboards, craftersmc leaderboards guide, craftersmc leaderboards list, craftersmc event log, craftersmc event log guide, craftersmc event log list, craftersmc unicode, craftersmc unicode guide, craftersmc unicode list, craftersmc">
     <meta name="google-site-verification" content="Wr3jatMv-sfXhgBy5jBfiX8Nwn6k8P1k_jPubQzBcTY" />
     <meta property="og:title" content="CraftersMC Guides">
     <meta property="og:description"
@@ -50,6 +51,55 @@
     <link rel="stylesheet" href="css/home.css">
     <script src="js/home.js"></script>
     <script src="js/script.js"></script>
+    <script>
+        function loadSidebar() {
+            fetch('sidebar.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('sidebar').innerHTML = data;
+                    // After loading, re-run the script inside the sidebar content
+                    const script = document.createElement('script');
+                    script.textContent = `
+                        document.addEventListener("DOMContentLoaded", () => {
+                            const profileImg = document.getElementById("sidebarProfilePic");
+                            const usernameText = document.getElementById("sidebarUsername");
+
+                            try {
+                                const user = JSON.parse(localStorage.getItem("user"));
+                                if (!user || !user.email) {
+                                    profileImg.src = "assets/cmc-guides.png"; // Default icon
+                                    usernameText.textContent = "";
+                                    return;
+                                }
+
+                                const userSettings = JSON.parse(localStorage.getItem(\`userSettings_\${user.email}\`)) || {};
+
+                                if (userSettings.profilePic) {
+                                    profileImg.src = userSettings.profilePic;
+                                } else {
+                                    profileImg.src = "assets/cmc-guides.png"; // Fallback
+                                }
+
+                                if (userSettings.username) {
+                                    usernameText.textContent = userSettings.username;
+                                } else {
+                                    usernameText.textContent = "";
+                                }
+                            } catch (err) {
+                                profileImg.src = "assets/cmc-guides.png"; // Default icon on error
+                                usernameText.textContent = "";
+                            }
+                        });
+                    `;
+                    document.getElementById('sidebar').appendChild(script);
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load the initial sidebar content
+            loadSidebar();
+        });
+    </script>
 </head>
 
 <body>
@@ -58,10 +108,8 @@
         <div></div>
         <div></div>
     </div>
-    <!-- Top Navbar -->
     <div class="navbar"></div>
 
-    <!-- Sidebar -->
     <div class="sidebar" id="sidebar"></div>
 
     <div id="sidebar-overlay"></div>
@@ -74,7 +122,6 @@
         <a class="cta-btn" href="#down">GET STARTED</a>
     </div>
 
-    <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <a href="journey-guides.html" class="nav-item">
             <span class="material-icons botton-nav-icon">play_arrow</span>
@@ -98,16 +145,7 @@
         </a>
     </div>
 
-    <!-- Cards Section -->
     <div class="card-container">
-        <!--<div class="card">
-            <img src="Backgrounds/IMG_4501.gif" alt="Card Image">
-            <div class="card-content">
-                <h3>Card Title</h3>
-                <p>Card Description</p>
-                <button>Learn More</button>
-            </div>test
-        </div>-->
         <a id="down"></a>
         <a class="card" href="journey-guides.html"
             style="background: url('Backgrounds/IMG_4500.jpeg'); background-repeat: no-repeat; background-size: cover;">
@@ -162,7 +200,6 @@
         </a>
     </div>
 
-    <!-- Footer -->
     <div id="footer"></div>
 </body>
 
