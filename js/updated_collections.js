@@ -342,8 +342,8 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "Exnned",
-                    "score": "100M+"
+                    "name": "KaosTheChaos",
+                    "score": "N/A"
                 },
                 {
                     "rank": 2,
@@ -352,8 +352,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Exnned",
+                    "score": "100M+"
                 },
                 {
                     "rank": 4,
@@ -1565,7 +1565,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 10,
-                    "name": "Unknown",
+                    "name": "AK_GAMERR5398",
                     "score": "N/A"
                 }
             ]
