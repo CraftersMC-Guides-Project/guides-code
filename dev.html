@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome - CraftersMC Guides</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #1c1c1c;
+      padding: 10px 20px;
+      border-radius: 10px;
+    }
+    button {
+      background: #ff4444;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar" id="user-bar">
+  <div>Welcome to CraftersMC Guides</div>
+  <div id="user-info"></div>
+</div>
+
+<h1>Main Content Here</h1>
+
+<script>
+  const user = JSON.parse(localStorage.getItem("user"));
+  const infoDiv = document.getElementById("user-info");
+
+  if (!user || !user.token) {
+    window.location.href = "login.html"; // not logged in
+  } else {
+    infoDiv.innerHTML = `
+      Logged in as <b>${user.email}</b>
+      <button onclick="logout()">Logout</button>
+    `;
+  }
+
+  function logout() {
+    localStorage.removeItem("user");
+    location.reload();
+  }
+</script>
+
+</body>
+</html>
