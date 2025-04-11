@@ -1,11 +1,53 @@
-<span class="sidebar-close material-icons" onclick="toggleSidebar()">close</span>
-<img src="../assets/cmc-guides.png" alt="CMC Guides Logo">
-<hr>
-<a class="sidebar-link" href="rank-sellersv2.html">Rank Sellers</a>
-<a class="sidebar-link" href="unicode.html">Unicode</a>
-<a class="sidebar-link" href="journey-guides.html">Guides</a>
-<a class="sidebar-link" href="bankInterestV2.html">Bank Interest Timer (Beta)</a>
-<a class="sidebar-link" href="leaderboards.html">Collection Leaderboards</a>
-<a class="sidebar-link" href="texture-packs.html">Texture Packs</a>
-<a class="sidebar-link" href="https://craftersmc.wiki.gg/wiki/">CraftersMC Wiki</a>
-<a class="sidebar-link" href="https://craftersmc.net/">CraftersMC Website</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sidebar</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+    .sidebar {
+      text-align: center;
+      padding: 20px;
+    }
+    .profile-pic {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #333;
+      margin: 0 auto;
+    }
+    .username {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <img id="sidebarProfile" class="profile-pic" src="server-icon.png" alt="Profile Picture">
+  <div id="sidebarUsername" class="username"></div>
+</div>
+
+<script>
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user && user.email) {
+    const settings = JSON.parse(localStorage.getItem(`userSettings_${user.email}`)) || {};
+    const profileImg = document.getElementById("sidebarProfile");
+    const usernameDisplay = document.getElementById("sidebarUsername");
+
+    if (settings.profilePic) profileImg.src = settings.profilePic;
+    if (settings.username) usernameDisplay.textContent = settings.username;
+  }
+</script>
+
+</body>
+</html>
