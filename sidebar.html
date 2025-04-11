@@ -1,125 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Settings - CraftersMC Guides</title>
-  <style>
-    body {
-      background-color: #111;
-      color: white;
-      font-family: 'Segoe UI', sans-serif;
-      padding: 20px;
-    }
-    .container {
-      max-width: 500px;
-      margin: auto;
-      background-color: #1c1c1c;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px #000;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      background-color: #2a2a2a;
-      border: none;
-      border-radius: 6px;
-      color: white;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      background-color: #ff4444;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #e63c3c;
-    }
-    .preview {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      margin: 10px auto;
-      object-fit: cover;
-      display: block;
-      border: 2px solid #333;
-    }
-  </style>
-</head>
-<body>
-
-<div class="container">
-  <h2>Settings</h2>
-
-  <label>Profile Picture</label>
-  <input type="file" id="profilePicInput" accept="image/*">
-  <img id="previewImg" class="preview" src="server-icon.png" alt="Preview">
-
-  <label>Username</label>
-  <input type="text" id="username" placeholder="Your name">
-
-  <label>Bio</label>
-  <textarea id="bio" rows="3" placeholder="Write something..."></textarea>
-
-  <button onclick="saveSettings()">Save Settings</button>
-</div>
+<span class="sidebar-close material-icons" onclick="toggleSidebar()">close</span>
+<img id="sidebarProfilePic" src="assets/cmc-guides.png" alt="CMC Guides Logo" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 10px auto; display: block;">
+<p id="sidebarUsername" style="text-align: center; font-weight: bold;"></p>
+<hr>
+<a class="sidebar-link" href="rank-sellers.html">Rank Sellers</a>
+<a class="sidebar-link" href="unicode.html">Unicode</a>
+<a class="sidebar-link" href="journey-guides.html">Guides</a>
+<a class="sidebar-link" href="bankInterestV2.html">Bank Interest Timer (Beta)</a>
+<a class="sidebar-link" href="leaderboards.html">Collection Leaderboards</a>
+<a class="sidebar-link" href="https://craftersmc.wiki.gg/wiki/">CraftersMC Wiki</a>
+<a class="sidebar-link" href="https://craftersmc.net/">CraftersMC Website</a>
 
 <script>
   const user = JSON.parse(localStorage.getItem("user"));
   if (user && user.email) {
     const settings = JSON.parse(localStorage.getItem(`userSettings_${user.email}`)) || {};
-    
-    // Inject saved profile picture if available
-    const previewImg = document.getElementById("previewImg");
-    if (settings.profilePic) {
-      previewImg.src = settings.profilePic;
+    const profilePic = settings.profilePic;
+    const username = settings.username;
+
+    if (profilePic) {
+      document.getElementById("sidebarProfilePic").src = profilePic;
     }
 
-    // Inject saved username if available
-    const usernameInput = document.getElementById("username");
-    if (settings.username) {
-      usernameInput.value = settings.username;
+    if (username) {
+      document.getElementById("sidebarUsername").textContent = username;
     }
-
-    // Inject saved bio if available
-    const bioInput = document.getElementById("bio");
-    if (settings.bio) {
-      bioInput.value = settings.bio;
-    }
-  }
-
-  const profilePicInput = document.getElementById("profilePicInput");
-  profilePicInput.addEventListener("change", function () {
-    const file = this.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        document.getElementById("previewImg").src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-
-  function saveSettings() {
-    const updated = {
-      profilePic: document.getElementById("previewImg").src,
-      username: document.getElementById("username").value.trim(),
-      bio: document.getElementById("bio").value.trim(),
-    };
-
-    localStorage.setItem(`userSettings_${user.email}`, JSON.stringify(updated));
-    alert("Settings saved!");
   }
 </script>
-
-</body>
-</html>
