@@ -75,7 +75,8 @@
 
   <button onclick="saveSettings()">Save Settings</button>
 
-  <canvas id="hiddenCanvas" class="hidden-canvas"></canvas>
+  <canvas id="resizeCanvas" class="hidden-canvas"></canvas>
+  <canvas id="squareCanvas" class="hidden-canvas"></canvas>
 </div>
 
 <script>
@@ -93,29 +94,64 @@
   const previewImg = document.getElementById("previewImg");
   const usernameInput = document.getElementById("username");
   const bioInput = document.getElementById("bio");
-  const hiddenCanvas = document.getElementById("hiddenCanvas");
-  const ctx = hiddenCanvas.getContext('2d');
+  const resizeCanvas = document.getElementById("resizeCanvas");
+  const resizeCtx = resizeCanvas.getContext('2d');
+  const squareCanvas = document.getElementById("squareCanvas");
+  const squareCtx = squareCanvas.getContext('2d');
 
   if (saved.profilePic) previewImg.src = saved.profilePic;
   if (saved.username) usernameInput.value = saved.username;
   if (saved.bio) bioInput.value = saved.bio;
 
+  function resizeImage(img) {
+    const maxPixels = 5 * 1024 * 1024; // Target 5 megapixels
+    let width = img.width;
+    let height = img.height;
+    let targetWidth = width;
+    let targetHeight = height;
+    const currentPixels = width * height;
+
+    if (currentPixels > maxPixels) {
+      const ratio = Math.sqrt(maxPixels / currentPixels);
+      targetWidth = Math.round(width * ratio);
+      targetHeight = Math.round(height * ratio);
+    }
+
+    resizeCanvas.width = targetWidth;
+    resizeCanvas.height = targetHeight;
+    resizeCtx.drawImage(img, 0, 0, targetWidth, targetHeight);
+    return resizeCanvas.toDataURL();
+  }
+
+  function makeSquare(dataURL) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = function () {
+        const size = Math.min(img.width, img.height);
+        squareCanvas.width = size;
+        squareCanvas.height = size;
+
+        const offsetX = (size - img.width) / 2;
+        const offsetY = (size - img.height) / 2;
+
+        squareCtx.drawImage(img, offsetX, offsetY, img.width, img.height);
+        const squaredDataURL = squareCanvas.toDataURL();
+        resolve(squaredDataURL);
+      };
+      img.onerror = reject;
+      img.src = dataURL;
+    });
+  }
+
   profilePicInput.addEventListener("change", function () {
     const file = this.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = function (e) {
+      reader.onload = async function (e) {
         const img = new Image();
-        img.onload = function () {
-          const size = Math.min(img.width, img.height);
-          hiddenCanvas.width = size;
-          hiddenCanvas.height = size;
-
-          const offsetX = (size - img.width) / 2;
-          const offsetY = (size - img.height) / 2;
-
-          ctx.drawImage(img, offsetX, offsetY, img.width, img.height);
-          const squaredDataURL = hiddenCanvas.toDataURL();
+        img.onload = async function () {
+          const resizedDataURL = resizeImage(img);
+          const squaredDataURL = await makeSquare(resizedDataURL);
           previewImg.src = squaredDataURL;
         };
         img.src = e.target.result;
@@ -126,7 +162,7 @@
 
   function saveSettings() {
     const updated = {
-      profilePic: previewImg.src, // Save the squared image data URL
+      profilePic: previewImg.src, // Save the processed image data URL
       username: usernameInput.value.trim(),
       bio: bioInput.value.trim(),
     };
