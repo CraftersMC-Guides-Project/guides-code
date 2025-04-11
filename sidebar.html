@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sidebar</title>
+  <title>Settings - CraftersMC Guides</title>
   <style>
     body {
       background-color: #111;
@@ -11,41 +11,113 @@
       font-family: 'Segoe UI', sans-serif;
       padding: 20px;
     }
-    .sidebar {
-      text-align: center;
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background-color: #1c1c1c;
       padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #000;
     }
-    .profile-pic {
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      background-color: #2a2a2a;
+      border: none;
+      border-radius: 6px;
+      color: white;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #ff4444;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #e63c3c;
+    }
+    .preview {
       width: 100px;
       height: 100px;
       border-radius: 50%;
+      margin: 10px auto;
       object-fit: cover;
+      display: block;
       border: 2px solid #333;
-      margin: 0 auto;
-    }
-    .username {
-      margin-top: 10px;
-      font-size: 18px;
-      color: #ccc;
     }
   </style>
 </head>
 <body>
 
-<div class="sidebar">
-  <img id="sidebarProfile" class="profile-pic" src="server-icon.png" alt="Profile Picture">
-  <div id="sidebarUsername" class="username"></div>
+<div class="container">
+  <h2>Settings</h2>
+
+  <label>Profile Picture</label>
+  <input type="file" id="profilePicInput" accept="image/*">
+  <img id="previewImg" class="preview" src="server-icon.png" alt="Preview">
+
+  <label>Username</label>
+  <input type="text" id="username" placeholder="Your name">
+
+  <label>Bio</label>
+  <textarea id="bio" rows="3" placeholder="Write something..."></textarea>
+
+  <button onclick="saveSettings()">Save Settings</button>
 </div>
 
 <script>
   const user = JSON.parse(localStorage.getItem("user"));
   if (user && user.email) {
     const settings = JSON.parse(localStorage.getItem(`userSettings_${user.email}`)) || {};
-    const profileImg = document.getElementById("sidebarProfile");
-    const usernameDisplay = document.getElementById("sidebarUsername");
+    
+    // Inject saved profile picture if available
+    const previewImg = document.getElementById("previewImg");
+    if (settings.profilePic) {
+      previewImg.src = settings.profilePic;
+    }
 
-    if (settings.profilePic) profileImg.src = settings.profilePic;
-    if (settings.username) usernameDisplay.textContent = settings.username;
+    // Inject saved username if available
+    const usernameInput = document.getElementById("username");
+    if (settings.username) {
+      usernameInput.value = settings.username;
+    }
+
+    // Inject saved bio if available
+    const bioInput = document.getElementById("bio");
+    if (settings.bio) {
+      bioInput.value = settings.bio;
+    }
+  }
+
+  const profilePicInput = document.getElementById("profilePicInput");
+  profilePicInput.addEventListener("change", function () {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        document.getElementById("previewImg").src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  function saveSettings() {
+    const updated = {
+      profilePic: document.getElementById("previewImg").src,
+      username: document.getElementById("username").value.trim(),
+      bio: document.getElementById("bio").value.trim(),
+    };
+
+    localStorage.setItem(`userSettings_${user.email}`, JSON.stringify(updated));
+    alert("Settings saved!");
   }
 </script>
 
