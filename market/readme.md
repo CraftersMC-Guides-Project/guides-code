@@ -1,0 +1,1 @@
+market.txt for declaring items, mprices.txt for adding prices to the respective ID, idk what Ss is
