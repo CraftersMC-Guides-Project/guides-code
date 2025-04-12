@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +8,8 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <link rel="stylesheet" href="css/essential.css" />
   <link rel="stylesheet" href="css/market.css" />
-  <script src="js/script.js" defer></script>
+  <script src="js/script.js"></script>
+  <script src="js/market.js"></script>
 </head>
 
 <body>
@@ -17,14 +19,16 @@
   <div id="sidebar-overlay"></div>
   <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
 
-  <div style="margin-top: 80px;"></div>
+  <br><br>
+  <h1>‎ </h1>
+  <h1>‎ </h1>
 
-  <div class="search-container">
-    <input type="text" id="searchBox" placeholder="Search Items..." onkeyup="searchItems()" disabled />
-    <div id="results" class="results-box"></div>
-  </div>
+  <!-- Search box always enabled -->
+  <input type="text" id="searchBox" placeholder="Search Items..." oninput="searchItems()" />
 
-  <h2 class="categories">Categories</h2>
+  <div id="results"></div>
+
+  <div class="categories">Categories</div>
   <div class="divider"></div>
 
   <div class="category-section">
@@ -38,7 +42,7 @@
         <div class="category-name"><p>Mining</p></div>
       </div>
       <div class="category-item" onclick="goToCategory('combat')">
-        <img src="assets/ui-icons/ui_bazaar_category_combat_active.png" alt="combat" />
+        <img src="assets/ui-icons/ui_bazaar_category_combat_active.png" alt="Combat" />
         <div class="category-name"><p>Combat</p></div>
       </div>
       <div class="category-item" onclick="goToCategory('foraging')">
@@ -63,16 +67,20 @@
 
     async function loadItems() {
       try {
-        const response = await fetch('market/market.txt');
+        const response = await fetch('../market/market.txt');
         const text = await response.text();
-        items = text.trim().split('\n').map(line => {
-          const [id, name, picture] = line.split('|');
-          return { id, name, picture };
-        });
-        document.getElementById('searchBox').disabled = false;
-      } catch (e) {
-        console.error('Failed to load items:', e);
-        document.getElementById('results').innerHTML = '<p>Error loading items.</p>';
+
+        // Assuming market.txt has lines like: id|name|picture
+        items = text
+          .trim()
+          .split('\n')
+          .map(line => {
+            const [id, name, picture] = line.split('|');
+            return { id, name, picture };
+          });
+
+      } catch (error) {
+        console.error("Error loading items:", error);
       }
     }
 
@@ -81,15 +89,19 @@
       const resultsDiv = document.getElementById('results');
       resultsDiv.innerHTML = '';
 
-      if (!query) return;
+      // Display loading message until items are available
+      if (items.length === 0) {
+        resultsDiv.innerHTML = '<p>Loading items...</p>';
+      }
 
-      const matched = items.filter(item => item.name.toLowerCase().includes(query));
-      if (matched.length === 0) {
+      const filteredItems = items.filter(item => item.name.toLowerCase().includes(query));
+
+      if (filteredItems.length === 0) {
         resultsDiv.innerHTML = '<p>No results found.</p>';
         return;
       }
 
-      matched.forEach(item => {
+      filteredItems.forEach(item => {
         const div = document.createElement('div');
         div.className = 'result';
         div.innerHTML = `
@@ -97,9 +109,10 @@
           <div class="info">
             <b>${item.name}</b>
             <span>ID: ${item.id}</span>
-          </div>
-        `;
-        div.onclick = () => window.location.href = `item.html?item=${item.id}`;
+          </div>`;
+        div.onclick = () => {
+          window.location.href = `item.html?item=${item.id}`;
+        };
         resultsDiv.appendChild(div);
       });
     }
@@ -110,61 +123,6 @@
 
     loadItems();
   </script>
-
-  <style>
-    .search-container {
-      max-width: 600px;
-      margin: 20px auto;
-      position: relative;
-      padding: 0 10px;
-    }
-
-    #searchBox {
-      width: 100%;
-      padding: 12px 15px;
-      font-size: 16px;
-      border: 1px solid #444;
-      border-radius: 6px;
-      background: #1f1f1f;
-      color: #fff;
-    }
-
-    .results-box {
-      margin-top: 10px;
-    }
-
-    .result {
-      display: flex;
-      align-items: center;
-      background: #2a2a2a;
-      border: 1px solid #444;
-      border-radius: 6px;
-      padding: 10px;
-      margin-bottom: 8px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .result:hover {
-      background: #333;
-    }
-
-    .result img {
-      height: 40px;
-      width: 40px;
-      margin-right: 10px;
-    }
-
-    .info b {
-      color: #fff;
-      display: block;
-    }
-
-    .info span {
-      font-size: 12px;
-      color: #aaa;
-    }
-  </style>
 </body>
-    </html>
-    
+
+</html>
