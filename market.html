@@ -2,127 +2,212 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Market Prices - CraftersMC Guides</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-  <link rel="stylesheet" href="css/essential.css" />
-  <link rel="stylesheet" href="css/market.css" />
-  <script src="js/script.js"></script>
-  <script src="js/market.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Market Prices - CraftersMC Guides</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" href="css/essential.css" />
+    <link rel="stylesheet" href="css/market.css" />
+    <script src="js/script.js"></script>
+    <script src="js/market.js"></script>
+    <style>
+        #results {
+            position: absolute;
+            top: 80px; /* Adjust as needed based on your search box position */
+            left: 0;
+            width: 100%;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-top: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            max-height: 200px; /* Adjust as needed */
+            overflow-y: auto;
+        }
+
+        .result {
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .result:hover {
+            background-color: #eee;
+        }
+
+        .result img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        .info b {
+            display: block;
+        }
+
+        .info span {
+            color: #777;
+            font-size: 0.9em;
+        }
+
+        #results p {
+            padding: 10px;
+            text-align: center;
+            color: #777;
+        }
+    </style>
 </head>
 
 <body>
-  <div id="loader"><div></div><div></div><div></div></div>
-  <div class="navbar"></div>
-  <div class="sidebar" id="sidebar"></div>
-  <div id="sidebar-overlay"></div>
-  <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
-
-  <br><br>
-  <h1>‎ </h1>
-  <h1>‎ </h1>
-
-  <!-- Search box always enabled -->
-  <input type="text" id="searchBox" placeholder="Search Items..." oninput="searchItems()" />
-
-  <div id="results"></div>
-
-  <div class="categories">Categories</div>
-  <div class="divider"></div>
-
-  <div class="category-section">
-    <div class="category-grid">
-      <div class="category-item" onclick="goToCategory('farming')">
-        <img src="assets/ui-icons/ui_bazaar_category_farming_active.png" alt="farming" />
-        <div class="category-name"><p>Farming</p></div>
-      </div>
-      <div class="category-item" onclick="goToCategory('mining')">
-        <img src="assets/ui-icons/ui_bazaar_category_mining_active.png" alt="mining" />
-        <div class="category-name"><p>Mining</p></div>
-      </div>
-      <div class="category-item" onclick="goToCategory('combat')">
-        <img src="assets/ui-icons/ui_bazaar_category_combat_active.png" alt="Combat" />
-        <div class="category-name"><p>Combat</p></div>
-      </div>
-      <div class="category-item" onclick="goToCategory('foraging')">
-        <img src="assets/ui-icons/ui_bazaar_category_foraging_active.png" alt="foraging" />
-        <div class="category-name"><p>Foraging</p></div>
-      </div>
-      <div class="category-item" onclick="goToCategory('miscellaneous')">
-        <img src="assets/ui-icons/ui_bazaar_category_oddities_active.png" alt="miscellaneous" />
-        <div class="category-name"><p>Miscellaneous</p></div>
-      </div>
-      <div class="category-item" onclick="goToCategory('special')">
-        <img src="assets/ui-icons/ui_star_active.png" alt="special" />
-        <div class="category-name"><p>Special</p></div>
-      </div>
+    <div id="loader">
+        <div></div>
+        <div></div>
+        <div></div>
     </div>
-  </div>
+    <div class="navbar"></div>
+    <div class="sidebar" id="sidebar"></div>
+    <div id="sidebar-overlay"></div>
+    <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
 
-  <div id="footer"></div>
+    <br><br>
+    <h1>‎ </h1>
+    <h1>‎ </h1>
 
-  <script>
-    let items = [];
+    <input type="text" id="searchBox" placeholder="Search Items..." oninput="searchItems()" />
 
-    async function loadItems() {
-      try {
-        const response = await fetch('../market/market.txt');
-        const text = await response.text();
+    <div id="results"></div>
 
-        // Assuming market.txt has lines like: id|name|picture
-        items = text
-          .trim()
-          .split('\n')
-          .map(line => {
-            const [id, name, picture] = line.split('|');
-            return { id, name, picture };
-          });
+    <div class="categories">Categories</div>
+    <div class="divider"></div>
 
-      } catch (error) {
-        console.error("Error loading items:", error);
-      }
-    }
+    <div class="category-section">
+        <div class="category-grid">
+            <div class="category-item" onclick="goToCategory('farming')">
+                <img src="assets/ui-icons/ui_bazaar_category_farming_active.png" alt="farming" />
+                <div class="category-name">
+                    <p>Farming</p>
+                </div>
+            </div>
+            <div class="category-item" onclick="goToCategory('mining')">
+                <img src="assets/ui-icons/ui_bazaar_category_mining_active.png" alt="mining" />
+                <div class="category-name">
+                    <p>Mining</p>
+                </div>
+            </div>
+            <div class="category-item" onclick="goToCategory('combat')">
+                <img src="assets/ui-icons/ui_bazaar_category_combat_active.png" alt="Combat" />
+                <div class="category-name">
+                    <p>Combat</p>
+                </div>
+            </div>
+            <div class="category-item" onclick="goToCategory('foraging')">
+                <img src="assets/ui-icons/ui_bazaar_category_foraging_active.png" alt="foraging" />
+                <div class="category-name">
+                    <p>Foraging</p>
+                </div>
+            </div>
+            <div class="category-item" onclick="goToCategory('miscellaneous')">
+                <img src="assets/ui-icons/ui_bazaar_category_oddities_active.png" alt="miscellaneous" />
+                <div class="category-name">
+                    <p>Miscellaneous</p>
+                </div>
+            </div>
+            <div class="category-item" onclick="goToCategory('special')">
+                <img src="assets/ui-icons/ui_star_active.png" alt="special" />
+                <div class="category-name">
+                    <p>Special</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    function searchItems() {
-      const query = document.getElementById('searchBox').value.toLowerCase();
-      const resultsDiv = document.getElementById('results');
-      resultsDiv.innerHTML = '';
+    <div id="footer"></div>
 
-      // Display loading message until items are available
-      if (items.length === 0) {
-        resultsDiv.innerHTML = '<p>Loading items...</p>';
-      }
+    <script>
+        let items = [];
+        let isDataLoaded = false; // Flag to track if data is loaded
 
-      const filteredItems = items.filter(item => item.name.toLowerCase().includes(query));
+        async function loadItems() {
+            try {
+                const response = await fetch('../market/market.txt');
+                if (!response.ok) {
+                    console.error(`HTTP error! status: ${response.status}`);
+                    document.getElementById('results').innerHTML = '<p>Failed to load item data.</p>';
+                    return;
+                }
+                const text = await response.text();
 
-      if (filteredItems.length === 0) {
-        resultsDiv.innerHTML = '<p>No results found.</p>';
-        return;
-      }
+                try {
+                    items = JSON.parse(text);
+                    isDataLoaded = true; // Set flag to true after successful load
+                    // Initial call to searchItems to handle cases where user starts typing before data loads
+                    searchItems();
+                } catch (error) {
+                    console.error("Error parsing market.txt as JSON:", error);
+                    document.getElementById('results').innerHTML = '<p>Error parsing item data.</p>';
+                }
 
-      filteredItems.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'result';
-        div.innerHTML = `
-          <img src="${item.picture}" alt="${item.name}">
+            } catch (error) {
+                console.error("Error fetching market.txt:", error);
+                document.getElementById('results').innerHTML = '<p>Failed to load item data.</p>';
+            } finally {
+                // Hide loader once loading is complete (success or failure)
+                document.getElementById('loader').style.display = 'none';
+            }
+        }
+
+        function searchItems() {
+            const query = document.getElementById('searchBox').value.toLowerCase();
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            if (!isDataLoaded) {
+                resultsDiv.innerHTML = '<p>Loading items...</p>';
+                return;
+            }
+
+            const filteredItems = items.filter(item => item.name.toLowerCase().includes(query));
+
+            if (filteredItems.length === 0 && query.trim() !== '') {
+                resultsDiv.innerHTML = '<p>No results found.</p>';
+                return;
+            }
+
+            // Clear results when the search box is empty
+            if (query.trim() === '') {
+                return;
+            }
+
+            filteredItems.slice(0, 10).forEach(item => { // Limit the number of results
+                const div = document.createElement('div');
+                div.className = 'result';
+                div.innerHTML = `
+          <img src="${item.picture === '-' ? 'assets/ui-icons/unknown_item.png' : item.picture}" alt="${item.name}">
           <div class="info">
             <b>${item.name}</b>
             <span>ID: ${item.id}</span>
           </div>`;
-        div.onclick = () => {
-          window.location.href = `item.html?item=${item.id}`;
-        };
-        resultsDiv.appendChild(div);
-      });
-    }
+                div.onclick = () => {
+                    window.location.href = `item.html?item=${item.id}`;
+                };
+                resultsDiv.appendChild(div);
+            });
+        }
 
-    function goToCategory(category) {
-      window.location.href = `categories.html?cat=${category}`;
-    }
+        function goToCategory(category) {
+            window.location.href = `categories.html?cat=${category}`;
+        }
 
-    loadItems();
-  </script>
+        // Load items when the page loads
+        loadItems();
+
+        // Optional: Clear results when the input loses focus (you might not want this)
+        // document.getElementById('searchBox').addEventListener('blur', () => {
+        //     document.getElementById('results').innerHTML = '';
+        // });
+    </script>
+
 </body>
 
-</html>
+  </html>
