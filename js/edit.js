@@ -1,7 +1,7 @@
 function saveInputs() {
-    let stringValue = document.getElementById('stringInput').value;
-    let numberValue = document.getElementById('numberInput').value;
+    let itemPrice = document.getElementById('priceInput').value;
+    let ID = document.getElementById('idInput').value;
     
-    console.log('String value:', stringValue);
-    console.log('Number value:', numberValue);
+    console.log('ID:', ID);
+    console.log('Price:', itemPrice);
 }
