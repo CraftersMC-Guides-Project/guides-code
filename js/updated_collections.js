@@ -1730,7 +1730,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "Unknown",
+                    "name": "MythicalPanda30",
                     "score": "N/A"
                 },
                 {
@@ -2085,7 +2085,7 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "Darkshadow52195",
-                    "score": "15.8M+"
+                    "score": "19M+"
                 },
                 {
                     "rank": 2,
