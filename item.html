@@ -45,13 +45,19 @@
                     const item = items.find(item => item.id === itemId);
 
                     const pricesMap = new Map();
+                    const npcPricesMap = new Map();
+                    
                     pricesData.split('\n').forEach(line => {
                         const [id, arrayStr] = line.split(':').map(part => part.trim());
                         if (id && arrayStr) {
                             try {
                                 const parsedArray = JSON.parse(arrayStr);
-                                if (Array.isArray(parsedArray) && parsedArray.length === 2) {
+                                if (Array.isArray(parsedArray) && parsedArray.length >= 2) {
                                     pricesMap.set(id, parsedArray[1]);
+                                    // Get NPC price if available (third element in array)
+                                    if (parsedArray.length >= 3) {
+                                        npcPricesMap.set(id, parsedArray[2]);
+                                    }
                                 }
                             } catch (e) {
                                 console.warn(`Invalid JSON format in mprices.txt for ID ${id}:`, e);
@@ -61,14 +67,18 @@
 
                     if (item) {
                         const itemDetailsDiv = document.getElementById('itemDetails');
-                        const price = pricesMap.get(item.id) || item.price || "Unknown";
+                        const marketPrice = pricesMap.get(item.id) || item.price || "N/A";
+                        const npcPrice = npcPricesMap.get(item.id) || "N/A";
 
                         itemDetailsDiv.innerHTML = `
                             <h1>${item.name}</h1>
                             ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
                             ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p>` : ''}
                             <p><strong>ID:</strong> ${item.id}</p>
-                            <p class="price"><strong>Price:</strong> ${formatPrice(price)}</p>
+                            <div class="price-container">
+                                <p class="price"><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p>
+                                <p class="price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>
+                            </div>
                             ${item.description ? `<p><strong>Description:</strong> ${item.description}</p>` : ''}
                             <p><strong>Category:</strong> ${item.category}</p>
                             <div class="attribute-container">
@@ -122,6 +132,9 @@
         }
 
         function formatPrice(price) {
+            if (price === "N/A" || price === "NAN") {
+                return `<span class="price">N/A</span>`;
+            }
             return `<span class="price">${Number(price).toLocaleString()} <img src="img/coin.png" alt="Coin"></span>`;
         }
 
