@@ -82,13 +82,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "Exnned",
-                    "score": "16M+"
+                    "name": "Kingclock683286",
+                    "score": "23M+"
                 },
                 {
                     "rank": 6,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Exnned",
+                    "score": "16M+"
                 },
                 {
                     "rank": 7,
