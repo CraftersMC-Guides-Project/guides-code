@@ -142,6 +142,10 @@
             color: lime;
         }
 
+        .panel.show {
+            display: block;
+        }
+
        
     </style>
 </head>
@@ -262,12 +266,22 @@
                     body: formData
                 });
                 if (res.ok) {
-                    alert("Bug report submitted!");
+                    //alert("Bug report submitted!");
                     document.getElementById("reportForm").reset();
                     preview.innerHTML = "";
                     uploadedFile = null;
+                    panel.classList.add("show");
+                    setTimeout(() => {
+                        panel.classList.remove("show");
+                    }, 3000);
                 } else {
-                    alert("Failed to submit report.");
+                    //alert("Failed to submit report.");
+                    panel.innerHTML = "Failed to submit report.";
+                    panel.style.color = "red";
+                    panel.classList.add("show");
+                    setTimeout(() => {
+                        panel.classList.remove("show");
+                    }, 3000);
                 }
             } catch (err) {
                 alert("Error submitting report.");
