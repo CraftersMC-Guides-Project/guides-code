@@ -1,1 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Report a Bug Hunter</title>
+  <style>
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 40px;
+    }
 
+    form {
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      background: #2c2c2c;
+      border: 1px solid #444;
+      color: #fff;
+      border-radius: 5px;
+    }
+
+    button {
+      background: crimson;
+      color: white;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Report a Bug Hunter</h1>
+  <form id="bugHunterForm">
+    <input type="text" id="report" placeholder="Report Subject (e.g. Player or Incident)" required />
+    <input type="text" id="ign" placeholder="In-Game Name" required />
+    <textarea id="reason" placeholder="Why are you reporting this Bug Hunter?" rows="4" required></textarea>
+    <textarea id="proof" placeholder="Proof / Screenshot Links (comma separated)" rows="3" required></textarea>
+    <button type="submit">Submit Report</button>
+  </form>
+
+  <script>
+    const webhookURL = "https://discord.com/api/webhooks/1361692940933796041/w2cigWcNOTdnUaX4jIBVxbpDqVovWw0qJaEKQ-ZDG6l-E1U83vamW3mumbrbo1FOVVXV";
+
+    document.getElementById("bugHunterForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const report = document.getElementById("report").value;
+      const ign = document.getElementById("ign").value;
+      const reason = document.getElementById("reason").value;
+      const proof = document.getElementById("proof").value;
+
+      const payload = {
+        embeds: [{
+          title: "New Bug Hunter Report",
+          color: 0xff0000,
+          fields: [
+            { name: "Report", value: report, inline: true },
+            { name: "IGN", value: ign, inline: true },
+            { name: "Reason", value: reason },
+            { name: "Proof", value: proof }
+          ],
+          timestamp: new Date().toISOString()
+        }]
+      };
+
+      fetch(webhookURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).then(() => {
+        alert("Bug Hunter report submitted successfully!");
+        document.getElementById("bugHunterForm").reset();
+      }).catch(err => {
+        alert("Error sending the report. Check console.");
+        console.error(err);
+      });
+    });
+  </script>
+</body>
+</html>
