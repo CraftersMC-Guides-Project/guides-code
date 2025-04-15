@@ -1,7 +1,41 @@
+:root {
+    --bg-color: white;
+    --text-color: black;
+    --input-bg: #f0f0f0;
+    --input-text: black;
+    --input-border: #ccc;
+    --input-focus-border: #007bff;
+    --input-focus-shadow: rgba(0, 123, 255, 0.3);
+    --result-bg: #f9f9f9;
+    --result-hover: #e6f0ff;
+    --result-text: black;
+    --highlight-bg: rgba(0, 123, 255, 0.2);
+    --highlight-text: black;
+    --confirm-bg: rgba(255, 255, 255, 0.97);
+    --confirm-text: black;
+}
+
+.dark-mode {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --input-bg: #222;
+    --input-text: white;
+    --input-border: #444;
+    --input-focus-border: #007bff;
+    --input-focus-shadow: rgba(0, 163, 204, 0.5);
+    --result-bg: #222222;
+    --result-hover: #000ada;
+    --result-text: white;
+    --highlight-bg: rgba(0, 123, 255, 1);
+    --highlight-text: white;
+    --confirm-bg: rgba(30, 30, 30, 0.95);
+    --confirm-text: white;
+}
+
 body {
     font-family: Arial, sans-serif;
-    background-color: white;
-    color: black;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     text-align: center;
     margin: 0;
     padding: 0;
@@ -21,18 +55,18 @@ body {
 #searchInput {
     width: 100%;
     padding: 12px 15px;
-    border: 1px solid #444;
+    border: 1px solid var(--input-border);
     font-size: 16px;
-    background-color: #222;
-    color: white;
+    background-color: var(--input-bg);
+    color: var(--input-text);
     border-radius: 8px;
     outline: none;
     box-sizing: border-box;
 }
 
 #searchInput:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 163, 204, 0.5);
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 5px var(--input-focus-shadow);
 }
 
 .results {
@@ -45,7 +79,8 @@ body {
 .result-item {
     width: 80%;
     max-width: 500px;
-    background: #222222;
+    background: var(--result-bg);
+    color: var(--result-text);
     padding: 10px;
     margin: 10px 0;
     border-radius: 18px;
@@ -55,14 +90,13 @@ body {
 }
 
 .result-item:hover {
-    border-color: #fff9fe;
-    background: #000ada;
+    background: var(--result-hover);
 }
 
 .highlight {
-    background-color: rgba(0, 123, 255, 1);
+    background-color: var(--highlight-bg);
     font-weight: bold;
-    color: white;
+    color: var(--highlight-text);
 }
 
 .confirm-box {
@@ -70,13 +104,16 @@ body {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
-    background: rgba(255, 255, 255, 0.0);
-    padding: 20px;
-    box-shadow: 0 0 20px rgba(0, 123, 255, 0.4);
-    border-radius: 10px;
+    transform: translate(-50%, -50%) scale(0.95);
+    background: var(--confirm-bg);
+    color: var(--confirm-text);
+    padding: 30px 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    border-radius: 16px;
     text-align: center;
-    backdrop-filter: blur(10px);
+    max-width: 400px;
+    width: 90%;
+    z-index: 9999;
     opacity: 0;
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
@@ -86,14 +123,25 @@ body {
     transform: translate(-50%, -50%) scale(1);
 }
 
+.confirm-box h2 {
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+.confirm-box p {
+    margin-bottom: 25px;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
 .confirm-box button {
     margin: 10px;
-    padding: 12px 20px;
+    padding: 12px 24px;
     border: none;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 16px;
-    transition: 0.2s;
+    transition: background 0.2s;
 }
 
 .confirm-go {
@@ -106,10 +154,10 @@ body {
 }
 
 .confirm-cancel {
-    background: red;
+    background: #dc3545;
     color: white;
 }
 
 .confirm-cancel:hover {
-    background: darkred;
+    background: #a71d2a;
 }
