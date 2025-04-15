@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Report a Bug Hunter</title>
+  <title>Report a Bug</title>
   <style>
     body {
       background: #121212;
@@ -49,34 +49,34 @@
   </style>
 </head>
 <body>
-  <h1>Report a Bug Hunter</h1>
-  <form id="bugHunterForm">
-    <input type="text" id="report" placeholder="Report Subject (e.g. Player or Incident)" required />
-    <input type="text" id="ign" placeholder="In-Game Name" required />
-    <textarea id="reason" placeholder="Why are you reporting this Bug Hunter?" rows="4" required></textarea>
+  <h1>Report a Bug</h1>
+  <form id="bugReportForm">
+    <input type="text" id="title" placeholder="Bug Title (e.g. Shop not opening)" required />
+    <input type="text" id="ign" placeholder="Your In-Game Name" required />
+    <textarea id="description" placeholder="Describe the bug in detail" rows="4" required></textarea>
     <textarea id="proof" placeholder="Proof / Screenshot Links (comma separated)" rows="3" required></textarea>
-    <button type="submit">Submit Report</button>
+    <button type="submit">Submit Bug Report</button>
   </form>
 
   <script>
     const webhookURL = "https://discord.com/api/webhooks/1361692940933796041/w2cigWcNOTdnUaX4jIBVxbpDqVovWw0qJaEKQ-ZDG6l-E1U83vamW3mumbrbo1FOVVXV";
 
-    document.getElementById("bugHunterForm").addEventListener("submit", function(e) {
+    document.getElementById("bugReportForm").addEventListener("submit", function(e) {
       e.preventDefault();
 
-      const report = document.getElementById("report").value;
+      const title = document.getElementById("title").value;
       const ign = document.getElementById("ign").value;
-      const reason = document.getElementById("reason").value;
+      const description = document.getElementById("description").value;
       const proof = document.getElementById("proof").value;
 
       const payload = {
         embeds: [{
-          title: "New Bug Hunter Report",
+          title: "New Bug Report Submitted",
           color: 0xff0000,
           fields: [
-            { name: "Report", value: report, inline: true },
-            { name: "IGN", value: ign, inline: true },
-            { name: "Reason", value: reason },
+            { name: "Bug Title", value: title, inline: true },
+            { name: "Reported By", value: ign, inline: true },
+            { name: "Description", value: description },
             { name: "Proof", value: proof }
           ],
           timestamp: new Date().toISOString()
@@ -88,8 +88,8 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       }).then(() => {
-        alert("Bug Hunter report submitted successfully!");
-        document.getElementById("bugHunterForm").reset();
+        alert("Bug report submitted successfully!");
+        document.getElementById("bugReportForm").reset();
       }).catch(err => {
         alert("Error sending the report. Check console.");
         console.error(err);
