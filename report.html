@@ -194,7 +194,7 @@
                 timestamp: new Date().toISOString()
             };
 
-            // Upload image to a hosting service and get the image URL (Example: Cloudinary)
+            // If an image is uploaded, include it within the embed
             if (uploadedFile) {
                 try {
                     const imageUrl = await uploadImage(uploadedFile); // Function to upload image to a service
@@ -211,7 +211,7 @@
             const payload = JSON.stringify({ embeds: [embed] });
 
             formData.append("payload_json", payload);
-            if (uploadedFile) formData.append("file", uploadedFile, uploadedFile.name);
+            // Do not append the file directly, since we're including it inside the embed
 
             try {
                 const res = await fetch(webhook, {
@@ -247,5 +247,4 @@
         }
     </script>
 </body>
-    </html>
-                         
+</html>
