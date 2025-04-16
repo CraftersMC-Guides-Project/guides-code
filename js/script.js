@@ -199,7 +199,6 @@ function applyTheme(isDarkMode) {
     categoryItem: document.querySelectorAll(".category-item"),
     searchBox: document.querySelectorAll("#searchBox"),
     searchInput: document.querySelectorAll("#searchInput"),
-    result: document.querySelectorAll(".result"),
     unicodeSections: document.querySelectorAll(".section"),
     sellerLists: document.querySelectorAll(".seller-list"),
     sellerCards: document.querySelectorAll(".seller-card"),
@@ -239,7 +238,6 @@ function applyTheme(isDarkMode) {
     elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "#222222"));
     elementsToStyle.itemContainer.forEach(itemContainer => (itemContainer.style.backgroundColor = "#2222227c"));
     elementsToStyle.itemCard.forEach(itemCard => (itemCard.style.backgroundColor = "#2222227c"));
-    elementsToStyle.result.forEach(result => (result.style.backgroundColor = "#0a0a2a"));
     elementsToStyle.searchBox.forEach(searchBox => (searchBox.style.backgroundColor = "#222", searchBox.style.color = "white"));
     elementsToStyle.searchInput.forEach(searchInput => (searchInput.style.backgroundColor = "#222", searchInput.style.color = "white"));
     elementsToStyle.categoryItem.forEach(categoryItem => (categoryItem.style.backgroundColor = "#2222227c"));
@@ -312,7 +310,6 @@ function applyTheme(isDarkMode) {
     elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "white"));
     elementsToStyle.itemContainer.forEach(itemContainer => (itemContainer.style.backgroundColor = "#ffffff7c"));
     elementsToStyle.itemCard.forEach(itemCard => (itemCard.style.backgroundColor = "#ffffff7c"));
-    elementsToStyle.result.forEach(result => (result.style.backgroundColor = "#ffffff7c"));
     elementsToStyle.searchBox.forEach(searchBox => (searchBox.style.backgroundColor = "transparent", searchBox.style.color = "black"));
     elementsToStyle.searchInput.forEach(searchInput => (searchInput.style.backgroundColor = "transparent", searchInput.style.color = "black"));
     elementsToStyle.categoryItem.forEach(categoryItem => (categoryItem.style.backgroundColor = "#ffffff7c"));
