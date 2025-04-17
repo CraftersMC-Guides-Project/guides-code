@@ -22,7 +22,11 @@
 
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      if (!user || !user.email) return;
+      if (!user || !user.email) {
+        profileImg.src = "assets/cmc-guides.png";
+        usernameText.innerHTML = "";
+        
+      } return;
 
       const userSettings = JSON.parse(localStorage.getItem(`userSettings_${user.email}`)) || {};
 
@@ -35,8 +39,7 @@
       }
     } catch (err) {
       // Use default image and don't show username
-      profileImg.src = "assets/cmc-guides.png";
-      usernameText.innerHTML = "";
+      
     }
   });
 </script>
