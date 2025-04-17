@@ -2165,7 +2165,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 6,
-                    "name": "Unknown",
+                    "name": "sagnikisawesome",
                     "score": "N/A"
                 },
                 {
@@ -2185,8 +2185,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 10,
-                    "name": "sagnikisawesome",
-                    "score": "3M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 }
             ]
         },
@@ -2221,7 +2221,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 6,
-                    "name": "GRAVITY8303",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
