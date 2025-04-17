@@ -2206,23 +2206,23 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
+                    "name": "GRAVITY8303",
+                    "score": "34.2M+"
+                },
+                {
+                    "rank": 4,
                     "name": "Iceberg899",
                     "score": "N/A"
                 },
                 {
-                    "rank": 4,
-                    "name": "Hefty6248",
-                    "score": "N/A"
-                },
-                {
                     "rank": 5,
-                    "name": "Unknown",
+                    "name": "Hefty6248",
                     "score": "N/A"
                 },
                 {
                     "rank": 6,
                     "name": "GRAVITY8303",
-                    "score": "24M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 7,
