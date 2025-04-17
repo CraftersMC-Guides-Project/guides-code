@@ -46,7 +46,7 @@
 
                     const pricesMap = new Map();
                     const npcPricesMap = new Map();
-                    
+
                     pricesData.split('\n').forEach(line => {
                         const [id, arrayStr] = line.split(':').map(part => part.trim());
                         if (id && arrayStr) {
@@ -54,7 +54,6 @@
                                 const parsedArray = JSON.parse(arrayStr);
                                 if (Array.isArray(parsedArray) && parsedArray.length >= 2) {
                                     pricesMap.set(id, parsedArray[1]);
-                                    // Get NPC price if available (third element in array)
                                     if (parsedArray.length >= 3) {
                                         npcPricesMap.set(id, parsedArray[2]);
                                     }
@@ -81,6 +80,8 @@
                             </div>
                             ${item.description ? `<p><strong>Description:</strong> ${item.description}</p>` : ''}
                             <p><strong>Category:</strong> ${item.category}</p>
+                            ${generateNatureBox(item.nature)}
+                            ${generateDemandBox(item.demand)}
                             <div class="attribute-container">
                                 ${generateAttributeBox('Craftable', item.craftable)}
                                 ${generateAttributeBox('Enchantable', item.enchantable)}
@@ -114,21 +115,11 @@
                     rarityDisplay.style.color = 'black';
                     break;
                 case 'uncommon':
-                    rarityDisplay.style.backgroundColor = '';
-                    break;
                 case 'rare':
-                    rarityDisplay.style.backgroundColor = '';
-                    break;
                 case 'epic':
-                    rarityDisplay.style.backgroundColor = '';
-                    break;
                 case 'legendary':
-                    rarityDisplay.style.backgroundColor = '';
-                    rarityDisplay.style.color = '';
-                    break;
                 case 'special':
                     rarityDisplay.style.backgroundColor = '';
-                    rarityDisplay.style.color = '';
                     break;
                 default:
                     rarityDisplay.style.backgroundColor = '';
@@ -148,6 +139,37 @@
                 <div class="attribute-box ${value ? 'yes' : 'no'}">
                     <img src="${value ? 'img/check.png' : 'img/cross.png'}" alt="${value ? 'Yes' : 'No'}">
                     ${label}
+                </div>
+            `;
+        }
+
+        function generateNatureBox(nature) {
+            if (!nature) return '';
+            let color = '';
+            if (nature.includes("STABLE")) color = 'green';
+            else if (nature.includes("UNDERPAID")) color = 'goldenrod';
+            else if (nature.includes("OVERPAID")) color = 'crimson';
+
+            return `
+                <div class="nature-box" style="border: 2px solid ${color}; padding: 8px; border-radius: 8px; margin: 10px 0;">
+                    <strong>Market Nature:</strong> <span style="color:${color}; font-weight: bold;">${nature}</span>
+                </div>
+            `;
+        }
+
+        function generateDemandBox(demand) {
+            if (!demand) return '';
+            const match = demand.match(/\[(\d+)\/10\]/);
+            const score = match ? parseInt(match[1]) : 0;
+            const barWidth = Math.min(score * 10, 100);
+            let color = score >= 7 ? 'limegreen' : score >= 4 ? 'orange' : 'red';
+
+            return `
+                <div class="demand-box" style="margin-bottom: 10px;">
+                    <strong>Demand:</strong> ${demand}
+                    <div style="background-color: #333; height: 10px; border-radius: 4px; overflow: hidden; margin-top: 5px;">
+                        <div style="width: ${barWidth}%; height: 100%; background-color: ${color};"></div>
+                    </div>
                 </div>
             `;
         }
