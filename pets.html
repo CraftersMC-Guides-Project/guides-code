@@ -12,8 +12,8 @@
       position: relative;
       margin: 20px 0;
       display: inline-block;
-      width: 80px;
     }
+
     .rarity-dropdown .selected {
       background-color: #2a2a2a;
       padding: 6px;
@@ -21,24 +21,27 @@
       border-radius: 5px;
       cursor: pointer;
       user-select: none;
-      display: flex;
+      display: inline-flex;
       justify-content: center;
       align-items: center;
     }
+
     .rarity-dropdown .selected img {
       height: 24px;
     }
+
     .rarity-dropdown .options {
       position: absolute;
       top: 100%;
       left: 0;
-      right: 0;
       background-color: #2a2a2a;
       border: 1px solid #444;
       border-radius: 5px;
       display: none;
       z-index: 10;
+      white-space: nowrap;
     }
+
     .rarity-dropdown .options div {
       padding: 5px;
       cursor: pointer;
@@ -46,18 +49,17 @@
       justify-content: center;
       align-items: center;
     }
+
     .rarity-dropdown .options div:hover {
       background-color: #3a3a3a;
     }
 
+    .rarity-dropdown .options img {
+      height: 20px;
+    }
+
     .price-container {
-      background: #181818;
-      color: #ffd700;
-      padding: 8px 12px;
-      margin: 10px 0;
-      border: 1px solid #333;
-      border-radius: 5px;
-      font-size: 18px;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -76,8 +78,6 @@
   <div id="footer"></div>
 
   <script>
-    let globalPetPrices = [];
-
     async function loadPetDetails() {
       const urlParams = new URLSearchParams(window.location.search);
       const petId = urlParams.get('pet');
@@ -90,39 +90,39 @@
           const petPricesData = await petPricesResponse.text();
 
           const pets = JSON.parse(petDetailsData);
-          globalPetPrices = JSON.parse(petPricesData);
-
+          const petPrices = JSON.parse(petPricesData);
+          
           const pet = pets.find(pet => pet.id === petId);
 
           if (pet) {
+            const petPrice = petPrices.find(price => price.petId === petId);
             const petDetailsDiv = document.getElementById('petDetails');
             const initialRarity = pet.rarity[0];
 
             petDetailsDiv.innerHTML = `
               <div class="item-card">
                 <h1>${pet.name}</h1>
-                <img src="${pet.picture}" alt="${pet.name}" id="petImage" class="item-image">
-                
+                <img src="${pet.picture}" alt="${pet.name}" class="item-image">
                 <div class="rarity-dropdown" id="rarityDropdown">
                   <div class="selected" onclick="toggleDropdown()">
                     <img src="/img/rarity/${initialRarity}.webp" alt="${initialRarity}">
                   </div>
                   <div class="options">
                     ${pet.rarity.map(r => `
-                      <div onclick="selectRarity('${pet.id}', '${r}')">
-                        <img src="/img/rarity/${r}.webp" alt="${r}" height="20">
-                      </div>
-                    `).join('')}
+                      <div onclick="selectRarity('${r}', '${pet.id}')">
+                        <img src="/img/rarity/${r}.webp" alt="${r}">
+                      </div>`).join('')}
                   </div>
                 </div>
-
                 <div id="petPrice" class="price-container"></div>
                 <p><strong>Category:</strong> ${pet.category}</p>
                 <p><strong>ID:</strong> ${pet.id}</p>
                 <p><strong>Description:</strong> ${pet.description || 'No description available'}</p>
               </div>
             `;
-            updatePrice(petId, initialRarity);
+
+            window.petPrices = petPrices; // make it accessible globally
+            updatePrice(pet.id, initialRarity);
           } else {
             document.getElementById('petDetails').innerHTML = '<p>Pet not found.</p> <a href="index.html">Back to Home</a>';
           }
@@ -136,35 +136,27 @@
     }
 
     function toggleDropdown() {
-      const options = document.querySelector('.rarity-dropdown .options');
-      options.style.display = options.style.display === 'block' ? 'none' : 'block';
+      const dropdown = document.querySelector('.rarity-dropdown .options');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
     }
 
-    function selectRarity(petId, rarity) {
-      const selected = document.querySelector('.rarity-dropdown .selected');
-      selected.innerHTML = `<img src="/img/rarity/${rarity}.webp" alt="${rarity}">`;
+    function selectRarity(rarity, petId) {
+      const selected = document.querySelector('.rarity-dropdown .selected img');
+      selected.src = `/img/rarity/${rarity}.webp`;
+      selected.alt = rarity;
       document.querySelector('.rarity-dropdown .options').style.display = 'none';
       updatePrice(petId, rarity);
     }
 
     function updatePrice(petId, rarity) {
-      const priceData = globalPetPrices.find(price => price.petId === petId);
-      const price = priceData && priceData[rarity] !== undefined ? priceData[rarity] : 'Not available';
-      document.getElementById('petPrice').innerHTML = `<strong>Price:</strong> ${formatPrice(price)}`;
+      const price = window.petPrices.find(price => price.petId === petId);
+      const selectedPrice = price?.[rarity] ?? 'Price not available';
+      document.getElementById('petPrice').innerHTML = `<strong>Price:</strong> ${formatPrice(selectedPrice)}`;
     }
 
     function formatPrice(price) {
-      return typeof price === 'number'
-        ? `<span style="color:#ffd700">${price.toLocaleString()}</span> coins`
-        : price;
+      return typeof price === 'number' ? price.toLocaleString() + ' coins' : price;
     }
-
-    document.addEventListener('click', function(e) {
-      const dropdown = document.querySelector('.rarity-dropdown');
-      if (!dropdown.contains(e.target)) {
-        document.querySelector('.rarity-dropdown .options').style.display = 'none';
-      }
-    });
 
     loadPetDetails();
   </script>
