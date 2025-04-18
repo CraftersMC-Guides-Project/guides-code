@@ -3,106 +3,90 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pet Info</title>
-  <style>
-    body { font-family: Arial; background: #111; color: #fff; padding: 20px; }
-    .container { max-width: 500px; margin: auto; background: #222; padding: 20px; border-radius: 10px; }
-    img { max-width: 100%; border-radius: 10px; }
-    .rarity-buttons { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
-    .rarity-button {
-      padding: 6px 12px;
-      border: none;
-      border-radius: 8px;
-      background-color: #444;
-      color: white;
-      cursor: pointer;
-      opacity: 0.7;
-    }
-    .rarity-button.active, .rarity-button:hover {
-      background-color: crimson;
-      opacity: 1;
-    }
-    .rarity-button.disabled {
-      background-color: #333;
-      color: #666;
-      pointer-events: none;
-      opacity: 0.4;
-    }
-    .price-box { margin-top: 20px; font-size: 1.2em; }
-  </style>
+  <title>Pets - CraftersMC Guides</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="css/essential.css">
+  <link rel="stylesheet" href="css/item.css">
 </head>
+
 <body>
-  <div class="container" id="petContainer">Loading...</div>
+  <div id="loader"><div></div><div></div><div></div></div>
+  <div class="navbar"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay"></div>
+  <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
+
+  <div class="item-container" id="itemDetails">
+    <p>Loading pet data...</p>
+  </div>
+
+  <div id="footer"></div>
 
   <script>
-    const queryParams = new URLSearchParams(window.location.search);
-    const petId = queryParams.get('pet');
+    async function loadPetDetails() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const petId = urlParams.get('pet');
 
-    const rarities = ["common", "uncommon", "rare", "epic", "legendary"];
-    const rarityEmojis = {
-      common: "⬜",
-      uncommon: "🟩",
-      rare: "🟦",
-      epic: "🟪",
-      legendary: "🟨"
-    };
-
-    let selectedRarity = "common";
-    let petData = null;
-    let priceArray = null;
-
-    async function loadPetData() {
-      const petRes = await fetch('pets.txt');
-      const petList = await petRes.json();
-
-      petData = petList.find(p => p.id == petId);
-      if (!petData) {
-        document.getElementById("petContainer").innerHTML = "Pet not found.";
+      if (!petId) {
+        document.getElementById('itemDetails').innerHTML = '<p>No pet ID specified.</p> <a href="index.html">Back to Home</a>';
         return;
       }
 
-      const priceRes = await fetch('pets-price.txt');
-      const priceList = await priceRes.json();
-      const petPriceData = priceList.find(p => p[0] === petData.name.toLowerCase());
+      try {
+        const res = await fetch('market/pets.txt');
+        const raw = await res.text();
+        const pets = JSON.parse(raw);
+        const pet = pets.find(p => p.id === petId);
 
-      if (petPriceData) priceArray = petPriceData.slice(1);
-      else priceArray = [0, 0, 0, 0, 0];
+        if (!pet) {
+          document.getElementById('itemDetails').innerHTML = '<p>Pet not found.</p> <a href="index.html">Back to Home</a>';
+          return;
+        }
 
-      renderPet();
+        const rarities = ["common", "uncommon", "rare", "epic", "legendary"];
+        const itemDetailsDiv = document.getElementById('itemDetails');
+
+        let buttons = rarities.map((rarity, i) => {
+          const available = pet.price.length > i && pet.price[i] > 0;
+          return `<button class="rarity-btn" data-index="${i}" ${!available ? 'disabled' : ''}>${capitalize(rarity)}</button>`;
+        }).join(' ');
+
+        itemDetailsDiv.innerHTML = `
+          <h1>${pet.name}</h1>
+          ${pet.picture ? `<img src="${pet.picture}" alt="${pet.name}">` : ''}
+          <div class="rarity-buttons">${buttons}</div>
+          <p><strong>ID:</strong> ${pet.id}</p>
+          <p><strong>Category:</strong> ${pet.category}</p>
+          <p><strong>Description:</strong> ${pet.description}</p>
+          <div id="priceDisplay"><p><strong>Price:</strong> ${formatPrice(pet.price[0])}</p></div>
+        `;
+
+        document.querySelectorAll('.rarity-btn').forEach(btn => {
+          btn.addEventListener('click', e => {
+            const index = parseInt(e.target.dataset.index);
+            document.getElementById('priceDisplay').innerHTML =
+              `<p><strong>Price:</strong> ${formatPrice(pet.price[index])}</p>`;
+          });
+        });
+
+      } catch (err) {
+        console.error('Failed to load pets:', err);
+        document.getElementById('itemDetails').innerHTML = '<p>Failed to load pet details.</p> <a href="index.html">Back to Home</a>';
+      }
     }
 
-    function renderPet() {
-      const container = document.getElementById("petContainer");
-      const imgSrc = petData.image;
-
-      let rarityButtons = rarities.map((rarity, index) => {
-        const isAvailable = petData.rarity.includes(rarity);
-        const isActive = rarity === selectedRarity;
-        const className = `rarity-button ${isActive ? 'active' : ''} ${!isAvailable ? 'disabled' : ''}`;
-        return `<button class="${className}" onclick="selectRarity('${rarity}')">${rarityEmojis[rarity]} ${rarity}</button>`;
-      }).join("");
-
-      container.innerHTML = `
-        <h2>${petData.name}</h2>
-        <img src="${imgSrc}" alt="${petData.name}" />
-        <div class="rarity-buttons">${rarityButtons}</div>
-        <div class="price-box">Price: <strong>${formatPrice(selectedRarity)}</strong></div>
-      `;
+    function formatPrice(price) {
+      if (!price || isNaN(price)) return `<span class="price">N/A</span>`;
+      return `<span class="price">${Number(price).toLocaleString()} <img src="img/coin.png" alt="Coin"></span>`;
     }
 
-    function selectRarity(rarity) {
-      if (!petData.rarity.includes(rarity)) return;
-      selectedRarity = rarity;
-      renderPet();
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    function formatPrice(rarity) {
-      const index = rarities.indexOf(rarity);
-      const price = priceArray[index] ?? 0;
-      return price.toLocaleString();
-    }
-
-    loadPetData();
+    loadPetDetails();
   </script>
+
+  <script src="js/script.js"></script>
 </body>
 </html>
