@@ -12,22 +12,22 @@
       position: relative;
       margin: 20px 0;
       display: inline-block;
+      user-select: none;
     }
 
     .rarity-dropdown .selected {
       background-color: #2a2a2a;
-      padding: 6px;
       border: 1px solid #444;
+      padding: 10px;
       border-radius: 5px;
       cursor: pointer;
-      user-select: none;
-      display: inline-flex;
-      justify-content: center;
+      display: flex;
       align-items: center;
+      gap: 10px;
     }
 
     .rarity-dropdown .selected img {
-      height: 24px;
+      height: 32px;
     }
 
     .rarity-dropdown .options {
@@ -40,26 +40,27 @@
       display: none;
       z-index: 10;
       white-space: nowrap;
+      max-height: 180px;
+      overflow-y: auto;
+      padding: 5px;
     }
 
-    .rarity-dropdown .options div {
+    .rarity-dropdown .option {
       padding: 5px;
       cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
-    .rarity-dropdown .options div:hover {
-      background-color: #3a3a3a;
+    .rarity-dropdown .option img {
+      height: 32px;
     }
 
-    .rarity-dropdown .options img {
-      height: 20px;
+    .rarity-dropdown.open .options {
+      display: block;
     }
 
     .price-container {
-      margin-top: 10px;
+      font-size: 18px;
+      margin-bottom: 15px;
     }
   </style>
 </head>
@@ -78,84 +79,90 @@
   <div id="footer"></div>
 
   <script>
+    const rarities = ["common", "uncommon", "rare", "epic", "legendary"];
+
     async function loadPetDetails() {
       const urlParams = new URLSearchParams(window.location.search);
       const petId = urlParams.get('pet');
-      if (petId) {
-        try {
-          const petDetailsResponse = await fetch('market/pets.txt');
-          const petPricesResponse = await fetch('market/pet-prices.txt');
 
-          const petDetailsData = await petDetailsResponse.text();
-          const petPricesData = await petPricesResponse.text();
-
-          const pets = JSON.parse(petDetailsData);
-          const petPrices = JSON.parse(petPricesData);
-          
-          const pet = pets.find(pet => pet.id === petId);
-
-          if (pet) {
-            const petPrice = petPrices.find(price => price.petId === petId);
-            const petDetailsDiv = document.getElementById('petDetails');
-            const initialRarity = pet.rarity[0];
-
-            petDetailsDiv.innerHTML = `
-              <div class="item-card">
-                <h1>${pet.name}</h1>
-                <img src="${pet.picture}" alt="${pet.name}" class="item-image">
-                <div class="rarity-dropdown" id="rarityDropdown">
-                  <div class="selected" onclick="toggleDropdown()">
-                    <img src="/img/rarity/${initialRarity}.webp" alt="${initialRarity}">
-                  </div>
-                  <div class="options">
-                    ${pet.rarity.map(r => `
-                      <div onclick="selectRarity('${r}', '${pet.id}')">
-                        <img src="/img/rarity/${r}.webp" alt="${r}">
-                      </div>`).join('')}
-                  </div>
-                </div>
-                <div id="petPrice" class="price-container"></div>
-                <p><strong>Category:</strong> ${pet.category}</p>
-                <p><strong>ID:</strong> ${pet.id}</p>
-                <p><strong>Description:</strong> ${pet.description || 'No description available'}</p>
-              </div>
-            `;
-
-            window.petPrices = petPrices; // make it accessible globally
-            updatePrice(pet.id, initialRarity);
-          } else {
-            document.getElementById('petDetails').innerHTML = '<p>Pet not found.</p> <a href="index.html">Back to Home</a>';
-          }
-        } catch (error) {
-          console.error('Error loading pet details:', error);
-          document.getElementById('petDetails').innerHTML = '<p>Failed to load pet details.</p> <a href="index.html">Back to Home</a>';
-        }
-      } else {
+      if (!petId) {
         document.getElementById('petDetails').innerHTML = '<p>No pet ID specified.</p> <a href="index.html">Back to Home</a>';
+        return;
+      }
+
+      try {
+        const [petDetailsRes, petPricesRes] = await Promise.all([
+          fetch('market/pets.txt'),
+          fetch('market/pet-prices.txt')
+        ]);
+
+        const pets = JSON.parse(await petDetailsRes.text());
+        const prices = JSON.parse(await petPricesRes.text());
+
+        const pet = pets.find(p => p.id === petId);
+        const priceData = prices.find(p => p.petId === petId);
+
+        if (!pet || !priceData) {
+          document.getElementById('petDetails').innerHTML = '<p>Pet not found.</p> <a href="index.html">Back to Home</a>';
+          return;
+        }
+
+        const petDiv = document.getElementById('petDetails');
+        petDiv.innerHTML = `
+          <div class="item-card">
+            <h1>${pet.name}</h1>
+            <img src="${pet.picture}" alt="${pet.name}" class="item-image">
+
+            <div class="rarity-dropdown" id="rarityDropdown">
+              <div class="selected" onclick="toggleDropdown()">
+                <img src="/img/rarity/common.webp" alt="common">
+              </div>
+              <div class="options">
+                ${pet.rarity.map(r => `
+                  <div class="option" onclick="selectRarity('${pet.id}', '${r}', this)">
+                    <img src="/img/rarity/${r}.webp" alt="${r}">
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div id="petPrice" class="price-container"></div>
+            <p><strong>Category:</strong> ${pet.category}</p>
+            <p><strong>ID:</strong> ${pet.id}</p>
+            <p><strong>Description:</strong> ${pet.description || 'No description available'}</p>
+          </div>
+        `;
+
+        // Set initial price
+        selectRarity(pet.id, "common");
+
+        // Store priceData globally
+        window._currentPriceData = priceData;
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById('petDetails').innerHTML = '<p>Failed to load pet details.</p> <a href="index.html">Back to Home</a>';
       }
     }
 
     function toggleDropdown() {
-      const dropdown = document.querySelector('.rarity-dropdown .options');
-      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+      document.getElementById("rarityDropdown").classList.toggle("open");
     }
 
-    function selectRarity(rarity, petId) {
-      const selected = document.querySelector('.rarity-dropdown .selected img');
-      selected.src = `/img/rarity/${rarity}.webp`;
-      selected.alt = rarity;
-      document.querySelector('.rarity-dropdown .options').style.display = 'none';
-      updatePrice(petId, rarity);
-    }
+    function selectRarity(petId, rarity, el) {
+      const dropdown = document.getElementById("rarityDropdown");
+      const selected = dropdown.querySelector(".selected");
+      selected.innerHTML = `<img src="/img/rarity/${rarity}.webp" alt="${rarity}">`;
+      toggleDropdown();
 
-    function updatePrice(petId, rarity) {
-      const price = window.petPrices.find(price => price.petId === petId);
-      const selectedPrice = price?.[rarity] ?? 'Price not available';
-      document.getElementById('petPrice').innerHTML = `<strong>Price:</strong> ${formatPrice(selectedPrice)}`;
+      const priceData = window._currentPriceData;
+      const price = priceData[rarity] ?? "N/A";
+      document.getElementById("petPrice").innerHTML = `<strong>Price:</strong> ${formatPrice(price)}`;
     }
 
     function formatPrice(price) {
-      return typeof price === 'number' ? price.toLocaleString() + ' coins' : price;
+      if (isNaN(price)) return price;
+      return parseInt(price).toLocaleString() + " coins";
     }
 
     loadPetDetails();
