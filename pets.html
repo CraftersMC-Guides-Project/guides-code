@@ -1,145 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pet Details</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pet Details - CraftersMC Guides</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="css/essential.css">
+  <link rel="stylesheet" href="css/item.css">
   <style>
-    .pet-image img {
-      width: 200px;
-      height: 200px;
-      object-fit: cover;
+    .rarity-dropdown {
+      margin: 15px 0;
+      padding: 10px;
+      font-size: 16px;
+      background-color: #f5f5f5;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
-    #rarity-display {
-      display: flex;
-      align-items: center;
-    }
-    .rarity {
-      width: 30px;
-      height: 30px;
-    }
-    .custom-dropdown {
-      position: relative;
-      display: inline-block;
-    }
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      background-color: #f9f9f9;
-      min-width: 160px;
-      box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-      z-index: 1;
-    }
-    .dropdown-content .dropdown-item {
-      padding: 12px 16px;
-      cursor: pointer;
-    }
-    .custom-dropdown:hover .dropdown-content {
-      display: block;
+    .rarity-dropdown select {
+      padding: 8px;
+      font-size: 16px;
     }
   </style>
 </head>
-<body>
 
-  <div id="petDetails">
+<body>
+  <div id="loader"><div></div><div></div><div></div></div>
+  <div class="navbar"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay"></div>
+  <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
+
+  <div class="item-container" id="petDetails">
     <p>Loading pet details...</p>
   </div>
+
+  <div id="footer"></div>
 
   <script>
     async function loadPetDetails() {
       const urlParams = new URLSearchParams(window.location.search);
       const petId = urlParams.get('pet');
-
       if (petId) {
         try {
-          // Fetch the pets data from the correct directory (make sure this path is correct)
           const response = await fetch('pets/pets.txt');
-          
-          if (!response.ok) {
-            throw new Error(`Failed to fetch pet data: ${response.statusText}`);
-          }
+          const data = await response.text();
 
-          const petData = await response.json();
-
-          // Check if petData is an array of pet objects
-          if (!Array.isArray(petData)) {
-            throw new Error('Invalid pet data format. Expected an array of pet objects.');
-          }
-
-          const pet = petData.find(pet => pet.id === petId);
+          const pets = JSON.parse(data);
+          const pet = pets.find(pet => pet.id === petId);
 
           if (pet) {
             const petDetailsDiv = document.getElementById('petDetails');
-            const petImage = pet.picture || '';
-            const petPrices = pet.price || [0, 0, 0, 0, 0];
-            const rarityList = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
-            
-            let rarityImage = '';
-            let priceForRarity = '';
-
-            // Function to get the image for rarity
-            const getRarityImage = (rarity) => {
-              return `<img class="rarity" src="img/rarity/${rarity}.webp" alt="${rarity}">`;
-            };
-
-            // Update the default rarity image and price based on the first rarity
-            rarityImage = getRarityImage(rarityList[0]);
-            priceForRarity = petPrices[0];
-
-            // Generate the custom dropdown list for rarity
-            let rarityDropdown = `
-              <div class="custom-dropdown">
-                <span>Select Rarity:</span>
-                <div class="dropdown-content">
-                  ${rarityList.map((rarity, index) => {
-                    return `<div class="dropdown-item" data-rarity="${rarity}" data-price="${petPrices[index]}">${rarity.charAt(0).toUpperCase() + rarity.slice(1)}</div>`;
-                  }).join('')}
-                </div>
-              </div>
-            `;
-
-            // Insert the pet details into the petDetailsDiv
             petDetailsDiv.innerHTML = `
-              <h1>${pet.name}</h1>
-              <div class="pet-image">
-                <img src="${petImage}" alt="${pet.name}">
+              <div class="item-card">
+                <h1>${pet.name}</h1>
+                <img src="${pet.picture}" alt="${pet.name}" id="petImage" class="item-image">
+                <div class="rarity-dropdown">
+                  <label for="raritySelect">Select Rarity:</label>
+                  <select id="raritySelect" onchange="updatePrice('${pet.id}')">
+                    ${pet.rarity.map(rarity => `<option value="${rarity}">${capitalizeFirstLetter(rarity)}</option>`).join('')}
+                  </select>
+                </div>
+                <div id="petPrice" class="price-container"></div>
+                <p><strong>Category:</strong> ${pet.category}</p>
+                <p><strong>ID:</strong> ${pet.id}</p>
+                <p><strong>Description:</strong> ${pet.description || 'No description available'}</p>
               </div>
-              <div id="rarity-display">
-                ${rarityImage}
-                <p><strong>Price:</strong> <span id="price-display">${priceForRarity}</span></p>
-              </div>
-              <p><strong>ID:</strong> ${pet.id}</p>
-              <p><strong>Category:</strong> ${pet.category}</p>
-              <p><strong>Description:</strong> ${pet.description}</p>
-              ${rarityDropdown}
             `;
-
-            // Add event listeners for the custom dropdown to update the rarity and price
-            document.querySelectorAll('.dropdown-item').forEach(item => {
-              item.addEventListener('click', function() {
-                const selectedRarity = this.getAttribute('data-rarity');
-                const selectedPrice = this.getAttribute('data-price');
-
-                document.getElementById('rarity-display').innerHTML = `
-                  ${getRarityImage(selectedRarity)}
-                  <p><strong>Price:</strong> <span id="price-display">${selectedPrice}</span></p>
-                `;
-              });
-            });
+            updatePrice(petId);
           } else {
-            throw new Error('Pet not found.');
+            document.getElementById('petDetails').innerHTML = '<p>Pet not found.</p> <a href="index.html">Back to Home</a>';
           }
         } catch (error) {
           console.error('Error loading pet details:', error);
-          document.getElementById('petDetails').innerHTML = `<p>Failed to load pet details: ${error.message}</p>`;
+          document.getElementById('petDetails').innerHTML = '<p>Failed to load pet details.</p> <a href="index.html">Back to Home</a>';
         }
       } else {
-        document.getElementById('petDetails').innerHTML = '<p>No pet ID specified in the URL.</p>';
+        document.getElementById('petDetails').innerHTML = '<p>No pet ID specified.</p> <a href="index.html">Back to Home</a>';
       }
+    }
+
+    function updatePrice(petId) {
+      const pet = getPetById(petId);
+      const selectedRarity = document.getElementById('raritySelect').value;
+      const priceIndex = pet.rarity.indexOf(selectedRarity);
+
+      const price = pet.price[priceIndex] || 'Price not available for this rarity.';
+      document.getElementById('petPrice').innerHTML = `<strong>Price for ${capitalizeFirstLetter(selectedRarity)}:</strong> ${formatPrice(price)}`;
+    }
+
+    function getPetById(petId) {
+      const url = 'pets/pets.txt';
+      return fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          const pets = JSON.parse(data);
+          return pets.find(pet => pet.id === petId);
+        });
+    }
+
+    function formatPrice(price) {
+      return price.toLocaleString() + ' coins';
+    }
+
+    function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
     loadPetDetails();
   </script>
+
+  <script src="js/script.js"></script>
 </body>
 </html>
