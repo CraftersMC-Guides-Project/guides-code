@@ -169,21 +169,22 @@
                 return;
             }
 
-            if (query.trim() === '') return;
+            if (query.trim() === '') {
+                return;
+            }
 
             filteredItems.slice(0, 10).forEach(item => {
-                const priceText = item.price ? `${item.price} coins` : "No price";
                 const div = document.createElement('div');
                 div.className = 'result';
                 div.innerHTML = `
                     <img src="${item.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : item.picture}" alt="${item.name}">
                     <div class="info">
-                        <b>${item.name} - ${priceText}</b>
+                        <b>${item.name} - ${item.price || 'N/A'} coins</b>
                         <span>ID: ${item.id}</span>
-                        ${item.description ? `<div class="description">${item.description}</div>` : ''}
+                        ${item.description ? `<div class="description">${item.description} | Price: ${item.price || 'N/A'} coins</div>` : ''}
                     </div>`;
                 div.onclick = () => {
-                    window.location.href = \`item.html?item=${item.id}\`;
+                    window.location.href = `item.html?item=${item.id}`;
                 };
                 resultsDiv.appendChild(div);
             });
@@ -196,5 +197,5 @@
         loadItems();
     </script>
 </body>
-
-</html>
+                    </html>
+    
