@@ -21,6 +21,12 @@
       border-radius: 5px;
       cursor: pointer;
       user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .rarity-dropdown .selected img {
+      height: 20px;
     }
     .rarity-dropdown .options {
       position: absolute;
@@ -32,13 +38,13 @@
       border-radius: 5px;
       display: none;
       z-index: 10;
-      max-height: 200px;
-      overflow-y: auto;
     }
     .rarity-dropdown .options div {
       padding: 10px;
       cursor: pointer;
-      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     .rarity-dropdown .options div:hover {
       background-color: #3a3a3a;
@@ -98,9 +104,17 @@
                 <img src="${pet.picture}" alt="${pet.name}" id="petImage" class="item-image">
                 
                 <div class="rarity-dropdown" id="rarityDropdown">
-                  <div class="selected" onclick="toggleDropdown()">${capitalizeFirstLetter(initialRarity)}</div>
+                  <div class="selected" onclick="toggleDropdown()">
+                    <img src="/img/rarity/${initialRarity}.webp" alt="${initialRarity}">
+                    ${capitalizeFirstLetter(initialRarity)}
+                  </div>
                   <div class="options">
-                    ${pet.rarity.map(r => `<div onclick="selectRarity('${pet.id}', '${r}')">${capitalizeFirstLetter(r)}</div>`).join('')}
+                    ${pet.rarity.map(r => `
+                      <div onclick="selectRarity('${pet.id}', '${r}')">
+                        <img src="/img/rarity/${r}.webp" alt="${r}" height="20">
+                        ${capitalizeFirstLetter(r)}
+                      </div>
+                    `).join('')}
                   </div>
                 </div>
 
@@ -129,7 +143,8 @@
     }
 
     function selectRarity(petId, rarity) {
-      document.querySelector('.rarity-dropdown .selected').textContent = capitalizeFirstLetter(rarity);
+      const selected = document.querySelector('.rarity-dropdown .selected');
+      selected.innerHTML = `<img src="/img/rarity/${rarity}.webp" alt="${rarity}"> ${capitalizeFirstLetter(rarity)}`;
       document.querySelector('.rarity-dropdown .options').style.display = 'none';
       updatePrice(petId, rarity);
     }
