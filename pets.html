@@ -42,13 +42,19 @@
       const petId = urlParams.get('pet');
       if (petId) {
         try {
-          const response = await fetch('pets/pets.txt');
-          const data = await response.text();
+          const petDetailsResponse = await fetch('pets/pets.txt');
+          const petPricesResponse = await fetch('pets/pet-prices.txt');
 
-          const pets = JSON.parse(data);
+          const petDetailsData = await petDetailsResponse.text();
+          const petPricesData = await petPricesResponse.text();
+
+          const pets = JSON.parse(petDetailsData);
+          const petPrices = JSON.parse(petPricesData);
+          
           const pet = pets.find(pet => pet.id === petId);
 
           if (pet) {
+            const petPrice = petPrices.find(price => price.petId === petId);
             const petDetailsDiv = document.getElementById('petDetails');
             petDetailsDiv.innerHTML = `
               <div class="item-card">
@@ -56,7 +62,7 @@
                 <img src="${pet.picture}" alt="${pet.name}" id="petImage" class="item-image">
                 <div class="rarity-dropdown">
                   <label for="raritySelect">Select Rarity:</label>
-                  <select id="raritySelect" onchange="updatePrice('${pet.id}')">
+                  <select id="raritySelect" onchange="updatePrice('${pet.id}', petPrices)">
                     ${pet.rarity.map(rarity => `<option value="${rarity}">${capitalizeFirstLetter(rarity)}</option>`).join('')}
                   </select>
                 </div>
@@ -66,7 +72,7 @@
                 <p><strong>Description:</strong> ${pet.description || 'No description available'}</p>
               </div>
             `;
-            updatePrice(petId);
+            updatePrice(petId, petPrices);
           } else {
             document.getElementById('petDetails').innerHTML = '<p>Pet not found.</p> <a href="index.html">Back to Home</a>';
           }
@@ -79,23 +85,11 @@
       }
     }
 
-    function updatePrice(petId) {
-      const pet = getPetById(petId);
+    function updatePrice(petId, petPrices) {
       const selectedRarity = document.getElementById('raritySelect').value;
-      const priceIndex = pet.rarity.indexOf(selectedRarity);
-
-      const price = pet.price[priceIndex] || 'Price not available for this rarity.';
-      document.getElementById('petPrice').innerHTML = `<strong>Price for ${capitalizeFirstLetter(selectedRarity)}:</strong> ${formatPrice(price)}`;
-    }
-
-    function getPetById(petId) {
-      const url = 'pets/pets.txt';
-      return fetch(url)
-        .then(response => response.text())
-        .then(data => {
-          const pets = JSON.parse(data);
-          return pets.find(pet => pet.id === petId);
-        });
+      const price = petPrices.find(price => price.petId === petId);
+      const selectedPrice = price[selectedRarity] || 'Price not available for this rarity.';
+      document.getElementById('petPrice').innerHTML = `<strong>Price for ${capitalizeFirstLetter(selectedRarity)}:</strong> ${formatPrice(selectedPrice)}`;
     }
 
     function formatPrice(price) {
