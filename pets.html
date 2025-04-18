@@ -3,10 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pets - CraftersMC Guides</title>
+  <title>Pet Details - CraftersMC Guides</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="css/essential.css">
   <link rel="stylesheet" href="css/item.css">
+  <style>
+    /* Custom styles for the pets page */
+    .custom-dropdown {
+      position: relative;
+      display: inline-block;
+      margin: 20px 0;
+    }
+
+    .custom-dropdown span {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .custom-dropdown .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+
+    .custom-dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .custom-dropdown .dropdown-item {
+      padding: 12px 16px;
+      cursor: pointer;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .custom-dropdown .dropdown-item:hover {
+      background-color: #ddd;
+    }
+
+    #rarity-display {
+      display: flex;
+      align-items: center;
+    }
+
+    #rarity-display img.rarity {
+      width: 40px;
+      height: 40px;
+      margin-right: 10px;
+    }
+
+    .pet-image img {
+      max-width: 300px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    /* Inherited styles from item.css */
+    /* (No changes here, just include item.css as usual) */
+  </style>
 </head>
 
 <body>
@@ -16,8 +72,8 @@
   <div id="sidebar-overlay"></div>
   <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
 
-  <div class="item-container" id="itemDetails">
-    <p>Loading pet data...</p>
+  <div class="item-container" id="petDetails">
+    <p>Loading pet details...</p>
   </div>
 
   <div id="footer"></div>
@@ -27,61 +83,81 @@
       const urlParams = new URLSearchParams(window.location.search);
       const petId = urlParams.get('pet');
 
-      if (!petId) {
-        document.getElementById('itemDetails').innerHTML = '<p>No pet ID specified.</p> <a href="index.html">Back to Home</a>';
-        return;
-      }
+      if (petId) {
+        try {
+          const response = await fetch('pets/pets.txt');
+          const petData = await response.json();
 
-      try {
-        const res = await fetch('market/pets.txt');
-        const raw = await res.text();
-        const pets = JSON.parse(raw);
-        const pet = pets.find(p => p.id === petId);
+          const pet = petData.find(pet => pet.id === petId);
 
-        if (!pet) {
-          document.getElementById('itemDetails').innerHTML = '<p>Pet not found.</p> <a href="index.html">Back to Home</a>';
-          return;
+          if (pet) {
+            const petDetailsDiv = document.getElementById('petDetails');
+            const petImage = pet.picture || '';
+            const petPrices = pet.price || [0, 0, 0, 0, 0];
+            const rarityList = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
+            
+            let rarityImage = '';
+            let priceForRarity = '';
+
+            // Function to get the image for rarity
+            const getRarityImage = (rarity) => {
+              return `<img class="rarity" src="img/rarity/${rarity}.webp" alt="${rarity}">`;
+            };
+
+            // Update the default rarity image and price based on the first rarity
+            rarityImage = getRarityImage(rarityList[0]);
+            priceForRarity = petPrices[0];
+
+            // Generate the custom dropdown list for rarity
+            let rarityDropdown = `
+              <div class="custom-dropdown">
+                <span>Select Rarity:</span>
+                <div class="dropdown-content">
+                  ${rarityList.map((rarity, index) => {
+                    return `<div class="dropdown-item" data-rarity="${rarity}" data-price="${petPrices[index]}">${rarity.charAt(0).toUpperCase() + rarity.slice(1)}</div>`;
+                  }).join('')}
+                </div>
+              </div>
+            `;
+
+            // Insert the pet details into the petDetailsDiv
+            petDetailsDiv.innerHTML = `
+              <h1>${pet.name}</h1>
+              <div class="pet-image">
+                <img src="${petImage}" alt="${pet.name}">
+              </div>
+              <div id="rarity-display">
+                ${rarityImage}
+                <p><strong>Price:</strong> <span id="price-display">${priceForRarity}</span></p>
+              </div>
+              <p><strong>ID:</strong> ${pet.id}</p>
+              <p><strong>Category:</strong> ${pet.category}</p>
+              <p><strong>Description:</strong> ${pet.description}</p>
+              ${rarityDropdown}
+            `;
+
+            // Add event listeners for the custom dropdown to update the rarity and price
+            document.querySelectorAll('.dropdown-item').forEach(item => {
+              item.addEventListener('click', function() {
+                const selectedRarity = this.getAttribute('data-rarity');
+                const selectedPrice = this.getAttribute('data-price');
+
+                document.getElementById('rarity-display').innerHTML = `
+                  ${getRarityImage(selectedRarity)}
+                  <p><strong>Price:</strong> <span id="price-display">${selectedPrice}</span></p>
+                `;
+              });
+            });
+          } else {
+            document.getElementById('petDetails').innerHTML = '<p>Pet not found.</p>';
+          }
+        } catch (error) {
+          console.error('Error loading pet details:', error);
+          document.getElementById('petDetails').innerHTML = '<p>Failed to load pet details.</p>';
         }
-
-        const rarities = ["common", "uncommon", "rare", "epic", "legendary"];
-        const itemDetailsDiv = document.getElementById('itemDetails');
-
-        let buttons = rarities.map((rarity, i) => {
-          const available = pet.price.length > i && pet.price[i] > 0;
-          return `<button class="rarity-btn" data-index="${i}" ${!available ? 'disabled' : ''}>${capitalize(rarity)}</button>`;
-        }).join(' ');
-
-        itemDetailsDiv.innerHTML = `
-          <h1>${pet.name}</h1>
-          ${pet.picture ? `<img src="${pet.picture}" alt="${pet.name}">` : ''}
-          <div class="rarity-buttons">${buttons}</div>
-          <p><strong>ID:</strong> ${pet.id}</p>
-          <p><strong>Category:</strong> ${pet.category}</p>
-          <p><strong>Description:</strong> ${pet.description}</p>
-          <div id="priceDisplay"><p><strong>Price:</strong> ${formatPrice(pet.price[0])}</p></div>
-        `;
-
-        document.querySelectorAll('.rarity-btn').forEach(btn => {
-          btn.addEventListener('click', e => {
-            const index = parseInt(e.target.dataset.index);
-            document.getElementById('priceDisplay').innerHTML =
-              `<p><strong>Price:</strong> ${formatPrice(pet.price[index])}</p>`;
-          });
-        });
-
-      } catch (err) {
-        console.error('Failed to load pets:', err);
-        document.getElementById('itemDetails').innerHTML = '<p>Failed to load pet details.</p> <a href="index.html">Back to Home</a>';
+      } else {
+        document.getElementById('petDetails').innerHTML = '<p>No pet ID specified.</p>';
       }
-    }
-
-    function formatPrice(price) {
-      if (!price || isNaN(price)) return `<span class="price">N/A</span>`;
-      return `<span class="price">${Number(price).toLocaleString()} <img src="img/coin.png" alt="Coin"></span>`;
-    }
-
-    function capitalize(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
     loadPetDetails();
@@ -89,4 +165,5 @@
 
   <script src="js/script.js"></script>
 </body>
-</html>
+  </html>
+  
