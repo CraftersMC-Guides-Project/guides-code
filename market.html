@@ -71,7 +71,7 @@
         <div class="category-grid">
             <div class="category-item" onclick="goToCategory('farming')">
                 <img src="assets/ui-icons/ui_bazaar_category_farming_active.png" alt="farming" class="bz">
-                <div class="category-name" >
+                <div class="category-name">
                     <p>Farming</p>
                 </div>
             </div>
@@ -105,25 +105,25 @@
                     <p>Special</p>
                 </div>
             </div>
-        <div class="category-item" onclick="goToCategory('minion')">
+            <div class="category-item" onclick="goToCategory('minion')">
                 <img src="img/Slime_Minion.png" alt="minion">
                 <div class="category-name">
                     <p>Minion</p>
                 </div>
-        </div>
-        <div class="category-item" onclick="goToCategory('pets')">
+            </div>
+            <div class="category-item" onclick="goToCategory('pets')">
                 <img src="img/Phoenix_Pet.webp" alt="Pets">
                 <div class="category-name">
                     <p>Pets</p>
                 </div>
+            </div>
         </div>
-    </div>
     </div>
     <div id="footer"></div>
 
     <script>
         let items = [];
-        let isDataLoaded = false; // Flag to track if data is loaded
+        let isDataLoaded = false;
 
         async function loadItems() {
             try {
@@ -148,7 +148,6 @@
                 console.error("Error fetching market.txt:", error);
                 document.getElementById('results').innerHTML = '<p>Failed to load item data.</p>';
             } finally {
-                // Hide loader once loading is complete (success or failure)
                 document.getElementById('loader').style.display = 'none';
             }
         }
@@ -170,23 +169,21 @@
                 return;
             }
 
-            // Clear results when the search box is empty
-            if (query.trim() === '') {
-                return;
-            }
+            if (query.trim() === '') return;
 
-            filteredItems.slice(0, 10).forEach(item => { // Limit the number of results
+            filteredItems.slice(0, 10).forEach(item => {
+                const priceText = item.price ? `${item.price} coins` : "No price";
                 const div = document.createElement('div');
                 div.className = 'result';
                 div.innerHTML = `
                     <img src="${item.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : item.picture}" alt="${item.name}">
                     <div class="info">
-                        <b>${item.name}</b>
+                        <b>${item.name} - ${priceText}</b>
                         <span>ID: ${item.id}</span>
                         ${item.description ? `<div class="description">${item.description}</div>` : ''}
                     </div>`;
                 div.onclick = () => {
-                    window.location.href = `item.html?item=${item.id}`;
+                    window.location.href = \`item.html?item=${item.id}\`;
                 };
                 resultsDiv.appendChild(div);
             });
@@ -196,8 +193,8 @@
             window.location.href = `categories.html?cat=${category}`;
         }
 
-        // Load items when the page loads
         loadItems();
     </script>
 </body>
+
 </html>
