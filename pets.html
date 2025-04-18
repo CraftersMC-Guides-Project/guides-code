@@ -9,16 +9,49 @@
   <link rel="stylesheet" href="css/item.css">
   <style>
     .rarity-dropdown {
-      margin: 15px 0;
-      padding: 10px;
-      font-size: 16px;
-      background-color: #f5f5f5;
-      border-radius: 5px;
-      border: 1px solid #ccc;
+      position: relative;
+      margin: 20px 0;
+      display: inline-block;
+      width: 200px;
     }
-    .rarity-dropdown select {
-      padding: 8px;
-      font-size: 16px;
+    .rarity-dropdown .selected {
+      background-color: #2a2a2a;
+      padding: 10px;
+      border: 1px solid #444;
+      border-radius: 5px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .rarity-dropdown .options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background-color: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 5px;
+      display: none;
+      z-index: 10;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .rarity-dropdown .options div {
+      padding: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .rarity-dropdown .options div:hover {
+      background-color: #3a3a3a;
+    }
+
+    .price-container {
+      background: #181818;
+      color: #ffd700;
+      padding: 8px 12px;
+      margin: 10px 0;
+      border: 1px solid #333;
+      border-radius: 5px;
+      font-size: 18px;
     }
   </style>
 </head>
@@ -37,73 +70,95 @@
   <div id="footer"></div>
 
   <script>
-  let globalPetPrices = [];
+    let globalPetPrices = [];
 
-  async function loadPetDetails() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const petId = urlParams.get('pet');
-    if (petId) {
-      try {
-        const petDetailsResponse = await fetch('market/pets.txt');
-        const petPricesResponse = await fetch('market/pet-prices.txt');
+    async function loadPetDetails() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const petId = urlParams.get('pet');
+      if (petId) {
+        try {
+          const petDetailsResponse = await fetch('market/pets.txt');
+          const petPricesResponse = await fetch('market/pet-prices.txt');
 
-        const petDetailsData = await petDetailsResponse.text();
-        const petPricesData = await petPricesResponse.text();
+          const petDetailsData = await petDetailsResponse.text();
+          const petPricesData = await petPricesResponse.text();
 
-        const pets = JSON.parse(petDetailsData);
-        globalPetPrices = JSON.parse(petPricesData); // save globally
+          const pets = JSON.parse(petDetailsData);
+          globalPetPrices = JSON.parse(petPricesData);
 
-        const pet = pets.find(pet => pet.id === petId);
+          const pet = pets.find(pet => pet.id === petId);
 
-        if (pet) {
-          const petDetailsDiv = document.getElementById('petDetails');
-          petDetailsDiv.innerHTML = `
-            <div class="item-card">
-              <h1>${pet.name}</h1>
-              <img src="${pet.picture}" alt="${pet.name}" id="petImage" class="item-image">
-              <div class="rarity-dropdown">
-                <label for="raritySelect">Select Rarity:</label>
-                <select id="raritySelect" onchange="updatePrice('${pet.id}')">
-                  ${pet.rarity.map(rarity => `<option value="${rarity}">${capitalizeFirstLetter(rarity)}</option>`).join('')}
-                </select>
+          if (pet) {
+            const petDetailsDiv = document.getElementById('petDetails');
+            const initialRarity = pet.rarity[0];
+
+            petDetailsDiv.innerHTML = `
+              <div class="item-card">
+                <h1>${pet.name}</h1>
+                <img src="${pet.picture}" alt="${pet.name}" id="petImage" class="item-image">
+                
+                <div class="rarity-dropdown" id="rarityDropdown">
+                  <div class="selected" onclick="toggleDropdown()">${capitalizeFirstLetter(initialRarity)}</div>
+                  <div class="options">
+                    ${pet.rarity.map(r => `<div onclick="selectRarity('${pet.id}', '${r}')">${capitalizeFirstLetter(r)}</div>`).join('')}
+                  </div>
+                </div>
+
+                <div id="petPrice" class="price-container"></div>
+                <p><strong>Category:</strong> ${pet.category}</p>
+                <p><strong>ID:</strong> ${pet.id}</p>
+                <p><strong>Description:</strong> ${pet.description || 'No description available'}</p>
               </div>
-              <div id="petPrice" class="price-container"></div>
-              <p><strong>Category:</strong> ${pet.category}</p>
-              <p><strong>ID:</strong> ${pet.id}</p>
-              <p><strong>Description:</strong> ${pet.description || 'No description available'}</p>
-            </div>
-          `;
-          updatePrice(petId); // initial render
-        } else {
-          document.getElementById('petDetails').innerHTML = '<p>Pet not found.</p> <a href="index.html">Back to Home</a>';
+            `;
+            updatePrice(petId, initialRarity);
+          } else {
+            document.getElementById('petDetails').innerHTML = '<p>Pet not found.</p> <a href="index.html">Back to Home</a>';
+          }
+        } catch (error) {
+          console.error('Error loading pet details:', error);
+          document.getElementById('petDetails').innerHTML = '<p>Failed to load pet details.</p> <a href="index.html">Back to Home</a>';
         }
-      } catch (error) {
-        console.error('Error loading pet details:', error);
-        document.getElementById('petDetails').innerHTML = '<p>Failed to load pet details.</p> <a href="index.html">Back to Home</a>';
+      } else {
+        document.getElementById('petDetails').innerHTML = '<p>No pet ID specified.</p> <a href="index.html">Back to Home</a>';
       }
-    } else {
-      document.getElementById('petDetails').innerHTML = '<p>No pet ID specified.</p> <a href="index.html">Back to Home</a>';
     }
-  }
 
-  function updatePrice(petId) {
-    const selectedRarity = document.getElementById('raritySelect').value;
-    const priceData = globalPetPrices.find(price => price.petId === petId);
-    const selectedPrice = priceData && priceData[selectedRarity] !== undefined ? priceData[selectedRarity] : 'Price not available';
-    document.getElementById('petPrice').innerHTML = `<strong>Price for ${capitalizeFirstLetter(selectedRarity)}:</strong> ${formatPrice(selectedPrice)}`;
-  }
+    function toggleDropdown() {
+      const options = document.querySelector('.rarity-dropdown .options');
+      options.style.display = options.style.display === 'block' ? 'none' : 'block';
+    }
 
-  function formatPrice(price) {
-    return typeof price === 'number' ? price.toLocaleString() + ' coins' : price;
-  }
+    function selectRarity(petId, rarity) {
+      document.querySelector('.rarity-dropdown .selected').textContent = capitalizeFirstLetter(rarity);
+      document.querySelector('.rarity-dropdown .options').style.display = 'none';
+      updatePrice(petId, rarity);
+    }
 
-  function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
+    function updatePrice(petId, rarity) {
+      const priceData = globalPetPrices.find(price => price.petId === petId);
+      const price = priceData && priceData[rarity] !== undefined ? priceData[rarity] : 'Not available';
+      document.getElementById('petPrice').innerHTML = `<strong>Price for ${capitalizeFirstLetter(rarity)}:</strong> ${formatPrice(price)}`;
+    }
 
-  loadPetDetails();
-</script>
+    function formatPrice(price) {
+      return typeof price === 'number'
+        ? `<span style="color:#ffd700">${price.toLocaleString()}</span> coins`
+        : price;
+    }
 
+    function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    document.addEventListener('click', function(e) {
+      const dropdown = document.querySelector('.rarity-dropdown');
+      if (!dropdown.contains(e.target)) {
+        document.querySelector('.rarity-dropdown .options').style.display = 'none';
+      }
+    });
+
+    loadPetDetails();
+  </script>
 
   <script src="js/script.js"></script>
 </body>
