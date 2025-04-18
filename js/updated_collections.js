@@ -2165,7 +2165,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 6,
-                    "name": "Unknown",
+                    "name": "sagnikisawesome",
                     "score": "N/A"
                 },
                 {
@@ -2185,8 +2185,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 10,
-                    "name": "sagnikisawesome",
-                    "score": "3M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 }
             ]
         },
@@ -2206,23 +2206,23 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
+                    "name": "GRAVITY8303",
+                    "score": "34.2M+"
+                },
+                {
+                    "rank": 4,
                     "name": "Iceberg899",
                     "score": "N/A"
                 },
                 {
-                    "rank": 4,
+                    "rank": 5,
                     "name": "Hefty6248",
                     "score": "N/A"
                 },
                 {
-                    "rank": 5,
+                    "rank": 6,
                     "name": "Unknown",
                     "score": "N/A"
-                },
-                {
-                    "rank": 6,
-                    "name": "GRAVITY8303",
-                    "score": "24M+"
                 },
                 {
                     "rank": 7,

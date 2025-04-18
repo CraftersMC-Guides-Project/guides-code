@@ -1,161 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Item Details - CraftersMC Guides</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="css/essential.css">
-    <link rel="stylesheet" href="css/item.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Item Details - CraftersMC Guides</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="css/essential.css">
+  <link rel="stylesheet" href="css/item.css">
 </head>
 
 <body>
-    <div id="loader">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-    <div class="navbar"></div>
-    <div class="sidebar" id="sidebar"></div>
-    <div id="sidebar-overlay"></div>
-    <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
+  <div id="loader"><div></div><div></div><div></div></div>
+  <div class="navbar"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay"></div>
+  <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
 
-    <div class="item-container" id="itemDetails">
-        <p>Loading item details...</p>
-    </div>
-    <div id="footer"></div>
+  <div class="item-container" id="itemDetails">
+    <p>Loading item details...</p>
+  </div>
 
-    <script>
-        async function loadItemDetails() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const itemId = urlParams.get('item');
+  <div id="footer"></div>
 
-            if (itemId) {
-                try {
-                    const [marketRes, pricesRes] = await Promise.all([
-                        fetch('market/market.txt'),
-                        fetch('market/mprices.txt')
-                    ]);
+  <script>
+    async function loadItemDetails() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const itemId = urlParams.get('item');
 
-                    const marketData = await marketRes.text();
-                    const pricesData = await pricesRes.text();
+      if (itemId) {
+        try {
+          const [marketRes, pricesRes] = await Promise.all([
+            fetch('market/market.txt'),
+            fetch('market/mprices.txt')
+          ]);
 
-                    const items = JSON.parse(marketData);
-                    const item = items.find(item => item.id === itemId);
+          const marketData = await marketRes.text();
+          const pricesData = await pricesRes.text();
 
-                    const pricesMap = new Map();
-                    const npcPricesMap = new Map();
-                    
-                    pricesData.split('\n').forEach(line => {
-                        const [id, arrayStr] = line.split(':').map(part => part.trim());
-                        if (id && arrayStr) {
-                            try {
-                                const parsedArray = JSON.parse(arrayStr);
-                                if (Array.isArray(parsedArray) && parsedArray.length >= 2) {
-                                    pricesMap.set(id, parsedArray[1]);
-                                    // Get NPC price if available (third element in array)
-                                    if (parsedArray.length >= 3) {
-                                        npcPricesMap.set(id, parsedArray[2]);
-                                    }
-                                }
-                            } catch (e) {
-                                console.warn(`Invalid JSON format in mprices.txt for ID ${id}:`, e);
-                            }
-                        }
-                    });
+          const items = JSON.parse(marketData);
+          const item = items.find(item => item.id === itemId);
 
-                    if (item) {
-                        const itemDetailsDiv = document.getElementById('itemDetails');
-                        const marketPrice = pricesMap.get(item.id) || item.price || "N/A";
-                        const npcPrice = npcPricesMap.get(item.id) || "N/A";
+          const pricesMap = new Map();
+          const npcPricesMap = new Map();
 
-                        itemDetailsDiv.innerHTML = `
-                            <h1>${item.name}</h1>
-                            ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
-                            ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p>` : ''}
-                            <p><strong>ID:</strong> ${item.id}</p>
-                            <div class="price-container">
-                                <p class="price"><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p>
-                                <p class="price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>
-                            </div>
-                            ${item.description ? `<p><strong>Description:</strong> ${item.description}</p>` : ''}
-                            <p><strong>Category:</strong> ${item.category}</p>
-                            <div class="attribute-container">
-                                ${generateAttributeBox('Craftable', item.craftable)}
-                                ${generateAttributeBox('Enchantable', item.enchantable)}
-                                ${generateAttributeBox('Tradable', item.tradable)}
-                                ${generateAttributeBox('Auctionable', item.auctionable)}
-                                ${generateAttributeBox('Bazaarable', item.bazaarable)}
-                                ${generateAttributeBox('Reforgable', item.reforgable)}
-                            </div>
-                        `;
-
-                        applyRarityBackgroundColor(item.rarity);
-                    } else {
-                        document.getElementById('itemDetails').innerHTML = '<p>Item not found.</p> <a href="index.html">Back to Home</a>';
-                    }
-                } catch (error) {
-                    console.error('Error loading item details:', error);
-                    document.getElementById('itemDetails').innerHTML = '<p>Failed to load item details.</p> <a href="index.html">Back to Home</a>';
+          pricesData.split('\n').forEach(line => {
+            const [id, arrayStr] = line.split(':').map(part => part.trim());
+            if (id && arrayStr) {
+              try {
+                const parsedArray = JSON.parse(arrayStr);
+                if (Array.isArray(parsedArray) && parsedArray.length >= 2) {
+                  pricesMap.set(id, parsedArray[1]);
+                  if (parsedArray.length >= 3) {
+                    npcPricesMap.set(id, parsedArray[2]);
+                  }
                 }
-            } else {
-                document.getElementById('itemDetails').innerHTML = '<p>No item ID specified.</p> <a href="index.html">Back to Home</a>';
+              } catch (e) {
+                console.warn(`Invalid JSON format in mprices.txt for ID ${id}:`, e);
+              }
             }
-        }
+          });
 
-        function applyRarityBackgroundColor(rarity) {
-            const rarityDisplay = document.getElementById('rarityDisplay');
-            if (!rarityDisplay) return;
+          if (item) {
+            const itemDetailsDiv = document.getElementById('itemDetails');
+            const marketPrice = pricesMap.get(item.id) || item.price || "N/A";
+            const npcPrice = npcPricesMap.get(item.id) || "N/A";
 
-            switch (rarity.toLowerCase()) {
-                case 'common':
-                    rarityDisplay.style.backgroundColor = '';
-                    rarityDisplay.style.color = 'black';
-                    break;
-                case 'uncommon':
-                    rarityDisplay.style.backgroundColor = '';
-                    break;
-                case 'rare':
-                    rarityDisplay.style.backgroundColor = '';
-                    break;
-                case 'epic':
-                    rarityDisplay.style.backgroundColor = '';
-                    break;
-                case 'legendary':
-                    rarityDisplay.style.backgroundColor = '';
-                    rarityDisplay.style.color = '';
-                    break;
-                case 'special':
-                    rarityDisplay.style.backgroundColor = '';
-                    rarityDisplay.style.color = '';
-                    break;
-                default:
-                    rarityDisplay.style.backgroundColor = '';
-            }
-        }
-
-        function formatPrice(price) {
-            if (price === "N/A" || price === "NAN") {
-                return `<span class="price">N/A</span>`;
-            }
-            return `<span class="price">${Number(price).toLocaleString()} <img src="img/coin.png" alt="Coin"></span>`;
-        }
-
-        function generateAttributeBox(label, value) {
-            if (value === undefined) return '';
-            return `
-                <div class="attribute-box ${value ? 'yes' : 'no'}">
-                    <img src="${value ? 'img/check.png' : 'img/cross.png'}" alt="${value ? 'Yes' : 'No'}">
-                    ${label}
-                </div>
+            itemDetailsDiv.innerHTML = `
+              <h1>${item.name}</h1>
+              ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
+              ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p>` : ''}
+              <p><strong>ID:</strong> ${item.id}</p>
+              <div class="price-container">
+                <p class="price"><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p>
+                <p class="price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>
+              </div>
+              ${item.description ? `<p><strong>Description:</strong> ${item.description}</p>` : ''}
+              <p><strong>Category:</strong> ${item.category}</p>
+              ${generateNatureBox(item.nature)}
+              ${generateDemandBox(item.demand)}
+              <div class="attribute-container">
+                ${generateAttributeBox('Craftable', item.craftable)}
+                ${generateAttributeBox('Enchantable', item.enchantable)}
+                ${generateAttributeBox('Tradable', item.tradable)}
+                ${generateAttributeBox('Auctionable', item.auctionable)}
+                ${generateAttributeBox('Bazaarable', item.bazaarable)}
+                ${generateAttributeBox('Reforgable', item.reforgable)}
+              </div>
             `;
+
+            applyRarityBackgroundColor(item.rarity);
+          } else {
+            document.getElementById('itemDetails').innerHTML = '<p>Item not found.</p> <a href="index.html">Back to Home</a>';
+          }
+        } catch (error) {
+          console.error('Error loading item details:', error);
+          document.getElementById('itemDetails').innerHTML = '<p>Failed to load item details.</p> <a href="index.html">Back to Home</a>';
         }
+      } else {
+        document.getElementById('itemDetails').innerHTML = '<p>No item ID specified.</p> <a href="index.html">Back to Home</a>';
+      }
+    }
 
-        loadItemDetails();
-    </script>
+    function applyRarityBackgroundColor(rarity) {
+      const rarityDisplay = document.getElementById('rarityDisplay');
+      if (!rarityDisplay) return;
 
-    <script src="js/script.js"></script>
+      switch (rarity.toLowerCase()) {
+        case 'common':
+          rarityDisplay.style.backgroundColor = '';
+          rarityDisplay.style.color = 'black';
+          break;
+        case 'uncommon':
+        case 'rare':
+        case 'epic':
+        case 'legendary':
+        case 'special':
+          rarityDisplay.style.backgroundColor = '';
+          rarityDisplay.style.color = '';
+          break;
+        default:
+          rarityDisplay.style.backgroundColor = '';
+      }
+    }
+
+    function formatPrice(price) {
+      if (price === "N/A" || price === "NAN") {
+        return `<span class="price">N/A</span>`;
+      }
+      return `<span class="price">${Number(price).toLocaleString()} <img src="img/coin.png" alt="Coin"></span>`;
+    }
+
+    function generateAttributeBox(label, value) {
+      if (value === undefined) return '';
+      return `
+        <div class="attribute-box ${value ? 'yes' : 'no'}">
+          <img src="${value ? 'img/check.png' : 'img/cross.png'}" alt="${value ? 'Yes' : 'No'}">
+          ${label}
+        </div>
+      `;
+    }
+
+    function generateNatureBox(nature) {
+      if (!nature) return '';
+      let color = '', bg = '', icon = '';
+
+      if (nature.includes("STABLE")) {
+        color = 'green'; bg = '#e6f4ea'; icon = '✅';
+      } else if (nature.includes("UNDERPAID")) {
+        color = 'goldenrod'; bg = '#fff8e1'; icon = '⚠️';
+      } else if (nature.includes("OVERPAID")) {
+        color = 'crimson'; bg = '#fdecea'; icon = '❌';
+      }
+
+      return `
+        <div class="nature-pill" style="
+          display: inline-block;
+          background: ${bg};
+          color: ${color};
+          font-weight: 600;
+          border-radius: 999px;
+          padding: 6px 14px;
+          font-size: 0.95rem;
+          margin: 10px 0;
+        ">
+          ${icon} Market Nature: ${nature}
+        </div>
+      `;
+    }
+
+    function generateDemandBox(demand) {
+      if (!demand) return '';
+      const match = demand.match(/\[(\d+)\/10\]/);
+      const score = match ? parseInt(match[1]) : 0;
+      const barWidth = Math.min(score * 10, 100);
+      let color = score >= 7 ? 'limegreen' : score >= 4 ? 'orange' : 'red';
+
+      return `
+        <div class="demand-box" style="margin: 15px 0;">
+          <strong>Demand:</strong> ${demand}
+          <div style="
+            background-color: #222;
+            height: 18px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 6px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+          ">
+            <div style="
+              width: ${barWidth}%;
+              height: 100%;
+              background-color: ${color};
+              transition: width 0.3s ease;
+            "></div>
+          </div>
+        </div>
+      `;
+    }
+
+    loadItemDetails();
+  </script>
+
+  <script src="js/script.js"></script>
 </body>
-
 </html>
