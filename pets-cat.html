@@ -57,11 +57,15 @@
                     const itemsHTML = petsData.map(item => {
                         const price = pricesMap.get(item.id) || item.price || "Unknown";
                         return `
-                            <div class="item-card" onclick="window.location.href='item.html?item=${item.id}'">
+                            <div class="item-card" onclick="window.location.href='pets.html?pet=${item.id}'">
                                 <h2>${item.name}</h2>
-                                ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}">` : ''}
-                                <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
-                                <p><strong>Price:</strong> ${formatPrice(price)}</p></div></div>
+                                <div class="main-data">
+                                    ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
+                                    <div class="main-data-val">
+                                        <p><strong>ID:</strong> ${item.id}</p>
+                                        <p><strong>Price:</strong> ${formatPrice(price)}</p>
+                                    </div>
+                                </div>
                                 ${item.description ? `<p>${item.description}</p>` : ''}
                             </div>
                         `;
