@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Minion Details - CraftersMC Guides</title>
+  <title>Item Details - CraftersMC Guides</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="css/essential.css">
   <link rel="stylesheet" href="css/item.css">
@@ -45,37 +45,6 @@
       background-color: #e74c3c;
       color: #fff;
     }
-
-    .price-container {
-      margin-top: 20px;
-      text-align: center;
-      font-size: 28px;
-      color: #f39c12;
-    }
-
-    .price-container .price {
-      font-size: 36px;
-      font-weight: bold;
-    }
-
-    .price-container .price img {
-      width: 30px;
-      vertical-align: middle;
-    }
-
-    .price-container .price span {
-      font-size: 30px;
-    }
-
-    .price-container .price-market {
-      font-size: 32px;
-      color: #e67e22;
-    }
-
-    .price-container .price-npc {
-      font-size: 32px;
-      color: #3498db;
-    }
   </style>
 </head>
 
@@ -99,16 +68,18 @@
 
       if (itemId) {
         try {
-          const [marketRes, pricesRes] = await Promise.all([
+          const [marketRes, pricesRes, minionsRes] = await Promise.all([
             fetch('market/market.txt'),
-            fetch('market/mprices.txt')
+            fetch('market/mprices.txt'),
+            fetch('market/minions.txt')
           ]);
 
           const marketData = await marketRes.text();
           const pricesData = await pricesRes.text();
+          const minionsData = await minionsRes.text();
 
           const items = JSON.parse(marketData);
-          const item = items.find(item => item.id === itemId);
+          const minions = JSON.parse(minionsData);
 
           const pricesMap = new Map();
           const npcPricesMap = new Map();
@@ -130,37 +101,74 @@
             }
           });
 
-          if (item) {
-            const itemDetailsDiv = document.getElementById('itemDetails');
-            const marketPrice = pricesMap.get(item.id) || item.price || "N/A";
-            const npcPrice = npcPricesMap.get(item.id) || "N/A";
+          if (itemId.startsWith('minion')) {
+            const minion = minions.find(minion => minion.id === itemId);
+            if (minion) {
+              const itemDetailsDiv = document.getElementById('itemDetails');
+              const tierPrices = Object.keys(minion.tiers).map(tier => {
+                const price = minion.tiers[tier];
+                return `<p class="price"><strong>Tier ${tier}: </strong>${formatPrice(price)}</p>`;
+              }).join('');
 
-            itemDetailsDiv.innerHTML = `
-              <h1>${item.name}</h1>
-              ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
-              ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p>` : ''}
-              <p><strong>ID:</strong> ${item.id}</p>
-              <div class="price-container">
-                <p class="price price-market"><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p>
-                <p class="price price-npc"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>
-              </div>
-              ${item.description ? `<p><strong>Description:</strong> ${item.description}</p>` : ''}
-              <p><strong>Category:</strong> ${item.category}</p>
-              ${generateNatureBox(item.nature)}
-              ${generateDemandBox(item.demand)}
-              <div class="attribute-container">
-                ${generateAttributeBox('Craftable', item.craftable)}
-                ${generateAttributeBox('Enchantable', item.enchantable)}
-                ${generateAttributeBox('Tradable', item.tradable)}
-                ${generateAttributeBox('Auctionable', item.auctionable)}
-                ${generateAttributeBox('Bazaarable', item.bazaarable)}
-                ${generateAttributeBox('Reforgable', item.reforgable)}
-              </div>
-            `;
+              itemDetailsDiv.innerHTML = `
+                <h1>${minion.name}</h1>
+                ${minion.picture ? `<img src="${minion.picture}" alt="${minion.name}">` : ''}
+                <p><strong>ID:</strong> ${minion.id}</p>
+                <div class="price-container">
+                  ${tierPrices}
+                </div>
+                ${minion.description ? `<p><strong>Description:</strong> ${minion.description}</p>` : ''}
+                <p><strong>Category:</strong> ${minion.category}</p>
+                ${generateNatureBox(minion.nature)}
+                ${generateDemandBox(minion.demand)}
+                <div class="attribute-container">
+                  ${generateAttributeBox('Craftable', minion.craftable)}
+                  ${generateAttributeBox('Enchantable', minion.enchantable)}
+                  ${generateAttributeBox('Tradable', minion.tradable)}
+                  ${generateAttributeBox('Auctionable', minion.auctionable)}
+                  ${generateAttributeBox('Bazaarable', minion.bazaarable)}
+                  ${generateAttributeBox('Reforgable', minion.reforgable)}
+                </div>
+              `;
 
-            applyRarityBackgroundColor(item.rarity);
+              applyRarityBackgroundColor(minion.rarity);
+            } else {
+              document.getElementById('itemDetails').innerHTML = '<p>Minion not found.</p> <a href="index.html">Back to Home</a>';
+            }
           } else {
-            document.getElementById('itemDetails').innerHTML = '<p>Item not found.</p> <a href="index.html">Back to Home</a>';
+            const item = items.find(item => item.id === itemId);
+            if (item) {
+              const itemDetailsDiv = document.getElementById('itemDetails');
+              const marketPrice = pricesMap.get(item.id) || item.price || "N/A";
+              const npcPrice = npcPricesMap.get(item.id) || "N/A";
+
+              itemDetailsDiv.innerHTML = `
+                <h1>${item.name}</h1>
+                ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
+                ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p>` : ''}
+                <p><strong>ID:</strong> ${item.id}</p>
+                <div class="price-container">
+                  <p class="price"><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p>
+                  <p class="price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>
+                </div>
+                ${item.description ? `<p><strong>Description:</strong> ${item.description}</p>` : ''}
+                <p><strong>Category:</strong> ${item.category}</p>
+                ${generateNatureBox(item.nature)}
+                ${generateDemandBox(item.demand)}
+                <div class="attribute-container">
+                  ${generateAttributeBox('Craftable', item.craftable)}
+                  ${generateAttributeBox('Enchantable', item.enchantable)}
+                  ${generateAttributeBox('Tradable', item.tradable)}
+                  ${generateAttributeBox('Auctionable', item.auctionable)}
+                  ${generateAttributeBox('Bazaarable', item.bazaarable)}
+                  ${generateAttributeBox('Reforgable', item.reforgable)}
+                </div>
+              `;
+
+              applyRarityBackgroundColor(item.rarity);
+            } else {
+              document.getElementById('itemDetails').innerHTML = '<p>Item not found.</p> <a href="index.html">Back to Home</a>';
+            }
           }
         } catch (error) {
           console.error('Error loading item details:', error);
