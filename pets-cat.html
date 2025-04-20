@@ -30,32 +30,11 @@
     <script>
         async function loadSpecialPets() {
             try {
-                const [petsRes, pricesRes] = await Promise.all([
-                    fetch('market/pets.txt'),
-                    fetch('market/mprices.txt')
-                ]);
-
+                const petsRes = await fetch('market/pets.txt');
                 const petsData = await petsRes.json();
-                const pricesData = await pricesRes.text();
-
-                const pricesMap = new Map();
-                pricesData.split('\n').forEach(line => {
-                    const [id, arrayStr] = line.split(':').map(part => part.trim());
-                    if (id && arrayStr) {
-                        try {
-                            const parsedArray = JSON.parse(arrayStr);
-                            if (Array.isArray(parsedArray) && parsedArray.length === 2) {
-                                pricesMap.set(id, parsedArray[1]);
-                            }
-                        } catch (e) {
-                            console.warn(`Invalid price format for ID ${id}`, e);
-                        }
-                    }
-                });
 
                 if (petsData.length > 0) {
                     const itemsHTML = petsData.map(item => {
-                        const price = pricesMap.get(item.id) || item.price || "Unknown";
                         return `
                             <div class="item-card" onclick="window.location.href='pets.html?pet=${item.id}'">
                                 <h2>${item.name}</h2>
@@ -63,7 +42,6 @@
                                     ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
                                     <div class="main-data-val">
                                         <p><strong>ID:</strong> ${item.id}</p>
-                                        <p><strong>Price:</strong> ${formatPrice(price)}</p>
                                     </div>
                                 </div>
                                 ${item.description ? `<p>${item.description}</p>` : ''}
@@ -79,10 +57,6 @@
                 console.error('Error loading special pets:', error);
                 document.getElementById('categoryItems').innerHTML = '<p>Failed to load special pets.</p>';
             }
-        }
-
-        function formatPrice(price) {
-            return `${Number(price).toLocaleString()} <img class="coin" src="img/coin.png" alt="Coin">`;
         }
 
         loadSpecialPets();
