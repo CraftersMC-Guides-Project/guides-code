@@ -15,13 +15,13 @@
       --drop-bg-color-option: #333333;
     }
 
-    .rarity-dropdown {
+    .tier-dropdown {
       position: relative;
       margin: 20px 0;
       display: inline-block;
     }
 
-    .rarity-dropdown .selected {
+    .tier-dropdown .selected {
       padding: 6px;
       border-radius: 5px;
       cursor: pointer;
@@ -29,11 +29,10 @@
       display: inline-flex;
       justify-content: center;
       align-items: center;
-      background: var(--drop-bg-color-option);
       font-weight: bold;
     }
 
-    .rarity-dropdown .options {
+    .tier-dropdown .options {
       position: absolute;
       top: 100%;
       left: 0;
@@ -44,18 +43,15 @@
       background-color: var(--drop-bg-color-option);
     }
 
-    .rarity-dropdown .options div {
-      padding: 6px 12px;
+    .tier-dropdown .options div {
+      padding: 5px;
       cursor: pointer;
+      text-align: center;
       transition: transform .2s;
     }
 
-    .rarity-dropdown .options div:hover {
-      transform: scale(1.05);
-    }
-
-    .price-container {
-      margin-top: 10px;
+    .tier-dropdown .options div:hover {
+      transform: scale(1.1);
     }
 
     .item-container {
@@ -80,8 +76,8 @@
   <script>
     async function loadMinionDetails() {
       const urlParams = new URLSearchParams(window.location.search);
-      const minionId = urlParams.get('minion');
-      if (minionId) {
+      const minionId = parseInt(urlParams.get('minion'));
+      if (!isNaN(minionId)) {
         try {
           const minionDetailsResponse = await fetch('market/minions.txt');
           const minionPricesResponse = await fetch('market/minion-prices.txt');
@@ -91,28 +87,25 @@
 
           const minions = JSON.parse(minionDetailsData);
           const minionPrices = JSON.parse(minionPricesData);
-          
+
           const minion = minions.find(m => m.id === minionId);
 
           if (minion) {
             const minionPrice = minionPrices.find(price => price.minionId === minionId);
             const minionDetailsDiv = document.getElementById('minionDetails');
-            const initialTier = 'Tier 1';
-
-            const tierOptions = Array.from({ length: 11 }, (_, i) => `Tier ${i + 1}`);
+            const initialTier = 1;
 
             minionDetailsDiv.innerHTML = `
               <div class="item-card">
                 <h1>${minion.name}</h1>
                 <img src="${minion.picture}" alt="${minion.name}" class="item-image">
-                <div class="rarity-dropdown" id="tierDropdown">
-                  <div class="selected" onclick="toggleDropdown()">${initialTier}</div>
+                <div class="tier-dropdown" id="tierDropdown">
+                  <div class="selected" onclick="toggleDropdown()">Tier ${initialTier}</div>
                   <div class="options">
-                    ${tierOptions.map(tier => `
-                      <div onclick="selectTier('${tier}', '${minion.id}')">${tier}</div>`).join('')}
+                    ${Array.from({ length: 11 }, (_, i) => i + 1).map(t => `
+                      <div onclick="selectTier(${t}, ${minion.id})">Tier ${t}</div>`).join('')}
                   </div>
                 </div>
-                <div id="minionPrice" class="price-container"></div>
                 <p><strong>Category:</strong> ${minion.category}</p>
                 <p><strong>ID:</strong> ${minion.id}</p>
                 <p><strong>Description:</strong> ${minion.description || 'No description available'}</p>
@@ -120,7 +113,6 @@
             `;
 
             window.minionPrices = minionPrices;
-            updatePrice(minion.id, initialTier);
           } else {
             document.getElementById('minionDetails').innerHTML = '<p>Minion not found.</p> <a href="index.html">Back to Home</a>';
           }
@@ -134,25 +126,13 @@
     }
 
     function toggleDropdown() {
-      const dropdown = document.querySelector('.rarity-dropdown .options');
+      const dropdown = document.querySelector('.tier-dropdown .options');
       dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
     }
 
     function selectTier(tier, minionId) {
-      const selected = document.querySelector('.rarity-dropdown .selected');
-      selected.textContent = tier;
-      document.querySelector('.rarity-dropdown .options').style.display = 'none';
-      updatePrice(minionId, tier);
-    }
-
-    function updatePrice(minionId, tier) {
-      const price = window.minionPrices.find(price => price.minionId === minionId);
-      const selectedPrice = price?.[tier] ?? 'Price not available';
-      document.getElementById('minionPrice').innerHTML = `<strong>Price:</strong> ${formatPrice(selectedPrice)}`;
-    }
-
-    function formatPrice(price) {
-      return typeof price === 'number' ? price.toLocaleString() + ' coins' : price;
+      document.querySelector('.tier-dropdown .selected').textContent = `Tier ${tier}`;
+      document.querySelector('.tier-dropdown .options').style.display = 'none';
     }
 
     loadMinionDetails();
@@ -161,4 +141,3 @@
   <script src="js/script.js"></script>
 </body>
 </html>
-
