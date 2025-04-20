@@ -86,7 +86,7 @@
   <script>
     async function loadItemDetails() {
       const urlParams = new URLSearchParams(window.location.search);
-      const minionId = urlParams.get('minion');  // Now it checks for 'minion' instead of 'item'
+      const minionId = urlParams.get('minion');  // Checks for 'minion' in the query
 
       if (minionId) {
         try {
@@ -153,7 +153,7 @@
               </div>
             `;
 
-            applyRarityBackgroundColor(minion.rarity);
+            applyRarityBackgroundColor(minion.rarity); // Even if no rarity is there, this function will do nothing.
           } else {
             document.getElementById('itemDetails').innerHTML = '<p>Minion not found.</p> <a href="index.html">Back to Home</a>';
           }
@@ -186,15 +186,18 @@
     }
 
     function applyRarityBackgroundColor(rarity) {
-      const rarityClassMap = {
-        common: 'rarity-common',
-        uncommon: 'rarity-uncommon',
-        rare: 'rarity-rare',
-        epic: 'rarity-epic',
-        legendary: 'rarity-legendary'
-      };
-      const rarityClass = rarityClassMap[rarity] || '';
-      document.querySelector('h1').classList.add(rarityClass);
+      // If no rarity is specified, skip setting the class
+      if (rarity) {
+        const rarityClassMap = {
+          common: 'rarity-common',
+          uncommon: 'rarity-uncommon',
+          rare: 'rarity-rare',
+          epic: 'rarity-epic',
+          legendary: 'rarity-legendary'
+        };
+        const rarityClass = rarityClassMap[rarity] || '';
+        document.querySelector('h1').classList.add(rarityClass);
+      }
     }
 
     // Call the loadItemDetails function when the page loads
