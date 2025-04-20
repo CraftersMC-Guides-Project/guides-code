@@ -4,52 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Minion Details - CraftersMC Guides</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="css/essential.css">
   <link rel="stylesheet" href="css/item.css">
   <style>
-    :root {
-      --drop-bg-color-option: #ffffff;
-    }
-    .dark-mode {
-      --drop-bg-color-option: #333333;
-    }
-
-    .rarity-dropdown {
-      position: relative;
-      margin: 20px 0;
-      display: inline-block;
-    }
-
-    .rarity-dropdown .selected {
-      padding: 6px 12px;
-      border-radius: 6px;
-      background: #eee;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .rarity-dropdown .options {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      display: none;
-      border-radius: 6px;
-      background: var(--drop-bg-color-option);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-      z-index: 999;
-    }
-
-    .rarity-dropdown .options div {
-      padding: 8px 12px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .rarity-dropdown .options div:hover {
-      background: #ccc;
-    }
-
     .item-container {
       margin: 40px auto;
       max-width: 800px;
@@ -69,118 +26,86 @@
       margin-bottom: 15px;
     }
 
-    .price-container {
+    .rarity-dropdown {
       margin: 15px 0;
     }
 
-    .price {
-      font-weight: bold;
-      font-size: 1.3rem;
-      color: #FFD700;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
+    .rarity-dropdown select {
+      padding: 8px;
+      font-size: 1rem;
+      border-radius: 6px;
+      background: #eee;
     }
 
-    .price img {
-      width: 18px;
-      height: 18px;
+    .price {
+      margin-top: 15px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: gold;
     }
   </style>
 </head>
 <body>
-  <div id="loader"><div></div><div></div><div></div></div>
-  <div class="navbar"></div>
-  <div class="sidebar" id="sidebar"></div>
-  <div id="sidebar-overlay"></div>
-  <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
-
-  <div class="item-container" id="minionDetails">
-    <p>Loading minion details...</p>
-  </div>
-
-  <div id="footer"></div>
+  <div class="item-container" id="minionDetails">Loading...</div>
 
   <script>
-    async function loadMinionDetails() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const minionId = urlParams.get('minion');
-      if (!minionId) {
-        document.getElementById('minionDetails').innerHTML = '<p>No minion ID specified.</p>';
-        return;
-      }
+    async function loadMinion() {
+      const params = new URLSearchParams(location.search);
+      const minionId = params.get("minion");
+      if (!minionId) return document.getElementById("minionDetails").innerHTML = "<p>No minion ID specified in URL.</p>";
 
       try {
-        const [minionRes, priceRes] = await Promise.all([
-          fetch('market/minions.txt'),
-          fetch('market/minion-prices.txt')
+        const [minionData, priceData] = await Promise.all([
+          fetch("market/minions.txt").then(res => res.text()),
+          fetch("market/minion-prices.txt").then(res => res.text())
         ]);
 
-        const minions = JSON.parse(await minionRes.text());
-        const prices = JSON.parse(await priceRes.text());
+        const minions = JSON.parse(minionData);
+        const prices = JSON.parse(priceData);
+        const minion = minions.find(m => m.id == minionId);
+        const priceObj = prices.find(p => p.minionId == minionId);
 
-        const minion = minions.find(m => m.id === parseInt(minionId));
-        const priceObj = prices.find(p => p.minionId === parseInt(minionId));
+        if (!minion) return document.getElementById("minionDetails").innerHTML = "<p>Minion not found.</p>";
 
-        if (!minion) {
-          document.getElementById('minionDetails').innerHTML = '<p>Minion not found.</p>';
-          return;
-        }
+        const tiers = Object.keys(priceObj?.prices || {});
+        const defaultTier = tiers[0] || "tier1";
 
-        window.priceMap = priceObj?.prices || {};
+        const tierOptions = tiers.map(t => `<option value="${t}">${t}</option>`).join("");
 
-        const defaultTier = 'tier1';
-        const minionHTML = `
+        document.getElementById("minionDetails").innerHTML = `
           <div class="item-card">
             <h1>${minion.name}</h1>
-            <img src="${minion.picture}" alt="${minion.name}" class="item-image">
-
-            <div class="rarity-dropdown" id="tierDropdown">
-              <div class="selected" onclick="toggleDropdown()"><span>${defaultTier}</span></div>
-              <div class="options">
-                ${Array.from({ length: 11 }, (_, i) => `<div onclick="selectTier('tier${i + 1}')">tier${i + 1}</div>`).join('')}
-              </div>
+            <img src="${minion.picture}" alt="${minion.name}" class="item-image" />
+            <div class="rarity-dropdown">
+              <label for="tierSelect">Select Tier:</label>
+              <select id="tierSelect">${tierOptions}</select>
             </div>
-
-            <div id="minionPrice" class="price-container"></div>
-
+            <div class="price" id="priceText"></div>
             <p><strong>Category:</strong> ${minion.category}</p>
+            <p><strong>Description:</strong> ${minion.description || "No description."}</p>
             <p><strong>ID:</strong> ${minion.id}</p>
-            <p><strong>Description:</strong> ${minion.description || 'No description available.'}</p>
           </div>
         `;
 
-        document.getElementById('minionDetails').innerHTML = minionHTML;
-        updatePrice(defaultTier);
+        const priceText = document.getElementById("priceText");
+        const tierSelect = document.getElementById("tierSelect");
+
+        function updatePrice() {
+          const tier = tierSelect.value;
+          const price = priceObj?.prices[tier] ?? "N/A";
+          priceText.textContent = `Price: ${price} coins`;
+        }
+
+        tierSelect.addEventListener("change", updatePrice);
+        updatePrice();
+
       } catch (err) {
         console.error(err);
-        document.getElementById('minionDetails').innerHTML = '<p>Failed to load minion data.</p>';
+        document.getElementById("minionDetails").innerHTML = "<p>Failed to load minion data.</p>";
       }
     }
 
-    function toggleDropdown() {
-      const options = document.querySelector('.rarity-dropdown .options');
-      options.style.display = options.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function selectTier(tier) {
-      document.querySelector('.rarity-dropdown .selected span').textContent = tier;
-      document.querySelector('.rarity-dropdown .options').style.display = 'none';
-      updatePrice(tier);
-    }
-
-    function updatePrice(tier) {
-      const price = window.priceMap[tier];
-      const container = document.getElementById('minionPrice');
-      if (price !== undefined) {
-        container.innerHTML = `<p class="price">${price.toLocaleString()} <img src="img/coin.png" alt="Coins"></p>`;
-      } else {
-        container.innerHTML = `<p class="price">Price not available</p>`;
-      }
-    }
-
-    window.addEventListener('DOMContentLoaded', loadMinionDetails);
+    loadMinion();
   </script>
 </body>
 </html>
