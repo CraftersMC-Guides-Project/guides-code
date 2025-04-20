@@ -1,207 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minion Details</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Minion Details - CraftersMC Guides</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="css/essential.css">
+  <link rel="stylesheet" href="css/item.css">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      color: #333;
-      margin: 0;
-      padding: 0;
+
+    :root {
+      --drop-bg-color-option: #ffffff;
+    }
+    .dark-mode {
+      --drop-bg-color-option: #333333;
     }
 
-    h1 {
-      color: #d9534f;
+    .rarity-dropdown {
+      position: relative;
+      margin: 20px 0;
+      display: inline-block;
     }
 
-    .container {
-      width: 80%;
-      margin: 0 auto;
-      padding: 20px;
+    .rarity-dropdown .selected {
+      padding: 6px;
+      border-radius: 5px;
+      cursor: pointer;
+      user-select: none;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .rarity-dropdown .selected img {
+      height: 24px;
+    }
+
+    .rarity-dropdown .options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      border-radius: 5px;
+      display: none;
+      z-index: 10;
+      white-space: nowrap;
+      background-color: var(--drop-bg-color-option);
+    }
+
+    .rarity-dropdown .options div {
+      padding: 5px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform .2s;
+      z-index: 999999999999999999999999999999999999999;
+    }
+
+    .rarity-dropdown .options div:hover {
+      transform: scale(1.1);
     }
 
     .price-container {
-      background-color: #e7e7e7;
-      padding: 15px;
-      border-radius: 5px;
-      margin-bottom: 20px;
+      margin-top: 10px;
     }
 
-    .price {
-      font-weight: bold;
-      color: #5bc0de;
-    }
-
-    .attribute-container {
-      margin-top: 20px;
-    }
-
-    .attribute-box {
-      display: inline-block;
-      width: 30%;
-      background-color: #d9534f;
-      padding: 10px;
-      margin: 5px;
-      color: white;
-      text-align: center;
-      border-radius: 5px;
-    }
-
-    .attribute-box span {
-      display: block;
-    }
-
-    .rarity-common { background-color: #A9A9A9; }
-    .rarity-uncommon { background-color: #28a745; }
-    .rarity-rare { background-color: #007bff; }
-    .rarity-epic { background-color: #6f42c1; }
-    .rarity-legendary { background-color: #d39e00; }
-
-    .back-link {
-      margin-top: 20px;
-      display: block;
-      color: #007bff;
-      text-decoration: none;
-    }
-
-    .back-link:hover {
-      text-decoration: underline;
-    }
-
-    img {
-      max-width: 100%;
-      height: auto;
+    .item-container {
+      margin-bottom: 35px;
     }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <div id="itemDetails"></div>
-    <a class="back-link" href="index.html">Back to Home</a>
+  <div id="loader"><div></div><div></div><div></div></div>
+  <div class="navbar"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay"></div>
+  <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
+
+  <div class="item-container" id="minionDetails">
+    <p>Loading minion details...</p>
   </div>
 
-  <script>
-    async function loadItemDetails() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const minionId = urlParams.get('minion');  // Checks for 'minion' in the query
+  <div id="footer"></div>
 
+  <script>
+    async function loadMinionDetails() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const minionId = urlParams.get('minion');
       if (minionId) {
         try {
-          const [marketRes, pricesRes, minionsRes] = await Promise.all([
-            fetch('market/market.txt'),
-            fetch('market/mprices.txt'),
-            fetch('market/minions.txt')
-          ]);
+          const minionDetailsResponse = await fetch('market/minions.txt');
+          const minionPricesResponse = await fetch('market/minion-prices.txt');
 
-          const marketData = await marketRes.text();
-          const pricesData = await pricesRes.text();
-          const minionsData = await minionsRes.text();
+          const minionDetailsData = await minionDetailsResponse.text();
+          const minionPricesData = await minionPricesResponse.text();
 
-          const items = JSON.parse(marketData);
-          const minions = JSON.parse(minionsData);
+          const minions = JSON.parse(minionDetailsData);
+          const minionPrices = JSON.parse(minionPricesData);
+          
+          const minion = minions.find(minion => minion.id === parseInt(minionId));
 
-          const pricesMap = new Map();
-          const npcPricesMap = new Map();
-
-          pricesData.split('\n').forEach(line => {
-            const [id, arrayStr] = line.split(':').map(part => part.trim());
-            if (id && arrayStr) {
-              try {
-                const parsedArray = JSON.parse(arrayStr);
-                if (Array.isArray(parsedArray) && parsedArray.length >= 2) {
-                  pricesMap.set(id, parsedArray[1]);
-                  if (parsedArray.length >= 3) {
-                    npcPricesMap.set(id, parsedArray[2]);
-                  }
-                }
-              } catch (e) {
-                console.warn(`Invalid JSON format in mprices.txt for ID ${id}:`, e);
-              }
-            }
-          });
-
-          // Check if the URL is for a minion
-          const minion = minions.find(minion => minion.id === minionId);
           if (minion) {
-            const itemDetailsDiv = document.getElementById('itemDetails');
-            const tierPrices = Object.keys(minion.tiers).map(tier => {
-              const price = minion.tiers[tier];
-              return `<p class="price"><strong>Tier ${tier}: </strong>${formatPrice(price)}</p>`;
-            }).join('');
+            const minionPrice = minionPrices.find(price => price.minionId === parseInt(minionId));
+            const minionDetailsDiv = document.getElementById('minionDetails');
+            const initialTier = 'tier1'; // Default to tier1
 
-            itemDetailsDiv.innerHTML = `
-              <h1>${minion.name}</h1>
-              ${minion.picture ? `<img src="${minion.picture}" alt="${minion.name}">` : ''}
-              <p><strong>ID:</strong> ${minion.id}</p>
-              <div class="price-container">
-                ${tierPrices}
-              </div>
-              ${minion.description ? `<p><strong>Description:</strong> ${minion.description}</p>` : ''}
-              <p><strong>Category:</strong> ${minion.category}</p>
-              ${generateNatureBox(minion.nature)}
-              ${generateDemandBox(minion.demand)}
-              <div class="attribute-container">
-                ${generateAttributeBox('Craftable', minion.craftable)}
-                ${generateAttributeBox('Enchantable', minion.enchantable)}
-                ${generateAttributeBox('Tradable', minion.tradable)}
-                ${generateAttributeBox('Auctionable', minion.auctionable)}
-                ${generateAttributeBox('Bazaarable', minion.bazaarable)}
-                ${generateAttributeBox('Reforgable', minion.reforgable)}
+            minionDetailsDiv.innerHTML = `
+              <div class="item-card">
+                <h1>${minion.name}</h1>
+                <img src="${minion.picture}" alt="${minion.name}" class="item-image">
+                <div class="rarity-dropdown" id="tierDropdown">
+                  <div class="selected" onclick="toggleDropdown()">
+                    <span>${initialTier}</span>
+                  </div>
+                  <div class="options">
+                    ${[...Array(11).keys()].map(i => {
+                      const tier = `tier${i + 1}`;
+                      return `
+                        <div onclick="selectTier('${tier}', '${minion.id}')">
+                          <span>${tier}</span>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+                <div id="minionPrice" class="price-container"></div>
+                <p><strong>Category:</strong> ${minion.category}</p>
+                <p><strong>ID:</strong> ${minion.id}</p>
+                <p><strong>Description:</strong> ${minion.description || 'No description available'}</p>
               </div>
             `;
 
-            applyRarityBackgroundColor(minion.rarity); // Even if no rarity is there, this function will do nothing.
+            window.minionPrices = minionPrices; // make it accessible globally
+            updatePrice(minion.id, initialTier);
           } else {
-            document.getElementById('itemDetails').innerHTML = '<p>Minion not found.</p> <a href="index.html">Back to Home</a>';
+            document.getElementById('minionDetails').innerHTML = '<p>Minion not found.</p> <a href="index.html">Back to Home</a>';
           }
         } catch (error) {
-          console.error('Error loading item details:', error);
-          document.getElementById('itemDetails').innerHTML = '<p>Failed to load item details.</p> <a href="index.html">Back to Home</a>';
+          console.error('Error loading minion details:', error);
+          document.getElementById('minionDetails').innerHTML = '<p>Failed to load minion details.</p> <a href="index.html">Back to Home</a>';
         }
       } else {
-        document.getElementById('itemDetails').innerHTML = '<p>No minion ID specified.</p> <a href="index.html">Back to Home</a>';
+        document.getElementById('minionDetails').innerHTML = '<p>No minion ID specified.</p> <a href="index.html">Back to Home</a>';
       }
+    }
+
+    function toggleDropdown() {
+      const dropdown = document.querySelector('.rarity-dropdown .options');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function selectTier(tier, minionId) {
+      const selected = document.querySelector('.rarity-dropdown .selected span');
+      selected.textContent = tier;
+      document.querySelector('.rarity-dropdown .options').style.display = 'none';
+      updatePrice(minionId, tier);
+    }
+
+    function updatePrice(minionId, tier) {
+      const price = window.minionPrices.find(price => price.minionId === minionId);
+      const selectedPrice = price?.prices?.[tier] ?? 'Price not available';
+      document.getElementById('minionPrice').innerHTML = `<strong>Price:</strong> ${formatPrice(selectedPrice)}`;
     }
 
     function formatPrice(price) {
-      return price.toLocaleString('en-US', {
-        style: 'currency',
-        currency: 'USD'
-      });
+      return typeof price === 'number' ? price.toLocaleString() + ' coins' : price;
     }
 
-    function generateAttributeBox(attribute, value) {
-      return `<div class="attribute-box">${attribute}: <span>${value ? 'Yes' : 'No'}</span></div>`;
-    }
-
-    function generateNatureBox(nature) {
-      return nature ? `<div><strong>Nature:</strong> ${nature}</div>` : '';
-    }
-
-    function generateDemandBox(demand) {
-      return demand ? `<div><strong>Demand:</strong> ${demand}</div>` : '';
-    }
-
-    function applyRarityBackgroundColor(rarity) {
-      // If no rarity is specified, skip setting the class
-      if (rarity) {
-        const rarityClassMap = {
-          common: 'rarity-common',
-          uncommon: 'rarity-uncommon',
-          rare: 'rarity-rare',
-          epic: 'rarity-epic',
-          legendary: 'rarity-legendary'
-        };
-        const rarityClass = rarityClassMap[rarity] || '';
-        document.querySelector('h1').classList.add(rarityClass);
-      }
-    }
-
-    // Call the loadItemDetails function when the page loads
-    window.onload = loadItemDetails;
+    loadMinionDetails();
   </script>
+
+  <script src="js/script.js"></script>
 </body>
 </html>
