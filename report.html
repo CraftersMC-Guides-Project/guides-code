@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="css/item.css">
     <style>
         body {
-            /*background-color: #1e1e2e;*/
             background: url("../Backgrounds/IMG_4502.jpeg");
             background-size: cover;
             background-position-x: center;
@@ -221,6 +220,7 @@
         const successMessage = document.getElementById("successMessage");
         let uploadedFile = null;
 
+        // Drag and drop functionality
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropArea.addEventListener(eventName, e => {
                 e.preventDefault();
@@ -284,13 +284,10 @@
             const bug = document.getElementById("bug").value.trim();
             const webhook = "https://discord.com/api/webhooks/1361692940933796041/w2cigWcNOTdnUaX4jIBVxbpDqVovWw0qJaEKQ-ZDG6l-E1U83vamW3mumbrbo1FOVVXV";
 
-            const formData = new FormData();
-            formData.append("username", "Bug Reporter");
-
-            // Initialize embed with bug report data
+            // Create the embed object
             const embed = {
                 title: "New Bug Report",
-                color: 16711680,
+                color: 16711680, // Red color
                 fields: [
                     { name: "Player", value: username, inline: true },
                     { name: "Bug Description", value: bug }
@@ -298,32 +295,30 @@
                 timestamp: new Date().toISOString()
             };
 
-            // If an image is uploaded, include it within the embed
-            if (uploadedFile) {
-                try {
-                    // For demo purposes, we'll just show the local image
-                    // In a real scenario, you would upload it to a server
-                    if (uploadedFile.type.startsWith('image/')) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            // This is just for demo - in reality you'd upload to a server
-                            console.log("Image would be uploaded here:", uploadedFile.name);
-                        };
-                        reader.readAsDataURL(uploadedFile);
-                    }
-                    
-                    // Add the file directly to the FormData
-                    formData.append("file", uploadedFile);
-                } catch (err) {
-                    console.error("Image handling failed:", err);
-                }
+            // If an image is uploaded, we need to send it as a file
+            // and reference it in the embed
+            let formData;
+            if (uploadedFile && uploadedFile.type.startsWith('image/')) {
+                formData = new FormData();
+                formData.append('file', uploadedFile);
+                
+                // Add the payload_json with embed information
+                embed.image = {
+                    url: "attachment://uploaded_image.png" // This matches the filename you'll send
+                };
+                
+                formData.append('payload_json', JSON.stringify({
+                    embeds: [embed],
+                    username: "Bug Reporter"
+                }));
+            } else {
+                // No image, just send the embed
+                formData = new FormData();
+                formData.append('payload_json', JSON.stringify({
+                    embeds: [embed],
+                    username: "Bug Reporter"
+                }));
             }
-
-            const payload = {
-                embeds: [embed]
-            };
-
-            formData.append("payload_json", JSON.stringify(payload));
 
             try {
                 const res = await fetch(webhook, {
@@ -342,22 +337,23 @@
                         successMessage.style.display = "block";
                     }, 2000);
                 } else {
+                    const errorData = await res.text();
+                    console.error("Error response:", errorData);
                     panel.innerHTML = "Failed to submit report. Please try again.";
                     panel.style.color = "red";
                     panel.classList.add("show");
                     setTimeout(() => {
                         panel.classList.remove("show");
                     }, 3000);
-                    console.error("Error submitting report:", res.statusText);
                 }
             } catch (err) {
+                console.error("Network error:", err);
                 panel.innerHTML = "Network error. Please check your connection.";
                 panel.style.color = "red";
                 panel.classList.add("show");
                 setTimeout(() => {
                     panel.classList.remove("show");
                 }, 3000);
-                console.error(err);
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = "Submit Report";
@@ -366,4 +362,4 @@
         });
     </script>
 </body>
-                                                                      </html>
+</html>
