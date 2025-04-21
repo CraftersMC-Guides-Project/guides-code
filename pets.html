@@ -174,32 +174,6 @@
     function formatPrice(price) {
       return typeof price === 'number' ? price.toLocaleString() + ' coins' : price;
     }
-
-    function generateDemandBox(demand) {
-      if (!demand) return '';
-      const match = demand.match(/\[(\d+)\/10\]/);
-      const score = match ? parseInt(match[1]) : 0;
-      const barWidth = Math.min(score * 10, 100);
-      let color = score >= 7 ? 'limegreen' : score >= 4 ? 'orange' : 'red';
-
-      return `
-        <div class="demand-box" style="margin: 15px 0;">
-          <strong>Demand:</strong> ${demand}
-          <div style="
-            background-color: #222;
-            height: 18px;
-            border-radius: 6px;
-            overflow: hidden;
-            margin-top: 6px;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
-          ">
-            <div style="
-              width: ${barWidth}%;
-              height: 100%;
-              background-color: ${color};
-              transition: width 0.3s ease;
-            "></div>
-            `;
   </script>
 
   <script src="js/script.js"></script>
