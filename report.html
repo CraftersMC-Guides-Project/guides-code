@@ -163,32 +163,29 @@
             display: none;
         }
 
-        /* Progress bar styles */
         .progress-container {
             width: 100%;
             background-color: #333;
             border-radius: 8px;
             margin-top: 1rem;
-            overflow: hidden;
             display: none;
         }
 
         .progress-bar {
+            width: 0%;
             height: 20px;
             background-color: #4CAF50;
-            width: 0%;
-            transition: width 0.3s ease;
+            border-radius: 8px;
             text-align: center;
             line-height: 20px;
             color: white;
-            font-size: 12px;
+            transition: width 0.3s;
         }
 
-        .upload-status {
-            margin-top: 5px;
-            font-size: 0.8rem;
-            color: #aaa;
-            text-align: center;
+        .video-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -223,11 +220,9 @@
                     <button type="button" id="fileBtn" onclick="fileElem.click()">Choose File</button>
                     <div id="preview"></div>
                 </div>
-                <!-- Progress bar elements -->
                 <div class="progress-container" id="progressContainer">
                     <div class="progress-bar" id="progressBar">0%</div>
                 </div>
-                <div class="upload-status" id="uploadStatus"></div>
             </div>
             <button type="submit" id="submitBtn">Submit Report</button>
         </form>
@@ -252,7 +247,6 @@
         const successMessage = document.getElementById("successMessage");
         const progressContainer = document.getElementById("progressContainer");
         const progressBar = document.getElementById("progressBar");
-        const uploadStatus = document.getElementById("uploadStatus");
         let uploadedFile = null;
 
         // Drag and drop functionality
@@ -292,7 +286,7 @@
         function handleFile(file) {
             uploadedFile = file;
             
-            // Check if file is an image
+            // Check file type
             if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -307,7 +301,7 @@
                 reader.onload = (e) => {
                     preview.innerHTML = `
                         <p>Selected: ${file.name}</p>
-                        <video controls style="max-width: 100%; max-height: 200px; margin-top: 10px;">
+                        <video controls class="video-preview">
                             <source src="${e.target.result}" type="${file.type}">
                             Your browser does not support the video tag.
                         </video>
@@ -315,7 +309,8 @@
                 };
                 reader.readAsDataURL(file);
             } else {
-                preview.innerHTML = `<p>Selected: ${file.name}</p>`;
+                preview.innerHTML = `<p>Selected: ${file.name} (Unsupported file type)</p>`;
+                uploadedFile = null;
             }
         }
 
@@ -326,14 +321,6 @@
             submitBtn.disabled = true;
             submitBtn.textContent = "Submitting...";
             submitBtn.style.opacity = "0.7";
-
-            // Show progress bar if uploading a file
-            if (uploadedFile) {
-                progressContainer.style.display = "block";
-                progressBar.style.width = "0%";
-                progressBar.textContent = "0%";
-                uploadStatus.textContent = "Preparing upload...";
-            }
 
             const username = document.getElementById("username").value.trim();
             const bug = document.getElementById("bug").value.trim();
@@ -350,44 +337,35 @@
                 timestamp: new Date().toISOString()
             };
 
-            // If an image is uploaded, we need to send it as a file
-            // and reference it in the embed
-            let formData;
-            if (uploadedFile && uploadedFile.type.startsWith('image/')) {
-                formData = new FormData();
-                formData.append('file', uploadedFile);
-                
-                // Add the image to the embed
-                embed.image = {
-                    url: "attachment://uploaded_file" // This matches the filename you'll send
-                };
-                
-                formData.append('payload_json', JSON.stringify({
-                    embeds: [embed],
-                    username: "Bug Reporter"
-                }));
-            } else if (uploadedFile && uploadedFile.type.startsWith('video/')) {
-                formData = new FormData();
-                formData.append('file', uploadedFile);
-                
-                // Add note about video to the embed
-                embed.fields.push({
-                    name: "Media",
-                    value: "Video attached (see below)"
-                });
-                
-                formData.append('payload_json', JSON.stringify({
-                    embeds: [embed],
-                    username: "Bug Reporter"
-                }));
-            } else {
-                // No file or unsupported file type
-                formData = new FormData();
-                formData.append('payload_json', JSON.stringify({
-                    embeds: [embed],
-                    username: "Bug Reporter"
-                }));
+            // Prepare form data
+            const formData = new FormData();
+            
+            // Show progress bar if we're uploading a file
+            if (uploadedFile) {
+                progressContainer.style.display = "block";
+                progressBar.style.width = "0%";
+                progressBar.textContent = "0%";
             }
+
+            // If an image/video is uploaded, we need to send it as a file
+            if (uploadedFile && (uploadedFile.type.startsWith('image/') || uploadedFile.type.startsWith('video/'))) {
+                formData.append('file', uploadedFile);
+                
+                // Add the image/video to the embed
+                if (uploadedFile.type.startsWith('image/')) {
+                    embed.image = { url: "attachment://uploaded_file" };
+                } else if (uploadedFile.type.startsWith('video/')) {
+                    // Discord doesn't support video embeds, so we'll just attach it
+                    // and mention it in the description
+                    embed.description = (embed.description || "") + "\n\n**Video attached**";
+                }
+            }
+            
+            // Add the embed to the payload
+            formData.append('payload_json', JSON.stringify({
+                embeds: [embed],
+                username: "Bug Reporter"
+            }));
 
             try {
                 const xhr = new XMLHttpRequest();
@@ -397,15 +375,10 @@
                         const percentComplete = Math.round((e.loaded / e.total) * 100);
                         progressBar.style.width = percentComplete + "%";
                         progressBar.textContent = percentComplete + "%";
-                        
-                        // Update status text with MB information
-                        const loadedMB = (e.loaded / (1024 * 1024)).toFixed(2);
-                        const totalMB = (e.total / (1024 * 1024)).toFixed(2);
-                        uploadStatus.textContent = `Uploading: ${loadedMB} MB of ${totalMB} MB`;
                     }
                 };
 
-                xhr.onload = function() {
+                xhr.onload = () => {
                     if (xhr.status >= 200 && xhr.status < 300) {
                         // Show success panel
                         panel.classList.add("show");
@@ -417,8 +390,7 @@
                             successMessage.style.display = "block";
                         }, 2000);
                     } else {
-                        const errorData = xhr.responseText;
-                        console.error("Error response:", errorData);
+                        console.error("Error response:", xhr.responseText);
                         panel.innerHTML = "Failed to submit report. Please try again.";
                         panel.style.color = "red";
                         panel.classList.add("show");
@@ -428,7 +400,7 @@
                     }
                 };
 
-                xhr.onerror = function() {
+                xhr.onerror = () => {
                     console.error("Network error");
                     panel.innerHTML = "Network error. Please check your connection.";
                     panel.style.color = "red";
@@ -453,8 +425,9 @@
                 submitBtn.disabled = false;
                 submitBtn.textContent = "Submit Report";
                 submitBtn.style.opacity = "1";
+                progressContainer.style.display = "none";
             }
         });
     </script>
 </body>
-</html>
+                                                          </html>
