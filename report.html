@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -131,7 +130,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0.8);
-            background: white;
+            background: rgba(0, 0, 0, 0.9);
             padding: 20px;
             border-radius: 10px;
             text-align: center;
@@ -141,12 +140,29 @@
             display: none;
             transition: transform 0.3s ease, opacity 0.3s ease;
             color: lime;
+            border: 1px solid lime;
         }
 
         .panel.show {
             display: block;
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
         }
 
+        .hidden {
+            display: none !important;
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 10vh auto;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+            display: none;
+        }
        
     </style>
 </head>
@@ -157,7 +173,7 @@
     <div id="sidebar-overlay"></div>
     <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
 
-    <div class="report-container">
+    <div class="report-container" id="reportContainer">
         <h1>Report a Bug</h1><br>
         <div class="panel" id="panel">
             <svg width="48" height="48" viewBox="0 0 48 48" style="vertical-align:middle; margin-bottom:10px;">
@@ -186,6 +202,12 @@
         </form>
     </div>
 
+    <div class="success-message" id="successMessage">
+        <h1>Thank You!</h1>
+        <p>Your bug report has been submitted successfully.</p>
+        <p>We'll review it and get back to you if needed.</p>
+    </div>
+
     <div id="footer"></div>
 
     <script src="js/script.js"></script>
@@ -194,6 +216,9 @@
         const fileElem = document.getElementById("fileElem");
         const preview = document.getElementById("preview");
         const panel = document.getElementById("panel");
+        const reportForm = document.getElementById("reportForm");
+        const reportContainer = document.getElementById("reportContainer");
+        const successMessage = document.getElementById("successMessage");
         let uploadedFile = null;
 
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -203,10 +228,24 @@
             }, false);
         });
 
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => {
+                dropArea.classList.add('highlight');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => {
+                dropArea.classList.remove('highlight');
+            });
+        });
+
         dropArea.addEventListener('drop', e => {
             const dt = e.dataTransfer;
             const files = dt.files;
-            handleFile(files[0]);
+            if (files.length) {
+                handleFile(files[0]);
+            }
         });
 
         fileElem.addEventListener('change', () => {
@@ -217,11 +256,29 @@
 
         function handleFile(file) {
             uploadedFile = file;
-            preview.innerHTML = `<p>Selected: ${file.name}</p>`;
+            
+            // Check if file is an image
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.innerHTML = `
+                        <p>Selected: ${file.name}</p>
+                        <img src="${e.target.result}" style="max-width: 100%; max-height: 200px; margin-top: 10px;">
+                    `;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = `<p>Selected: ${file.name}</p>`;
+            }
         }
 
-        document.getElementById("reportForm").addEventListener("submit", async (e) => {
+        reportForm.addEventListener("submit", async (e) => {
             e.preventDefault();
+
+            const submitBtn = document.getElementById("submitBtn");
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Submitting...";
+            submitBtn.style.opacity = "0.7";
 
             const username = document.getElementById("username").value.trim();
             const bug = document.getElementById("bug").value.trim();
@@ -244,71 +301,69 @@
             // If an image is uploaded, include it within the embed
             if (uploadedFile) {
                 try {
-                    const imageUrl = await uploadImage(uploadedFile); // Function to upload image to a service
-
-                    // Add the image to the embed (inside the embed)
-                    embed.image = {
-                        url: imageUrl
-                    };
+                    // For demo purposes, we'll just show the local image
+                    // In a real scenario, you would upload it to a server
+                    if (uploadedFile.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            // This is just for demo - in reality you'd upload to a server
+                            console.log("Image would be uploaded here:", uploadedFile.name);
+                        };
+                        reader.readAsDataURL(uploadedFile);
+                    }
+                    
+                    // Add the file directly to the FormData
+                    formData.append("file", uploadedFile);
                 } catch (err) {
-                    console.error("Image upload failed:", err);
+                    console.error("Image handling failed:", err);
                 }
             }
 
-            const payload = JSON.stringify({ embeds: [embed] });
+            const payload = {
+                embeds: [embed]
+            };
 
-            formData.append("payload_json", payload);
-            // Do not append the file directly, since we're including it inside the embed
-            // alr
+            formData.append("payload_json", JSON.stringify(payload));
 
             try {
                 const res = await fetch(webhook, {
                     method: "POST",
                     body: formData
                 });
+                
                 if (res.ok) {
-                    //alert("Bug report submitted!");
-                    document.getElementById("reportForm").reset();
-                    preview.innerHTML = "";
-                    uploadedFile = null;
+                    // Show success panel
                     panel.classList.add("show");
+                    
+                    // Hide form and show success message after delay
                     setTimeout(() => {
                         panel.classList.remove("show");
-                    }, 3000);
+                        reportContainer.classList.add("hidden");
+                        successMessage.style.display = "block";
+                    }, 2000);
                 } else {
-                    //alert("Failed to submit report.");
-                    panel.innerHTML = "Failed to submit report.";
+                    panel.innerHTML = "Failed to submit report. Please try again.";
                     panel.style.color = "red";
                     panel.classList.add("show");
                     setTimeout(() => {
                         panel.classList.remove("show");
                     }, 3000);
                     console.error("Error submitting report:", res.statusText);
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1000);
                 }
             } catch (err) {
-                alert("Error submitting report.");
+                panel.innerHTML = "Network error. Please check your connection.";
+                panel.style.color = "red";
+                panel.classList.add("show");
+                setTimeout(() => {
+                    panel.classList.remove("show");
+                }, 3000);
                 console.error(err);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Submit Report";
+                submitBtn.style.opacity = "1";
             }
-
-
         });
-
-        // Example function to upload the image and get the URL (using Cloudinary or a similar service)
-        async function uploadImage(file) {
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append("upload_preset", "your_upload_preset"); // Replace with your Cloudinary preset
-
-            const res = await fetch("https://api.cloudinary.com/v1_1/your_cloud_name/image/upload", {
-                method: "POST",
-                body: formData
-            });
-            const data = await res.json();
-            return data.secure_url; // The URL of the uploaded image
-        }
     </script>
 </body>
-</html>
+                                                                      </html>
