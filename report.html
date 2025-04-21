@@ -162,7 +162,31 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
             display: none;
         }
-       
+
+        .progress-container {
+            width: 100%;
+            background-color: #333;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 20px;
+            background-color: #4CAF50;
+            border-radius: 8px;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            transition: width 0.3s;
+        }
+
+        .video-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -196,6 +220,9 @@
                     <button type="button" id="fileBtn" onclick="fileElem.click()">Choose File</button>
                     <div id="preview"></div>
                 </div>
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar" id="progressBar">0%</div>
+                </div>
             </div>
             <button type="submit" id="submitBtn">Submit Report</button>
         </form>
@@ -218,6 +245,8 @@
         const reportForm = document.getElementById("reportForm");
         const reportContainer = document.getElementById("reportContainer");
         const successMessage = document.getElementById("successMessage");
+        const progressContainer = document.getElementById("progressContainer");
+        const progressBar = document.getElementById("progressBar");
         let uploadedFile = null;
 
         // Drag and drop functionality
@@ -257,7 +286,7 @@
         function handleFile(file) {
             uploadedFile = file;
             
-            // Check if file is an image
+            // Check file type
             if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -267,8 +296,21 @@
                     `;
                 };
                 reader.readAsDataURL(file);
+            } else if (file.type.startsWith('video/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.innerHTML = `
+                        <p>Selected: ${file.name}</p>
+                        <video controls class="video-preview">
+                            <source src="${e.target.result}" type="${file.type}">
+                            Your browser does not support the video tag.
+                        </video>
+                    `;
+                };
+                reader.readAsDataURL(file);
             } else {
-                preview.innerHTML = `<p>Selected: ${file.name}</p>`;
+                preview.innerHTML = `<p>Selected: ${file.name} (Unsupported file type)</p>`;
+                uploadedFile = null;
             }
         }
 
@@ -295,60 +337,85 @@
                 timestamp: new Date().toISOString()
             };
 
-            // If an image is uploaded, we need to send it as a file
-            // and reference it in the embed
-            let formData;
-            if (uploadedFile && uploadedFile.type.startsWith('image/')) {
-                formData = new FormData();
-                formData.append('file', uploadedFile);
-                
-                // Add the payload_json with embed information
-                embed.image = {
-                    url: "attachment://uploaded_image.png" // This matches the filename you'll send
-                };
-                
-                formData.append('payload_json', JSON.stringify({
-                    embeds: [embed],
-                    username: "Bug Reporter"
-                }));
-            } else {
-                // No image, just send the embed
-                formData = new FormData();
-                formData.append('payload_json', JSON.stringify({
-                    embeds: [embed],
-                    username: "Bug Reporter"
-                }));
+            // Prepare form data
+            const formData = new FormData();
+            
+            // Show progress bar if we're uploading a file
+            if (uploadedFile) {
+                progressContainer.style.display = "block";
+                progressBar.style.width = "0%";
+                progressBar.textContent = "0%";
             }
 
-            try {
-                const res = await fetch(webhook, {
-                    method: "POST",
-                    body: formData
-                });
+            // If an image/video is uploaded, we need to send it as a file
+            if (uploadedFile && (uploadedFile.type.startsWith('image/') || uploadedFile.type.startsWith('video/'))) {
+                formData.append('file', uploadedFile);
                 
-                if (res.ok) {
-                    // Show success panel
-                    panel.classList.add("show");
-                    
-                    // Hide form and show success message after delay
-                    setTimeout(() => {
-                        panel.classList.remove("show");
-                        reportContainer.classList.add("hidden");
-                        successMessage.style.display = "block";
-                    }, 2000);
-                } else {
-                    const errorData = await res.text();
-                    console.error("Error response:", errorData);
-                    panel.innerHTML = "Failed to submit report. Please try again.";
+                // Add the image/video to the embed
+                if (uploadedFile.type.startsWith('image/')) {
+                    embed.image = { url: "attachment://uploaded_file" };
+                } else if (uploadedFile.type.startsWith('video/')) {
+                    // Discord doesn't support video embeds, so we'll just attach it
+                    // and mention it in the description
+                    embed.description = (embed.description || "") + "\n\n**Video attached**";
+                }
+            }
+            
+            // Add the embed to the payload
+            formData.append('payload_json', JSON.stringify({
+                embeds: [embed],
+                username: "Bug Reporter"
+            }));
+
+            try {
+                const xhr = new XMLHttpRequest();
+                
+                xhr.upload.onprogress = (e) => {
+                    if (e.lengthComputable) {
+                        const percentComplete = Math.round((e.loaded / e.total) * 100);
+                        progressBar.style.width = percentComplete + "%";
+                        progressBar.textContent = percentComplete + "%";
+                    }
+                };
+
+                xhr.onload = () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        // Show success panel
+                        panel.classList.add("show");
+                        
+                        // Hide form and show success message after delay
+                        setTimeout(() => {
+                            panel.classList.remove("show");
+                            reportContainer.classList.add("hidden");
+                            successMessage.style.display = "block";
+                        }, 2000);
+                    } else {
+                        console.error("Error response:", xhr.responseText);
+                        panel.innerHTML = "Failed to submit report. Please try again.";
+                        panel.style.color = "red";
+                        panel.classList.add("show");
+                        setTimeout(() => {
+                            panel.classList.remove("show");
+                        }, 3000);
+                    }
+                };
+
+                xhr.onerror = () => {
+                    console.error("Network error");
+                    panel.innerHTML = "Network error. Please check your connection.";
                     panel.style.color = "red";
                     panel.classList.add("show");
                     setTimeout(() => {
                         panel.classList.remove("show");
                     }, 3000);
-                }
+                };
+
+                xhr.open("POST", webhook, true);
+                xhr.send(formData);
+
             } catch (err) {
-                console.error("Network error:", err);
-                panel.innerHTML = "Network error. Please check your connection.";
+                console.error("Error:", err);
+                panel.innerHTML = "An error occurred. Please try again.";
                 panel.style.color = "red";
                 panel.classList.add("show");
                 setTimeout(() => {
@@ -358,6 +425,7 @@
                 submitBtn.disabled = false;
                 submitBtn.textContent = "Submit Report";
                 submitBtn.style.opacity = "1";
+                progressContainer.style.display = "none";
             }
         });
     </script>
