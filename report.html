@@ -19,67 +19,229 @@
             padding: 0;
         }
 
-        /* [Previous CSS styles remain the same...] */
+        .navbar, .sidebar {
+            background-color: #1c1c1c;
+        }
 
+        .report-container {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 10vh auto;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+        }
+
+        h1 {
+            color: #4a90e2;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #888;
+            background-color: #333;
+            color: white;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        #drop-area {
+            border: 2px dashed #007bff;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            color: #888;
+            margin-top: 1rem;
+            background-color: #282828;
+        }
+
+        #drop-area.highlight {
+            border-color: #ff4444;
+        }
+
+        #submitBtn {
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        #submitBtn:hover {
+            background-color: #0056b3;
+        }
+
+        #fileBtn {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        #fileBtn:hover {
+            background-color: #0056b3;
+        }
+
+        #preview {
+            margin-top: 1rem;
+            max-width: 100%;
+        }
+
+        .material-icons {
+            vertical-align: middle;
+        }
+
+        p {
+          margin: 1rem auto;
+        }
+
+        @media (max-width: 768px) {
+            .report-container {
+                padding: 1.5rem;
+            }
+        }
+
+        label {
+            display: block;
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 8px;
+        }
+
+        .panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
+            z-index: 9999999;
+            width: 300px;
+            display: none;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            color: lime;
+            border: 1px solid lime;
+        }
+
+        .panel.show {
+            display: block;
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 10vh auto;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+            display: none;
+        }
+
+        /* Progress bar styles */
         .progress-container {
             width: 100%;
             background-color: #333;
             border-radius: 8px;
             margin-top: 1rem;
-            display: none;
             overflow: hidden;
+            display: none;
         }
 
         .progress-bar {
-            width: 0%;
             height: 20px;
-            background: linear-gradient(90deg, #4CAF50, #2E7D32);
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.3s ease;
             text-align: center;
             line-height: 20px;
             color: white;
-            transition: width 0.3s ease;
-            position: relative;
-        }
-
-        .progress-text {
-            position: absolute;
-            width: 100%;
-            text-align: center;
-            font-weight: bold;
-            text-shadow: 0 0 3px rgba(0,0,0,0.5);
+            font-size: 12px;
         }
 
         .upload-status {
             margin-top: 5px;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: #aaa;
             text-align: center;
-        }
-
-        .video-preview {
-            max-width: 100%;
-            max-height: 200px;
-            margin-top: 10px;
-            background: #000;
-            border-radius: 5px;
-        }
-
-        .thumbnail-container {
-            position: relative;
-            display: inline-block;
-            margin-top: 10px;
-        }
-
-        .file-info {
-            margin-top: 5px;
-            font-size: 0.9rem;
-            color: #ccc;
         }
     </style>
 </head>
 <body>
-    <!-- [Previous HTML structure remains the same...] -->
+    <div id="loader"><div></div><div></div><div></div></div>
+    <div class="navbar"></div>
+    <div class="sidebar" id="sidebar"></div>
+    <div id="sidebar-overlay"></div>
+    <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
 
+    <div class="report-container" id="reportContainer">
+        <h1>Report a Bug</h1><br>
+        <div class="panel" id="panel">
+            <svg width="48" height="48" viewBox="0 0 48 48" style="vertical-align:middle; margin-bottom:10px;">
+            <circle cx="24" cy="24" r="22" stroke="#00ff00" fill="transparent" stroke-width="3"/>
+            <polyline points="15,25 22,32 34,18" fill="none" stroke="#00ff00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg><br>Report Submitted, Thank you!</div>
+        <form id="reportForm">
+            <div class="form-group">
+                <label for="username">Your In-Game Name:</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="bug">Describe the Bug:</label>
+                <textarea id="bug" rows="5" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="file">Upload Image/Video (optional):</label>
+                <div id="drop-area">
+                    <p>Drag & drop a file here, or click below to select</p>
+                    <input type="file" id="fileElem" accept="image/*,video/*" style="display:none">
+                    <button type="button" id="fileBtn" onclick="fileElem.click()">Choose File</button>
+                    <div id="preview"></div>
+                </div>
+                <!-- Progress bar elements -->
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar" id="progressBar">0%</div>
+                </div>
+                <div class="upload-status" id="uploadStatus"></div>
+            </div>
+            <button type="submit" id="submitBtn">Submit Report</button>
+        </form>
+    </div>
+
+    <div class="success-message" id="successMessage">
+        <h1>Thank You!</h1>
+        <p>Your bug report has been submitted successfully.</p>
+        <p>We'll review it and get back to you if needed.</p>
+    </div>
+
+    <div id="footer"></div>
+
+    <script src="js/script.js"></script>
     <script>
         const dropArea = document.getElementById("drop-area");
         const fileElem = document.getElementById("fileElem");
@@ -90,55 +252,70 @@
         const successMessage = document.getElementById("successMessage");
         const progressContainer = document.getElementById("progressContainer");
         const progressBar = document.getElementById("progressBar");
+        const uploadStatus = document.getElementById("uploadStatus");
         let uploadedFile = null;
 
-        // [Previous drag/drop handlers remain the same...]
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => {
+                dropArea.classList.add('highlight');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => {
+                dropArea.classList.remove('highlight');
+            });
+        });
+
+        dropArea.addEventListener('drop', e => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileElem.addEventListener('change', () => {
+            if (fileElem.files.length) {
+                handleFile(fileElem.files[0]);
+            }
+        });
 
         function handleFile(file) {
             uploadedFile = file;
-            const fileSize = (file.size / (1024 * 1024)).toFixed(2) + " MB";
             
+            // Check if file is an image
             if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     preview.innerHTML = `
-                        <div class="thumbnail-container">
-                            <img src="${e.target.result}" style="max-width: 100%; max-height: 200px;">
-                        </div>
-                        <div class="file-info">
-                            <div>${file.name}</div>
-                            <div>${fileSize} • ${file.type}</div>
-                        </div>
+                        <p>Selected: ${file.name}</p>
+                        <img src="${e.target.result}" style="max-width: 100%; max-height: 200px; margin-top: 10px;">
                     `;
                 };
                 reader.readAsDataURL(file);
-            } 
-            else if (file.type.startsWith('video/')) {
+            } else if (file.type.startsWith('video/')) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     preview.innerHTML = `
-                        <div class="thumbnail-container">
-                            <video controls class="video-preview">
-                                <source src="${e.target.result}" type="${file.type}">
-                                Your browser doesn't support video preview
-                            </video>
-                        </div>
-                        <div class="file-info">
-                            <div>${file.name}</div>
-                            <div>${fileSize} • ${file.type}</div>
-                        </div>
+                        <p>Selected: ${file.name}</p>
+                        <video controls style="max-width: 100%; max-height: 200px; margin-top: 10px;">
+                            <source src="${e.target.result}" type="${file.type}">
+                            Your browser does not support the video tag.
+                        </video>
                     `;
                 };
                 reader.readAsDataURL(file);
-            } 
-            else {
-                preview.innerHTML = `
-                    <div class="file-info">
-                        <div>${file.name}</div>
-                        <div>${fileSize} • ${file.type}</div>
-                        <div style="color: orange;">Note: This file type may not embed properly in Discord</div>
-                    </div>
-                `;
+            } else {
+                preview.innerHTML = `<p>Selected: ${file.name}</p>`;
             }
         }
 
@@ -147,16 +324,25 @@
 
             const submitBtn = document.getElementById("submitBtn");
             submitBtn.disabled = true;
-            submitBtn.textContent = "Uploading...";
+            submitBtn.textContent = "Submitting...";
+            submitBtn.style.opacity = "0.7";
+
+            // Show progress bar if uploading a file
+            if (uploadedFile) {
+                progressContainer.style.display = "block";
+                progressBar.style.width = "0%";
+                progressBar.textContent = "0%";
+                uploadStatus.textContent = "Preparing upload...";
+            }
 
             const username = document.getElementById("username").value.trim();
             const bug = document.getElementById("bug").value.trim();
-            const webhook = "YOUR_DISCORD_WEBHOOK_URL";
+            const webhook = "https://discord.com/api/webhooks/1361692940933796041/w2cigWcNOTdnUaX4jIBVxbpDqVovWw0qJaEKQ-ZDG6l-E1U83vamW3mumbrbo1FOVVXV";
 
-            // Create embed
+            // Create the embed object
             const embed = {
                 title: "New Bug Report",
-                color: 16711680,
+                color: 16711680, // Red color
                 fields: [
                     { name: "Player", value: username, inline: true },
                     { name: "Bug Description", value: bug }
@@ -164,101 +350,109 @@
                 timestamp: new Date().toISOString()
             };
 
-            const formData = new FormData();
-            
-            // Show upload progress UI
-            progressContainer.style.display = "block";
-            progressBar.innerHTML = '<div class="progress-text">Preparing upload...</div>';
-            
-            // Handle file upload
-            if (uploadedFile) {
-                const isImage = uploadedFile.type.startsWith('image/');
-                const isVideo = uploadedFile.type.startsWith('video/');
-                
-                // Update status text
-                progressBar.innerHTML = '<div class="progress-text">Uploading ' + 
-                    (isImage ? 'image' : isVideo ? 'video' : 'file') + '... (0%)</div>';
-                
-                // Add to embed if it's an image
-                if (isImage) {
-                    embed.image = { url: "attachment://uploaded_file" };
-                } 
-                else if (isVideo) {
-                    embed.fields.push({
-                        name: "Media",
-                        value: "Video attached (see below)"
-                    });
-                }
-                
+            // If an image is uploaded, we need to send it as a file
+            // and reference it in the embed
+            let formData;
+            if (uploadedFile && uploadedFile.type.startsWith('image/')) {
+                formData = new FormData();
                 formData.append('file', uploadedFile);
+                
+                // Add the image to the embed
+                embed.image = {
+                    url: "attachment://uploaded_file" // This matches the filename you'll send
+                };
+                
+                formData.append('payload_json', JSON.stringify({
+                    embeds: [embed],
+                    username: "Bug Reporter"
+                }));
+            } else if (uploadedFile && uploadedFile.type.startsWith('video/')) {
+                formData = new FormData();
+                formData.append('file', uploadedFile);
+                
+                // Add note about video to the embed
+                embed.fields.push({
+                    name: "Media",
+                    value: "Video attached (see below)"
+                });
+                
+                formData.append('payload_json', JSON.stringify({
+                    embeds: [embed],
+                    username: "Bug Reporter"
+                }));
+            } else {
+                // No file or unsupported file type
+                formData = new FormData();
+                formData.append('payload_json', JSON.stringify({
+                    embeds: [embed],
+                    username: "Bug Reporter"
+                }));
             }
-            
-            formData.append('payload_json', JSON.stringify({
-                embeds: [embed],
-                username: "Bug Reporter"
-            }));
 
             try {
                 const xhr = new XMLHttpRequest();
                 
-                // Upload progress tracking
                 xhr.upload.onprogress = (e) => {
                     if (e.lengthComputable) {
-                        const percent = Math.round((e.loaded / e.total) * 100);
-                        progressBar.style.width = percent + '%';
-                        progressBar.innerHTML = `<div class="progress-text">Uploading... (${percent}%)</div>`;
+                        const percentComplete = Math.round((e.loaded / e.total) * 100);
+                        progressBar.style.width = percentComplete + "%";
+                        progressBar.textContent = percentComplete + "%";
                         
-                        // Additional status updates
-                        const uploadedMB = (e.loaded / (1024 * 1024)).toFixed(2);
+                        // Update status text with MB information
+                        const loadedMB = (e.loaded / (1024 * 1024)).toFixed(2);
                         const totalMB = (e.total / (1024 * 1024)).toFixed(2);
-                        document.querySelector('.upload-status').textContent = 
-                            `${uploadedMB} MB of ${totalMB} MB uploaded`;
+                        uploadStatus.textContent = `Uploading: ${loadedMB} MB of ${totalMB} MB`;
                     }
                 };
-                
+
                 xhr.onload = function() {
                     if (xhr.status >= 200 && xhr.status < 300) {
-                        // Complete the progress bar
-                        progressBar.style.width = '100%';
-                        progressBar.innerHTML = '<div class="progress-text">Upload complete!</div>';
+                        // Show success panel
+                        panel.classList.add("show");
                         
-                        // Show success and hide form
+                        // Hide form and show success message after delay
                         setTimeout(() => {
-                            panel.classList.add("show");
-                            setTimeout(() => {
-                                reportContainer.classList.add("hidden");
-                                successMessage.style.display = "block";
-                            }, 1500);
-                        }, 500);
+                            panel.classList.remove("show");
+                            reportContainer.classList.add("hidden");
+                            successMessage.style.display = "block";
+                        }, 2000);
                     } else {
-                        handleError("Failed to submit report. Server returned: " + xhr.status);
+                        const errorData = xhr.responseText;
+                        console.error("Error response:", errorData);
+                        panel.innerHTML = "Failed to submit report. Please try again.";
+                        panel.style.color = "red";
+                        panel.classList.add("show");
+                        setTimeout(() => {
+                            panel.classList.remove("show");
+                        }, 3000);
                     }
                 };
-                
+
                 xhr.onerror = function() {
-                    handleError("Network error during upload. Please try again.");
+                    console.error("Network error");
+                    panel.innerHTML = "Network error. Please check your connection.";
+                    panel.style.color = "red";
+                    panel.classList.add("show");
+                    setTimeout(() => {
+                        panel.classList.remove("show");
+                    }, 3000);
                 };
-                
+
                 xhr.open("POST", webhook, true);
                 xhr.send(formData);
-                
+
             } catch (err) {
-                handleError("An unexpected error occurred: " + err.message);
-            }
-            
-            function handleError(message) {
-                progressBar.style.background = "#f44336";
-                progressBar.innerHTML = `<div class="progress-text">Upload failed</div>`;
-                panel.innerHTML = message;
+                console.error("Error:", err);
+                panel.innerHTML = "An error occurred. Please try again.";
                 panel.style.color = "red";
                 panel.classList.add("show");
-                
-                submitBtn.disabled = false;
-                submitBtn.textContent = "Try Again";
-                
                 setTimeout(() => {
                     panel.classList.remove("show");
-                }, 5000);
+                }, 3000);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Submit Report";
+                submitBtn.style.opacity = "1";
             }
         });
     </script>
