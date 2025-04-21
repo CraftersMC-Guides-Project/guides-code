@@ -9,10 +9,9 @@
     <link rel="stylesheet" href="css/item.css">
     <style>
         body {
-            /*background-color: #1e1e2e;*/
-            background: url("../Backgrounds/IMG_4502.jpeg");
+            background: url("Backgrounds/IMG_4502.jpeg"); /* fixed path */
             background-size: cover;
-            background-position-x: center;
+            background-position: center;
             background-repeat: no-repeat;
             color: #ffffff;
             font-family: Arial, sans-serif;
@@ -70,7 +69,7 @@
             border-color: #ff4444;
         }
 
-        #submitBtn {
+        #submitBtn, #fileBtn {
             margin-top: 1rem;
             padding: 0.75rem 1.5rem;
             background-color: #007bff;
@@ -81,21 +80,7 @@
             width: 100%;
         }
 
-        #submitBtn:hover {
-            background-color: #0056b3;
-        }
-
-        #fileBtn {
-            background-color: #007bff;
-            border: none;
-            color: white;
-            border-radius: 8px;
-            padding: 0.75rem 1.5rem;
-            width: 100%;
-            cursor: pointer;
-        }
-
-        #fileBtn:hover {
+        #submitBtn:hover, #fileBtn:hover {
             background-color: #0056b3;
         }
 
@@ -109,7 +94,7 @@
         }
 
         p {
-          margin: 1rem auto;
+            margin: 1rem auto;
         }
 
         @media (max-width: 768px) {
@@ -145,24 +130,22 @@
         .panel.show {
             display: block;
         }
-
-       
     </style>
 </head>
 <body>
-    <div id="loader"><div></div><div></div><div></div></div>
     <div class="navbar"></div>
     <div class="sidebar" id="sidebar"></div>
     <div id="sidebar-overlay"></div>
     <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
 
-    <div class="report-container">
+    <div class="report-container" id="formContainer">
         <h1>Report a Bug</h1><br>
         <div class="panel" id="panel">
             <svg width="48" height="48" viewBox="0 0 48 48" style="vertical-align:middle; margin-bottom:10px;">
-            <circle cx="24" cy="24" r="22" stroke="#00ff00" fill="transparent" stroke-width="3"/>
-            <polyline points="15,25 22,32 34,18" fill="none" stroke="#00ff00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg><br>Report Submitted, Thank you!</div>
+                <circle cx="24" cy="24" r="22" stroke="#00ff00" fill="transparent" stroke-width="3"/>
+                <polyline points="15,25 22,32 34,18" fill="none" stroke="#00ff00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg><br>Report Submitted, Thank you!
+        </div>
         <form id="reportForm">
             <div class="form-group">
                 <label for="username">Your In-Game Name:</label>
@@ -187,12 +170,12 @@
 
     <div id="footer"></div>
 
-    <script src="js/script.js"></script>
     <script>
         const dropArea = document.getElementById("drop-area");
         const fileElem = document.getElementById("fileElem");
         const preview = document.getElementById("preview");
         const panel = document.getElementById("panel");
+        const formContainer = document.getElementById("formContainer");
         let uploadedFile = null;
 
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -229,7 +212,6 @@
             const formData = new FormData();
             formData.append("username", "Bug Reporter");
 
-            // Initialize embed with bug report data
             const embed = {
                 title: "New Bug Report",
                 color: 16711680,
@@ -240,73 +222,47 @@
                 timestamp: new Date().toISOString()
             };
 
-            // If an image is uploaded, include it within the embed
-            if (uploadedFile) {
-                try {
-                    const imageUrl = await uploadImage(uploadedFile); // Function to upload image to a service
-
-                    // Add the image to the embed (inside the embed)
-                    embed.image = {
-                        url: imageUrl
-                    };
-                } catch (err) {
-                    console.error("Image upload failed:", err);
+            try {
+                if (uploadedFile) {
+                    const imageUrl = await uploadImage(uploadedFile);
+                    embed.image = { url: imageUrl };
                 }
+            } catch (err) {
+                console.warn("Image upload skipped/failure.");
             }
 
-            const payload = JSON.stringify({ embeds: [embed] });
-
-            formData.append("payload_json", payload);
-            // Do not append the file directly, since we're including it inside the embed
-            // alr
+            formData.append("payload_json", JSON.stringify({ embeds: [embed] }));
 
             try {
                 const res = await fetch(webhook, {
                     method: "POST",
                     body: formData
                 });
+
                 if (res.ok) {
-                    //alert("Bug report submitted!");
-                    document.getElementById("reportForm").reset();
+                    document.getElementById("reportForm").remove(); // Hide the form
                     preview.innerHTML = "";
+                    panel.classList.add("show");
                     uploadedFile = null;
-                    panel.classList.add("show");
-                    setTimeout(() => {
-                        panel.classList.remove("show");
-                    }, 3000);
                 } else {
-                    //alert("Failed to submit report.");
-                    panel.innerHTML = "Failed to submit report.";
-                    panel.style.color = "red";
-                    panel.classList.add("show");
-                    setTimeout(() => {
-                        panel.classList.remove("show");
-                    }, 3000);
-                    console.error("Error submitting report:", res.statusText);
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1000);
+                    alert("Failed to submit. Try again later.");
                 }
             } catch (err) {
                 alert("Error submitting report.");
                 console.error(err);
             }
-
-
         });
 
-        // Example function to upload the image and get the URL (using Cloudinary or a similar service)
         async function uploadImage(file) {
             const formData = new FormData();
             formData.append("file", file);
-            formData.append("upload_preset", "your_upload_preset"); // Replace with your Cloudinary preset
-
+            formData.append("upload_preset", "your_upload_preset"); // Replace!
             const res = await fetch("https://api.cloudinary.com/v1_1/your_cloud_name/image/upload", {
                 method: "POST",
                 body: formData
             });
             const data = await res.json();
-            return data.secure_url; // The URL of the uploaded image
+            return data.secure_url;
         }
     </script>
 </body>
