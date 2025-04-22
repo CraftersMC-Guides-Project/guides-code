@@ -151,15 +151,15 @@ function calculateEventTimes() {
 function displayNextEvent() {
     const now = Date.now();
     const periodsSinceBase = Math.floor((now - baseEventTime) / intervalDuration);
-    const lastEventTime = baseEventTime + periodsSinceBase * intervalDuration;
-    const nextEventTime = lastEventTime + intervalDuration;
+    const nextEventTime = baseEventTime + (periodsSinceBase + 1) * intervalDuration;
+    const lastEventTime = nextEventTime - intervalDuration;
     document.getElementById("nextEventTime").textContent = formatTime(new Date(nextEventTime));
     document.getElementById("lastEventTime").textContent = formatTime(new Date(lastEventTime));
 }
 
 function displayEvents() {
     const eventContainer = document.getElementById("eventContainer");
-    eventContainer.innerHTML = ""; // Clear previous
+    eventContainer.innerHTML = ""; // Clear previous events
     const events = calculateEventTimes();
     for (let i = 0; i < 10; i++) {
         const div = document.createElement("div");
@@ -173,6 +173,7 @@ function toggleEventContainer() {
     const content = document.querySelector(".content");
     content.classList.toggle("show");
     const collapsible = document.querySelector(".collapsible");
+    displayEvents()
     if (content.classList.contains("show")) {
         collapsible.innerHTML = "Next Events (Click to Collapse)";
         content.style.display = "block";
