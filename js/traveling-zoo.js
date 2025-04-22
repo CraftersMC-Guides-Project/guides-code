@@ -106,8 +106,9 @@ const timerInterval = setInterval(function () {
 }, 1000);
 
 displayNextEvent();
-displayEvents();*/
+displayEvents();
 
+new code: (its below this)*/
 const intervalDuration = (2 * 24 + 14) * 60 * 60 * 1000; // 2 days 14 hours in ms
 const eventDuration = 60 * 60 * 1000; // 1 hour in ms
 const baseEventTime = new Date('2025-01-27T14:30:00+05:30').getTime();
@@ -174,6 +175,7 @@ function toggleEventContainer() {
     content.classList.toggle("show");
     const collapsible = document.querySelector(".collapsible");
     displayEvents()
+    displayNextEvent();
     if (content.classList.contains("show")) {
         collapsible.innerHTML = "Next Events (Click to Collapse)";
         content.style.display = "block";
@@ -217,6 +219,11 @@ function updateCountdown() {
     showEventAlert(nextEventTime);
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    displayNextEvent();
+    displayEvents();
+    const eventContainer = document.getElementById("eventContainer");
+    eventContainer.addEventListener("click", toggleEventContainer);
+  });
+
 setInterval(updateCountdown, 1000);
-displayNextEvent();
-displayEvents();
