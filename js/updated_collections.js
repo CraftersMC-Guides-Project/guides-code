@@ -2033,8 +2033,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 2,
-                    "name": "KaosTheChaos",
-                    "score": "13M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 3,
@@ -2043,8 +2043,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "KaosTheChaos",
+                    "score": "13.5M+"
                 },
                 {
                     "rank": 5,
