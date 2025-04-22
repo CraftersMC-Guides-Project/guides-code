@@ -2272,13 +2272,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "IRONMAN1237721",
-                    "score": "10.1M+"
+                    "name": "SammyMishu",
+                    "score": "10.6M+"
                 },
                 {
                     "rank": 6,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "IRONMAN1237721",
+                    "score": "10.1M+"
                 },
                 {
                     "rank": 7,
