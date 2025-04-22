@@ -136,6 +136,21 @@
     let prices = {};
     let isDataLoaded = false;
 
+    function parsePrices(text) {
+      const priceMap = {};
+      const lines = text.trim().split('\n');
+      for (const line of lines) {
+        const match = line.match(/^(\d+):\s*\[(.*)\]$/);
+        if (match) {
+          const id = match[1];
+          const parts = match[2].split(',');
+          const price = parseInt(parts[1].trim());
+          priceMap[id] = price;
+        }
+      }
+      return priceMap;
+    }
+
     async function loadItems() {
       try {
         const [marketRes, priceRes] = await Promise.all([
@@ -157,21 +172,6 @@
       } finally {
         document.getElementById('loader').style.display = 'none';
       }
-    }
-
-    function parsePrices(text) {
-      const priceMap = {};
-      const lines = text.trim().split('\n');
-      for (const line of lines) {
-        const match = line.match(/^(\d+):\s*\[(.*)\]$/);
-        if (match) {
-          const id = match[1];
-          const parts = match[2].split(',');
-          const price = parseInt(parts[1].trim());
-          priceMap[id] = price;
-        }
-      }
-      return priceMap;
     }
 
     function searchItems() {
@@ -204,9 +204,8 @@
             <img src="${item.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : item.picture}" alt="${item.name}">
             </div>
             <div class="result-div-info">ID: ${item.id}</div>
-            <div class="result-div-info">Price: ${price}</div>
-            <div class="result-div-info">Category: ${item.category}</div>
-            ${item.description ? `<div class="description">${item.description} | Price: ${price} coins</div>` : ''}
+            <div class="result-div-info">Market price: ${price} <img class="coin" src="img/coin.png" alt="Coin"></div>
+            ${item.description ? `<div class="description">${item.description}</div>` : ''}
           </div>`;
         div.onclick = () => {
           window.location.href = `item.html?item=${item.id}`;
