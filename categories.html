@@ -73,8 +73,13 @@
                                 <h2>${item.name}</h2>
                                 ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}">` : ''}
                                 <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
-                                <p><strong>Price:</strong> ${formatPrice(item.price)}</p></div></div>
-                                ${item.description ? `<p>${item.description}</p>` : ''}
+                                <p><div class="price-with-coin"><strong>Price:</strong> ${formatPrice(item.price)}</div></p>
+                                ${item.description ? `<p class="description">${item.description}</p>` : ''}
+                                ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
+                                ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
+                                ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
+
+                                </div></div>
                             </div>
                         `;
                     }).join('');
@@ -91,6 +96,18 @@
 
         function formatPrice(price) {
             return `${Number(price).toLocaleString()} <img class="coin" src="img/coin.png" alt="Coin">`;
+        }
+
+        function formatNature(nature) {
+            let natureText = nature.replace('[', ' ').toLowerCase();
+            natureText = natureText.replace(']', '').replace(/_/g, ' ').trim();
+            return natureText;
+        }
+
+        function formatDemand(demand) {
+            let demandText = demand.replace('[', ' ').toLowerCase();
+            demandText = demandText.replace(']', '').replace(/_/g, ' ').trim();
+            return demandText;
         }
 
         loadCategoryItems();
