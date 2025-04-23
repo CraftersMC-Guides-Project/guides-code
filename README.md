@@ -58,11 +58,9 @@ This project is brought to you by:
 - **Coder:** Pg Network (Discord: pgnetwork01)
 - **Coder:** Dev. (Discord: dev.odf)
 - **Coder:** Dipanshu FF (Discord: dipanshuff)
-- **Coder:** Dipanshu FF (Discord: dipanshuff)
 - **Writer:** ieduoo (Discord: ieduoo)
 - **Advisor:** Aakash Gupta (Discord: aakashgupta12)
 - **Data Skimmer:** C69P2W (Discord: c69p2w)
-- **Data Skimmer:** Kautilya Garg (Discord: gargkautilya)
 
 ---
 
