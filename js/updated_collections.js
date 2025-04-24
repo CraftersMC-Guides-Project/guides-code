@@ -2005,13 +2005,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 8,
-                    "name": "Rehan2038",
-                    "score": "36.3M+"
+                    "name": "Ghosthunter4233",
+                    "score": "N/A"
                 },
                 {
                     "rank": 9,
-                    "name": "Ghosthunter4233",
-                    "score": "N/A"
+                    "name": "Rehan2038",
+                    "score": "36.3M+"
                 },
                 {
                     "rank": 10,
