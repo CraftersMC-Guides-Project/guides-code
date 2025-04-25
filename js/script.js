@@ -372,6 +372,28 @@ function applyTheme(isDarkMode) {
   }
 }
 
+function toggleTheme(event) {
+  const reveal = document.getElementById("theme-reveal");
+  const x = event.clientX;
+  const y = event.clientY;
+
+  reveal.style.top = `${y - 50}px`;
+  reveal.style.left = `${x - 50}px`;
+  reveal.style.background = getComputedStyle(document.body).getPropertyValue('--main-bg-color');
+  reveal.style.transform = "scale(0)";
+  reveal.style.transition = "none";
+
+  void reveal.offsetWidth;
+
+  reveal.style.transition = "transform 0.6s ease-out";
+  reveal.style.transform = "scale(50)";
+
+  setTimeout(() => {
+    document.body.classList.toggle("darkmode");
+    reveal.style.transform = "scale(0)";
+  }, 300);
+}
+
 // Darkmode by Pg network 
 // declare the elements here otherwise won't work + error
 // document.addEventListener("DOMContentLoaded", () => {
