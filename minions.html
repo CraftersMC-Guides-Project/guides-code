@@ -1,33 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Previous head content remains the same -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Minion Details - CraftersMC Guides</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="css/essential.css">
+  <link rel="stylesheet" href="css/item.css">
   <style>
-    /* Previous styles remain the same */
-    
+    :root {
+      --drop-bg-color-option: #ffffff;
+    }
+    .dark-mode {
+      --drop-bg-color-option: #333333;
+    }
+
+    .rarity-dropdown {
+      position: relative;
+      margin: 20px 0;
+      display: inline-block;
+    }
+
+    .rarity-dropdown .selected {
+      padding: 6px;
+      border-radius: 5px;
+      cursor: pointer;
+      user-select: none;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .rarity-dropdown .selected img {
+      height: 24px;
+    }
+
+    .rarity-dropdown .options {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 210px;
+      border-radius: 5px;
+      display: none;
+      z-index: 10;
+      white-space: nowrap;
+      background-color: var(--drop-bg-color-option);
+      flex-direction: row;
+      flex-wrap: wrap;
+      columns: 3;
+      column-gap: 10px;
+    }
+
+    .rarity-dropdown .options div {
+      padding: 5px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      transition: transform .2s;
+    }
+
+    .rarity-dropdown .options div:hover {
+      transform: scale(1.1);
+    }
+
     .price-container {
       margin-top: 10px;
       display: flex;
-      gap: 20px;
+      flex-direction: column;
+      gap: 8px;
     }
-    
+
     .price-section {
       display: flex;
-      flex-direction: column;
+      gap: 10px;
     }
-    
-    .buy-price {
-      color: #4CAF50; /* Green for buy price */
+
+    .current-price {
+      color: gold;
+      font-weight: bold;
     }
-    
-    .sell-price {
-      color: #F44336; /* Red for sell price */
+
+    .making-price {
+      color: #4CAF50; /* Green */
+    }
+
+    .selling-price {
+      color: #F44336; /* Red */
+    }
+
+    .item-container {
+      margin-bottom: 35px;
     }
   </style>
 </head>
 
 <body>
-  <!-- Previous body content remains the same until the script -->
+  <div id="loader"><div></div><div></div><div></div></div>
+  <div class="navbar"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay"></div>
+  <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
+
+  <div class="item-container" id="minionDetails">
+    <p>Loading minion details...</p>
+  </div>
+
+  <div id="footer"></div>
 
   <script>
     async function loadMinionDetails() {
@@ -104,27 +185,30 @@
     }
 
     function updatePrice(minionId, tier) {
-      const price = window.minionPrices.find(price => price.minionId === minionId);
-      const priceData = price?.prices?.[tier];
-      
-      let priceHTML = '';
+      const priceData = window.minionPrices.find(price => price.minionId === minionId);
       
       if (priceData) {
-        priceHTML = `
+        const tierPrice = priceData.tierPrices?.[tier] ?? 'Price not available';
+        const makingPrice = priceData.makingPrice ?? 'N/A';
+        const sellingPrice = priceData.sellingPrice ?? 'N/A';
+        
+        document.getElementById('minionPrice').innerHTML = `
           <div class="price-section">
-            <strong>Buy Price:</strong>
-            <span class="buy-price">${formatPrice(priceData.buy)}</span>
+            <strong>Current Tier Price:</strong>
+            <span class="current-price">${formatPrice(tierPrice)}</span>
           </div>
           <div class="price-section">
-            <strong>Sell Price:</strong>
-            <span class="sell-price">${formatPrice(priceData.sell)}</span>
+            <strong>Making Price:</strong>
+            <span class="making-price">${formatPrice(makingPrice)}</span>
+          </div>
+          <div class="price-section">
+            <strong>Selling Price:</strong>
+            <span class="selling-price">${formatPrice(sellingPrice)}</span>
           </div>
         `;
       } else {
-        priceHTML = '<div>Price not available</div>';
+        document.getElementById('minionPrice').innerHTML = '<div>Price data not available</div>';
       }
-      
-      document.getElementById('minionPrice').innerHTML = priceHTML;
     }
 
     function formatPrice(price) {
@@ -134,6 +218,6 @@
     loadMinionDetails();
   </script>
 
-  <!-- Rest of the body remains the same -->
+  <script src="js/script.js"></script>
 </body>
 </html>
