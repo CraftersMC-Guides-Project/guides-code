@@ -78,17 +78,14 @@
       gap: 10px;
     }
 
-    .current-price {
-      color: gold;
-      font-weight: bold;
-    }
-
     .making-price {
       color: #4CAF50; /* Green */
+      font-weight: bold;
     }
 
     .selling-price {
       color: #F44336; /* Red */
+      font-weight: bold;
     }
 
     .item-container {
@@ -152,22 +149,14 @@
                   </div>
                 </div>
                 <div id="minionPrice" class="price-container"></div>
-                <div id="fixedPrices" class="price-container"></div>
                 <p><strong>Category:</strong> ${minion.category}</p>
                 <p><strong>ID:</strong> ${minion.id}</p>
                 <p><strong>Description:</strong> ${minion.description || 'No description available'}</p>
               </div>
             `;
 
-            window.currentMinion = {  // Store minion data globally
-              id: minion.id,
-              makingPrice: minionPrice?.makingPrice,
-              sellingPrice: minionPrice?.sellingPrice
-            };
-            
-            window.minionPrices = minionPrices; // make prices accessible globally
-            updateTierPrice(minion.id, initialTier);
-            updateFixedPrices();
+            window.minionPrices = minionPrices; // make it accessible globally
+            updatePrice(minion.id, initialTier);
           } else {
             document.getElementById('minionDetails').innerHTML = '<p>Minion not found.</p> <a href="index.html">Back to Home</a>';
           }
@@ -189,32 +178,27 @@
       const selected = document.querySelector('.rarity-dropdown .selected span');
       selected.textContent = tier;
       document.querySelector('.rarity-dropdown .options').style.display = 'none';
-      updateTierPrice(minionId, tier);
+      updatePrice(minionId, tier);
     }
 
-    function updateTierPrice(minionId, tier) {
+    function updatePrice(minionId, tier) {
       const priceData = window.minionPrices.find(price => price.minionId === minionId);
-      const tierPrice = priceData?.tierPrices?.[tier] ?? 'Price not available';
+      const tierPrices = priceData?.tiers?.[tier];
       
-      document.getElementById('minionPrice').innerHTML = `
-        <div class="price-section">
-          <strong>${tier} Price:</strong>
-          <span class="current-price">${formatPrice(tierPrice)}</span>
-        </div>
-      `;
-    }
-
-    function updateFixedPrices() {
-      document.getElementById('fixedPrices').innerHTML = `
-        <div class="price-section">
-          <strong>Making Price:</strong>
-          <span class="making-price">${formatPrice(window.currentMinion.makingPrice)}</span>
-        </div>
-        <div class="price-section">
-          <strong>Selling Price:</strong>
-          <span class="selling-price">${formatPrice(window.currentMinion.sellingPrice)}</span>
-        </div>
-      `;
+      if (tierPrices) {
+        document.getElementById('minionPrice').innerHTML = `
+          <div class="price-section">
+            <strong>Making Cost:</strong>
+            <span class="making-price">${formatPrice(tierPrices[0])}</span>
+          </div>
+          <div class="price-section">
+            <strong>Selling Price:</strong>
+            <span class="selling-price">${formatPrice(tierPrices[1])}</span>
+          </div>
+        `;
+      } else {
+        document.getElementById('minionPrice').innerHTML = '<div>Price data not available</div>';
+      }
     }
 
     function formatPrice(price) {
