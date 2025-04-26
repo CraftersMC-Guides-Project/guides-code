@@ -618,7 +618,7 @@ setTimeout(() => {
   } else {
     infoDiv.innerHTML = `${user.email}`;
     infoDivName.innerHTML = `${userSettings.username}`;
-    infoDivImg.innerHTML = `${userSettings.profilePic}`;
+    infoDivImg.innerHTML = `<img style="width: 50px; height: 50px; margin: 0;" src="${userSettings.profilePic}">`;
   }
 }, 5000); // 5000 milliseconds = 5 seconds
 
