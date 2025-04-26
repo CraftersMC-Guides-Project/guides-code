@@ -6,3 +6,17 @@ function clearSelection() {
         sel.removeAllRanges();
     }
 }
+
+const user = JSON.parse(localStorage.getItem("user"));
+const infoDiv = document.getElementById("sidebarUsername");
+
+  if (!user || !user.token) {
+    window.location.href = "login.html"; // not logged in
+  } else {
+    infoDiv.innerHTML = `${user.email}`;
+  }
+
+  function logout() {
+    localStorage.removeItem("user");
+    location.reload();
+  }
