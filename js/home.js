@@ -9,6 +9,7 @@ function clearSelection() {
 
 setTimeout(() => {
   const user = JSON.parse(localStorage.getItem("user"));
+  const userSettings = JSON.parse(localStorage.getItem(`userSettings_${user.email}`));
   const infoDiv = document.getElementById("sidebarUsername");
   const infoDivName = document.getElementById("sidebarName");
 
@@ -16,7 +17,7 @@ setTimeout(() => {
     window.location.href = "login.html"; // not logged in
   } else {
     infoDiv.innerHTML = `${user.email}`;
-    infoDivName.innerHTML = `${userSettings_`${user.email}`.username}`;
+    infoDivName.innerHTML = `${userSettings.username}`;
   }
 }, 5000); // 5000 milliseconds = 5 seconds
 
