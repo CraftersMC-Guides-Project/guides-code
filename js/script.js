@@ -78,7 +78,8 @@ document.addEventListener("click", (event) => {
     sidebar.classList.contains("openSbar") &&
     !sidebar.contains(event.target) &&
     !menuIcon.contains(event.target) &&
-    !left.contains(event.target)
+    !left.contains(event.target) &&
+    !overlay.contains(event.target)
   ) {
     sidebar.classList.remove("openSbar");
     document.body.style.overflow = "";
