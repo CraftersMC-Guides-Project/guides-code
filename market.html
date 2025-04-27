@@ -201,7 +201,7 @@
       const filteredPets = pets.filter(pet => pet.name.toLowerCase().includes(query));
       const filteredMinions = minions.filter(minion => minion.name.toLowerCase().includes(query));
 
-      if (filteredItems.length === 0 && query.trim() !== '') {
+      if (filteredItems.length === 0 && query.trim() !== '' && filteredPets.length === 0 && filteredMinions.length === 0) {
         resultsDiv.innerHTML = '<p>No results found.</p>';
         return;
       }
@@ -244,7 +244,7 @@
             <img src="${pet.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : pet.picture}" alt="${pet.name}">
             </div>
             <div class="result-div-info">ID: ${pet.id}</div>
-            <div class="result-div-info">Market price: ${petPrice}</div>
+            <div class="result-div-info">Market price: Dependant on rarity, click for more</div>
             ${pet.description ? `<div class="description">${pet.description}</div>` : ''}
           </div>`;
         div.onclick = () => {
@@ -269,7 +269,7 @@
             <img src="${minion.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : minion.picture}" alt="${minion.name}">
             </div>
             <div class="result-div-info">ID: ${minion.id}</div>
-            <div class="result-div-info">Market price: Dependant on rarity</div>
+            <div class="result-div-info">Market price: Dependant on tier, click for more</div>
             ${minion.description ? `<div class="description">${minion.description}</div>` : ''}
           </div>`;
         div.onclick = () => {
