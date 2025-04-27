@@ -629,12 +629,12 @@ setTimeout(() => {
       infoDivImg.innerHTML = `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="${userSettings.profilePic}">`;
     } else {
       console.error("User settings not found.");
-      window.location.href = "login.html";
+      window.location.href = "sign-up.html";
     }
 
   } else {
     // Not logged in
-    window.location.href = "login.html";
+    window.location.href = "sign-up.html";
   }
 }, 5000); // 5 seconds delay
 
