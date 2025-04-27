@@ -3,155 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Processing Discord Login...</title>
+    <title>Discord Login Processing</title>
     <style>
         body {
-            font-family: sans-serif;
+            font-family: 'Roboto', sans-serif;
+            background-color: #36393f;
+            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            background-color: #36393f;
-            color: #ffffff;
+            height: 100vh;
             margin: 0;
             text-align: center;
         }
-        .message-box {
-            padding: 20px;
-            border-radius: 5px;
-            background-color: #424549;
-            max-width: 80%;
+        .container {
+            background-color: #2f3136;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+        .loader {
+            border: 4px solid #5865f2;
+            border-top: 4px solid transparent;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
         }
         .error-box {
-            padding: 20px;
-            border-radius: 5px;
-            background-color: #721c24;
-            color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            margin-bottom: 10px;
+            background-color: #ed4245;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            word-break: break-word;
         }
-        h1 {
-            margin-bottom: 10px;
-            color: #ffffff;
-        }
-        p {
-            margin-bottom: 10px;
-        }
-        .loading-indicator {
-            border: 4px solid #fff;
-            border-top: 4px solid #5865f2;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 10px auto;
+        .debug-info {
+            background-color: #202225;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 12px;
+            text-align: left;
+            max-height: 150px;
+            overflow-y: auto;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        button {
+            background-color: #5865f2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #4752c4;
+        }
     </style>
 </head>
 <body>
-    <div class="message-box">
-        <h1>Processing Login...</h1>
-        <div class="loading-indicator"></div>
-        <p>You are being logged in via Discord.</p>
+    <div class="container">
+        <h1 id="status-title">Processing Discord Login...</h1>
+        <div class="loader" id="loader"></div>
+        <div id="error-container" style="display: none;"></div>
+        <div id="debug-container" class="debug-info" style="display: none;"></div>
+        <button id="retry-btn" style="display: none;" onclick="window.location.reload()">Try Again</button>
     </div>
+
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    
     <script>
-        // Your Firebase configuration (replace with your actual config)
-        const firebaseConfig = {
-            apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
-            authDomain: "craftersmc-guides.firebaseapp.com",
-            projectId: "craftersmc-guides",
-            storageBucket: "craftersmc-guides.firebasestorage.app",
-            messagingSenderId: "647290515320",
-            appId: "1:647290515320:web:44e1be1528c86af00d628d",
-            measurementId: "G-K3WGXSF9DQ"
-        };
+        // Debug mode - set to false in production
+        const DEBUG_MODE = true;
         
+        // Firebase configuration (replace with yours)
+        const firebaseConfig = {
+            apiKey: "AIzaSyABC123...",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abc123def456",
+            measurementId: "G-ABC123DEF"
+        };
+
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
+        // DOM elements
+        const statusTitle = document.getElementById('status-title');
+        const loader = document.getElementById('loader');
+        const errorContainer = document.getElementById('error-container');
+        const debugContainer = document.getElementById('debug-container');
+        const retryBtn = document.getElementById('retry-btn');
+
+        // Cloud Function endpoint (REPLACE WITH YOURS)
+        const backendEndpoint = 'https://us-central1-your-project.cloudfunctions.net/discordAuth';
+
+        // Parse URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
         const error = urlParams.get('error');
         const errorDescription = urlParams.get('error_description');
-        const messageBox = document.querySelector('.message-box');
-        const loadingIndicator = document.querySelector('.loading-indicator');
 
-        // Show loading indicator
-        loadingIndicator.style.display = 'block';
+        // Debug logging
+        function logDebug(message) {
+            if (DEBUG_MODE) {
+                const debugElement = document.createElement('div');
+                debugElement.textContent = `[DEBUG] ${new Date().toLocaleTimeString()}: ${message}`;
+                debugContainer.appendChild(debugElement);
+                debugContainer.style.display = 'block';
+            }
+            console.debug(message);
+        }
 
-        // Replace with your Cloud Function URL
-        const backendEndpoint = 'https://us-central1-YOUR_PROJECT.cloudfunctions.net/discordAuth';
+        // Show error message
+        function showError(title, message, details = '') {
+            statusTitle.textContent = title;
+            loader.style.display = 'none';
+            
+            errorContainer.innerHTML = `
+                <div class="error-box">
+                    <strong>${message}</strong>
+                    ${details ? `<p>${details}</p>` : ''}
+                </div>
+            `;
+            errorContainer.style.display = 'block';
+            retryBtn.style.display = 'inline-block';
+            
+            logDebug(`Error: ${title} - ${message} ${details}`);
+        }
 
-        if (code) {
-            fetch(backendEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ code: code })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(`Server error: ${response.status} - ${text}`);
-                    });
+        // Main authentication flow
+        async function authenticateWithDiscord() {
+            try {
+                if (!code) {
+                    if (error) {
+                        showError('Discord Login Failed', 
+                                errorDescription || 'Unknown error occurred', 
+                                `Error code: ${error}`);
+                    } else {
+                        showError('Invalid Request', 
+                                'This page should only be accessed via Discord login redirect.');
+                    }
+                    return;
                 }
-                return response.json();
-            })
-            .then(data => {
-                if (data.firebaseToken) {
-                    // Sign in to Firebase with the custom token
-                    return auth.signInWithCustomToken(data.firebaseToken);
-                } else {
+
+                logDebug(`Received auth code: ${code.substring(0, 10)}...`);
+
+                // Call Cloud Function
+                const response = await fetch(backendEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ code })
+                });
+
+                logDebug(`Response status: ${response.status}`);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Server returned ${response.status}: ${errorText}`);
+                }
+
+                const data = await response.json();
+                logDebug('Received response from server:', JSON.stringify(data, null, 2));
+
+                if (!data.firebaseToken) {
                     throw new Error('No Firebase token received from server');
                 }
-            })
-            .then(userCredential => {
-                // Successfully logged in
-                console.log("Logged in user:", userCredential.user);
-                // Redirect to your main application page
-                window.location.href = "/dashboard.html"; // Change this to your desired redirect
-            })
-            .catch(error => {
-                console.error("Authentication failed:", error);
-                loadingIndicator.style.display = 'none';
-                messageBox.innerHTML = `
-                    <div class="error-box">
-                        <h1>Login Error</h1>
-                        <p>${error.message || 'Unknown error occurred'}</p>
-                    </div>
-                    <p>Please try again or contact support.</p>
-                `;
-            });
-        } else if (error) {
-            // Handle Discord OAuth errors
-            loadingIndicator.style.display = 'none';
-            messageBox.innerHTML = `
-                <div class="error-box">
-                    <h1>Discord Login Error</h1>
-                    <p>Error: ${error}</p>
-                    <p>${errorDescription || 'No additional details'}</p>
-                </div>
-                <p>Please try logging in again.</p>
-            `;
-        } else {
-            // No code or error parameter present
-            loadingIndicator.style.display = 'none';
-            messageBox.innerHTML = `
-                <div class="error-box">
-                    <h1>Invalid Request</h1>
-                    <p>This page should only be accessed as part of the Discord login flow.</p>
-                </div>
-                <p>Return to <a href="/" style="color: #5865f2;">home page</a>.</p>
-            `;
+
+                // Sign in with Firebase
+                const userCredential = await auth.signInWithCustomToken(data.firebaseToken);
+                logDebug('Successfully authenticated with Firebase:', userCredential.user.uid);
+
+                // Redirect to app
+                window.location.href = '/dashboard.html'; // Change to your success URL
+
+            } catch (err) {
+                showError('Authentication Failed', 
+                         'Could not complete login process', 
+                         err.message);
+                console.error('Authentication error:', err);
+            }
         }
+
+        // Start the process
+        authenticateWithDiscord();
     </script>
 </body>
-    </html>
+</html>
