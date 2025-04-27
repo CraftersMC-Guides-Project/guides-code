@@ -29,7 +29,7 @@ The **CraftersMC Guides** almost covers every aspect of progression in SkyBlock,
 - **[Rank Sellers Page](https://craftersmc-guides.pages.dev/ranksellersv2)**
 - **[Unicode Guide Page](https://craftersmc-guides.pages.dev/unicode)**
 - **[Collection Leaderboards Page](https://craftersmc-guides.pages.dev/leaderboards)**
-- **[Bank Interest Countdown (Beta)](https://craftersmc-guides.pages.dev/bankInterestV2)**
+- **[Bank Interest Countdown (Beta)](https://craftersmc-guides.pages.dev/bank-interest)**
 - **[Bazaar Prices (Beta)](https://craftersmc-guides.pages.dev/market)**
 - **[Texture Packs](https://craftersmc-guides.pages.dev/texture-packs)**
 
