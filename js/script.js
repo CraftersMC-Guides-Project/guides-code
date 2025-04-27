@@ -607,22 +607,40 @@ function toggleTheme(event) {
 // });
 
 setTimeout(() => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  const userSettings = JSON.parse(localStorage.getItem(`userSettings_${user.email}`));
+  const gUser = JSON.parse(localStorage.getItem('googleAuth'));
+  const user = JSON.parse(localStorage.getItem('user'));
+  const userSettings = user ? JSON.parse(localStorage.getItem(`userSettings_${user.email}`)) : null;
+
   const infoDiv = document.getElementById("sidebarUsername");
   const infoDivName = document.getElementById("sidebarName");
   const infoDivImg = document.getElementById("sidebarImg");
 
-  if (!user || !user.token) {
-    window.location.href = "login.html"; // not logged in
+  if (gUser) {
+    // Display Google user info
+    infoDiv.innerHTML = `${gUser.email}`;
+    infoDivName.innerHTML = `${gUser.displayName}`;
+    infoDivImg.innerHTML = `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="${gUser.photoURL}">`;
+
+  } else if (user && user.token) {
+    // Display Email/Password user info
+    if (userSettings) {
+      infoDiv.innerHTML = `${user.email}`;
+      infoDivName.innerHTML = `${userSettings.username}`;
+      infoDivImg.innerHTML = `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="${userSettings.profilePic}">`;
+    } else {
+      console.error("User settings not found.");
+      window.location.href = "login.html";
+    }
+
   } else {
-    infoDiv.innerHTML = `${user.email}`;
-    infoDivName.innerHTML = `${userSettings.username}`;
-    infoDivImg.innerHTML = `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="${userSettings.profilePic}">`;
+    // Not logged in
+    window.location.href = "login.html";
   }
-}, 5000); // 5000 milliseconds = 5 seconds
+}, 5000); // 5 seconds delay
 
 function logout() {
   localStorage.removeItem("user");
+  localStorage.removeItem("googleAuth");
   location.reload();
 }
+
