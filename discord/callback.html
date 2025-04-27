@@ -63,9 +63,10 @@
     </div>
 
     <script>
-        // Static configuration (replace these values)
-        const WORKER_URL = 'https://discord-auth.roumakdatta.workers.dev';  // ← Change this
-        
+        // Configuration
+        const WORKER_URL = 'https://discord-auth.roumakdatta.workers.dev';
+        const ALLOWED_ORIGIN = 'https://craftersmc-guides.pages.dev/discord/callback'; // Change to your site's URL
+
         // DOM elements
         const statusEl = document.getElementById('status');
         const loaderEl = document.getElementById('loader');
@@ -75,32 +76,47 @@
         const retryBtn = document.getElementById('retry-btn');
 
         async function handleAuth() {
+            // Security check
+            if (window.location.origin !== ALLOWED_ORIGIN) {
+                return showError('Unauthorized domain');
+            }
+
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
             const error = urlParams.get('error');
 
             if (error) {
-                showError(`Discord error: ${error}`);
-                return;
+                return showError(`Discord error: ${error}`);
             }
 
             if (!code) {
-                showError('No authorization code found');
-                return;
+                return showError('No authorization code found');
             }
 
             try {
-                // Exchange code for user data
-                const response = await fetch(`${WORKER_URL}/callback?code=${code}`);
+                statusEl.textContent = 'Verifying with Discord...';
                 
+                const response = await fetch(`${WORKER_URL}/callback`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': ALLOWED_ORIGIN
+                    },
+                    body: JSON.stringify({ code })
+                });
+
                 if (!response.ok) {
-                    throw new Error('Failed to authenticate');
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Authentication failed');
                 }
 
                 const user = await response.json();
                 showSuccess(user);
             } catch (err) {
-                showError(err.message);
+                console.error('Auth error:', err);
+                showError(err.message.includes('Failed to fetch') 
+                    ? 'Cannot connect to authentication server' 
+                    : err.message);
             }
         }
 
@@ -110,8 +126,6 @@
             statusEl.className = 'success';
             usernameEl.textContent = user.username;
             userInfoEl.style.display = 'block';
-            
-            // Clean URL
             history.replaceState({}, '', window.location.pathname);
         }
 
@@ -122,19 +136,14 @@
             errorUiEl.style.display = 'block';
             
             retryBtn.onclick = () => {
-                // Reset UI
                 loaderEl.style.display = 'block';
                 statusEl.textContent = 'Processing Discord Login';
                 statusEl.className = '';
                 errorUiEl.style.display = 'none';
-                userInfoEl.style.display = 'none';
-                
-                // Restart auth flow
                 window.location.href = `${WORKER_URL}/login`;
             };
         }
 
-        // Start auth flow when page loads
         document.addEventListener('DOMContentLoaded', handleAuth);
     </script>
 </body>
