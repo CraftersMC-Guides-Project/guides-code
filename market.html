@@ -153,16 +153,28 @@
 
     async function loadItems() {
       try {
-        const [marketRes, priceRes] = await Promise.all([
+        const [marketRes, priceRes, petRes, petPriceRes, minionRes, minionPriceRes] = await Promise.all([
           fetch('../market/market.txt'),
-          fetch('../market/mprices.txt')
+          fetch('../market/mprices.txt'),
+          fetch('../market/pets.txt'),
+          fetch('../market/pet-prices.txt'),
+          fetch('../market/minions.txt'),
+          fetch('../market/minion-prices.txt')
         ]);
 
         const marketText = await marketRes.text();
         const priceText = await priceRes.text();
+        const petText = await petRes.text();
+        const petPriceText = await petPriceRes.text();
+        const minionText = await minionRes.text();
+        const minionPriceText = await minionPriceRes.text();
 
         items = JSON.parse(marketText);
         prices = parsePrices(priceText);
+        pets = JSON.parse(petText);
+        petPrices = parsePrices(petPriceText);
+        minions = JSON.parse(minionText);
+        minionPrices = parsePrices(minionPriceText);
         
 
         isDataLoaded = true;
@@ -186,6 +198,8 @@
       }
 
       const filteredItems = items.filter(item => item.name.toLowerCase().includes(query));
+      const filteredPets = pets.filter(pet => pet.name.toLowerCase().includes(query));
+      const filteredMinions = minions.filter(minion => minion.name.toLowerCase().includes(query));
 
       if (filteredItems.length === 0 && query.trim() !== '') {
         resultsDiv.innerHTML = '<p>No results found.</p>';
@@ -209,6 +223,29 @@
             <div class="result-div-info">ID: ${item.id}</div>
             <div class="result-div-info">Market price: ${price} <img class="coin" src="img/coin.png" alt="Coin"></div>
             ${item.description ? `<div class="description">${item.description}</div>` : ''}
+          </div>`;
+        div.onclick = () => {
+          window.location.href = `item.html?item=${item.id}`;
+        };
+        resultsDiv.appendChild(div);
+      });
+    
+
+    filteredPets.slice(0, 10).forEach(pet => {
+        const petPrice = petPrices[pet.id] || 'N/A';
+        console.log(prices);
+
+        const div = document.createElement('div');
+        div.className = 'result';
+        div.innerHTML = `
+          <div class="info">
+          <div class="info-head">
+            <b>${pet.name}</b>
+            <img src="${pet.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : pet.picture}" alt="${pet.name}">
+            </div>
+            <div class="result-div-info">ID: ${pet.id}</div>
+            <div class="result-div-info">Market price: Dependant on rarity</div>
+            ${pet.description ? `<div class="description">${pet.description}</div>` : ''}
           </div>`;
         div.onclick = () => {
           window.location.href = `item.html?item=${item.id}`;
