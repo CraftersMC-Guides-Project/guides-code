@@ -1,6 +1,6 @@
-const intervalDuration = (5 * 24 + 4) * 60 * 60 * 1000; // 2 days 14 hours in ms
+const intervalDuration = (5 * 24 + 4) * 60 * 60 * 1000; // 5 days 4 hours in ms
 const eventDuration = 60 * 60 * 1000; // 1 hour in ms
-const baseEventTime = new Date('2025-01-27T14:30:00+05:30').getTime();
+const baseEventTime = new Date('2025-05-01T16:00:00+01:00').getTime();
 const eventAlertMessage = `
 🦁 Did you know? 🦁 The Creedon NPC is there with his random pets near the spawn inside the event stand area. Go online to buy those pets! 🐾
 `;
