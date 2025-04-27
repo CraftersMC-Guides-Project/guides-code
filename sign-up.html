@@ -123,6 +123,15 @@ document.getElementById('googleAuth').addEventListener('click', () => {
       const user = result.user;
       const additionalUserInfo = getAdditionalUserInfo(result);
     })
+
+    const userData = {
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL
+      };
+
+      localStorage.setItem('googleAuth', JSON.stringify(userData));
+  
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
