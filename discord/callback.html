@@ -3,76 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Login Processing</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #36393f;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            text-align: center;
-        }
-        .container {
-            background: #2f3136;
-            padding: 2rem;
-            border-radius: 8px;
-            max-width: 500px;
-            width: 90%;
-        }
-        .loader {
-            border: 4px solid #5865f2;
-            border-top: 4px solid transparent;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        .success { color: #3ba55c; }
-        .error { color: #ed4245; }
-        .message { margin-top: 20px; }
-    </style>
+    <title>Debugging Discord Login</title>
 </head>
 <body>
-    <div class="container">
-        <h1 id="status">Processing Discord Login</h1>
-        <div class="loader" id="loader"></div>
-        <div id="message-container" style="display: none;" class="message">
-            <p id="message-text"></p>
-        </div>
-    </div>
-
+    <h1>Debugging Discord Login</h1>
+    <p id="status">Attempting to send code to worker...</p>
     <script>
         const WORKER_URL = 'https://discord-auth.roumakdatta.workers.dev'; // *** ENSURE THIS IS EXACTLY YOUR WORKER URL ***
 
-        const statusEl = document.getElementById('status');
-        const loaderEl = document.getElementById('loader');
-        const messageContainerEl = document.getElementById('message-container');
-        const messageTextEl = document.getElementById('message-text');
-
-        async function handleAuth() {
+        async function sendCodeToWorker() {
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
-            const error = urlParams.get('error');
-
-            if (error) {
-                showError(`Discord error: ${error}`);
-                return;
-            }
 
             if (!code) {
-                showError('No authorization code found.');
+                console.error('No authorization code found in URL.');
+                document.getElementById('status').textContent = 'Error: No authorization code found.';
                 return;
             }
 
-            try {
-                statusEl.textContent = 'Verifying with Discord...';
-                loaderEl.style.display = 'block';
+            console.log('Authorization code found:', code);
+            document.getElementById('status').textContent = 'Sending code to worker...';
 
+            try {
                 const response = await fetch(`${WORKER_URL}/callback`, {
                     method: 'POST',
                     headers: {
@@ -82,49 +34,18 @@
                     body: JSON.stringify({ code })
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Authentication failed');
-                }
+                console.log('Worker Response:', response);
+                const data = await response.json();
+                console.log('Worker Response Data:', data);
+                document.getElementById('status').textContent = 'Worker responded (check console).';
 
-                const user = await response.json();
-                await sendUserToSession(user);
-
-            } catch (err) {
-                console.error('Auth error:', err);
-                showError(err.message.includes('Failed to fetch')
-                    ? 'Cannot connect to authentication server'
-                    : err.message);
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                document.getElementById('status').textContent = `Fetch Error: ${error.message}`;
             }
         }
 
-        async function sendUserToSession(user) {
-            statusEl.textContent = 'Creating session...';
-            const sessionResponse = await fetch(`${WORKER_URL}/session`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Origin': window.location.origin
-                },
-                body: JSON.stringify(user)
-            });
-
-            if (sessionResponse.ok) {
-                window.location.href = '/'; // Redirect to your static main site
-            } else {
-                const errorData = await sessionResponse.json();
-                showError(`Failed to create session: ${errorData.error || 'Unknown error'}`);
-            }
-        }
-
-        function showError(message) {
-            loaderEl.style.display = 'none';
-            statusEl.textContent = 'Login Failed';
-            messageTextEl.textContent = message;
-            messageContainerEl.style.display = 'block';
-        }
-
-        document.addEventListener('DOMContentLoaded', handleAuth);
+        document.addEventListener('DOMContentLoaded', sendCodeToWorker);
     </script>
 </body>
 </html>
