@@ -77,7 +77,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+  import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
@@ -91,6 +91,8 @@
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  auth.languageCode = 'it';
+  const gProvider = new GoogleAuthProvider();
 
   window.signUp = function () {
     const email = document.getElementById("email").value.trim();
@@ -110,6 +112,26 @@
         msg.textContent = error.message;
       });
   };
+
+  gProvider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+  
+document.getElementById('googleAuth').addEventListener('click', () => {
+  signInWithPopup(auth, gProvider)
+    .then((result) => {
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+      const user = result.user;
+      const additionalUserInfo = getAdditionalUserInfo(result);
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      const email = error.customData?.email;
+      const credential = GoogleAuthProvider.credentialFromError(error);
+    });
+});
+
+  
 </script>
 
 </body>
