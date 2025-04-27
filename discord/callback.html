@@ -37,17 +37,6 @@
         p {
             margin-bottom: 10px;
         }
-        #code-display {
-            font-family: monospace;
-            background-color: #2c2f33;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px auto;
-            max-width: 80%;
-            overflow-x: auto;
-            word-wrap: break-word;
-            display: none; /* Hide the code display */
-        }
         .loading-indicator {
             border: 4px solid #fff;
             border-top: 4px solid #5865f2;
@@ -56,6 +45,7 @@
             height: 30px;
             animation: spin 1s linear infinite;
             margin: 10px auto;
+            display: none; /* Initially hidden */
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -66,9 +56,8 @@
 <body>
     <div class="message-box">
         <h1>Processing Login...</h1>
-        <div class="loading-indicator" style="display: none;"></div>
+        <div class="loading-indicator"></div>
         <p>You are being logged in.</p>
-        <p id="code-display"></p>
     </div>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
@@ -78,20 +67,19 @@
         const messageBox = document.querySelector('.message-box');
         // Your Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
-            authDomain: "craftersmc-guides.firebaseapp.com",
-            projectId: "craftersmc-guides",
-            storageBucket: "craftersmc-guides.firebasestorage.app",
-            messagingSenderId: "647290515320",
-            appId: "1:647290515320:web:44e1be1528c86af00d628d",
-            measurementId: "G-K3WGXSF9DQ"
+            apiKey: "YOUR_FIREBASE_API_KEY",
+            authDomain: "YOUR_FIREBASE_AUTH_DOMAIN",
+            projectId: "YOUR_FIREBASE_PROJECT_ID",
+            storageBucket: "YOUR_FIREBASE_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_FIREBASE_MESSAGING_SENDER_ID",
+            appId: "YOUR_FIREBASE_APP_ID",
+            measurementId: "YOUR_FIREBASE_MEASUREMENT_ID"
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); // Get the auth service
         if (code) {
-            messageBox.querySelector('.loading-indicator').style.display = 'block';
-            messageBox.querySelector('p').textContent = 'You are being logged in...';
+            messageBox.querySelector('.loading-indicator').style.display = 'block'; // Show indicator
             // Important: Send this code to your backend!  Replace '/your-backend-endpoint'
             const backendEndpoint = '/your-backend-endpoint'; // <===== CHANGE THIS LINE =====
             fetch(backendEndpoint, {
@@ -99,15 +87,13 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    code: code
-                })
+                body: JSON.stringify({ code: code })
             })
             .then(response => {
                 if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(`HTTP error! Status: ${response.status}, Body: ${text}`);
-                    });
+                  return response.text().then(text => {  //  Capture the response text
+                    throw new Error(`HTTP error! Status: ${response.status},  Body: ${text}`);
+                  });
                 }
                 return response.json();
             })
@@ -129,8 +115,6 @@
                                 <h1>Firebase Sign-in Error</h1>
                                 <p>Failed to sign in to Firebase: ${error.message}</p>
                                 <p>Please try again later.</p>`;
-                            //  Consider a redirect here, too.
-                            //  window.location.href = '/login-failed';
                         });
                 } else if (data.redirectUrl) {
                     // Backend sent a redirect URL
@@ -140,8 +124,6 @@
                     const errorMessage = data.error_message || "No Firebase token or redirect URL received from server.";
                     messageBox.innerHTML = `<h1>Login Error</h1>
                                             <p>Error: ${errorMessage}</p>`;
-                    //  Consider a redirect
-                    //  window.location.href = '/login-failed';
                 }
             })
             .catch(error => {
@@ -151,8 +133,6 @@
                     <h1>Error</h1>
                     <p>Error communicating with the server: ${error.message}</p>
                     <p>Please try again later.</p>`;
-                //  Consider a redirect
-                //  window.location.href = '/login-failed';
             });
         } else if (error) {
             // Handle errors from Discord's OAuth2 server
@@ -161,13 +141,9 @@
                 <p style="color:red;">Error: ${error}</p>
                 <p style="color:red;">Description: ${errorDescription || 'No description available'}</p>
                 <p>Please try logging in again.</p>`;
-            //  Consider a redirect
-            //  window.location.href = '/login-failed';
         } else {
-            // The user got to this page without a code or error.
-            messageBox.innerHTML = `<h1>Invalid Code</h1><p>Authorization code is missing.  This page is intended to be accessed after a successful Discord login.</p>`;
-            //  Consider a redirect
-            //  window.location.href = '/login-failed';
+            // The user got to this page without a code or error.  Show specific error
+            messageBox.innerHTML = `<h1>Invalid Code</h1><p>Authorization code is missing.  This page must be accessed as part of the Discord login flow.</p>`;
         }
     </script>
 </body>
