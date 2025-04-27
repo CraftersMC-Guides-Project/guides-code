@@ -123,6 +123,8 @@ document.getElementById('googleAuth').addEventListener('click', () => {
       const user = result.user;
       const additionalUserInfo = getAdditionalUserInfo(result);
 
+      console.log('Successfully signed in:', user); // Add this
+
       const userData = {
         email: user.email,
         displayName: user.displayName,
@@ -130,15 +132,19 @@ document.getElementById('googleAuth').addEventListener('click', () => {
       };
 
       localStorage.setItem('googleAuth', JSON.stringify(userData));
-  
+      console.log('User data stored in localStorage:', userData); // Add this
+
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
       const email = error.customData?.email;
       const credential = GoogleAuthProvider.credentialFromError(error);
+
+      console.error('Authentication error:', errorMessage);
     });
 });
+
 
   
 </script>
