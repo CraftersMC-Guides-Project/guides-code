@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Login</title>
+    <title>Discord Login Processing</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -34,73 +34,50 @@
         }
         .success { color: #3ba55c; }
         .error { color: #ed4245; }
-        button {
-            background: #5865f2;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .message { margin-top: 20px; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 id="status">Processing Discord Login</h1>
         <div class="loader" id="loader"></div>
-        <div id="user-info" style="display: none;">
-            <h2>Welcome, <span id="username"></span>!</h2>
-            <button onclick="window.location.href='/'">Continue to App</button>
-        </div>
-        <div id="error-ui" style="display: none;">
-            <button id="retry-btn">Try Again</button>
+        <div id="message-container" style="display: none;" class="message">
+            <p id="message-text"></p>
         </div>
     </div>
 
     <script>
-        // Configuration
-        const WORKER_URL = 'https://discord-auth.roumakdatta.workers.dev';
-        // const ALLOWED_ORIGIN = 'https://craftersmc-guides.pages.dev/discord/callback'; // Change to your site's URL
+        const WORKER_URL = 'https://discord-auth.roumakdatta.workers.dev'; // Your Cloudflare Worker URL
 
-        // DOM elements
         const statusEl = document.getElementById('status');
         const loaderEl = document.getElementById('loader');
-        const userInfoEl = document.getElementById('user-info');
-        const usernameEl = document.getElementById('username');
-        const errorUiEl = document.getElementById('error-ui');
-        const retryBtn = document.getElementById('retry-btn');
+        const messageContainerEl = document.getElementById('message-container');
+        const messageTextEl = document.getElementById('message-text');
 
         async function handleAuth() {
-            // Security check - REMOVED
-            // if (window.location.origin !== ALLOWED_ORIGIN) {
-            //     return showError('Unauthorized domain');
-            // }
-
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
             const error = urlParams.get('error');
 
             if (error) {
-                return showError(`Discord error: ${error}`);
+                showError(`Discord error: ${error}`);
+                return;
             }
 
             if (!code) {
-                return showError('No authorization code found');
+                showError('No authorization code found.');
+                return;
             }
 
             try {
                 statusEl.textContent = 'Verifying with Discord...';
+                loaderEl.style.display = 'block';
 
                 const response = await fetch(`${WORKER_URL}/callback`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Origin': window.location.origin // Use the current origin
+                        'Origin': window.location.origin
                     },
                     body: JSON.stringify({ code })
                 });
@@ -111,7 +88,8 @@
                 }
 
                 const user = await response.json();
-                showSuccess(user);
+                await sendUserToSession(user);
+
             } catch (err) {
                 console.error('Auth error:', err);
                 showError(err.message.includes('Failed to fetch')
@@ -120,28 +98,30 @@
             }
         }
 
-        function showSuccess(user) {
-            loaderEl.style.display = 'none';
-            statusEl.textContent = 'Login successful!';
-            statusEl.className = 'success';
-            usernameEl.textContent = user.username;
-            userInfoEl.style.display = 'block';
-            history.replaceState({}, '', window.location.pathname);
+        async function sendUserToSession(user) {
+            statusEl.textContent = 'Creating session...';
+            const sessionResponse = await fetch(`${WORKER_URL}/session`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Origin': window.location.origin
+                },
+                body: JSON.stringify(user)
+            });
+
+            if (sessionResponse.ok) {
+                window.location.href = '/'; // Redirect to your static main site
+            } else {
+                const errorData = await sessionResponse.json();
+                showError(`Failed to create session: ${errorData.error || 'Unknown error'}`);
+            }
         }
 
         function showError(message) {
             loaderEl.style.display = 'none';
-            statusEl.textContent = message;
-            statusEl.className = 'error';
-            errorUiEl.style.display = 'block';
-
-            retryBtn.onclick = () => {
-                loaderEl.style.display = 'block';
-                statusEl.textContent = 'Processing Discord Login';
-                statusEl.className = '';
-                errorUiEl.style.display = 'none';
-                window.location.href = `${WORKER_URL}/login`;
-            };
+            statusEl.textContent = 'Login Failed';
+            messageTextEl.textContent = message;
+            messageContainerEl.style.display = 'block';
         }
 
         document.addEventListener('DOMContentLoaded', handleAuth);
