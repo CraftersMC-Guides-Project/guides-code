@@ -12,7 +12,7 @@
             align-items: center;
             min-height: 100vh;
             background-color: #36393f;
-            color: #dcddde;
+            color: #ffffff;
             margin: 0;
             text-align: center;
         }
@@ -45,6 +45,8 @@
             margin: 10px auto;
             max-width: 80%;
             overflow-x: auto;
+            word-wrap: break-word;
+            display: none; /* Hide the code display */
         }
         .loading-indicator {
             border: 4px solid #fff;
@@ -55,29 +57,25 @@
             animation: spin 1s linear infinite;
             margin: 10px auto;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
     </style>
 </head>
 <body>
     <div class="message-box">
-        <h1>Processing Discord Login...</h1>
-        <div class="loading-indicator"></div>
-        <p>You have been redirected from Discord. Please wait while we process your login.</p>
+        <h1>Processing Login...</h1>
+        <div class="loading-indicator" style="display: none;"></div>
+        <p>You are being logged in.</p>
         <p id="code-display"></p>
     </div>
-
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
         const error = urlParams.get('error');
         const errorDescription = urlParams.get('error_description');
         const messageBox = document.querySelector('.message-box');
-
         // Your Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
@@ -88,63 +86,63 @@
             appId: "1:647290515320:web:44e1be1528c86af00d628d",
             measurementId: "G-K3WGXSF9DQ"
         };
-
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); // Get the auth service
-
         if (code) {
-            document.getElementById('code-display').textContent = `Authorization Code: ${code}`;
-            // Important:  Send this code to your backend!
-            fetch('/your-backend-endpoint', {  // Replace '/your-backend-endpoint'
+            messageBox.querySelector('.loading-indicator').style.display = 'block';
+            messageBox.querySelector('p').textContent = 'You are being logged in...';
+            // Important: Send this code to your backend!  Replace '/your-backend-endpoint'
+            const backendEndpoint = '/your-backend-endpoint'; // <===== CHANGE THIS LINE =====
+            fetch(backendEndpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ code: code })
+                body: JSON.stringify({
+                    code: code
+                })
             })
             .then(response => {
                 if (!response.ok) {
-                    // Handle HTTP errors (e.g., 500, 400)
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    return response.text().then(text => {
+                        throw new Error(`HTTP error! Status: ${response.status}, Body: ${text}`);
+                    });
                 }
-                return response.json(); // Or response.text(), depending on your backend
+                return response.json();
             })
             .then(data => {
-                //  Handle the response from your backend.  The backend should:
-                //  1. Exchange the code with Discord for an access token.
-                //  2. Get the user's information from Discord.
-                //  3. Create a Firebase custom token.
-                //  4.  Send the Firebase custom token (or a session identifier)
-                //      back to this frontend.
-
-                console.log("Response from backend:", data); // For debugging
-
+                // Handle the response from your backend.
+                console.log("Response from backend:", data);
                 if (data.firebaseToken) {
-                    //  Sign in with Firebase using the custom token:
+                    // Sign in with Firebase using the custom token:
                     auth.signInWithCustomToken(data.firebaseToken)
-                    .then(userCredential => {
-                        console.log("Successfully signed in to Firebase:", userCredential.user);
-                        //  Redirect to your main app page.
-                        window.location.href = '/your-main-app'; //  Change this
-                    })
-                    .catch(error => {
-                        console.error("Firebase sign-in error:", error);
-                        messageBox.innerHTML = `
-                            <h1>Firebase Sign-in Error</h1>
-                            <p>Failed to sign in to Firebase: ${error.message}</p>
-                            <p>Please try again later.</p>`;
-
-                    });
+                        .then(userCredential => {
+                            console.log("Successfully signed in to Firebase:", userCredential.user);
+                            // Redirect to your main app page. Replace '/your-main-app'
+                            const mainAppUrl = '/your-main-app'; // <===== CHANGE THIS LINE =====
+                            window.location.href = mainAppUrl;
+                        })
+                        .catch(error => {
+                            console.error("Firebase sign-in error:", error);
+                            messageBox.innerHTML = `
+                                <h1>Firebase Sign-in Error</h1>
+                                <p>Failed to sign in to Firebase: ${error.message}</p>
+                                <p>Please try again later.</p>`;
+                            //  Consider a redirect here, too.
+                            //  window.location.href = '/login-failed';
+                        });
                 } else if (data.redirectUrl) {
-                    //  Backend sent a redirect URL (e.g., with a session cookie)
+                    // Backend sent a redirect URL
                     window.location.href = data.redirectUrl;
-                }
-                else {
+                } else {
                     // Handle other success cases, or errors
-                    messageBox.innerHTML = `<h1>Login Successful (No Token)</h1><p>Your login was successful, but we did not receive a Firebase token.  Check with the administrator.</p>`;
+                    const errorMessage = data.error_message || "No Firebase token or redirect URL received from server.";
+                    messageBox.innerHTML = `<h1>Login Error</h1>
+                                            <p>Error: ${errorMessage}</p>`;
+                    //  Consider a redirect
+                    //  window.location.href = '/login-failed';
                 }
-
             })
             .catch(error => {
                 // Handle network errors, JSON parsing errors, etc.
@@ -153,17 +151,23 @@
                     <h1>Error</h1>
                     <p>Error communicating with the server: ${error.message}</p>
                     <p>Please try again later.</p>`;
+                //  Consider a redirect
+                //  window.location.href = '/login-failed';
             });
         } else if (error) {
             // Handle errors from Discord's OAuth2 server
-             messageBox.innerHTML = `
+            messageBox.innerHTML = `
                 <h1 style="color:red;">Discord Login Error</h1>
                 <p style="color:red;">Error: ${error}</p>
                 <p style="color:red;">Description: ${errorDescription || 'No description available'}</p>
                 <p>Please try logging in again.</p>`;
+            //  Consider a redirect
+            //  window.location.href = '/login-failed';
         } else {
-            //  The user got to this page without a code or error.
-            messageBox.innerHTML = `<h1>Invalid Request</h1><p>You should not be on this page directly.  Please return to the login page and try again.</p>`;
+            // The user got to this page without a code or error.
+            messageBox.innerHTML = `<h1>Invalid Code</h1><p>Authorization code is missing.  This page is intended to be accessed after a successful Discord login.</p>`;
+            //  Consider a redirect
+            //  window.location.href = '/login-failed';
         }
     </script>
 </body>
