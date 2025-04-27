@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Login Processing</title>
+    <title>Discord Login Callback</title>
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
             background-color: #36393f;
             color: white;
             display: flex;
@@ -20,7 +20,7 @@
             background-color: #2f3136;
             padding: 2rem;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             max-width: 500px;
             width: 90%;
         }
@@ -33,176 +33,117 @@
             animation: spin 1s linear infinite;
             margin: 20px auto;
         }
-        .error-box {
-            background-color: #ed4245;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            word-break: break-word;
+        .success {
+            color: #3ba55c;
         }
-        .debug-info {
-            background-color: #202225;
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 20px;
-            font-family: monospace;
-            font-size: 12px;
-            text-align: left;
-            max-height: 150px;
-            overflow-y: auto;
+        .error {
+            color: #ed4245;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        button {
-            background-color: #5865f2;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-        button:hover {
-            background-color: #4752c4;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 id="status-title">Processing Discord Login...</h1>
+        <h1 id="status">Processing Discord Login...</h1>
         <div class="loader" id="loader"></div>
-        <div id="error-container" style="display: none;"></div>
-        <div id="debug-container" class="debug-info" style="display: none;"></div>
-        <button id="retry-btn" style="display: none;" onclick="window.location.reload()">Try Again</button>
+        <div id="user-info" style="display: none;">
+            <h2>Welcome, <span id="username"></span>!</h2>
+            <p>You've successfully logged in with Discord.</p>
+            <button onclick="window.location.href='/'" style="
+                background: #5865f2;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+                margin-top: 20px;
+            ">Continue to Dashboard</button>
+        </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    
     <script>
-        // Debug mode - set to false in production
-        const DEBUG_MODE = true;
+        // Cloudflare Worker endpoint (REPLACE WITH YOUR WORKER URL)
+        const WORKER_URL = 'https://discord-auth.your-username.workers.dev';
         
-        // Firebase configuration (replace with yours)
-        const firebaseConfig = {
-            apiKey: "AIzaSyABC123...",
-            authDomain: "your-project.firebaseapp.com",
-            projectId: "your-project",
-            storageBucket: "your-project.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abc123def456",
-            measurementId: "G-ABC123DEF"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-
         // DOM elements
-        const statusTitle = document.getElementById('status-title');
-        const loader = document.getElementById('loader');
-        const errorContainer = document.getElementById('error-container');
-        const debugContainer = document.getElementById('debug-container');
-        const retryBtn = document.getElementById('retry-btn');
+        const statusEl = document.getElementById('status');
+        const loaderEl = document.getElementById('loader');
+        const userInfoEl = document.getElementById('user-info');
+        const usernameEl = document.getElementById('username');
 
-        // Cloud Function endpoint (REPLACE WITH YOURS)
-        const backendEndpoint = 'https://us-central1-your-project.cloudfunctions.net/discordAuth';
+        async function handleCallback() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const error = urlParams.get('error');
 
-        // Parse URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-        const error = urlParams.get('error');
-        const errorDescription = urlParams.get('error_description');
-
-        // Debug logging
-        function logDebug(message) {
-            if (DEBUG_MODE) {
-                const debugElement = document.createElement('div');
-                debugElement.textContent = `[DEBUG] ${new Date().toLocaleTimeString()}: ${message}`;
-                debugContainer.appendChild(debugElement);
-                debugContainer.style.display = 'block';
+            if (error) {
+                showError(`Discord login failed: ${error}`);
+                return;
             }
-            console.debug(message);
-        }
 
-        // Show error message
-        function showError(title, message, details = '') {
-            statusTitle.textContent = title;
-            loader.style.display = 'none';
-            
-            errorContainer.innerHTML = `
-                <div class="error-box">
-                    <strong>${message}</strong>
-                    ${details ? `<p>${details}</p>` : ''}
-                </div>
-            `;
-            errorContainer.style.display = 'block';
-            retryBtn.style.display = 'inline-block';
-            
-            logDebug(`Error: ${title} - ${message} ${details}`);
-        }
+            if (!code) {
+                showError('Authorization code missing');
+                return;
+            }
 
-        // Main authentication flow
-        async function authenticateWithDiscord() {
             try {
-                if (!code) {
-                    if (error) {
-                        showError('Discord Login Failed', 
-                                errorDescription || 'Unknown error occurred', 
-                                `Error code: ${error}`);
-                    } else {
-                        showError('Invalid Request', 
-                                'This page should only be accessed via Discord login redirect.');
-                    }
-                    return;
-                }
-
-                logDebug(`Received auth code: ${code.substring(0, 10)}...`);
-
-                // Call Cloud Function
-                const response = await fetch(backendEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ code })
-                });
-
-                logDebug(`Response status: ${response.status}`);
-
+                // Exchange code for user data via Cloudflare Worker
+                const response = await fetch(`${WORKER_URL}/callback?code=${code}`);
+                
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Server returned ${response.status}: ${errorText}`);
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to authenticate');
                 }
 
-                const data = await response.json();
-                logDebug('Received response from server:', JSON.stringify(data, null, 2));
-
-                if (!data.firebaseToken) {
-                    throw new Error('No Firebase token received from server');
-                }
-
-                // Sign in with Firebase
-                const userCredential = await auth.signInWithCustomToken(data.firebaseToken);
-                logDebug('Successfully authenticated with Firebase:', userCredential.user.uid);
-
-                // Redirect to app
-                window.location.href = '/dashboard.html'; // Change to your success URL
-
+                const userData = await response.json();
+                completeLogin(userData);
             } catch (err) {
-                showError('Authentication Failed', 
-                         'Could not complete login process', 
-                         err.message);
-                console.error('Authentication error:', err);
+                showError(err.message);
             }
         }
 
-        // Start the process
-        authenticateWithDiscord();
+        function completeLogin(user) {
+            // Hide loader and show success
+            loaderEl.style.display = 'none';
+            statusEl.textContent = 'Login Successful!';
+            statusEl.className = 'success';
+            
+            // Display user info
+            usernameEl.textContent = user.username;
+            userInfoEl.style.display = 'block';
+            
+            // Store user data in localStorage
+            localStorage.setItem('discordUser', JSON.stringify(user));
+            
+            // You can now use the user data in your app:
+            // - user.id (Discord snowflake)
+            // - user.username
+            // - user.avatar (if you added it to the Worker response)
+        }
+
+        function showError(message) {
+            loaderEl.style.display = 'none';
+            statusEl.textContent = message;
+            statusEl.className = 'error';
+            
+            // Add retry button
+            statusEl.innerHTML += `<br/><button onclick="window.location.href='${WORKER_URL}/login'" style="
+                background: #5865f2;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-top: 10px;
+            ">Try Again</button>`;
+        }
+
+        // Start processing on page load
+        document.addEventListener('DOMContentLoaded', handleCallback);
     </script>
 </body>
 </html>
