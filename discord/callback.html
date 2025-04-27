@@ -65,7 +65,7 @@
     <script>
         // Configuration
         const WORKER_URL = 'https://discord-auth.roumakdatta.workers.dev';
-        const ALLOWED_ORIGIN = 'https://craftersmc-guides.pages.dev/discord/callback'; // Change to your site's URL
+        // const ALLOWED_ORIGIN = 'https://craftersmc-guides.pages.dev/discord/callback'; // Change to your site's URL
 
         // DOM elements
         const statusEl = document.getElementById('status');
@@ -76,10 +76,10 @@
         const retryBtn = document.getElementById('retry-btn');
 
         async function handleAuth() {
-            // Security check
-            if (window.location.origin !== ALLOWED_ORIGIN) {
-                return showError('Unauthorized domain');
-            }
+            // Security check - REMOVED
+            // if (window.location.origin !== ALLOWED_ORIGIN) {
+            //     return showError('Unauthorized domain');
+            // }
 
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
@@ -95,12 +95,12 @@
 
             try {
                 statusEl.textContent = 'Verifying with Discord...';
-                
+
                 const response = await fetch(`${WORKER_URL}/callback`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Origin': ALLOWED_ORIGIN
+                        'Origin': window.location.origin // Use the current origin
                     },
                     body: JSON.stringify({ code })
                 });
@@ -114,8 +114,8 @@
                 showSuccess(user);
             } catch (err) {
                 console.error('Auth error:', err);
-                showError(err.message.includes('Failed to fetch') 
-                    ? 'Cannot connect to authentication server' 
+                showError(err.message.includes('Failed to fetch')
+                    ? 'Cannot connect to authentication server'
                     : err.message);
             }
         }
@@ -134,7 +134,7 @@
             statusEl.textContent = message;
             statusEl.className = 'error';
             errorUiEl.style.display = 'block';
-            
+
             retryBtn.onclick = () => {
                 loaderEl.style.display = 'block';
                 statusEl.textContent = 'Processing Discord Login';
