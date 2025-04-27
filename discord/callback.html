@@ -3,18 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Login Handler</title>
+    <title>Discord Login</title>
     <style>
-        :root {
-            --discord-blurple: #5865F2;
-            --discord-green: #3BA55C;
-            --discord-red: #ED4245;
-            --discord-dark: #2F3136;
-            --discord-darker: #202225;
-        }
         body {
-            font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background-color: var(--discord-darker);
+            font-family: Arial, sans-serif;
+            background: #36393f;
             color: white;
             display: flex;
             justify-content: center;
@@ -23,47 +16,31 @@
             margin: 0;
             text-align: center;
         }
-        .auth-container {
-            background-color: var(--discord-dark);
+        .container {
+            background: #2f3136;
             padding: 2rem;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            width: 90%;
             max-width: 500px;
+            width: 90%;
         }
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
+        .loader {
+            border: 4px solid #5865f2;
+            border-top: 4px solid transparent;
             border-radius: 50%;
-            border-top: 4px solid var(--discord-blurple);
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
             margin: 20px auto;
         }
-        .status-message {
-            margin: 15px 0;
-            font-size: 1.1rem;
-        }
-        .success { color: var(--discord-green); }
-        .error { color: var(--discord-red); }
-        .btn {
-            background: var(--discord-blurple);
+        .success { color: #3ba55c; }
+        .error { color: #ed4245; }
+        button {
+            background: #5865f2;
             color: white;
             border: none;
             padding: 10px 20px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 1rem;
-            margin-top: 15px;
-            transition: background 0.2s;
-        }
-        .btn:hover {
-            background: #4752C4;
-        }
-        .user-card {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            border-radius: 5px;
             margin-top: 20px;
         }
         @keyframes spin {
@@ -73,137 +50,92 @@
     </style>
 </head>
 <body>
-    <div class="auth-container">
-        <h1>Discord Authentication</h1>
-        <div class="spinner" id="spinner"></div>
-        <p class="status-message" id="status">Processing login...</p>
-        
-        <div id="success-ui" style="display: none;">
-            <div class="user-card">
-                <h2 id="username">Welcome, User!</h2>
-                <p>You've successfully authenticated</p>
-            </div>
-            <button class="btn" onclick="window.location.href='/'">Continue to App</button>
+    <div class="container">
+        <h1 id="status">Processing Discord Login</h1>
+        <div class="loader" id="loader"></div>
+        <div id="user-info" style="display: none;">
+            <h2>Welcome, <span id="username"></span>!</h2>
+            <button onclick="window.location.href='/'">Continue to App</button>
         </div>
-        
         <div id="error-ui" style="display: none;">
-            <button class="btn" id="retry-btn">Try Again</button>
+            <button id="retry-btn">Try Again</button>
         </div>
     </div>
 
     <script>
-        // Configuration - MUST UPDATE THESE
-        const CONFIG = {
-            workerUrl: 'https://discord-auth.roumakdatta.workers.dev/', // Your Worker URL
-            allowedDomains: ['https://craftersmc-guides.pages.dev'] // Your allowed domains
-        };
+        // Static configuration (replace these values)
+        const WORKER_URL = 'https://discord-auth.roumakdatta.workers.dev/';  // ← Change this
+        
+        // DOM elements
+        const statusEl = document.getElementById('status');
+        const loaderEl = document.getElementById('loader');
+        const userInfoEl = document.getElementById('user-info');
+        const usernameEl = document.getElementById('username');
+        const errorUiEl = document.getElementById('error-ui');
+        const retryBtn = document.getElementById('retry-btn');
 
-        // DOM Elements
-        const elements = {
-            spinner: document.getElementById('spinner'),
-            status: document.getElementById('status'),
-            successUi: document.getElementById('success-ui'),
-            errorUi: document.getElementById('error-ui'),
-            username: document.getElementById('username'),
-            retryBtn: document.getElementById('retry-btn')
-        };
+        async function handleAuth() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const error = urlParams.get('error');
 
-        // State management
-        const authState = {
-            reset: () => {
-                localStorage.removeItem('discordUser');
-                elements.successUi.style.display = 'none';
-                elements.errorUi.style.display = 'none';
-                elements.spinner.style.display = 'block';
-                elements.status.className = '';
+            if (error) {
+                showError(`Discord error: ${error}`);
+                return;
             }
-        };
 
-        // Main auth flow controller
-        const authFlow = {
-            init: () => {
-                // Validate we're on an allowed domain
-                if (!CONFIG.allowedDomains.includes(window.location.origin)) {
-                    this.showError('Unauthorized domain');
-                    return;
-                }
-
-                // Check for auth code in URL
-                const urlParams = new URLSearchParams(window.location.search);
-                const code = urlParams.get('code');
-                const error = urlParams.get('error');
-
-                if (error) {
-                    this.showError(`Discord error: ${error}`);
-                    return;
-                }
-
-                if (code) {
-                    this.handleCallback(code);
-                } else {
-                    this.showError('Missing authorization code');
-                }
-            },
-
-            handleCallback: async (code) => {
-                try {
-                    elements.status.textContent = 'Verifying with Discord...';
-                    
-                    const response = await fetch(`${CONFIG.workerUrl}/callback?code=${code}`);
-                    
-                    if (!response.ok) {
-                        const error = await response.json();
-                        throw new Error(error.message || 'Authentication failed');
-                    }
-
-                    const userData = await response.json();
-                    this.handleSuccess(userData);
-                } catch (err) {
-                    this.showError(err.message);
-                    console.error('Auth error:', err);
-                }
-            },
-
-            handleSuccess: (user) => {
-                // Update UI
-                elements.spinner.style.display = 'none';
-                elements.status.textContent = 'Authentication successful!';
-                elements.status.className = 'success';
-                elements.username.textContent = `Welcome, ${user.username}!`;
-                elements.successUi.style.display = 'block';
-                
-                // Store user data
-                localStorage.setItem('discordUser', JSON.stringify(user));
-                
-                // Clean URL
-                window.history.replaceState({}, document.title, window.location.pathname);
-            },
-
-            showError: (message) => {
-                elements.spinner.style.display = 'none';
-                elements.status.textContent = message;
-                elements.status.className = 'error';
-                elements.errorUi.style.display = 'block';
-                
-                // Set up retry button
-                elements.retryBtn.onclick = () => {
-                    authState.reset();
-                    elements.status.textContent = 'Redirecting to Discord...';
-                    window.location.href = `${CONFIG.workerUrl}/login`;
-                };
+            if (!code) {
+                showError('No authorization code found');
+                return;
             }
-        };
 
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            // First check if we're already logged in
-            const savedUser = localStorage.getItem('discordUser');
-            if (savedUser) {
-                authFlow.handleSuccess(JSON.parse(savedUser));
-            } else {
-                authFlow.init();
+            try {
+                // Exchange code for user data
+                const response = await fetch(`${WORKER_URL}/callback?code=${code}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to authenticate');
+                }
+
+                const user = await response.json();
+                showSuccess(user);
+            } catch (err) {
+                showError(err.message);
             }
-        });
+        }
+
+        function showSuccess(user) {
+            loaderEl.style.display = 'none';
+            statusEl.textContent = 'Login successful!';
+            statusEl.className = 'success';
+            usernameEl.textContent = user.username;
+            userInfoEl.style.display = 'block';
+            
+            // Clean URL
+            history.replaceState({}, '', window.location.pathname);
+        }
+
+        function showError(message) {
+            loaderEl.style.display = 'none';
+            statusEl.textContent = message;
+            statusEl.className = 'error';
+            errorUiEl.style.display = 'block';
+            
+            retryBtn.onclick = () => {
+                // Reset UI
+                loaderEl.style.display = 'block';
+                statusEl.textContent = 'Processing Discord Login';
+                statusEl.className = '';
+                errorUiEl.style.display = 'none';
+                userInfoEl.style.display = 'none';
+                
+                // Restart auth flow
+                window.location.href = `${WORKER_URL}/login`;
+            };
+        }
+
+        // Start auth flow when page loads
+        document.addEventListener('DOMContentLoaded', handleAuth);
     </script>
 </body>
-    </html>
+</html>
