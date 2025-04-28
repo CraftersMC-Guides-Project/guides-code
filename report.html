@@ -30,6 +30,7 @@
             border-radius: 10px;
             background-color: rgba(0, 0, 0, 0.8);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+            text-align: center; /* Center the content */
         }
 
         h1 {
@@ -40,6 +41,7 @@
 
         .form-group {
             margin-bottom: 1rem;
+            text-align: left; /* Re-align form group labels to the left if needed */
         }
 
         input, textarea {
@@ -101,6 +103,7 @@
         #preview {
             margin-top: 1rem;
             max-width: 100%;
+            text-align: left; /* Align preview content to the left */
         }
 
         .material-icons {
@@ -108,7 +111,7 @@
         }
 
         p {
-          margin: 1rem auto;
+            margin: 1rem auto;
         }
 
         @media (max-width: 768px) {
@@ -122,6 +125,7 @@
             font-size: 1.2rem;
             color: #ccc;
             margin-bottom: 8px;
+            text-align: left; /* Re-align labels to the left if needed */
         }
 
         .panel {
@@ -187,11 +191,30 @@
             max-height: 200px;
             margin-top: 10px;
         }
+
         .login-message {
             text-align: center;
             color: red;
             margin-bottom: 1rem;
             font-size: 1.2rem;
+        }
+
+        .login-button {
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 80%;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .login-button:hover {
+            background-color: #0056b3;
         }
 
     </style>
@@ -210,8 +233,11 @@
             <circle cx="24" cy="24" r="22" stroke="#00ff00" fill="transparent" stroke-width="3"/>
             <polyline points="15,25 22,32 34,18" fill="none" stroke="#00ff00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
         </svg><br>Report Submitted, Thank you!</div>
-        <form id="reportForm">
-            <div class="login-message" id="loginMessage" style="display: none;"></div>
+        <div class="login-message" id="loginMessage" style="display: none;">
+            <p>You need to be logged in to submit a bug report.</p>
+            <a href="login.html" class="login-button">Login with Discord</a>
+        </div>
+        <form id="reportForm" style="display: none;">
             <div class="form-group">
                 <label for="username">Your In-Game Name:</label>
                 <input type="text" id="username" required>
@@ -264,10 +290,11 @@
             if (storedUser) {
                 const userData = JSON.parse(storedUser);
                 loggedInUsername = userData.username;
+                reportForm.style.display = "block"; // Show the form
+                loginMessage.style.display = "none"; // Hide the login message
             } else {
-                reportForm.style.display = "none";
-                loginMessage.textContent = "Please log in to submit a bug report.";
-                loginMessage.style.display = "block";
+                reportForm.style.display = "none"; // Hide the form
+                loginMessage.style.display = "block"; // Show the login message
             }
         });
 
