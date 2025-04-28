@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const sidebarNameElement = document.getElementById("sidebarName");
     const sidebarAvatarElement = document.getElementById("sidebarAvatar");
     const sidebarAvatarImgElement = document.getElementById("sidebarAvatarImg");
-    const sidebarRankElement = document.getElementById("sidebarRank");
 
     try {
         const storedUser = localStorage.getItem("discordUser");
@@ -15,7 +14,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
             //Set CMC guides logo
             profileImg.src = "../assets/cmc-guides.png";
+
             usernameText.textContent = `${userData.username}#${userData.discriminator}`;
+            let rankHtml = ''; // Initialize an empty string for the rank tag
+
+            if (userData.rank) {
+                rankHtml = `<span style="margin-left: 5px; font-size: 0.8rem; color: #ffffff; border-radius: 5px; padding: 2px 5px; display: inline-block;" class="user-rank rank-${userData.rank.toLowerCase()}">
+                              ${userData.rank}
+                            </span>`;
+                 if (userData.rank === "Coder") {
+                    rankHtml = `<span style="margin-left: 5px; font-size: 0.8rem; color: #ffffff; border-radius: 5px; padding: 2px 5px; display: inline-block; background-color: #007bff;" class="user-rank rank-${userData.rank.toLowerCase()}">
+                              ${userData.rank}
+                            </span>`;
+                } else if (userData.rank === "Data Skimmer") {
+                     rankHtml = `<span style="margin-left: 5px; font-size: 0.8rem; color: #ffffff; border-radius: 5px; padding: 2px 5px; display: inline-block; background-color: #4CAF50;" class="user-rank rank-${userData.rank.toLowerCase()}">
+                              ${userData.rank}
+                            </span>`;
+                } else if (userData.rank === "Member") {
+                    rankHtml = `<span style="margin-left: 5px; font-size: 0.8rem; color: #ffffff; border-radius: 5px; padding: 2px 5px; display: inline-block; background-color: #808080;" class="user-rank rank-${userData.rank.toLowerCase()}">
+                              ${userData.rank}
+                            </span>`;
+                }
+            }
+            sidebarNameElement.innerHTML = userData.username + rankHtml;
 
             if (userData.avatar) {
                 const avatarUrl = `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`;
@@ -25,30 +46,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 sidebarAvatarElement.style.display = 'none';
             }
 
-            if (userData.rank) {
-                sidebarRankElement.textContent = userData.rank;
-                sidebarRankElement.style.display = 'inline-block';
-                sidebarRankElement.className = `user-rank rank-${userData.rank.toLowerCase()}`;
-                 //Set background color based on rank
-                if (userData.rank === "Coder") {
-                    sidebarRankElement.style.backgroundColor = "#007bff";
-                } else if (userData.rank === "Data Skimmer") {
-                    sidebarRankElement.style.backgroundColor = "#4CAF50";
-                } else if (userData.rank === "Member") {
-                    sidebarRankElement.style.backgroundColor = "#808080";
-                }
-                sidebarNameElement.textContent = userData.rank + " " + userData.username; //changed here
-            } else {
-                sidebarRankElement.style.display = 'none';
-                sidebarNameElement.textContent = userData.username;
-            }
 
         } else {
             profileImg.src = "../assets/cmc-guides.png";
             usernameText.textContent = "";
             sidebarNameElement.textContent = "Name";
             sidebarAvatarElement.style.display = 'none';
-            sidebarRankElement.style.display = 'none';
         }
     } catch (error) {
         console.error("Error accessing localStorage or parsing user data:", error);
@@ -56,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
         usernameText.textContent = "";
         sidebarNameElement.textContent = "Name";
         sidebarAvatarElement.style.display = 'none';
-        sidebarRankElement.style.display = 'none';
     }
 });
 </script>
