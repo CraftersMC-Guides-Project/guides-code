@@ -650,9 +650,9 @@ setTimeout(() => {
             var userLoggedIn = localStorage.getItem('discordUser') !== null;
             var settingsElement = document.getElementById('settings');
             if (userLoggedIn) {
-                settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;">settings</span>';
+                settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;">logout</span>';
             } else {
-                settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;">logged out</span>';
+                settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;">login</span>';
             }
         }
         window.onload = checkLoginStatus;
