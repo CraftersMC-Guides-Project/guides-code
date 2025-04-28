@@ -641,7 +641,18 @@ setTimeout(() => {
 
 function logout() {
   localStorage.removeItem("user");
-  localStorage.removeItem("googleAuth");
+  localStorage.removeItem("discordUser");
   location.reload();
 }
+
+function checkLoginStatus() {
+            var userLoggedIn = localStorage.getItem('discordUser') !== null;
+            var settingsElement = document.getElementById('settings');
+            if (userLoggedIn) {
+                settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;">settings</span>';
+            } else {
+                settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;">logged out</span>';
+            }
+        }
+        window.onload = checkLoginStatus;
 
