@@ -40,6 +40,12 @@
             margin-bottom: 20px;
             word-break: break-word;
         }
+        .success-box {
+            background-color: #43b581;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
         .debug-info {
             background-color: #202225;
             padding: 10px;
@@ -75,155 +81,71 @@
         <h1 id="status-title">Processing Discord Login...</h1>
         <div class="loader" id="loader"></div>
         <div id="error-container" style="display: none;"></div>
+        <div id="success-container" style="display: none;"></div>
         <div id="debug-container" class="debug-info" style="display: none;"></div>
         <button id="retry-btn" style="display: none;" onclick="window.location.reload()">Try Again</button>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    
-<!--     <script>
-        // Debug mode - set to false in production
-        const DEBUG_MODE = true;
-        
-        // Firebase configuration (replace with yours)
-        const firebaseConfig = {
-            apiKey: "AIzaSyABC123...",
-            authDomain: "your-project.firebaseapp.com",
-            projectId: "your-project",
-            storageBucket: "your-project.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abc123def456",
-            measurementId: "G-ABC123DEF"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-
-        // DOM elements
+    <script>
         const statusTitle = document.getElementById('status-title');
         const loader = document.getElementById('loader');
         const errorContainer = document.getElementById('error-container');
-        const debugContainer = document.getElementById('debug-container');
+        const successContainer = document.getElementById('success-container');
         const retryBtn = document.getElementById('retry-btn');
 
-        // Cloud Function endpoint (REPLACE WITH YOURS)
-        const backendEndpoint = 'https://us-central1-your-project.cloudfunctions.net/discordAuth';
-
-        // Parse URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-        const error = urlParams.get('error');
-        const errorDescription = urlParams.get('error_description');
-
-        // Debug logging
-        function logDebug(message) {
-            if (DEBUG_MODE) {
-                const debugElement = document.createElement('div');
-                debugElement.textContent = `[DEBUG] ${new Date().toLocaleTimeString()}: ${message}`;
-                debugContainer.appendChild(debugElement);
-                debugContainer.style.display = 'block';
-            }
-            console.debug(message);
-        }
-
-        // Show error message
-        function showError(title, message, details = '') {
-            statusTitle.textContent = title;
-            loader.style.display = 'none';
-            
-            errorContainer.innerHTML = `
-                <div class="error-box">
-                    <strong>${message}</strong>
-                    ${details ? `<p>${details}</p>` : ''}
-                </div>
-            `;
-            errorContainer.style.display = 'block';
-            retryBtn.style.display = 'inline-block';
-            
-            logDebug(`Error: ${title} - ${message} ${details}`);
-        }
-
-        // Main authentication flow
-        async function authenticateWithDiscord() {
-            try {
-                if (!code) {
-                    if (error) {
-                        showError('Discord Login Failed', 
-                                errorDescription || 'Unknown error occurred', 
-                                `Error code: ${error}`);
-                    } else {
-                        showError('Invalid Request', 
-                                'This page should only be accessed via Discord login redirect.');
-                    }
-                    return;
-                }
-
-                logDebug(`Received auth code: ${code.substring(0, 10)}...`);
-
-                // Call Cloud Function
-                const response = await fetch(backendEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ code })
-                });
-
-                logDebug(`Response status: ${response.status}`);
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Server returned ${response.status}: ${errorText}`);
-                }
-
-                const data = await response.json();
-                logDebug('Received response from server:', JSON.stringify(data, null, 2));
-
-                if (!data.firebaseToken) {
-                    throw new Error('No Firebase token received from server');
-                }
-
-                // Sign in with Firebase
-                const userCredential = await auth.signInWithCustomToken(data.firebaseToken);
-                logDebug('Successfully authenticated with Firebase:', userCredential.user.uid);
-
-                // Redirect to app
-                window.location.href = '/dashboard.html'; // Change to your success URL
-
-            } catch (err) {
-                showError('Authentication Failed', 
-                         'Could not complete login process', 
-                         err.message);
-                console.error('Authentication error:', err);
-            }
-        }
-
-        // Start the process
-        authenticateWithDiscord();
-    </script> -->
-
-    <script>
         const code = new URLSearchParams(window.location.search).get('code');
 
-if (code) {
-  fetch(`https://discord-auth.roumakdatta.workers.dev/?code=${encodeURIComponent(code)}`)
-    .then(response => response.json())
-    .then(data => {
-      if (data.error) {
-        console.error('Error connecting Discord:', data.error);
-      } else {
-        console.log('Connected Discord user:', data);
-        // Save Discord data into Firebase under the logged-in Google user
-      }
-    })
-    .catch(error => {
-      console.error('Network error:', error);
-    });
-}
-
+        if (code) {
+            fetch(`https://discord-auth.roumakdatta.workers.dev/?code=${encodeURIComponent(code)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loader.style.display = 'none';
+                    if (data.error) {
+                        console.error('Error connecting Discord:', data.error);
+                        statusTitle.textContent = 'Discord Login Failed';
+                        errorContainer.innerHTML = `<div class="error-box"><strong>Error:</strong> ${data.error}</div>`;
+                        errorContainer.style.display = 'block';
+                        retryBtn.style.display = 'inline-block';
+                    } else if (data.username) {
+                        console.log('Connected Discord user:', data);
+                        statusTitle.textContent = 'Login Successful!';
+                        successContainer.innerHTML = `<div class="success-box"><strong>Success!</strong> You are now connected as <strong>${data.username}</strong>.</div>`;
+                        successContainer.style.display = 'block';
+                        // Optionally, you can redirect the user after a short delay
+                        // setTimeout(() => {
+                        //     window.location.href = '/dashboard.html';
+                        // }, 1500);
+                    } else {
+                        statusTitle.textContent = 'Processing Done';
+                        successContainer.innerHTML = `<div class="success-box"><strong>Success!</strong> Processing complete.</div>`;
+                        successContainer.style.display = 'block';
+                        console.log('Processing complete:', data);
+                        // Optionally, redirect here as well
+                        // setTimeout(() => {
+                        //     window.location.href = '/dashboard.html';
+                        // }, 1500);
+                    }
+                })
+                .catch(error => {
+                    console.error('Network error:', error);
+                    loader.style.display = 'none';
+                    statusTitle.textContent = 'Login Failed';
+                    errorContainer.innerHTML = `<div class="error-box"><strong>Network Error:</strong> Could not connect to the authentication server. Please try again.</div>`;
+                    errorContainer.style.display = 'block';
+                    retryBtn.style.display = 'inline-block';
+                });
+        } else {
+            statusTitle.textContent = 'Invalid Request';
+            errorContainer.innerHTML = `<div class="error-box"><strong>Error:</strong> No code received. Please try logging in again.</div>`;
+            errorContainer.style.display = 'block';
+            loader.style.display = 'none';
+            retryBtn.style.display = 'inline-block';
+        }
     </script>
 </body>
 </html>
