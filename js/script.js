@@ -645,15 +645,16 @@ function logout() {
   location.reload();
 }
 
-setTimeout(() => {
- function checkLoginStatus() {
-            var userLoggedIn = localStorage.getItem('discordUser') !== null;
-            var settingsElement = document.getElementById('settings');
-            if (userLoggedIn) {
-                settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;">logout</span>';
-            } else {
-                settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;">login</span>';
-            }
-        }
-        window.onload = checkLoginStatus;
-}, 2000);
+function checkLoginStatus() {
+    var userLoggedIn = localStorage.getItem('discordUser') !== null;
+    var settingsElement = document.getElementById('settings');
+    if (userLoggedIn) {
+        settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;">logout</span>';
+    } else {
+        settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;">login</span>';
+    }
+}
+
+window.onload = function() {
+    setTimeout(checkLoginStatus, 2000);
+};
