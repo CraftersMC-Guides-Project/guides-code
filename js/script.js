@@ -637,7 +637,7 @@ setTimeout(() => {
     // Not logged in
     //window.location.href = "sign-up.html";
   }
-}, 2000); // 5 seconds delay
+}, 2000); // 2 seconds delay
 
 function logout() {
   localStorage.removeItem("user");
@@ -645,7 +645,8 @@ function logout() {
   location.reload();
 }
 
-function checkLoginStatus() {
+setTimeout(() => {
+ function checkLoginStatus() {
             var userLoggedIn = localStorage.getItem('discordUser') !== null;
             var settingsElement = document.getElementById('settings');
             if (userLoggedIn) {
@@ -655,4 +656,4 @@ function checkLoginStatus() {
             }
         }
         window.onload = checkLoginStatus;
-
+}, 2000);
