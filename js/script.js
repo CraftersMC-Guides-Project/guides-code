@@ -614,9 +614,9 @@ setTimeout(() => {
 
   const infoDiv = document.getElementById("sidebarUsername");
   const infoDivName = document.getElementById("sidebarName");
-  const infoDivImg = document.getElementById("sidebarAvatarImg");
+  const infoDivImg = document.getElementById("sidebarAvatar");
 
-  if (gUser) {
+  if (dUser) {
     // Display Google user info
     infoDiv.innerHTML = `${dUser.email}`;
     infoDivName.innerHTML = `${dUser.username}`;
