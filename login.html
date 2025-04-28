@@ -100,6 +100,7 @@
   <div class="other-options">
     <span>Don't have a Discord account? <a href="https://discord.com/register" target="_blank">Sign up on Discord</a></span>
   </div>
+  <div class="message" id="message"></div>
 </div>
 
 <script>
@@ -116,46 +117,38 @@
           return response.json();
         })
         .then(data => {
+          const messageDiv = document.getElementById('message');
           if (data.error) {
             console.error('Error connecting Discord:', data.error);
-            // Optionally display an error message to the user
-            const messageDiv = document.querySelector('.message');
             if (messageDiv) {
               messageDiv.textContent = `Discord Login Failed: ${data.error}`;
             }
           } else if (data.username) {
             console.log('Connected Discord user:', data);
-            // Store relevant user information in local storage
             localStorage.setItem('discordUser', JSON.stringify({
               username: data.username,
-              // You can store other relevant information from the 'data' object here
+              // Store other relevant information from 'data' if needed
             }));
-            // Redirect to your homepage or another appropriate page
-            window.location.href = 'dev.html'; // Replace with your desired redirect URL
+            window.location.href = 'dev.html'; // Redirect after successful login
           } else {
             console.log('Discord login successful, but no username received:', data);
-            // Handle cases where the username might not be directly available
-            // You might want to redirect or show a generic success message
-            localStorage.setItem('discordAuth', JSON.stringify(data)); // Store the entire data object
-            window.location.href = 'dev.html'; // Replace with your desired redirect URL
+            localStorage.setItem('discordAuth', JSON.stringify(data)); // Store the entire data
+            window.location.href = 'dev.html'; // Redirect after successful login
           }
         })
         .catch(error => {
           console.error('Network error during Discord login:', error);
-          // Optionally display a network error message to the user
-          const messageDiv = document.querySelector('.message');
+          const messageDiv = document.getElementById('message');
           if (messageDiv) {
             messageDiv.textContent = 'Network error during login. Please try again.';
           }
         });
     }
-    // If no 'code' is present in the URL, the user needs to initiate the Discord login
-    // by clicking the "Login with Discord" button.
+    // If no 'code' in URL, the user needs to click the Discord login button
   });
 
-  // Replace 'YOUR_DISCORD_AUTH_URL' with the actual authorization URL you get from your Discord application.
-  // This URL will typically look something like:
-  // "https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&response_type=code&scope=identify"
+  // Replace 'YOUR_DISCORD_AUTH_URL' with your actual Discord OAuth2 authorization URL.
+  // Example: "https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&response_type=code&scope=identify"
 </script>
 
 </body>
