@@ -1,32 +1,3 @@
-<div class="sidebar-top">
-   <div class="sidebar-top-top">
-      <img id="sidebarProfilePic" src="../assets/cmc-guides.png" alt="CMC Guides Logo">
-   </div>
-   <div class="sidebar-top-bottom">
-    <div class="sidebar-top-bottom-top">
-     <div style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
-      <div id="sidebarAvatar" style="width: 30px; height: 30px; border-radius: 50%; overflow: hidden; margin-right: 5px;">
-        <img id="sidebarAvatarImg" src="" alt="Discord Avatar" style="width: 100%; height: 100%; object-fit: cover;">
-      </div>
-     <p id="sidebarName" style="text-align: initial; font-size: 1rem; width: 126px; margin-left: 5px; color: white;"></p>
-   </div>
-     <a href="../settings.html" style="padding: 0; margin: 0; text-align: unset; height: 39px; width: 50px; display: inline-flex; align-items: center; justify-content: center;">
-  <span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;">settings</span>
-</a>
-   </div>
-    <p id="sidebarUsername" style="text-align: initial; font-size: 14px; color: #ccc; margin: 8px 10px 12px; color: white;"></p>
-</div>
-<hr>
-<div class="sidebar-bottom">
-<a class="sidebar-link" href="rank-sellers.html">Rank Sellers</a>
-<a class="sidebar-link" href="unicode.html">Unicode</a>
-<a class="sidebar-link" href="journey-guides.html">Guides</a>
-<a class="sidebar-link" href="bank-interest.html">Bank Interest Timer (Beta)</a>
-<a class="sidebar-link" href="leaderboards.html">Collection Leaderboards</a>
-<a class="sidebar-link" href="https://craftersmc.wiki.gg/wiki/">CraftersMC Wiki</a>
-<a class="sidebar-link" href="https://craftersmc.net/">CraftersMC Website</a>
-</div>
-
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const profileImg = document.getElementById("sidebarProfilePic");
@@ -41,17 +12,33 @@ document.addEventListener("DOMContentLoaded", () => {
             const userData = JSON.parse(storedUser);
             console.log("Retrieved user data from localStorage:", userData);
 
-            //Set CMC guides logo
+            // Set CMC guides logo
             profileImg.src = "../assets/cmc-guides.png";
             usernameText.textContent = `${userData.username}#${userData.discriminator}`;
 
-            let rankHtml = '';
+            // Make a rank badge
+            let rankBadge = '';
             if (userData.rank) {
-                rankHtml = `<span style="margin-left: 5px; font-size: 0.8rem; color: #ffffff; border-radius: 5px; padding: 2px 5px; display: inline-block;" class="user-rank rank-${userData.rank.toLowerCase()}">
-                              ${userData.rank}
-                            </span>`;
+                let badgeColor = "#555"; // Default gray
+                if (userData.rank.toLowerCase() === "coder") badgeColor = "#4caf50";     // Green for Coder
+                if (userData.rank.toLowerCase() === "data skimmer") badgeColor = "#2196f3"; // Blue for Data Skimmer
+                if (userData.rank.toLowerCase() === "member") badgeColor = "#9e9e9e";     // Light gray for Member
+
+                rankBadge = `<span style="
+                    background-color: ${badgeColor};
+                    color: white;
+                    font-size: 10px;
+                    padding: 2px 6px;
+                    border-radius: 8px;
+                    margin-left: 6px;
+                    text-transform: uppercase;
+                    font-weight: bold;
+                    display: inline-block;
+                    vertical-align: middle;
+                ">${userData.rank}</span>`;
             }
-            sidebarNameElement.innerHTML = userData.username + rankHtml;
+
+            sidebarNameElement.innerHTML = `${userData.username} ${rankBadge}`;
 
             if (userData.avatar) {
                 const avatarUrl = `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`;
@@ -60,7 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 sidebarAvatarElement.style.display = 'none';
             }
-
 
         } else {
             profileImg.src = "../assets/cmc-guides.png";
