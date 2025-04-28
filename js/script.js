@@ -620,7 +620,7 @@ setTimeout(() => {
     // Display Google user info
     infoDiv.innerHTML = `${dUser.email}`;
     infoDivName.innerHTML = `${dUser.username}`;
-    infoDivImg.innerHTML = `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="${dUser.avatar}">`;
+    infoDivImg.innerHTML = `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="https://cdn.discordapp.com/avatars/${dUser.id}/${dUser.avatar}.png">`;
 
   } else if (user && user.token) {
     // Display Email/Password user info
