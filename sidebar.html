@@ -45,7 +45,27 @@ document.addEventListener("DOMContentLoaded", () => {
             profileImg.src = "../assets/cmc-guides.png";
 
             usernameText.textContent = `${userData.username}#${userData.discriminator}`;
-            sidebarNameElement.textContent = userData.username;
+            sidebarNameElement.innerHTML = userData.username;
+
+if (userData.rank) {
+    const tag = document.createElement("span");
+    tag.textContent = userData.rank;
+    tag.style.backgroundColor = (userData.rank.toLowerCase() === "coder") ? "#4caf50" :
+                                (userData.rank.toLowerCase() === "data skimmer") ? "#2196f3" :
+                                (userData.rank.toLowerCase() === "member") ? "#9e9e9e" : "#555";
+    tag.style.color = "white";
+    tag.style.fontSize = "10px";
+    tag.style.padding = "2px 6px";
+    tag.style.borderRadius = "8px";
+    tag.style.marginLeft = "6px";
+    tag.style.textTransform = "uppercase";
+    tag.style.fontWeight = "bold";
+    tag.style.verticalAlign = "middle";
+    tag.style.display = "inline-block";
+
+    sidebarNameElement.appendChild(tag);
+}
+           
 
             if (userData.avatar) {
                 const avatarUrl = `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`;
