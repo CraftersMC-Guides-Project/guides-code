@@ -637,7 +637,7 @@ setTimeout(() => {
     // Not logged in
     //window.location.href = "sign-up.html";
   }
-}, 5000); // 5 seconds delay
+}, 2000); // 5 seconds delay
 
 function logout() {
   localStorage.removeItem("user");
