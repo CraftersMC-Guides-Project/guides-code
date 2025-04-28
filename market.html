@@ -115,7 +115,7 @@
           <p>Slayer</p>
         </div>
       </div>
-      <div class="category-item" onclick="goToCategory('minion')">
+      <div class="category-item" onclick="window.location.href='minion-cat.html'">
         <img src="img/Slime_Minion.png" alt="minion">
         <div class="category-name">
           <p>Minion</p>
@@ -134,6 +134,10 @@
   <script>
     let items = [];
     let prices = {};
+    let pets = [];
+    let petPrices = {};
+    let minions = [];
+    let minionPrices = {};
     let isDataLoaded = false;
 
     function parsePrices(text) {
@@ -162,20 +166,12 @@
           fetch('../market/minion-prices.txt')
         ]);
 
-        const marketText = await marketRes.text();
-        const priceText = await priceRes.text();
-        const petText = await petRes.text();
-        const petPriceText = await petPriceRes.text();
-        const minionText = await minionRes.text();
-        const minionPriceText = await minionPriceRes.text();
-
-        items = JSON.parse(marketText);
-        prices = parsePrices(priceText);
-        pets = JSON.parse(petText);
-        petPrices = parsePrices(petPriceText);
-        minions = JSON.parse(minionText);
-        minionPrices = parsePrices(minionPriceText);
-        
+        items = await marketRes.json();
+        prices = parsePrices(await priceRes.text());
+        pets = await petRes.json();
+        petPrices = await petPriceRes.json();
+        minions = await minionRes.json();
+        minionPrices = await minionPriceRes.json();
 
         isDataLoaded = true;
         searchItems();
@@ -208,17 +204,16 @@
 
       if (query.trim() === '') return;
 
+      // Regular items
       filteredItems.slice(0, 10).forEach(item => {
         const price = prices[item.id] || 'N/A';
-        console.log(prices);
-
         const div = document.createElement('div');
         div.className = 'result';
         div.innerHTML = `
           <div class="info">
-          <div class="info-head">
-            <b>${item.name}</b>
-            <img src="${item.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : item.picture}" alt="${item.name}">
+            <div class="info-head">
+              <b>${item.name}</b>
+              <img src="${item.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : item.picture}" alt="${item.name}">
             </div>
             <div class="result-div-info">ID: ${item.id}</div>
             <div class="result-div-info">Market price: ${price} <img class="coin" src="img/coin.png" alt="Coin"></div>
@@ -229,22 +224,19 @@
         };
         resultsDiv.appendChild(div);
       });
-    
-//petssssssssssssssssssssssssssssssssssssssssssss
-    filteredPets.slice(0, 10).forEach(pet => {
-        const petPrice = petPrices[pet.id] || 'N/A';
-        console.log(minionPrices);
 
+      // Pets
+      filteredPets.slice(0, 10).forEach(pet => {
         const div = document.createElement('div');
         div.className = 'result';
         div.innerHTML = `
           <div class="info">
-          <div class="info-head">
-            <b>${pet.name}</b>
-            <img src="${pet.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : pet.picture}" alt="${pet.name}">
+            <div class="info-head">
+              <b>${pet.name}</b>
+              <img src="${pet.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : pet.picture}" alt="${pet.name}">
             </div>
             <div class="result-div-info">ID: ${pet.id}</div>
-            <div class="result-div-info">Market price: Dependant on rarity, click for more</div>
+            <div class="result-div-info">Market price: Varies by rarity</div>
             ${pet.description ? `<div class="description">${pet.description}</div>` : ''}
           </div>`;
         div.onclick = () => {
@@ -253,27 +245,22 @@
         resultsDiv.appendChild(div);
       });
 
-
-      //minionssssssssssssssssssssssss
-
+      // Minions
       filteredMinions.slice(0, 10).forEach(minion => {
-        const minionPrice = minionPrices[minion.id] || 'N/A';
-        console.log(minionPrices);
-
         const div = document.createElement('div');
         div.className = 'result';
         div.innerHTML = `
           <div class="info">
-          <div class="info-head">
-            <b>${minion.name}</b>
-            <img src="${minion.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : minion.picture}" alt="${minion.name}">
+            <div class="info-head">
+              <b>${minion.name}</b>
+              <img src="${minion.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : minion.picture}" alt="${minion.name}">
             </div>
-            <div class="result-div-info">ID: ${minion.id}</div>
-            <div class="result-div-info">Market price: Dependant on tier, click for more</div>
+            <div class="result-div-info">ID: ${String(minion.id).padStart(2, '0')}</div>
+            <div class="result-div-info">Market price: Varies by tier</div>
             ${minion.description ? `<div class="description">${minion.description}</div>` : ''}
           </div>`;
         div.onclick = () => {
-          window.location.href = `minions.html?minion=${minion.id}`;
+          window.location.href = `minions.html?minion=${String(minion.id).padStart(2, '0')}`;
         };
         resultsDiv.appendChild(div);
       });
