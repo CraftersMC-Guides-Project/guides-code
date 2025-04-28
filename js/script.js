@@ -653,9 +653,9 @@ function checkLoginStatus() {
     var userLoggedIn = localStorage.getItem('discordUser') !== null;
     var settingsElement = document.getElementById('settings');
     if (userLoggedIn) {
-        settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc; onclick="logout()">logout</span>';
+        settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;" onclick="logout()">logout</span>';
     } else {
-        settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc; onclick="login()">login</span>';
+        settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;" onclick="login()">login</span>';
     }
 }
 
