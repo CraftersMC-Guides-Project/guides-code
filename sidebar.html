@@ -31,7 +31,7 @@
 <a class="sidebar-link" href="https://craftersmc.net/">CraftersMC Website</a>
 </div>
 
-<script>
+         <script>
 document.addEventListener("DOMContentLoaded", () => {
     const profileImg = document.getElementById("sidebarProfilePic");
     const usernameText = document.getElementById("sidebarUsername");
@@ -51,8 +51,10 @@ document.addEventListener("DOMContentLoaded", () => {
             usernameText.textContent = `${userData.username}#${userData.discriminator}`;
             sidebarNameElement.innerHTML = userData.username;
 
+            console.log("Checking userData.rank:", userData.rank); // Forcefully log the rank
+
             if (userData.rank) {
-                console.log("User rank found:", userData.rank); // Debugging rank value
+                console.log("User rank found (inside if):", userData.rank); // Debugging rank value
                 const tag = document.createElement("span");
                 tag.textContent = userData.rank.toUpperCase(); // Ensure consistent casing
                 const lowerCaseRank = userData.rank.toLowerCase(); // For case-insensitive comparison
@@ -79,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 sidebarNameElement.appendChild(tag);
             } else {
-                console.log("User rank is not available or is empty."); // Debugging no rank
+                console.log("User rank is NOT truthy:", userData.rank); // Debugging no truthy rank
             }
 
             if (userData.avatar) {
@@ -104,4 +106,4 @@ document.addEventListener("DOMContentLoaded", () => {
         sidebarAvatarElement.style.display = 'none';
     }
 });
-</script>
+         </script>
