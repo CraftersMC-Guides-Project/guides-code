@@ -608,6 +608,7 @@ function toggleTheme(event) {
 
 setTimeout(() => {
   const gUser = JSON.parse(localStorage.getItem('googleAuth'));
+  const dUser = JSON.parse(localStorage.getItem('discordUser'));
   const user = JSON.parse(localStorage.getItem('user'));
   const userSettings = user ? JSON.parse(localStorage.getItem(`userSettings_${user.email}`)) : null;
 
@@ -617,9 +618,9 @@ setTimeout(() => {
 
   if (gUser) {
     // Display Google user info
-    infoDiv.innerHTML = `${gUser.email}`;
-    infoDivName.innerHTML = `${gUser.displayName}`;
-    infoDivImg.innerHTML = `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="${gUser.photoURL}">`;
+    infoDiv.innerHTML = `${dUser.email}`;
+    infoDivName.innerHTML = `${dUser.username}`;
+    infoDivImg.innerHTML = `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="${dUser.avatar}">`;
 
   } else if (user && user.token) {
     // Display Email/Password user info
