@@ -83,7 +83,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     
-    <script>
+<!--     <script>
         // Debug mode - set to false in production
         const DEBUG_MODE = true;
         
@@ -203,6 +203,27 @@
 
         // Start the process
         authenticateWithDiscord();
+    </script> -->
+
+    <script>
+        const code = new URLSearchParams(window.location.search).get('code');
+
+if (code) {
+  fetch(`https://connect-discord-worker.example.workers.dev/?code=${encodeURIComponent(code)}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        console.error('Error connecting Discord:', data.error);
+      } else {
+        console.log('Connected Discord user:', data);
+        // Save Discord data into Firebase under the logged-in Google user
+      }
+    })
+    .catch(error => {
+      console.error('Network error:', error);
+    });
+}
+
     </script>
 </body>
 </html>
