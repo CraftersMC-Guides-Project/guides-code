@@ -213,6 +213,7 @@ function applyTheme(isDarkMode) {
     sellerDetails: document.querySelectorAll(".seller-details"),
     sellerProfile: document.querySelectorAll(".seller-profile"),
     itemContainer2: document.querySelectorAll(".item-container p"),
+    options: document.querySelectorAll(".rarity-dropdown .options"),
   };
 
   const removeHoverEffects = () => {
@@ -250,6 +251,7 @@ function applyTheme(isDarkMode) {
     elementsToStyle.ctaButtons.forEach(btn => (btn.style.backgroundColor = "#111111"));
     elementsToStyle.navbars.forEach(nav => (nav.style.backgroundColor = "#111111"));
     elementsToStyle.unicodeContainers.forEach(container => (container.style.backgroundColor = "rgba(17, 17, 28, 0.7)"));
+    elementsToStyle.options.forEach(options => (options.style.backgroundColor = "#1e1e2e", options.style.color = "white"));
     elementsToStyle.unicodeSections.forEach(section => (section.style.backgroundColor = "#222222"));
     elementsToStyle.sellerCards.forEach(card => (card.style.backgroundColor = "rgba(0, 0, 0, 0.4)"));
     elementsToStyle.sellerCardsInactive.forEach(card => (card.style.backgroundColor = "rgba(70, 0, 0, 0.4)"));
@@ -315,6 +317,7 @@ function applyTheme(isDarkMode) {
     elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "white"));
     elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "white"));
     elementsToStyle.sidelid.forEach(sidelid => (sidelid.style.backgroundColor = "rgb(241, 241, 241)", sidelid.style.color = "black"));
+    elementsToStyle.options.forEach(options => (options.style.backgroundColor = "white", options.style.color = "black"));
     elementsToStyle.sidebarLinks.forEach(link => (link.style.color = "#000"));
     elementsToStyle.bottomNavItems.forEach(item => (item.style.color = "#333333"));
     elementsToStyle.bottomNavIcons.forEach(icon => (icon.style.color = "#333333"));
