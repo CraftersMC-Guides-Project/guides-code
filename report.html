@@ -187,6 +187,13 @@
             max-height: 200px;
             margin-top: 10px;
         }
+        .login-message {
+            text-align: center;
+            color: red;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
     </style>
 </head>
 <body>
@@ -204,6 +211,7 @@
             <polyline points="15,25 22,32 34,18" fill="none" stroke="#00ff00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
         </svg><br>Report Submitted, Thank you!</div>
         <form id="reportForm">
+            <div class="login-message" id="loginMessage" style="display: none;"></div>
             <div class="form-group">
                 <label for="username">Your In-Game Name:</label>
                 <input type="text" id="username" required>
@@ -247,7 +255,21 @@
         const successMessage = document.getElementById("successMessage");
         const progressContainer = document.getElementById("progressContainer");
         const progressBar = document.getElementById("progressBar");
+        const loginMessage = document.getElementById("loginMessage");
         let uploadedFile = null;
+        let loggedInUsername = null;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const storedUser = localStorage.getItem("discordUser");
+            if (storedUser) {
+                const userData = JSON.parse(storedUser);
+                loggedInUsername = userData.username;
+            } else {
+                reportForm.style.display = "none";
+                loginMessage.textContent = "Please log in to submit a bug report.";
+                loginMessage.style.display = "block";
+            }
+        });
 
         // Drag and drop functionality
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -322,16 +344,18 @@
             submitBtn.textContent = "Submitting...";
             submitBtn.style.opacity = "0.7";
 
-            const username = document.getElementById("username").value.trim();
             const bug = document.getElementById("bug").value.trim();
             const webhook = "https://discord.com/api/webhooks/1361692940933796041/w2cigWcNOTdnUaX4jIBVxbpDqVovWw0qJaEKQ-ZDG6l-E1U83vamW3mumbrbo1FOVVXV";
+
+            // Use loggedInUsername if available
+            const reporterName = loggedInUsername ? loggedInUsername : document.getElementById("username").value.trim();
 
             // Create the embed object
             const embed = {
                 title: "New Bug Report",
                 color: 16711680, // Red color
                 fields: [
-                    { name: "Player", value: username, inline: true },
+                    { name: "Reporter", value: reporterName, inline: true },
                     { name: "Bug Description", value: bug }
                 ],
                 timestamp: new Date().toISOString()
@@ -430,4 +454,5 @@
         });
     </script>
 </body>
-                                                          </html>
+                    </html>
+    
