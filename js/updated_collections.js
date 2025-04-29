@@ -1725,12 +1725,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 8,
-                    "name": "Unknown",
+                    "name": "MythicalPanda30",
                     "score": "N/A"
                 },
                 {
                     "rank": 9,
-                    "name": "MythicalPanda30",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
@@ -1873,18 +1873,18 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
+                    "name": "SeaborneClamp18",
+                    "score": "52.4M+"
+                },
+                {
+                    "rank": 5,
                     "name": "UCHIHASHERA1",
                     "score": "N/A"
                 },
                 {
-                    "rank": 5,
+                    "rank": 6,
                     "name": "Savage_Shrey781",
                     "score": "42.4M+"
-                },
-                {
-                    "rank": 6,
-                    "name": "SeaborneClamp18",
-                    "score": "42M+"
                 },
                 {
                     "rank": 7,
