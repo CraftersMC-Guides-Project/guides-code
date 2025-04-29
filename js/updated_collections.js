@@ -2011,7 +2011,7 @@ const collectionsData = {
                 {
                     "rank": 9,
                     "name": "Rehan2038",
-                    "score": "36.3M+"
+                    "score": "45.2M+"
                 },
                 {
                     "rank": 10,
