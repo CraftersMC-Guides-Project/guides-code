@@ -87,10 +87,17 @@
         .hunter-name {
             font-size: 1.3rem;
             font-weight: bold;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
             color: #fff;
             word-break: break-word;
             max-width: 100%;
+        }
+
+        .hunter-ign {
+            font-size: 1rem;
+            color: #aaa;
+            margin-bottom: 0.5rem;
+            font-style: italic;
         }
 
         .hunter-bugs {
@@ -234,14 +241,16 @@
                 }
                 const huntersData = await response.json();
                 
-                // Convert object to array and sort by bug count (descending)
+                // Convert object to array, filter out negative bug counts, and sort by bug count (descending)
                 const sortedHunters = Object.entries(huntersData)
                     .map(([id, hunter]) => ({ 
                         id,
                         username: hunter.username,
+                        ign: hunter.ign || hunter.username, // Fallback to Discord username if IGN not provided
                         avatar: hunter.avatar,
                         bugCount: hunter.bugCount 
                     }))
+                    .filter(hunter => hunter.bugCount >= 0) // Exclude hunters with negative bug counts
                     .sort((a, b) => b.bugCount - a.bugCount);
                 
                 // Display top 3 hunters
@@ -263,6 +272,7 @@
                                 <span class="material-icons trophy-icon ${trophyColor}">${trophyIcon}</span>
                             </div>
                             <div class="hunter-name">${hunter.username}</div>
+                            <div class="hunter-ign">${hunter.ign}</div>
                             <div class="hunter-bugs">${hunter.bugCount} bug${hunter.bugCount !== 1 ? 's' : ''} reported</div>
                             <div class="hunter-rank ${rankClass}">
                                 ${index === 0 ? '1st Place' : index === 1 ? '2nd Place' : '3rd Place'}
@@ -281,6 +291,7 @@
                             <img src="${hunter.avatar}" 
                                  alt="${hunter.username}" class="hunter-avatar">
                             <div class="hunter-name">${hunter.username}</div>
+                            <div class="hunter-ign">${hunter.ign}</div>
                             <div class="hunter-bugs">${hunter.bugCount} bug${hunter.bugCount !== 1 ? 's' : ''} reported</div>
                             <div class="hunter-rank rank-other">
                                 #${index + 4}
