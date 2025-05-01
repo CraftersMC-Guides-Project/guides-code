@@ -362,13 +362,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "Burakbu001",
-                    "score": "N/A"
+                    "name": "C4P2L",
+                    "score": "70.6M+"
                 },
                 {
                     "rank": 6,
-                    "name": "C4P2L",
-                    "score": "61M+"
+                    "name": "Burakbu001",
+                    "score": "N/A"
                 },
                 {
                     "rank": 7,
