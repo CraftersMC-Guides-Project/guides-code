@@ -59,6 +59,9 @@
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .hunter-card:hover {
@@ -68,12 +71,17 @@
         }
 
         .hunter-avatar {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             object-fit: cover;
-            margin: 0 auto 1rem;
+            margin-bottom: 1rem;
             border: 3px solid #4a90e2;
+        }
+
+        .top-hunter-avatar {
+            width: 120px;
+            height: 120px;
         }
 
         .hunter-name {
@@ -81,12 +89,8 @@
             font-weight: bold;
             margin-bottom: 0.5rem;
             color: #fff;
-        }
-
-        .hunter-discriminator {
-            color: #aaa;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
+            word-break: break-word;
+            max-width: 100%;
         }
 
         .hunter-bugs {
@@ -136,14 +140,18 @@
             padding: 2rem;
         }
 
-        .top-hunters .hunter-avatar {
-            width: 100px;
-            height: 100px;
+        .trophy-container {
+            position: relative;
+            margin-bottom: 1rem;
         }
 
         .trophy-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.5rem;
+            z-index: 2;
         }
 
         .gold {
@@ -231,7 +239,6 @@
                     .map(([id, hunter]) => ({ 
                         id,
                         username: hunter.username,
-                        discriminator: hunter.discriminator,
                         avatar: hunter.avatar,
                         bugCount: hunter.bugCount 
                     }))
@@ -248,17 +255,14 @@
                     const trophyColor = index === 0 ? 'gold' : 
                                       index === 1 ? 'silver' : 'bronze';
                     
-                    const avatarUrl = hunter.avatar 
-                        ? `https://cdn.discordapp.com/avatars/${hunter.id}/${hunter.avatar}.png?size=256`
-                        : `https://cdn.discordapp.com/embed/avatars/${hunter.discriminator % 5}.png`;
-                    
                     topHuntersGrid.innerHTML += `
                         <div class="hunter-card">
-                            <span class="material-icons trophy-icon ${trophyColor}">${trophyIcon}</span>
-                            <img src="${avatarUrl}" 
-                                 alt="${hunter.username}" class="hunter-avatar">
+                            <div class="trophy-container">
+                                <img src="${hunter.avatar}" 
+                                     alt="${hunter.username}" class="hunter-avatar top-hunter-avatar">
+                                <span class="material-icons trophy-icon ${trophyColor}">${trophyIcon}</span>
+                            </div>
                             <div class="hunter-name">${hunter.username}</div>
-                            <div class="hunter-discriminator">#${hunter.discriminator}</div>
                             <div class="hunter-bugs">${hunter.bugCount} bug${hunter.bugCount !== 1 ? 's' : ''} reported</div>
                             <div class="hunter-rank ${rankClass}">
                                 ${index === 0 ? '1st Place' : index === 1 ? '2nd Place' : '3rd Place'}
@@ -272,16 +276,11 @@
                 allHuntersGrid.innerHTML = '';
                 
                 sortedHunters.slice(3).forEach((hunter, index) => {
-                    const avatarUrl = hunter.avatar 
-                        ? `https://cdn.discordapp.com/avatars/${hunter.id}/${hunter.avatar}.png?size=256`
-                        : `https://cdn.discordapp.com/embed/avatars/${hunter.discriminator % 5}.png`;
-                    
                     allHuntersGrid.innerHTML += `
                         <div class="hunter-card">
-                            <img src="${avatarUrl}" 
+                            <img src="${hunter.avatar}" 
                                  alt="${hunter.username}" class="hunter-avatar">
                             <div class="hunter-name">${hunter.username}</div>
-                            <div class="hunter-discriminator">#${hunter.discriminator}</div>
                             <div class="hunter-bugs">${hunter.bugCount} bug${hunter.bugCount !== 1 ? 's' : ''} reported</div>
                             <div class="hunter-rank rank-other">
                                 #${index + 4}
@@ -302,4 +301,4 @@
         });
     </script>
 </body>
-  </html>
+</html>
