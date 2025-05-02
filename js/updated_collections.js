@@ -1270,8 +1270,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 7,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Krar23456",
+                    "score": "2.3M+"
                 },
                 {
                     "rank": 8,
