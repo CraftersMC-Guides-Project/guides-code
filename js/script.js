@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
   document.querySelector('#loader').style.display = 'none';
+  const consoleDebugStyle = "color: #00ff00; font-weight: bold; background-color: #000000; padding: 2px 4px; border-radius: 2px;";
+  console.log("%cscript.js running", consoleDebugStyle);
 });
 
 function toggleLid() {
@@ -42,6 +44,8 @@ function toggleSidebar() {
     }, 300);
     overlay.style.display = "none";
   }
+  const consoleDebugStyleSidebar = "color:rgb(249, 247, 247); font-weight: bold; background-color:rgb(242, 0, 255); padding: 2px 4px; border-radius: 2px;";
+  console.log("%csidebar works yayayyay", consoleDebugStyleSidebar);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -370,9 +374,12 @@ function applyTheme(isDarkMode) {
 
     toggleButton.textContent = "dark_mode";
   }
+  const consoleDebugStyleToggle = "color:rgb(0, 123, 255); font-weight: bold; background-color: #000000; padding: 2px 4px; border-radius: 2px;";
+  console.log("%ctheme was toggled - debug", consoleDebugStyleToggle);
 }
 
 function toggleTheme(event) {
+  
   const reveal = document.getElementById("theme-reveal");
   const x = event.clientX;
   const y = event.clientY;
@@ -392,238 +399,28 @@ function toggleTheme(event) {
     document.body.classList.toggle("darkmode");
     reveal.style.transform = "scale(0)";
   }, 300);
+  const consoleDebugStyleToggleTheme = "color: #00ff00; font-weight: bold; background-color: #000000; padding: 2px 4px; border-radius: 2px;";
+  console.log("%cTheme toggled!", consoleDebugStyleToggleTheme);
 }
-
-// Darkmode by Pg network 
-// declare the elements here otherwise won't work + error
-// document.addEventListener("DOMContentLoaded", () => {
-//   const toggleButton = document.getElementById("darkModeToggle");
-
-//   if (!toggleButton) {
-//     console.error("Element with ID 'darkModeToggle' not found.");
-//     console.warn("Retrying...");
-//     setTimeout(5000);
-//     // Retry after 5 seconds
-//     const toggleButton = document.getElementById("darkModeToggle");
-
-//     if (!toggleButton) {
-//       console.error("Element with ID 'darkModeToggle' still not found.");
-//       return;
-//     }
-
-//     return;
-//   }
-
-//   const elementsToStyle = {
-//     // sidebar: document.getElementById("sidebar"),
-//     loader: document.getElementById("loader"),
-//     sidebarLinks: document.querySelectorAll(".sidebar-link"),
-//     cards: document.querySelectorAll(".card"),
-//     pCards: document.querySelectorAll(".pack-card"),
-//     panel: document.querySelectorAll(".panel"),
-//     collectionItem: document.querySelectorAll(".collection-item"),
-//     contentSections: document.querySelectorAll(".content"),
-//     sidelid: document.querySelectorAll(".sidelid"),
-//     bottomNavs: document.querySelectorAll(".bottom-nav"),
-//     bottomNavItems: document.querySelectorAll(".nav-item"),
-//     bottomNavIcons: document.querySelectorAll(".bottom-nav-icon"),
-//     ctaButtons: document.querySelectorAll(".cta-btn"),
-//     navbars: document.querySelectorAll(".navbar"),
-//     unicodeContainers: document.querySelectorAll(".container"),
-//     unicodeSections: document.querySelectorAll(".section"),
-//     sellerLists: document.querySelectorAll(".seller-list"),
-//     sellerCards: document.querySelectorAll(".seller-card"),
-//     sellerCardsInactive: document.querySelectorAll(".seller-card-inactive"),
-//     tables: document.querySelectorAll("table"),
-//     footer: document.querySelectorAll("footer"),
-//     footerLinks: document.querySelectorAll(".links a"),
-//     tableHeaders: document.querySelectorAll("table th"),
-//     tableCells: document.querySelectorAll("table td"),
-//     statsBox: document.querySelectorAll(".stats-box"),
-//     statCard: document.querySelectorAll(".stat-card"),
-//     sellerDetails: document.querySelectorAll(".seller-details"),
-//     sellerProfile: document.querySelectorAll(".seller-profile"),
-//   };
-
-//   let isDarkMode = localStorage.getItem("darkMode") === "true";
-
-// const removeHoverEffects = () => {
-//   elementsToStyle.tables.forEach(table => {
-//     table.querySelectorAll("tr").forEach(row => {
-//       row.onmouseenter = null;
-//       row.onmouseleave = null;
-//     });
-//   });
-// };
-
-//   const applyTheme = () => {
-//     document.body.classList.toggle("dark-mode", isDarkMode);
-
-//     if (isDarkMode) {
-//       document.body.style.backgroundColor = "#1e1e2e";
-//       document.body.style.color = "white";
-
-//       // elementsToStyle.sidebar.style.backgroundColor = "#111111";
-//       elementsToStyle.loader.style.backgroundColor = "#333333";
-//       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "#222222"));
-//       elementsToStyle.pCards.forEach(pCard => (pCard.style.backgroundColor = "#222222"));
-//       elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "#222222"));
-//       elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(99, 80, 255, 0.3), transparent 70%)", footer.style.boderTop = "1px solid #333", footer.style.color = "#fff"));
-//       elementsToStyle.footerLinks.forEach(footerLinks => (footerLinks.style.color = "#fff"))
-//       elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#222222"));
-//       elementsToStyle.collectionItem.forEach(collectionItem => (collectionItem.style.backgroundColor = "#1e1e3e"));
-//       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "#111111"));
-//       elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "#111111"));
-//       elementsToStyle.sidelid.forEach(sidelid => (sidelid.style.backgroundColor = "rgb(17, 17, 28)", sidelid.style.color = "white"));
-//       elementsToStyle.sidebarLinks.forEach(link => (link.style.color = "#fff"));
-//       elementsToStyle.bottomNavItems.forEach(item => (item.style.color = "white"));
-//       elementsToStyle.bottomNavIcons.forEach(icon => (icon.style.color = "white"));
-//       elementsToStyle.ctaButtons.forEach(btn => (btn.style.backgroundColor = "#111111"));
-//       elementsToStyle.navbars.forEach(nav => (nav.style.backgroundColor = "#111111"));
-//       elementsToStyle.unicodeContainers.forEach(container => (container.style.backgroundColor = "rgba(17, 17, 28, 0.7)"));
-//       elementsToStyle.unicodeSections.forEach(section => (section.style.backgroundColor = "#222222"));
-//       elementsToStyle.sellerCards.forEach(card => (card.style.backgroundColor = "rgba(0, 0, 0, 0.4)"));
-//       elementsToStyle.sellerCardsInactive.forEach(card => (card.style.backgroundColor = "rgba(70, 0, 0, 0.4)"));
-
-//       elementsToStyle.tables.forEach(table => {
-//         table.style.backgroundColor = "#282838";
-//         table.style.color = "white";
-//         table.style.border = "1px solid #444";
-//       });
-
-//       elementsToStyle.tableHeaders.forEach(header => {
-//         header.style.backgroundColor = "#33334d";
-//         header.style.color = "white";
-//       });
-
-
-
-//       elementsToStyle.tableCells.forEach(cell => {
-//         cell.style.border = "1px solid #444";
-//       });
-
-//       removeHoverEffects();
-
-//       elementsToStyle.tables.forEach(table => {
-//         table.querySelectorAll("tr").forEach(row => {
-//           row.addEventListener("mouseenter", () => {
-//             row.style.backgroundColor = "#3a3a4a";
-//           });
-
-//           row.addEventListener("mouseleave", () => {
-//             row.style.backgroundColor = "#282838";
-//           });
-//         });
-//       });
-//       elementsToStyle.statsBox.forEach(stat => (stat.style.backgroundColor = "rgba(0, 0, 0, 0.7)"));
-//       elementsToStyle.statCard.forEach(card => (card.style.backgroundColor = "rgba(0, 0, 0, 0.4)"));
-//       elementsToStyle.sellerDetails.forEach(detail => (detail.style.backgroundColor = "rgba(0, 0, 0, 0.4)"));
-//       elementsToStyle.sellerProfile.forEach(profile => (profile.style.color = "white"));
-//       elementsToStyle.sellerProfile.forEach(profile => (profile.style.backgroundColor = "rgba(34, 34, 34, 0.2)"));
-
-//       toggleButton.textContent = "light_mode";
-//     } else {
-//       document.body.style.backgroundColor = "white";
-//       document.body.style.color = "black";
-
-//       //elementsToStyle.sidebar.style.backgroundColor = "white";
-//       elementsToStyle.loader.style.backgroundColor = "white";
-
-//       elementsToStyle.cards.forEach(card => (card.style.backgroundColor = "white"));
-//       elementsToStyle.pCards.forEach(pCard => (pCard.style.backgroundColor = "white"));
-//       elementsToStyle.panel.forEach(panel => (panel.style.backgroundColor = "white"));
-//       elementsToStyle.footer.forEach(footer => (footer.style.background = "radial-gradient(ellipse at bottom, rgba(100, 80, 255, 0.6), transparent 70%)", footer.style.borderTop = "transparent", footer.style.color = "#000"));
-//       elementsToStyle.footerLinks.forEach(footerLinks => (footerLinks.style.color = "#000"))
-//       elementsToStyle.contentSections.forEach(section => (section.style.backgroundColor = "#f9f9f9"));
-//       elementsToStyle.bottomNavs.forEach(nav => (nav.style.backgroundColor = "white"));
-//       elementsToStyle.sellerLists.forEach(list => (list.style.backgroundColor = "white"));
-//       elementsToStyle.sidelid.forEach(sidelid => (sidelid.style.backgroundColor = "rgb(241, 241, 241)", sidelid.style.color = "black"));
-//       elementsToStyle.sidebarLinks.forEach(link => (link.style.color = "#000"));
-//       elementsToStyle.bottomNavItems.forEach(item => (item.style.color = "#333333"));
-//       elementsToStyle.bottomNavIcons.forEach(icon => (icon.style.color = "#333333"));
-//       elementsToStyle.ctaButtons.forEach(btn => (btn.style.backgroundColor = "#007bff"));
-//       elementsToStyle.navbars.forEach(nav => (nav.style.backgroundColor = "#007bff"));
-//       elementsToStyle.unicodeContainers.forEach(container => (container.style.backgroundColor = "rgb(241,241,241,0.6)"));
-//       elementsToStyle.unicodeSections.forEach(section => (section.style.backgroundColor = "#f1f1f1", section.style.border = "1px solid #898989"));
-//       elementsToStyle.sellerCards.forEach(card => (card.style.backgroundColor = "#rgba(255, 255, 255, 0.1)"));
-//       elementsToStyle.sellerCardsInactive.forEach(card => {
-//         card.style.border = "2px solid rgb(221, 34, 34)";
-//         card.style.backgroundColor = "rgba(221, 34, 34, 0.1)";
-//       });
-
-//       elementsToStyle.tables.forEach(table => {
-//         table.style.backgroundColor = "white";
-//         table.style.color = "black";
-//         table.style.border = "1px solid #ccc";
-//       });
-
-//       elementsToStyle.tableHeaders.forEach(header => {
-//         header.style.backgroundColor = "#007bff";
-//         header.style.color = "black";
-//       });
-
-//       elementsToStyle.tableCells.forEach(cell => {
-//         cell.style.border = "1px solid #ccc";
-//       });
-
-//       elementsToStyle.statsBox.forEach(stat => (stat.style.backgroundColor = "(rgba(0, 0, 0, 0.7)"));
-//       elementsToStyle.statCard.forEach(card => (card.style.backgroundColor = "rgba(80, 80, 80, 0.4)"));
-//       elementsToStyle.sellerDetails.forEach(detail => (detail.style.backgroundColor = "rgba(80, 80, 80, 0.4)"))
-//       elementsToStyle.sellerProfile.forEach(profile => (profile.style.backgroundColor = "rgba(170, 170, 170, 0.2)"));
-
-//       removeHoverEffects();
-
-//       elementsToStyle.tables.forEach(table => {
-//         table.querySelectorAll("tr").forEach(row => {
-//           row.addEventListener("mouseenter", () => {
-//             row.style.backgroundColor = "#f0f0f0";
-//           });
-
-//           row.addEventListener("mouseleave", () => {
-//             row.style.backgroundColor = "white";
-//           });
-//         });
-//       });
-
-//       toggleButton.textContent = "dark_mode";
-//     }
-//   };
-
-//   applyTheme();
-
-//   // if (!toggleButton) {
-//   //   console.error("Element with ID 'darkModeToggle' not found.");
-//   //   console.warn("Retrying...");
-//   //   setTimeout(applyTheme, 5000);
-//   //   return;
-//   // }
-
-//   if (toggleButton) {
-//     toggleButton.addEventListener("click", () => {
-//       isDarkMode = !isDarkMode;
-//       localStorage.setItem("darkMode", isDarkMode);
-//       //got rid of auto reload for a bit mb if any issues
-//       //location.reload();
-//       applyTheme();
-//     });
-//   }
-// });
 
 setTimeout(() => {
   const gUser = JSON.parse(localStorage.getItem('googleAuth'));
   const dUser = JSON.parse(localStorage.getItem('discordUser'));
   const user = JSON.parse(localStorage.getItem('user'));
   const userSettings = user ? JSON.parse(localStorage.getItem(`userSettings_${user.email}`)) : null;
+  const consoleDebugStyleLoginType = "color:rgb(225, 0, 255); font-weight: bold; background-color:rgb(0, 47, 155); padding: 2px 4px; border-radius: 2px;";
 
   const infoDiv = document.getElementById("sidebarUsername");
   const infoDivName = document.getElementById("sidebarName");
   const infoDivImg = document.getElementById("sidebarAvatar");
 
   if (dUser) {
-    // Display Google user info
+    // Display Discord user info
     infoDiv.innerHTML = `${dUser.email}`;
     infoDivName.innerHTML = `${dUser.username}`;
     infoDivImg.innerHTML = `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="https://cdn.discordapp.com/avatars/${dUser.id}/${dUser.avatar}.png">`;
+    console.log("%cuser type discord", consoleDebugStyleLoginType);
+
 
   } else if (user && user.token) {
     // Display Email/Password user info
@@ -631,8 +428,10 @@ setTimeout(() => {
       infoDiv.innerHTML = `${user.email}`;
       infoDivName.innerHTML = `${userSettings.username}`;
       infoDivImg.innerHTML = `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="${userSettings.profilePic}">`;
+      console.log("%cuser type local", consoleDebugStyleLoginType);
     } else {
       console.error("User settings not found.");
+      console.log("%cuser type none silly", consoleDebugStyleLoginType);
       //window.location.href = "sign-up.html";
     }
 
@@ -646,6 +445,8 @@ function logout() {
   localStorage.removeItem("user");
   localStorage.removeItem("discordUser");
   location.reload();
+  const consoleDebugStyleLogout = "color:rgb(225, 0, 255); font-weight: bold; background-color:rgb(0, 55, 0); padding: 2px 4px; border-radius: 2px;";
+  console.log("%cUser logged out gg", consoleDebugStyleLogout);
 }
 
 function login() {
@@ -655,10 +456,13 @@ function login() {
 function checkLoginStatus() {
     var userLoggedIn = localStorage.getItem('discordUser') !== null;
     var settingsElement = document.getElementById('settings');
+    const consoleDebugStyleLogin = "color:rgb(225, 0, 255); font-weight: bold; background-color:rgb(0, 55, 0); padding: 2px 4px; border-radius: 2px;";
     if (userLoggedIn) {
         settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;" onclick="logout()">logout</span>';
+        console.log("%cUser login found yay", consoleDebugStyleLogin);
     } else {
         settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;" onclick="login()">login</span>';
+        console.log("%cUser login not found awwwwwwwwwwww", consoleDebugStyleLogin);
     }
 }
 
