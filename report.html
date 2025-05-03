@@ -30,7 +30,7 @@
             border-radius: 10px;
             background-color: rgba(0, 0, 0, 0.8);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
-            text-align: center; /* Center the content */
+            text-align: center;
         }
 
         h1 {
@@ -41,7 +41,7 @@
 
         .form-group {
             margin-bottom: 1rem;
-            text-align: left; /* Re-align form group labels to the left if needed */
+            text-align: left;
         }
 
         input, textarea {
@@ -103,7 +103,7 @@
         #preview {
             margin-top: 1rem;
             max-width: 100%;
-            text-align: left; /* Align preview content to the left */
+            text-align: left;
         }
 
         .material-icons {
@@ -125,7 +125,7 @@
             font-size: 1.2rem;
             color: #ccc;
             margin-bottom: 8px;
-            text-align: left; /* Re-align labels to the left if needed */
+            text-align: left;
         }
 
         .panel {
@@ -216,23 +216,22 @@
         .login-button:hover {
             background-color: #0056b3;
         }
-
     </style>
 </head>
 <body>
     <div id="loader"><div></div><div></div><div></div></div>
     <div class="navbar"></div>
     <div class="sidebar" id="sidebar"></div>
-  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
     <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
 
     <div class="report-container" id="reportContainer">
         <h1>Report a Bug</h1><br>
         <div class="panel" id="panel">
             <svg width="48" height="48" viewBox="0 0 48 48" style="vertical-align:middle; margin-bottom:10px;">
-            <circle cx="24" cy="24" r="22" stroke="#00ff00" fill="transparent" stroke-width="3"/>
-            <polyline points="15,25 22,32 34,18" fill="none" stroke="#00ff00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg><br>Report Submitted, Thank you!</div>
+                <circle cx="24" cy="24" r="22" stroke="#00ff00" fill="transparent" stroke-width="3"/>
+                <polyline points="15,25 22,32 34,18" fill="none" stroke="#00ff00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg><br>Report Submitted, Thank you!</div>
         <div class="login-message" id="loginMessage" style="display: none;">
             <p>You need to be logged in to submit a bug report.</p>
             <a href="login.html" class="login-button">Login with Discord</a>
@@ -284,21 +283,22 @@
         const loginMessage = document.getElementById("loginMessage");
         let uploadedFile = null;
         let loggedInUsername = null;
+        let loggedInUserId = null;
 
         document.addEventListener("DOMContentLoaded", () => {
             const storedUser = localStorage.getItem("discordUser");
             if (storedUser) {
                 const userData = JSON.parse(storedUser);
                 loggedInUsername = userData.username;
-                reportForm.style.display = "block"; // Show the form
-                loginMessage.style.display = "none"; // Hide the login message
+                loggedInUserId = userData.id;
+                reportForm.style.display = "block";
+                loginMessage.style.display = "none";
             } else {
-                reportForm.style.display = "none"; // Hide the form
-                loginMessage.style.display = "block"; // Show the login message
+                reportForm.style.display = "none";
+                loginMessage.style.display = "block";
             }
         });
 
-        // Drag and drop functionality
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropArea.addEventListener(eventName, e => {
                 e.preventDefault();
@@ -335,7 +335,6 @@
         function handleFile(file) {
             uploadedFile = file;
             
-            // Check file type
             if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -373,50 +372,39 @@
 
             const bug = document.getElementById("bug").value.trim();
             const webhook = "https://discord.com/api/webhooks/1361692940933796041/w2cigWcNOTdnUaX4jIBVxbpDqVovWw0qJaEKQ-ZDG6l-E1U83vamW3mumbrbo1FOVVXV";
+            const inGameName = document.getElementById("username").value.trim();
 
-            // Use loggedInUsername if available
-            const reporterName = loggedInUsername ? loggedInUsername : document.getElementById("username").value.trim();
-
-            // Create the embed object
-            const embed = {
-                title: "New Bug Report",
-                color: 16711680, // Red color
-                fields: [
-                    { name: "Reporter", value: reporterName, inline: true },
-                    { name: "Bug Description", value: bug }
-                ],
-                timestamp: new Date().toISOString()
+            // Create JSON payload
+            const payload = {
+                username: "Bug Reporter",
+                content: JSON.stringify({
+                    type: "bug_report",
+                    reporter: {
+                        discord_id: loggedInUserId,
+                        discord_username: loggedInUsername,
+                        in_game_name: inGameName
+                    },
+                    description: bug,
+                    timestamp: new Date().toISOString(),
+                    attachment: uploadedFile ? {
+                        name: uploadedFile.name,
+                        type: uploadedFile.type,
+                        size: uploadedFile.size
+                    } : null
+                }, null, 2)
             };
 
             // Prepare form data
             const formData = new FormData();
             
-            // Show progress bar if we're uploading a file
             if (uploadedFile) {
                 progressContainer.style.display = "block";
                 progressBar.style.width = "0%";
                 progressBar.textContent = "0%";
-            }
-
-            // If an image/video is uploaded, we need to send it as a file
-            if (uploadedFile && (uploadedFile.type.startsWith('image/') || uploadedFile.type.startsWith('video/'))) {
                 formData.append('file', uploadedFile);
-                
-                // Add the image/video to the embed
-                if (uploadedFile.type.startsWith('image/')) {
-                    embed.image = { url: "attachment://uploaded_file" };
-                } else if (uploadedFile.type.startsWith('video/')) {
-                    // Discord doesn't support video embeds, so we'll just attach it
-                    // and mention it in the description
-                    embed.description = (embed.description || "") + "\n\n**Video attached**";
-                }
             }
             
-            // Add the embed to the payload
-            formData.append('payload_json', JSON.stringify({
-                embeds: [embed],
-                username: "Bug Reporter"
-            }));
+            formData.append('payload_json', JSON.stringify(payload));
 
             try {
                 const xhr = new XMLHttpRequest();
@@ -431,10 +419,8 @@
 
                 xhr.onload = () => {
                     if (xhr.status >= 200 && xhr.status < 300) {
-                        // Show success panel
                         panel.classList.add("show");
                         
-                        // Hide form and show success message after delay
                         setTimeout(() => {
                             panel.classList.remove("show");
                             reportContainer.classList.add("hidden");
@@ -481,5 +467,4 @@
         });
     </script>
 </body>
-                    </html>
-    
+    </html>
