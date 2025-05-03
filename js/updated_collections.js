@@ -1720,12 +1720,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 7,
-                    "name": "Unknown",
+                    "name": "MythicalPanda30",
                     "score": "N/A"
                 },
                 {
                     "rank": 8,
-                    "name": "MythicalPanda30",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
@@ -1817,8 +1817,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "NINTIN7238",
+                    "score": "3.3M+"
                 },
                 {
                     "rank": 5,
