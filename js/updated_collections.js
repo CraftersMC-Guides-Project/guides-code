@@ -1696,7 +1696,7 @@ const collectionsData = {
                 {
                     "rank": 2,
                     "name": "M47230",
-                    "score": "21M+"
+                    "score": "31.2M+"
                 },
                 {
                     "rank": 3,
