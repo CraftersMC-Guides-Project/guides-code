@@ -147,7 +147,7 @@ function storeUserData(provider, userData) {
 // Google Authentication
 gProvider.addScope('https://www.googleapis.com/auth/contacts.readonly');
 
-document.getElementById('googleAuth').addEventListener('click', async () => {
+document.getElementById('googleAuth').addEventListener('click', () => {
   signInWithPopup(auth, gProvider)
     .then(async (result) => {
       const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -165,22 +165,18 @@ document.getElementById('googleAuth').addEventListener('click', async () => {
 
       storeUserData('googleAuth', userData);
 
-      // Check if Microsoft account exists and attempt linking
-      const methods = await fetchSignInMethodsForEmail(auth, user.email);
+      // Check if the Google account can be linked with an existing Microsoft account
+      const email = user.email;
+      const methods = await fetchSignInMethodsForEmail(auth, email);
+
       if (methods.includes('microsoft.com')) {
-        try {
-          const microsoftCredential = OAuthProvider.credentialFromError(result);
-          const microsoftResult = await signInWithPopup(auth, microsoftProvider);
-          await linkWithCredential(microsoftResult.user, microsoftCredential);
-          console.log("Google account successfully linked to existing Microsoft account");
+        const microsoftCredential = OAuthProvider.credentialFromError(result);
+        const microsoftResult = await signInWithPopup(auth, microsoftProvider);
+        await linkWithCredential(microsoftResult.user, microsoftCredential);
+        console.log("Google account successfully linked to existing Microsoft account");
 
-          storeUserData('microsoftAuth', microsoftResult.user);
-
-          // Display linked account information
-          alert("Your Microsoft account has been linked to your Google account.");
-        } catch (linkError) {
-          console.error("Error linking Microsoft account:", linkError);
-        }
+        // Update the localStorage with linked Microsoft account data
+        storeUserData('microsoftAuth', microsoftResult.user);
       }
     })
     .catch((error) => {
@@ -188,6 +184,7 @@ document.getElementById('googleAuth').addEventListener('click', async () => {
     });
 });
 
+// Microsoft Authentication
 document.getElementById("microsoftAuth").addEventListener("click", async () => {
   try {
     const result = await signInWithPopup(auth, microsoftProvider);
@@ -204,42 +201,59 @@ document.getElementById("microsoftAuth").addEventListener("click", async () => {
 
     storeUserData('microsoftAuth', userData);
 
-    // Check if Google account exists and attempt linking
-    const methods = await fetchSignInMethodsForEmail(auth, result.user.email);
+    // Check if the Microsoft account can be linked with an existing Google account
+    const email = result.user.email;
+    const methods = await fetchSignInMethodsForEmail(auth, email);
+
     if (methods.includes('google.com')) {
-      try {
-        const googleCredential = GoogleAuthProvider.credentialFromError(result);
-        const googleResult = await signInWithPopup(auth, gProvider);
-        await linkWithCredential(googleResult.user, googleCredential);
-        console.log("Microsoft account successfully linked to existing Google account");
+      const googleCredential = GoogleAuthProvider.credentialFromError(result);
+      const googleResult = await signInWithPopup(auth, gProvider);
+      await linkWithCredential(googleResult.user, googleCredential);
+      console.log("Microsoft account successfully linked to existing Google account");
 
-        storeUserData('googleAuth', googleResult.user);
-
-        // Display linked account information
-        alert("Your Google account has been linked to your Microsoft account.");
-      } catch (linkError) {
-        console.error("Error linking Google account:", linkError);
-      }
+      // Update localStorage with linked Google account data
+      storeUserData('googleAuth', googleResult.user);
     }
   } catch (error) {
-    console.error('Microsoft Authentication error:', error.message);
+    if (error.code === 'auth/account-exists-with-different-credential') {
+      const pendingCred = OAuthProvider.credentialFromError(error);
+      const email = error.customData?.email;
+
+      const methods = await fetchSignInMethodsForEmail(auth, email);
+      console.log("Account already exists with:", methods);
+
+      if (methods.includes('google.com')) {
+        const googleProvider = new GoogleAuthProvider();
+        try {
+          // Sign in with Google
+          const googleResult = await signInWithPopup(auth, googleProvider);
+          
+          // Link Microsoft account to Google account
+          await linkWithCredential(googleResult.user, pendingCred);
+          console.log("Microsoft account successfully linked to existing Google account");
+
+          const userData = {
+            provider: 'google', // After linking, user data should show as Google
+            uid: googleResult.user.uid,
+            email: googleResult.user.email,
+            displayName: googleResult.user.displayName,
+            photoURL: googleResult.user.photoURL,
+            providerId: googleResult.user.providerData[0]?.providerId,
+          };
+          storeUserData('googleAuth', userData); // Store linked Google account data
+          
+        } catch (linkError) {
+          console.error("Error linking Microsoft account:", linkError);
+        }
+      } else {
+        alert(`Please sign in using your existing method: ${methods[0]}`);
+      }
+    } else {
+      console.error("Microsoft sign-in failed:", error);
+    }
   }
 });
 
-// Checking if accounts are linked when the user is logged in
-function checkIfLinked() {
-  const user = auth.currentUser;
-
-  if (user) {
-    fetchSignInMethodsForEmail(auth, user.email).then(methods => {
-      if (methods.length > 1) {
-        alert("Your accounts are linked! Linked methods: " + methods.join(", "));
-      } else {
-        alert("No linked accounts found.");
-      }
-    });
-  }
-}
 </script>
 
 </body>
