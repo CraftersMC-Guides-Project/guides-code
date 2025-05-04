@@ -1,11 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- ... (keep all existing head content the same) ... -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Bug Report - CraftersMC Guides</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/essential.css">
+    <link rel="stylesheet" href="css/item.css">
+    <style>
+        body {
+            background: url("../Backgrounds/IMG_4502.jpeg");
+            background-size: cover;
+            background-position-x: center;
+            background-repeat: no-repeat;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar, .sidebar {
+            background-color: #1c1c1c;
+        }
+
+        .report-container {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 10vh auto;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #4a90e2;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #888;
+            background-color: #333;
+            color: white;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        #drop-area {
+            border: 2px dashed #007bff;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            color: #888;
+            margin-top: 1rem;
+            background-color: #282828;
+        }
+
+        #drop-area.highlight {
+            border-color: #ff4444;
+        }
+
+        #submitBtn {
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        #submitBtn:hover {
+            background-color: #0056b3;
+        }
+
+        #fileBtn {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        #fileBtn:hover {
+            background-color: #0056b3;
+        }
+
+        #preview {
+            margin-top: 1rem;
+            max-width: 100%;
+            text-align: left;
+        }
+
+        .material-icons {
+            vertical-align: middle;
+        }
+
+        p {
+            margin: 1rem auto;
+        }
+
+        @media (max-width: 768px) {
+            .report-container {
+                padding: 1.5rem;
+            }
+        }
+
+        label {
+            display: block;
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
+            z-index: 9999999;
+            width: 300px;
+            display: none;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            color: lime;
+            border: 1px solid lime;
+        }
+
+        .panel.show {
+            display: block;
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 10vh auto;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+            display: none;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #333;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 20px;
+            background-color: #4CAF50;
+            border-radius: 8px;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            transition: width 0.3s;
+        }
+
+        .video-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+        }
+
+        .login-message {
+            text-align: center;
+            color: red;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .login-button {
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 80%;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .login-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <!-- ... (keep all existing HTML the same until the script) ... -->
+    <div id="loader"><div></div><div></div><div></div></div>
+    <div class="navbar"></div>
+    <div class="sidebar" id="sidebar"></div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
 
+    <div class="report-container" id="reportContainer">
+        <h1>Report a Bug</h1><br>
+        <div class="panel" id="panel">
+            <svg width="48" height="48" viewBox="0 0 48 48" style="vertical-align:middle; margin-bottom:10px;">
+                <circle cx="24" cy="24" r="22" stroke="#00ff00" fill="transparent" stroke-width="3"/>
+                <polyline points="15,25 22,32 34,18" fill="none" stroke="#00ff00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg><br>Report Submitted, Thank you!</div>
+        <div class="login-message" id="loginMessage" style="display: none;">
+            <p>You need to be logged in to submit a bug report.</p>
+            <a href="login.html" class="login-button">Login with Discord</a>
+        </div>
+        <form id="reportForm" style="display: none;">
+            <div class="form-group">
+                <label for="username">Your In-Game Name:</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="bug">Describe the Bug:</label>
+                <textarea id="bug" rows="5" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="file">Upload Image/Video (optional):</label>
+                <div id="drop-area">
+                    <p>Drag & drop a file here, or click below to select</p>
+                    <input type="file" id="fileElem" accept="image/*,video/*" style="display:none">
+                    <button type="button" id="fileBtn" onclick="fileElem.click()">Choose File</button>
+                    <div id="preview"></div>
+                </div>
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar" id="progressBar">0%</div>
+                </div>
+            </div>
+            <button type="submit" id="submitBtn">Submit Report</button>
+        </form>
+    </div>
+
+    <div class="success-message" id="successMessage">
+        <h1>Thank You!</h1>
+        <p>Your bug report has been submitted successfully.</p>
+        <p>We'll review it and get back to you if needed.</p>
+    </div>
+
+    <div id="footer"></div>
+
+    <script src="js/script.js"></script>
     <script>
         const dropArea = document.getElementById("drop-area");
         const fileElem = document.getElementById("fileElem");
@@ -35,7 +299,68 @@
             }
         });
 
-        // ... (keep all existing drag-and-drop and file handling code the same) ...
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => {
+                dropArea.classList.add('highlight');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => {
+                dropArea.classList.remove('highlight');
+            });
+        });
+
+        dropArea.addEventListener('drop', e => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileElem.addEventListener('change', () => {
+            if (fileElem.files.length) {
+                handleFile(fileElem.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            uploadedFile = file;
+            
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.innerHTML = `
+                        <p>Selected: ${file.name}</p>
+                        <img src="${e.target.result}" style="max-width: 100%; max-height: 200px; margin-top: 10px;">
+                    `;
+                };
+                reader.readAsDataURL(file);
+            } else if (file.type.startsWith('video/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.innerHTML = `
+                        <p>Selected: ${file.name}</p>
+                        <video controls class="video-preview">
+                            <source src="${e.target.result}" type="${file.type}">
+                            Your browser does not support the video tag.
+                        </video>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = `<p>Selected: ${file.name} (Unsupported file type)</p>`;
+                uploadedFile = null;
+            }
+        }
 
         reportForm.addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -49,28 +374,7 @@
             const webhook = "https://discord.com/api/webhooks/1361692940933796041/w2cigWcNOTdnUaX4jIBVxbpDqVovWw0qJaEKQ-ZDG6l-E1U83vamW3mumbrbo1FOVVXV";
             const inGameName = document.getElementById("username").value.trim();
 
-            let attachmentUrl = null;
-            
-            if (uploadedFile) {
-                try {
-                    // First upload the file to a temporary hosting service
-                    attachmentUrl = await uploadFile(uploadedFile);
-                } catch (err) {
-                    console.error("File upload failed:", err);
-                    panel.innerHTML = "File upload failed. Please try again.";
-                    panel.style.color = "red";
-                    panel.classList.add("show");
-                    setTimeout(() => {
-                        panel.classList.remove("show");
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = "Submit Report";
-                        submitBtn.style.opacity = "1";
-                    }, 3000);
-                    return;
-                }
-            }
-
-            // Create JSON payload with the file URL
+            // Create JSON payload with file URL if available
             const payload = {
                 username: "Bug Reporter",
                 content: JSON.stringify({
@@ -82,8 +386,8 @@
                     },
                     description: bug,
                     timestamp: new Date().toISOString(),
-                    attachment: attachmentUrl ? {
-                        url: attachmentUrl,
+                    attachment: uploadedFile ? {
+                        url: URL.createObjectURL(uploadedFile), // Creates a blob URL
                         name: uploadedFile.name,
                         type: uploadedFile.type,
                         size: uploadedFile.size
@@ -92,7 +396,6 @@
             };
 
             try {
-                // Send the webhook with the file URL
                 const response = await fetch(webhook, {
                     method: "POST",
                     headers: {
@@ -119,8 +422,8 @@
                     }, 3000);
                 }
             } catch (err) {
-                console.error("Network error:", err);
-                panel.innerHTML = "Network error. Please check your connection.";
+                console.error("Error:", err);
+                panel.innerHTML = "An error occurred. Please try again.";
                 panel.style.color = "red";
                 panel.classList.add("show");
                 setTimeout(() => {
@@ -133,53 +436,6 @@
                 progressContainer.style.display = "none";
             }
         });
-
-        async function uploadFile(file) {
-            return new Promise((resolve, reject) => {
-                progressContainer.style.display = "block";
-                progressBar.style.width = "0%";
-                progressBar.textContent = "0%";
-
-                const formData = new FormData();
-                formData.append('file', file);
-
-                // Using ImgBB as an example free image hosting service
-                // Note: For production, you should use your own file hosting service
-                const xhr = new XMLHttpRequest();
-                xhr.open("POST", "https://api.imgbb.com/1/upload?key=6d992a6ab73a342e75b378cf60ebe8d4"); // Replace with your API key
-                
-                xhr.upload.onprogress = (e) => {
-                    if (e.lengthComputable) {
-                        const percentComplete = Math.round((e.loaded / e.total) * 100;
-                        progressBar.style.width = percentComplete + "%";
-                        progressBar.textContent = percentComplete + "%";
-                    }
-                };
-
-                xhr.onload = () => {
-                    if (xhr.status >= 200 && xhr.status < 300) {
-                        try {
-                            const response = JSON.parse(xhr.responseText);
-                            if (response.data && response.data.url) {
-                                resolve(response.data.url);
-                            } else {
-                                reject(new Error("Invalid response from file host"));
-                            }
-                        } catch (err) {
-                            reject(err);
-                        }
-                    } else {
-                        reject(new Error(`Upload failed with status ${xhr.status}`));
-                    }
-                };
-
-                xhr.onerror = () => {
-                    reject(new Error("Network error during file upload"));
-                };
-
-                xhr.send(formData);
-            });
-        }
     </script>
 </body>
 </html>
