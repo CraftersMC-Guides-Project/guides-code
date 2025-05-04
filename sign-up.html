@@ -117,45 +117,35 @@
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo, OAuthProvider, linkWithCredential, fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo, OAuthProvider, linkWithCredential, fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
-    authDomain: "craftersmc-guides.firebaseapp.com",
-    projectId: "craftersmc-guides",
-    storageBucket: "craftersmc-guides.firebasestorage.app",
-    messagingSenderId: "647290515320",
-    appId: "1:647290515320:web:44e1be1528c86af00d628d",
-    measurementId: "G-K3WGXSF9DQ"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
+  authDomain: "craftersmc-guides.firebaseapp.com",
+  projectId: "craftersmc-guides",
+  storageBucket: "craftersmc-guides.firebasestorage.app",
+  messagingSenderId: "647290515320",
+  appId: "1:647290515320:web:44e1be1528c86af00d628d",
+  measurementId: "G-K3WGXSF9DQ"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  auth.languageCode = 'it';
-  const gProvider = new GoogleAuthProvider();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+auth.languageCode = 'it';
+const gProvider = new GoogleAuthProvider();
+const microsoftProvider = new OAuthProvider('microsoft.com');
+microsoftProvider.setCustomParameters({ prompt: 'consent', tenant: 'consumers' });
 
-  window.signUp = function () {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const msg = document.getElementById("message");
+// Store user data in localStorage
+function storeUserData(userData) {
+  localStorage.setItem('authData', JSON.stringify(userData));
+  console.log('User data stored in localStorage:', userData);
+}
 
-    if (!email || !password) {
-      msg.textContent = "Please fill out both fields.";
-      return;
-    }
+// Google Authentication
+gProvider.addScope('https://www.googleapis.com/auth/contacts.readonly');
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        msg.textContent = `Account created for ${userCredential.user.email}`;
-      })
-      .catch((error) => {
-        msg.textContent = error.message;
-      });
-  };
-
-  gProvider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-  
 document.getElementById('googleAuth').addEventListener('click', () => {
   signInWithPopup(auth, gProvider)
     .then((result) => {
@@ -164,35 +154,39 @@ document.getElementById('googleAuth').addEventListener('click', () => {
       const user = result.user;
       const additionalUserInfo = getAdditionalUserInfo(result);
 
-      console.log('Successfully signed in:', user); // Add this
+      console.log('Successfully signed in:', user);
 
       const userData = {
+        provider: 'google',
         email: user.email,
         displayName: user.displayName,
         photoURL: user.photoURL
       };
 
-      localStorage.setItem('googleAuth', JSON.stringify(userData));
-      console.log('User data stored in localStorage:', userData); // Add this
-
+      storeUserData(userData);
     })
     .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      const email = error.customData?.email;
-      const credential = GoogleAuthProvider.credentialFromError(error);
-
-      console.error('Authentication error:', errorMessage);
+      console.error('Authentication error:', error.message);
     });
 });
 
-const microsoftProvider = new OAuthProvider('microsoft.com');
-microsoftProvider.setCustomParameters({ prompt: 'consent', tenant: 'consumers' });
-
+// Microsoft Authentication
 document.getElementById("microsoftAuth").addEventListener("click", async () => {
   try {
-    await signInWithPopup(auth, microsoftProvider);
+    const result = await signInWithPopup(auth, microsoftProvider);
     console.log("Microsoft sign-in successful");
+
+    const userData = {
+      provider: 'microsoft',
+      uid: result.user.uid,
+      email: result.user.email,
+      displayName: result.user.displayName,
+      photoURL: result.user.photoURL,
+      providerId: result.user.providerData[0]?.providerId,
+    };
+
+    storeUserData(userData);
+
   } catch (error) {
     if (error.code === 'auth/account-exists-with-different-credential') {
       const pendingCred = OAuthProvider.credentialFromError(error);
@@ -204,9 +198,21 @@ document.getElementById("microsoftAuth").addEventListener("click", async () => {
       if (methods.includes("google.com")) {
         const googleProvider = new GoogleAuthProvider();
         try {
-          const result = await signInWithPopup(auth, googleProvider);
-          await linkWithCredential(result.user, pendingCred);
+          const googleResult = await signInWithPopup(auth, googleProvider);
+          
+          await linkWithCredential(googleResult.user, pendingCred);
           console.log("Microsoft account successfully linked to existing Google account");
+
+          const userData = {
+            provider: 'google', // After linking, user data should show as Google
+            uid: googleResult.user.uid,
+            email: googleResult.user.email,
+            displayName: googleResult.user.displayName,
+            photoURL: googleResult.user.photoURL,
+            providerId: googleResult.user.providerData[0]?.providerId,
+          };
+          storeUserData(userData);
+
         } catch (linkError) {
           console.error("Error linking Microsoft account:", linkError);
         }
@@ -218,6 +224,8 @@ document.getElementById("microsoftAuth").addEventListener("click", async () => {
     }
   }
 });
+
+
 
   
 </script>
