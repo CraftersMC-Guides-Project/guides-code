@@ -118,7 +118,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo, OAuthProvider } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+  import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo, OAuthProvider, linkWithCredential, fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
@@ -187,34 +187,36 @@ document.getElementById('googleAuth').addEventListener('click', () => {
 });
 
 const microsoftProvider = new OAuthProvider('microsoft.com');
-microsoftProvider.setCustomParameters({
-  prompt: 'consent',
-  tenant: 'consumers'
-});
+microsoftProvider.setCustomParameters({ prompt: 'consent', tenant: 'consumers' });
 
-document.getElementById('microsoftAuth').addEventListener('click', () => {
-  auth.useDeviceLanguage();
+document.getElementById("microsoftAuth").addEventListener("click", async () => {
+  try {
+    await signInWithPopup(auth, microsoftProvider);
+    console.log("Microsoft sign-in successful");
+  } catch (error) {
+    if (error.code === 'auth/account-exists-with-different-credential') {
+      const pendingCred = OAuthProvider.credentialFromError(error);
+      const email = error.customData?.email;
 
-  // Popup sign in
-  signInWithPopup(auth, microsoftProvider)
-    .then((result) => {
-      const user = result.user;
-      const credential = OAuthProvider.credentialFromResult(result);
-      const accessToken = credential.accessToken;
-      const idToken = credential.idToken;
+      const methods = await fetchSignInMethodsForEmail(auth, email);
+      console.log("Account already exists with:", methods);
 
-      const userData = {
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL
-      };
-
-      localStorage.setItem('microsoftAuth', JSON.stringify(userData));
-      console.log("Microsoft user signed in:", userData);
-    })
-    .catch((error) => {
-      console.error("Microsoft auth error:", error);
-    });
+      if (methods.includes("google.com")) {
+        const googleProvider = new GoogleAuthProvider();
+        try {
+          const result = await signInWithPopup(auth, googleProvider);
+          await linkWithCredential(result.user, pendingCred);
+          console.log("Microsoft account successfully linked to existing Google account");
+        } catch (linkError) {
+          console.error("Error linking Microsoft account:", linkError);
+        }
+      } else {
+        alert(`Please sign in using your existing method: ${methods[0]}`);
+      }
+    } else {
+      console.error("Microsoft sign-in failed:", error);
+    }
+  }
 });
 
   
