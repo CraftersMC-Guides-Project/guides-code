@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Skimmer Application</title>
+    <link rel="stylesheet" href="../css/form.css">
+</head>
+<body>
+    <div class="top-button-container">
+        <button class="top-button" onclick="window.location.href='index.html'">Home</button>
+    </div>
+
+    <div class="card-container">
+        <form class="card" id="applicationForm">
+            <div class="card-content">
+                <h3>Data Skimmer Application</h3>
+                <label>1. Discord Username</label>
+                <input type="text" name="discord" required><br>
+
+                <label>2. Minecraft Username</label>
+                <input type="text" name="minecraft" required><br>
+
+                <label>3. What is a Data Skimmer?</label>
+                <textarea name="dataSkimmer" required></textarea><br>
+
+                <label>4. Why do you want to join?</label>
+                <textarea name="whyJoin" required></textarea><br>
+
+                <label>5. Time you can dedicate:</label>
+                <select name="dailyTime" required>
+                    <option value="less than an hour">a) less than an hour</option>
+                    <option value="1-2 hour">b) 1-2 hour</option>
+                    <option value="2-3 hour">c) 2-3 hour</option>
+                    <option value="+4 hour">d) +4 hour</option>
+                </select><br>
+
+                <label>6. Unavailable Times</label>
+                <textarea name="unavailable" required></textarea><br>
+
+                <label>7. Commitment Consistency</label>
+                <select name="consistency" required>
+                    <option value="Yes">a) Yes, I am committed to being consistent.</option>
+                    <option value="No">b) No, I might not be able to commit consistently.</option>
+                    <option value="Intervals">c) I can commit, but only for specific intervals.</option>
+                </select><br>
+
+                <label>8. Deadline Reliability</label>
+                <select name="deadline" required>
+                    <option value="Always">a) Yes, I can complete my work on time.</option>
+                    <option value="Usually">b) I can usually complete on time, but occasional delays.</option>
+                    <option value="Struggle">c) No, I might struggle with deadlines.</option>
+                </select><br>
+
+                <label>9. Being Contacted</label>
+                <select name="contact" required>
+                    <option value="No issues">a) No, I’m fine with being contacted.</option>
+                    <option value="Prefer not">b) Yes, I prefer not to be contacted unless necessary.</option>
+                    <option value="Depends">c) It depends on the situation.</option>
+                </select><br>
+
+                <label>10. Can we trust you?</label>
+                <select name="trust" required>
+                    <option value="Trustworthy">a) Yes, you can trust me completely.</option>
+                    <option value="Not trustworthy">b) No, I might share it with others.</option>
+                </select><br>
+
+                <label>11. CraftersMC Playtime & Join Date</label>
+                <input type="text" name="playtime" required><br>
+
+                <label>12. Ban/Mute History</label>
+                <textarea name="banHistory" required></textarea><br>
+
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+    document.getElementById('applicationForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const form = event.target;
+        const formData = new FormData(form);
+
+        const fields = Array.from(formData.entries()).map(([key, value], i) => {
+            const question = form.querySelector(`[name="${key}"]`).previousElementSibling?.innerText || key;
+            return `**${question}**\n${value}`;
+        });
+
+        const payload = {
+            content: fields.join("\n\n")
+        };
+
+        await fetch('https://discord.com/api/webhooks/1368564981095727117/K0YXhk04D9BIFnghp5E9oX-jqnnsu7U-6Exh5y3lOuGPaNJpcBrY2NL3feP8AaCWYJQl', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        alert('Form submitted successfully.');
+        form.reset();
+    });
+    </script>
+</body>
+</html>
