@@ -94,27 +94,37 @@
     </div>
     <div id="footer" id="important"></div>
     <script>
-    document.getElementById('applicationForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const panel = document.querySelector('.panel');
-        const form = event.target;
-        const formData = new FormData(form);
+document.getElementById('applicationForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const panel = document.querySelector('.panel');
+    const form = event.target;
+    const formData = new FormData(form);
 
-        const fields = Array.from(formData.entries()).map(([key, value], i) => {
-            const question = form.querySelector(`[name="${key}"]`).previousElementSibling?.innerText || key;
-            return `**${question}**\n${value}`;
-        });
-
-        const payload = {
-            content: fields.join("\n\n")
+    const fields = Array.from(formData.entries()).map(([key, value]) => {
+        const question = form.querySelector(`[name="${key}"]`).previousElementSibling?.innerText || key;
+        return {
+            name: question,
+            value: value || "N/A",
+            inline: false
         };
+    });
 
+    const embedPayload = {
+        embeds: [{
+            title: "New Data Skimmer Application",
+            color: 0x00ff00, // Green
+            fields: fields,
+            timestamp: new Date().toISOString()
+        }]
+    };
+
+    try {
         await fetch('https://discord.com/api/webhooks/1368564981095727117/K0YXhk04D9BIFnghp5E9oX-jqnnsu7U-6Exh5y3lOuGPaNJpcBrY2NL3feP8AaCWYJQl', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(embedPayload)
         });
         panel.classList.add('show');
         alert('Form submitted successfully.');
@@ -122,8 +132,11 @@
             form.reset();
             panel.classList.remove('show');
         }, 5000);
-        p
-    });
-    </script>
+    } catch (error) {
+        alert('There was an error submitting the form.');
+        console.error(error);
+    }
+});
+</script>
 </body>
 </html>
