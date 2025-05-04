@@ -25,6 +25,11 @@
 
     <div class="card-container">
         <form id="applicationForm"><br>
+            <div class="panel" id="panel">
+                <svg width="48" height="48" viewBox="0 0 48 48" style="vertical-align:middle; margin-bottom:10px;">
+                    <circle cx="24" cy="24" r="22" stroke="#00ff00" fill="transparent" stroke-width="3"/>
+                    <polyline points="15,25 22,32 34,18" fill="none" stroke="#00ff00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg><br>Application Submitted, Thank you!</div>
                 <h1>Data Skimmer Application</h1><br>
             <div class="card-content">
                 <label>1. Discord Username</label>
@@ -91,7 +96,7 @@
     <script>
     document.getElementById('applicationForm').addEventListener('submit', async function(event) {
         event.preventDefault();
-
+        const panel = document.querySelector('.panel');
         const form = event.target;
         const formData = new FormData(form);
 
@@ -111,9 +116,13 @@
             },
             body: JSON.stringify(payload)
         });
-
+        panel.classList.add('show');
         alert('Form submitted successfully.');
-        form.reset();
+        setTimeout(() => {
+            form.reset();
+            panel.classList.remove('show');
+        }, 5000);
+        p
     });
     </script>
 </body>
