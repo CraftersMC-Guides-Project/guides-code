@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link Microsoft/Xbox Account</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e2e;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #2e2e3e;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            color: #7289da;
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: #7289da;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #677bc4;
+        }
+        .btn:disabled {
+            background-color: #4e4e5e;
+            cursor: not-allowed;
+        }
+        .code-display {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #3e3e4e;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 24px;
+            word-break: break-all;
+        }
+        .instructions {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #a0a0a0;
+        }
+        .error {
+            color: #ff6b6b;
+            margin-top: 20px;
+        }
+        .success {
+            color: #6bff6b;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Link Your Microsoft/Xbox Account</h1>
+        <p>Connect your Microsoft/Xbox account to your Discord profile to enable special features.</p>
+        
+        <div id="auth-section">
+            <button id="login-btn" class="btn">Login with Microsoft</button>
+        </div>
+        
+        <div id="code-section" style="display: none;">
+            <p>Your verification code:</p>
+            <div id="code" class="code-display"></div>
+            <div class="instructions">
+                <p>Copy this code and use it in Discord with the <strong>/link [code]</strong> command.</p>
+                <p>This code will expire in 10 minutes.</p>
+            </div>
+        </div>
+        
+        <div id="error-message" class="error" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('login-btn').addEventListener('click', startMicrosoftLogin);
+
+        async function startMicrosoftLogin() {
+            const btn = document.getElementById('login-btn');
+            btn.disabled = true;
+            btn.textContent = 'Redirecting...';
+            
+            try {
+                // Get the current URL to construct the callback URL
+                const baseUrl = window.location.href.split('?')[0];
+                const callbackUrl = `${baseUrl.replace('link.html', '')}auth/microsoft/callback`;
+                
+                // Start the Microsoft login flow
+                window.location.href = `${baseUrl.replace('link.html', '')}auth/microsoft`;
+            } catch (error) {
+                showError('Failed to start login process. Please try again.');
+                console.error('Login error:', error);
+                btn.disabled = false;
+                btn.textContent = 'Login with Microsoft';
+            }
+        }
+
+        // Check if we have a code in the URL (in case of direct callback access)
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const error = urlParams.get('error');
+            
+            if (error) {
+                showError(error);
+            } else if (code) {
+                // This would be for direct callback access, but our flow uses the worker
+                // So we'll let the worker handle the code display
+            }
+        });
+
+        function showError(message) {
+            const errorEl = document.getElementById('error-message');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+
+        function showVerificationCode(code) {
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('code').textContent = code;
+            document.getElementById('code-section').style.display = 'block';
+            
+            // Auto-copy to clipboard
+            navigator.clipboard.writeText(code).then(() => {
+                // Optional: Show "Copied!" message
+            });
+        }
+    </script>
+</body>
+</html>
