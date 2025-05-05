@@ -95,47 +95,49 @@ document.addEventListener("click", (event) => {
 });
 */
 
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM fully loaded.");
+function initializeThemeSwitcher() {
+  document.addEventListener("DOMContentLoaded", () => {
+    console.log("DOM fully loaded.");
 
-  const themeSwitch = document.getElementById("theme-switch");
+    const themeSwitch = document.getElementById("theme-switch");
 
-  if (!themeSwitch) {
-    console.error("Error: #theme-switch button not found!");
-    return;
-  }
-
-  let darkMode = localStorage.getItem("darkMode");
-
-  const enableDarkmode = () => {
-    document.body.classList.add("darkmode");
-    localStorage.setItem("darkMode", "true");
-    themeSwitch.textContent = "light_mode";
-    console.log("Dark mode enabled.");
-  };
-
-  const disableDarkmode = () => {
-    document.body.classList.remove("darkmode");
-    localStorage.setItem("darkMode", "false");
-    themeSwitch.textContent = "dark_mode";
-    console.log("Dark mode disabled.");
-  };
-  
-  if (darkMode === "true") {
-    enableDarkmode();
-  }
-
-  themeSwitch.addEventListener("click", () => {
-    darkMode = localStorage.getItem("darkMode");
-    if (darkMode !== "true") {
-      enableDarkmode();
-    } else {
-      disableDarkmode();
+    if (!themeSwitch) {
+      console.error("Error: #theme-switch button not found!");
+      return;
     }
-  });
 
-  console.log("Event listener added.");
-});
+    let darkMode = localStorage.getItem("darkMode");
+
+    const enableDarkmode = () => {
+      document.body.classList.add("darkmode");
+      localStorage.setItem("darkMode", "true");
+      themeSwitch.textContent = "light_mode";
+      console.log("Dark mode enabled.");
+    };
+
+    const disableDarkmode = () => {
+      document.body.classList.remove("darkmode");
+      localStorage.setItem("darkMode", "false");
+      themeSwitch.textContent = "dark_mode";
+      console.log("Dark mode disabled.");
+    };
+
+    if (darkMode === "true") {
+      enableDarkmode();
+    }
+
+    themeSwitch.addEventListener("click", () => {
+      darkMode = localStorage.getItem("darkMode");
+      if (darkMode !== "true") {
+        enableDarkmode();
+      } else {
+        disableDarkmode();
+      }
+    });
+
+    console.log("Event listener added.");
+  });
+}
 
 // navbar
 document.addEventListener("DOMContentLoaded", function () {
@@ -143,6 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(response => response.text())
     .then(data => {
       document.querySelector('.navbar').innerHTML = data;
+      initializeThemeSwitcher();
     })
     .catch(error => console.error('Error loading the navbar:', error));
 });
@@ -153,6 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(response => response.text())
     .then(data => {
       document.getElementById('sidebar').innerHTML = data;
+      initializeThemeSwitcher();
     })
     .catch(error => console.error('Error loading the navbar:', error));
 });
@@ -163,6 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(response => response.text())
     .then(data => {
       document.getElementById('footer').innerHTML = data;
+      initializeThemeSwitcher();
     })
     .catch(error => console.error('Error loading the navbar:', error));
 });
