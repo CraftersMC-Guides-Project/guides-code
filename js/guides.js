@@ -145,7 +145,7 @@ const totalComponents = 3;
 function componentLoaded() {
   componentsLoaded++;
   if (componentsLoaded === totalComponents) {
-    initializeThemeSwitcher();
+    setTimeout(initializeThemeSwitcher, 5000);
   }
 }
 
