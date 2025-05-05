@@ -1715,12 +1715,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 6,
-                    "name": "Unknown",
+                    "name": "MythicalPanda30",
                     "score": "N/A"
                 },
                 {
                     "rank": 7,
-                    "name": "MythicalPanda30",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
