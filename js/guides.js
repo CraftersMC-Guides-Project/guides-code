@@ -139,47 +139,33 @@ function initializeThemeSwitcher() {
   });
 }
 
-let componentsLoaded = 0;
-const totalComponents = 3;
+// after all three async HTML fetches
+function fetchAllPartials() {
+  const navbar = fetch('../navbarv2.html')
+    .then(res => res.text())
+    .then(html => {
+      document.querySelector('.navbar').innerHTML = html;
+    });
 
-function componentLoaded() {
-  componentsLoaded++;
-  if (componentsLoaded === totalComponents) {
-    setTimeout(initializeThemeSwitcher, 5000);
-  }
+  const sidebar = fetch('../sidebar.html')
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById('sidebar').innerHTML = html;
+    });
+
+  const footer = fetch('../footer.html')
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById('footer').innerHTML = html;
+    });
+
+  // After all are done, wait 5s, then initialize
+  Promise.all([navbar, sidebar, footer]).then(() => {
+    setTimeout(() => {
+      initializeThemeSwitcher();
+    }, 5000);
+  });
 }
 
-
-// navbar
-document.addEventListener("DOMContentLoaded", function () {
-  fetch('../navbarv2.html')
-    .then(response => response.text())
-    .then(data => {
-      document.querySelector('.navbar').innerHTML = data;
-      componentLoaded();
-    })
-    .catch(error => console.error('Error loading the navbar:', error));
-});
-
-// sidebar
-document.addEventListener("DOMContentLoaded", function () {
-  fetch('../sidebar.html')
-    .then(response => response.text())
-    .then(data => {
-      document.getElementById('sidebar').innerHTML = data;
-      componentLoaded();
-    })
-    .catch(error => console.error('Error loading the navbar:', error));
-});
-
-// footer
-document.addEventListener("DOMContentLoaded", function () {
-  fetch('../footer.html')
-    .then(response => response.text())
-    .then(data => {
-      document.getElementById('footer').innerHTML = data;
-      componentLoaded();
-    })
-    .catch(error => console.error('Error loading the navbar:', error));
-});
+document.addEventListener("DOMContentLoaded", fetchAllPartials);
 
