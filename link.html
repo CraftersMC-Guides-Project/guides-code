@@ -93,6 +93,53 @@
     </div>
 
     <script>
+         const loginBtn = document.getElementById('login-btn');
+        const verificationCodeDiv = document.getElementById('code-display');
+
+        // Redirect user to the Microsoft login page to initiate OAuth flow
+        loginBtn.addEventListener('click', () => {
+            const microsoftAuthUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?` +
+                `client_id=9bc431ed-d546-4de6-b37e-a960b1e47c44&` +
+                `response_type=code&` +
+                `redirect_uri=https://discord-auth.roumakdatta.workers.dev/auth/microsoft/callback&` +
+                `response_mode=query&` +
+                `scope=Xboxlive.signin%20Xboxlive.offline_access`;
+
+            window.location.href = microsoftAuthUrl; // Redirect to Microsoft OAuth
+        });
+
+        // Handle the callback when user is redirected back
+        window.onload = async function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const error = urlParams.get('error');
+            const errorDescription = urlParams.get('error_description');
+
+            // If there's an error, show the error message
+            if (error) {
+                alert(`Error: ${error}\nDescription: ${errorDescription}`);
+                return;
+            }
+
+            // If there's a code, send it to your backend to retrieve the verification code
+            if (code) {
+                try {
+                    // Call your backend API to verify the code and get the verification code
+                    const response = await fetch('https://your-worker-name.your-worker-subdomain.workers.dev/auth/microsoft/callback?code=' + code);
+                    const result = await response.text();
+                    
+                    // Display the verification code if successful
+                    verificationCodeDiv.innerHTML = result;
+                    verificationCodeDiv.style.display = 'block'; // Show the verification code
+                } catch (err) {
+                    console.error('Error:', err);
+                    alert('An error occurred while processing the login.');
+                }
+            }
+        }
+ </script>
+
+<!--     <script>
         document.getElementById('login-btn').addEventListener('click', startMicrosoftLogin);
 
         async function startMicrosoftLogin() {
@@ -145,6 +192,6 @@
                 // Optional: Show "Copied!" message
             });
         }
-    </script>
+    </script> -->
 </body>
 </html>
