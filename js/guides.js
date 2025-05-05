@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // navbar
 document.addEventListener("DOMContentLoaded", function () {
-  fetch('../navbar.html')
+  fetch('../navbarv2.html')
     .then(response => response.text())
     .then(data => {
       document.querySelector('.navbar').innerHTML = data;
