@@ -136,3 +136,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
   console.log("Event listener added.");
 });
+
+// navbar
+document.addEventListener("DOMContentLoaded", function () {
+  fetch('../navbar.html')
+    .then(response => response.text())
+    .then(data => {
+      document.querySelector('.navbar').innerHTML = data;
+      initializeDarkMode(); // Call dark mode initialization after navbar is loaded
+    })
+    .catch(error => console.error('Error loading the navbar:', error));
+});
+
+// sidebar
+document.addEventListener("DOMContentLoaded", function () {
+  fetch('../sidebar.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('sidebar').innerHTML = data;
+      initializeDarkMode(); // Call dark mode initialization after navbar is loaded
+    })
+    .catch(error => console.error('Error loading the navbar:', error));
+});
+
+// footer
+document.addEventListener("DOMContentLoaded", function () {
+  fetch('../footer.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('footer').innerHTML = data;
+      initializeDarkMode(); // Call dark mode initialization after navbar is loaded
+    })
+    .catch(error => console.error('Error loading the navbar:', error));
+});
+
