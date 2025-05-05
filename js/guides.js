@@ -139,13 +139,24 @@ function initializeThemeSwitcher() {
   });
 }
 
+let componentsLoaded = 0;
+const totalComponents = 3;
+
+function componentLoaded() {
+  componentsLoaded++;
+  if (componentsLoaded === totalComponents) {
+    initializeThemeSwitcher();
+  }
+}
+
+
 // navbar
 document.addEventListener("DOMContentLoaded", function () {
   fetch('../navbarv2.html')
     .then(response => response.text())
     .then(data => {
       document.querySelector('.navbar').innerHTML = data;
-      initializeThemeSwitcher();
+      componentLoaded();
     })
     .catch(error => console.error('Error loading the navbar:', error));
 });
@@ -156,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(response => response.text())
     .then(data => {
       document.getElementById('sidebar').innerHTML = data;
-      initializeThemeSwitcher();
+      componentLoaded();
     })
     .catch(error => console.error('Error loading the navbar:', error));
 });
@@ -167,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(response => response.text())
     .then(data => {
       document.getElementById('footer').innerHTML = data;
-      initializeThemeSwitcher();
+      componentLoaded();
     })
     .catch(error => console.error('Error loading the navbar:', error));
 });
