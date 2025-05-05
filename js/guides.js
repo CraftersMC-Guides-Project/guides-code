@@ -143,7 +143,6 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(response => response.text())
     .then(data => {
       document.querySelector('.navbar').innerHTML = data;
-      initializeDarkMode(); // Call dark mode initialization after navbar is loaded
     })
     .catch(error => console.error('Error loading the navbar:', error));
 });
