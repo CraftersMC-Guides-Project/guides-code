@@ -153,7 +153,6 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(response => response.text())
     .then(data => {
       document.getElementById('sidebar').innerHTML = data;
-      initializeDarkMode(); // Call dark mode initialization after navbar is loaded
     })
     .catch(error => console.error('Error loading the navbar:', error));
 });
@@ -164,7 +163,6 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(response => response.text())
     .then(data => {
       document.getElementById('footer').innerHTML = data;
-      initializeDarkMode(); // Call dark mode initialization after navbar is loaded
     })
     .catch(error => console.error('Error loading the navbar:', error));
 });
