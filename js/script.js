@@ -545,16 +545,17 @@ window.onload = function() {
     setTimeout(checkLoginStatus, 2000);
 };
 
+// Initialize theme toggle system
 function initThemeToggle() {
   const leaderboardThemeSwitch = document.getElementById("leaderboard-theme-switch");
   
   if (!leaderboardThemeSwitch) {
-    console.debug("[leaderboardThemeSwitch] Theme switch not found, retrying...");
+    console.debug("[Theme] Switch not found, retrying...");
     setTimeout(initThemeToggle, 100); // Retry after 100ms
     return;
   }
 
-  console.debug("[leaderboardThemeSwitch] Theme switch found:", leaderboardThemeSwitch);
+  console.debug("[Theme] Switch found:", leaderboardThemeSwitch);
 
   // Check localStorage or fallback to OS preference
   let darkMode = localStorage.getItem("darkMode");
@@ -566,14 +567,14 @@ function initThemeToggle() {
     document.body.classList.add("darkmode");
     localStorage.setItem("darkMode", "true");
     leaderboardThemeSwitch.textContent = "light_mode";
-    console.debug("[leaderboardThemeSwitch] Dark mode enabled");
+    console.debug("[Theme] Dark mode enabled");
   };
 
   const disableDarkmode = () => {
     document.body.classList.remove("darkmode");
     localStorage.setItem("darkMode", "false");
     leaderboardThemeSwitch.textContent = "dark_mode";
-    console.debug("[leaderboardThemeSwitch] Dark mode disabled");
+    console.debug("[Theme] Dark mode disabled");
   };
 
   // Set initial state
@@ -586,6 +587,33 @@ function initThemeToggle() {
     else enableDarkmode();
   });
 }
+
+// Fetch and inject partial HTML (navbar, sidebar, footer)
+function fetchAllPartials() {
+  Promise.all([
+    fetch('../navbarv2.html').then(res => res.text()),
+    fetch('../sidebar.html').then(res => res.text()),
+    fetch('../footer.html').then(res => res.text())
+  ]).then(([navbarHtml, sidebarHtml, footerHtml]) => {
+    // Inject HTML
+    document.querySelector('.navbar').innerHTML = navbarHtml;
+    document.getElementById('sidebar').innerHTML = sidebarHtml;
+    document.getElementById('footer').innerHTML = footerHtml;
+
+    console.debug("[Partials] Loaded successfully!");
+    
+    // Reinitialize theme toggle (in case the switch was reloaded)
+    initThemeToggle();
+  }).catch(err => {
+    console.error("[Partials] Failed to load:", err);
+  });
+}
+
+// Start everything when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  initThemeToggle(); // Initialize theme first
+  fetchAllPartials(); // Then load partials
+});
 
 // Start the theme toggle
 initThemeToggle();
