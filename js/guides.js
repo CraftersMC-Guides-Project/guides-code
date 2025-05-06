@@ -96,47 +96,70 @@ document.addEventListener("click", (event) => {
 */
 
 function initializeThemeSwitcher() {
+  console.debug("[ThemeSwitcher] Initializing theme switcher...");
+  
   document.addEventListener("DOMContentLoaded", () => {
+    console.debug("[ThemeSwitcher] DOM fully loaded and parsed");
     console.log("DOM fully loaded.");
 
     const themeSwitch = document.getElementById("theme-switch");
+    console.debug(`[ThemeSwitcher] Theme switch element:`, themeSwitch);
 
     if (!themeSwitch) {
       console.error("Error: #theme-switch button not found!");
+      console.debug("[ThemeSwitcher] Aborting initialization - theme switch element not found");
       return;
     }
 
     let darkMode = localStorage.getItem("darkMode");
+    console.debug(`[ThemeSwitcher] Initial darkMode value from localStorage:`, darkMode);
 
     const enableDarkmode = () => {
+      console.debug("[ThemeSwitcher] Enabling dark mode...");
       document.body.classList.add("darkmode");
       localStorage.setItem("darkMode", "true");
       themeSwitch.textContent = "light_mode";
       console.log("Dark mode enabled.");
+      console.debug("[ThemeSwitcher] Dark mode enabled - class added, localStorage updated");
     };
 
     const disableDarkmode = () => {
+      console.debug("[ThemeSwitcher] Disabling dark mode...");
       document.body.classList.remove("darkmode");
       localStorage.setItem("darkMode", "false");
       themeSwitch.textContent = "dark_mode";
       console.log("Dark mode disabled.");
+      console.debug("[ThemeSwitcher] Dark mode disabled - class removed, localStorage updated");
     };
 
     if (darkMode === "true") {
+      console.debug("[ThemeSwitcher] Initial dark mode state detected - enabling");
       enableDarkmode();
+    } else {
+      console.debug("[ThemeSwitcher] Initial light mode state detected or no preference");
     }
 
     themeSwitch.addEventListener("click", () => {
+      console.debug("[ThemeSwitcher] Theme switch clicked");
       darkMode = localStorage.getItem("darkMode");
+      console.debug(`[ThemeSwitcher] Current darkMode value before toggle:`, darkMode);
+      
       if (darkMode !== "true") {
+        console.debug("[ThemeSwitcher] Toggling to dark mode");
         enableDarkmode();
       } else {
+        console.debug("[ThemeSwitcher] Toggling to light mode");
         disableDarkmode();
       }
+      
+      console.debug(`[ThemeSwitcher] New darkMode value after toggle:`, localStorage.getItem("darkMode"));
     });
 
     console.log("Event listener added.");
+    console.debug("[ThemeSwitcher] Theme switcher initialization complete");
   });
+  
+  console.debug("[ThemeSwitcher] DOMContentLoaded listener registered");
 }
 
 // after all three async HTML fetches
