@@ -545,18 +545,22 @@ window.onload = function() {
     setTimeout(checkLoginStatus, 2000);
 };
 
-const leaderboardThemeSwitch = document.getElementById("leaderboard-theme-switch");
+function initThemeToggle() {
+  const leaderboardThemeSwitch = document.getElementById("leaderboard-theme-switch");
   
   if (!leaderboardThemeSwitch) {
-    console.debug("[leaderboardThemeSwitch] Theme switch not found yet, will retry...");
-    // If not found, try again after a short delay
+    console.debug("[leaderboardThemeSwitch] Theme switch not found, retrying...");
+    setTimeout(initThemeToggle, 100); // Retry after 100ms
     return;
   }
 
-  console.debug(`[leaderboardThemeSwitch] Theme switch element found:`, leaderboardThemeSwitch);
+  console.debug("[leaderboardThemeSwitch] Theme switch found:", leaderboardThemeSwitch);
 
+  // Check localStorage or fallback to OS preference
   let darkMode = localStorage.getItem("darkMode");
-  console.debug(`[leaderboardThemeSwitch] Initial darkMode value from localStorage:`, darkMode);
+  if (darkMode === null) { // First visit
+    darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? "true" : "false";
+  }
 
   const enableDarkmode = () => {
     document.body.classList.add("darkmode");
@@ -573,18 +577,15 @@ const leaderboardThemeSwitch = document.getElementById("leaderboard-theme-switch
   };
 
   // Set initial state
-  if (darkMode === "true") {
-    enableDarkmode();
-  } else {
-    disableDarkmode(); // Explicitly set light mode if not dark
-  }
+  if (darkMode === "true") enableDarkmode();
+  else disableDarkmode();
 
-  // Add click handler
+  // Toggle on click
   leaderboardThemeSwitch.addEventListener("click", () => {
-    darkMode = localStorage.getItem("darkMode");
-    if (darkMode !== "true") {
-      enableDarkmode();
-    } else {
-      disableDarkmode();
-    }
+    if (document.body.classList.contains("darkmode")) disableDarkmode();
+    else enableDarkmode();
   });
+}
+
+// Start the theme toggle
+initThemeToggle();
