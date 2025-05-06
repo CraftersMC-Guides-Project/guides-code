@@ -105,10 +105,13 @@
             const itemDetailsDiv = document.getElementById('itemDetails');
             const marketPrice = pricesMap.get(item.id) || item.price || "N/A";
             const npcPrice = npcPricesMap.get(item.id) || "N/A";
+            
+            // Add special filter for item ID 512
+            const imageStyle = item.id === "512" ? 'style="filter: brightness(90%) saturate(95%);"' : '';
 
             itemDetailsDiv.innerHTML = `
               <h1>${item.name}</h1>
-              ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
+              ${item.picture ? `<img src="${item.picture}" alt="${item.name}" ${imageStyle}>` : ''}
               ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p>` : ''}
               <p><strong>ID:</strong> ${item.id}</p>
               <div class="price-container">
