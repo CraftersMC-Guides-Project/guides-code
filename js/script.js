@@ -589,14 +589,12 @@ function initThemeToggle() {
 }
 
 // Fetch and inject partial HTML (navbar, sidebar, footer)
-function fetchAllPartials() {
+function fetchAllLPartials() {
   Promise.all([
-    fetch('../navbarv2.html').then(res => res.text()),
     fetch('../sidebar.html').then(res => res.text()),
     fetch('../footer.html').then(res => res.text())
-  ]).then(([navbarHtml, sidebarHtml, footerHtml]) => {
+  ]).then(([sidebarHtml, footerHtml]) => {
     // Inject HTML
-    document.querySelector('.navbar').innerHTML = navbarHtml;
     document.getElementById('sidebar').innerHTML = sidebarHtml;
     document.getElementById('footer').innerHTML = footerHtml;
 
@@ -612,7 +610,7 @@ function fetchAllPartials() {
 // Start everything when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   initThemeToggle(); // Initialize theme first
-  fetchAllPartials(); // Then load partials
+  fetchAllLPartials(); // Then load partials
 });
 
 // Start the theme toggle
