@@ -95,100 +95,78 @@ document.addEventListener("click", (event) => {
 });
 */
 
+// Modified to work with dynamic content loading
 function initializeThemeSwitcher() {
   console.debug("[ThemeSwitcher] Initializing theme switcher...");
+
+  // Try to find the theme switch button
+  const themeSwitch = document.getElementById("theme-switch");
   
-  document.addEventListener("DOMContentLoaded", () => {
-    console.debug("[ThemeSwitcher] DOM fully loaded and parsed");
-    console.log("DOM fully loaded.");
+  if (!themeSwitch) {
+    console.debug("[ThemeSwitcher] Theme switch not found yet, will retry...");
+    // If not found, try again after a short delay
+    setTimeout(initializeThemeSwitcher, 100);
+    return;
+  }
 
-    const themeSwitch = document.getElementById("theme-switch");
-    console.debug(`[ThemeSwitcher] Theme switch element:`, themeSwitch);
+  console.debug(`[ThemeSwitcher] Theme switch element found:`, themeSwitch);
 
-    if (!themeSwitch) {
-      console.error("Error: #theme-switch button not found!");
-      console.debug("[ThemeSwitcher] Aborting initialization - theme switch element not found");
-      return;
-    }
+  let darkMode = localStorage.getItem("darkMode");
+  console.debug(`[ThemeSwitcher] Initial darkMode value from localStorage:`, darkMode);
 
-    let darkMode = localStorage.getItem("darkMode");
-    console.debug(`[ThemeSwitcher] Initial darkMode value from localStorage:`, darkMode);
+  const enableDarkmode = () => {
+    document.body.classList.add("darkmode");
+    localStorage.setItem("darkMode", "true");
+    themeSwitch.textContent = "light_mode";
+    console.debug("[ThemeSwitcher] Dark mode enabled");
+  };
 
-    const enableDarkmode = () => {
-      console.debug("[ThemeSwitcher] Enabling dark mode...");
-      document.body.classList.add("darkmode");
-      localStorage.setItem("darkMode", "true");
-      themeSwitch.textContent = "light_mode";
-      console.log("Dark mode enabled.");
-      console.debug("[ThemeSwitcher] Dark mode enabled - class added, localStorage updated");
-    };
+  const disableDarkmode = () => {
+    document.body.classList.remove("darkmode");
+    localStorage.setItem("darkMode", "false");
+    themeSwitch.textContent = "dark_mode";
+    console.debug("[ThemeSwitcher] Dark mode disabled");
+  };
 
-    const disableDarkmode = () => {
-      console.debug("[ThemeSwitcher] Disabling dark mode...");
-      document.body.classList.remove("darkmode");
-      localStorage.setItem("darkMode", "false");
-      themeSwitch.textContent = "dark_mode";
-      console.log("Dark mode disabled.");
-      console.debug("[ThemeSwitcher] Dark mode disabled - class removed, localStorage updated");
-    };
+  // Set initial state
+  if (darkMode === "true") {
+    enableDarkmode();
+  } else {
+    disableDarkmode(); // Explicitly set light mode if not dark
+  }
 
-    if (darkMode === "true") {
-      console.debug("[ThemeSwitcher] Initial dark mode state detected - enabling");
+  // Add click handler
+  themeSwitch.addEventListener("click", () => {
+    darkMode = localStorage.getItem("darkMode");
+    if (darkMode !== "true") {
       enableDarkmode();
     } else {
-      console.debug("[ThemeSwitcher] Initial light mode state detected or no preference");
+      disableDarkmode();
     }
-
-    themeSwitch.addEventListener("click", () => {
-      console.debug("[ThemeSwitcher] Theme switch clicked");
-      darkMode = localStorage.getItem("darkMode");
-      console.debug(`[ThemeSwitcher] Current darkMode value before toggle:`, darkMode);
-      
-      if (darkMode !== "true") {
-        console.debug("[ThemeSwitcher] Toggling to dark mode");
-        enableDarkmode();
-      } else {
-        console.debug("[ThemeSwitcher] Toggling to light mode");
-        disableDarkmode();
-      }
-      
-      console.debug(`[ThemeSwitcher] New darkMode value after toggle:`, localStorage.getItem("darkMode"));
-    });
-
-    console.log("Event listener added.");
-    console.debug("[ThemeSwitcher] Theme switcher initialization complete");
   });
-  
-  console.debug("[ThemeSwitcher] DOMContentLoaded listener registered");
+
+  console.debug("[ThemeSwitcher] Initialization complete");
 }
 
-// after all three async HTML fetches
+// Improved partial loading with theme switcher initialization
 function fetchAllPartials() {
-  const navbar = fetch('../navbarv2.html')
-    .then(res => res.text())
-    .then(html => {
-      document.querySelector('.navbar').innerHTML = html;
-    });
-
-  const sidebar = fetch('../sidebar.html')
-    .then(res => res.text())
-    .then(html => {
-      document.getElementById('sidebar').innerHTML = html;
-    });
-
-  const footer = fetch('../footer.html')
-    .then(res => res.text())
-    .then(html => {
-      document.getElementById('footer').innerHTML = html;
-    });
-
-  // After all are done, wait 5s, then initialize
-  Promise.all([navbar, sidebar, footer]).then(() => {
-    setTimeout(() => {
-      initializeThemeSwitcher();
-    }, 5000);
+  Promise.all([
+    fetch('../navbarv2.html').then(res => res.text()),
+    fetch('../sidebar.html').then(res => res.text()),
+    fetch('../footer.html').then(res => res.text())
+  ]).then(([navbarHtml, sidebarHtml, footerHtml]) => {
+    // Insert all HTML at once
+    document.querySelector('.navbar').innerHTML = navbarHtml;
+    document.getElementById('sidebar').innerHTML = sidebarHtml;
+    document.getElementById('footer').innerHTML = footerHtml;
+    
+    // Initialize theme switcher immediately after content is inserted
+    initializeThemeSwitcher();
+  }).catch(error => {
+    console.error("Error loading partials:", error);
   });
 }
 
+// Start the process when DOM is ready
 document.addEventListener("DOMContentLoaded", fetchAllPartials);
 
