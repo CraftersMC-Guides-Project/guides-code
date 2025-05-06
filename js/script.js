@@ -544,3 +544,47 @@ function checkLoginStatus() {
 window.onload = function() {
     setTimeout(checkLoginStatus, 2000);
 };
+
+const leaderboardThemeSwitch = document.getElementById("leaderboard-theme-switch");
+  
+  if (!leaderboardThemeSwitch) {
+    console.debug("[leaderboardThemeSwitch] Theme switch not found yet, will retry...");
+    // If not found, try again after a short delay
+    return;
+  }
+
+  console.debug(`[leaderboardThemeSwitch] Theme switch element found:`, leaderboardThemeSwitch);
+
+  let darkMode = localStorage.getItem("darkMode");
+  console.debug(`[leaderboardThemeSwitch] Initial darkMode value from localStorage:`, darkMode);
+
+  const enableDarkmode = () => {
+    document.body.classList.add("darkmode");
+    localStorage.setItem("darkMode", "true");
+    leaderboardThemeSwitch.textContent = "light_mode";
+    console.debug("[leaderboardThemeSwitch] Dark mode enabled");
+  };
+
+  const disableDarkmode = () => {
+    document.body.classList.remove("darkmode");
+    localStorage.setItem("darkMode", "false");
+    leaderboardThemeSwitch.textContent = "dark_mode";
+    console.debug("[leaderboardThemeSwitch] Dark mode disabled");
+  };
+
+  // Set initial state
+  if (darkMode === "true") {
+    enableDarkmode();
+  } else {
+    disableDarkmode(); // Explicitly set light mode if not dark
+  }
+
+  // Add click handler
+  leaderboardThemeSwitch.addEventListener("click", () => {
+    darkMode = localStorage.getItem("darkMode");
+    if (darkMode !== "true") {
+      enableDarkmode();
+    } else {
+      disableDarkmode();
+    }
+  });
