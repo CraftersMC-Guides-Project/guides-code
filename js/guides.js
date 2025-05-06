@@ -170,3 +170,71 @@ function fetchAllPartials() {
 // Start the process when DOM is ready
 document.addEventListener("DOMContentLoaded", fetchAllPartials);
 
+
+setTimeout(() => {
+  const gUser = JSON.parse(localStorage.getItem('googleAuth'));
+  const dUser = JSON.parse(localStorage.getItem('discordUser'));
+  const user = JSON.parse(localStorage.getItem('user'));
+  const userSettings = user ? JSON.parse(localStorage.getItem(`userSettings_${user.email}`)) : null;
+  const consoleDebugStyleLoginType = "color:rgb(225, 0, 255); font-weight: bold; background-color:rgb(0, 47, 155); padding: 2px 4px; border-radius: 2px;";
+
+  const infoDiv = document.getElementById("sidebarUsername");
+  const infoDivName = document.getElementById("sidebarName");
+  const infoDivImg = document.getElementById("sidebarAvatar");
+
+  if (dUser) {
+    // Display Discord user info
+    infoDiv.innerHTML = `${dUser.email}`;
+    infoDivName.innerHTML = `${dUser.username}`;
+    infoDivImg.innerHTML = `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="https://cdn.discordapp.com/avatars/${dUser.id}/${dUser.avatar}.png">`;
+    console.log("%cuser type discord", consoleDebugStyleLoginType);
+
+
+  } else if (user && user.token) {
+    // Display Email/Password user info
+    if (userSettings) {
+      infoDiv.innerHTML = `${user.email}`;
+      infoDivName.innerHTML = `${userSettings.username}`;
+      infoDivImg.innerHTML = `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="${userSettings.profilePic}">`;
+      console.log("%cuser type local", consoleDebugStyleLoginType);
+    } else {
+      console.error("User settings not found.");
+      console.log("%cuser type none silly", consoleDebugStyleLoginType);
+      //window.location.href = "sign-up.html";
+    }
+
+  } else {
+    // Not logged in
+    //window.location.href = "sign-up.html";
+  }
+}, 2000); // 2 seconds delay
+
+function logout() {
+  localStorage.removeItem("user");
+  localStorage.removeItem("discordUser");
+  location.reload();
+  const consoleDebugStyleLogout = "color:rgb(225, 0, 255); font-weight: bold; background-color:rgb(0, 55, 0); padding: 2px 4px; border-radius: 2px;";
+  console.log("%cUser logged out gg", consoleDebugStyleLogout);
+}
+
+function login() {
+  window.location.href = "/login";
+}
+
+function checkLoginStatus() {
+    var userLoggedIn = localStorage.getItem('discordUser') !== null;
+    var settingsElement = document.getElementById('settings');
+    const consoleDebugStyleLogin = "color:rgb(225, 0, 255); font-weight: bold; background-color:rgb(0, 55, 0); padding: 2px 4px; border-radius: 2px;";
+    if (userLoggedIn) {
+        settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;" onclick="logout()">logout</span>';
+        console.log("%cUser login found yay", consoleDebugStyleLogin);
+    } else {
+        settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;" onclick="login()">login</span>';
+        console.log("%cUser login not found awwwwwwwwwwww", consoleDebugStyleLogin);
+    }
+}
+
+window.onload = function() {
+    setTimeout(checkLoginStatus, 2000);
+};
+
