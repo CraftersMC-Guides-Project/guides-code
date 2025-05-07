@@ -10,8 +10,9 @@
     <link rel="stylesheet" href="css/essential.css">
     <link rel="stylesheet" href="css/categories.css">
     <style>
-        /* Add this new CSS rule for special items */
-        .special-item {
+        /* Special style for item ID 512 */
+        .item-512,
+        .item-512 img {
             filter: brightness(90%) saturate(95%);
         }
     </style>
@@ -75,17 +76,17 @@
                 if (categoryItems.length > 0) {
                     const itemsHTML = categoryItems.map(item => {
                         const price = pricesMap.get(item.id) || item.price || "Unknown";
-                        const isSpecialItem = item.id === 512;
-                        const specialClass = isSpecialItem ? 'special-item' : '';
+                        const isItem512 = item.id === 512;
+                        const itemClass = isItem512 ? 'item-512' : '';
                         
                         return `
-                            <div class="item-card ${specialClass}" onclick="window.location.href='item.html?item=${item.id}'">
+                            <div class="item-card ${itemClass}" onclick="window.location.href='item.html?item=${item.id}'">
                                 <h2>${item.name}</h2>
-                                ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}" class="${specialClass}">` : ''}
+                                ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}" class="${itemClass}">` : ''}
                                 <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
                                 <p><div class="price-with-coin"><strong>Price:</strong> ${formatPrice(item.price)}</div></p>
                                 ${item.description ? `<p class="description">${item.description}</p>` : ''}
-                                ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity ${specialClass}" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
+                                ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity ${itemClass}" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
                                 ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
                                 ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
                                 </div></div>
@@ -119,7 +120,6 @@
             return demandText;
         }
 
-        // Load items when the page is ready
         document.addEventListener('DOMContentLoaded', function() {
             loadCategoryItems();
         });
