@@ -30,88 +30,91 @@
     <div id="footer"></div>
     <script>
         async function loadCategoryItems() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const category = urlParams.get('cat');
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('cat');
 
-            if (!category) {
-                document.getElementById('categoryItems').innerHTML = '<p>No category specified.</p>';
-                return;
-            }
+    if (!category) {
+        document.getElementById('categoryItems').innerHTML = '<p>No category specified.</p>';
+        return;
+    }
 
-            try {
-                const [marketRes, pricesRes] = await Promise.all([
-                    fetch('market/market.txt'), // updated path dev you didnt change the json back to txt here
-                    fetch('market/mprices.txt')  // updated path
-                ]);
+    try {
+        const [marketRes, pricesRes] = await Promise.all([
+            fetch('market/market.txt'), // updated path dev you didnt change the json back to txt here
+            fetch('market/mprices.txt')  // updated path
+        ]);
 
-                const marketData = await marketRes.json();
-                const pricesData = await pricesRes.text();
+        const marketData = await marketRes.json();
+        const pricesData = await pricesRes.text();
 
-                const pricesMap = new Map();
-                pricesData.split('\n').forEach(line => {
-                    const [id, arrayStr] = line.split(':').map(part => part.trim());
-                    if (id && arrayStr) {
-                        try {
-                            const parsedArray = JSON.parse(arrayStr);
-                            if (Array.isArray(parsedArray) && parsedArray.length === 2) {
-                                pricesMap.set(id, parsedArray[1]);
-                            }
-                        } catch (e) {
-                            console.warn(`Invalid price format for ID ${id}`, e);
-                        }
+        const pricesMap = new Map();
+        pricesData.split('\n').forEach(line => {
+            const [id, arrayStr] = line.split(':').map(part => part.trim());
+            if (id && arrayStr) {
+                try {
+                    const parsedArray = JSON.parse(arrayStr);
+                    if (Array.isArray(parsedArray) && parsedArray.length === 2) {
+                        pricesMap.set(id, parsedArray[1]);
                     }
-                });
-
-                const categoryItems = marketData.filter(item =>
-                    item.category && item.category.toLowerCase() === category.toLowerCase()
-                );
-
-                if (categoryItems.length > 0) {
-                    const itemsHTML = categoryItems.map(item => {
-                        const price = pricesMap.get(item.id) || item.price || "Unknown";
-                        return `
-                            <div class="item-card" onclick="window.location.href='item.html?item=${item.id}'">
-                                <h2>${item.name}</h2>
-                                ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}">` : ''}
-                                <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
-                                <p><div class="price-with-coin"><strong>Price:</strong> ${formatPrice(item.price)}</div></p>
-                                ${item.description ? `<p class="description">${item.description}</p>` : ''}
-                                ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
-                                ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
-                                ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
-
-                                </div></div>
-                            </div>
-                        `;
-                    }).join('');
-
-                    document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
-                } else {
-                    document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
+                } catch (e) {
+                    console.warn(`Invalid price format for ID ${id}`, e);
                 }
-            } catch (error) {
-                console.error('Error loading category items:', error);
-                document.getElementById('categoryItems').innerHTML = '<p>Failed to load items.</p>';
             }
-        }
+        });
 
-        function formatPrice(price) {
-            return `${Number(price).toLocaleString()} <img class="coin" src="img/coin.png" alt="Coin">`;
-        }
+        const categoryItems = marketData.filter(item =>
+            item.category && item.category.toLowerCase() === category.toLowerCase()
+        );
 
-        function formatNature(nature) {
-            let natureText = nature.replace('[', ' ').toLowerCase();
-            natureText = natureText.replace(']', '').replace(/_/g, ' ').trim();
-            return natureText;
-        }
+        if (categoryItems.length > 0) {
+            const itemsHTML = categoryItems.map(item => {
+                const price = pricesMap.get(item.id) || item.price || "Unknown";
+                const isSpecialItem = item.id === 512;
+                const specialStyle = isSpecialItem ? 'style="filter: brightness(90%) saturate(95%);"' : '';
+                
+                return `
+                    <div class="item-card" onclick="window.location.href='item.html?item=${item.id}'" ${specialStyle}>
+                        <h2>${item.name}</h2>
+                        ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}" ${specialStyle}>` : ''}
+                        <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
+                        <p><div class="price-with-coin"><strong>Price:</strong> ${formatPrice(item.price)}</div></p>
+                        ${item.description ? `<p class="description">${item.description}</p>` : ''}
+                        ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp" ${specialStyle}></p><br><br>` : ''}
+                        ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
+                        ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
 
-        function formatDemand(demand) {
-            let demandText = demand.replace('[', ' ').toLowerCase();
-            demandText = demandText.replace(']', '').replace(/_/g, ' ').trim();
-            return demandText;
-        }
+                        </div></div>
+                    </div>
+                `;
+            }).join('');
 
-        loadCategoryItems();
+            document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
+        } else {
+            document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
+        }
+    } catch (error) {
+        console.error('Error loading category items:', error);
+        document.getElementById('categoryItems').innerHTML = '<p>Failed to load items.</p>';
+    }
+}
+
+function formatPrice(price) {
+    return `${Number(price).toLocaleString()} <img class="coin" src="img/coin.png" alt="Coin">`;
+}
+
+function formatNature(nature) {
+    let natureText = nature.replace('[', ' ').toLowerCase();
+    natureText = natureText.replace(']', '').replace(/_/g, ' ').trim();
+    return natureText;
+}
+
+function formatDemand(demand) {
+    let demandText = demand.replace('[', ' ').toLowerCase();
+    demandText = demandText.replace(']', '').replace(/_/g, ' ').trim();
+    return demandText;
+}
+
+loadCategoryItems();
     </script>
 </body>
 
