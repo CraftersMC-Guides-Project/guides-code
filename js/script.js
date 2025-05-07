@@ -31,19 +31,24 @@ function toggleLid() {
 function toggleSidebar() {
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("sidebar-overlay");
+  const sidelid = document.getElementById("sidelid"); // Assuming there's an element with this ID
+  
   sidebar.classList.toggle("openSbar");
 
   if (sidebar.classList.contains("openSbar")) {
     document.body.style.overflow = "hidden";
     sidebar.style.overflowY = "auto";
     overlay.style.display = "block";
+    if (sidelid) sidelid.style.display = "none"; // Close sidelid when sidebar opens
   } else {
     document.body.style.overflow = "";
     setTimeout(() => {
       sidebar.scrollTop = 0;
     }, 300);
     overlay.style.display = "none";
+    if (sidelid) sidelid.style.display = "block"; // Open sidelid when sidebar closes
   }
+  
   const consoleDebugStyleSidebar = "color:rgb(249, 247, 247); font-weight: bold; background-color:rgb(242, 0, 255); padding: 2px 4px; border-radius: 2px;";
   console.log("%csidebar works yayayyay", consoleDebugStyleSidebar);
 }
