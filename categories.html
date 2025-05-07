@@ -10,9 +10,8 @@
     <link rel="stylesheet" href="css/essential.css">
     <link rel="stylesheet" href="css/categories.css">
     <style>
-        /* Special style for item ID 512 */
-        .item-512,
-        .item-512 img {
+        /* Special style for Sky Canvas image only */
+        img[alt="Sky Canvas"] {
             filter: brightness(90%) saturate(95%);
         }
     </style>
@@ -76,17 +75,16 @@
                 if (categoryItems.length > 0) {
                     const itemsHTML = categoryItems.map(item => {
                         const price = pricesMap.get(item.id) || item.price || "Unknown";
-                        const isItem512 = item.id === 512;
-                        const itemClass = isItem512 ? 'item-512' : '';
+                        const isSkyCanvas = item.name === "Sky Canvas"; // Check if this is the Sky Canvas item
                         
                         return `
-                            <div class="item-card ${itemClass}" onclick="window.location.href='item.html?item=${item.id}'">
+                            <div class="item-card" onclick="window.location.href='item.html?item=${item.id}'">
                                 <h2>${item.name}</h2>
-                                ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}" class="${itemClass}">` : ''}
+                                ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="sky-canvas-img"' : ''}>` : ''}
                                 <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
                                 <p><div class="price-with-coin"><strong>Price:</strong> ${formatPrice(item.price)}</div></p>
                                 ${item.description ? `<p class="description">${item.description}</p>` : ''}
-                                ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity ${itemClass}" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
+                                ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
                                 ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
                                 ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
                                 </div></div>
