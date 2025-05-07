@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function toggleLid() {
   const sidelid = document.getElementById("sidelid");
   const overlay = document.getElementById("sidebar-overlay");
+  const tip = document.querySelectorAll(".button-tip");
 
   if (!sidelid) {
     console.error("Element with ID 'sidelid' not found.");
@@ -19,6 +20,7 @@ function toggleLid() {
     document.body.style.overflow = "hidden";
     sidebar.style.overflowY = "auto";
     overlay.style.display = "block";
+    tip.style.display = "hidden";
   } else {
     document.body.style.overflow = "";
     setTimeout(() => {
