@@ -20,7 +20,7 @@ function toggleLid() {
     document.body.style.overflow = "hidden";
     sidelid.style.overflowY = "auto";
     overlay.style.display = "block";
-    tips.forEach(tip => tip.style.display = "none");
+    tips.forEach(tip => tip.style.display = "none !important");
   } else {
     document.body.style.overflow = "";
     setTimeout(() => {
