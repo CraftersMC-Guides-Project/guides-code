@@ -14,6 +14,13 @@ function toggleLid() {
     return;
   }
 
+  const isOpening = !sidelid.classList.contains("openlid");
+  
+  if (isOpening) {
+    sidelid.style.display = "block";
+    sidelid.offsetHeight;
+  }
+
   sidelid.classList.toggle("openlid");
 
   if (sidelid.classList.contains("openlid")) {
@@ -25,6 +32,7 @@ function toggleLid() {
     document.body.style.overflow = "";
     setTimeout(() => {
       sidelid.scrollTop = 0;
+      sidelid.style.display = "none";
     }, 300);
     overlay.style.display = "none";
   }
