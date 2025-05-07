@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function toggleLid() {
   const sidelid = document.getElementById("sidelid");
   const overlay = document.getElementById("sidebar-overlay");
-  const tip = document.querySelectorAll(".button-tip");
+  const tips = document.querySelectorAll(".button-tip");
 
   if (!sidelid) {
     console.error("Element with ID 'sidelid' not found.");
@@ -18,9 +18,9 @@ function toggleLid() {
 
   if (sidelid.classList.contains("openlid")) {
     document.body.style.overflow = "hidden";
-    sidebar.style.overflowY = "auto";
+    sidelid.style.overflowY = "auto";
     overlay.style.display = "block";
-    tip.style.display = "hidden";
+    tips.forEach(tip => tip.style.display = "none");
   } else {
     document.body.style.overflow = "";
     setTimeout(() => {
