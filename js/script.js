@@ -542,6 +542,9 @@ function logout() {
 function login() {
   window.location.href = "/login";
 }
+function profile() {
+  window.location.href = "/profile";
+}
 
 function checkLoginStatus() {
     var userLoggedIn = localStorage.getItem('discordUser') !== null;
