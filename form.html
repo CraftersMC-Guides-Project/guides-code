@@ -84,6 +84,20 @@
     </div>
     <div id="footer" id="important"></div>
     <script>
+        let loggedInUsername = null;
+let loggedInUserId = null;
+
+document.addEventListener("DOMContentLoaded", () => {
+    const storedUser = localStorage.getItem("discordUser");
+    if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        loggedInUsername = userData.username;
+    } else {
+        // Redirect to login page if not logged in
+        window.location.href = "/login.html"; // Replace with your actual login page URL
+    }
+});
+        
 document.getElementById('applicationForm').addEventListener('submit', async function(event) {
     event.preventDefault();
     const panel = document.querySelector('.panel');
@@ -101,7 +115,7 @@ document.getElementById('applicationForm').addEventListener('submit', async func
 
     const embedPayload = {
         embeds: [{
-            title: "New Data Skimmer Application",
+            title: "New Data Skimmer Application [${loggedInUsername}]",
             color: 0x00ff00, // Green
             fields: fields,
             timestamp: new Date().toISOString()
