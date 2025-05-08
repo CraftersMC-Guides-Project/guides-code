@@ -545,13 +545,10 @@ function login() {
 
 function checkLoginStatus() {
     var userLoggedIn = localStorage.getItem('discordUser') !== null;
-    var settingsElement = document.getElementById('settings');
     const consoleDebugStyleLogin = "color:rgb(225, 0, 255); font-weight: bold; background-color:rgb(0, 55, 0); padding: 2px 4px; border-radius: 2px;";
     if (userLoggedIn) {
-        settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;" onclick="logout()">logout</span>';
         console.log("%cUser login found yay", consoleDebugStyleLogin);
     } else {
-        settingsElement.innerHTML = '<span class="menu-icon material-icons" style="font-size: 38px; color: #ccc;" onclick="login()">login</span>';
         console.log("%cUser login not found awwwwwwwwwwww", consoleDebugStyleLogin);
     }
 }
