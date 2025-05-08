@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Giveaway</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .container {
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    .duration-options {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .duration-options select {
+      flex: 1;
+    }
+    .hidden {
+      display: none;
+    }
+    #giveaway-link {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f5f5f5;
+      border-radius: 4px;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Create a Giveaway</h1>
+    
+    <div id="host-login">
+      <h2>Host Login</h2>
+      <label for="host-username">Username:</label>
+      <input type="text" id="host-username" placeholder="Enter your username">
+      
+      <label for="host-password">Password:</label>
+      <input type="password" id="host-password" placeholder="Enter your password">
+      
+      <button onclick="hostLogin()">Login as Host</button>
+    </div>
+    
+    <div id="giveaway-form" class="hidden">
+      <h2>Giveaway Settings</h2>
+      <label for="host-name">Display Name:</label>
+      <input type="text" id="host-name" placeholder="How you want to appear">
+      
+      <label for="prize-name">Prize Name:</label>
+      <input type="text" id="prize-name" placeholder="What you're giving away">
+      
+      <label for="num-winners">Number of Winners:</label>
+      <input type="number" id="num-winners" min="1" value="1">
+      
+      <label for="duration-type">Duration Type:</label>
+      <select id="duration-type" onchange="toggleDurationOptions()">
+        <option value="datetime">Specific Date/Time</option>
+        <option value="period">Time Period</option>
+      </select>
+      
+      <div id="datetime-option">
+        <label for="end-datetime">End Date/Time:</label>
+        <input type="datetime-local" id="end-datetime">
+      </div>
+      
+      <div id="period-option" class="hidden">
+        <div class="duration-options">
+          <select id="period-amount">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="24">24</option>
+          </select>
+          <select id="period-unit">
+            <option value="minutes">Minutes</option>
+            <option value="hours">Hours</option>
+            <option value="days">Days</option>
+          </select>
+        </div>
+      </div>
+      
+      <button id="create-giveaway" onclick="createGiveaway()">Create Giveaway</button>
+    </div>
+    
+    <div id="giveaway-created" class="hidden">
+      <h2>Giveaway Created!</h2>
+      <p>Share this link with participants:</p>
+      <div id="giveaway-link"></div>
+      <p>You can manage the giveaway from this page when it's time to draw winners.</p>
+    </div>
+  </div>
+
+  <script>
+    // Whitelist of allowed hosts (in real app, this would be server-side)
+    const HOST_WHITELIST = {
+      'admin': 'admin123',
+      'moderator': 'mod456'
+    };
+    
+    function hostLogin() {
+      const username = document.getElementById('host-username').value.trim();
+      const password = document.getElementById('host-password').value.trim();
+      
+      if (!username || !password) {
+        alert('Please enter both username and password');
+        return;
+      }
+      
+      // Check if user is whitelisted (simulated)
+      if (HOST_WHITELIST[username] && HOST_WHITELIST[username] === password) {
+        document.getElementById('host-login').classList.add('hidden');
+        document.getElementById('giveaway-form').classList.remove('hidden');
+        
+        // Set default host name to username
+        document.getElementById('host-name').value = username;
+      } else {
+        alert('Invalid host credentials');
+      }
+    }
+    
+    function toggleDurationOptions() {
+      const durationType = document.getElementById('duration-type').value;
+      document.getElementById('datetime-option').classList.toggle('hidden', durationType !== 'datetime');
+      document.getElementById('period-option').classList.toggle('hidden', durationType !== 'period');
+    }
+    
+    function createGiveaway() {
+      const hostName = document.getElementById('host-name').value.trim();
+      const prizeName = document.getElementById('prize-name').value.trim();
+      const numWinners = parseInt(document.getElementById('num-winners').value);
+      
+      if (!hostName || !prizeName || isNaN(numWinners)) {
+        alert('Please fill all fields correctly');
+        return;
+      }
+      
+      // Calculate end time
+      let endTime;
+      const durationType = document.getElementById('duration-type').value;
+      
+      if (durationType === 'datetime') {
+        endTime = new Date(document.getElementById('end-datetime').value).getTime();
+      } else {
+        const amount = parseInt(document.getElementById('period-amount').value);
+        const unit = document.getElementById('period-unit').value;
+        
+        const now = new Date();
+        if (unit === 'minutes') {
+          endTime = now.getTime() + amount * 60000;
+        } else if (unit === 'hours') {
+          endTime = now.getTime() + amount * 3600000;
+        } else { // days
+          endTime = now.getTime() + amount * 86400000;
+        }
+      }
+      
+      // Generate a unique giveaway ID
+      const giveawayId = 'gw-' + Math.random().toString(36).substr(2, 9);
+      
+      // In a real app, you would save this to a database
+      const giveaway = {
+        id: giveawayId,
+        hostName,
+        prizeName,
+        numWinners,
+        endTime,
+        entries: [],
+        winners: []
+      };
+      
+      // Store in localStorage for this demo
+      localStorage.setItem('giveaway_' + giveawayId, JSON.stringify(giveaway));
+      
+      // Show the shareable link
+      const giveawayLink = window.location.href.replace('giveaway-host.html', 'giveaway-entry.html?id=' + giveawayId);
+      document.getElementById('giveaway-link').textContent = giveawayLink;
+      
+      document.getElementById('giveaway-form').classList.add('hidden');
+      document.getElementById('giveaway-created').classList.remove('hidden');
+    }
+    
+    // Set minimum datetime to now
+    document.addEventListener('DOMContentLoaded', function() {
+      const now = new Date();
+      const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+      document.getElementById('end-datetime').min = localDateTime;
+    });
+  </script>
+</body>
+</html>
