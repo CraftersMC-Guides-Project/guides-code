@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giveaway System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    .host-section, .entry-section, .winner-section {
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    #entries-list {
+      margin-top: 15px;
+    }
+    .entry-item {
+      padding: 5px;
+      border-bottom: 1px solid #eee;
+    }
+    .hidden {
+      display: none;
+    }
+    .duration-options {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .duration-options select {
+      flex: 1;
+    }
+    .winner-info {
+      background-color: #f8f8f8;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Giveaway Host Section -->
+    <div class="host-section" id="host-section">
+      <h2>Giveaway Host Settings</h2>
+      <label for="host-name">Host Name:</label>
+      <input type="text" id="host-name" placeholder="Enter Host Name">
+      
+      <label for="prize-name">Prize Name:</label>
+      <input type="text" id="prize-name" placeholder="Enter Prize Name">
+      
+      <label for="num-winners">Number of Winners:</label>
+      <input type="number" id="num-winners" min="1" value="1" placeholder="Number of Winners">
+      
+      <label for="duration-type">Duration Type:</label>
+      <select id="duration-type" onchange="toggleDurationOptions()">
+        <option value="datetime">Specific Date/Time</option>
+        <option value="period">Time Period</option>
+      </select>
+      
+      <div id="datetime-option">
+        <label for="end-datetime">End Date/Time:</label>
+        <input type="datetime-local" id="end-datetime">
+      </div>
+      
+      <div id="period-option" class="hidden">
+        <div class="duration-options">
+          <select id="period-amount">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="24">24</option>
+          </select>
+          <select id="period-unit">
+            <option value="minutes">Minutes</option>
+            <option value="hours">Hours</option>
+            <option value="days">Days</option>
+          </select>
+        </div>
+      </div>
+      
+      <button id="start-giveaway" onclick="startGiveaway()">Start Giveaway</button>
+    </div>
+
+    <!-- Current Giveaway Info -->
+    <div class="entry-section hidden" id="current-giveaway">
+      <h2>Current Giveaway</h2>
+      <div id="giveaway-info"></div>
+      <div id="entries-count">Entries: 0</div>
+      <div id="entries-list"></div>
+      <button id="draw-winner" class="hidden" onclick="drawWinner()">Draw Winner</button>
+    </div>
+
+    <!-- Giveaway Entry Section -->
+    <div class="entry-section hidden" id="entry-section">
+      <h2>Enter Giveaway</h2>
+      <div id="login-notice">
+        <p>You must be logged in to enter the giveaway.</p>
+        <!-- In a real implementation, this would be your login form or button -->
+        <button onclick="simulateLogin()">Simulate Login</button>
+      </div>
+      <div id="entry-form" class="hidden">
+        <p>Logged in as: <span id="logged-in-user"></span></p>
+        <button id="enter-giveaway" onclick="enterGiveaway()">Enter Giveaway</button>
+      </div>
+    </div>
+
+    <!-- Winner Notification Section -->
+    <div class="winner-section hidden" id="winner-section">
+      <h2>Congratulations!</h2>
+      <div class="winner-info">
+        <p>You have won: <span id="winner-prize"></span></p>
+        <p>Hosted by: <span id="winner-host"></span></p>
+      </div>
+      <button id="cancel-expiry" onclick="cancelExpiry()">Claim Prize (Cancel Expiration)</button>
+      <a id="contact-link" class="hidden" href="/contact">Contact Page</a>
+    </div>
+  </div>
+
+  <script>
+    // Whitelist of allowed host user IDs (in a real app, this would be server-side)
+    const HOST_WHITELIST = ['admin123', 'moderator456'];
+    
+    // State management
+    let giveaway = {
+      active: false,
+      hostName: '',
+      prizeName: '',
+      numWinners: 1,
+      endTime: null,
+      entries: [],
+      winners: []
+    };
+    
+    let currentUser = null;
+    
+    // DOM elements
+    const hostSection = document.getElementById('host-section');
+    const currentGiveawaySection = document.getElementById('current-giveaway');
+    const entrySection = document.getElementById('entry-section');
+    const winnerSection = document.getElementById('winner-section');
+    
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if user is logged in (simulated)
+      checkLoginStatus();
+      
+      // Set minimum datetime to now
+      const now = new Date();
+      const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+      document.getElementById('end-datetime').min = localDateTime;
+    });
+    
+    function toggleDurationOptions() {
+      const durationType = document.getElementById('duration-type').value;
+      document.getElementById('datetime-option').classList.toggle('hidden', durationType !== 'datetime');
+      document.getElementById('period-option').classList.toggle('hidden', durationType !== 'period');
+    }
+    
+    function startGiveaway() {
+      // In a real app, verify host is whitelisted (server-side)
+      const hostName = document.getElementById('host-name').value.trim();
+      const prizeName = document.getElementById('prize-name').value.trim();
+      const numWinners = parseInt(document.getElementById('num-winners').value);
+      
+      if (!hostName || !prizeName || isNaN(numWinners) {
+        alert('Please fill all fields correctly');
+        return;
+      }
+      
+      // Calculate end time based on selected option
+      let endTime;
+      const durationType = document.getElementById('duration-type').value;
+      
+      if (durationType === 'datetime') {
+        endTime = new Date(document.getElementById('end-datetime').value).getTime();
+      } else {
+        const amount = parseInt(document.getElementById('period-amount').value);
+        const unit = document.getElementById('period-unit').value;
+        
+        const now = new Date();
+        if (unit === 'minutes') {
+          endTime = now.getTime() + amount * 60000;
+        } else if (unit === 'hours') {
+          endTime = now.getTime() + amount * 3600000;
+        } else { // days
+          endTime = now.getTime() + amount * 86400000;
+        }
+      }
+      
+      // Initialize giveaway
+      giveaway = {
+        active: true,
+        hostName,
+        prizeName,
+        numWinners,
+        endTime,
+        entries: [],
+        winners: []
+      };
+      
+      // Update UI
+      hostSection.classList.add('hidden');
+      currentGiveawaySection.classList.remove('hidden');
+      entrySection.classList.remove('hidden');
+      
+      // Show giveaway info
+      document.getElementById('giveaway-info').innerHTML = `
+        <p><strong>Prize:</strong> ${prizeName}</p>
+        <p><strong>Hosted by:</strong> ${hostName}</p>
+        <p><strong>Ends:</strong> ${new Date(endTime).toLocaleString()}</p>
+        <p><strong>Winners:</strong> ${numWinners}</p>
+      `;
+      
+      // Start countdown to end time
+      const countdown = setInterval(() => {
+        const now = new Date().getTime();
+        const remaining = endTime - now;
+        
+        if (remaining <= 0) {
+          clearInterval(countdown);
+          endGiveaway();
+        }
+      }, 1000);
+    }
+    
+    function endGiveaway() {
+      giveaway.active = false;
+      document.getElementById('draw-winner').classList.remove('hidden');
+    }
+    
+    function simulateLogin() {
+      // In a real app, this would be your login flow
+      const username = prompt('Enter your username (simulated login)');
+      if (username) {
+        currentUser = {
+          id: username.toLowerCase().replace(/\s+/g, '') + Math.floor(Math.random() * 1000),
+          name: username
+        };
+        checkLoginStatus();
+      }
+    }
+    
+    function checkLoginStatus() {
+      if (currentUser) {
+        document.getElementById('login-notice').classList.add('hidden');
+        document.getElementById('entry-form').classList.remove('hidden');
+        document.getElementById('logged-in-user').textContent = currentUser.name;
+      } else {
+        document.getElementById('login-notice').classList.remove('hidden');
+        document.getElementById('entry-form').classList.add('hidden');
+      }
+    }
+    
+    function enterGiveaway() {
+      if (!currentUser) {
+        alert('Please log in first');
+        return;
+      }
+      
+      // Check if user already entered
+      if (giveaway.entries.some(entry => entry.id === currentUser.id)) {
+        alert('You have already entered this giveaway');
+        return;
+      }
+      
+      // Add entry
+      giveaway.entries.push({
+        id: currentUser.id,
+        name: currentUser.name,
+        timestamp: new Date().getTime()
+      });
+      
+      // Update UI
+      updateEntriesList();
+      
+      // Calculate and show chance to win
+      const chance = (1 / giveaway.entries.length * 100).toFixed(2);
+      alert(`Entry successful! Current chance to win: ${chance}%`);
+    }
+    
+    function updateEntriesList() {
+      const entriesList = document.getElementById('entries-list');
+      entriesList.innerHTML = '';
+      
+      giveaway.entries.forEach(entry => {
+        const entryElement = document.createElement('div');
+        entryElement.className = 'entry-item';
+        entryElement.textContent = entry.name;
+        entriesList.appendChild(entryElement);
+      });
+      
+      document.getElementById('entries-count').textContent = `Entries: ${giveaway.entries.length}`;
+    }
+    
+    function drawWinner() {
+      if (giveaway.winners.length > 0) {
+        alert('Winners have already been drawn');
+        return;
+      }
+      
+      if (giveaway.entries.length === 0) {
+        alert('No entries to draw from');
+        return;
+      }
+      
+      // Select winners
+      const entries = [...giveaway.entries];
+      const winners = [];
+      
+      for (let i = 0; i < Math.min(giveaway.numWinners, entries.length); i++) {
+        const randomIndex = Math.floor(Math.random() * entries.length);
+        winners.push(entries.splice(randomIndex, 1)[0]);
+      }
+      
+      giveaway.winners = winners;
+      
+      // Check if current user is a winner
+      if (currentUser && winners.some(winner => winner.id === currentUser.id)) {
+        showWinnerNotification();
+      }
+      
+      // Update UI
+      document.getElementById('draw-winner').classList.add('hidden');
+      alert(`Winners drawn: ${winners.map(w => w.name).join(', ')}`);
+    }
+    
+    function showWinnerNotification() {
+      winnerSection.classList.remove('hidden');
+      document.getElementById('winner-prize').textContent = giveaway.prizeName;
+      document.getElementById('winner-host').textContent = giveaway.hostName;
+    }
+    
+    function cancelExpiry() {
+      if (!currentUser) {
+        alert('Please log in to claim your prize');
+        return;
+      }
+      
+      // Verify the logged in user is actually a winner
+      if (!giveaway.winners.some(winner => winner.id === currentUser.id)) {
+        alert('You are not a winner of this giveaway');
+        return;
+      }
+      
+      // In a real app, this would make an API call to confirm prize claim
+      alert('Prize claimed successfully! Redirecting to contact page...');
+      document.getElementById('contact-link').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
