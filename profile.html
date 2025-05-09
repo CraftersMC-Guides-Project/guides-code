@@ -76,9 +76,15 @@
     fetch(`https://discord-auth.roumakdatta.workers.dev/get-custom-name?id=${user.id}`)
       .then(res => res.json())
       .then(data => {
-        if (data.name) {
+        if (data.success && data.name) {
           document.getElementById("custom-name").textContent = data.name;
+        } else {
+          document.getElementById("custom-name").textContent = "No custom name set";
         }
+      })
+      .catch(err => {
+        console.error("Error fetching custom name:", err);
+        alert("There was an issue retrieving your custom name.");
       });
   }
 
@@ -104,11 +110,16 @@
         } else {
           alert("Failed to save custom name.");
         }
+      })
+      .catch(err => {
+        console.error("Error saving custom name:", err);
+        alert("There was an issue saving your custom name.");
       });
   }
 
   window.onload = loadProfile;
 </script>
+
 
 </body>
 </html>
