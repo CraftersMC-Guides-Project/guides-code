@@ -51,47 +51,64 @@
   </div>
 
   <script>
-    function loadProfile() {
-      const storedUser = localStorage.getItem("discordUser");
-      if (!storedUser) {
-        alert("User not found in local storage.");
-        return;
-      }
+  const workerUrl = "https://discord-auth.roumakdatta.workers.dev/set-custom-name"; // update if needed
 
-      const user = JSON.parse(storedUser);
-
-      document.getElementById("username").textContent = user.username;
-      document.getElementById("email").textContent = user.email;
-      document.getElementById("user-id").textContent = user.id;
-
-      const avatarImg = document.getElementById("avatar");
-      if (user.avatar) {
-        avatarImg.src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
-      } else {
-        avatarImg.alt = "No Avatar";
-      }
-
-      const customName = localStorage.getItem(`customName:${user.id}`);
-      if (customName) {
-        document.getElementById("custom-name").textContent = customName;
-      }
+  function loadProfile() {
+    const storedUser = localStorage.getItem("discordUser");
+    if (!storedUser) {
+      alert("User not found in local storage.");
+      return;
     }
 
-    function setCustomName() {
-      const storedUser = localStorage.getItem("discordUser");
-      if (!storedUser) return alert("User not found.");
+    const user = JSON.parse(storedUser);
+    document.getElementById("username").textContent = user.username;
+    document.getElementById("email").textContent = user.email;
+    document.getElementById("user-id").textContent = user.id;
 
-      const user = JSON.parse(storedUser);
-      const customName = document.getElementById("customNameInput").value.trim();
-      if (!customName) return alert("Please enter a valid name.");
-
-      localStorage.setItem(`customName:${user.id}`, customName);
-      document.getElementById("custom-name").textContent = customName;
-      document.getElementById("customNameInput").value = "";
-      alert("Custom name saved.");
+    const avatarImg = document.getElementById("avatar");
+    if (user.avatar) {
+      avatarImg.src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
+    } else {
+      avatarImg.alt = "No Avatar";
     }
 
-    window.onload = loadProfile;
-  </script>
+    // Fetch custom name from worker
+    fetch(`https://discord-auth.roumakdatta.workers.dev/get-custom-name?id=${user.id}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.name) {
+          document.getElementById("custom-name").textContent = data.name;
+        }
+      });
+  }
+
+  function setCustomName() {
+    const storedUser = localStorage.getItem("discordUser");
+    if (!storedUser) return alert("User not found.");
+
+    const user = JSON.parse(storedUser);
+    const customName = document.getElementById("customNameInput").value.trim();
+    if (!customName) return alert("Please enter a valid name.");
+
+    fetch(workerUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: user.id, name: customName })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById("custom-name").textContent = customName;
+          document.getElementById("customNameInput").value = "";
+          alert("Custom name saved.");
+        } else {
+          alert("Failed to save custom name.");
+        }
+      });
+  }
+
+  window.onload = loadProfile;
+</script>
+
 </body>
 </html>
