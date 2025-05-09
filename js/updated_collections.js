@@ -1265,13 +1265,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 6,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Krar23456",
+                    "score": "2.5M+"
                 },
                 {
                     "rank": 7,
-                    "name": "Krar23456",
-                    "score": "2.3M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 8,
@@ -1874,7 +1874,7 @@ const collectionsData = {
                 {
                     "rank": 4,
                     "name": "SeaborneClamp18",
-                    "score": "52.4M+"
+                    "score": "55M+"
                 },
                 {
                     "rank": 5,
