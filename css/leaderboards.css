@@ -18,19 +18,36 @@
 
 body {
   font-family: Arial, sans-serif;
-  background-color: var(--body-bg);
-  background: url("../Backgrounds/IMG_4500.jpeg") no-repeat center center fixed;
-  background-size: cover;
-  background-attachment: fixed;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
+  background-color: var(--body-bg); 
   color: var(--main-text-color);
   text-align: center;
   margin: 0;
   padding: 0;
-  height: 100vh;
+  min-height: 100vh;
   overflow-x: hidden;
+}
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("../Backgrounds/IMG_4500.jpeg") no-repeat center center;
+  background-size: cover;
+  z-index: -1;
+  -webkit-backface-visibility: hidden; 
+  -webkit-transform: translateZ(0); 
+}
+@-moz-document url-prefix() {
+  body {
+    scrollbar-width: none; 
+  }
+}
+@media (max-width: 768px) {
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 .custom-navbar {
