@@ -363,80 +363,116 @@
             }
         }
 
-        reportForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
+        <script>
+    // ... (keep all your existing code until the reportForm submit event)
 
-            const submitBtn = document.getElementById("submitBtn");
-            submitBtn.disabled = true;
-            submitBtn.textContent = "Submitting...";
-            submitBtn.style.opacity = "0.7";
+    reportForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-            const bug = document.getElementById("bug").value.trim();
-            const webhook = "https://discord.com/api/webhooks/1361692940933796041/w2cigWcNOTdnUaX4jIBVxbpDqVovWw0qJaEKQ-ZDG6l-E1U83vamW3mumbrbo1FOVVXV";
-            const inGameName = document.getElementById("username").value.trim();
+        const submitBtn = document.getElementById("submitBtn");
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Submitting...";
+        submitBtn.style.opacity = "0.7";
 
-            // Create JSON payload with file URL if available
-            const payload = {
-                username: "Bug Reporter",
-                content: JSON.stringify({
-                    type: "bug_report",
-                    reporter: {
-                        discord_id: loggedInUserId,
-                        discord_username: loggedInUsername,
-                        in_game_name: inGameName
-                    },
-                    description: bug,
-                    timestamp: new Date().toISOString(),
-                    attachment: uploadedFile ? {
-                        url: URL.createObjectURL(uploadedFile), // Creates a blob URL
+        const bug = document.getElementById("bug").value.trim();
+        const webhook = "https://discord.com/api/webhooks/1361692940933796041/w2cigWcNOTdnUaX4jIBVxbpDqVovWw0qJaEKQ-ZDG6l-E1U83vamW3mumbrbo1FOVVXV";
+        const inGameName = document.getElementById("username").value.trim();
+
+        // Create initial payload without attachment
+        let payload = {
+            username: "Bug Reporter",
+            content: JSON.stringify({
+                type: "bug_report",
+                reporter: {
+                    discord_id: loggedInUserId,
+                    discord_username: loggedInUsername,
+                    in_game_name: inGameName
+                },
+                description: bug,
+                timestamp: new Date().toISOString(),
+                attachment: null
+            }, null, 2)
+        };
+
+        try {
+            // If there's a file, upload it first
+            let attachmentUrl = null;
+            if (uploadedFile) {
+                progressContainer.style.display = "block";
+                
+                // Create FormData for file upload
+                const formData = new FormData();
+                formData.append('file', uploadedFile);
+
+                // Upload file to Discord's CDN
+                const uploadResponse = await fetch(webhook + '?wait=true', {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!uploadResponse.ok) {
+                    throw new Error("File upload failed");
+                }
+
+                const uploadResult = await uploadResponse.json();
+                if (uploadResult.attachments && uploadResult.attachments.length > 0) {
+                    attachmentUrl = uploadResult.attachments[0].url;
+                }
+
+                // Update payload with the actual CDN URL
+                payload.content = JSON.stringify({
+                    ...JSON.parse(payload.content),
+                    attachment: attachmentUrl ? {
+                        url: attachmentUrl,
                         name: uploadedFile.name,
                         type: uploadedFile.type,
                         size: uploadedFile.size
                     } : null
-                }, null, 2)
-            };
+                }, null, 2);
+            }
 
-            try {
-                const response = await fetch(webhook, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payload)
-                });
+            // Send the final payload with the attachment URL
+            const response = await fetch(webhook, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
 
-                if (response.ok) {
-                    panel.classList.add("show");
-                    
-                    setTimeout(() => {
-                        panel.classList.remove("show");
-                        reportContainer.classList.add("hidden");
-                        successMessage.style.display = "block";
-                    }, 2000);
-                } else {
-                    console.error("Error response:", await response.text());
-                    panel.innerHTML = "Failed to submit report. Please try again.";
-                    panel.style.color = "red";
-                    panel.classList.add("show");
-                    setTimeout(() => {
-                        panel.classList.remove("show");
-                    }, 3000);
-                }
-            } catch (err) {
-                console.error("Error:", err);
-                panel.innerHTML = "An error occurred. Please try again.";
+            if (response.ok) {
+                panel.classList.add("show");
+                
+                setTimeout(() => {
+                    panel.classList.remove("show");
+                    reportContainer.classList.add("hidden");
+                    successMessage.style.display = "block";
+                }, 2000);
+            } else {
+                console.error("Error response:", await response.text());
+                panel.innerHTML = "Failed to submit report. Please try again.";
                 panel.style.color = "red";
                 panel.classList.add("show");
                 setTimeout(() => {
                     panel.classList.remove("show");
                 }, 3000);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = "Submit Report";
-                submitBtn.style.opacity = "1";
-                progressContainer.style.display = "none";
             }
-        });
+        } catch (err) {
+            console.error("Error:", err);
+            panel.innerHTML = "An error occurred. Please try again.";
+            panel.style.color = "red";
+            panel.classList.add("show");
+            setTimeout(() => {
+                panel.classList.remove("show");
+            }, 3000);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Submit Report";
+            submitBtn.style.opacity = "1";
+            progressContainer.style.display = "none";
+        }
+    });
+</script>
     </script>
 </body>
 </html>
