@@ -10,7 +10,78 @@
   <link rel="stylesheet" href="css/item.css">
   <link rel="stylesheet" href="css/minion.css">
   <style>
+    .attribute-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
 
+    .attribute-box {
+      width: 156px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background-color: #333;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+      gap: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      padding: 0 5px;
+      font-family: revert;
+    }
+
+    .attribute-box img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .attribute-box.yes {
+      background-color: #2ecc7138;
+      color: var(--main-text-color);
+      border: 1px solid #2ecc71;
+    }
+
+    .attribute-box.no {
+      background-color: #e74c3c38;
+      color: var(--main-text-color);
+      border: 1px solid #e74c3c;
+    }
+
+    .stability {
+      margin: 15px 0;
+    }
+
+    .nature-pill {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      margin-right: 10px;
+      background-color: #333;
+    }
+
+    .nature-pill.stable {
+      background-color: #2ecc7138;
+      border: 1px solid #2ecc71;
+    }
+
+    .nature-pill.underpaid {
+      background-color: #e74c3c38;
+      border: 1px solid #e74c3c;
+    }
+
+    .nature-pill.overpaid {
+      background-color: #f39c1238;
+      border: 1px solid #f39c12;
+    }
+
+    .demand-box {
+      margin-top: 15px;
+    }
   </style>
 </head>
 
@@ -63,7 +134,7 @@
       },
 
       renderMinionDetails(selectedTier) {
-        const { name, picture, category, id, description, prices } = this.currentMinion;
+        const { name, picture, category, id, description, prices, nature, demand } = this.currentMinion;
         const tierPrices = prices[selectedTier] || [0, 0];
 
         document.getElementById('minionDetails').innerHTML = `
@@ -95,7 +166,17 @@
             </div>
             <p><strong>Category:</strong> ${category}</p>
             <p><strong>ID:</strong> ${id}</p>
-            <p><strong>Description:</strong> ${description || 'No description available'}</p>
+            ${description ? `<p><strong>Description:</strong> ${description}</p>` : ''}
+            <div class="stability">
+              ${this.generateNatureBox(nature)}
+              ${this.generateDemandBox(demand)}
+            </div>
+            <div class="attribute-container">
+              ${this.generateAttributeBox('Craftable', true)}
+              ${this.generateAttributeBox('Upgradable', true)}
+              ${this.generateAttributeBox('Tradable', true)}
+              ${this.generateAttributeBox('Auctionable', true)}
+            </div>
           </div>
         `;
       },
@@ -112,6 +193,67 @@
 
       formatPrice(price) {
         return typeof price === 'number' ? `${price.toLocaleString()} coins` : 'Not available';
+      },
+
+      generateAttributeBox(label, value) {
+        if (value === undefined) return '';
+        return `
+          <div class="attribute-box ${value ? 'yes' : 'no'}">
+            <span class="material-icons" style="font-size: 25px; padding: 0; cursor: pointer;">${value ? 'check' : 'close'}</span>
+            ${label}
+          </div>
+        `;
+      },
+
+      generateNatureBox(nature) {
+        if (!nature) return '';
+        let icon = '';
+
+        if (nature.includes("STABLE")) {
+          icon = '✅';
+        } else if (nature.includes("UNDERPAID")) {
+          icon = '❌';
+        } else if (nature.includes("OVERPAID")) {
+          icon = '⚠️';
+        }
+
+        let natureText = nature.replace('[', ' ').toLowerCase();
+        natureText = natureText.replace(']', '').replace(/_/g, ' ').trim();
+
+        return `
+          <div class="nature-pill ${natureText}">
+            ${icon} Market Nature: ${natureText}
+          </div>
+        `;
+      },
+
+      generateDemandBox(demand) {
+        if (!demand) return '';
+        const match = demand.match(/\[(\d+)\/10\]/);
+        const score = match ? parseInt(match[1]) : 0;
+        const barWidth = Math.min(score * 10, 100);
+        let color = score >= 7 ? 'limegreen' : score >= 4 ? 'orange' : 'red';
+
+        return `
+          <div class="demand-box">
+            <strong>Demand:</strong> ${demand}
+            <div style="
+              background-color: #222;
+              height: 18px;
+              border-radius: 6px;
+              overflow: hidden;
+              margin-top: 6px;
+              box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+            ">
+              <div style="
+                width: ${barWidth}%;
+                height: 100%;
+                background-color: ${color};
+                transition: width 0.3s ease;
+              "></div>
+            </div>
+          </div>
+        `;
       },
 
       showError(message) {
