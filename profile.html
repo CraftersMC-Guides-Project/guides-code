@@ -196,7 +196,6 @@
   
   <div class="profile-container">
     <div class="profile" id="profile">
-      <!-- Profile content will be loaded here -->
     </div>
   </div>
 
@@ -224,16 +223,13 @@
       // Format display name
       const displayName = user.global_name || user.username;
       
-      // Format avatar URL
-      const avatarUrl = "https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}";
-      
       // Format dates
       const firstLogin = user.first_login ? new Date(user.first_login).toLocaleString() : 'Unknown';
       const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Unknown';
       
       profileElement.innerHTML = `
   <div class="profile-header">
-    <img class="profile-avatar" src="${avatarUrl}" alt="User Avatar" id="avatar" crossorigin="anonymous">
+    <img class="profile-avatar" src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}" alt="User Avatar" id="avatar" crossorigin="anonymous">
     <h2 class="profile-name">${displayName}</h2>
   </div>
   
@@ -266,7 +262,6 @@
     
     function logout() {
       localStorage.removeItem("discordUser");
-      window.location.href = '/login';
     }
 
     window.onload = loadProfile;
