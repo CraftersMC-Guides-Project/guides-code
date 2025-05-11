@@ -134,6 +134,25 @@
             margin: 10px auto;
             display: none;
         }
+
+        .user-details {
+            display: none;
+            margin-top: 15px;
+            width: 80%;
+            background: #2c2c2c99;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .user-detail {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #66bb6a;
+        }
     </style>
 </head>
 
@@ -165,6 +184,7 @@
         <div class="message" id="message"></div>
         <div id="login-status" style="display: none;"></div>
         <div id="username-display" style="display: none;"></div>
+        <div id="user-details" class="user-details"></div>
         <button id="logout-button" class="logout-button" style="display: none;">Logout</button>
     </div>
 
@@ -177,6 +197,7 @@
             const usernameDisplay = document.getElementById('username-display');
             const logoutButton = document.getElementById('logout-button');
             const userAvatar = document.getElementById('user-avatar');
+            const userDetailsDiv = document.getElementById('user-details');
 
             // Check for existing login
             const storedUser = localStorage.getItem('discordUser');
@@ -204,24 +225,44 @@
                             showError(data.error, data.details);
                         } else {
                             // Handle both old and new Discord username formats
-                            const displayName = data.global_name || 
-                                             (data.username ? 
-                                              `${data.username}${data.discriminator !== '0' ? `#${data.discriminator}` : ''}` : 
+                            const displayName = data.user.global_name || 
+                                             (data.user.username ? 
+                                              `${data.user.username}${data.user.discriminator !== '0' ? `#${data.user.discriminator}` : ''}` : 
                                               'Unknown User');
 
-                            const avatarUrl = data.avatar ? 
-                                           `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png` : 
-                                           'https://cdn.discordapp.com/embed/avatars/0.png';
+                            const avatarUrl = data.user.avatar ? 
+                                           `https://cdn.discordapp.com/avatars/${data.user.id}/${data.user.avatar}.${data.user.avatar.startsWith('a_') ? 'gif' : 'png'}` : 
+                                           `https://cdn.discordapp.com/embed/avatars/${data.user.discriminator % 5}.png`;
 
+                            const bannerUrl = data.user.banner ? 
+                                            `https://cdn.discordapp.com/banners/${data.user.id}/${data.user.banner}.${data.user.banner.startsWith('a_') ? 'gif' : 'png'}` : 
+                                            null;
+
+                            // Store all user data in localStorage
                             const userData = {
-                                id: data.id,
-                                username: displayName,
-                                avatar: avatarUrl,
-                                email: data.email,
-                                guild_member: data.guild_member || false
+                                id: data.user.id,
+                                username: data.user.username,
+                                global_name: data.user.global_name,
+                                display_name: displayName,
+                                discriminator: data.user.discriminator,
+                                avatar: data.user.avatar,
+                                avatar_url: avatarUrl,
+                                banner: data.user.banner,
+                                banner_url: bannerUrl,
+                                accent_color: data.user.accent_color,
+                                email: data.user.email,
+                                verified: data.user.verified,
+                                mfa_enabled: data.user.mfa_enabled,
+                                locale: data.user.locale,
+                                flags: data.user.flags,
+                                premium_type: data.user.premium_type,
+                                public_flags: data.user.public_flags,
+                                guild_member: data.user.guild_member,
+                                first_login: data.user.first_login,
+                                last_login: data.user.last_login,
+                                login_count: data.user.login_count
                             };
 
-                            // Save to localStorage
                             localStorage.setItem('discordUser', JSON.stringify(userData));
                             showLoggedInState(userData);
                         }
@@ -237,13 +278,28 @@
                 loginStatus.textContent = 'Logged in Successfully!';
                 loginStatus.style.display = 'block';
                 
-                usernameDisplay.textContent = `Welcome, ${userData.username}`;
+                usernameDisplay.textContent = `Welcome, ${userData.display_name || userData.username}`;
                 usernameDisplay.style.display = 'block';
                 
-                if (userData.avatar) {
-                    userAvatar.src = userData.avatar;
+                if (userData.avatar_url) {
+                    userAvatar.src = userData.avatar_url;
                     userAvatar.style.display = 'block';
                 }
+                
+                // Display user details
+                userDetailsDiv.innerHTML = `
+                    <div class="user-detail"><span class="detail-label">User ID:</span> ${userData.id}</div>
+                    ${userData.email ? `<div class="user-detail"><span class="detail-label">Email:</span> ${userData.email}</div>` : ''}
+                    ${userData.global_name ? `<div class="user-detail"><span class="detail-label">Global Name:</span> ${userData.global_name}</div>` : ''}
+                    <div class="user-detail"><span class="detail-label">Username:</span> ${userData.username}${userData.discriminator !== '0' ? `#${userData.discriminator}` : ''}</div>
+                    <div class="user-detail"><span class="detail-label">Account Status:</span> ${userData.verified ? 'Verified' : 'Not Verified'} ${userData.mfa_enabled ? '(MFA Enabled)' : ''}</div>
+                    <div class="user-detail"><span class="detail-label">Server Member:</span> ${userData.guild_member ? 'Yes' : 'No'}</div>
+                    ${userData.premium_type ? `<div class="user-detail"><span class="detail-label">Nitro Status:</span> ${getNitroType(userData.premium_type)}</div>` : ''}
+                    <div class="user-detail"><span class="detail-label">First Login:</span> ${new Date(userData.first_login).toLocaleString()}</div>
+                    <div class="user-detail"><span class="detail-label">Last Login:</span> ${new Date(userData.last_login).toLocaleString()}</div>
+                    <div class="user-detail"><span class="detail-label">Login Count:</span> ${userData.login_count}</div>
+                `;
+                userDetailsDiv.style.display = 'block';
                 
                 document.querySelector('.button-container').style.display = 'none';
                 document.querySelector('.other-options').style.display = 'none';
@@ -252,6 +308,15 @@
                 
                 if (messageDiv) {
                     messageDiv.textContent = '';
+                }
+            }
+
+            function getNitroType(premiumType) {
+                switch(premiumType) {
+                    case 1: return 'Nitro Classic';
+                    case 2: return 'Nitro';
+                    case 3: return 'Nitro Basic';
+                    default: return 'None';
                 }
             }
 
@@ -268,6 +333,7 @@
                 loginStatus.style.display = 'none';
                 usernameDisplay.style.display = 'none';
                 userAvatar.style.display = 'none';
+                userDetailsDiv.style.display = 'none';
                 document.querySelector('.button-container').style.display = 'flex';
                 document.querySelector('.other-options').style.display = 'block';
                 document.querySelector('hr').style.display = 'block';
