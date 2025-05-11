@@ -170,21 +170,23 @@
 
         .progress-container {
             width: 100%;
+            height: 20px;
             background-color: #333;
-            border-radius: 8px;
-            margin-top: 1rem;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
             display: none;
         }
 
         .progress-bar {
-            width: 0%;
-            height: 20px;
+            height: 100%;
             background-color: #4CAF50;
-            border-radius: 8px;
+            width: 0%;
+            transition: width 0.3s;
             text-align: center;
             line-height: 20px;
             color: white;
-            transition: width 0.3s;
+            font-size: 12px;
         }
 
         .video-preview {
@@ -217,6 +219,12 @@
         .login-button:hover {
             background-color: #0056b3;
         }
+
+        .file-info {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
     </style>
 </head>
 <body>
@@ -247,12 +255,13 @@
                 <textarea id="bug" rows="5" required></textarea>
             </div>
             <div class="form-group">
-                <label for="file">Upload Image/Video (optional):</label>
+                <label for="file">Upload Image/Video (optional, max 8MB):</label>
                 <div id="drop-area">
                     <p>Drag & drop a file here, or click below to select</p>
                     <input type="file" id="fileElem" accept="image/*,video/*" style="display:none">
-                    <button type="button" id="fileBtn" onclick="fileElem.click()">Choose File</button>
+                    <button type="button" id="fileBtn" onclick="document.getElementById('fileElem').click()">Choose File</button>
                     <div id="preview"></div>
+                    <div class="file-info" id="fileInfo"></div>
                 </div>
                 <div class="progress-container" id="progressContainer">
                     <div class="progress-bar" id="progressBar">0%</div>
@@ -282,6 +291,7 @@
         const progressContainer = document.getElementById("progressContainer");
         const progressBar = document.getElementById("progressBar");
         const loginMessage = document.getElementById("loginMessage");
+        const fileInfo = document.getElementById("fileInfo");
         let uploadedFile = null;
         let loggedInUsername = null;
         let loggedInUserId = null;
@@ -300,6 +310,7 @@
             }
         });
 
+        // Drag and drop handlers
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropArea.addEventListener(eventName, e => {
                 e.preventDefault();
@@ -334,22 +345,33 @@
         });
 
         function handleFile(file) {
+            // Check file size (8MB limit)
+            if (file.size > 8 * 1024 * 1024) {
+                preview.innerHTML = `<p style="color: red;">File too large (max 8MB)</p>`;
+                fileInfo.innerHTML = "";
+                uploadedFile = null;
+                return;
+            }
+
             uploadedFile = file;
             
+            // Display file info
+            fileInfo.innerHTML = `
+                <p>File: ${file.name}</p>
+                <p>Size: ${formatFileSize(file.size)}</p>
+                <p>Type: ${file.type}</p>
+            `;
+
             if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    preview.innerHTML = `
-                        <p>Selected: ${file.name}</p>
-                        <img src="${e.target.result}" style="max-width: 100%; max-height: 200px; margin-top: 10px;">
-                    `;
+                    preview.innerHTML = `<img src="${e.target.result}" style="max-width: 100%; max-height: 200px; margin-top: 10px;">`;
                 };
                 reader.readAsDataURL(file);
             } else if (file.type.startsWith('video/')) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     preview.innerHTML = `
-                        <p>Selected: ${file.name}</p>
                         <video controls class="video-preview">
                             <source src="${e.target.result}" type="${file.type}">
                             Your browser does not support the video tag.
@@ -358,121 +380,131 @@
                 };
                 reader.readAsDataURL(file);
             } else {
-                preview.innerHTML = `<p>Selected: ${file.name} (Unsupported file type)</p>`;
-                uploadedFile = null;
+                preview.innerHTML = `<p style="color: orange;">Preview not available for this file type</p>`;
             }
         }
 
-        <script>
-    // ... (keep all your existing code until the reportForm submit event)
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
 
-    reportForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+        reportForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-        const submitBtn = document.getElementById("submitBtn");
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Submitting...";
-        submitBtn.style.opacity = "0.7";
+            const submitBtn = document.getElementById("submitBtn");
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Submitting...";
+            submitBtn.style.opacity = "0.7";
 
-        const bug = document.getElementById("bug").value.trim();
-        const webhook = "https://discord.com/api/webhooks/1361692940933796041/w2cigWcNOTdnUaX4jIBVxbpDqVovWw0qJaEKQ-ZDG6l-E1U83vamW3mumbrbo1FOVVXV";
-        const inGameName = document.getElementById("username").value.trim();
+            const bug = document.getElementById("bug").value.trim();
+            const webhook = "https://discord.com/api/webhooks/1361692940933796041/w2cigWcNOTdnUaX4jIBVxbpDqVovWw0qJaEKQ-ZDG6l-E1U83vamW3mumbrbo1FOVVXV";
+            const inGameName = document.getElementById("username").value.trim();
 
-        // Create initial payload without attachment
-        let payload = {
-            username: "Bug Reporter",
-            content: JSON.stringify({
-                type: "bug_report",
-                reporter: {
-                    discord_id: loggedInUserId,
-                    discord_username: loggedInUsername,
-                    in_game_name: inGameName
-                },
-                description: bug,
-                timestamp: new Date().toISOString(),
-                attachment: null
-            }, null, 2)
-        };
-
-        try {
-            // If there's a file, upload it first
-            let attachmentUrl = null;
-            if (uploadedFile) {
-                progressContainer.style.display = "block";
+            try {
+                let attachmentUrl = null;
                 
-                // Create FormData for file upload
-                const formData = new FormData();
-                formData.append('file', uploadedFile);
+                // If file is uploaded, send it first
+                if (uploadedFile) {
+                    progressContainer.style.display = "block";
+                    
+                    const formData = new FormData();
+                    formData.append('file', uploadedFile);
+                    formData.append('content', 'File upload for bug report');
 
-                // Upload file to Discord's CDN
-                const uploadResponse = await fetch(webhook + '?wait=true', {
+                    // Update progress bar
+                    const xhr = new XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', (e) => {
+                        if (e.lengthComputable) {
+                            const percentComplete = (e.loaded / e.total) * 100;
+                            progressBar.style.width = percentComplete + '%';
+                            progressBar.textContent = Math.round(percentComplete) + '%';
+                        }
+                    });
+
+                    const uploadPromise = new Promise((resolve, reject) => {
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4) {
+                                if (xhr.status === 200) {
+                                    const response = JSON.parse(xhr.responseText);
+                                    if (response.attachments && response.attachments.length > 0) {
+                                        attachmentUrl = response.attachments[0].url;
+                                        resolve();
+                                    } else {
+                                        reject(new Error("No attachment URL returned"));
+                                    }
+                                } else {
+                                    reject(new Error("Upload failed"));
+                                }
+                            }
+                        };
+                    });
+
+                    xhr.open('POST', webhook + '?wait=true', true);
+                    xhr.send(formData);
+
+                    await uploadPromise;
+                }
+
+                // Create the final payload
+                const payload = {
+                    username: "Bug Reporter",
+                    content: JSON.stringify({
+                        type: "bug_report",
+                        reporter: {
+                            discord_id: loggedInUserId,
+                            discord_username: loggedInUsername,
+                            in_game_name: inGameName
+                        },
+                        description: bug,
+                        timestamp: new Date().toISOString(),
+                        attachment: uploadedFile ? {
+                            url: attachmentUrl,
+                            name: uploadedFile.name,
+                            type: uploadedFile.type,
+                            size: uploadedFile.size
+                        } : null
+                    }, null, 2)
+                };
+
+                // Send the report
+                const response = await fetch(webhook, {
                     method: "POST",
-                    body: formData
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
                 });
 
-                if (!uploadResponse.ok) {
-                    throw new Error("File upload failed");
+                if (response.ok) {
+                    panel.classList.add("show");
+                    
+                    setTimeout(() => {
+                        panel.classList.remove("show");
+                        reportContainer.classList.add("hidden");
+                        successMessage.style.display = "block";
+                    }, 2000);
+                } else {
+                    throw new Error("Failed to submit report");
                 }
-
-                const uploadResult = await uploadResponse.json();
-                if (uploadResult.attachments && uploadResult.attachments.length > 0) {
-                    attachmentUrl = uploadResult.attachments[0].url;
-                }
-
-                // Update payload with the actual CDN URL
-                payload.content = JSON.stringify({
-                    ...JSON.parse(payload.content),
-                    attachment: attachmentUrl ? {
-                        url: attachmentUrl,
-                        name: uploadedFile.name,
-                        type: uploadedFile.type,
-                        size: uploadedFile.size
-                    } : null
-                }, null, 2);
-            }
-
-            // Send the final payload with the attachment URL
-            const response = await fetch(webhook, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (response.ok) {
-                panel.classList.add("show");
-                
-                setTimeout(() => {
-                    panel.classList.remove("show");
-                    reportContainer.classList.add("hidden");
-                    successMessage.style.display = "block";
-                }, 2000);
-            } else {
-                console.error("Error response:", await response.text());
-                panel.innerHTML = "Failed to submit report. Please try again.";
+            } catch (err) {
+                console.error("Error:", err);
+                panel.innerHTML = "An error occurred. Please try again.";
                 panel.style.color = "red";
                 panel.classList.add("show");
                 setTimeout(() => {
                     panel.classList.remove("show");
                 }, 3000);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Submit Report";
+                submitBtn.style.opacity = "1";
+                progressContainer.style.display = "none";
             }
-        } catch (err) {
-            console.error("Error:", err);
-            panel.innerHTML = "An error occurred. Please try again.";
-            panel.style.color = "red";
-            panel.classList.add("show");
-            setTimeout(() => {
-                panel.classList.remove("show");
-            }, 3000);
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = "Submit Report";
-            submitBtn.style.opacity = "1";
-            progressContainer.style.display = "none";
-        }
-    });
-</script>
+        });
     </script>
 </body>
-</html>
+            </html>
