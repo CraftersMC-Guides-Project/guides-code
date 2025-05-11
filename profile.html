@@ -6,17 +6,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="css/essential.css">
-    <link rel="stylesheet" href="css/home.css">
-    <script src="js/script.js"></script>
+  <link rel="stylesheet" href="css/home.css">
+  <script src="js/script.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: var(--body-bg);
       color: white;
       display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .profile-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 800px;
+      padding: 2rem;
     }
 
     .profile {
@@ -24,58 +34,156 @@
       backdrop-filter: blur(15px);
       -webkit-backdrop-filter: blur(15px);
       border-radius: 20px;
-      padding: 30px;
-      max-width: 500px;
+      padding: 2.5rem;
       width: 100%;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
       border: 1px solid var(--border-color);
-      margin-top: 12rem;
-  position: relative;
+      position: relative;
+      margin-bottom: 2rem;
     }
 
-    .profile img {
-      width: 100px;
-      height: 100px;
+    .profile-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-avatar {
+      width: 128px;
+      height: 128px;
       border-radius: 50%;
-      margin-bottom: 15px;
-      border: 3px solid var(--border-color);
-  position: absolute;
-  left: 193px;
-  top: -52px;
+      border: 4px solid var(--border-color);
+      object-fit: cover;
+      margin-bottom: 1rem;
     }
 
-    .profile p {
-      margin: 30px 0px 30px 10px;
-      font-size: 16px;
-      gap: 20px;
-    }
-
-    .profile span {
+    .profile-name {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
       color: var(--main-text-color);
+    }
+
+    .profile-discriminator {
+      color: var(--secondary-text-color);
+      font-size: 1rem;
+    }
+
+    .profile-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .detail-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .detail-title {
+      font-size: 0.9rem;
+      color: var(--secondary-text-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .detail-value {
+      font-size: 1.1rem;
+      word-break: break-all;
+    }
+
+    .profile-badges {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: var(--primary-color);
+      padding: 0.3rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .badge-icon {
+      font-size: 1rem;
+    }
+
+    .profile-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      justify-content: center;
+    }
+
+    .btn {
+      background: var(--primary-text-color);
+      color: var(--main-text-color);
+      padding: 0.8rem 1.5rem;
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      transition: 0.3s;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn:hover {
+      background: var(--primary-color-hover);
+      box-shadow: 0 0 2px 4px var(--border-color);
+    }
+
+    .btn-logout {
+      background: rgba(220, 53, 69, 0.2);
+      border-color: rgba(220, 53, 69, 0.5);
+    }
+
+    .btn-logout:hover {
+      background: rgba(220, 53, 69, 0.3);
+    }
+
+    .login-prompt {
+      text-align: center;
+      padding: 2rem;
     }
 
     @media (max-width: 768px) {
       .profile {
-        width: 20rem;
+        padding: 1.5rem;
       }
-      .profile img {
-        left: 105px;
-    top: -67px;
+      
+      .profile-details {
+        grid-template-columns: 1fr;
       }
     }
 
-    .btns {
-  background: var(--primary-text-color);
-  color: var(--main-text-color);
-  padding: 10px;
-  border: 2px solid var(--border-color);
-  border-radius: 10px;
-      transition: 0.3s;
-}
-    .btns:hover {
-  background: var(--primary-color-hover);
-  box-shadow: 0 0 2px 4px var(--border-color);
-      cursor: pointer;
+    /* Banner styling */
+    .profile-banner {
+      height: 150px;
+      width: 100%;
+      border-radius: 12px 12px 0 0;
+      background-size: cover;
+      background-position: center;
+      margin-bottom: -64px; /* Half of avatar size */
+      position: relative;
+    }
+
+    .profile-banner-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
     }
   </style>
 </head>
@@ -86,42 +194,94 @@
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
   <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
   
-  <div class="profile" id="profile">
-      <img id="avatar" width="128" height="128" />
-    <div class="profila">
-      <p>Username: <span id="username">Loading...</span></p>
-      <p>Email: <span id="email"></span></p>
-      <p>ID: <span id="user-id"></span></p>
+  <div class="profile-container">
+    <div class="profile" id="profile">
+      <!-- Profile content will be loaded here -->
     </div>
-    <a class="btns" onclick="logout()">Logout</a>
   </div>
-
 
   <div id="footer"></div>
   <script>
-  function loadProfile() {
-    const storedUser = localStorage.getItem("discordUser");
-    if (!storedUser) {
-       document.getElementById("profile").innerHTML = '<p>Login to view your profile</p><br><a class="btns" onclick="login()">Login</a>';
-      return;
+    function loadProfile() {
+      const storedUser = localStorage.getItem("discordUser");
+      const profileElement = document.getElementById("profile");
+      
+      if (!storedUser) {
+        profileElement.innerHTML = `
+          <div class="login-prompt">
+            <h3>Login to view your profile</h3>
+            <button class="btn" onclick="window.location.href='/login'">
+              <span class="material-icons">login</span>
+              Login with Discord
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      const user = JSON.parse(storedUser);
+      
+      // Format display name
+      const displayName = user.global_name || user.username;
+      const discriminator = user.discriminator !== '0' ? `#${user.discriminator}` : '';
+      
+      // Format avatar URL
+      const avatarExt = user.avatar?.startsWith('a_') ? 'gif' : 'png';
+      const avatarUrl = user.avatar 
+        ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${avatarExt}`
+        : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`;
+      
+      // Format banner URL if available
+      const bannerStyle = user.banner 
+        ? `background-image: url('https://cdn.discordapp.com/banners/${user.id}/${user.banner}.${user.banner.startsWith('a_') ? 'gif' : 'png'}')`
+        : `background: linear-gradient(45deg, #${user.accent_color?.toString(16) || '5865F2'}, #${user.accent_color ? (user.accent_color + 0x111111).toString(16) : '7289DA'})`;
+      
+      // Format Nitro status
+      const nitroStatus = getNitroType(user.premium_type);
+      
+      // Format dates
+      const firstLogin = user.first_login ? new Date(user.first_login).toLocaleString() : 'Unknown';
+      const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Unknown';
+      
+      profileElement.innerHTML = `
+  <div class="profile-header">
+    <img class="profile-avatar" src="${avatarUrl}" alt="User Avatar" id="avatar">
+    <h2 class="profile-name">${displayName}</h2>
+  </div>
+  
+  <div class="profile-details">
+    <div class="detail-card">
+      <div class="detail-title">Account Information</div>
+      <div class="detail-value">ID: ${user.id}</div>
+      ${user.email ? `<div class="detail-value">Email: ${user.email}</div>` : ''}
+    </div>
+    
+    <div class="detail-card">
+      <div class="detail-title">Activity</div>
+      <div class="detail-value">First Login: ${firstLogin}</div>
+      <div class="detail-value">Last Login: ${lastLogin}</div>
+      <div class="detail-value">Login Count: ${user.login_count || 1}</div>
+    </div>
+  </div>
+  
+  <div class="profile-actions">
+    <button class="btn" onclick="window.location.href='/'">
+      <span class="material-icons">home</span>
+      Return Home
+    </button>
+    <button class="btn btn-logout" onclick="logout()">
+      <span class="material-icons">logout</span>
+      Logout
+    </button>
+  </div>
+`;
+    
+    function logout() {
+      localStorage.removeItem("discordUser");
+      window.location.href = '/login';
     }
 
-    const user = JSON.parse(storedUser);
-    document.getElementById("username").textContent = user.username;
-    document.getElementById("email").textContent = user.email;
-    document.getElementById("user-id").textContent = user.id;
-
-    const avatarImg = document.getElementById("avatar");
-    if (user.avatar) {
-      avatarImg.src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
-    } else {
-      avatarImg.alt = "No Avatar";
-    }
-  }
-
-  window.onload = loadProfile;
-</script>
-
-
+    window.onload = loadProfile;
+  </script>
 </body>
 </html>
