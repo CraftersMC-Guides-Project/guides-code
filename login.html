@@ -184,8 +184,7 @@
         <div class="message" id="message"></div>
         <div id="login-status" style="display: none;"></div>
         <div id="username-display" style="display: none;"></div>
-        <div id="user-details" class="user-details" style="display:none;"></div>
-        <button id="logout-button" class="logout-button">Logout</button>
+        <button id="logout-button" class="logout-button" style="display: none;">Logout</button>
     </div>
 
     <script>
@@ -197,7 +196,6 @@
             const usernameDisplay = document.getElementById('username-display');
             const logoutButton = document.getElementById('logout-button');
             const userAvatar = document.getElementById('user-avatar');
-            const userDetailsDiv = document.getElementById('user-details');
 
             // Check for existing login
             const storedUser = localStorage.getItem('discordUser');
@@ -300,6 +298,11 @@
                     <div class="user-detail"><span class="detail-label">Login Count:</span> ${userData.login_count}</div>
                 `;
                 
+                document.querySelector('.button-container').style.display = 'none';
+                document.querySelector('.other-options').style.display = 'none';
+                document.querySelector('hr').style.display = 'none';
+                logoutButton.style.display = 'block';
+                
                 if (messageDiv) {
                     messageDiv.textContent = '';
                 }
@@ -324,6 +327,13 @@
 
             function logout() {
                 localStorage.removeItem('discordUser');
+                loginStatus.style.display = 'none';
+                usernameDisplay.style.display = 'none';
+                userAvatar.style.display = 'none';
+                document.querySelector('.button-container').style.display = 'flex';
+                document.querySelector('.other-options').style.display = 'block';
+                document.querySelector('hr').style.display = 'block';
+                logoutButton.style.display = 'none';
                 
                 if (messageDiv) {
                     messageDiv.textContent = 'Please log in to continue.';
