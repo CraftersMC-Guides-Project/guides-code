@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="css/essential.css">
   <link rel="stylesheet" href="css/home.css">
-  <script src="js/script.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -95,27 +94,6 @@
       word-break: break-all;
     }
 
-    .profile-badges {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .badge {
-      background: var(--primary-color);
-      padding: 0.3rem 0.6rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    .badge-icon {
-      font-size: 1rem;
-    }
-
     .profile-actions {
       display: flex;
       gap: 1rem;
@@ -139,16 +117,11 @@
 
     .btn:hover {
       background: var(--primary-color-hover);
-      box-shadow: 0 0 2px 4px var(--border-color);
     }
 
     .btn-logout {
       background: rgba(220, 53, 69, 0.2);
       border-color: rgba(220, 53, 69, 0.5);
-    }
-
-    .btn-logout:hover {
-      background: rgba(220, 53, 69, 0.3);
     }
 
     .login-prompt {
@@ -165,26 +138,6 @@
         grid-template-columns: 1fr;
       }
     }
-
-    /* Banner styling */
-    .profile-banner {
-      height: 150px;
-      width: 100%;
-      border-radius: 12px 12px 0 0;
-      background-size: cover;
-      background-position: center;
-      margin-bottom: -64px; /* Half of avatar size */
-      position: relative;
-    }
-
-    .profile-banner-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 50%;
-      background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-    }
   </style>
 </head>
 <body>
@@ -196,10 +149,12 @@
   
   <div class="profile-container">
     <div class="profile" id="profile">
+      <p>Loading profile...</p>
     </div>
   </div>
 
   <div id="footer"></div>
+
   <script>
     function loadProfile() {
       const storedUser = localStorage.getItem("discordUser");
@@ -219,53 +174,54 @@
       }
 
       const user = JSON.parse(storedUser);
-      
-      // Format display name
       const displayName = user.global_name || user.username;
-      
-      // Format dates
       const firstLogin = user.first_login ? new Date(user.first_login).toLocaleString() : 'Unknown';
       const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Unknown';
       
       profileElement.innerHTML = `
-  <div class="profile-header">
-    <img class="profile-avatar" src="${user.avatar_url}" alt="User Avatar" id="avatar" crossorigin="anonymous">
-    <h2 class="profile-name">${displayName}</h2>
-  </div>
-  
-  <div class="profile-details">
-    <div class="detail-card">
-      <div class="detail-title">Account Information</div>
-      <div class="detail-value">ID: ${user.id}</div>
-      ${user.email ? `<div class="detail-value">Email: ${user.email}</div>` : ''}
-    </div>
-    
-    <div class="detail-card">
-      <div class="detail-title">Activity</div>
-      <div class="detail-value">First Login: ${firstLogin}</div>
-      <div class="detail-value">Last Login: ${lastLogin}</div>
-      <div class="detail-value">Login Count: ${user.login_count || 1}</div>
-    </div>
-  </div>
-  
-  <div class="profile-actions">
-    <button class="btn" onclick="window.location.href='/'">
-      <span class="material-icons">home</span>
-      Return Home
-    </button>
-    <button class="btn btn-logout" onclick="logout()">
-      <span class="material-icons">logout</span>
-      Logout
-    </button>
-  </div>
-`;
-    }
-    
-    function logout() {
-      localStorage.removeItem("discordUser");
+        <div class="profile-header">
+          <h2 class="profile-name">${displayName}</h2>
+        </div>
+        
+        <div class="profile-details">
+          <div class="detail-card">
+            <div class="detail-title">Account Information</div>
+            <div class="detail-value">ID: ${user.id}</div>
+            ${user.email ? `<div class="detail-value">Email: ${user.email}</div>` : ''}
+          </div>
+          
+          <div class="detail-card">
+            <div class="detail-title">Activity</div>
+            <div class="detail-value">First Login: ${firstLogin}</div>
+            <div class="detail-value">Last Login: ${lastLogin}</div>
+            <div class="detail-value">Login Count: ${user.login_count || 1}</div>
+          </div>
+        </div>
+        
+        <div class="profile-actions">
+          <button class="btn" onclick="window.location.href='/'">
+            <span class="material-icons">home</span>
+            Return Home
+          </button>
+          <button class="btn btn-logout" onclick="logout()">
+            <span class="material-icons">logout</span>
+            Logout
+          </button>
+        </div>
+      `;
     }
 
-    window.onload = loadProfile;
+    function logout() {
+      localStorage.removeItem("discordUser");
+      window.location.href = '/';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadProfile();
+    });
+
+    window.logout = logout;
   </script>
+  <script src="js/script.js"></script>
 </body>
 </html>
