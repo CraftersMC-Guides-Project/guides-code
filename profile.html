@@ -223,21 +223,12 @@
       
       // Format display name
       const displayName = user.global_name || user.username;
-      const discriminator = user.discriminator !== '0' ? `#${user.discriminator}` : '';
       
       // Format avatar URL
       const avatarExt = user.avatar?.startsWith('a_') ? 'gif' : 'png';
       const avatarUrl = user.avatar 
-        ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${avatarExt}`
-        : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`;
-      
-      // Format banner URL if available
-      const bannerStyle = user.banner 
-        ? `background-image: url('https://cdn.discordapp.com/banners/${user.id}/${user.banner}.${user.banner.startsWith('a_') ? 'gif' : 'png'}')`
-        : `background: linear-gradient(45deg, #${user.accent_color?.toString(16) || '5865F2'}, #${user.accent_color ? (user.accent_color + 0x111111).toString(16) : '7289DA'})`;
-      
-      // Format Nitro status
-      const nitroStatus = getNitroType(user.premium_type);
+  ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}?size=128`
+  : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`;
       
       // Format dates
       const firstLogin = user.first_login ? new Date(user.first_login).toLocaleString() : 'Unknown';
@@ -245,7 +236,7 @@
       
       profileElement.innerHTML = `
   <div class="profile-header">
-    <img class="profile-avatar" src="${avatarUrl}" alt="User Avatar" id="avatar">
+    <img class="profile-avatar" src="${avatarUrl}" alt="User Avatar" id="avatar" crossorigin="anonymous">
     <h2 class="profile-name">${displayName}</h2>
   </div>
   
