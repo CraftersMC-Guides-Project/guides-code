@@ -17,6 +17,8 @@
       justify-content: center;
       flex-direction: column;
       min-height: 100vh;
+      margin: 0;
+      padding-top: 60px;
     }
 
     .profile-container {
@@ -60,13 +62,14 @@
     .profile-name {
       font-size: 1.5rem;
       font-weight: bold;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
       color: var(--main-text-color);
     }
 
     .profile-discriminator {
       color: var(--secondary-text-color);
       font-size: 1rem;
+      margin-bottom: 0.5rem;
     }
 
     .profile-details {
@@ -92,27 +95,7 @@
     .detail-value {
       font-size: 1.1rem;
       word-break: break-all;
-    }
-
-    .profile-badges {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .badge {
-      background: var(--primary-color);
-      padding: 0.3rem 0.6rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    .badge-icon {
-      font-size: 1rem;
+      margin-bottom: 0.5rem;
     }
 
     .profile-actions {
@@ -163,6 +146,10 @@
       .profile-details {
         grid-template-columns: 1fr;
       }
+      
+      .profile-actions {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -182,7 +169,15 @@
   <div id="footer"></div>
 
   <script>
-    // Load profile data
+    function getDiscordAvatarUrl(userId, avatarHash, discriminator) {
+      if (avatarHash) {
+        return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png?size=256`;
+      }
+      // Default avatar based on discriminator (or random if discriminator is 0)
+      const defaultAvatarIndex = discriminator ? discriminator % 5 : Math.floor(Math.random() * 5);
+      return `https://cdn.discordapp.com/embed/avatars/${defaultAvatarIndex}.png`;
+    }
+
     function loadProfile() {
       const storedUser = localStorage.getItem("discordUser");
       const profileElement = document.getElementById("profile");
@@ -200,62 +195,77 @@
         return;
       }
 
-      const user = JSON.parse(storedUser);
-      
-      // Format display name
-      const displayName = user.global_name || user.username;
-      
-      // Format dates
-      const firstLogin = user.first_login ? new Date(user.first_login).toLocaleString() : 'Unknown';
-      const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Unknown';
-      
-      profileElement.innerHTML = `
-        <div class="profile-header">
-          <h2 class="profile-name">${displayName}</h2>
-        </div>
+      try {
+        const user = JSON.parse(storedUser);
+        const displayName = user.global_name || user.username;
+        const discriminator = user.discriminator || '0';
+        const avatarUrl = getDiscordAvatarUrl(user.id, user.avatar, discriminator);
         
-        <div class="profile-details">
-          <div class="detail-card">
-            <div class="detail-title">Account Information</div>
-            <div class="detail-value">ID: ${user.id}</div>
-            ${user.email ? `<div class="detail-value">Email: ${user.email}</div>` : ''}
+        const firstLogin = user.first_login ? new Date(user.first_login).toLocaleString() : 'Unknown';
+        const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Unknown';
+        
+        profileElement.innerHTML = `
+          <div class="profile-header">
+            <img src="${avatarUrl}" alt="Profile Picture" class="profile-avatar" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+            <h2 class="profile-name">${displayName}</h2>
+            ${discriminator !== '0' ? `<span class="profile-discriminator">#${discriminator}</span>` : ''}
           </div>
           
-          <div class="detail-card">
-            <div class="detail-title">Activity</div>
-            <div class="detail-value">First Login: ${firstLogin}</div>
-            <div class="detail-value">Last Login: ${lastLogin}</div>
-            <div class="detail-value">Login Count: ${user.login_count || 1}</div>
+          <div class="profile-details">
+            <div class="detail-card">
+              <div class="detail-title">Account Information</div>
+              <div class="detail-value">ID: ${user.id}</div>
+              ${user.email ? `<div class="detail-value">Email: ${user.email}</div>` : ''}
+            </div>
+            
+            <div class="detail-card">
+              <div class="detail-title">Activity</div>
+              <div class="detail-value">First Login: ${firstLogin}</div>
+              <div class="detail-value">Last Login: ${lastLogin}</div>
+              <div class="detail-value">Login Count: ${user.login_count || 1}</div>
+            </div>
           </div>
-        </div>
-        
-        <div class="profile-actions">
-          <button class="btn" onclick="window.location.href='/'">
-            <span class="material-icons">home</span>
-            Return Home
-          </button>
-          <button class="btn btn-logout" onclick="logout()">
-            <span class="material-icons">logout</span>
-            Logout
-          </button>
-        </div>
-      `;
+          
+          <div class="profile-actions">
+            <button class="btn" onclick="window.location.href='/'">
+              <span class="material-icons">home</span>
+              Return Home
+            </button>
+            <button class="btn btn-logout" onclick="logout()">
+              <span class="material-icons">logout</span>
+              Logout
+            </button>
+          </div>
+        `;
+      } catch (error) {
+        console.error("Error loading profile:", error);
+        profileElement.innerHTML = `
+          <div class="login-prompt">
+            <h3>Error loading profile data</h3>
+            <button class="btn" onclick="logout()">
+              <span class="material-icons">logout</span>
+              Please login again
+            </button>
+          </div>
+        `;
+      }
     }
 
-    // Logout function
     function logout() {
       localStorage.removeItem("discordUser");
       window.location.href = '/';
     }
 
-    // Initialize when DOM is loaded
     document.addEventListener('DOMContentLoaded', function() {
       loadProfile();
+      
+      // Load navbar/sidebar scripts after DOM is ready
+      const script = document.createElement('script');
+      script.src = 'js/script.js';
+      document.body.appendChild(script);
     });
 
-    // Make logout function available globally
     window.logout = logout;
   </script>
-  <script src="js/script.js"></script>
 </body>
-</html>
+  </html>
