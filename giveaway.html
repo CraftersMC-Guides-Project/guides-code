@@ -2,45 +2,312 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>Giveaways - CraftersMC</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Giveaway System</title>
-  <link rel="stylesheet" href="css/giveaway.css">
-  <script src="js/giveaway.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="css/essential.css">
+  <link rel="stylesheet" href="css/home.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--body-bg);
+      color: var(--main-text-color);
+    }
+
+    .giveaway-container {
+      max-width: 1200px;
+      margin: 6rem auto 2rem;
+      padding: 0 1rem;
+    }
+
+    .giveaway-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .giveaway-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .giveaway-card {
+      background: var(--card-bg-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+      border: 1px solid var(--border-color);
+    }
+
+    .giveaway-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .giveaway-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: var(--primary-text-color);
+    }
+
+    .giveaway-reward {
+      color: var(--accent-color);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .giveaway-dates {
+      font-size: 0.9rem;
+      color: var(--secondary-text-color);
+      margin-bottom: 1rem;
+    }
+
+    .giveaway-status {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .status-active {
+      background: rgba(40, 167, 69, 0.2);
+      color: #28a745;
+    }
+
+    .status-ended {
+      background: rgba(220, 53, 69, 0.2);
+      color: #dc3545;
+    }
+
+    .giveaway-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    .btn-participate {
+      background: var(--primary-color);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: background 0.3s;
+    }
+
+    .btn-participate:hover {
+      background: var(--primary-color-hover);
+    }
+
+    .btn-participate:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+
+    .participants-count {
+      font-size: 0.9rem;
+      color: var(--secondary-text-color);
+    }
+
+    .login-prompt {
+      text-align: center;
+      padding: 2rem;
+      max-width: 500px;
+      margin: 0 auto;
+      background: var(--card-bg-color);
+      border-radius: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .giveaway-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Giveaway Host Section -->
-    <div class="host-section">
-      <h2>Giveaway Host Settings</h2>
-      <label for="host-name">Host Name:</label>
-      <input type="text" id="host-name" placeholder="Enter Host Name">
-      <label for="prize-name">Prize Name:</label>
-      <input type="text" id="prize-name" placeholder="Enter Prize Name">
-      <label for="num-winners">Number of Winners:</label>
-      <input type="number" id="num-winners" min="1" placeholder="Number of Winners">
-      <label for="duration">Duration:</label>
-      <input type="datetime-local" id="duration">
-      <button id="start-giveaway" onclick="startGiveaway()">Start Giveaway</button>
+  <div id="loader"><div></div><div></div><div></div></div>
+  <div class="navbar"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
+  
+  <div class="giveaway-container">
+    <div class="giveaway-header">
+      <h1>Current Giveaways</h1>
+      <p>Participate in our exciting giveaways for a chance to win amazing rewards!</p>
     </div>
-
-    <!-- Giveaway Entry Section -->
-    <div class="entry-section">
-      <h2>Enter Giveaway</h2>
-      <label for="entry-name">entry name</label>
-      <input type="text" id="entry-name" placeholder="Enter your name">
-      <button id="enter-giveaway" onclick="enterGiveaway()">Enter Giveaway</button>
-      <div id="entries-list"></div>
-    </div>
-
-    <!-- Winner Notification Section -->
-    <div class="winner-section" style="display: none;">
-      <h2>Winner Notification</h2>
-      <p id="winner-name"></p>
-      <button id="cancel-expiry" onclick="cancelExpiry()">Cancel Expiry</button>
-      <a id="contact-link" href="https://discord.gg/">Contact Page</a>
+    
+    <div id="giveaways-content">
+      <!-- Content will be loaded dynamically -->
     </div>
   </div>
+  
+  <div id="footer"></div>
 
-  <script src="script.js"></script>
+  <script>
+    // Load navbar, sidebar, footer
+    document.addEventListener('DOMContentLoaded', function() {
+      loadNavbar();
+      loadSidebar();
+      loadFooter();
+      checkLoginAndLoadGiveaways();
+    });
+
+    function checkLoginAndLoadGiveaways() {
+      const storedUser = localStorage.getItem("discordUser");
+      const contentElement = document.getElementById("giveaways-content");
+      
+      if (!storedUser) {
+        contentElement.innerHTML = `
+          <div class="login-prompt">
+            <h3>Login to view and participate in giveaways</h3>
+            <button class="btn" onclick="window.location.href='/login'">
+              <span class="material-icons">login</span>
+              Login with Discord
+            </button>
+          </div>
+        `;
+        return;
+      }
+      
+      loadGiveaways();
+    }
+
+    async function loadGiveaways() {
+      try {
+        const response = await fetch('gw/active_giveaways.txt');
+        const data = await response.text();
+        const giveaways = parseGiveawaysData(data);
+        displayGiveaways(giveaways);
+      } catch (error) {
+        console.error('Error loading giveaways:', error);
+        document.getElementById("giveaways-content").innerHTML = `
+          <div class="alert alert-danger">
+            Failed to load giveaways. Please try again later.
+          </div>
+        `;
+      }
+    }
+
+    function parseGiveawaysData(data) {
+      return data.split('\n')
+        .filter(line => line.trim() !== '')
+        .map(line => {
+          const [id, title, description, startDate, endDate, maxParticipants, reward, status] = line.split('|');
+          return {
+            id,
+            title,
+            description,
+            startDate,
+            endDate,
+            maxParticipants: parseInt(maxParticipants),
+            reward,
+            status
+          };
+        });
+    }
+
+    async function displayGiveaways(giveaways) {
+      const contentElement = document.getElementById("giveaways-content");
+      
+      if (giveaways.length === 0) {
+        contentElement.innerHTML = `
+          <div class="alert alert-info">
+            No active giveaways at the moment. Check back later!
+          </div>
+        `;
+        return;
+      }
+      
+      // Get participation counts for each giveaway
+      const participationCounts = await getParticipationCounts();
+      
+      const user = JSON.parse(localStorage.getItem("discordUser"));
+      const userParticipations = await getUserParticipations(user.id);
+      
+      const html = `
+        <div class="giveaway-grid">
+          ${giveaways.map(giveaway => {
+            const isParticipated = userParticipations.includes(giveaway.id);
+            const count = participationCounts[giveaway.id] || 0;
+            const isEnded = new Date(giveaway.endDate) < new Date();
+            
+            return `
+              <div class="giveaway-card">
+                <div class="giveaway-title">${giveaway.title}</div>
+                <div class="giveaway-reward">Reward: ${giveaway.reward}</div>
+                <div class="giveaway-dates">
+                  ${formatDate(giveaway.startDate)} - ${formatDate(giveaway.endDate)}
+                </div>
+                <div class="giveaway-description">${giveaway.description}</div>
+                <div class="giveaway-footer">
+                  <div>
+                    <span class="giveaway-status ${isEnded ? 'status-ended' : 'status-active'}">
+                      ${isEnded ? 'Ended' : 'Active'}
+                    </span>
+                    <span class="participants-count">${count}/${giveaway.maxParticipants}</span>
+                  </div>
+                  <button 
+                    class="btn-participate" 
+                    onclick="window.location.href='giveaway-details.html?id=${giveaway.id}'"
+                    ${isEnded || isParticipated ? 'disabled' : ''}
+                  >
+                    ${isParticipated ? 'Participated' : isEnded ? 'Ended' : 'Participate'}
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+      
+      contentElement.innerHTML = html;
+    }
+
+    async function getParticipationCounts() {
+      try {
+        const response = await fetch('gw/participants.txt');
+        const data = await response.text();
+        const lines = data.split('\n').filter(line => line.trim() !== '');
+        
+        return lines.reduce((counts, line) => {
+          const [giveawayId] = line.split('|');
+          counts[giveawayId] = (counts[giveawayId] || 0) + 1;
+          return counts;
+        }, {});
+      } catch (error) {
+        console.error('Error loading participation counts:', error);
+        return {};
+      }
+    }
+
+    async function getUserParticipations(discordId) {
+      try {
+        const response = await fetch('gw/participants.txt');
+        const data = await response.text();
+        return data.split('\n')
+          .filter(line => line.trim() !== '')
+          .map(line => {
+            const [giveawayId, userId] = line.split('|');
+            return { giveawayId, userId };
+          })
+          .filter(participation => participation.userId === discordId)
+          .map(participation => participation.giveawayId);
+      } catch (error) {
+        console.error('Error loading user participations:', error);
+        return [];
+      }
+    }
+
+    function formatDate(dateString) {
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    }
+  </script>
 </body>
-</html>
+  </html>
