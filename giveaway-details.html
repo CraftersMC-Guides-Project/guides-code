@@ -67,6 +67,9 @@
   <div id="giveaway-content">Loading giveaway details...</div>
 
   <script>
+    // Discord Webhook URL
+    const WEBHOOK_URL = "https://discord.com/api/webhooks/1371500562234867824/dzJi5f2g1iS_0nfJIT7ZfmAEEMaawip43MjBpwooin5FKfarEjj-Wa17QHPbh3B-z-5H";
+
     async function loadGiveawayDetails() {
       const user = JSON.parse(localStorage.getItem("discordUser"));
       if (!user) {
@@ -176,19 +179,47 @@
               return;
             }
 
-            // In a real implementation, this would be sent to a server
-            const newParticipation = `${giveaway.id}|${user.id}|${minecraftUsername}|${new Date().toISOString().split('T')[0]}\n`;
-            
-            // Simulate webhook notification
-            console.log('New participation:', newParticipation);
-            console.log('Would send to Discord webhook:', {
-              giveaway: giveaway.title,
-              discordUser: user.username,
-              minecraftUsername
-            });
+            try {
+              // Send to Discord webhook
+              const webhookData = {
+                embeds: [{
+                  title: "🎉 New Giveaway Entry",
+                  description: `**${user.username}** entered a giveaway!`,
+                  color: 0x5865F2,
+                  fields: [
+                    { name: "Giveaway", value: giveaway.title, inline: true },
+                    { name: "MC Username", value: minecraftUsername, inline: true },
+                    { name: "User ID", value: user.id, inline: true },
+                    { name: "Giveaway ID", value: giveaway.id, inline: true }
+                  ],
+                  timestamp: new Date().toISOString(),
+                  thumbnail: {
+                    url: user.avatar 
+                      ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+                      : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`
+                  }
+                }]
+              };
 
-            alert('Successfully participated in the giveaway!');
-            window.location.reload();
+              const response = await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(webhookData)
+              });
+
+              if (!response.ok) throw new Error('Webhook failed');
+              
+              // Add to participants (in a real app, this would be a server call)
+              const newParticipation = `${giveaway.id}|${user.id}|${minecraftUsername}|${new Date().toISOString().split('T')[0]}\n`;
+              console.log('New participation:', newParticipation);
+              
+              alert('Successfully participated in the giveaway! Good luck!');
+              window.location.reload();
+              
+            } catch (error) {
+              console.error('Webhook error:', error);
+              alert('Participation recorded but failed to notify Discord');
+            }
           });
         }
       } catch (error) {
