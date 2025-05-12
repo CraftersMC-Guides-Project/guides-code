@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Giveaway Details - CraftersMC</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="css/essential.css">
+  <link rel="stylesheet" href="css/home.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--body-bg);
+      color: var(--main-text-color);
+    }
+
+    .giveaway-details-container {
+      max-width: 800px;
+      margin: 6rem auto 2rem;
+      padding: 0 1rem;
+    }
+
+    .giveaway-details-card {
+      background: var(--card-bg-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border-color);
+    }
+
+    .giveaway-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      color: var(--primary-text-color);
+    }
+
+    .giveaway-reward {
+      font-size: 1.2rem;
+      color: var(--accent-color);
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+    }
+
+    .giveaway-meta {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--secondary-text-color);
+    }
+
+    .giveaway-description {
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      white-space: pre-line;
+    }
+
+    .participate-section {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--input-bg-color);
+      color: var(--main-text-color);
+    }
+
+    .btn-submit {
+      background: var(--primary-color);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: background 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-color-hover);
+    }
+
+    .btn-submit:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+
+    .participants-section {
+      margin-top: 2rem;
+    }
+
+    .participants-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      color: var(--primary-text-color);
+      margin-bottom: 1rem;
+    }
+
+    .participants-list {
+      display: none;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 1rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .participants-list.show {
+      display: block;
+    }
+
+    .participant-item {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+
+    .alert-success {
+      background: rgba(40, 167, 69, 0.2);
+      color: #28a745;
+      border: 1px solid rgba(40, 167, 69, 0.3);
+    }
+
+    .alert-danger {
+      background: rgba(220, 53, 69, 0.2);
+      color: #dc3545;
+      border: 1px solid rgba(220, 53, 69, 0.3);
+    }
+
+    .alert-info {
+      background: rgba(23, 162, 184, 0.2);
+      color: #17a2b8;
+      border: 1px solid rgba(23, 162, 184, 0.3);
+    }
+
+    .login-prompt {
+      text-align: center;
+      padding: 2rem;
+      max-width: 500px;
+      margin: 0 auto;
+      background: var(--card-bg-color);
+      border-radius: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .giveaway-meta {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loader"><div></div><div></div><div></div></div>
+  <div class="navbar"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
+  
+  <div class="giveaway-details-container">
+    <div id="giveaway-details-content">
+      <!-- Content will be loaded dynamically -->
+    </div>
+  </div>
+  
+  <div id="footer"></div>
+
+  <script>
+    // Load navbar, sidebar, footer
+    document.addEventListener('DOMContentLoaded', function() {
+      loadNavbar();
+      loadSidebar();
+      loadFooter();
+      checkLoginAndLoadGiveawayDetails();
+    });
+
+    function checkLoginAndLoadGiveawayDetails() {
+      const storedUser = localStorage.getItem("discordUser");
+      const contentElement = document.getElementById("giveaway-details-content");
+      
+      if (!storedUser) {
+        contentElement.innerHTML = `
+          <div class="login-prompt">
+            <h3>Login to view giveaway details</h3>
+            <button class="btn" onclick="window.location.href='/login'">
+              <span class="material-icons">login</span>
+              Login with Discord
+            </button>
+          </div>
+        `;
+        return;
+      }
+      
+      loadGiveawayDetails();
+    }
+
+    async function loadGiveawayDetails() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const giveawayId = urlParams.get('id');
+      
+      if (!giveawayId) {
+        window.location.href = 'giveaway.html';
+        return;
+      }
+      
+      try {
+        const response = await fetch('gw/active_giveaways.txt');
+        const data = await response.text();
+        const giveaways = parseGiveawaysData(data);
+        const giveaway = giveaways.find(g => g.id === giveawayId);
+        
+        if (!giveaway) {
+          window.location.href = 'giveaway.html';
+          return;
+        }
+        
+        displayGiveawayDetails(giveaway);
+      } catch (error) {
+        console.error('Error loading giveaway details:', error);
+        document.getElementById("giveaway-details-content").innerHTML = `
+          <div class="alert alert-danger">
+            Failed to load giveaway details. Please try again later.
+          </div>
+        `;
+      }
+    }
+
+    function parseGiveawaysData(data) {
+      return data.split('\n')
+        .filter(line => line.trim() !== '')
+        .map(line => {
+          const [id, title, description, startDate, endDate, maxParticipants, reward, status] = line.split('|');
+          return {
+            id,
+            title,
+            description,
+            startDate,
+            endDate,
+            maxParticipants: parseInt(maxParticipants),
+            reward,
+            status
+          };
+        });
+    }
+
+    async function displayGiveawayDetails(giveaway) {
+      const user = JSON.parse(localStorage.getItem("discordUser"));
+      const isParticipated = await checkParticipation(user.id, giveaway.id);
+      const isEnded = new Date(giveaway.endDate) < new Date();
+      const participants = await getParticipants(giveaway.id);
+      
+      const contentElement = document.getElementById("giveaway-details-content");
+      
+      contentElement.innerHTML = `
+        <div class="giveaway-details-card">
+          <h1 class="giveaway-title">${giveaway.title}</h1>
+          <div class="giveaway-reward">Reward: ${giveaway.reward}</div>
+          
+          <div class="giveaway-meta">
+            <div class="meta-item">
+              <span class="material-icons">event</span>
+              <span>Started: ${formatDate(giveaway.startDate)}</span>
+            </div>
+            <div class="meta-item">
+              <span class="material-icons">event_available</span>
+              <span>Ends: ${formatDate(giveaway.endDate)}</span>
+            </div>
+            <div class="meta-item">
+              <span class="material-icons">people</span>
+              <span>Max Participants: ${giveaway.maxParticipants}</span>
+            </div>
+          </div>
+          
+          <div class="giveaway-description">${giveaway.description}</div>
+          
+          ${isParticipated || isEnded ? '' : `
+            <div class="participate-section">
+              <h3>Participate in this giveaway</h3>
+              <form id="participate-form">
+                <div class="form-group">
+                  <label for="minecraft-username" class="form-label">Minecraft Username</label>
+                  <input 
+                    type="text" 
+                    id="minecraft-username" 
+                    class="form-input" 
+                    placeholder="Enter your Minecraft username"
+                    required
+                  >
+                </div>
+                <button type="submit" class="btn-submit">
+                  <span class="material-icons">how_to_reg</span>
+                  Participate
+                </button>
+              </form>
+            </div>
+          `}
+          
+          ${isParticipated ? `
+            <div class="alert alert-success">
+              You have already participated in this giveaway with username: ${await getParticipantMinecraftName(user.id, giveaway.id)}
+            </div>
+          ` : ''}
+          
+          ${isEnded ? `
+            <div class="alert alert-info">
+              This giveaway has ended. Winners will be announced soon.
+            </div>
+          ` : ''}
+          
+          <div class="participants-section">
+            <div class="participants-toggle" onclick="toggleParticipantsList()">
+              <span class="material-icons" id="participants-toggle-icon">expand_more</span>
+              <span>View Participants (${participants.length})</span>
+            </div>
+            <div class="participants-list" id="participants-list">
+              ${participants.length > 0 ? 
+                participants.map(p => `
+                  <div class="participant-item">${p.minecraftUsername}</div>
+                `).join('') :
+                '<div class="participant-item">No participants yet</div>'
+              }
+            </div>
+          </div>
+        </div>
+      `;
+      
+      if (!isParticipated && !isEnded) {
+        document.getElementById("participate-form").addEventListener('submit', async function(e) {
+          e.preventDefault();
+          await participateInGiveaway(giveaway.id, user.id);
+        });
+      }
+    }
+
+    async function checkParticipation(discordId, giveawayId) {
+      try {
+        const response = await fetch('gw/participants.txt');
+        const data = await response.text();
+        return data.split('\n')
+          .filter(line => line.trim() !== '')
+          .some(line => {
+            const [gId, dId] = line.split('|');
+            return gId === giveawayId && dId === discordId;
+          });
+      } catch (error) {
+        console.error('Error checking participation:', error);
+        return false;
+      }
+    }
+
+    async function getParticipantMinecraftName(discordId, giveawayId) {
+      try {
+        const response = await fetch('gw/participants.txt');
+        const data = await response.text();
+        const participation = data.split('\n')
+          .filter(line => line.trim() !== '')
+          .map(line => {
+            const [gId, dId, minecraftName] = line.split('|');
+            return { gId, dId, minecraftName };
+          })
+          .find(p => p.gId === giveawayId && p.dId === discordId);
+        
+        return participation ? participation.minecraftName : 'Unknown';
+      } catch (error) {
+        console.error('Error getting Minecraft name:', error);
+        return 'Unknown';
+      }
+    }
+
+    async function getParticipants(giveawayId) {
+      try {
+        const response = await fetch('gw/participants.txt');
+        const data = await response.text();
+        return data.split('\n')
+          .filter(line => line.trim() !== '')
+          .map(line => {
+            const [gId, dId, minecraftName] = line.split('|');
+            return { gId, dId, minecraftName };
+          })
+          .filter(p => p.gId === giveawayId)
+          .map(p => ({ minecraftUsername: p.minecraftName }));
+      } catch (error) {
+        console.error('Error getting participants:', error);
+        return [];
+      }
+    }
+
+    async function participateInGiveaway(giveawayId, discordId) {
+      const minecraftUsername = document.getElementById("minecraft-username").value.trim();
+      
+      if (!minecraftUsername) {
+        alert('Please enter your Minecraft username');
+        return;
+      }
+      
+      try {
+        // Check if user already participated
+        const alreadyParticipated = await checkParticipation(discordId, giveawayId);
+        if (alreadyParticipated) {
+          alert('You have already participated in this giveaway');
+          return;
+        }
+        
+        // Add participation to participants.txt
+        const participationEntry = `${giveawayId}|${discordId}|${minecraftUsername}|${new Date().toISOString().split('T')[0]}\n`;
+        
+        // In a real implementation, you would send this to a server endpoint
+        // For this example, we'll simulate it
+        console.log('Adding participation:', participationEntry);
+        
+        // Send to webhook (simulated)
+        const webhookUrl = 'YOUR_DISCORD_WEBHOOK_URL';
+        const user = JSON.parse(localStorage.getItem("discordUser"));
+        
+        const webhookData = {
+          content: `New giveaway participation!\n**Giveaway:** ${giveawayId}\n**Discord User:** ${user.username}#${user.discriminator}\n**Minecraft Username:** ${minecraftUsername}`
+        };
+        
+        // In a real implementation:
+        // await fetch(webhookUrl, {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify(webhookData)
+        // });
+        
+        console.log('Webhook data:', webhookData);
+        
+        // Show success message
+        alert('Successfully participated in the giveaway!');
+        window.location.reload();
+      } catch (error) {
+        console.error('Error participating in giveaway:', error);
+        alert('Failed to participate. Please try again.');
+      }
+    }
+
+    function toggleParticipantsList() {
+      const list = document.getElementById("participants-list");
+      const icon = document.getElementById("participants-toggle-icon");
+      
+      list.classList.toggle('show');
+      icon.textContent = list.classList.contains('show') ? 'expand_less' : 'expand_more';
+    }
+
+    function formatDate(dateString) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    }
+  </script>
+</body>
+</html>
