@@ -1588,18 +1588,18 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "Krar23456",
-                    "score": "60M+"
-                },
-                {
-                    "rank": 4,
                     "name": "Dadabhaai",
                     "score": "N/A"
                 },
                 {
-                    "rank": 5,
+                    "rank": 4,
                     "name": "Pranjal2389",
-                    "score": "41M+"
+                    "score": "N/A"
+                },
+                {
+                    "rank": 5,
+                    "name": "Krar23456",
+                    "score": "63M+"
                 },
                 {
                     "rank": 6,
