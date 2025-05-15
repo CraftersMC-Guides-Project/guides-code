@@ -34,29 +34,33 @@
       background: var(--card-bg-color);
       backdrop-filter: blur(15px);
       -webkit-backdrop-filter: blur(15px);
-      border-radius: 20px;
       padding: 2.5rem;
       width: 100%;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-      border: 1px solid var(--border-color);
       position: relative;
       margin-bottom: 2rem;
+      border-radius: 20px 20px 20px 20px;
     }
 
     .profile-header {
       display: flex;
       flex-direction: column;
-      align-items: center;
       margin-bottom: 1.5rem;
+      top:20;
     }
 
     .profile-avatar {
-      width: 128px;
-      height: 128px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
-      border: 4px solid var(--border-color);
+      border: 4px solid #1e1e1e;
       object-fit: cover;
       margin-bottom: 1rem;
+      left:0;
+      right: 0;
+      position:relative;
+      z-index:100;
+      top:15px;
     }
 
     .profile-name {
@@ -92,9 +96,13 @@
     }
 
     .detail-value {
-      font-size: 1.1rem;
-      word-break: break-all;
-    }
+  font-size: 10px;
+  word-break: break-all;
+  margin-bottom: 10px;
+  justify-content: space-around;
+  display: flex;
+  justify-content: space-between;
+}
 
     .profile-badges {
       display: flex;
@@ -135,7 +143,8 @@
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0px;
+      height:50px;
     }
 
     .btn:hover {
@@ -186,6 +195,25 @@
       height: 50%;
       background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
     }
+    #test {
+      width: 100%;
+      height: 100px;
+      color: red;
+      margin:0;
+      padding: 0;
+      position: absolute;
+      top: 0;
+      left:0;
+      right:0;
+      border-radius: 20px 0px 20px 0px;
+    }
+    #test img {
+      width:100%;
+      height:100%;
+      border-radius: 20px 20px 20px 20px;
+      object-fit: fit;
+      overflow:hidden;
+    }
   </style>
 </head>
 <body>
@@ -199,7 +227,6 @@
     <div class="profile" id="profile">
     </div>
   </div>
-
   <div id="footer"></div>
   <script>
     function loadProfile() {
@@ -229,24 +256,27 @@
       const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Unknown';
       
       profileElement.innerHTML = `
-  <div class="profile-header">
+      
+      <div class="header">
     <img class="profile-avatar" src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="User Avatar" id="avatar" crossorigin="anonymous">
     <h2 class="profile-name">${displayName}</h2>
   </div>
-  
+  <div id="test">
+  <img src="img/galaxy.jpeg" alt="profil-banner">
+  </div>
   <div class="profile-details">
     <div class="detail-card">
       <div class="detail-title">Account Information</div>
-      <div class="detail-value">Username: ${user.username}</div>
-      <div class="detail-value">ID: ${user.id}</div>
-      ${user.email ? `<div class="detail-value">Email: ${user.email}</div>` : ''}
+      <div class="detail-value"><span class="detail-value-head">Username:</span> <span class="detail-value-data">${user.username}</span></div>
+      <div class="detail-value"><span class="detail-value-head">ID:</span> <span class="detail-value-data">${user.id}</span></div>
+      ${user.email ? `<div class="detail-value"><span class="detail-value-head">Email:</span> <span class="detail-value-data">${user.email}</span></div>` : ''}
     </div>
     
     <div class="detail-card">
       <div class="detail-title">Activity</div>
-      <div class="detail-value">First Login: ${firstLogin}</div>
-      <div class="detail-value">Last Login: ${lastLogin}</div>
-      <div class="detail-value">Login Count: ${user.login_count || 1}</div>
+      <div class="detail-value"><span class="detail-value-head">First Login:</span> <span class="detail-value-data">${firstLogin}</span></div>
+      <div class="detail-value"><span class="detail-value-head">Last Login:</span> <span class="detail-value-data">${lastLogin}</span></div>
+      <div class="detail-value"><span class="detail-value-head">Login Count:</span> <span class="detail-value-data">${user.login_count || 1}</span></div>
     </div>
   </div>
   

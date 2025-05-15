@@ -1,46 +1,191 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
+  <title>Giveaways</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Giveaway System</title>
-  <link rel="stylesheet" href="css/giveaway.css">
-  <script src="js/giveaway.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/essential.css">
+    <script src="js/script.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0 auto;
+      padding: 0;
+      min-width:40px;
+      justify-content: center;
+      align-items: center;
+      display:flex;
+      flex-direction: column;
+      background: var(--body-bg);
+      color: var(--main-text-color);
+    }
+    .giveaway-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 0px;
+      left:0;
+      right:0;
+    }
+    .giveaway-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      width:100%;
+      background: rgba(255, 255, 255, 0.05);
+      max-width: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+    }
+    .gw-container {
+  margin-top: 1rem;
+      margin:10px;
+      width: 100%;
+  display: flex;
+  flex-direction: column;
+      
+}
+    .giveaway-title {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 5px;
+    }
+    .giveaway-reward {
+      color: #2b7bba;
+      margin-bottom: 10px;
+    }
+    .btn-participate {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .btn-participate:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+    }
+    .status-active { color: #4CAF50; }
+    .status-ended { color: #f44336; }
+    .giveaways-container {
+      display:flex;
+      width:90%;
+      padding: 10px 10px 10px 10px;;
+      border-radius:10px;
+      border: 3px solid var(--gw-border);
+      align-items: center;
+      justify-content: center;
+      margin-top: 5rem;
+      background:var(--card-bg-color);
+    }
+    .current-gw {
+      font-size:30px;
+      display:grid;
+      place-item: center;
+      margin: 30px auto;
+      font-weight: bold;
+      text-decoration: underline;
+      color: var(--primary-text-color);
+    }
+    @media (max-width: 768px) {
+      .giveaway-grid {
+        flex-direction: row;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Giveaway Host Section -->
-    <div class="host-section">
-      <h2>Giveaway Host Settings</h2>
-      <label for="host-name">Host Name:</label>
-      <input type="text" id="host-name" placeholder="Enter Host Name">
-      <label for="prize-name">Prize Name:</label>
-      <input type="text" id="prize-name" placeholder="Enter Prize Name">
-      <label for="num-winners">Number of Winners:</label>
-      <input type="number" id="num-winners" min="1" placeholder="Number of Winners">
-      <label for="duration">Duration:</label>
-      <input type="datetime-local" id="duration">
-      <button id="start-giveaway" onclick="startGiveaway()">Start Giveaway</button>
+  <div id="loader">
+        <div></div>
+        <div></div>
+        <div></div>
     </div>
+    <div class="navbar"></div>
 
-    <!-- Giveaway Entry Section -->
-    <div class="entry-section">
-      <h2>Enter Giveaway</h2>
-      <label for="entry-name">entry name</label>
-      <input type="text" id="entry-name" placeholder="Enter your name">
-      <button id="enter-giveaway" onclick="enterGiveaway()">Enter Giveaway</button>
-      <div id="entries-list"></div>
-    </div>
+    <div class="sidebar" id="sidebar"></div>
 
-    <!-- Winner Notification Section -->
-    <div class="winner-section" style="display: none;">
-      <h2>Winner Notification</h2>
-      <p id="winner-name"></p>
-      <button id="cancel-expiry" onclick="cancelExpiry()">Cancel Expiry</button>
-      <a id="contact-link" href="https://discord.gg/">Contact Page</a>
-    </div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <button id="scrollToTopBtn"><span class="material-icons">north</span></button>
+  <div class="giveaways-container">
+  <div class="gw-container">
+  <div class="current-gw">Current Giveaways</div>
+  <div id="giveaways-content">Loading giveaways...</div>
   </div>
+  </div>
+  <div id="footer"></div>
+  <script>
+    async function loadGiveaways() {
+      const user = JSON.parse(localStorage.getItem("discordUser"));
+      if (!user) {
+        document.getElementById("giveaways-content").innerHTML = `
+          <p>Please login to view giveaways</p>
+          <button onclick="window.location.href='/login'">Login with Discord</button>
+        `;
+        return;
+      }
 
-  <script src="script.js"></script>
+      try {
+        // Load active giveaways
+        const response = await fetch('gw/active_giveaways.txt');
+        const data = await response.text();
+        const giveaways = data.split('\n')
+          .filter(line => line.trim() !== '')
+          .map(line => {
+            const [id, title, description, startDate, endDate, maxParticipants, reward, status] = line.split('|');
+            return { id, title, description, startDate, endDate, maxParticipants, reward, status };
+          });
+
+        // Load participation data
+        const partResponse = await fetch('gw/participants.txt');
+        const partData = await partResponse.text();
+        const participations = partData.split('\n')
+          .filter(line => line.trim() !== '')
+          .map(line => {
+            const [giveawayId, discordId] = line.split('|');
+            return { giveawayId, discordId };
+          });
+
+        // Display giveaways
+        let html = '<div class="giveaway-grid">';
+        giveaways.forEach(giveaway => {
+          const isEnded = new Date(giveaway.endDate) < new Date();
+          const isParticipated = participations.some(p => 
+            p.giveawayId === giveaway.id && p.discordId === user.id
+          );
+          
+          html += `
+            <div class="giveaway-card">
+              <div class="giveaway-title">${giveaway.title}</div>
+              <div class="giveaway-reward">Reward: ${giveaway.reward}</div>
+              <div>Status: <span class="status-${isEnded ? 'ended' : 'active'}">${
+                isEnded ? 'Ended' : 'Active'
+              }</span></div>
+              <div>Ends: ${new Date(giveaway.endDate).toLocaleDateString()}</div>
+              <button 
+                class="btn-participate" 
+                onclick="window.location.href='giveaway-details.html?id=${giveaway.id}'"
+                ${isEnded || isParticipated ? 'disabled' : ''}
+              >
+                ${isParticipated ? 'Participated' : isEnded ? 'Ended' : 'Participate'}
+              </button>
+            </div>
+          `;
+        });
+        html += '</div>';
+        
+        document.getElementById("giveaways-content").innerHTML = html || '<p>No active giveaways</p>';
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById("giveaways-content").innerHTML = '<p>Error loading giveaways</p>';
+      }
+    }
+
+    // Load giveaways when page loads
+    window.onload = loadGiveaways;
+  </script>
 </body>
 </html>
