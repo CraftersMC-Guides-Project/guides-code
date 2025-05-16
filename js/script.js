@@ -561,12 +561,12 @@ window.onload = function() {
 };
 
 // Initialize theme toggle system
-function initThemeToggle() {
+function initLBThemeToggle() {
   const leaderboardThemeSwitch = document.getElementById("leaderboard-theme-switch");
   
   if (!leaderboardThemeSwitch) {
     console.debug("[Theme] Switch not found, retrying...");
-    setTimeout(initThemeToggle, 100); // Retry after 100ms
+    setTimeout(initLBThemeToggle, 100); // Retry after 100ms
     return;
   }
 
@@ -616,7 +616,7 @@ function fetchAllLPartials() {
     console.debug("[Partials] Loaded successfully!");
     
     // Reinitialize theme toggle (in case the switch was reloaded)
-    initThemeToggle();
+    initLBThemeToggle();
   }).catch(err => {
     console.error("[Partials] Failed to load:", err);
   });
@@ -624,9 +624,9 @@ function fetchAllLPartials() {
 
 // Start everything when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-  initThemeToggle(); // Initialize theme first
+  initLBThemeToggle(); // Initialize theme first
   fetchAllLPartials(); // Then load partials
 });
 
 // Start the theme toggle
-initThemeToggle();
+initLBThemeToggle();
