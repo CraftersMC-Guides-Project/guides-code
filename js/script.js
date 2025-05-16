@@ -566,7 +566,7 @@ function initLBThemeToggle() {
   
   if (!leaderboardThemeSwitch) {
     console.debug("[Theme] Switch not found, retrying...");
-    setTimeout(initLBThemeToggle, 100); // Retry after 100ms
+    setTimeout(initLBThemeToggle, 10000); // Retry after 10000ms
     return;
   }
 
