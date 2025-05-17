@@ -608,13 +608,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "JODHEMANT8975",
-                    "score": "2M+"
+                    "name": "TINKUGAMER1232",
+                    "score": "N/A"
                 },
                 {
                     "rank": 10,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "JODHEMANT8975",
+                    "score": "2M+"
                 }
             ]
         },
@@ -888,13 +888,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "JODHEMANT8975",
-                    "score": "2M+"
+                    "name": "TINKUGAMER1232",
+                    "score": "N/A"
                 },
                 {
                     "rank": 10,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "JODHEMANT8975",
+                    "score": "2M+"
                 }
             ]
         },
