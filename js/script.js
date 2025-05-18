@@ -141,35 +141,36 @@ document.addEventListener("DOMContentLoaded", function() {
     ai: document.getElementById("ai"),
     top: document.getElementById("scrollToTopBtn")
   };
-  
-  // Initialize the active state
+
   let isActive = false;
   
   sweepBtn.addEventListener("click", function() {
-    // Toggle the state
     isActive = !isActive;
     
     if (elementsToStyle.container) {
-      elementsToStyle.container.style.display = isActive ? "block" : "none";
       elementsToStyle.container.style.backgroundColor = isActive ? "var(--primary-text-color)" : "";
+      elementsToStyle.container.style.left = isActive ? "95%" : "85%";
+      elementsToStyle.container.style.transition = "transform 0.3s ease";
     }
     
     if (elementsToStyle.home) {
-      // Removed forEach since home is a single element
       elementsToStyle.home.style.display = isActive ? "block" : "none";
+      elementsToStyle.home.style.transition = "transform 0.3s ease";
     }
     
     if (elementsToStyle.ai) {
       elementsToStyle.ai.style.display = isActive ? "block" : "none";
+      elementsToStyle.ai.style.transition = "transform 0.3s ease";
     }
     
     if (elementsToStyle.top) {
       elementsToStyle.top.style.display = isActive ? "block" : "none";
+      elementsToStyle.top.style.transition = "transform 0.3s ease";
     }
     
     if (elementsToStyle.sweep) {
       elementsToStyle.sweep.style.transform = isActive ? "rotate(180deg)" : "rotate(0deg)";
-      elementsToStyle.sweep.style.transition = "transform 0.3s ease"; // Added for smooth rotation
+      elementsToStyle.sweep.style.transition = "transform 0.3s ease";
     }
   });
 });
