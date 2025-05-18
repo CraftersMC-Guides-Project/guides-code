@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   const elementsToStyle = {
     container: document.getElementById("float"),
-    sweep: sweepBtn
+    sweep: sweepBtn,
     home: document.getElementById("homeBtn"),
     ai: document.getElementById("ai"),
     top: document.getElementById("scrollToTopBtn")
