@@ -1791,7 +1791,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 10,
-                    "name": "Unknown",
+                    "name": "MythicalPanda30",
                     "score": "N/A"
                 }
             ]
