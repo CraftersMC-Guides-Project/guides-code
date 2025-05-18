@@ -128,6 +128,45 @@ document.addEventListener("click", (event) => {
   }
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+  const sweepBtn = document.getElementById("sweepBtn");
+  
+  if (!sweepBtn) return;
+
+  const elementsToStyle = {
+    container: document.getElementById("float"),
+    sweep: sweepBtn
+    home: document.getElementById("homeBtn"),
+    ai: document.getElementById("ai"),
+    top: document.getElementById("scrollToTopBtn")
+  };
+  
+  sweepBtn.addEventListener("click", function() {
+    
+    if (elementsToStyle.container) {
+      elementsToStyle.container.style.display = isActive ? "block" : "none";
+      elementsToStyle.container.style.backgroundColor = isActive ? "var(--primary-text-color)" : "none";
+    }
+    
+    if (elementsToStyle.home) {
+      elementsToStyle.home.forEach(option => {
+        home.style.display = isActive ? "block" : "none";
+      });
+    }
+    
+    if (elementsToStyle.ai) {
+      elementsToStyle.ai.style.display = isActive ? "block" : "none";
+    }
+    
+    if (elementsToStyle.top) {
+      elementsToStyle.top.style.display = isActive ? "block" : "none";
+    }
+    if (elementsToStyle.top) {
+      elementsToStyle.top.style.tranform = isActive ? "rotate(180deg)" : "rotate(0deg)";
+    }
+  });
+});
+
 // navbar
 // document.addEventListener("DOMContentLoaded", function () {
 //   fetch('../navbar.html')
