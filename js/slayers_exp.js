@@ -1,5 +1,4 @@
 const collectionsData = {
-  "Slayer": [
     {
       "name": "Zombie Slayer",
       "image": "https://craftersmc.wiki.gg/images/8/8e/Revenant_Horror.png?b5e98d",
