@@ -141,17 +141,21 @@ document.addEventListener("DOMContentLoaded", function() {
     top: document.getElementById("scrollToTopBtn")
   };
   
+  // Initialize the active state
+  let isActive = false;
+  
   sweepBtn.addEventListener("click", function() {
+    // Toggle the state
+    isActive = !isActive;
     
     if (elementsToStyle.container) {
       elementsToStyle.container.style.display = isActive ? "block" : "none";
-      elementsToStyle.container.style.backgroundColor = isActive ? "var(--primary-text-color)" : "none";
+      elementsToStyle.container.style.backgroundColor = isActive ? "var(--primary-text-color)" : "";
     }
     
     if (elementsToStyle.home) {
-      elementsToStyle.home.forEach(option => {
-        elementsToStyle.home.style.display = isActive ? "block" : "none";
-      });
+      // Removed forEach since home is a single element
+      elementsToStyle.home.style.display = isActive ? "block" : "none";
     }
     
     if (elementsToStyle.ai) {
@@ -161,8 +165,10 @@ document.addEventListener("DOMContentLoaded", function() {
     if (elementsToStyle.top) {
       elementsToStyle.top.style.display = isActive ? "block" : "none";
     }
+    
     if (elementsToStyle.sweep) {
       elementsToStyle.sweep.style.transform = isActive ? "rotate(180deg)" : "rotate(0deg)";
+      elementsToStyle.sweep.style.transition = "transform 0.3s ease"; // Added for smooth rotation
     }
   });
 });
