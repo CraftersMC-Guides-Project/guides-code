@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     if (elementsToStyle.home) {
       elementsToStyle.home.forEach(option => {
-        home.style.display = isActive ? "block" : "none";
+        elementsToStyle.home.style.display = isActive ? "block" : "none";
       });
     }
     
@@ -161,8 +161,8 @@ document.addEventListener("DOMContentLoaded", function() {
     if (elementsToStyle.top) {
       elementsToStyle.top.style.display = isActive ? "block" : "none";
     }
-    if (elementsToStyle.top) {
-      elementsToStyle.top.style.tranform = isActive ? "rotate(180deg)" : "rotate(0deg)";
+    if (elementsToStyle.sweep) {
+      elementsToStyle.sweep.style.transform = isActive ? "rotate(180deg)" : "rotate(0deg)";
     }
   });
 });
