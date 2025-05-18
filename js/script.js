@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
   console.log("%cscript.js running", consoleDebugStyle);
 });
 
+
 function toggleLid() {
   const sidelid = document.getElementById("sidelid");
   const overlay = document.getElementById("sidebar-overlay");
