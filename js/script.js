@@ -148,28 +148,28 @@ document.addEventListener("DOMContentLoaded", function() {
     isActive = !isActive;
     
     if (elementsToStyle.container) {
-      elementsToStyle.container.style.backgroundColor = isActive ? "var(--primary-text-color)" : "";
-      elementsToStyle.container.style.left = isActive ? "95%" : "85%";
+      elementsToStyle.container.style.backgroundColor = isActive ? "" : "var(--primary-text-color)";
+      elementsToStyle.container.style.left = isActive ? "85%" : "95%";
       elementsToStyle.container.style.transition = "transform 0.3s ease";
     }
     
     if (elementsToStyle.home) {
-      elementsToStyle.home.style.display = isActive ? "block" : "none";
+      elementsToStyle.home.style.display = isActive ? "none" : "block";
       elementsToStyle.home.style.transition = "transform 0.3s ease";
     }
     
     if (elementsToStyle.ai) {
-      elementsToStyle.ai.style.display = isActive ? "block" : "none";
+      elementsToStyle.ai.style.display = isActive ? "none" : "block";
       elementsToStyle.ai.style.transition = "transform 0.3s ease";
     }
     
     if (elementsToStyle.top) {
-      elementsToStyle.top.style.display = isActive ? "block" : "none";
+      elementsToStyle.top.style.display = isActive ? "none" : "block";
       elementsToStyle.top.style.transition = "transform 0.3s ease";
     }
     
     if (elementsToStyle.sweep) {
-      elementsToStyle.sweep.style.transform = isActive ? "rotate(180deg)" : "rotate(0deg)";
+      elementsToStyle.sweep.style.transform = isActive ? "rotate(0deg)" : "rotate(1800deg)";
       elementsToStyle.sweep.style.transition = "transform 0.3s ease";
     }
   });
