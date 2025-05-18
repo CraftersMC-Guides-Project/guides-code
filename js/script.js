@@ -66,22 +66,11 @@ function toggleSidebar() {
 document.addEventListener("DOMContentLoaded", function () {
   const scrollToTopBtn = document.getElementById("scrollToTopBtn");
 
-  if (!scrollToTopBtn) {
-    console.error("scrollToTopBtn not found in the DOM");
-    return;
+  if (scrollToTopBtn) {
+    scrollToTopBtn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
   }
-
-  window.onscroll = function () {
-    if (document.documentElement.scrollTop > 300) {
-      scrollToTopBtn.style.display = "block";
-    } else {
-      scrollToTopBtn.style.display = "none";
-    }
-  };
-
-  scrollToTopBtn.addEventListener("click", function () {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
 });
 
 // outside click will close the sidebar
