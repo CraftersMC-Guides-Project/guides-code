@@ -175,6 +175,14 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 
+function homeBtn() {
+  window.location.href = "../index.html";
+}
+
+function aiBtn() {
+  window.location.href = "/ai";
+}
+
 // navbar
 // document.addEventListener("DOMContentLoaded", function () {
 //   fetch('../navbar.html')
