@@ -154,17 +154,17 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
     if (elementsToStyle.home) {
-      elementsToStyle.home.style.display = isActive ? "" : "none";
+      elementsToStyle.home.style.display = isActive ? "none" : "";
       elementsToStyle.home.style.transition = "transform 0.3s ease";
     }
     
     if (elementsToStyle.ai) {
-      elementsToStyle.ai.style.display = isActive ? "" : "none";
+      elementsToStyle.ai.style.display = isActive ? "none" : "";
       elementsToStyle.ai.style.transition = "transform 0.3s ease";
     }
     
     if (elementsToStyle.top) {
-      elementsToStyle.top.style.display = isActive ? "" : "none";
+      elementsToStyle.top.style.display = isActive ? "none" : "";
       elementsToStyle.top.style.transition = "transform 0.3s ease";
     }
     
