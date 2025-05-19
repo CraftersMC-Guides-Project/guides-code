@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     if (elementsToStyle.container) {
       elementsToStyle.container.style.backgroundColor = isActive ? "var(--primary-text-color)" : "";
-      elementsToStyle.container.style.left = isActive ? "85%" : "95%";
+      elementsToStyle.container.style.left = isActive ? "calc(100% - 13rem)" : "calc(100% - 4rem)";
       elementsToStyle.container.style.transition = "transform 0.3s ease";
     }
     
