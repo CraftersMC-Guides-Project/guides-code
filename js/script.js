@@ -109,55 +109,42 @@ function toggleSidebar() {
 
 document.addEventListener("click", (event) => {
   const sidebar = document.getElementById("sidebar");
-  const menuIcon = document.querySelector(".menu-icon");
-  const left = document.querySelector(".left");
-  const overlay = document.getElementById("sidebar-overlay");
-
-  if (!sidebar || !menuIcon || !left || !overlay) return;
-
-  const clickOutsideSidebar =
-    sidebar.classList.contains("openSbar") &&
-    !sidebar.contains(event.target) &&
-    !menuIcon.contains(event.target) &&
-    !left.contains(event.target) &&
-    !overlay.contains(event.target);
-
-  const clickOnOverlay = event.target === overlay;
-
-  if (clickOutsideSidebar || clickOnOverlay) {
-    sidebar.classList.remove("openSbar");
-    document.body.style.overflow = "";
-    overlay.style.display = "none";
-
-    setTimeout(() => {
-      sidebar.scrollTop = 0;
-    }, 300);
-  }
-});
-
-
-// outside click will close the sidelid
-document.addEventListener("click", (event) => {
   const sidelid = document.getElementById("sidelid");
   const menuIcon = document.querySelector(".menu-icon");
   const left = document.querySelector(".left");
   const overlay = document.getElementById("sidebar-overlay");
 
-  if (!sidelid || !menuIcon || !left || !overlay) return;
+  if (!menuIcon || !left || !overlay) return;
 
-  if (sidelid.classList.contains("openlid") &&
-    (!sidelid.contains(event.target) &&
-      !menuIcon.contains(event.target) &&
-      !left.contains(event.target)) ||
-    event.target === overlay) {
+  const clickedOverlay = event.target === overlay;
+  const clickedOutsideSidebar = sidebar?.classList.contains("openSbar") &&
+    !sidebar.contains(event.target) &&
+    !menuIcon.contains(event.target) &&
+    !left.contains(event.target) &&
+    !clickedOverlay;
 
-    sidelid.classList.remove("openlid");
-    document.body.style.overflow = "";
-    overlay.style.display = "none";
+  const clickedOutsideSidelid = sidelid?.classList.contains("openlid") &&
+    !sidelid.contains(event.target) &&
+    !menuIcon.contains(event.target) &&
+    !left.contains(event.target) &&
+    !clickedOverlay;
 
-    setTimeout(() => {
-      sidelid.scrollTop = 0;
-    }, 300);
+  if (clickedOutsideSidebar || clickedOverlay) {
+    if (sidebar?.classList.contains("openSbar")) {
+      sidebar.classList.remove("openSbar");
+      document.body.style.overflow = "";
+      overlay.style.display = "none";
+      setTimeout(() => sidebar.scrollTop = 0, 300);
+    }
+  }
+
+  if (clickedOutsideSidelid || clickedOverlay) {
+    if (sidelid?.classList.contains("openlid")) {
+      sidelid.classList.remove("openlid");
+      document.body.style.overflow = "";
+      overlay.style.display = "none";
+      setTimeout(() => sidelid.scrollTop = 0, 300);
+    }
   }
 });
 
