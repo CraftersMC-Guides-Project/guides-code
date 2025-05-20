@@ -43,9 +43,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  setupThemeSwitchers();
   fetchAllPartials();
   fetchAllLPartials();
-  initLBThemeToggle();
 });
 
 function toggleLid() {
@@ -53,10 +53,7 @@ function toggleLid() {
   const overlay = document.getElementById("sidebar-overlay");
   const tips = document.querySelectorAll(".button-tip");
 
-  if (!sidelid) {
-    console.error("Element with ID 'sidelid' not found.");
-    return;
-  }
+  if (!sidelid) return;
 
   const isOpening = !sidelid.classList.contains("openlid");
   
@@ -85,7 +82,7 @@ function toggleLid() {
 function toggleSidebar() {
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("sidebar-overlay");
-  const sidelid = document.getElementById("sidelid"); // Assuming there's an element with this ID
+  const sidelid = document.getElementById("sidelid");
   
   sidebar.classList.toggle("openSbar");
 
@@ -93,18 +90,15 @@ function toggleSidebar() {
     document.body.style.overflow = "hidden";
     sidebar.style.overflowY = "auto";
     overlay.style.display = "block";
-    if (sidelid) sidelid.style.display = "none"; // Close sidelid when sidebar opens
+    if (sidelid) sidelid.style.display = "none";
   } else {
     document.body.style.overflow = "";
     setTimeout(() => {
       sidebar.scrollTop = 0;
     }, 300);
     overlay.style.display = "none";
-    if (sidelid) sidelid.style.display = "block"; // Open sidelid when sidebar closes
+    if (sidelid) sidelid.style.display = "block";
   }
-  
-  const consoleDebugStyleSidebar = "color:rgb(249, 247, 247); font-weight: bold; background-color:rgb(242, 0, 255); padding: 2px 4px; border-radius: 2px;";
-  console.log("%csidebar works yayayyay", consoleDebugStyleSidebar);
 }
 
 document.addEventListener("click", (event) => {
@@ -156,54 +150,6 @@ function aiBtn() {
   window.location.href = "/ai";
 }
 
-function initializeThemeSwitcher() {
-  console.debug("[ThemeSwitcher] Initializing theme switcher...");
-  const themeSwitch = document.getElementById("theme-switch");
-  
-  if (!themeSwitch) {
-    console.debug("[ThemeSwitcher] Theme switch not found yet, will retry...");
-    setTimeout(initializeThemeSwitcher, 100);
-    return;
-  }
-
-  console.debug(`[ThemeSwitcher] Theme switch element found:`, themeSwitch);
-
-  let darkMode = localStorage.getItem("darkMode");
-  console.debug(`[ThemeSwitcher] Initial darkMode value from localStorage:`, darkMode);
-
-  const enableDarkmode = () => {
-    document.body.classList.add("darkmode");
-    localStorage.setItem("darkMode", "true");
-    themeSwitch.textContent = "light_mode";
-    console.debug("[ThemeSwitcher] Dark mode enabled");
-  };
-
-  const disableDarkmode = () => {
-    document.body.classList.remove("darkmode");
-    localStorage.setItem("darkMode", "false");
-    themeSwitch.textContent = "dark_mode";
-    console.debug("[ThemeSwitcher] Dark mode disabled");
-  };
-
-  // Set initial state
-  if (darkMode === "true") {
-    enableDarkmode();
-  } else {
-    disableDarkmode();
-  }
-
-  themeSwitch.addEventListener("click", () => {
-    darkMode = localStorage.getItem("darkMode");
-    if (darkMode !== "true") {
-      enableDarkmode();
-    } else {
-      disableDarkmode();
-    }
-  });
-
-  console.debug("[ThemeSwitcher] Initialization complete");
-}
-
 function fetchAllPartials() {
   Promise.all([
     fetch('../navbarv2.html').then(res => res.text()),
@@ -213,8 +159,7 @@ function fetchAllPartials() {
     document.querySelector('.navbar').innerHTML = navbarHtml;
     document.getElementById('sidebar').innerHTML = sidebarHtml;
     document.getElementById('footer').innerHTML = footerHtml;
-    
-    initializeThemeSwitcher();
+    setupThemeSwitchers();
   }).catch(error => {
     console.error("Error loading partials:", error);
   });
@@ -225,108 +170,45 @@ setTimeout(() => {
   const dUser = JSON.parse(localStorage.getItem('discordUser'));
   const user = JSON.parse(localStorage.getItem('user'));
   const userSettings = user ? JSON.parse(localStorage.getItem(`userSettings_${user.email}`)) : null;
-  const consoleDebugStyleLoginType = "color:rgb(225, 0, 255); font-weight: bold; background-color:rgb(0, 47, 155); padding: 2px 4px; border-radius: 2px;";
 
   const infoDiv = document.getElementById("sidebarUsername");
   const infoDivName = document.getElementById("sidebarName");
   const infoDivImg = document.getElementById("sidebarAvatar");
 
   if (dUser) {
-    // Display Discord user info
     infoDiv.innerHTML = `${dUser.email}`;
     infoDivName.innerHTML = `${dUser.username}`;
     infoDivImg.innerHTML = `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="https://cdn.discordapp.com/avatars/${dUser.id}/${dUser.avatar}.png">`;
-    console.log("%cuser type discord", consoleDebugStyleLoginType);
-
-
   } else if (user && user.token) {
-    // Display Email/Password user info
     if (userSettings) {
       infoDiv.innerHTML = `${user.email}`;
       infoDivName.innerHTML = `${userSettings.username}`;
       infoDivImg.innerHTML = `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="${userSettings.profilePic}">`;
-      console.log("%cuser type local", consoleDebugStyleLoginType);
-    } else {
-      console.error("User settings not found.");
-      console.log("%cuser type none silly", consoleDebugStyleLoginType);
-      //window.location.href = "sign-up.html";
     }
-
-  } else {
-    // Not logged in
-    //window.location.href = "sign-up.html";
   }
-}, 2000); // 2 seconds delay
+}, 2000);
 
 function logout() {
   localStorage.removeItem("user");
   localStorage.removeItem("discordUser");
   location.reload();
-  const consoleDebugStyleLogout = "color:rgb(225, 0, 255); font-weight: bold; background-color:rgb(0, 55, 0); padding: 2px 4px; border-radius: 2px;";
-  console.log("%cUser logged out gg", consoleDebugStyleLogout);
 }
 
 function login() {
   window.location.href = "/login";
 }
+
 function profile() {
   window.location.href = "/profile";
 }
 
 function checkLoginStatus() {
-    var userLoggedIn = localStorage.getItem('discordUser') !== null;
-    const consoleDebugStyleLogin = "color:rgb(225, 0, 255); font-weight: bold; background-color:rgb(0, 55, 0); padding: 2px 4px; border-radius: 2px;";
-    if (userLoggedIn) {
-        console.log("%cUser login found yay", consoleDebugStyleLogin);
-    } else {
-        console.log("%cUser login not found awwwwwwwwwwww", consoleDebugStyleLogin);
-    }
+  var userLoggedIn = localStorage.getItem('discordUser') !== null;
 }
 
 window.onload = function() {
-    setTimeout(checkLoginStatus, 2000);
+  setTimeout(checkLoginStatus, 2000);
 };
-
-// Initialize theme toggle system
-function initLBThemeToggle() {
-  const leaderboardThemeSwitch = document.getElementById("leaderboard-theme-switch");
-  
-  if (!leaderboardThemeSwitch) {
-    console.debug("[Theme] Switch not found, retrying...");
-    setTimeout(initLBThemeToggle, 100); // Retry after 100ms
-    return;
-  }
-
-  console.debug("[Theme] Switch found:", leaderboardThemeSwitch);
-
-  // Check localStorage or fallback to OS preference
-  let darkMode = localStorage.getItem("darkMode");
-  if (darkMode === null) { // First visit
-    darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? "true" : "false";
-  }
-
-  const enableDarkmode = () => {
-    document.body.classList.add("darkmode");
-    localStorage.setItem("darkMode", "true");
-    leaderboardThemeSwitch.textContent = "light_mode";
-    console.debug("[Theme] Dark mode enabled");
-  };
-
-  const disableDarkmode = () => {
-    document.body.classList.remove("darkmode");
-    localStorage.setItem("darkMode", "false");
-    leaderboardThemeSwitch.textContent = "dark_mode";
-    console.debug("[Theme] Dark mode disabled");
-  };
-
-  if (darkMode === "true") enableDarkmode();
-  else disableDarkmode();
-
-  leaderboardThemeSwitch.addEventListener("click", () => {
-    if (document.body.classList.contains("darkmode")) disableDarkmode();
-    else enableDarkmode();
-  });
-}
 
 function fetchAllLPartials() {
   Promise.all([
@@ -335,13 +217,35 @@ function fetchAllLPartials() {
   ]).then(([sidebarHtml, footerHtml]) => {
     document.getElementById('sidebar').innerHTML = sidebarHtml;
     document.getElementById('footer').innerHTML = footerHtml;
-
-    console.debug("[Partials] Loaded successfully!");
-    
-    initLBThemeToggle();
   }).catch(err => {
     console.error("[Partials] Failed to load:", err);
   });
 }
 
-initLBThemeToggle();
+function setupThemeSwitchers() {
+  const themeSwitches = [
+    document.getElementById("theme-switch"),
+    document.getElementById("leaderboard-theme-switch")
+  ].filter(Boolean);
+
+  if (!themeSwitches.length) return;
+
+  const updateTheme = () => {
+    const isDark = localStorage.getItem("darkMode") === "true";
+    document.body.classList.toggle("darkmode", isDark);
+    themeSwitches.forEach(switchEl => {
+      switchEl.textContent = isDark ? "light_mode" : "dark_mode";
+    });
+  };
+
+  const toggleTheme = () => {
+    const isNowDark = !document.body.classList.contains("darkmode");
+    localStorage.setItem("darkMode", isNowDark);
+    updateTheme();
+  };
+
+  updateTheme();
+  themeSwitches.forEach(switchEl => {
+    switchEl.addEventListener("click", toggleTheme);
+  });
+}
