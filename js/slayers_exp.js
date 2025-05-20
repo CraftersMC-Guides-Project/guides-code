@@ -8,8 +8,8 @@ const collectionsData = [
       { "rank": 3, "name": "HeGzoStRqFe", "score": "N/A" },
       { "rank": 4, "name": "Itzomkar1232891", "score": "17,000,000" },
       { "rank": 5, "name": "StragglyBoat23", "score": "15,000,000+" },
-      { "rank": 6, "name": "SoundClover8088", "score": "N/A" },
-      { "rank": 7, "name": "Kg_lcky_01", "score": "N/A" },
+      { "rank": 6, "name": "Kg_lcky_01", "score": "N/A" },
+      { "rank": 7, "name": "SoundClover8088", "score": "N/A" },
       { "rank": 8, "name": "Firegod174", "score": "13,600,000" },
       { "rank": 9, "name": "Shubh_gamer9497", "score": "12,400,000" },
       { "rank": 10, "name": "Arslaan9477", "score": "N/A" }
