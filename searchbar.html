@@ -47,121 +47,129 @@
     <div id="footer"></div>
 
     <script>
-    let selectedLink = "";
-    let offset = 0;
-    let accumulatedResults = [];
-    let currentQuery = "";
+let selectedLink = "";
+let allResults = [];
+let currentIndex = 0;
+let currentOffset = 0;
+let queryGlobal = "";
+let hasMoreFromAPI = true;
+const resultsPerPage = 5;
 
-    async function searchWiki(isLoadMore = false) {
-        const input = document.getElementById("searchInput");
-        const query = input.value.trim();
-        if (!query && !isLoadMore) return;
+const moreButton = document.createElement("button");
+moreButton.className = "more-button";
+moreButton.innerText = "Show more results";
+moreButton.onclick = loadMoreResults;
 
-        if (!isLoadMore) {
-            offset = 0;
-            accumulatedResults = [];
-            currentQuery = query;
-            document.getElementById("resultsContainer").innerHTML = "Searching the query...";
+async function searchWiki() {
+    const query = document.getElementById("searchInput").value.trim();
+    if (!query) return;
+
+    const resultsContainer = document.getElementById("resultsContainer");
+    resultsContainer.innerHTML = "";
+    currentIndex = 0;
+    currentOffset = 0;
+    allResults = [];
+    queryGlobal = query;
+    hasMoreFromAPI = true;
+
+    await fetchMoreResults();
+    loadMoreResults();
+}
+
+async function fetchMoreResults() {
+    if (!hasMoreFromAPI) return;
+
+    const apiUrl = `https://craftersmc.wiki.gg/api.php?action=query&list=search&srsearch=${encodeURIComponent(queryGlobal)}&sroffset=${currentOffset}&format=json&origin=*`;
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+
+    const results = data.query.search || [];
+    if (results.length === 0) {
+        hasMoreFromAPI = false;
+        return;
+    }
+
+    const queryLower = queryGlobal.toLowerCase();
+    const scoredResults = results.map(result => {
+        const lower = result.title.toLowerCase();
+        let score = 100;
+        if (lower === queryLower) score = 0;
+        else if (lower.startsWith(queryLower)) score = 1;
+        else if (lower.includes(queryLower)) score = 2;
+        else {
+            let common = queryLower.split('').filter(ch => lower.includes(ch)).length;
+            score = 100 - common;
         }
-
-        const apiUrl = `https://craftersmc.wiki.gg/api.php?action=query&list=search&srsearch=${encodeURIComponent(currentQuery)}&format=json&origin=*&srlimit=5&sroffset=${offset}`;
-        
-        try {
-            const response = await fetch(apiUrl);
-            const data = await response.json();
-
-            const resultsContainer = document.getElementById("resultsContainer");
-            if (!isLoadMore) resultsContainer.innerHTML = "";
-
-            const results = data.query.search;
-
-            if (results.length === 0 && !isLoadMore) {
-                resultsContainer.innerHTML = "<p>No results found.</p>";
-                return;
-            }
-
-            offset += results.length;
-            accumulatedResults.push(...results);
-
-            const sortedResults = [...accumulatedResults].sort((a, b) => {
-                return scoreResult(currentQuery, b.title) - scoreResult(currentQuery, a.title);
-            });
-
-            resultsContainer.innerHTML = "";
-
-            sortedResults.forEach(result => {
-                const div = document.createElement("div");
-                div.className = "result-item";
-                const highlightedSnippet = result.snippet.replace(
-                    new RegExp(currentQuery, "gi"),
-                    match => `<span class="highlight">${match}</span>`
-                );
-                div.innerHTML = `<strong>${result.title}</strong><br>${highlightedSnippet}`;
-                div.onclick = () => showConfirm(result.title);
-                resultsContainer.appendChild(div);
-            });
-
-            if (results.length === 5) {
-                let moreBtn = document.getElementById("moreBtn");
-                if (!moreBtn) {
-                    moreBtn = document.createElement("button");
-                    moreBtn.id = "moreBtn";
-                    moreBtn.textContent = "Show more results...";
-                    moreBtn.onclick = () => searchWiki(true);
-                    moreBtn.style.marginTop = "10px";
-                    resultsContainer.appendChild(moreBtn);
-                } else {
-                    resultsContainer.appendChild(moreBtn);
-                }
-            }
-
-        } catch (error) {
-            document.getElementById("resultsContainer").innerHTML = "<p>Error fetching data.</p>";
-        }
-    }
-
-    function scoreResult(query, title) {
-        query = query.toLowerCase();
-        title = title.toLowerCase();
-
-        if (title === query) return 100;
-        if (title.startsWith(query)) return 90;
-        if (title.includes(query)) return 75;
-
-        let matchScore = 0;
-        for (let char of query) {
-            if (title.includes(char)) matchScore += 2;
-        }
-
-        if (title.match(new RegExp(query.split("").join(".*")))) matchScore += 5;
-
-        return matchScore;
-    }
-
-    function showConfirm(title) {
-        selectedLink = `https://craftersmc.wiki.gg/wiki/${title.replace(/\s+/g, "_")}`;
-        const confirmBox = document.getElementById("confirmBox");
-        confirmBox.style.display = "block";
-        setTimeout(() => confirmBox.classList.add("show"), 10); 
-    }
-
-    function closeConfirm() {
-        const confirmBox = document.getElementById("confirmBox");
-        confirmBox.classList.remove("show");
-        setTimeout(() => confirmBox.style.display = "none", 300);
-    }
-
-    function goToPage() {
-        window.open(selectedLink, "_blank");
-        closeConfirm();
-    }
-
-    document.getElementById("searchInput").addEventListener("keydown", function (event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            searchWiki();
-        }
+        return { ...result, score };
     });
+
+    scoredResults.sort((a, b) => a.score - b.score);
+    allResults.push(...scoredResults);
+    currentOffset += results.length;
+    if (!data.continue) hasMoreFromAPI = false;
+}
+
+async function loadMoreResults() {
+    const resultsContainer = document.getElementById("resultsContainer");
+    const query = queryGlobal;
+    let count = 0;
+
+    while (count < resultsPerPage && currentIndex < allResults.length) {
+        const result = allResults[currentIndex];
+        const div = document.createElement("div");
+        div.className = "result-item new-result";
+        const highlightedSnippet = result.snippet.replace(
+            new RegExp(query, "gi"),
+            match => `<span class="highlight">${match}</span>`
+        );
+        div.innerHTML = `<strong>${result.title}</strong><br>${highlightedSnippet}`;
+        div.onclick = () => showConfirm(result.title);
+        resultsContainer.appendChild(div);
+        currentIndex++;
+        count++;
+    }
+
+    if (currentIndex >= allResults.length && hasMoreFromAPI) {
+        await fetchMoreResults();
+        loadMoreResults();
+        return;
+    }
+
+    if (currentIndex >= allResults.length && !hasMoreFromAPI) {
+        moreButton.style.display = "none";
+        const noMore = document.createElement("p");
+        noMore.textContent = "No more results found.";
+        resultsContainer.appendChild(noMore);
+    } else {
+        moreButton.style.display = "inline-block";
+        resultsContainer.appendChild(moreButton);
+    }
+}
+
+function showConfirm(title) {
+    selectedLink = `https://craftersmc.wiki.gg/wiki/${title.replace(/\s+/g, "_")}`;
+    const confirmBox = document.getElementById("confirmBox");
+    confirmBox.style.display = "block";
+    setTimeout(() => confirmBox.classList.add("show"), 10);
+}
+
+function closeConfirm() {
+    const confirmBox = document.getElementById("confirmBox");
+    confirmBox.classList.remove("show");
+    setTimeout(() => confirmBox.style.display = "none", 300);
+}
+
+function goToPage() {
+    window.open(selectedLink, "_blank");
+    closeConfirm();
+}
+
+document.getElementById("searchInput").addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        searchWiki();
+    }
+});
 </script>
 
 </body>
