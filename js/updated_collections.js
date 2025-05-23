@@ -1705,12 +1705,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "Unknown",
+                    "name": "MythicalPanda30",
                     "score": "N/A"
                 },
                 {
                     "rank": 5,
-                    "name": "MythicalPanda30",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
@@ -1786,12 +1786,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "Unknown",
+                    "name": "MythicalPanda30",
                     "score": "N/A"
                 },
                 {
                     "rank": 10,
-                    "name": "MythicalPanda30",
+                    "name": "Unknown",
                     "score": "N/A"
                 }
             ]
@@ -2165,12 +2165,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 6,
-                    "name": "sagnikisawesome",
-                    "score": "N/A"
+                    "name": "Creepyshorts",
+                    "score": "6.6M+"
                 },
                 {
                     "rank": 7,
-                    "name": "Unknown",
+                    "name": "sagnikisawesome",
                     "score": "N/A"
                 },
                 {
