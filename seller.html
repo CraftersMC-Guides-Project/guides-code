@@ -8,20 +8,63 @@
     <link rel="stylesheet" href="css/essential.css">
     <script src="js/script.js"></script>
     <style>
+
         :root {
-            --primary-color: #007bff;
-            --secondary-color: #f0f0f0;
-            --text-color: #333;
-            --font-family: Arial, sans-serif;
+            --box-font-size: 1.5rem;
+            --white-color: white;
+            --gold-color: gold;
+            --accent-color: #007bff;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --stats-bg-color: rgba(0, 0, 0, 0.7);
+            --border-color: rgba(255, 255, 255, 0.125);
+            --border-color-alt: rgba(255, 255, 255, 0.3);
+            --profile-bg-color: rgba(255, 255, 255, 0.49);
+            --avatar-bg-color: #007bff;
+            --card-bg-color: rgba(200, 200, 200, 0.5);
+            --darkmode-card-bg: rgba(80, 80, 80, 0.75);
+            --label-color: #ccc;
+            --available-color: #82EB53;
+            --selling-bg: rgba(0, 128, 0, 0.3);
+            --selling-color: #82EB53;
+            --paused-bg: rgba(218, 81, 0, 0.3);
+            --paused-color: #ff9b59;
+            --inactive-bg: rgba(255, 0, 0, 0.3);
+            --inactive-color: #ff6b6b;
+            --badge-bg: #007bff;
+            --text-color: #222;
             --box-size: 150px;
             --box-gap: 20px;
         }
+
+        .darkmode {
+            --white-color: white;
+            --gold-color: gold;
+            --accent-color: #007bff;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --stats-bg-color: rgba(0, 0, 0, 0.7);
+            --border-color: rgba(255, 255, 255, 0.125);
+            --border-color-alt: rgba(255, 255, 255, 0.3);
+            --profile-bg-color: rgba(255, 255, 255, 0.49);
+            --avatar-bg-color: #007bff;
+            --card-bg-color: rgba(40, 40, 40, 0.75);
+            --darkmode-card-bg: rgba(36, 36, 36, 0.4);
+            --label-color: #ccc;
+            --available-color: #82EB53;
+            --selling-bg: rgba(0, 128, 0, 0.3);
+            --selling-color: #82EB53;
+            --paused-bg: rgba(218, 81, 0, 0.3);
+            --paused-color: #ff9b59;
+            --inactive-bg: rgba(255, 0, 0, 0.3);
+            --inactive-color: #ff6b6b;
+            --badge-bg: #007bff;
+            --text-color: #fff;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
+            color: var(--text-color);
             margin: 0;
-            background-image: url('Backgrounds/FlowerBanner.jpeg');
+            background-image: url('Backgrounds/IMG_4500.jpeg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -36,9 +79,14 @@
         }
         
         .box {
-            background-color: rgba(0, 123, 255, 0.5);
+            background-color: var(--card-bg-color);
             backdrop-filter: blur(10px);
             border-radius: 10px;
+            box-shadow: black 2px 5px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
         }
 
         .grid-container-container {
@@ -74,6 +122,7 @@
             :root {
                     --box-size: 120px;
                     --box-gap: 10px;
+                    --box-font-size: 1.2rem;
             }
         }
         
@@ -120,30 +169,11 @@
             padding: 5px;
         }
 
-        .banner-info {
-            color: var(--white-color, white);
-        }
-
         .banner-name {
             font-size: 3rem;
             margin: 0;
             color: var(--white-color, white);
             text-shadow: 2px 2px var(--shadow-color);
-        }
-
-        .banner-title {
-            font-size: 1.3rem;
-            margin: 5px 0;
-            color: var(--accent-color, #f5b8ff);
-        }
-
-        .stats-box {
-            display: flex;
-            background-color: var(--stats-bg-color,);
-            border-radius: 10px;
-            padding: 10px;
-            margin-left: auto;
-
         }
         select {
             padding: 10px;
@@ -153,11 +183,106 @@
             background-color: var(--card-bg-color);
             color: var(--white-color);
         }
-        .stat-item {
-            flex: 1;
+
+        #prices {
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.9)), url('../Backgrounds/IMG_4502.jpeg');
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            color: var(--white-color);
+            justify-content: space-evenly;
+            display: grid;
+            grid-template-columns: var(--box-size) var(--box-size) var(--box-size);
+            grid-template-rows: var(--box-size);
+            grid-template-areas: 
+                "price1 price2 price3";
+        }
+        .price-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+            padding: 10px;
+        }
+        .box-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .box-label {
+            position: fixed;
+            font-size: 1rem;
+            color: var(--text-color);
+            bottom: 20%;
+            padding-top: 5px;
+        }
+
+        #prices .box-label {
+            color: var(--white-color);
+        }
+
+        #rank {
+            border-radius: 10px;
+            color: var(--white-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .box-value img {
+            width: var(--box-size);
+            height: auto;
+        }
+        
+        #discord-value {
+            font-size: calc(var(--box-font-size) - 0.2rem);
+            color: #007bff;
+            word-wrap: break-word;
+            padding: 0;
+        }
+
+        #gem-status {
+            font-size: var(--box-font-size);
+            color: #82EB53;
+        }
+
+        #status {
+            font-size: 3rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+.status-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 16px;
+  font-weight: bold;
+}
+
+.Selling {
+  background-color: var(--selling-bg, rgba(0, 128, 0, 0.3));
+  color: var(--selling-color, #82EB53);
+}
+
+.Paused {
+  background-color: var(--paused-bg, rgba(218, 81, 0, 0.3));
+  color: var(--paused-color, #ff9b59);
+}
+
+.Inactive {
+  background-color: var(--inactive-bg, rgba(255, 0, 0, 0.3));
+  color: var(--inactive-color, #ff6b6b);
+}
+
+#timezone-value {
+    font-size: var(--box-font-size);
+    text-align: center;
+}
+        #sales {
+            font-size: var(--box-font-size);
             text-align: center;
-            padding: 0 10px;
-            border-right: 1px solid var(--border-color, rgba(255, 255, 255, 0.2));
         }
 
 
@@ -204,15 +329,51 @@
   </div>
     <div class="grid-container-container">
         <div class="grid-container">
-            <div class="box" style="grid-area: box-1;" id="name">rank</div>
-            <div class="box" style="grid-area: box-2;" id="prices">prices, use a sub grid box and set background to banner + linear gradient of black and 50% opacity</div>
-            <div class="box" style="grid-area: box-3;" id="discord">discord</div>
-            <div class="box" style="grid-area: box-4;" id="gem-status">if gems</div>
-            <div class="box" style="grid-area: box-5;" id="stock">stock</div>
-            <div class="box" style="grid-area: box-6;" id="status">status, set the background colour to the status colour</div>
-            <div class="box" style="grid-area: box-7;" id="timezone">timezone, with GMT and IST conversion</div>
-            <div class="box" style="grid-area: box-8;" id="sales">sales</div>
+            <div class="box" style="grid-area: box-1;" id="rank">
+                <div class="box-value"><img src="rank/emerald.png"></div>
+                <div class="box-label">Rank</div>
+            </div>
+            <div class="box" style="grid-area: box-2;" id="prices">
+                <div class="price-box">
+                    <div class="box-value" style="color: gold;">20m</div>
+                    <div class="box-label" >Gold</div>
+                </div>
+                <div class="price-box">
+                    <div class="box-value" style="color: darkturquoise;">40m</div>
+                    <div class="box-label">Diamond</div>
+                </div>
+                <div class="price-box">
+                    <div class="box-value" style="color: lime;">100m</div>
+                    <div class="box-label">Emerald</div>
+                </div>
+            </div>
+            <div class="box" style="grid-area: box-3;" id="discord">
+                <div class="box-value" id="discord-value">hollowspooky</div>
+                <div class="box-label">Discord</div>
+            </div>
+            <div class="box" style="grid-area: box-4;" id="gem-status">
+                <div class="box-value" id="gem-status">20k per gem</div>
+                <div class="box-label">Gems</div>
+            </div>
+            <div class="box" style="grid-area: box-5;" id="stock">
+                <div class="box-value">100</div>
+                <div class="box-label">Stock</div>
+            </div>
+            <div class="box Selling" style="grid-area: box-6;" id="status">
+                <div class="box-value">Selling</div>
+                <div class="box-label">Status</div>
+        </div>
+            <div class="box" style="grid-area: box-7;" id="timezone">
+                <div class="box-value" id="timezone-value">GMT+0, IST+4:30</div>
+                <div class="box-label">Timezone</div>
+            </div>
+            <div class="box" style="grid-area: box-8;" id="sales">
+                <div class="box-value">2.5</div>
+                <div class="box-label">Sales</div>
+            </div>
         </div>
     </div>
+
+    <div id="footer"></div>
 </body>
 </html>
