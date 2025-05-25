@@ -1701,7 +1701,7 @@ const collectionsData = {
                 {
                     "rank": 3,
                     "name": "Unknown",
-                    "score": "18M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 4,
@@ -1730,8 +1730,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "ENDERxBEAST4806",
+                    "score": "20.5M+"
                 },
                 {
                     "rank": 10,
@@ -2124,8 +2124,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "ST4ANG3",
+                    "score": "9M+"
                 },
                 {
                     "rank": 10,
