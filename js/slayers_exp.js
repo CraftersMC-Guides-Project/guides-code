@@ -3,16 +3,16 @@ const collectionsData = [
     "name": "Zombie Slayer",
     "image": "https://craftersmc.wiki.gg/images/8/8e/Revenant_Horror.png?b5e98d",
     "players": [
-      { "rank": 1, "name": "SphinxWraith", "score": "40M+" },
-      { "rank": 2, "name": "DueBacon2007102", "score": "25M+" },
-      { "rank": 3, "name": "HeGzoStRqFe", "score": "N/A" },
-      { "rank": 4, "name": "Itzomkar1232891", "score": "17M+" },
-      { "rank": 5, "name": "StragglyBoat23", "score": "15M+" },
-      { "rank": 6, "name": "SoundClover8088", "score": "N/A" },
-      { "rank": 7, "name": "Firegod174", "score": "16M+" },
-      { "rank": 8, "name": "Kg_lcky_01", "score": "N/A" },
-      { "rank": 9, "name": "Shubh_gamer9497", "score": "12.4M+" },
-      { "rank": 10, "name": "Arslaan9477", "score": "N/A" }
+      { "rank": 1, "name": "SphinxWraith", "score": "44M+" },
+      { "rank": 2, "name": "HeGzoStRqFe", "score": "N/A" },
+      { "rank": 3, "name": "DueBacon2007102", "score": "34M+" },
+      { "rank": 4, "name": "Itzomkar1232891", "score": "24M+" },
+      { "rank": 5, "name": "StragglyBoat23", "score": "19M+" },
+      { "rank": 6, "name": "Kg_lcky_01", "score": "18.3M+" },
+      { "rank": 7, "name": "Firegod174", "score": "17M+" },
+      { "rank": 8, "name": "DRONZAR_OP", "score": "N/A" },
+      { "rank": 9, "name": "SoundClover8088", "score": "N/A" },
+      { "rank": 10, "name": "Unknown", "score": "N/A" }
     ]
   },
   {
