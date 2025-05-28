@@ -19,126 +19,176 @@
       background: var(--body-bg);
       color: var(--main-text-color);
     }
+    /* Container improvements */
+.giveaways-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 1rem 1.5rem 1rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gw-container {
+  width: 100%;
+}
+
+.current-gw {
+  font-size: 1.5em;
+  font-weight: 700;
+  color: var(--primary-text-color, #1a73e8);
+  margin-bottom: 1.5em;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+/* End container improvements */
+
     .giveaway-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 28px;
-      margin-top: 0px;
-      left:0;
-      right:0;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 32px;
+      width: 100%;
+      margin: 0 auto;
     }
     .giveaway-card {
       border: 1.5px solid var(--border-color, #e0e0e0);
-      border-radius: 16px;
-      padding: 22px 18px 18px 18px;
+      border-radius: 18px;
+      padding: 2rem 1.5rem 1.5rem 1.5rem;
       background: var(--card-bg-color, #fff);
-      box-shadow: 0 4px 24px 0 var(--shadow-color, rgba(30,42,70,0.10));
-      max-width: 100%;
+      box-shadow: 0 8px 32px 0 var(--shadow-color, rgba(30,42,70,0.10));
       position: relative;
       transition: box-shadow 0.2s, border 0.2s, background 0.3s;
       display: flex;
       flex-direction: column;
-      gap: 0.7em;
-      min-height: 230px;
+      gap: 0.9em;
+      min-height: 250px;
+      overflow: hidden;
+      animation: fadeIn 0.7s;
     }
     .giveaway-card.ended {
-      opacity: 0.85;
+      opacity: 0.92;
       background: linear-gradient(120deg, #f8f8f8 60%, #e3e3e3 100%);
       border-color: #f44336;
     }
     .giveaway-title {
       font-weight: bold;
-      font-size: 1.35em;
+      font-size: 1.4em;
       margin-bottom: 2px;
       color: var(--primary-text-color, #1a73e8);
       letter-spacing: 0.5px;
       text-shadow: 0 2px 8px var(--shadow-color, rgba(30,42,70,0.10));
+      text-align: center;
     }
     .giveaway-reward {
       color: var(--accent, #2b7bba);
       margin-bottom: 6px;
       font-size: 1.08em;
+      text-align: center;
     }
     .giveaway-status {
       font-size: 1em;
       margin-bottom: 2px;
+      text-align: center;
     }
     .giveaway-date {
       font-size: 0.98em;
       color: var(--text-color, #555);
       opacity: 0.8;
       margin-bottom: 4px;
+      text-align: center;
     }
     .winner-badge {
       background: linear-gradient(90deg, #ffe066 60%, #fffbe6 100%);
       color: #856404;
-      border-radius: 7px;
-      padding: 7px 12px;
+      border-radius: 8px;
+      padding: 8px 14px;
       font-weight: 600;
-      margin: 7px 0 2px 0;
-      font-size: 1.05em;
+      margin: 10px auto 2px auto;
+      font-size: 1.08em;
       border-left: 5px solid #f7c325;
       box-shadow: 0 2px 8px 0 var(--shadow-color, rgba(30,42,70,0.10));
       display: flex;
       align-items: center;
       gap: 0.5em;
+      justify-content: center;
+      max-width: 90%;
+    }
+    .btn-participate, .btn-view {
+      width: 100%;
+      margin: 0.3em 0 0.2em 0;
+      padding: 10px 0;
+      border-radius: 6px;
+      font-size: 1.08em;
+      font-weight: 600;
+      box-shadow: 0 2px 8px 0 var(--shadow-color, rgba(30,42,70,0.10));
+      border: none;
+      transition: background 0.2s, color 0.2s;
+      cursor: pointer;
+      display: block;
     }
     .btn-participate {
       background: #4CAF50;
       color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 10px;
-      font-weight: 600;
-      font-size: 1em;
-      transition: background 0.2s;
     }
     .btn-participate:disabled {
       background: #cccccc;
+      color: #888;
       cursor: not-allowed;
     }
     .btn-view {
-      padding: 8px 12px;
       background: #0eaa2e;
-      border: none;
-      border-radius: 4px;
       color: white;
-      margin-left: 8px;
-      font-weight: 600;
-      font-size: 1em;
-      transition: background 0.2s;
     }
     .btn-view:hover {
       background: #0c8a22;
-      cursor: pointer;
     }
     .status-active { color: #4CAF50; font-weight: 600;}
     .status-ended { color: #f44336; font-weight: 600;}
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
       .giveaway-grid {
         grid-template-columns: 1fr;
       }
       .giveaways-container {
-        width: 99%;
-        padding: 0;
+        padding: 1.2rem 0.2rem;
       }
     }
     @media (prefers-color-scheme: dark) {
+      body {
+        background: var(--body-bg, #181a1b);
+        color: var(--text-color, #e0e6eb);
+      }
       .giveaway-card {
         background: var(--card-bg-color, #23272e);
         border: 1.5px solid var(--border-color, #2c313a);
-        box-shadow: 0 4px 24px 0 var(--shadow-color, rgba(0,0,0,0.5));
+        box-shadow: 0 8px 32px 0 var(--shadow-color, rgba(0,0,0,0.5));
       }
       .giveaway-card.ended {
         background: linear-gradient(120deg, #23272e 60%, #181a1b 100%);
         border-color: #f44336;
       }
+      .giveaway-title {
+        color: var(--primary-text-color, #90caf9);
+        text-shadow: 0 2px 8px var(--shadow-color, rgba(0,0,0,0.5));
+      }
       .winner-badge {
         background: linear-gradient(90deg, #3a2e00 60%, #23272e 100%);
         color: #ffe066;
         border-left: 5px solid #f7c325;
+      }
+      .btn-participate {
+        background: #388e3c;
+        color: #fff;
+      }
+      .btn-view {
+        background: #197d2b;
+        color: #fff;
+      }
+      .btn-participate:disabled {
+        background: #444;
+        color: #aaa;
       }
     }
   </style>
