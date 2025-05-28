@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Giveaway Details</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="css/essential.css">
-    <script src="js/script.js"></script>
+  <link rel="stylesheet" href="css/essential.css">
+  <script src="js/script.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -14,9 +15,11 @@
       background: var(--body-bg);
       color: var(--text-color);
     }
+
     #giveaway-content {
-  margin-top: 5rem;
-}
+      margin-top: 5rem;
+    }
+
     .giveaway-details {
       background: var(--card-bg-color);
       border: 3px solid var(--border-color);
@@ -25,12 +28,13 @@
       border-radius: 8px;
       padding: 20px;
       margin-top: 20px;
-      width:90%;
+      width: 90%;
       margin: 0 auto;
-      padding:10px auto;
+      padding: 10px auto;
     }
+
     .giveaway-title {
-      display:flex;
+      display: flex;
       flex-direction: coloum;
       justify-content: center;
       align-items: cemter;
@@ -39,13 +43,16 @@
       margin-bottom: 10px;
       color: var(--primary-text-color);
     }
-    .giveaway-meta {
+
+    .giveaway-value {
       margin: 15px 0;
       color: #555;
     }
+
     .form-group {
       margin: 15px 0;
     }
+
     .form-input {
       padding: 8px;
       width: 100%;
@@ -53,6 +60,7 @@
       border: 1px solid #ddd;
       border-radius: 4px;
     }
+
     .btn-submit {
       background: #4CAF50;
       color: white;
@@ -62,48 +70,63 @@
       cursor: pointer;
       margin-top: 10px;
     }
+
     .alert {
       padding: 10px;
       border-radius: 4px;
       margin: 10px 0;
     }
+
     .alert-success {
       background: #dff0d8;
       color: #3c763d;
       width: fit-content;
     }
+
     .alert-info {
-      background: #d9edf7;
-      color: #31708f;
+      background: #4444444d;
+      color: #007ebd;
+      backdrop-filter: blur(100px);
+      width: fit-content;
     }
+
     .participants-list {
       margin-top: 20px;
       border-top: 1px solid #eee;
       padding-top: 15px;
     }
+
     #minecraft-username {
-      margin-top:5px;
+      margin-top: 5px;
+    }
+
+    .gw-head {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: first baseline;
     }
   </style>
 </head>
+
 <body>
   <div id="loader">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-    <div class="navbar"></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  <div class="navbar"></div>
 
-    <div class="sidebar" id="sidebar"></div>
+  <div class="sidebar" id="sidebar"></div>
 
-    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-    <button id="float">
-        <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
-        <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
-        <span class="material-icons"id="ai" onclick="aiBtn()">smart_toy</span>
-        <span class="material-icons" id="scrollToTopBtn">north</span>
-    </button>
-  
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <button id="float">
+    <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
+    <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
+    <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
+    <span class="material-icons" id="scrollToTopBtn">north</span>
+  </button>
+
   <a href="giveaway.html">&larr; Back to Giveaways</a>
   <div id="giveaway-content">Loading giveaway details...</div>
   <div id="footer"></div>
@@ -114,10 +137,10 @@
 
     async function loadGiveawayDetails() {
       const user = JSON.parse(localStorage.getItem("discordUser"));
-      if (!user) {
-        window.location.href = 'giveaway.html';
-        return;
-      }
+      // if (!user) {
+      //  window.location.href = 'giveaway.html';
+      //  return;
+      //}
 
       const urlParams = new URLSearchParams(window.location.search);
       const giveawayId = urlParams.get('id');
@@ -133,14 +156,41 @@
         const giveaway = data.split('\n')
           .filter(line => line.trim() !== '')
           .map(line => {
-            const [id, title, description, startDate, endDate, maxParticipants, reward, status] = line.split('|');
-            return { id, title, description, startDate, endDate, maxParticipants, reward, status };
+            const parts = line.split('|');
+            const [id, title, description, startDate, endDate, maxParticipants, reward, status] = parts;
+            return {
+              id,
+              title,
+              description,
+              startDate,
+              endDate,
+              maxParticipants,
+              reward,
+              status
+            };
           })
           .find(g => g.id === giveawayId);
 
         if (!giveaway) {
           window.location.href = 'giveaway.html';
           return;
+        }
+
+        // Load winner data
+        let winnerEntry = null;
+        try {
+          const winnerResponse = await fetch('gw/winners.txt');
+          const winnerText = await winnerResponse.text();
+          winnerEntry = winnerText.split('\n')
+            .filter(line => line.trim() !== '')
+            .map(line => {
+              const [gId, , , winnerName] = line.split('|');
+              return { gId, winnerName };
+            })
+            .find(w => w.gId === giveaway.id);
+        } catch (e) {
+          // If winners.txt missing or error, just skip winner display
+          winnerEntry = null;
         }
 
         // Load participation data
@@ -153,8 +203,8 @@
             return { gId, dId, minecraftName };
           });
 
-        const isEnded = new Date(giveaway.endDate) < new Date();
-        const userParticipation = participations.find(p => 
+        const isEnded = giveaway.status === "ended" || new Date(giveaway.endDate) < new Date();
+        const userParticipation = participations.find(p =>
           p.gId === giveaway.id && p.dId === user.id
         );
         const participants = participations.filter(p => p.gId === giveaway.id);
@@ -163,34 +213,49 @@
         let html = `
           <div class="giveaway-details">
             <div class="giveaway-title">${giveaway.title}</div>
-            <div class="giveaway-reward">Reward: ${giveaway.reward}</div>
-            <div class="giveaway-meta">
-              <div>Started: ${new Date(giveaway.startDate).toLocaleDateString()}</div>
-              <div>Ends: ${new Date(giveaway.endDate).toLocaleDateString()}</div>
-              <div>Status: ${isEnded ? 'Ended' : 'Active'}</div>
+            <div class="gw-head">
+              <div class="gw-info">
+                <div class="giveaway-description">Description: ${giveaway.description}</div>
+                <div class="giveaway-reward">Reward: ${giveaway.reward}</div>
+              </div>
+              <div class="giveaway-meta">
+                <div><span style="color:#01b726;">Started:</span> ${new Date(giveaway.startDate).toLocaleString()}</div>
+                <div><span style="color:#01b726;">Ends:</span> ${new Date(giveaway.endDate).toLocaleString()}</div>
+                <div><span style="color:#01b726;">Status:</span> 
+                  ${isEnded ? '<span style="color:red;font-weight:bold;">Ended</span>' : '<span style="color:green;font-weight:bold;">Active</span>'}
+                </div>
+              </div>
             </div>
-            <div class="giveaway-description">${giveaway.description}</div>
         `;
 
-        if (userParticipation) {
+        // Winner display from winners.txt
+        if (isEnded && winnerEntry && winnerEntry.winnerName && winnerEntry.winnerName !== "null" && winnerEntry.winnerName.trim() !== "") {
+          html += `
+            <div class="alert alert-success" style="background: #ffe066; color: #856404;">
+              🎉 <b>Winner:</b> ${winnerEntry.winnerName}
+            </div>
+          `;
+        }
+
+        if (isEnded) {
+          html += `
+            <div class="alert alert-info">
+              This giveaway has ended.
+            </div>
+          `;
+        } else if (userParticipation) {
           html += `
             <div class="alert alert-success">
               You're participating as: ${userParticipation.minecraftName}
             </div>
           `;
-        } else if (!isEnded) {
+        } else {
           html += `
             <form id="participate-form" class="form-group">
               <label for="minecraft-username">Minecraft Username:</label>
               <input type="text" id="minecraft-username" class="form-input" required>
               <button type="submit" class="btn-submit">Participate</button>
             </form>
-          `;
-        } else {
-          html += `
-            <div class="alert alert-info">
-              This giveaway has ended.
-            </div>
           `;
         }
 
@@ -199,10 +264,10 @@
           <div class="participants-list">
             <h3>Participants (${participants.length})</h3>
             <ul>
-              ${participants.length > 0 ? 
-                participants.map(p => `<li>${p.minecraftName}</li>`).join('') :
-                '<li>No participants yet</li>'
-              }
+              ${participants.length > 0 ?
+            participants.map(p => `<li>${p.minecraftName}</li>`).join('') :
+            '<li>No participants yet</li>'
+          }
             </ul>
           </div>
         `;
@@ -215,7 +280,7 @@
           document.getElementById("participate-form").addEventListener('submit', async (e) => {
             e.preventDefault();
             const minecraftUsername = document.getElementById("minecraft-username").value.trim();
-            
+
             if (!minecraftUsername) {
               alert('Please enter your Minecraft username');
               return;
@@ -225,7 +290,7 @@
               // Create the participation entry
               const entryDate = new Date().toISOString().split('T')[0];
               const participationEntry = `${giveaway.id}|${user.id}|${minecraftUsername}|${entryDate}`;
-              
+
               // Send to Discord webhook as plain text
               const webhookData = {
                 content: `${participationEntry}`
@@ -238,10 +303,10 @@
               });
 
               if (!response.ok) throw new Error('Webhook failed');
-              
+
               alert('Successfully participated in the giveaway! Good luck!');
               window.location.reload();
-              
+
             } catch (error) {
               console.error('Webhook error:', error);
               alert('Participation recorded but failed to notify Discord');
@@ -257,4 +322,5 @@
     window.onload = loadGiveawayDetails;
   </script>
 </body>
+
 </html>
