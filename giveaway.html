@@ -21,34 +21,67 @@
     }
     .giveaway-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 28px;
       margin-top: 0px;
       left:0;
       right:0;
     }
     .giveaway-card {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 15px;
-      width:100%;
-      background: rgba(255, 255, 255, 0.05);
+      border: 1.5px solid var(--border-color, #e0e0e0);
+      border-radius: 16px;
+      padding: 22px 18px 18px 18px;
+      background: var(--card-bg-color, #fff);
+      box-shadow: 0 4px 24px 0 var(--shadow-color, rgba(30,42,70,0.10));
       max-width: 100%;
+      position: relative;
+      transition: box-shadow 0.2s, border 0.2s, background 0.3s;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7em;
+      min-height: 230px;
     }
-    .gw-container {
-  margin-top: 1rem;
-      margin:10px;
-      width: 100%;
-      
-}
+    .giveaway-card.ended {
+      opacity: 0.85;
+      background: linear-gradient(120deg, #f8f8f8 60%, #e3e3e3 100%);
+      border-color: #f44336;
+    }
     .giveaway-title {
       font-weight: bold;
-      font-size: 1.2em;
-      margin-bottom: 5px;
+      font-size: 1.35em;
+      margin-bottom: 2px;
+      color: var(--primary-text-color, #1a73e8);
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 8px var(--shadow-color, rgba(30,42,70,0.10));
     }
     .giveaway-reward {
-      color: #2b7bba;
-      margin-bottom: 10px;
+      color: var(--accent, #2b7bba);
+      margin-bottom: 6px;
+      font-size: 1.08em;
+    }
+    .giveaway-status {
+      font-size: 1em;
+      margin-bottom: 2px;
+    }
+    .giveaway-date {
+      font-size: 0.98em;
+      color: var(--text-color, #555);
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+    .winner-badge {
+      background: linear-gradient(90deg, #ffe066 60%, #fffbe6 100%);
+      color: #856404;
+      border-radius: 7px;
+      padding: 7px 12px;
+      font-weight: 600;
+      margin: 7px 0 2px 0;
+      font-size: 1.05em;
+      border-left: 5px solid #f7c325;
+      box-shadow: 0 2px 8px 0 var(--shadow-color, rgba(30,42,70,0.10));
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
     }
     .btn-participate {
       background: #4CAF50;
@@ -58,48 +91,54 @@
       border-radius: 4px;
       cursor: pointer;
       margin-top: 10px;
+      font-weight: 600;
+      font-size: 1em;
+      transition: background 0.2s;
     }
     .btn-participate:disabled {
       background: #cccccc;
       cursor: not-allowed;
     }
-    .status-active { color: #4CAF50; }
-    .status-ended { color: #f44336; }
-    .giveaways-container {
-      display:flex;
-      width:90%;
-      padding: 10px 10px 10px 10px;;
-      border-radius:10px;
-      border: 3px solid var(--border-color);
-      align-items: center;
-      justify-content: center;
-      margin-top: 5rem;
-      background:var(--card-bg-color);
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
-    }
-    .current-gw {
-      font-size:30px;
-      display:grid;
-      text-align: center;
-      margin: 10px auto 4rem auto;
-      font-weight: bold;
-      text-align: center;
-      color: var(--primary-text-color);
-      text-decoration: underline;
-    }
     .btn-view {
-  padding: 8px 12px;
-  background: #0eaa2e;
-  border: none;
-  border-radius: 4px;
-  color: white;
-}
+      padding: 8px 12px;
+      background: #0eaa2e;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      margin-left: 8px;
+      font-weight: 600;
+      font-size: 1em;
+      transition: background 0.2s;
+    }
     .btn-view:hover {
+      background: #0c8a22;
       cursor: pointer;
     }
+    .status-active { color: #4CAF50; font-weight: 600;}
+    .status-ended { color: #f44336; font-weight: 600;}
     @media (max-width: 768px) {
       .giveaway-grid {
-        flex-direction: row;
+        grid-template-columns: 1fr;
+      }
+      .giveaways-container {
+        width: 99%;
+        padding: 0;
+      }
+    }
+    @media (prefers-color-scheme: dark) {
+      .giveaway-card {
+        background: var(--card-bg-color, #23272e);
+        border: 1.5px solid var(--border-color, #2c313a);
+        box-shadow: 0 4px 24px 0 var(--shadow-color, rgba(0,0,0,0.5));
+      }
+      .giveaway-card.ended {
+        background: linear-gradient(120deg, #23272e 60%, #181a1b 100%);
+        border-color: #f44336;
+      }
+      .winner-badge {
+        background: linear-gradient(90deg, #3a2e00 60%, #23272e 100%);
+        color: #ffe066;
+        border-left: 5px solid #f7c325;
       }
     }
   </style>
@@ -160,22 +199,45 @@
             return { giveawayId, discordId };
           });
 
+        // Load winners data
+        let winners = [];
+        try {
+          const winnersResponse = await fetch('gw/winners.txt');
+          const winnersText = await winnersResponse.text();
+          winners = winnersText.split('\n')
+            .filter(line => line.trim() !== '')
+            .map(line => {
+              const [gId, , , winnerName] = line.split('|');
+              return { gId, winnerName };
+            });
+        } catch (e) {
+          winners = [];
+        }
+
         // Display giveaways
         let html = '<div class="giveaway-grid">';
         giveaways.forEach(giveaway => {
-          const isEnded = new Date(giveaway.endDate) < new Date();
+          const isEnded = giveaway.status === "ended" || new Date(giveaway.endDate) < new Date();
           const isParticipated = participations.some(p => 
             p.giveawayId === giveaway.id && p.discordId === user.id
           );
-          
+          const winnerEntry = winners.find(w => w.gId === giveaway.id);
+
           html += `
-            <div class="giveaway-card">
+            <div class="giveaway-card${isEnded ? ' ended' : ''}">
               <div class="giveaway-title">${giveaway.title}</div>
-              <div class="giveaway-reward">Reward: ${giveaway.reward}</div>
-              <div>Status: <span class="status-${isEnded ? 'ended' : 'active'}">${
-                isEnded ? 'Ended' : 'Active'
-              }</span></div>
-              <div>Ends: ${new Date(giveaway.endDate).toLocaleDateString()}</div>
+              <div class="giveaway-reward">🎁 <b>${giveaway.reward}</b></div>
+              <div class="giveaway-status">
+                Status: <span class="status-${isEnded ? 'ended' : 'active'}">${
+                  isEnded ? 'Ended' : 'Active'
+                }</span>
+              </div>
+              <div class="giveaway-date">Ends: ${new Date(giveaway.endDate).toLocaleString()}</div>
+              ${isEnded && winnerEntry && winnerEntry.winnerName ? `
+                <div class="winner-badge">
+                  🏆 Winner: <span>${winnerEntry.winnerName}</span>
+                </div>
+              ` : ''}
               <button 
                 class="btn-participate" 
                 onclick="window.location.href='giveaway-details.html?id=${giveaway.id}'"
