@@ -196,6 +196,7 @@
             text-decoration: none;
             display: block;
         }
+
         #login-modal {
             display: none;
             position: fixed;
@@ -299,8 +300,11 @@
             if (storedUser) {
                 showLoggedInState(JSON.parse(storedUser));
             } else {
-                // Show login instructions modal
-                loginModal.style.display = 'block';
+                // Show message if not logged in
+                if (messageDiv) {
+                    messageDiv.textContent = 'Please log in to continue.';
+                }
+                loginStatus.style.display = 'none';
             }
 
             if (code) {
