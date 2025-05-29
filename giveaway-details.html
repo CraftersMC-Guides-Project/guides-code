@@ -366,15 +366,31 @@
             return { gId, dId, minecraftName };
           });
 
-        const isEnded = giveaway.status === "ended" || new Date(giveaway.endDate) < new Date();
-        const userParticipation = participations.find(p =>
-          p.gId === giveaway.id && p.dId === user.id
-        );
-        const participants = participations.filter(p => p.gId === giveaway.id);
+        const now = new Date();
+        const start = new Date(giveaway.startDate);
+        const end = new Date(giveaway.endDate);
+
+        let statusLabel = '';
+        let statusClass = '';
+        let canParticipate = false;
+
+        if (now < start) {
+          statusLabel = 'Scheduled';
+          statusClass = 'scheduled';
+          canParticipate = false;
+        } else if (giveaway.status === "ended" || now > end) {
+          statusLabel = 'Ended';
+          statusClass = 'ended';
+          canParticipate = false;
+        } else {
+          statusLabel = 'Active';
+          statusClass = 'active';
+          canParticipate = true;
+        }
 
         // Display giveaway
         let html = `
-          <div class="giveaway-details">
+          <div class="giveaway-details${statusClass ? ' ' + statusClass : ''}">
             <div class="giveaway-title">${giveaway.title}</div>
             <div class="gw-head">
               <div class="gw-info">
@@ -382,17 +398,17 @@
                 <div class="giveaway-reward">Reward: ${giveaway.reward}</div>
               </div>
               <div class="giveaway-meta">
-                <div><span style="color:#01b726;">Started:</span> ${new Date(giveaway.startDate).toLocaleString()}</div>
-                <div><span style="color:#01b726;">Ends:</span> ${new Date(giveaway.endDate).toLocaleString()}</div>
+                <div><span style="color:#01b726;">Started:</span> ${start.toLocaleString()}</div>
+                <div><span style="color:#01b726;">Ends:</span> ${end.toLocaleString()}</div>
                 <div><span style="color:#01b726;">Status:</span> 
-                  ${isEnded ? '<span style="color:red;font-weight:bold;">Ended</span>' : '<span style="color:green;font-weight:bold;">Active</span>'}
+                  <span class="status-${statusClass}">${statusLabel}</span>
                 </div>
               </div>
             </div>
         `;
 
         // Winner display from winners.txt
-        if (isEnded && winnerEntry && winnerEntry.winnerName && winnerEntry.winnerName !== "null" && winnerEntry.winnerName.trim() !== "") {
+        if (statusClass === 'ended' && winnerEntry && winnerEntry.winnerName && winnerEntry.winnerName !== "null" && winnerEntry.winnerName.trim() !== "") {
           html += `
             <div class="alert alert-success" style="background: #ffe066; color: #856404;">
               🎉 <b>Winner:</b> ${winnerEntry.winnerName}
@@ -400,10 +416,16 @@
           `;
         }
 
-        if (isEnded) {
+        if (statusClass === 'ended') {
           html += `
             <div class="alert alert-info">
               This giveaway has ended.
+            </div>
+          `;
+        } else if (statusClass === 'scheduled') {
+          html += `
+            <div class="alert alert-info">
+              This giveaway is scheduled and has not started yet.
             </div>
           `;
         } else if (userParticipation) {
@@ -412,7 +434,7 @@
               You're participating as: ${userParticipation.minecraftName}
             </div>
           `;
-        } else {
+        } else if (canParticipate) {
           html += `
             <form id="participate-form" class="form-group">
               <label for="minecraft-username">Minecraft Username:</label>
