@@ -339,21 +339,20 @@
           return;
         }
 
-        // Load winner data
-        let winnerEntry = null;
+        // Load winner data (support multiple winners per giveaway)
+        let winnerEntries = [];
         try {
           const winnerResponse = await fetch('gw/winners.txt');
           const winnerText = await winnerResponse.text();
-          winnerEntry = winnerText.split('\n')
+          winnerEntries = winnerText.split('\n')
             .filter(line => line.trim() !== '')
             .map(line => {
               const [gId, , , winnerName] = line.split('|');
               return { gId, winnerName };
             })
-            .find(w => w.gId === giveaway.id);
+            .filter(w => w.gId === giveaway.id && w.winnerName && w.winnerName !== "null" && w.winnerName.trim() !== "");
         } catch (e) {
-          // If winners.txt missing or error, just skip winner display
-          winnerEntry = null;
+          winnerEntries = [];
         }
 
         // Load participation data
@@ -402,6 +401,7 @@
               <div class="gw-info">
                 <div class="giveaway-description">Description: ${giveaway.description}</div>
                 <div class="giveaway-reward">Reward: ${giveaway.reward}</div>
+                <div class="giveaway-slots">Slots: ${giveaway.maxParticipants}</div>
               </div>
               <div class="giveaway-meta">
                 <div><span style="color:#01b726;">Started:</span> ${start.toLocaleString()}</div>
@@ -413,11 +413,14 @@
             </div>
         `;
 
-        // Winner display from winners.txt
-        if (statusClass === 'ended' && winnerEntry && winnerEntry.winnerName && winnerEntry.winnerName !== "null" && winnerEntry.winnerName.trim() !== "") {
+        // Winner display (multiple winners)
+        if (statusClass === 'ended' && winnerEntries.length > 0) {
           html += `
             <div class="alert alert-success" style="background: #ffe066; color: #856404;">
-              🎉 <b>Winner:</b> ${winnerEntry.winnerName}
+              🎉 <b>Winner${winnerEntries.length > 1 ? 's' : ''}:</b>
+              <ul style="margin: 0.5em 0 0 1.2em; padding: 0;">
+                ${winnerEntries.map(w => `<li>${w.winnerName}</li>`).join('')}
+              </ul>
             </div>
           `;
         }
