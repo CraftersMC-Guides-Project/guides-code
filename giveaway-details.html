@@ -433,7 +433,7 @@
             <div class="alert alert-info">
               You must connect your Xbox account to Discord to participate.
             </div>
-            <button class="btn-submit" onclick="window.location.href='login.html'">Login & Connect Xbox</button>
+            <button class="btn-submit" onclick="logoutAndRedirect()">Login & Connect Xbox</button>
           `;
         } else if (statusClass === 'ended') {
           html += `
@@ -525,6 +525,13 @@
     }
 
     window.onload = loadGiveawayDetails;
+    function logout() {
+      localStorage.removeItem('discordUser');
+    };
+    function logoutAndRedirect() {
+      logout();
+      window.location.href = 'login.html';
+    }
   </script>
 </body>
 
