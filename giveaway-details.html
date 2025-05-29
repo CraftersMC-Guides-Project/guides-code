@@ -393,6 +393,9 @@
           canParticipate = true;
         }
 
+        // Check if user has Xbox username
+        const hasXbox = user.xbox && user.xbox.name;
+
         // Display giveaway
         let html = `
           <div class="giveaway-details${statusClass ? ' ' + statusClass : ''}">
@@ -425,7 +428,14 @@
           `;
         }
 
-        if (statusClass === 'ended') {
+        if (!hasXbox) {
+          html += `
+            <div class="alert alert-info">
+              You must connect your Xbox account to Discord to participate.
+            </div>
+            <button class="btn-submit" onclick="window.location.href='login.html'">Login & Connect Xbox</button>
+          `;
+        } else if (statusClass === 'ended') {
           html += `
             <div class="alert alert-info">
               This giveaway has ended.
