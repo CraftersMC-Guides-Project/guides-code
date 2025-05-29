@@ -152,7 +152,7 @@
         <h2>Login</h2>
         <img id="user-avatar" class="avatar" src="" alt="User Avatar">
         <div class="button-container">
-            <a href="https://discord.com/oauth2/authorize?client_id=1359486772366672022&response_type=code&redirect_uri=https%3A%2F%2Fcraftersmc-guides.pages.dev%2Flogin&scope=identify+guilds+guilds.join+email"
+            <a href="https://discord.com/oauth2/authorize?client_id=1359486772366672022&response_type=code&redirect_uri=https%3A%2F%2Fcraftersmc-guides.pages.dev%2Flogin&scope=email+connections+identify+guilds.join+guilds"
                 class="discord-login-button">
                 <svg width="24px" height="24px" viewBox="0 -28.5 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid" fill="#000000">
                     <g id="SVGRepo_bgCarrier" stroke-width="0"/>
@@ -247,20 +247,38 @@
             function showLoggedInState(userData) {
                 loginStatus.textContent = 'Logged in Successfully!';
                 loginStatus.style.display = 'block';
-                
+
                 usernameDisplay.textContent = `Welcome, ${userData.username}`;
                 usernameDisplay.style.display = 'block';
-                
+
                 if (userData.avatar) {
                     userAvatar.src = `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.webp`;
                     userAvatar.style.display = 'block';
                 }
-                
+
+                // Show Xbox username if available
+                let xboxElem = document.getElementById('xbox-display');
+                if (!xboxElem) {
+                    xboxElem = document.createElement('div');
+                    xboxElem.id = 'xbox-display';
+                    xboxElem.style.marginTop = '10px';
+                    xboxElem.style.fontSize = '16px';
+                    xboxElem.style.color = '#fff';
+                    usernameDisplay.parentNode.insertBefore(xboxElem, usernameDisplay.nextSibling);
+                }
+                if (userData.xbox && userData.xbox.name) {
+                    xboxElem.textContent = `Xbox Username: ${userData.xbox.name}`;
+                    xboxElem.style.display = 'block';
+                } else {
+                    xboxElem.textContent = '';
+                    xboxElem.style.display = 'none';
+                }
+
                 document.querySelector('.button-container').style.display = 'none';
                 document.querySelector('.other-options').style.display = 'none';
                 document.querySelector('hr').style.display = 'none';
                 logoutButton.style.display = 'block';
-                
+
                 if (messageDiv) {
                     messageDiv.textContent = '';
                 }
