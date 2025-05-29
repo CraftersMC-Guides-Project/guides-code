@@ -485,7 +485,11 @@
         if (participateForm && !userParticipation && !isEnded && hasXbox) {
           participateForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const minecraftUsername = user.xbox.name; // Use Xbox name directly
+            const minecraftUsername = user.xbox && user.xbox.name ? user.xbox.name : null;
+            if (!minecraftUsername) {
+              alert('Xbox username not found. Please login and connect your Xbox account.');
+              return;
+            }
 
             try {
               // Create the participation entry
