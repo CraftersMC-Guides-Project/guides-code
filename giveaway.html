@@ -313,23 +313,30 @@
           const isParticipated = participations.some(p => 
             p.giveawayId === giveaway.id && p.discordId === user.id
           );
-          const winnerEntry = winners.find(w => w.gId === giveaway.id);
+          // Get all winners for this giveaway
+          const winnerEntries = winners.filter(w => w.gId === giveaway.id && w.winnerName && w.winnerName !== "null" && w.winnerName.trim() !== "");
 
           html += `
-            <div class="giveaway-card${statusClass === 'ended' ? ' ended' : ''}">
+            <div class="giveaway-card${statusClass === 'ended' ? ' ended' : ''}${statusClass === 'scheduled' ? ' scheduled' : ''}">
               <div class="giveaway-title">${giveaway.title}</div>
               <div class="giveaway-reward">🎁 <b>${giveaway.reward}</b></div>
+              <div class="giveaway-slots">Slots: <b>${giveaway.maxParticipants}</b></div>
               <div class="giveaway-status">
                 Status: <span class="status-${statusClass}">${statusLabel}</span>
               </div>
               <div class="giveaway-date">
                 ${statusClass === 'scheduled' ? `Starts: ${start.toLocaleString()}` : `Ends: ${end.toLocaleString()}`}
               </div>
-              ${statusClass === 'ended' && winnerEntry && winnerEntry.winnerName ? `
+              ${
+                statusClass === 'ended' && winnerEntries.length > 0 ? `
                 <div class="winner-badge">
-                  🏆 Winner: <span>${winnerEntry.winnerName}</span>
+                  🏆 Winner${winnerEntries.length > 1 ? 's' : ''}:
+                  <ul style="margin: 0.5em 0 0 1.2em; padding: 0;">
+                    ${winnerEntries.map(w => `<li>${w.winnerName}</li>`).join('')}
+                  </ul>
                 </div>
-              ` : ''}
+              ` : ''
+              }
               <button 
                 class="btn-participate" 
                 onclick="window.location.href='giveaway-details.html?id=${giveaway.id}'"
