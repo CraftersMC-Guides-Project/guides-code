@@ -1,61 +1,65 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Giveaways</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="css/essential.css">
-    <script src="js/script.js"></script>
+  <link rel="stylesheet" href="css/essential.css">
+  <script src="js/script.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0 auto;
       padding: 0;
-      min-width:40px;
+      min-width: 40px;
       justify-content: center;
       align-items: center;
-      display:flex;
+      display: flex;
       flex-direction: column;
       background: var(--body-bg);
       color: var(--main-text-color);
     }
+
     /* Container improvements */
-.giveaways-container {
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 2.5rem 1rem 1.5rem 1rem;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 5rem;
-}
+    .giveaways-container {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 1rem 1.5rem 1rem;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 5rem;
+    }
 
-.gw-container {
-  width: 100%;
-}
+    .gw-container {
+      width: 100%;
+    }
 
-.current-gw {
-  font-size: 1.5em;
-  font-weight: 700;
-  color: var(--primary-text-color, #1a73e8);
-  margin-bottom: 1.5em;
-  letter-spacing: 1px;
-  text-align: center;
-}
+    .current-gw {
+      font-size: 1.5em;
+      font-weight: 700;
+      color: var(--primary-text-color, #1a73e8);
+      margin-bottom: 1.5em;
+      letter-spacing: 1px;
+      text-align: center;
+    }
 
-/* End container improvements */
+    /* End container improvements */
 
     .giveaway-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr); /* 4 cards per row */
+      grid-template-columns: repeat(3, 1fr);
+      /* 4 cards per row */
       gap: 32px;
       width: 100%;
       margin: 0 auto;
       padding: 0 0 2rem 0;
       align-items: stretch;
     }
+
     .giveaway-card {
       border: 1.5px solid var(--border-color, #e0e0e0);
       border-radius: 18px;
@@ -74,11 +78,13 @@
       align-items: stretch;
       height: 100%;
     }
+
     .giveaway-card.ended {
       opacity: 1;
-      border:2px solid #f44336;
-      box-shadow: 0 0 10px 0 rgba(244,67,54,0.10);
+      border: 2px solid #f44336;
+      box-shadow: 0 0 10px 0 rgba(244, 67, 54, 0.10);
     }
+
     .giveaway-title {
       font-weight: bold;
       font-size: 1.4em;
@@ -87,17 +93,20 @@
       letter-spacing: 0.5px;
       text-align: center;
     }
+
     .giveaway-reward {
       color: var(--accent, #2b7bba);
       margin-bottom: 6px;
       font-size: 1.08em;
       text-align: center;
     }
+
     .giveaway-status {
       font-size: 1em;
       margin-bottom: 2px;
       text-align: center;
     }
+
     .giveaway-date {
       font-size: 0.98em;
       color: var(--text-color, #555);
@@ -105,6 +114,7 @@
       margin-bottom: 4px;
       text-align: center;
     }
+
     .winner-badge {
       background: #ffe066;
       color: #856404;
@@ -114,99 +124,128 @@
       margin: 10px auto 2px auto;
       font-size: 1.08em;
       border-left: 5px solid #f7c325;
-      box-shadow: 0 2px 8px 0 var(--shadow-color, rgba(30,42,70,0.10));
+      box-shadow: 0 2px 8px 0 var(--shadow-color, rgba(30, 42, 70, 0.10));
       display: flex;
       align-items: center;
       gap: 0.5em;
       justify-content: center;
       max-width: 90%;
+      flex-direction: column;
     }
-    .btn-participate, .btn-view {
+
+    .btn-participate,
+    .btn-view {
       width: 100%;
       margin: 0.3em 0 0.2em 0;
       padding: 10px 0;
       border-radius: 6px;
       font-size: 1.08em;
       font-weight: 600;
-      box-shadow: 0 2px 8px 0 var(--shadow-color, rgba(30,42,70,0.10));
+      box-shadow: 0 2px 8px 0 var(--shadow-color, rgba(30, 42, 70, 0.10));
       border: none;
       transition: background 0.2s, color 0.2s;
       cursor: pointer;
       display: block;
     }
+
     .btn-participate {
       background: #4CAF50;
       color: white;
     }
+
     .btn-participate:disabled {
       background: #cccccc;
       color: #888;
       cursor: not-allowed;
     }
+
     .btn-view {
       background: #0eaa2e;
       color: white;
     }
+
     .btn-view:hover {
       background: #0c8a22;
     }
-    .status-active { color: #4CAF50; font-weight: 600;}
-    .status-ended { color: #f44336; font-weight: 600;}
+
+    .status-active {
+      color: #4CAF50;
+      font-weight: 600;
+    }
+
+    .status-ended {
+      color: #f44336;
+      font-weight: 600;
+    }
+
     .status-scheduled {
       color: #f7b500;
       font-weight: 600;
     }
+
     .giveaway-card.scheduled {
       background: linear-gradient(135deg, #fffbe6 0%, #f7e9b0 100%);
       border-color: #f7b500;
     }
+
     @media (max-width: 1200px) {
       .giveaway-grid {
         grid-template-columns: repeat(2, 1fr);
       }
     }
+
     @media (max-width: 900px) {
       .giveaway-grid {
         grid-template-columns: 1fr;
         gap: 18px;
       }
+
       .giveaways-container {
         padding: 1.2rem 0.2rem;
       }
     }
+
     @media (prefers-color-scheme: dark) {
       body {
         background: var(--body-bg, #181a1b);
         color: var(--text-color, #e0e6eb);
       }
+
       .giveaway-card {
         border: 2px solid rgba(28, 255, 3, 0.511);
         box-shadow: 0 0 10px 0 var(--shadow-color, rgba(28, 255, 3, 0.482));
       }
+
       .giveaway-card.ended {
-        border:2px solid #f44336;
-        box-shadow: 0 0 10px 0 rgba(244,67,54,0.18);
+        border: 2px solid #f44336;
+        box-shadow: 0 0 10px 0 rgba(244, 67, 54, 0.18);
       }
+
       .giveaway-title {
         color: var(--primary-text-color, #90caf9);
       }
+
       .winner-badge {
         background: #3a2e00;
         color: #ffe066;
         border-left: 5px solid #f7c325;
       }
+
       .btn-participate {
         background: #388e3c;
         color: #fff;
       }
+
       .btn-view {
         background: #197d2b;
         color: #fff;
       }
+
       .btn-participate:disabled {
         background: #444;
         color: #aaa;
       }
+
       .giveaway-card.scheduled {
         background: linear-gradient(135deg, #2d2a00 0%, #23272e 100%);
         border-color: #f7b500;
@@ -214,28 +253,29 @@
     }
   </style>
 </head>
+
 <body>
   <div id="loader">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-    <div class="navbar"></div>
-
-    <div class="sidebar" id="sidebar"></div>
-
-    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-    <button id="float">
-        <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
-        <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
-        <span class="material-icons"id="ai" onclick="aiBtn()">smart_toy</span>
-        <span class="material-icons" id="scrollToTopBtn">north</span>
-    </button>
-  <div class="giveaways-container">
-  <div class="gw-container">
-  <div class="current-gw">Current Giveaways</div>
-  <div id="giveaways-content">Loading giveaways...</div>
+    <div></div>
+    <div></div>
+    <div></div>
   </div>
+  <div class="navbar"></div>
+
+  <div class="sidebar" id="sidebar"></div>
+
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <button id="float">
+    <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
+    <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
+    <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
+    <span class="material-icons" id="scrollToTopBtn">north</span>
+  </button>
+  <div class="giveaways-container">
+    <div class="gw-container">
+      <div class="current-gw">Current Giveaways</div>
+      <div id="giveaways-content">Loading giveaways...</div>
+    </div>
   </div>
   <div id="footer"></div>
   <script>
@@ -310,7 +350,7 @@
             canParticipate = true;
           }
 
-          const isParticipated = participations.some(p => 
+          const isParticipated = participations.some(p =>
             p.giveawayId === giveaway.id && p.discordId === user.id
           );
           // Get all winners for this giveaway
@@ -327,8 +367,7 @@
               <div class="giveaway-date">
                 ${statusClass === 'scheduled' ? `Starts: ${start.toLocaleString()}` : `Ends: ${end.toLocaleString()}`}
               </div>
-              ${
-                statusClass === 'ended' && winnerEntries.length > 0 ? `
+              ${statusClass === 'ended' && winnerEntries.length > 0 ? `
                 <div class="winner-badge">
                   🏆 Winner${winnerEntries.length > 1 ? 's' : ''}:
                   <ul style="margin: 0.5em 0 0 1.2em; padding: 0;">
@@ -336,28 +375,27 @@
                   </ul>
                 </div>
               ` : ''
-              }
+            }
               <button 
                 class="btn-participate" 
                 onclick="window.location.href='giveaway-details.html?id=${giveaway.id}'"
                 ${!canParticipate || isParticipated ? 'disabled' : ''}
               >
-                ${
-                  statusClass === 'scheduled'
-                    ? 'Not Started'
-                    : isParticipated
-                      ? 'Participated'
-                      : statusClass === 'ended'
-                        ? 'Ended'
-                        : 'Participate'
-                }
+                ${statusClass === 'scheduled'
+              ? 'Not Started'
+              : isParticipated
+                ? 'Participated'
+                : statusClass === 'ended'
+                  ? 'Ended'
+                  : 'Participate'
+            }
               </button>
               <button class="btn-view" onclick="window.location.href='giveaway-details.html?id=${giveaway.id}'">View</button>
             </div>
           `;
         });
         html += '</div>';
-        
+
         document.getElementById("giveaways-content").innerHTML = html || '<p>No active giveaways</p>';
       } catch (error) {
         console.error('Error:', error);
@@ -369,4 +407,5 @@
     window.onload = loadGiveaways;
   </script>
 </body>
+
 </html>
