@@ -454,10 +454,11 @@
             </div>
           `;
         } else if (canParticipate) {
+          // Auto-participate with Xbox name, no input needed
           html += `
             <form id="participate-form" class="form-group">
-              <label for="minecraft-username">Minecraft Username:</label>
-              <input type="text" id="minecraft-username" class="form-input" required>
+              <label for="xbox-username">Xbox Username:</label>
+              <input type="text" id="xbox-username" class="form-input" value="${user.xbox.name}" readonly>
               <button type="submit" class="btn-submit">Participate</button>
             </form>
           `;
@@ -481,15 +482,10 @@
 
         // Handle form submission
         const participateForm = document.getElementById("participate-form");
-        if (participateForm && !userParticipation && !isEnded) {
+        if (participateForm && !userParticipation && !isEnded && hasXbox) {
           participateForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const minecraftUsername = document.getElementById("minecraft-username").value.trim();
-
-            if (!minecraftUsername) {
-              alert('Please enter your Minecraft username');
-              return;
-            }
+            const minecraftUsername = user.xbox.name; // Use Xbox name directly
 
             try {
               // Create the participation entry
