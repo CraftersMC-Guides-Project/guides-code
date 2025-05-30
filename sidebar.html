@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const sidebarNameElement = document.getElementById("sidebarName");
     const sidebarAvatarElement = document.getElementById("sidebarAvatar");
     const sidebarAvatarImgElement = document.getElementById("sidebarAvatarImg");
+    const sidebarTopTop = document.querySelector(".sidebar-top-bottom-top");
 
     try {
         const storedUser = localStorage.getItem("discordUser");
@@ -97,6 +98,34 @@ document.addEventListener("DOMContentLoaded", () => {
             usernameText.textContent = "";
             sidebarNameElement.textContent = "Name";
             sidebarAvatarElement.style.display = 'none';
+
+            // Hide user info row and settings icon
+            const userInfoRow = sidebarTopTop.querySelector('div[style*="display: flex"]');
+            const settingsDiv = document.getElementById("settings");
+            if (userInfoRow) userInfoRow.style.display = "none";
+            if (settingsDiv) settingsDiv.style.display = "none";
+
+            // Remove any existing login button to avoid duplicates
+            const oldBtn = sidebarTopTop.querySelector('.sidebar-login-btn');
+            if (oldBtn) oldBtn.remove();
+
+            // Add login button
+            const loginBtn = document.createElement("button");
+            loginBtn.className = "sidebar-login-btn";
+            loginBtn.textContent = "Login with Discord";
+            loginBtn.style.cssText = `
+                background: #5865f2;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                padding: 8px 18px;
+                font-size: 1rem;
+                cursor: pointer;
+                margin: 0 auto 10px auto;
+                display: block;
+            `;
+            loginBtn.onclick = () => window.location.href = '/login.html';
+            sidebarTopTop.appendChild(loginBtn);
         }
     } catch (error) {
         console.error("Error accessing localStorage or parsing user data:", error);
@@ -104,6 +133,23 @@ document.addEventListener("DOMContentLoaded", () => {
         usernameText.textContent = "";
         sidebarNameElement.textContent = "Name";
         sidebarAvatarElement.style.display = 'none';
+
+        // Add login button on error as well
+        if (sidebarTopTop) {
+            sidebarTopTop.innerHTML = `
+              <button onclick="window.location.href='/login.html'" style="
+                background: #5865f2;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                padding: 8px 18px;
+                font-size: 1rem;
+                cursor: pointer;
+                margin: 0 auto;
+                display: block;
+              ">Login with Discord</button>
+            `;
+        }
     }
 });
          </script>
