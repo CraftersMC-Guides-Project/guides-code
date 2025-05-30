@@ -160,6 +160,7 @@ function fetchAllPartials() {
     document.getElementById('sidebar').innerHTML = sidebarHtml;
     document.getElementById('footer').innerHTML = footerHtml;
     setupThemeSwitchers();
+    updateSidebarLoginButton(); // <-- Add this line
   }).catch(error => {
     console.error("Error loading partials:", error);
   });
@@ -217,6 +218,7 @@ function fetchAllLPartials() {
   ]).then(([sidebarHtml, footerHtml]) => {
     document.getElementById('sidebar').innerHTML = sidebarHtml;
     document.getElementById('footer').innerHTML = footerHtml;
+    updateSidebarLoginButton(); // <-- Add this line
   }).catch(err => {
     console.error("[Partials] Failed to load:", err);
   });
@@ -248,4 +250,60 @@ function setupThemeSwitchers() {
   themeSwitches.forEach(switchEl => {
     switchEl.addEventListener("click", toggleTheme);
   });
+}
+
+function updateSidebarLoginButton() {
+  const profileImg = document.getElementById("sidebarProfilePic");
+  const usernameText = document.getElementById("sidebarUsername");
+  const sidebarNameElement = document.getElementById("sidebarName");
+  const sidebarAvatarElement = document.getElementById("sidebarAvatar");
+  const sidebarAvatarImgElement = document.getElementById("sidebarAvatarImg");
+  const sidebarTopTop = document.querySelector(".sidebar-top-bottom-top");
+
+  const storedUser = localStorage.getItem("discordUser");
+  if (!sidebarTopTop) return;
+
+  if (storedUser) {
+    // Show user info (optional: you can add your user info logic here)
+    if (sidebarAvatarElement) sidebarAvatarElement.style.display = 'block';
+    if (sidebarNameElement) sidebarNameElement.style.display = '';
+    if (profileImg) profileImg.src = "../assets/cmc-guides.png";
+    // Remove login button if present
+    const oldBtn = sidebarTopTop.querySelector('.sidebar-login-btn');
+    if (oldBtn) oldBtn.remove();
+    // Optionally, show settings icon etc.
+    const userInfoRow = sidebarTopTop.querySelector('div[style*="display: flex"]');
+    const settingsDiv = document.getElementById("settings");
+    if (userInfoRow) userInfoRow.style.display = "";
+    if (settingsDiv) settingsDiv.style.display = "";
+  } else {
+    // Hide user info and settings
+    if (sidebarAvatarElement) sidebarAvatarElement.style.display = 'none';
+    if (sidebarNameElement) sidebarNameElement.textContent = "Name";
+    if (profileImg) profileImg.src = "../assets/cmc-guides.png";
+    const userInfoRow = sidebarTopTop.querySelector('div[style*="display: flex"]');
+    const settingsDiv = document.getElementById("settings");
+    if (userInfoRow) userInfoRow.style.display = "none";
+    if (settingsDiv) settingsDiv.style.display = "none";
+    // Remove any existing login button to avoid duplicates
+    const oldBtn = sidebarTopTop.querySelector('.sidebar-login-btn');
+    if (oldBtn) oldBtn.remove();
+    // Add login button
+    const loginBtn = document.createElement("button");
+    loginBtn.className = "sidebar-login-btn";
+    loginBtn.textContent = "Login with Discord";
+    loginBtn.style.cssText = `
+      background: #5865f2;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 18px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin: 0 auto 10px auto;
+      display: block;
+    `;
+    loginBtn.onclick = () => window.location.href = '/login.html';
+    sidebarTopTop.appendChild(loginBtn);
+  }
 }
