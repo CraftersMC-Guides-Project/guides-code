@@ -8,257 +8,185 @@
   <link rel="stylesheet" href="css/essential.css">
   <script src="js/script.js"></script>
   <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      margin: 0 auto;
-      padding: 0;
-      min-width: 40px;
-      justify-content: center;
-      align-items: center;
-      display: flex;
-      flex-direction: column;
-      background: var(--body-bg);
-      color: var(--main-text-color);
-    }
+    :root {
+  --main-bg: #f5f7fa;
+  --main-text: #1c1c1c;
+  --primary: #007bff;
+  --card-bg: #ffffff40;
+  --card-border: #ffffff80;
+  --glass-blur: blur(18px);
 
-    /* Container improvements */
-    .giveaways-container {
-      width: 100%;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2.5rem 1rem 1.5rem 1rem;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 5rem;
-    }
+  --status-active: #28a745;
+  --status-scheduled: #ffc107;
+  --status-ended: #dc3545;
+  --reward: #d9a500;
+}
 
-    .gw-container {
-      width: 100%;
-    }
+.darkmode {
+  --main-bg: #252525;
+  --main-text: #f5f5f5;
+  --primary: #66b2ff;
+  --card-bg: #1a1a1a60;
+  --card-border: #444;
+  --glass-blur: blur(18px);
+}
 
-    .current-gw {
-      font-size: 1.5em;
-      font-weight: 700;
-      color: var(--primary-text-color, #1a73e8);
-      margin-bottom: 1.5em;
-      letter-spacing: 1px;
-      text-align: center;
-    }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--main-bg);
+  color: var(--main-text);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-    /* End container improvements */
+.giveaways-container {
+  max-width: 1100px;
+  width: 100%;
+  padding: 3rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-    .giveaway-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      /* 4 cards per row */
-      gap: 32px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 0 0 2rem 0;
-      align-items: stretch;
-    }
+.current-gw {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 2rem;
+  text-align: center;
+}
 
-    .giveaway-card {
-      backdrop-filter: blur(16px) saturate(180%);
-      -webkit-backdrop-filter: blur(16px) saturate(180%);
-      background-color: rgba(255, 255, 255, 0.15);
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      color: #ffffff;
-      max-width: 25rem;
-    }
+.giveaway-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  width: 100%;
+}
 
-    .giveaway-card:hover {
-      transform: translateY(-5px);
-    }
+.giveaway-card {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 1.5rem;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
-    .giveaway-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 0.5rem;
-      text-align: center;
-    }
+.giveaway-card:hover {
+  transform: translateY(-4px);
+}
 
-    .giveaway-reward {
-      font-size: 1.2rem;
-      font-weight: 500;
-      color: #ffd700;
-      text-align: center;
-      margin-bottom: 1rem;
-    }
+.status-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 50px;
+  color: #fff;
+  text-transform: uppercase;
+}
 
-    .giveaway-status,
-    .giveaway-date {
-      font-size: 0.95rem;
-      text-align: center;
-      opacity: 0.85;
-    }
+.giveaway-card.active .status-badge {
+  background-color: var(--status-active);
+}
 
-    .status-active {
-      color: #4CAF50;
-      font-weight: 600;
-    }
+.giveaway-card.scheduled .status-badge {
+  background-color: var(--status-scheduled);
+  color: #000;
+}
 
-    .status-ended {
-      color: #f44336;
-      font-weight: 600;
-    }
+.giveaway-card.ended .status-badge {
+  background-color: var(--status-ended);
+}
 
-    .status-scheduled {
-      color: #ffc107;
-      font-weight: 600;
-    }
+.giveaway-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 0.5rem;
+}
 
-    .winner-badge {
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(6px);
-      color: #f7c325;
-      border-left: 5px solid #f7c325;
-      padding: 0.8rem;
-      border-radius: 12px;
-      text-align: center;
-      margin: 1rem auto;
-      max-width: 90%;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    }
+.giveaway-reward {
+  text-align: center;
+  margin: 0.8rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--reward);
+}
 
-    .btn-participate,
-    .btn-view {
-      padding: 0.75rem 1rem;
-      margin-top: 0.6rem;
-      border: none;
-      border-radius: 999px;
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      width: 100%;
-      transition: background 0.3s, transform 0.2s;
-      backdrop-filter: blur(6px);
-      color: white;
-    }
+.giveaway-date {
+  text-align: center;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-bottom: 1.2rem;
+}
 
-    .btn-participate {
-      background: rgba(76, 175, 80, 0.7);
-    }
+.giveaway-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: column;
+}
 
-    .btn-participate:hover {
-      background: rgba(76, 175, 80, 0.85);
-      transform: scale(1.02);
-    }
+.giveaway-card .btn {
+  padding: 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-align: center;
+  border: none;
+  background-color: var(--primary);
+  color: var(--primary-color);
+  transition: background 0.3s ease;
+  margin-top: 0.5rem;
+}
 
-    .btn-participate:disabled {
-      background: rgba(255, 255, 255, 0.2);
-      color: #aaa;
-      cursor: not-allowed;
-    }
+.giveaway-card .btn:hover {
+  background-color: var(--navbar-light);
+}
 
-    .btn-view {
-      background: rgba(14, 170, 46, 0.6);
-    }
+.giveaway-card .btn:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
 
-    .btn-view:hover {
-      background: rgba(14, 170, 46, 0.75);
-      transform: scale(1.02);
-    }
+.winner-badge {
+  border-left: 4px solid var(--reward);
+  padding: 0.75rem;
+  margin: 1rem 0 0.5rem;
+  background: transparent;
+  border-radius: 10px;
+  text-align: center;
+  color: var(--reward);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
 
-    .status-active {
-      color: #4CAF50;
-      font-weight: 600;
-    }
+@media (max-width: 768px) {
+  .giveaway-card {
+    padding: 1.2rem;
+  }
 
-    .status-ended {
-      color: #f44336;
-      font-weight: 600;
-    }
+  .giveaway-grid {
+    gap: 18px;
+  }
 
-    .status-scheduled {
-      color: #f7b500;
-      font-weight: 600;
-    }
-
-    .giveaway-card.scheduled {
-      background: linear-gradient(135deg, #fffbe6 0%, #f7e9b0 100%);
-      border-color: #f7b500;
-    }
-
-    @media (max-width: 900px) {
-      .giveaway-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 18px;
-      }
-
-      .giveaways-container {
-        padding: 1.2rem 0.2rem;
-      }
-    }
-
-     @media (max-width: 1200px) {
-      .giveaway-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 18px;
-      }
-     }
-
-     @media (max-width: 600px) {
-      .giveaway-grid {
-        grid-template-columns: 1fr;
-        gap: 18px;
-      }
-     }
-
-
-    @media (prefers-color-scheme: dark) {
-      body {
-        background: var(--body-bg, #181a1b);
-        color: var(--text-color, #e0e6eb);
-      }
-
-      .giveaway-card {
-        border: 2px solid rgba(28, 255, 3, 0.511);
-      }
-
-      .giveaway-card.ended {
-        border: 2px solid #f44336;
-      }
-
-      .giveaway-title {
-        color: var(--primary-text-color, #90caf9);
-      }
-
-      .winner-badge {
-        background: transparent;
-        color: #cea400;
-        border-left: 5px solid #f7c325;
-        border: 2px solid;
-      }
-
-      .btn-participate {
-        background: #388e3c;
-        color: #fff;
-      }
-
-      .btn-view {
-        background: #197d2b;
-        color: #fff;
-      }
-
-      .btn-participate:disabled {
-        background: #444;
-        color: #aaa;
-      }
-
-      .giveaway-card.scheduled {
-        background: #2d2a00;
-        border-color: #f7b500;
-      }
-    }
+  .current-gw {
+    font-size: 1.6rem;
+  }
+}
   </style>
 </head>
 
@@ -288,14 +216,14 @@
   <div id="footer"></div>
   <script>
     async function loadGiveaways() {
-      const user = JSON.parse(localStorage.getItem("discordUser"));
-      if (!user) {
-        document.getElementById("giveaways-content").innerHTML = `
-          <p>Please login to view giveaways</p>
-          <button onclick="window.location.href='/login'">Login with Discord</button>
-        `;
-        return;
-      }
+      //const user = JSON.parse(localStorage.getItem("discordUser"));
+      //if (!user) {
+        //document.getElementById("giveaways-content").innerHTML = `
+          //<p>Please login to view giveaways</p>
+          //<button onclick="window.location.href='/login'">Login with Discord</button>
+        //`;
+        //return;
+      //}  
 
       try {
         // Load active giveaways
