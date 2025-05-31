@@ -460,6 +460,7 @@
           `;
         }
 
+        // Fix: Only show participate form if canParticipate is true AND statusClass is 'active'
         if (!hasXbox) {
           html += `
             <div class="alert alert-info">
@@ -485,7 +486,7 @@
               You're participating as: ${userParticipation.minecraftName}
             </div>
           `;
-        } else if (canParticipate) {
+        } else if (canParticipate && statusClass === 'active') {
           html += `
             <form id="participate-form" class="form-group">
               <label for="xbox-username">Minecraft Username:</label>
@@ -520,7 +521,7 @@
               return;
             }
             try {
-              const entryDate = new Date().toISOString().split('T')[0];
+              const entryDate = getFormattedNow(); // Use new formatted date
               const participationEntry = `${giveaway.id}|${user.id}|${minecraftUsername}|${entryDate}`;
               const webhookData = { content: `${participationEntry}` };
               const response = await fetch(WEBHOOK_URL, {
@@ -552,6 +553,19 @@
     function logoutAndRedirect() {
       logout();
       window.location.href = 'login.html';
+    }
+
+    // Fix: Format participation entry date as DD-MM-YYYY HH:MM AM/PM
+    function getFormattedNow() {
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const year = now.getFullYear();
+      let hour = now.getHours();
+      const minute = String(now.getMinutes()).padStart(2, '0');
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      hour = hour % 12 || 12;
+      return `${day}-${month}-${year} ${hour}:${minute} ${ampm}`;
     }
   </script>
 </body>
