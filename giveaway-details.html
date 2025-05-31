@@ -9,74 +9,87 @@
   <script src="js/script.js"></script>
   <style>
     :root {
-      /* Light mode */
-      --body-bg: #f6f8fa;
-      --text-color: #222;
-      --primary-text-color: #1a73e8;
-      --card-bg-color: #fff;
-      --border-color: #e0e0e0;
-      --shadow-color: rgba(30, 42, 70, 0.10);
-      --accent: #1a73e8;
-      --success-bg: #e6ffed;
-      --success-color: #137333;
-      --info-bg: #e3f2fd;
-      --info-color: #1565c0;
-      --input-bg: #f7fafd;
-      --input-border: #cfd8dc;
+      --main-bg: #f5f7fa;
+      --main-text: #1c1c1c;
+      --primary: #007bff;
       --card-bg: rgba(255, 255, 255, 0.30);
+      --card-border: rgba(255, 255, 255, 0.56);
+      --glass-blur: blur(8.1px);
+      --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      --card-radius: 16px;
+      --status-active: #28a745;
+      --status-scheduled: #ffc107;
+      --status-ended: #dc3545;
+      --reward: #d9a500;
     }
 
     .darkmode {
-      --body-bg: #181a1b;
-      --text-color: #e0e6eb;
-      --primary-text-color: #90caf9;
-      --card-bg-color: #23272e;
-      --border-color: #2c313a;
-      --shadow-color: rgba(0, 0, 0, 0.5);
-      --accent: #90caf9;
-      --success-bg: #223d2b;
-      --success-color: #7fff9f;
-      --info-bg: #1a2636;
-      --info-color: #90caf9;
-      --input-bg: #23272e;
-      --input-border: #374151;
+      --main-bg: #252525;
+      --main-text: #f5f5f5;
+      --primary: #66b2ff;
       --card-bg: rgba(40, 40, 40, 0.69);
+      --card-border: rgba(48, 39, 39, 0.41);
+      --glass-blur: blur(9.7px);
+      --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      --card-radius: 16px;
     }
 
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
       margin: 0 auto;
       padding: 0;
-      color: var(--text-color);
+      color: var(--main-text);
       min-height: 100vh;
       background-image: url("../Backgrounds/IMG_4498.jpeg");
       background-repeat: no-repeat;
       background-position: center center;
       background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    #giveaway-content {
-      margin-top: 5rem;
+    .giveaway-details-container {
+      max-width: 1100px;
+      width: 100%;
+      padding: 5rem 1rem;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      min-height: 60vh;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 auto;
     }
 
-    .giveaway-details {
+    .giveaway-details-card {
+      position: relative;
       background: var(--card-bg);
-      border: 1.5px solid var(--border-color, #e0e0e0);
-      box-shadow: 0 8px 32px 0 var(--shadow-color, rgba(30, 42, 70, 0.10));
-      border-radius: 18px;
+      border: 1px solid var(--card-border);
+      border-radius: var(--card-radius);
       padding: 2.5rem 2rem 2rem 2rem;
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      box-shadow: var(--glass-shadow);
+      transition: background 0.3s, color 0.3s, transform 0.2s;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow: hidden;
       width: 100%;
       max-width: 500px;
       margin: 0 auto;
-      transition: background 0.3s, color 0.3s;
-      position: relative;
-      overflow: hidden;
       animation: fadeIn 0.7s;
-      backdrop-filter: blur(2px);
+    }
+
+    .giveaway-details-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+      border-radius: var(--card-radius);
+      z-index: -1;
     }
 
     @keyframes fadeIn {
@@ -92,81 +105,94 @@
     }
 
     .giveaway-title {
-      display: flex;
-      justify-content: center;
-      align-items: center;
       font-size: 2em;
       font-weight: 700;
+      text-align: center;
       margin-bottom: 0.7em;
-      color: var(--primary-text-color, #1a73e8);
+      color: var(--primary);
       letter-spacing: 1px;
-      text-shadow: 0 2px 8px var(--shadow-color, rgba(30, 42, 70, 0.10));
+      text-shadow: 0 2px 8px var(--glass-shadow);
     }
 
-    .gw-head {
-      display: flex;
-      flex-direction: column;
-      gap: 1.2em;
-      margin-bottom: 1.2em;
-    }
-
-    .gw-info {
-      font-size: 1.08em;
+    .giveaway-reward {
+      text-align: center;
+      font-weight: 600;
+      color: var(--reward);
       margin-bottom: 0.5em;
+      font-size: 1.1rem;
+    }
+
+    .giveaway-sponsor {
+      text-align: center;
+      font-size: 1em;
+      color: var(--reward);
+      margin-bottom: 8px;
+    }
+
+    .giveaway-banner {
+      width: 100%;
+      border-radius: 10px 10px 0 0;
+      max-height: 180px;
+      object-fit: cover;
+      margin-bottom: 10px;
     }
 
     .giveaway-description {
       margin-bottom: 0.5em;
-      color: var(--text-color);
+      color: var(--main-text);
       opacity: 0.95;
-    }
-
-    .giveaway-reward {
-      font-weight: 500;
-      color: var(--accent);
-      margin-bottom: 0.5em;
+      text-align: center;
     }
 
     .giveaway-meta {
       font-size: 0.98em;
-      color: var(--text-color);
+      color: var(--main-text);
       opacity: 0.8;
       display: flex;
       flex-direction: column;
       gap: 0.2em;
+      margin-bottom: 1em;
+      align-items: center;
     }
 
     .giveaway-meta span {
       font-weight: 600;
     }
 
-    .alert {
+    .giveaway-slots {
+      text-align: center;
+      margin-bottom: 0.5em;
+    }
+
+    .alert,
+    .alert-success,
+    .alert-info {
       padding: 12px 18px;
       border-radius: 8px;
       margin: 18px 0 10px 0;
       font-size: 1.05em;
-      box-shadow: 0 2px 8px 0 var(--shadow-color);
-      border-left: 5px solid var(--accent);
-      background: var(--info-bg);
-      color: var(--info-color);
+      box-shadow: 0 2px 8px 0 var(--glass-shadow);
+      border-left: 5px solid var(--primary);
+      background: #e3f2fd;
+      color: #1565c0;
       transition: background 0.3s, color 0.3s;
     }
 
     .alert-success {
       background: linear-gradient(90deg, #e6ffed 60%, #b2f7cc 100%);
-      color: var(--success-color, #137333);
+      color: #137333;
       border-left: 5px solid #4caf50;
     }
 
     .alert-info {
-      background: var(--info-bg);
-      color: var(--info-color);
-      border-left: 5px solid var(--accent);
+      background: #e3f2fd;
+      color: #1565c0;
+      border-left: 5px solid var(--primary);
     }
 
     .participants-list {
       margin-top: 2.2em;
-      border-top: 1px solid var(--border-color);
+      border-top: 1px solid var(--card-border);
       padding-top: 1.2em;
       background: transparent;
     }
@@ -174,7 +200,7 @@
     .participants-list h3 {
       margin: 0 0 0.7em 0;
       font-size: 1.1em;
-      color: var(--primary-text-color);
+      color: var(--primary);
       letter-spacing: 1px;
     }
 
@@ -188,9 +214,9 @@
     }
 
     .participants-list li {
-      background: var(--input-bg);
-      color: var(--text-color);
-      border: 1px solid var(--input-border);
+      background: var(--main-bg);
+      color: var(--main-text);
+      border: 1px solid var(--card-border);
       border-radius: 6px;
       padding: 5px 12px;
       font-size: 0.98em;
@@ -207,29 +233,29 @@
 
     .form-group label {
       font-weight: 500;
-      color: var(--primary-text-color);
+      color: var(--primary);
       margin-bottom: 0.2em;
     }
 
     .form-input {
       padding: 10px;
       width: 100%;
-      border: 1.5px solid var(--input-border);
+      border: 1.5px solid var(--card-border);
       border-radius: 6px;
-      background: var(--input-bg);
-      color: var(--text-color);
+      background: var(--main-bg);
+      color: var(--main-text);
       font-size: 1em;
       transition: border 0.2s, background 0.3s;
       outline: none;
     }
 
     .form-input:focus {
-      border-color: var(--accent);
-      background: var(--card-bg-color);
+      border-color: var(--primary);
+      background: #fff;
     }
 
     .btn-submit {
-      background: var(--accent);
+      background: var(--primary);
       color: #fff;
       border: none;
       padding: 10px;
@@ -238,7 +264,7 @@
       font-size: 1.08em;
       font-weight: 600;
       margin-top: 0.5em;
-      box-shadow: 0 2px 8px 0 var(--shadow-color);
+      box-shadow: 0 2px 8px 0 var(--glass-shadow);
       transition: background 0.2s;
     }
 
@@ -247,7 +273,7 @@
     }
 
     a {
-      color: var(--accent);
+      color: var(--primary);
       text-decoration: none;
       transition: color 0.2s;
     }
@@ -257,21 +283,13 @@
       color: #1765c1;
     }
 
-    @media (prefers-color-scheme: dark) {
-      .giveaway-details {
-        background: var(--card-bg-color, #23272e);
-        border: 1.5px solid var(--border-color, #2c313a);
-        box-shadow: 0 8px 32px 0 var(--shadow-color, rgba(0, 0, 0, 0.5));
+    @media (max-width: 768px) {
+      .giveaway-details-card {
+        padding: 1.2rem;
       }
 
-      .giveaway-title {
-        color: var(--primary-text-color, #90caf9);
-        text-shadow: 0 2px 8px var(--shadow-color, rgba(0, 0, 0, 0.5));
-      }
-
-      .alert-success {
-        background: linear-gradient(90deg, #00ff5575 60%, #00bf59 100%);
-        color: var(--success-color, #7fff9f);
+      .giveaway-details-container {
+        padding: 2rem 0.5rem;
       }
     }
   </style>
@@ -284,9 +302,7 @@
     <div></div>
   </div>
   <div class="navbar"></div>
-
   <div class="sidebar" id="sidebar"></div>
-
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
   <button id="float">
     <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
@@ -294,32 +310,27 @@
     <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
     <span class="material-icons" id="scrollToTopBtn">north</span>
   </button>
-
-  <a href="giveaway.html">&larr; Back to Giveaways</a>
-  <div id="giveaway-content">Loading giveaway details...</div>
+  <div class="giveaway-details-container">
+    <a href="giveaway.html" style="margin-bottom:1.5em;">&larr; Back to Giveaways</a>
+    <div id="giveaway-content">Loading giveaway details...</div>
+  </div>
   <div id="footer"></div>
-
   <script>
     // Discord Webhook URL
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1371500562234867824/dzJi5f2g1iS_0nfJIT7ZfmAEEMaawip43MjBpwooin5FKfarEjj-Wa17QHPbh3B-z-5H";
 
-    // Add this helper function at the top of your <script> tag, before async function loadGiveawayDetails()
     function formatDateTime(dateStr) {
       if (!dateStr) return '';
-      // Accepts "DD-MM-YYYY HH:MM AM/PM" or "YYYY-MM-DD HH:MM AM/PM"
       let [datePart, timePart, ampm] = dateStr.split(/[\s:]+/);
       let day, month, year, hour, minute;
       if (datePart.includes('-')) {
         const parts = datePart.split('-');
         if (parts[2].length === 4) {
-          // DD-MM-YYYY
           [day, month, year] = parts;
         } else {
-          // YYYY-MM-DD
           [year, month, day] = parts;
         }
       }
-      // If timePart is undefined, try to get from dateStr
       let timeMatch = dateStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
       if (timeMatch) {
         hour = parseInt(timeMatch[1], 10);
@@ -330,17 +341,14 @@
         minute = '00';
         ampm = '';
       }
-      // Convert to 24h if needed
       if (ampm === 'PM' && hour < 12) hour += 12;
       if (ampm === 'AM' && hour === 12) hour = 0;
-      // Month name
       const monthNames = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
       ];
       const monthIdx = parseInt(month, 10) - 1;
       const monthName = monthNames[monthIdx] || month;
-      // Format hour back to 12h
       let hour12 = hour % 12 || 12;
       let ampmOut = hour >= 12 ? 'PM' : 'AM';
       return `${parseInt(day, 10)} ${monthName} ${year}, ${hour12}:${minute} ${ampmOut}`;
@@ -352,16 +360,13 @@
         window.location.href = 'giveaway.html';
         return;
       }
-
       const urlParams = new URLSearchParams(window.location.search);
       const giveawayId = urlParams.get('id');
       if (!giveawayId) {
         window.location.href = 'giveaway.html';
         return;
       }
-
       try {
-        // Load giveaway details
         const response = await fetch('gw/active_giveaways.txt');
         const data = await response.text();
         const giveaway = data.split('\n')
@@ -370,26 +375,14 @@
             const parts = line.split('|');
             const [id, title, description, startDate, endDate, maxParticipants, reward, status, sponsor, banner] = parts;
             return {
-              id,
-              title,
-              description,
-              startDate,
-              endDate,
-              maxParticipants,
-              reward,
-              status,
-              sponsor,
-              banner
+              id, title, description, startDate, endDate, maxParticipants, reward, status, sponsor, banner
             };
           })
           .find(g => g.id === giveawayId);
-
         if (!giveaway) {
           window.location.href = 'giveaway.html';
           return;
         }
-
-        // Load winner data (support multiple winners per giveaway)
         let winnerEntries = [];
         try {
           const winnerResponse = await fetch('gw/winners.txt');
@@ -401,11 +394,7 @@
               return { gId, winnerName };
             })
             .filter(w => w.gId === giveaway.id && w.winnerName && w.winnerName !== "null" && w.winnerName.trim() !== "");
-        } catch (e) {
-          winnerEntries = [];
-        }
-
-        // Load participation data
+        } catch (e) { winnerEntries = []; }
         const partResponse = await fetch('gw/participants.txt');
         const partData = await partResponse.text();
         const participations = partData.split('\n')
@@ -414,26 +403,26 @@
             const [gId, dId, minecraftName] = line.split('|');
             return { gId, dId, minecraftName };
           });
-
         const userParticipation = participations.find(p =>
           p.gId === giveaway.id && p.dId === user.id
         );
         const participants = participations.filter(p => p.gId === giveaway.id);
 
         const now = new Date();
-        const start = new Date(giveaway.startDate);
-        const end = new Date(giveaway.endDate);
-        const isEnded = giveaway.status === "ended" || now > end;
+        const startFormatted = formatDateTime(giveaway.startDate);
+        const endFormatted = formatDateTime(giveaway.endDate);
 
         let statusLabel = '';
         let statusClass = '';
         let canParticipate = false;
+        const startDateObj = new Date(giveaway.startDate);
+        const endDateObj = new Date(giveaway.endDate);
 
-        if (now < start) {
+        if (now < startDateObj) {
           statusLabel = 'Scheduled';
           statusClass = 'scheduled';
           canParticipate = false;
-        } else if (giveaway.status === "ended" || now > end) {
+        } else if (giveaway.status === "ended" || now > endDateObj) {
           statusLabel = 'Ended';
           statusClass = 'ended';
           canParticipate = false;
@@ -443,32 +432,25 @@
           canParticipate = true;
         }
 
-        // Check if user has Xbox username
         const hasXbox = user.xbox && user.xbox.name;
 
-        // Display giveaway
         let html = `
-          <div class="giveaway-details${statusClass ? ' ' + statusClass : ''}">
-            ${giveaway.banner ? `<img src="${giveaway.banner}" alt="Giveaway Banner" style="width:100%;border-radius:10px 10px 0 0;max-height:180px;object-fit:cover;margin-bottom:10px;">` : ''}
+          <div class="giveaway-details-card${statusClass ? ' ' + statusClass : ''}">
+            ${giveaway.banner ? `<img class="giveaway-banner" src="${giveaway.banner}" alt="Giveaway Banner">` : ''}
             <div class="giveaway-title">${giveaway.title}</div>
-            <div class="giveaway-reward">Reward: ${giveaway.reward}</div>
-            ${giveaway.sponsor ? `<div class="giveaway-sponsor" style="font-size:1em;color:var(--reward);margin-bottom:8px;">Sponsored by: <b>${giveaway.sponsor}</b></div>` : ''}
-            <div class="gw-head">
-              <div class="gw-info">
-                <div class="giveaway-description">Description: ${giveaway.description}</div>
-                <div class="giveaway-slots">Slots: ${giveaway.maxParticipants}</div>
+            <div class="giveaway-reward">🎁 <b>${giveaway.reward}</b></div>
+            ${giveaway.sponsor ? `<div class="giveaway-sponsor">Sponsored by: <b>${giveaway.sponsor}</b></div>` : ''}
+            <div class="giveaway-description">${giveaway.description}</div>
+            <div class="giveaway-meta">
+              <div><span style="color:#01b726;">Started:</span> ${startFormatted}</div>
+              <div><span style="color:#01b726;">Ends:</span> ${endFormatted}</div>
+              <div><span style="color:#01b726;">Status:</span> 
+                <span class="status-${statusClass}">${statusLabel}</span>
               </div>
-              <div class="giveaway-meta">
-                <div><span style="color:#01b726;">Started:</span> ${formatDateTime(giveaway.startDate)}</div>
-                <div><span style="color:#01b726;">Ends:</span> ${formatDateTime(giveaway.endDate)}</div>
-                <div><span style="color:#01b726;">Status:</span> 
-                  <span class="status-${statusClass}">${statusLabel}</span>
-                </div>
-              </div>
+              <div class="giveaway-slots">Slots: <b>${giveaway.maxParticipants}</b></div>
             </div>
         `;
 
-        // Winner display (multiple winners)
         if (statusClass === 'ended' && winnerEntries.length > 0) {
           html += `
             <div class="alert alert-success" style="background: #ffd22070; color: var(--main-text-color);">
@@ -506,7 +488,6 @@
             </div>
           `;
         } else if (canParticipate) {
-          // Auto-participate with Xbox name, no input needed
           html += `
             <form id="participate-form" class="form-group">
               <label for="xbox-username">Minecraft Username:</label>
@@ -516,7 +497,6 @@
           `;
         }
 
-        // Participants list
         html += `
           <div class="participants-list">
             <h3>Participants (${participants.length})</h3>
@@ -532,9 +512,8 @@
         html += '</div>';
         document.getElementById("giveaway-content").innerHTML = html;
 
-        // Handle form submission
         const participateForm = document.getElementById("participate-form");
-        if (participateForm && !userParticipation && !isEnded && hasXbox) {
+        if (participateForm && !userParticipation && statusClass === 'active' && hasXbox) {
           participateForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const minecraftUsername = user.xbox && user.xbox.name ? user.xbox.name : null;
@@ -542,28 +521,18 @@
               alert('Xbox username not found. Please login and connect your Xbox account.');
               return;
             }
-
             try {
-              // Create the participation entry
               const entryDate = new Date().toISOString().split('T')[0];
               const participationEntry = `${giveaway.id}|${user.id}|${minecraftUsername}|${entryDate}`;
-
-              // Send to Discord webhook as plain text
-              const webhookData = {
-                content: `${participationEntry}`
-              };
-
+              const webhookData = { content: `${participationEntry}` };
               const response = await fetch(WEBHOOK_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(webhookData)
               });
-
               if (!response.ok) throw new Error('Webhook failed');
-
               alert('Successfully participated in the giveaway! Good luck!');
               window.location.reload();
-
             } catch (error) {
               console.error('Webhook error:', error);
               alert('Participation recorded but failed to notify Discord');
@@ -577,9 +546,11 @@
     }
 
     window.onload = loadGiveawayDetails;
+
     function logout() {
       localStorage.removeItem('discordUser');
     };
+
     function logoutAndRedirect() {
       logout();
       window.location.href = 'login.html';
