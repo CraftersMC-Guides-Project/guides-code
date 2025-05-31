@@ -352,6 +352,20 @@
       return `${parseInt(day, 10)} ${monthName} ${year}, ${hour12}:${minute} ${ampmOut}`;
     }
 
+    function parseCustomDate(dateStr) {
+      const match = dateStr.match(/^(\d{2})-(\d{2})-(\d{4}) (\d{1,2}):(\d{2}) (AM|PM)$/i);
+      if (!match) return new Date(NaN);
+      let [, day, month, year, hour, minute, ampm] = match;
+      day = parseInt(day, 10);
+      month = parseInt(month, 10) - 1;
+      year = parseInt(year, 10);
+      hour = parseInt(hour, 10);
+      minute = parseInt(minute, 10);
+      if (ampm.toUpperCase() === "PM" && hour < 12) hour += 12;
+      if (ampm.toUpperCase() === "AM" && hour === 12) hour = 0;
+      return new Date(year, month, day, hour, minute);
+    }
+
     async function loadGiveawayDetails() {
       const user = JSON.parse(localStorage.getItem("discordUser"));
       if (!user) {
@@ -413,8 +427,8 @@
         let statusLabel = '';
         let statusClass = '';
         let canParticipate = false;
-        const startDateObj = new Date(giveaway.startDate);
-        const endDateObj = new Date(giveaway.endDate);
+        const startDateObj = parseCustomDate(giveaway.startDate);
+        const endDateObj = parseCustomDate(giveaway.endDate);
 
         if (now < startDateObj) {
           statusLabel = 'Scheduled';
