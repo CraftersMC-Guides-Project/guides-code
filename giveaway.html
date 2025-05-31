@@ -285,6 +285,49 @@ body {
   </div>
   <div id="footer"></div>
   <script>
+    // Helper to format date string "DD-MM-YYYY HH:MM AM/PM" to "5 June 2025, 10:00 AM"
+function formatDateTime(dateStr) {
+  if (!dateStr) return '';
+  // Accepts "DD-MM-YYYY HH:MM AM/PM" or "YYYY-MM-DD HH:MM AM/PM"
+  let [datePart, timePart, ampm] = dateStr.split(/[\s:]+/);
+  let day, month, year, hour, minute;
+  if (datePart.includes('-')) {
+    const parts = datePart.split('-');
+    if (parts[2].length === 4) {
+      // DD-MM-YYYY
+      [day, month, year] = parts;
+    } else {
+      // YYYY-MM-DD
+      [year, month, day] = parts;
+    }
+  }
+  // If timePart is undefined, try to get from dateStr
+  let timeMatch = dateStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+  if (timeMatch) {
+    hour = parseInt(timeMatch[1], 10);
+    minute = timeMatch[2];
+    ampm = timeMatch[3] ? timeMatch[3].toUpperCase() : '';
+  } else {
+    hour = 0;
+    minute = '00';
+    ampm = '';
+  }
+  // Convert to 24h if needed
+  if (ampm === 'PM' && hour < 12) hour += 12;
+  if (ampm === 'AM' && hour === 12) hour = 0;
+  // Month name
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const monthIdx = parseInt(month, 10) - 1;
+  const monthName = monthNames[monthIdx] || month;
+  // Format hour back to 12h
+  let hour12 = hour % 12 || 12;
+  let ampmOut = hour >= 12 ? 'PM' : 'AM';
+  return `${parseInt(day, 10)} ${monthName} ${year}, ${hour12}:${minute} ${ampmOut}`;
+}
+
     async function loadGiveaways() {
       const user = JSON.parse(localStorage.getItem("discordUser"));
       if (!user) {
@@ -362,6 +405,10 @@ body {
           // Get all winners for this giveaway
           const winnerEntries = winners.filter(w => w.gId === giveaway.id && w.winnerName && w.winnerName !== "null" && w.winnerName.trim() !== "");
 
+          // Format start and end date
+          const startFormatted = formatDateTime(giveaway.startDate);
+          const endFormatted = formatDateTime(giveaway.endDate);
+
           html += `
             <div class="giveaway-card${statusClass === 'ended' ? ' ended' : ''}${statusClass === 'scheduled' ? ' scheduled' : ''}">
               ${giveaway.banner ? `<img src="${giveaway.banner}" alt="Giveaway Banner" style="width:100%;border-radius:10px 10px 0 0;max-height:120px;object-fit:cover;margin-bottom:10px;">` : ''}
@@ -373,7 +420,7 @@ body {
                 <div class="giveaway-slots">Slots: <b>${giveaway.maxParticipants}</b></div>
               </div>
               <div class="giveaway-date">
-                ${statusClass === 'scheduled' ? `Starts: ${start.toLocaleString()}` : `Ends: ${end.toLocaleString()}`}
+                ${statusClass === 'scheduled' ? `Starts: ${startFormatted}` : `Ends: ${endFormatted}`}
               </div>
               ${statusClass === 'ended' && winnerEntries.length > 0 ? `
                 <div class="winner-badge">

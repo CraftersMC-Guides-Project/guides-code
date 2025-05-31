@@ -303,6 +303,49 @@
     // Discord Webhook URL
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1371500562234867824/dzJi5f2g1iS_0nfJIT7ZfmAEEMaawip43MjBpwooin5FKfarEjj-Wa17QHPbh3B-z-5H";
 
+    // Add this helper function at the top of your <script> tag, before async function loadGiveawayDetails()
+    function formatDateTime(dateStr) {
+      if (!dateStr) return '';
+      // Accepts "DD-MM-YYYY HH:MM AM/PM" or "YYYY-MM-DD HH:MM AM/PM"
+      let [datePart, timePart, ampm] = dateStr.split(/[\s:]+/);
+      let day, month, year, hour, minute;
+      if (datePart.includes('-')) {
+        const parts = datePart.split('-');
+        if (parts[2].length === 4) {
+          // DD-MM-YYYY
+          [day, month, year] = parts;
+        } else {
+          // YYYY-MM-DD
+          [year, month, day] = parts;
+        }
+      }
+      // If timePart is undefined, try to get from dateStr
+      let timeMatch = dateStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+      if (timeMatch) {
+        hour = parseInt(timeMatch[1], 10);
+        minute = timeMatch[2];
+        ampm = timeMatch[3] ? timeMatch[3].toUpperCase() : '';
+      } else {
+        hour = 0;
+        minute = '00';
+        ampm = '';
+      }
+      // Convert to 24h if needed
+      if (ampm === 'PM' && hour < 12) hour += 12;
+      if (ampm === 'AM' && hour === 12) hour = 0;
+      // Month name
+      const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+      const monthIdx = parseInt(month, 10) - 1;
+      const monthName = monthNames[monthIdx] || month;
+      // Format hour back to 12h
+      let hour12 = hour % 12 || 12;
+      let ampmOut = hour >= 12 ? 'PM' : 'AM';
+      return `${parseInt(day, 10)} ${monthName} ${year}, ${hour12}:${minute} ${ampmOut}`;
+    }
+
     async function loadGiveawayDetails() {
       const user = JSON.parse(localStorage.getItem("discordUser"));
       if (!user) {
@@ -416,8 +459,8 @@
                 <div class="giveaway-slots">Slots: ${giveaway.maxParticipants}</div>
               </div>
               <div class="giveaway-meta">
-                <div><span style="color:#01b726;">Started:</span> ${start.toLocaleString()}</div>
-                <div><span style="color:#01b726;">Ends:</span> ${end.toLocaleString()}</div>
+                <div><span style="color:#01b726;">Started:</span> ${formatDateTime(giveaway.startDate)}</div>
+                <div><span style="color:#01b726;">Ends:</span> ${formatDateTime(giveaway.endDate)}</div>
                 <div><span style="color:#01b726;">Status:</span> 
                   <span class="status-${statusClass}">${statusLabel}</span>
                 </div>
