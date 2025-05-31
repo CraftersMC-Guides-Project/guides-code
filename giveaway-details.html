@@ -325,7 +325,7 @@
           .filter(line => line.trim() !== '')
           .map(line => {
             const parts = line.split('|');
-            const [id, title, description, startDate, endDate, maxParticipants, reward, status] = parts;
+            const [id, title, description, startDate, endDate, maxParticipants, reward, status, sponsor, banner] = parts;
             return {
               id,
               title,
@@ -334,7 +334,9 @@
               endDate,
               maxParticipants,
               reward,
-              status
+              status,
+              sponsor,
+              banner
             };
           })
           .find(g => g.id === giveawayId);
@@ -404,11 +406,13 @@
         // Display giveaway
         let html = `
           <div class="giveaway-details${statusClass ? ' ' + statusClass : ''}">
+            ${giveaway.banner ? `<img src="${giveaway.banner}" alt="Giveaway Banner" style="width:100%;border-radius:10px 10px 0 0;max-height:180px;object-fit:cover;margin-bottom:10px;">` : ''}
             <div class="giveaway-title">${giveaway.title}</div>
+            <div class="giveaway-reward">Reward: ${giveaway.reward}</div>
+            ${giveaway.sponsor ? `<div class="giveaway-sponsor" style="font-size:1em;color:var(--reward);margin-bottom:8px;">Sponsored by: <b>${giveaway.sponsor}</b></div>` : ''}
             <div class="gw-head">
               <div class="gw-info">
                 <div class="giveaway-description">Description: ${giveaway.description}</div>
-                <div class="giveaway-reward">Reward: ${giveaway.reward}</div>
                 <div class="giveaway-slots">Slots: ${giveaway.maxParticipants}</div>
               </div>
               <div class="giveaway-meta">
