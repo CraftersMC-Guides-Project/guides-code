@@ -557,11 +557,21 @@
 
     // Fix: Format participation entry date as DD-MM-YYYY HH:MM AM/PM
     function getFormattedNow() {
+      // Get current time in IST (UTC+5:30)
       const now = new Date();
-      const day = String(now.getDate()).padStart(2, '0');
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const year = now.getFullYear();
-      return `${day}-${month}-${year}`;
+      // Convert to IST by adding 5.5 hours (19800000 ms)
+      const istOffset = 5.5 * 60 * 60 * 1000;
+      const ist = new Date(now.getTime() + istOffset);
+
+      const day = String(ist.getDate()).padStart(2, '0');
+      const month = String(ist.getMonth() + 1).padStart(2, '0');
+      const year = ist.getFullYear();
+      let hour = ist.getHours();
+      const minute = String(ist.getMinutes()).padStart(2, '0');
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      hour = hour % 12 || 12;
+
+      return `${day}-${month}-${year} ${hour}:${minute} ${ampm} IST`;
     }
   </script>
 </body>
