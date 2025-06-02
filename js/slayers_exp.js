@@ -7,11 +7,11 @@ const collectionsData = [
       { "rank": 2, "name": "HeGzoStRqFe", "score": "N/A" },
       { "rank": 3, "name": "DueBacon2007102", "score": "34M+" },
       { "rank": 4, "name": "Itzomkar1232891", "score": "24M+" },
-      { "rank": 5, "name": "StragglyBoat23", "score": "19M+" },
+      { "rank": 5, "name": "SoundClover8088", "score": "19.1M+" },
       { "rank": 6, "name": "Kg_lcky_01", "score": "18.3M+" },
       { "rank": 7, "name": "Firegod174", "score": "17M+" },
       { "rank": 8, "name": "DRONZAR_OP", "score": "N/A" },
-      { "rank": 9, "name": "SoundClover8088", "score": "N/A" },
+      { "rank": 9, "name": "Unknown", "score": "N/A" },
       { "rank": 10, "name": "Unknown", "score": "N/A" }
     ]
   },
@@ -26,9 +26,9 @@ const collectionsData = [
       { "rank": 5, "name": "Shakilbaby", "score": "2.5M+" },
       { "rank": 6, "name": "DueBacon2007102", "score": "N/A" },
       { "rank": 7, "name": "Yogi_Ji_gaming", "score": "N/A" },
-      { "rank": 8, "name": "op_moraya5598", "score": "1.9M+" },
-      { "rank": 9, "name": "uatitan580", "score": "N/A" },
-      { "rank": 10, "name": "Unknown", "score": "N/A" }
+      { "rank": 8, "name": "SoundClover8088", "score": "2.5M+" },
+      { "rank": 9, "name": "op_moraya5598", "score": "N/A" },
+      { "rank": 10, "name": "uatitan580", "score": "N/A" }
     ]
   }
 ];
