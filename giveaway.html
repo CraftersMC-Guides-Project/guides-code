@@ -261,6 +261,42 @@ body {
     margin-top: 2rem;
   }
 }
+
+.login-prompt {
+  text-align: center;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  padding: 2rem;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow);
+  max-width: 400px;
+  margin: 2rem auto;
+}
+
+.login-message {
+  font-size: 1.2rem;
+  color: var(--main-text);
+  margin-bottom: 1.5rem;
+}
+
+.btn-discord-login {
+  padding: 0.8rem 1.5rem;
+  background-color: #5865F2;
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-discord-login:hover {
+  background-color: #4752c4;
+}
   </style>
 </head>
 
@@ -339,9 +375,11 @@ function formatDateTime(dateStr) {
       const user = JSON.parse(localStorage.getItem("discordUser"));
       if (!user) {
         document.getElementById("giveaways-content").innerHTML = `
-          <p>Please login to view giveaways</p>
-          <button onclick="window.location.href='/login'">Login with Discord</button>
-        `;
+  <div class="login-prompt">
+    <p class="login-message">Please login to view giveaways</p>
+    <button class="btn-discord-login" onclick="window.location.href='/login'">Login with Discord</button>
+  </div>
+`;
         return;
       }  
 
