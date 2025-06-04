@@ -156,7 +156,7 @@ function fetchAllPartials() {
     fetch('../sidebar.html').then(res => res.text()),
     fetch('../footer.html').then(res => res.text())
   ]).then(([navbarHtml, sidebarHtml, footerHtml]) => {
-    document.querySelector('.navbar').innerHTML = navbarHtml;
+    document.querySelector('.top').innerHTML = navbarHtml;
     document.getElementById('sidebar').innerHTML = sidebarHtml;
     document.getElementById('footer').innerHTML = footerHtml;
     setupThemeSwitchers();
