@@ -4,8 +4,8 @@
    </div>
    <div class="sidebar-top-bottom">
     <div class="sidebar-top-bottom-top">
-     <div style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
-      <div id="sidebarAvatar" style="width: 30px; height: 30px; border-radius: 50%; overflow: hidden; margin-right: 5px;">
+     <div class="nasty">
+      <div id="sidebarAvatar" style="border-radius: 50%; overflow: hidden; margin-right: 5px;">
         <img id="sidebarAvatarImg" src="" alt="Discord Avatar" style="width: 100%; height: 100%; object-fit: cover;">
       </div>
      <p id="sidebarName" style="text-align: initial; font-size: 1rem; width: 126px; margin-left: 5px;"></p>
@@ -22,6 +22,7 @@
   <b>Console Output:</b><br>
    </div>
 
+<a class="sidebar-link" href="../giveaway.html">Giveaways</a>
 <a class="sidebar-link" href="../rank-sellers.html">Rank Sellers</a>
 <a class="sidebar-link" href="../unicode.html">Unicode</a>
 <a class="sidebar-link" href="../journey-guides.html">Guides</a>
@@ -38,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const sidebarNameElement = document.getElementById("sidebarName");
     const sidebarAvatarElement = document.getElementById("sidebarAvatar");
     const sidebarAvatarImgElement = document.getElementById("sidebarAvatarImg");
+    const sidebarTopTop = document.querySelector(".sidebar-top-bottom-top");
 
     try {
         const storedUser = localStorage.getItem("discordUser");
@@ -97,6 +99,34 @@ document.addEventListener("DOMContentLoaded", () => {
             usernameText.textContent = "";
             sidebarNameElement.textContent = "Name";
             sidebarAvatarElement.style.display = 'none';
+
+            // Hide user info row and settings icon
+            const userInfoRow = sidebarTopTop.querySelector('div[style*="display: flex"]');
+            const settingsDiv = document.getElementById("settings");
+            if (userInfoRow) userInfoRow.style.display = "none";
+            if (settingsDiv) settingsDiv.style.display = "none";
+
+            // Remove any existing login button to avoid duplicates
+            const oldBtn = sidebarTopTop.querySelector('.sidebar-login-btn');
+            if (oldBtn) oldBtn.remove();
+
+            // Add login button
+            const loginBtn = document.createElement("button");
+            loginBtn.className = "sidebar-login-btn";
+            loginBtn.textContent = "Login with Discord";
+            loginBtn.style.cssText = `
+                background: #5865f2;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                padding: 8px 18px;
+                font-size: 1rem;
+                cursor: pointer;
+                margin: 0 auto 10px auto;
+                display: block;
+            `;
+            loginBtn.onclick = () => window.location.href = '/login.html';
+            sidebarTopTop.appendChild(loginBtn);
         }
     } catch (error) {
         console.error("Error accessing localStorage or parsing user data:", error);
@@ -104,6 +134,23 @@ document.addEventListener("DOMContentLoaded", () => {
         usernameText.textContent = "";
         sidebarNameElement.textContent = "Name";
         sidebarAvatarElement.style.display = 'none';
+
+        // Add login button on error as well
+        if (sidebarTopTop) {
+            sidebarTopTop.innerHTML = `
+              <button onclick="window.location.href='/login.html'" style="
+                background: #5865f2;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                padding: 8px 18px;
+                font-size: 1rem;
+                cursor: pointer;
+                margin: 0 auto;
+                display: block;
+              ">Login with Discord</button>
+            `;
+        }
     }
 });
          </script>
