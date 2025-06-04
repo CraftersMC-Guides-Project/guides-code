@@ -6,8 +6,3 @@ function clearSelection() {
         sel.removeAllRanges();
     }
 }
-
-function closeAnnouncementBanner() {
-    document.getElementById('announcement-banner').style.display = 'none';
-    document.querySelector('.navbar').style.marginTop = '0';
-  }
