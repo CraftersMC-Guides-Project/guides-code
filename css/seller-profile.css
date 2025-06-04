@@ -1,206 +1,287 @@
-/* General styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
+:root {
+    --box-font-size: 1.5rem;
+    --white-color: white;
+    --gold-color: gold;
+    --accent-color: #007bff;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --stats-bg-color: rgba(0, 0, 0, 0.7);
+    --border-color: rgba(255, 255, 255, 0.125);
+    --border-color-alt: rgba(255, 255, 255, 0.3);
+    --profile-bg-color: rgba(255, 255, 255, 0.49);
+    --avatar-bg-color: #007bff;
+    --card-bg-color: rgba(200, 200, 200, 0.65);
+    --darkmode-card-bg: rgba(80, 80, 80, 0.75);
+    --label-color: #ccc;
+    --available-color: #82EB53;
+    --selling-bg: rgba(0, 128, 0, 0.3);
+    --selling-color: #82EB53;
+    --paused-bg: rgba(218, 81, 0, 0.3);
+    --paused-color: #ff9b59;
+    --inactive-bg: rgba(255, 0, 0, 0.3);
+    --inactive-color: #ff6b6b;
+    --badge-bg: #007bff;
+    --text-color: #222;
+    --box-size: 150px;
+    --box-gap: 20px;
+}
+
+.darkmode {
+    --white-color: white;
+    --gold-color: gold;
+    --accent-color: #007bff;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --stats-bg-color: rgba(0, 0, 0, 0.7);
+    --border-color: rgba(255, 255, 255, 0.125);
+    --border-color-alt: rgba(255, 255, 255, 0.3);
+    --profile-bg-color: rgba(255, 255, 255, 0.49);
+    --avatar-bg-color: #007bff;
+    --card-bg-color: rgba(40, 40, 40, 0.75);
+    --darkmode-card-bg: rgba(36, 36, 36, 0.4);
+    --label-color: #ccc;
+    --available-color: #82EB53;
+    --selling-bg: rgba(0, 128, 0, 0.3);
+    --selling-color: #82EB53;
+    --paused-bg: rgba(218, 81, 0, 0.3);
+    --paused-color: #ff9b59;
+    --inactive-bg: rgba(255, 0, 0, 0.3);
+    --inactive-color: #ff6b6b;
+    --badge-bg: #007bff;
+    --text-color: #fff;
 }
 
 body {
-    background: #f9f9f9;
-    color: #222;
-    overflow-x: hidden;
-}
-
-/* Hero Section */
-.hero {
-    flex: 1;
-    direction: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: white;
-    margin-top: 56px;
-    padding: 20px;
-    height: calc(100vh - 56px);
-    background-image: url("../Backgrounds/IMG_4501.gif");
+    font-family: Arial, sans-serif;
+    color: var(--text-color);
+    margin: 0;
+    background-image: url('../Backgrounds/IMG_4500.jpeg');
     background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     background-repeat: no-repeat;
-    z-index: 3;
-}
 
-.hero.darkmode {
-    background-image:
-    linear-gradient(rgba(0, 0, 0, 0.5),
-                    rgba(0, 0, 0, 0.5)),
-    url("../Backgrounds/IMG_4501.gif");
 }
-
-.hero h1 {
-    font-size: 3rem;
-    margin-top: 90px;
-    margin-bottom: 20px;
-}
-
-.hero p {
-    font-family: 'Courier New', monospace;
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-}
-
-.cta-btn {
-    background: #007bff;
-    color: white;
-    padding: 15px 30px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.cta-btn:hover {
-    background: #0056b3;
-}
-
-/* Bottom Navbar */
-.bottom-nav {
-    background: white;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 10px 0;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    z-index: 20;
-}
-
-.bottom-nav a {
-    text-decoration: none;
-    color: #48494b;
-    font-size: 0.8rem;
+h1 {
+    margin-top: 64px;
+    font-size: 2.5em;
     text-align: center;
+    color: #007bff;
 }
 
-.bottom-nav a:hover {
-    color: #0056b3;
+.box {
+    background-color: var(--card-bg-color);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    box-shadow: black 2px 5px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
-.bottom-nav .nav-item {
+.grid-container-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.grid-container {
+    /*DO NOT ADD align-items: center; WORST MISTAKE OF MY LIFE*/
+    display: grid;
+    grid-template-columns: var(--box-size) var(--box-size) var(--box-size) var(--box-size) var(--box-size);
+    grid-template-rows: var(--box-size) var(--box-size) ;
+    grid-template-areas: 
+        "box-5 box-1 box-2 box-2 box-2 box-7"
+        "box-5 box-3 box-4 box-6 box-6 box-8";
+    gap: var(--box-gap);
+}
+
+@media (max-width: 1200px) {
+    .grid-container {
+        display: grid;
+        grid-template-columns: var(--box-size) var(--box-size) var(--box-size) var(--box-size);
+        grid-template-rows: var(--box-size) var(--box-size) var(--box-size);
+        grid-template-areas: 
+            "box-1 box-2 box-2 box-2"
+            "box-3 box-4 box-6 box-6"
+            "box-5 box-5 box-7 box-8";
+        gap: var(--box-gap);
+    }
+}
+
+@media (max-width: 700px) {
+    .grid-container {
+        grid-template-columns: var(--box-size) var(--box-size) var(--box-size) ;
+        grid-template-rows: var(--box-size) var(--box-size) var(--box-size) var(--box-size);
+        grid-template-areas: 
+            "box-2 box-2 box-2"
+            "box-1 box-3 box-4"
+            "box-6 box-6 box-7"
+            "box-8 box-5 box-5";
+    }
+}
+@media (max-width: 500px) {
+    :root {
+            --box-size: 120px;
+            --box-gap: 10px;
+            --box-font-size: 1.2rem;
+    }
+}
+
+.profile-banner {
+    height: auto;
+    min-height: 40vh;
+    width: 100%;
+    background-image: url('../Backgrounds/IMG_4500.jpeg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    margin-top: 60px;
+    padding-top: 50px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
 }
 
-.bottom-nav .nav-item span {
-    font-size: 1.5rem;
-}
-
-/* Cards Section */
-.card-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 20px;
-    width: 97%;
-    height: fit-content;
-}
-
-.card {
-    position: relative;
-    width: 33%;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease-in-out;
-}
-
-.card img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    display: block;
-}
-
-.card::before {
+.profile-banner::before {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.8));
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7));
 }
 
-.card-content {
-    position: absolute;
-    bottom: 15px;
-    left: 15px;
-    color: white;
-    z-index: 2;
-    text-align: left;
+.banner-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    z-index: 1;
+    width: 100%;
+}
+
+.banner-avatar {
+    height: 60px;
+    width: auto;
+    border-radius: 12px;
+    margin-right: 20px;
+    background-color: #007bff;
+    padding: 5px;
+}
+
+.banner-name {
+    font-size: 3rem;
+    margin: 0;
+    color: var(--white-color, white);
+    text-shadow: 2px 2px var(--shadow-color);
+}
+select {
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg-color);
+    color: var(--white-color);
+}
+
+#prices {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.9)), url('../Backgrounds/IMG_4502.jpeg');
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    color: var(--white-color);
+    justify-content: space-evenly;
+    display: grid;
+    grid-template-columns: var(--box-size) var(--box-size) var(--box-size);
+    grid-template-rows: var(--box-size);
+    grid-template-areas: 
+        "price1 price2 price3";
+}
+.price-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
     padding: 10px;
 }
-
-.card h3 {
-    margin: 0;
-    font-size: 20px;
+.box-value {
+    font-size: 2.5rem;
     font-weight: bold;
+    margin-bottom: 5px;
+}
+.box-label {
+    position: fixed;
+    font-size: 1rem;
+    color: var(--text-color);
+    bottom: 20%;
+    padding-top: 5px;
 }
 
-.card p {
-    font-size: 14px;
-    margin: 5px 0;
+#prices .box-label {
+    color: var(--white-color);
 }
 
-.card button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    display: inline-block;
+#rank {
+    border-radius: 10px;
+    color: var(--white-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
 }
 
-.card button:hover {
-    background-color: #0056b3;
+.box-value img {
+    width: var(--box-size);
+    height: auto;
 }
 
-.card:hover {
-    transform: scale(1.05);
+#discord {
+    font-size: calc(var(--box-font-size) - 0.2rem);
+    color: #007bff;
+    word-wrap: break-word;
+    padding: 0;
 }
 
-@media (max-width: 768px) {
-    body {
-        align-items: flex-start;
-        height: auto;
-    }
-
-    .card-container {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .card {
-        width: 90%;
-        max-width: 400px;
-    }
+#gem {
+    font-size: var(--box-font-size);
+    color: #82EB53;
 }
 
-footer {
-    margin-top: 20px;
+#status {
+    font-size: 3rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-badge {
+display: inline-block;
+padding: 5px 10px;
+border-radius: 16px;
+font-weight: bold;
+}
+
+.selling {
+background-color: var(--selling-bg, rgba(0, 128, 0, 0.3));
+color: var(--selling-color, #82EB53);
+}
+
+.paused {
+background-color: var(--paused-bg, rgba(218, 81, 0, 0.3));
+color: var(--paused-color, #ff9b59);
+}
+
+.inactive {
+background-color: var(--inactive-bg, rgba(255, 0, 0, 0.3));
+color: var(--inactive-color, #ff6b6b);
+}
+
+#timezone {
+    font-size: var(--box-font-size);
     text-align: center;
-    font-size: 14px;
-    color: #666;
 }
+#sales {
+    text-align: center;
+}
+
