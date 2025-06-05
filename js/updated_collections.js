@@ -2000,12 +2000,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 7,
-                    "name": "Unknown",
+                    "name": "Ghosthunter4233",
                     "score": "N/A"
                 },
                 {
                     "rank": 8,
-                    "name": "Ghosthunter4233",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
