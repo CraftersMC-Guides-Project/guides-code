@@ -341,7 +341,14 @@ body {
   </div>
   <div id="footer"></div>
   <script>
-    // Helper to format date string "DD-MM-YYYY HH:MM AM/PM" to "5 June 2025, 10:00 AM"
+function getCookie(name) {
+  return document.cookie.split('; ').reduce((r, v) => {
+    const parts = v.split('=');
+    return parts[0] === name ? decodeURIComponent(parts[1]) : r
+  }, '');
+}
+
+// Helper to format date string "DD-MM-YYYY HH:MM AM/PM" to "5 June 2025, 10:00 AM"
 function formatDateTime(dateStr) {
   if (!dateStr) return '';
   // Accepts "DD-MM-YYYY HH:MM AM/PM" or "YYYY-MM-DD HH:MM AM/PM"
@@ -385,7 +392,8 @@ function formatDateTime(dateStr) {
 }
 
     async function loadGiveaways() {
-      const user = JSON.parse(localStorage.getItem("discordUser"));
+      const userCookie = getCookie('discordUser');
+      const user = userCookie ? JSON.parse(userCookie) : null;
       if (!user) {
         document.getElementById("giveaways-content").innerHTML = `
   <div class="login-prompt">
