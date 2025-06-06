@@ -167,8 +167,17 @@ function fetchAllPartials() {
 }
 
 setTimeout(() => {
+  // Use cookie for discordUser
+  function getCookie(name) {
+    return document.cookie.split('; ').reduce((r, v) => {
+      const parts = v.split('=');
+      return parts[0] === name ? decodeURIComponent(parts[1]) : r
+    }, '');
+  }
+
   const gUser = JSON.parse(localStorage.getItem('googleAuth'));
-  const dUser = JSON.parse(localStorage.getItem('discordUser'));
+  const dUserCookie = getCookie('discordUser');
+  const dUser = dUserCookie ? JSON.parse(dUserCookie) : null;
   const user = JSON.parse(localStorage.getItem('user'));
   const userSettings = user ? JSON.parse(localStorage.getItem(`userSettings_${user.email}`)) : null;
 
@@ -177,9 +186,11 @@ setTimeout(() => {
   const infoDivImg = document.getElementById("sidebarAvatar");
 
   if (dUser) {
-    infoDiv.innerHTML = `${dUser.email}`;
-    infoDivName.innerHTML = `${dUser.username}`;
-    infoDivImg.innerHTML = `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="https://cdn.discordapp.com/avatars/${dUser.id}/${dUser.avatar}.png">`;
+    infoDiv.innerHTML = `${dUser.email || ''}`;
+    infoDivName.innerHTML = `${dUser.username || ''}`;
+    infoDivImg.innerHTML = dUser.avatar && dUser.id
+      ? `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="https://cdn.discordapp.com/avatars/${dUser.id}/${dUser.avatar}.png">`
+      : '';
   } else if (user && user.token) {
     if (userSettings) {
       infoDiv.innerHTML = `${user.email}`;
@@ -190,6 +201,8 @@ setTimeout(() => {
 }, 2000);
 
 function logout() {
+  // Remove user data from cookies and localStorage
+  document.cookie = "discordUser=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
   localStorage.removeItem("user");
   localStorage.removeItem("discordUser");
   location.reload();
@@ -253,6 +266,14 @@ function setupThemeSwitchers() {
 }
 
 function updateSidebarLoginButton() {
+  // Use cookie for discordUser
+  function getCookie(name) {
+    return document.cookie.split('; ').reduce((r, v) => {
+      const parts = v.split('=');
+      return parts[0] === name ? decodeURIComponent(parts[1]) : r
+    }, '');
+  }
+
   const profileImg = document.getElementById("sidebarProfilePic");
   const usernameText = document.getElementById("sidebarUsername");
   const sidebarNameElement = document.getElementById("sidebarName");
@@ -260,7 +281,8 @@ function updateSidebarLoginButton() {
   const sidebarAvatarImgElement = document.getElementById("sidebarAvatarImg");
   const sidebarTopTop = document.querySelector(".sidebar-top-bottom-top");
 
-  const storedUser = localStorage.getItem("discordUser");
+  const dUserCookie = getCookie("discordUser");
+  const storedUser = dUserCookie ? JSON.parse(dUserCookie) : null;
   if (!sidebarTopTop) return;
 
   if (storedUser) {
