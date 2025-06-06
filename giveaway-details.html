@@ -393,8 +393,16 @@
       return new Date(year, month, day, hour, minute);
     }
 
+    function getCookie(name) {
+      return document.cookie.split('; ').reduce((r, v) => {
+        const parts = v.split('=');
+        return parts[0] === name ? decodeURIComponent(parts[1]) : r
+      }, '');
+    }
+
     async function loadGiveawayDetails() {
-      const user = JSON.parse(localStorage.getItem("discordUser"));
+      const userCookie = getCookie('discordUser');
+      const user = userCookie ? JSON.parse(userCookie) : null;
       if (!user) {
         window.location.href = 'giveaway.html';
         return;
