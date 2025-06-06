@@ -34,6 +34,14 @@
 
          <script>
 document.addEventListener("DOMContentLoaded", () => {
+    // Helper to get cookie value by name
+    function getCookie(name) {
+        return document.cookie.split('; ').reduce((r, v) => {
+            const parts = v.split('=');
+            return parts[0] === name ? decodeURIComponent(parts[1]) : r
+        }, '');
+    }
+
     const profileImg = document.getElementById("sidebarProfilePic");
     const usernameText = document.getElementById("sidebarUsername");
     const sidebarNameElement = document.getElementById("sidebarName");
@@ -42,15 +50,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const sidebarTopTop = document.querySelector(".sidebar-top-bottom-top");
 
     try {
-        const storedUser = localStorage.getItem("discordUser");
+        const storedUser = getCookie("discordUser");
         if (storedUser) {
             const userData = JSON.parse(storedUser);
-            console.log("Retrieved user data from localStorage:", userData); // Debugging
+            console.log("Retrieved user data from cookie:", userData); // Debugging
 
             //Set CMC guides logo
             profileImg.src = "../assets/cmc-guides.png";
 
-            usernameText.textContent = `${userData.username}#${userData.discriminator}`;
+            usernameText.textContent = userData.discriminator
+                ? `${userData.username}#${userData.discriminator}`
+                : userData.username;
             sidebarNameElement.innerHTML = userData.username;
 
             console.log("Checking userData.rank:", userData.rank); // Forcefully log the rank
@@ -129,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
             sidebarTopTop.appendChild(loginBtn);
         }
     } catch (error) {
-        console.error("Error accessing localStorage or parsing user data:", error);
+        console.error("Error accessing cookie or parsing user data:", error);
         profileImg.src = "../assets/cmc-guides.png";
         usernameText.textContent = "";
         sidebarNameElement.textContent = "Name";
