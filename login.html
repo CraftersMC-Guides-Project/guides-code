@@ -293,6 +293,21 @@
     </div>
 
     <script>
+        // Helper functions for cookies
+        function setCookie(name, value, days = 7) {
+            const expires = new Date(Date.now() + days * 864e5).toUTCString();
+            document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+        }
+        function getCookie(name) {
+            return document.cookie.split('; ').reduce((r, v) => {
+                const parts = v.split('=');
+                return parts[0] === name ? decodeURIComponent(parts[1]) : r
+            }, '');
+        }
+        function deleteCookie(name) {
+            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
@@ -307,11 +322,10 @@
             const discordLoginBtn = document.getElementById('discord-login-button');
 
             // Check for existing login
-            const storedUser = localStorage.getItem('discordUser');
+            const storedUser = getCookie('discordUser');
             if (storedUser) {
                 showLoggedInState(JSON.parse(storedUser));
             } else {
-                // Show message if not logged in
                 if (messageDiv) {
                     messageDiv.textContent = 'Please log in to continue.';
                 }
@@ -337,7 +351,6 @@
                         if (data.error) {
                             showError(data.error, data.details);
                         } else {
-                            // Handle both old and new Discord username formats
                             const displayName = data.global_name ||
                                 (data.username ?
                                     `${data.username}${data.discriminator !== '0' ? `#${data.discriminator}` : ''}` :
@@ -357,8 +370,8 @@
                                 xbox: data.user.xbox || null
                             };
 
-                            // Save to localStorage
-                            localStorage.setItem('discordUser', JSON.stringify(userData));
+                            // Save to cookie
+                            setCookie('discordUser', JSON.stringify(userData), 7);
                             showLoggedInState(userData);
                         }
                     })
@@ -437,7 +450,7 @@
             }
 
             function logout() {
-                localStorage.removeItem('discordUser');
+                deleteCookie('discordUser');
                 loginStatus.style.display = 'none';
                 usernameDisplay.style.display = 'none';
                 userAvatar.style.display = 'none';
@@ -445,6 +458,9 @@
                 document.querySelector('.other-options').style.display = 'block';
                 document.querySelector('hr').style.display = 'block';
                 logoutButton.style.display = 'none';
+
+                let xboxElem = document.getElementById('xbox-display');
+                if (xboxElem) xboxElem.style.display = 'none';
 
                 if (messageDiv) {
                     messageDiv.textContent = 'Please log in to continue.';
