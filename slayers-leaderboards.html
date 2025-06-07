@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-<link rel="icon" href="assets/cmc-icon.png" type="image/png">
+    <link rel="icon" href="assets/cmc-icon.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:title" content="Slayers Leaderboards">
@@ -27,13 +27,13 @@
         <div></div>
         <div></div>
     </div>
-  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
     <!-- Navbar -->
     <div class="custom-navbar">
         <div class="left">
             <div class="button-wrapper">
                 <div class="button-tip" id="tooltip">Click to proceed!</div>
-            <span class="openbtn menu-icon material-icons" onclick="toggleLid()" id="continue-btn">sort</span>
+                <span class="openbtn menu-icon material-icons" onclick="toggleLid()" id="continue-btn">sort</span>
             </div>
             <span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
         </div>
@@ -50,17 +50,28 @@
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar"></div>
         <button id="float">
-        <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
-        <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
-        <span class="material-icons"id="ai" onclick="aiBtn()">smart_toy</span>
-        <span class="material-icons" id="scrollToTopBtn">north</span>
-    </button>
+            <span class="material-icons" id="sweepBtn"
+                style="background: #222; border-radius: 50px;">chevron_right</span>
+            <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
+            <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
+            <span class="material-icons" id="scrollToTopBtn">north</span>
+        </button>
         <div>
+            <script async
+                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
+                crossorigin="anonymous"></script>
+            <ins class="adsbygoogle" style="display:block;width:90%;height:100px;z-index: 9999999;"
+                data-ad-client="ca-pub-3105845866547691" data-ad-slot="9849702725"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
 
             <div class="container">
                 <h1>CraftersMC Slayers Leaderboards</h1>
                 <p>Find out who is at what position and how much experience they have by our friendly-ui tool.</p><br>
-                <p id="mobileGuide">Click on the icon with 3 different length lines at the top left of the screen to select any collection and see the top 10 highest ranked players in the slayers experience on the table.</p><br id="mobileGuide">
+                <p id="mobileGuide">Click on the icon with 3 different length lines at the top left of the screen to
+                    select any collection and see the top 10 highest ranked players in the slayers experience on the
+                    table.</p><br id="mobileGuide">
                 <p>Select the slayer type to view the top 10 players.</p>
 
                 <div class="leaderboard">
@@ -126,12 +137,20 @@
                             </tr>
                         </tbody>
                     </table>
-                                        <br><details>
-                          <summary>What Once Was: A Legacy Remembered</summary><hr>
-                          <div class="message">
-                            The first leaderboard website was made by NumberOne230564 and David_R06 using Google Docs, which was pretty basic. Later, CraftersMC Guides made it better by designing a new, nicer website and got information from the original Google Docs site. This message gives a shoutout to their work, and we want to make it clear that we didn't gather all the early data ourselves. Right now, NumberOne230564 and his team run a different website that is new and was created after their Google Docs site, while we take care of this other website and collect our own data.
-                          </div>
-                        </details>
+                    <br>
+                    <details>
+                        <summary>What Once Was: A Legacy Remembered</summary>
+                        <hr>
+                        <div class="message">
+                            The first leaderboard website was made by NumberOne230564 and David_R06 using Google Docs,
+                            which was pretty basic. Later, CraftersMC Guides made it better by designing a new, nicer
+                            website and got information from the original Google Docs site. This message gives a
+                            shoutout to their work, and we want to make it clear that we didn't gather all the early
+                            data ourselves. Right now, NumberOne230564 and his team run a different website that is new
+                            and was created after their Google Docs site, while we take care of this other website and
+                            collect our own data.
+                        </div>
+                    </details>
                 </div>
             </div>
         </div>
@@ -139,50 +158,40 @@
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-    loadCollections();
+            loadCollections();
 
-    function loadCollections() {
-        const collectionGrid = document.getElementById("collectionGrid");
-        collectionGrid.innerHTML = "";
+            function loadCollections() {
+                const collectionGrid = document.getElementById("collectionGrid");
+                collectionGrid.innerHTML = "";
 
-        collectionsData.forEach((collection, index) => {
-            let item = document.createElement("div");
-            item.classList.add("collection-item");
-            item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`;
-            item.onclick = () => loadLeaderboard(index);
-            collectionGrid.appendChild(item);
-        });
-    }
+                collectionsData.forEach((collection, index) => {
+                    let item = document.createElement("div");
+                    item.classList.add("collection-item");
+                    item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`;
+                    item.onclick = () => loadLeaderboard(index);
+                    collectionGrid.appendChild(item);
+                });
+            }
 
-    function loadLeaderboard(index) {
-        const collection = collectionsData[index];
-        document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
+            function loadLeaderboard(index) {
+                const collection = collectionsData[index];
+                document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
 
-        const leaderboardData = document.getElementById("leaderboardData");
-        leaderboardData.innerHTML = collection.players.length
-            ? collection.players.map(player => `
+                const leaderboardData = document.getElementById("leaderboardData");
+                leaderboardData.innerHTML = collection.players.length
+                    ? collection.players.map(player => `
                 <tr>
                     <td>${player.rank}</td>
                     <td>${player.name || "???"}</td>
                     <td>${player.score || "???"}</td>
                 </tr>
             `).join("")
-            : "<tr><td>1</td><td>???</td><td>???</td></tr>".repeat(10);
+                    : "<tr><td>1</td><td>???</td><td>???</td></tr>".repeat(10);
 
-        document.getElementById('collectionTitle').scrollIntoView({ behavior: 'smooth' });
-    }
-});
-    </script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
-    crossorigin="anonymous"></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
-        crossorigin="anonymous"></script>
-    <ins class="adsbygoogle" style="display:block;width:90%;height:100px;z-index: 9999999;"
-        data-ad-client="ca-pub-3105845866547691" data-ad-slot="9849702725"></ins>
-    <script>
-        (adsbygoogle = window.adsbygoogle || []).push({});
+                document.getElementById('collectionTitle').scrollIntoView({ behavior: 'smooth' });
+            }
+        });
     </script>
 </body>
 
 </html>
-
