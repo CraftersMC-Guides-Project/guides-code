@@ -316,13 +316,22 @@
         const loginMessage = document.getElementById("loginMessage");
         const fileInfo = document.getElementById("fileInfo");
         let uploadedFile = null;
+
+        // Replace the localStorage usage with cookie-based user data retrieval
+        function getCookie(name) {
+            return document.cookie.split('; ').reduce((r, v) => {
+                const parts = v.split('=');
+                return parts[0] === name ? decodeURIComponent(parts[1]) : r
+            }, '');
+        }
+
         let loggedInUsername = null;
         let loggedInUserId = null;
 
         document.addEventListener("DOMContentLoaded", () => {
-            const storedUser = localStorage.getItem("discordUser");
-            if (storedUser) {
-                const userData = JSON.parse(storedUser);
+            const storedUserCookie = getCookie("discordUser");
+            if (storedUserCookie) {
+                const userData = JSON.parse(storedUserCookie);
                 loggedInUsername = userData.username;
                 loggedInUserId = userData.id;
                 reportForm.style.display = "block";
