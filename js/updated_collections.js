@@ -598,8 +598,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 7,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "TINKUGAMER1232",
+                    "score": "3.8M+"
                 },
                 {
                     "rank": 8,
@@ -608,7 +608,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "TINKUGAMER1232",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
@@ -878,8 +878,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 7,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "TINKUGAMER1232",
+                    "score": "3.6M+"
                 },
                 {
                     "rank": 8,
@@ -888,7 +888,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "TINKUGAMER1232",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
@@ -2314,7 +2314,7 @@ const collectionsData = {
                 {
                     "rank": 2,
                     "name": "Slayer1219978",
-                    "score": "N/A"
+                    "score": "40.5M+"
                 },
                 {
                     "rank": 3,
