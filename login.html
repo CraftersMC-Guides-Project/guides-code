@@ -303,180 +303,198 @@
     <div id="footer"></div>
 
     <script>
-        // Helper functions for cookies
-        function setCookie(name, value, days = 7) {
-            const expires = new Date(Date.now() + days * 864e5).toUTCString();
-            document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+// Helper functions for cookies
+function setCookie(name, value, days = 7) {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+}
+function getCookie(name) {
+    return document.cookie.split('; ').reduce((r, v) => {
+        const parts = v.split('=');
+        return parts[0] === name ? decodeURIComponent(parts[1]) : r
+    }, '');
+}
+function deleteCookie(name) {
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const messageDiv = document.getElementById('message');
+    const loginStatus = document.getElementById('login-status');
+    const usernameDisplay = document.getElementById('username-display');
+    const logoutButton = document.getElementById('logout-button');
+    const userAvatar = document.getElementById('user-avatar');
+    const loginModal = document.getElementById('login-modal');
+    const proceedLoginButton = document.getElementById('proceed-login');
+    const closeModalButton = document.getElementById('close-modal');
+    const discordLoginBtn = document.getElementById('discord-login-button');
+
+    const storedUser = getCookie('discordUser');
+    if (storedUser) {
+        showLoggedInState(JSON.parse(storedUser));
+    } else {
+        if (messageDiv) {
+            messageDiv.textContent = 'Please log in to continue.';
         }
-        function getCookie(name) {
-            return document.cookie.split('; ').reduce((r, v) => {
-                const parts = v.split('=');
-                return parts[0] === name ? decodeURIComponent(parts[1]) : r
-            }, '');
-        }
-        function deleteCookie(name) {
-            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-        }
+        loginStatus.style.display = 'none';
+    }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-            const messageDiv = document.getElementById('message');
-            const loginStatus = document.getElementById('login-status');
-            const usernameDisplay = document.getElementById('username-display');
-            const logoutButton = document.getElementById('logout-button');
-            const userAvatar = document.getElementById('user-avatar');
-            const loginModal = document.getElementById('login-modal');
-            const proceedLoginButton = document.getElementById('proceed-login');
-            const closeModalButton = document.getElementById('close-modal');
-            const discordLoginBtn = document.getElementById('discord-login-button');
+    if (code) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        const workerUrl = 'https://discord-auth.roumakdatta.workers.dev/';
 
-            // Check for existing login
-            const storedUser = getCookie('discordUser');
-            if (storedUser) {
-                showLoggedInState(JSON.parse(storedUser));
-            } else {
-                if (messageDiv) {
-                    messageDiv.textContent = 'Please log in to continue.';
-                }
-                loginStatus.style.display = 'none';
-            }
-
-            if (code) {
-                // Clear the code from URL
-                window.history.replaceState({}, document.title, window.location.pathname);
-
-                const workerUrl = 'https://discord-auth.roumakdatta.workers.dev/';
-
-                fetch(`${workerUrl}?code=${encodeURIComponent(code)}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(errData => {
-                                throw new Error(errData.error || 'Login failed');
-                            });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.error) {
-                            showError(data.error, data.details);
-                        } else {
-                            const displayName = data.global_name ||
-                                (data.username ?
-                                    `${data.username}${data.discriminator !== '0' ? `#${data.discriminator}` : ''}` :
-                                    'Unknown User');
-
-                            const userData = {
-                                id: data.user.id,
-                                username: data.user.username,
-                                global_name: data.user.global_name,
-                                display_name: displayName,
-                                avatar: data.user.avatar,
-                                email: data.user.email,
-                                verified: data.user.verified,
-                                first_login: data.user.first_login,
-                                last_login: data.user.last_login,
-                                login_count: data.user.login_count,
-                                xbox: data.user.xbox || null
-                            };
-
-                            // Save to cookie
-                            setCookie('discordUser', JSON.stringify(userData), 7);
-                            showLoggedInState(userData);
-                        }
-                    })
-                    .catch(error => {
-                        showError('Login Error', error.message);
+        fetch(`${workerUrl}?code=${encodeURIComponent(code)}`)
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errData => {
+                        throw new Error(errData.error || 'Login failed');
                     });
-            }
-
-            if (storedUser) {
-                showLoggedInState(JSON.parse(storedUser));
-            }
-
-            // Show modal when login button is clicked
-            discordLoginBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-                loginModal.style.display = 'block';
-            });
-
-            closeModalButton.addEventListener('click', () => {
-                loginModal.style.display = 'none';
-            });
-            proceedLoginButton.addEventListener('click', () => {
-                loginModal.style.display = 'none';
-                window.location.href = "https://discord.com/oauth2/authorize?client_id=1359486772366672022&response_type=code&redirect_uri=https%3A%2F%2Fcraftersmc-guides.pages.dev%2Flogin&scope=email+connections+identify+guilds.join+guilds";
-            });
-
-
-            logoutButton.addEventListener('click', logout);
-
-            function showLoggedInState(userData) {
-                loginStatus.textContent = 'Logged in Successfully!';
-                loginStatus.style.display = 'block';
-
-                usernameDisplay.textContent = `Welcome, ${userData.username}`;
-                usernameDisplay.style.display = 'block';
-
-                if (userData.avatar) {
-                    userAvatar.src = `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.webp`;
-                    userAvatar.style.display = 'block';
                 }
-
-                // Show Xbox username if available
-                let xboxElem = document.getElementById('xbox-display');
-                if (!xboxElem) {
-                    xboxElem = document.createElement('div');
-                    xboxElem.id = 'xbox-display';
-                    xboxElem.style.marginTop = '10px';
-                    xboxElem.style.fontSize = '16px';
-                    xboxElem.style.color = '#fff';
-                    usernameDisplay.parentNode.insertBefore(xboxElem, usernameDisplay.nextSibling);
-                }
-                if (userData.xbox && userData.xbox.name) {
-                    xboxElem.textContent = `Xbox Username: ${userData.xbox.name}`;
-                    xboxElem.style.display = 'block';
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    showError(data.error, data.details);
                 } else {
-                    xboxElem.textContent = '';
-                    xboxElem.style.display = 'none';
+                    const displayName = data.global_name ||
+                        (data.username ?
+                            `${data.username}${data.discriminator !== '0' ? `#${data.discriminator}` : ''}` :
+                            'Unknown User');
+
+                    const userData = {
+                        id: data.user.id,
+                        username: data.user.username,
+                        global_name: data.user.global_name,
+                        display_name: displayName,
+                        avatar: data.user.avatar,
+                        email: data.user.email,
+                        verified: data.user.verified,
+                        first_login: data.user.first_login,
+                        last_login: data.user.last_login,
+                        login_count: data.user.login_count,
+                        xbox: data.user.xbox || null
+                    };
+
+                    setCookie('discordUser', JSON.stringify(userData), 7);
+                    showLoggedInState(userData);
                 }
+            })
+            .catch(error => {
+                showError('Login Error', error.message);
+            });
+    }
 
-                document.querySelector('.button-container').style.display = 'none';
-                document.querySelector('.other-options').style.display = 'none';
-                document.querySelector('hr').style.display = 'none';
-                logoutButton.style.display = 'block';
+    if (storedUser) {
+        showLoggedInState(JSON.parse(storedUser));
+    }
 
-                if (messageDiv) {
-                    messageDiv.textContent = '';
-                }
-            }
+    discordLoginBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        loginModal.style.display = 'block';
+    });
 
-            function showError(error, details) {
-                console.error('Login error:', error, details);
-                if (messageDiv) {
-                    messageDiv.textContent = `${error}: ${details || ''}`;
-                }
-                logout();
-            }
+    closeModalButton.addEventListener('click', () => {
+        loginModal.style.display = 'none';
+    });
 
-            function logout() {
-                deleteCookie('discordUser');
-                loginStatus.style.display = 'none';
-                usernameDisplay.style.display = 'none';
-                userAvatar.style.display = 'none';
-                document.querySelector('.button-container').style.display = 'flex';
-                document.querySelector('.other-options').style.display = 'block';
-                document.querySelector('hr').style.display = 'block';
-                logoutButton.style.display = 'none';
+    proceedLoginButton.addEventListener('click', () => {
+        loginModal.style.display = 'none';
+        window.location.href = "https://discord.com/oauth2/authorize?client_id=1359486772366672022&response_type=code&redirect_uri=https%3A%2F%2Fcraftersmc-guides.pages.dev%2Flogin&scope=email+connections+identify+guilds.join+guilds";
+    });
 
-                let xboxElem = document.getElementById('xbox-display');
-                if (xboxElem) xboxElem.style.display = 'none';
+    logoutButton.addEventListener('click', logout);
 
-                if (messageDiv) {
-                    messageDiv.textContent = 'Please log in to continue.';
-                }
-            }
-        });
+    function showLoggedInState(userData) {
+        loginStatus.textContent = 'Logged in Successfully!';
+        loginStatus.style.display = 'block';
+
+        usernameDisplay.textContent = `Welcome, ${userData.username}`;
+        usernameDisplay.style.display = 'block';
+
+        if (userData.avatar) {
+            userAvatar.src = `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.webp`;
+            userAvatar.style.display = 'block';
+        }
+
+        let xboxElem = document.getElementById('xbox-display');
+        if (!xboxElem) {
+            xboxElem = document.createElement('div');
+            xboxElem.id = 'xbox-display';
+            xboxElem.style.marginTop = '10px';
+            xboxElem.style.fontSize = '16px';
+            xboxElem.style.color = '#fff';
+            usernameDisplay.parentNode.insertBefore(xboxElem, usernameDisplay.nextSibling);
+        }
+        if (userData.xbox && userData.xbox.name) {
+            xboxElem.textContent = `Xbox Username: ${userData.xbox.name}`;
+            xboxElem.style.display = 'block';
+        } else {
+            xboxElem.textContent = '';
+            xboxElem.style.display = 'none';
+        }
+
+        document.querySelector('.button-container').style.display = 'none';
+        document.querySelector('.other-options').style.display = 'none';
+        document.querySelector('hr').style.display = 'none';
+        logoutButton.style.display = 'block';
+
+        if (messageDiv) {
+            messageDiv.textContent = '';
+        }
+
+        // GIVEAWAY BUTTON
+        let giveawayBtn = document.getElementById('giveaway-button');
+        if (!giveawayBtn) {
+            giveawayBtn = document.createElement('button');
+            giveawayBtn.id = 'giveaway-button';
+            giveawayBtn.textContent = 'Go to Giveaway Page';
+            giveawayBtn.style.marginTop = '10px';
+            giveawayBtn.style.backgroundColor = '#7289da';
+            giveawayBtn.style.color = '#fff';
+            giveawayBtn.style.padding = '10px 20px';
+            giveawayBtn.style.border = 'none';
+            giveawayBtn.style.borderRadius = '5px';
+            giveawayBtn.style.cursor = 'pointer';
+
+            logoutButton.parentNode.insertBefore(giveawayBtn, logoutButton);
+        }
+
+        giveawayBtn.onclick = () => {
+            window.location.href = 'giveaway.html';
+        };
+    }
+
+    function showError(error, details) {
+        console.error('Login error:', error, details);
+        if (messageDiv) {
+            messageDiv.textContent = `${error}: ${details || ''}`;
+        }
+        logout();
+    }
+
+    function logout() {
+        deleteCookie('discordUser');
+        loginStatus.style.display = 'none';
+        usernameDisplay.style.display = 'none';
+        userAvatar.style.display = 'none';
+        document.querySelector('.button-container').style.display = 'flex';
+        document.querySelector('.other-options').style.display = 'block';
+        document.querySelector('hr').style.display = 'block';
+        logoutButton.style.display = 'none';
+
+        let xboxElem = document.getElementById('xbox-display');
+        if (xboxElem) xboxElem.style.display = 'none';
+
+        let giveawayBtn = document.getElementById('giveaway-button');
+        if (giveawayBtn) giveawayBtn.style.display = 'none';
+
+        if (messageDiv) {
+            messageDiv.textContent = 'Please log in to continue.';
+        }
+    }
+});
     </script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
         crossorigin="anonymous"></script>
