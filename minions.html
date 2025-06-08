@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <link rel="icon" href="assets/cmc-icon.png" type="image/png">
   <meta charset="UTF-8">
@@ -10,6 +11,14 @@
   <link rel="stylesheet" href="css/item.css">
   <link rel="stylesheet" href="css/minion.css">
   <style>
+    :root {
+      --arrow-bg: transparent;
+      --arrow-color: #23272e;
+    }
+    .darkmode {
+      --arrow-bg: #23272e;
+      --arrow-color: #ffd700;
+    }
     .nature-pill {
       display: inline-block;
       padding: 6px 12px;
@@ -23,19 +32,22 @@
     .nature-pill.stable {
       background-color: #2ecc7138;
       border: 1px solid #2ecc71;
+      color: #14b959;
     }
 
     .nature-pill.underpaid {
       background-color: #e74c3c38;
       border: 1px solid #e74c3c;
+      color: #ff2a14;
     }
 
     .nature-pill.overpaid {
       background-color: #f39c1238;
       border: 1px solid #f39c12;
+      color: #e08d07;
     }
 
-    .demand-box {
+    .stability {
       margin-top: 15px;
     }
 
@@ -44,38 +56,74 @@
       height: 18px;
       border-radius: 6px;
       overflow: hidden;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
     }
 
     .demand-box div div {
       height: 100%;
       transition: width 0.3s ease;
     }
+
     .demand-score {
-  display: flex;
-  border-radius: 0px !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  margin: 4px;
-  width: auto;
-  height: 22px !important;
-  gap: 8px;
-}
+      display: flex;
+      border-radius: 0px !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      margin: 4px;
+      width: auto;
+      height: 22px !important;
+      gap: 8px;
+    }
+
+    .rarity-arrow {
+      background: var(--arrow-bg);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s;
+      color: var(--arrow-color);
+      font-size: 1.5em;
+      box-shadow: 0 2px 8px #0002;
+    }
+
+    .rarity-arrow:hover {
+      background: #ffd700;
+      color: #23272e;
+    }
+
+    .selected {
+      font-weight: bold;
+      font-size: 1.1em;
+      background: var(--arrow-bg);
+      border-radius: 8px;
+      padding: 8px 18px;
+      box-shadow: 0 1px 4px #0002;
+      color: var(--arrow-color);
+    }
   </style>
 </head>
 
 <body>
-  <div id="loader"><div></div><div></div><div></div></div>
+  <div id="loader">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
   <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
   <button id="float">
-        <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
-        <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
-        <span class="material-icons"id="ai" onclick="aiBtn()">smart_toy</span>
-        <span class="material-icons" id="scrollToTopBtn">north</span>
-    </button>
-    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
+    <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
+    <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
+    <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
+    <span class="material-icons" id="scrollToTopBtn">north</span>
+  </button>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
         crossorigin="anonymous"></script>
     <ins class="adsbygoogle" style="display:block;width:90%;height:100px;z-index: 9999999;"
         data-ad-client="ca-pub-3105845866547691" data-ad-slot="9849702725"></ins>
@@ -94,6 +142,8 @@
     const MinionManager = {
       currentMinion: null,
       minionPrices: null,
+      currentTierIndex: 0,
+      tierList: [],
 
       async loadMinionDetails() {
         try {
@@ -112,6 +162,8 @@
           if (!minionPrice) throw new Error('Price data not found');
 
           this.currentMinion = { ...minion, prices: minionPrice.tiers };
+          this.tierList = Object.keys(this.currentMinion.prices);
+          this.currentTierIndex = 0;
           this.renderMinionDetails('tier1');
         } catch (error) {
           this.showError(error.message);
@@ -132,19 +184,17 @@
           <div class="item-card">
             <h1>${name}</h1>
             <img src="${picture}" alt="${name}" class="item-image">
-            <div class="rarity-dropdown">
-              <div class="selected" onclick="MinionManager.toggleDropdown()">
-                <span>${selectedTier}</span>
-                <span class="material-icons">arrow_drop_down</span>
-              </div>
-              <div class="options" id="tierOptions">
-                ${Object.keys(prices).map(tier => `
-                  <div onclick="MinionManager.selectTier('${tier}')">
-                    <span>${tier}</span>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
+            <div class="rarity-dropdown" style="display:flex;align-items:center;justify-content:center;gap:8px;margin:20px 0;">
+  <button class="rarity-arrow left" onclick="MinionManager.changeTier(-1)">
+    <span class="material-icons">chevron_left</span>
+  </button>
+  <div class="selected" id="selectedTier" style="min-width:120px;display:inline-flex;align-items:center;justify-content:center;">
+    <span style="font-size:1.08em;letter-spacing:0.5px;">${selectedTier.toUpperCase()}</span>
+  </div>
+  <button class="rarity-arrow right" onclick="MinionManager.changeTier(1)">
+    <span class="material-icons">chevron_right</span>
+  </button>
+</div>
             <div class="price-container">
               <div class="price-section">
                 <span>Making Cost:</span>
@@ -164,15 +214,14 @@
             </div>
           </div>
         `;
+
+        this.currentTierIndex = this.tierList.indexOf(selectedTier);
       },
 
-      toggleDropdown() {
-        const dropdown = document.getElementById('tierOptions');
-        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-      },
-
-      selectTier(tier) {
-        this.toggleDropdown();
+      changeTier(direction) {
+        if (!this.tierList.length) return;
+        this.currentTierIndex = (this.currentTierIndex + direction + this.tierList.length) % this.tierList.length;
+        const tier = this.tierList[this.currentTierIndex];
         this.renderMinionDetails(tier);
       },
 
@@ -194,7 +243,7 @@
 
         let natureText = nature.replace('[', ' ').toLowerCase();
         natureText = natureText.replace(']', '').replace(/_/g, ' ').trim();
-        
+
 
         return `
           <div class="nature-pill ${natureText}">
@@ -241,4 +290,5 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
     crossorigin="anonymous"></script>
 </body>
+
 </html>
