@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <link rel="icon" href="assets/cmc-icon.png" type="image/png">
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pet Details - CraftersMC Guides</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="css/essential.css">
@@ -12,13 +13,15 @@
     :root {
       --drop-bg-color-option: #ffffff;
     }
+
     .dark-mode {
       --drop-bg-color-option: #333333;
     }
+
     body {
       justify-content: center;
       align-items: center;
-      display:flex;
+      display: flex;
     }
 
     .rarity-dropdown {
@@ -41,8 +44,8 @@
       align-items: center;
       font-weight: bold;
       font-size: 1.1em;
-      background: #181c22;
-      color: #ffd700;
+      background: var(--arrow-bg);
+      color: var(--arrow-color);
       box-shadow: 0 1px 4px #0002;
     }
 
@@ -51,7 +54,7 @@
     }
 
     .rarity-arrow {
-      background: #23272e;
+      background: var(--arrow-bg);
       border: none;
       border-radius: 50%;
       width: 36px;
@@ -61,7 +64,7 @@
       justify-content: center;
       cursor: pointer;
       transition: background 0.2s;
-      color: #ffd700;
+      color: var(--arrow-color);
       font-size: 1.5em;
       box-shadow: 0 2px 8px #0002;
     }
@@ -82,7 +85,7 @@
       z-index: 10;
       white-space: nowrap;
       background-color: var(--glass-bg);
-  padding: 18px;
+      padding: 18px;
     }
 
     .rarity-dropdown .options div {
@@ -114,26 +117,28 @@
       border-radius: 20px;
       margin: 10px 0;
       font-weight: bold;
-      color: var(--main-text-color);
     }
 
     .nature-pill.stable {
       border: 1px solid #2ecc71;
       background-color: #2ecc7138;
+      color: #2ecc71;
     }
 
     .nature-pill.underprice {
       border: 1px solid #f39c12;
       background-color: #f39c1238;
+      color: #ffb237;
     }
 
     .nature-pill.overprice {
       background-color: #eb1d0e38;
-  border: 1px solid #eb1d0e;
+      border: 1px solid #eb1d0e;
+      color: #eb1d0e;
     }
 
     .demand-box {
-      width : 30%;
+      width: 30%;
       margin: 15px 0;
       justify-content: center;
       align-items: center;
@@ -152,7 +157,7 @@
       border-radius: 6px;
       overflow: hidden;
       margin-top: 6px;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
     }
 
     .demand-progress {
@@ -179,7 +184,7 @@
       font-weight: bold;
       text-align: center;
       gap: 6px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
       padding: 0 5px;
       font-family: revert;
     }
@@ -200,26 +205,30 @@
     }
 
     .price-img {
-  display: flex;
-  width: max-content;
-  align-items: center;
-  width: 14%;
-}
+      display: flex;
+      width: max-content;
+      align-items: center;
+      width: 14%;
+    }
   </style>
 </head>
 
 <body>
-  <div id="loader"><div></div><div></div><div></div></div>
+  <div id="loader">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
   <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
   <button id="float">
-        <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
-        <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
-        <span class="material-icons"id="ai" onclick="aiBtn()">smart_toy</span>
-        <span class="material-icons" id="scrollToTopBtn">north</span>
-    </button>
-    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
+    <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
+    <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
+    <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
+    <span class="material-icons" id="scrollToTopBtn">north</span>
+  </button>
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
         crossorigin="anonymous"></script>
     <ins class="adsbygoogle" style="display:block;width:90%;height:100px;z-index: 9999999;"
         data-ad-client="ca-pub-3105845866547691" data-ad-slot="9849702725"></ins>
@@ -235,8 +244,8 @@
 
   <script>
     // Place these at global scope (outside any function)
-let currentRarityIndex = 0;
-let currentPetRarities = [];
+    let currentRarityIndex = 0;
+    let currentPetRarities = [];
 
 
     async function loadPetDetails() {
@@ -252,7 +261,7 @@ let currentPetRarities = [];
 
           const pets = JSON.parse(petDetailsData);
           const petPrices = JSON.parse(petPricesData);
-          
+
           const pet = pets.find(pet => pet.id === petId);
 
           if (pet) {
@@ -322,15 +331,15 @@ let currentPetRarities = [];
     }
 
     function updatePrice(petId, rarity) {
-  const price = window.petPrices.find(price => price.petId === petId);
-  if (!price) return;
+      const price = window.petPrices.find(price => price.petId === petId);
+      if (!price) return;
 
-  // Convert rarity to lowercase for NPC price keys (e.g., "common" → "ncommon")
-  const npcRarityKey = `n${rarity.toLowerCase()}`;
-  const marketPrice = price[rarity.toLowerCase()] ?? 'Price not available';
-  const npcPrice = price[npcRarityKey] ?? 'Not sold by NPC';
+      // Convert rarity to lowercase for NPC price keys (e.g., "common" → "ncommon")
+      const npcRarityKey = `n${rarity.toLowerCase()}`;
+      const marketPrice = price[rarity.toLowerCase()] ?? 'Price not available';
+      const npcPrice = price[npcRarityKey] ?? 'Not sold by NPC';
 
-  document.getElementById('petPrice').innerHTML = `
+      document.getElementById('petPrice').innerHTML = `
     <div class="price-row">
       <strong>Market Price:</strong> <div class="price-img">${formatPrice(marketPrice)}</div>
     </div><hr width="150px" style="color:var(--border-color);">
@@ -338,7 +347,7 @@ let currentPetRarities = [];
       <strong>NPC Price:</strong> <div class="price-img">${formatPrice(npcPrice)}</div>
     </div>
   `;
-}
+    }
 
     function formatPrice(price) {
       return typeof price === 'number' ? price.toLocaleString() + ' <img src="img/coin.png" alt="Coin" style="margin:0;">' : price;
@@ -395,14 +404,14 @@ let currentPetRarities = [];
     }
 
     function changeRarity(direction, petId) {
-  if (!currentPetRarities.length) return;
-  currentRarityIndex = (currentRarityIndex + direction + currentPetRarities.length) % currentPetRarities.length;
-  const rarity = currentPetRarities[currentRarityIndex];
-  // Update display
-  const selectedDiv = document.getElementById('selectedRarity');
-  selectedDiv.innerHTML = `<img src="/img/rarity/${rarity}.webp" alt="${rarity}" style="margin:0;height:24px;">`;
-  updatePrice(petId, rarity);
-}
+      if (!currentPetRarities.length) return;
+      currentRarityIndex = (currentRarityIndex + direction + currentPetRarities.length) % currentPetRarities.length;
+      const rarity = currentPetRarities[currentRarityIndex];
+      // Update display
+      const selectedDiv = document.getElementById('selectedRarity');
+      selectedDiv.innerHTML = `<img src="/img/rarity/${rarity}.webp" alt="${rarity}" style="margin:0;height:24px;">`;
+      updatePrice(petId, rarity);
+    }
 
     loadPetDetails();
   </script>
@@ -411,4 +420,5 @@ let currentPetRarities = [];
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
     crossorigin="anonymous"></script>
 </body>
+
 </html>
