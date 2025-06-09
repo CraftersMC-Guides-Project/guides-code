@@ -1995,12 +1995,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 6,
-                    "name": "Unknown",
+                    "name": "Ghosthunter4233",
                     "score": "N/A"
                 },
                 {
                     "rank": 7,
-                    "name": "Ghosthunter4233",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
