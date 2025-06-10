@@ -341,6 +341,29 @@ document.addEventListener('DOMContentLoaded', function () {
         loginStatus.style.display = 'none';
     }
 
+    // Check cookie consent status
+    const cookieConsent = localStorage.getItem('cookieConsent');
+    if (cookieConsent === 'denied') {
+        // If denied, delete user data from cookies if present
+        deleteCookie('discordUser');
+    }
+
+    if (storedUser && cookieConsent !== 'denied') {
+        showLoggedInState(JSON.parse(storedUser));
+    } else if (cookieConsent === 'denied') {
+        if (messageDiv) {
+            messageDiv.textContent = 'You must allow cookies to log in and access services. Please allow cookies to continue.';
+        }
+        loginStatus.style.display = 'none';
+        // Optionally, hide login button or disable it
+        document.querySelector('.button-container').style.display = 'none';
+    } else {
+        if (messageDiv) {
+            messageDiv.textContent = 'Please log in to continue.';
+        }
+        loginStatus.style.display = 'none';
+    }
+
     if (code) {
         window.history.replaceState({}, document.title, window.location.pathname);
         const workerUrl = 'https://discord-auth.roumakdatta.workers.dev/';
@@ -358,6 +381,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.error) {
                     showError(data.error, data.details);
                 } else {
+                    // Check cookie consent before saving user data
+                    const cookieConsent = localStorage.getItem('cookieConsent');
+                    if (cookieConsent === 'denied') {
+                        if (messageDiv) {
+                            messageDiv.textContent = 'You must allow cookies to log in and access services. Please allow cookies to continue.';
+                        }
+                        loginStatus.style.display = 'none';
+                        document.querySelector('.button-container').style.display = 'none';
+                        return;
+                    }
+
                     const displayName = data.global_name ||
                         (data.username ?
                             `${data.username}${data.discriminator !== '0' ? `#${data.discriminator}` : ''}` :
@@ -367,9 +401,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         id: data.user.id,
                         username: data.user.username,
                         global_name: data.user.global_name,
-                        // display_name: displayName,
                         avatar: data.user.avatar,
-                        // email: data.user.email,
                         verified: data.user.verified,
                         first_login: data.user.first_login,
                         last_login: data.user.last_login,

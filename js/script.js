@@ -334,3 +334,138 @@ function closeAnnouncementBanner() {
     document.getElementById('announcement-banner').style.display = 'none';
     document.querySelector('.navbar').style.marginTop = '0';
   }
+
+// --- Cookie Consent Logic ---
+function showCookieConsent() {
+  if (document.getElementById('cookie-consent-banner')) return;
+
+  const banner = document.createElement('div');
+  banner.id = 'cookie-consent-banner';
+  banner.style.cssText = `
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    background: linear-gradient(90deg, #23272e 60%, #2b2f3a 100%);
+    color: #fff;
+    z-index: 99999;
+    padding: 2em 1em 1.5em 1em;
+    box-shadow: 0 -4px 32px #000a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.08em;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    animation: cookieFadeIn 0.7s cubic-bezier(.4,1.4,.6,1) 1;
+    backdrop-filter: blur(6px);
+  `;
+
+  // Add keyframes for fade-in
+  if (!document.getElementById('cookie-consent-style')) {
+    const style = document.createElement('style');
+    style.id = 'cookie-consent-style';
+    style.innerHTML = `
+      @keyframes cookieFadeIn {
+        from { transform: translateY(100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      #cookie-consent-banner button {
+        font-family: inherit;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        box-shadow: 0 2px 12px #0002;
+      }
+      #cookie-consent-banner button:focus {
+        outline: 2px solid #ffd700;
+      }
+      #cookie-consent-banner .cookie-icon {
+        font-size: 2.2em;
+        margin-bottom: 0.3em;
+        color: #ffd700;
+        filter: drop-shadow(0 2px 8px #ffd70044);
+        animation: cookieBounce 1.2s infinite alternate;
+      }
+      @keyframes cookieBounce {
+        from { transform: translateY(0);}
+        to { transform: translateY(-8px);}
+      }
+      #cookie-consent-banner .cookie-btn-allow {
+        background: linear-gradient(90deg, #ffd700 60%, #ffe066 100%);
+        color: #23272e;
+        border: none;
+        padding: 10px 32px;
+        border-radius: 8px;
+        font-size: 1.08em;
+        cursor: pointer;
+        margin-right: 0.5em;
+        box-shadow: 0 2px 12px #ffd70033;
+      }
+      #cookie-consent-banner .cookie-btn-allow:hover {
+        background: linear-gradient(90deg, #ffe066 60%, #ffd700 100%);
+        color: #181c22;
+      }
+      #cookie-consent-banner .cookie-btn-deny {
+        background: linear-gradient(90deg, #23272e 60%, #2b2f3a 100%);
+        color: #fff;
+        border: 1.5px solid #ffd700;
+        padding: 10px 32px;
+        border-radius: 8px;
+        font-size: 1.08em;
+        cursor: pointer;
+        margin-left: 0.5em;
+      }
+      #cookie-consent-banner .cookie-btn-deny:hover {
+        background: #ffd700;
+        color: #23272e;
+        border-color: #ffd700;
+      }
+      #cookie-consent-banner .cookie-policy-link {
+        color: #ffd700;
+        text-decoration: underline;
+        font-weight: 500;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  banner.innerHTML = `
+    <div style="max-width: 700px; text-align: center;">
+      <span class="material-icons cookie-icon">cookie</span>
+      <div style="font-size:1.25em;font-weight:700;letter-spacing:0.01em;margin-bottom:0.3em;">
+        Cookie Consent Required
+      </div>
+      <div style="margin-bottom:0.7em;line-height:1.7;">
+        We use cookies to store your login session and preferences.<br>
+        <span style="color:#ffd700;font-weight:500;">If you do not allow cookies, you will not be able to join giveaways or access other services that require login.</span>
+      </div>
+      <small style="color:#aaa;">
+        Read more in our <a href="/privacypolicy.html" class="cookie-policy-link" target="_blank">Privacy Policy</a>.
+      </small>
+    </div>
+    <div style="margin-top: 1.5em; display: flex; gap: 1em; justify-content: center;">
+      <button id="cookie-allow-btn" class="cookie-btn-allow">Allow Cookies</button>
+      <button id="cookie-deny-btn" class="cookie-btn-deny">Deny</button>
+    </div>
+  `;
+
+  document.body.appendChild(banner);
+
+  document.getElementById('cookie-allow-btn').onclick = function() {
+    localStorage.setItem('cookieConsent', 'allowed');
+    banner.remove();
+  };
+  document.getElementById('cookie-deny-btn').onclick = function() {
+    localStorage.setItem('cookieConsent', 'denied');
+    banner.remove();
+    alert("You have denied cookies. You will not be able to join giveaways or access login-required services.");
+  };
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  // ...existing code...
+  if (!localStorage.getItem('cookieConsent')) {
+    showCookieConsent();
+  }
+});
