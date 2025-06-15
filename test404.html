@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Minecraft 404 Page</title>
+    <title>Minecraft 404</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         @font-face {
@@ -12,13 +12,13 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #71a7ff;
+            background-color: #71a7ff; /* Minecraft sky */
             font-family: 'Minecraft', sans-serif;
             overflow: hidden;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
             touch-action: manipulation;
         }
         
@@ -27,58 +27,89 @@
             width: 100%;
             height: 100%;
             max-width: 800px;
-            margin: 0 auto;
         }
         
+        /* Ground */
         #ground {
             position: absolute;
             bottom: 0;
             width: 100%;
             height: 20vh;
-            min-height: 80px;
-            background-image: url('https://i.imgur.com/Q3ZQJ9v.png');
-            background-size: 100% 100%;
-            image-rendering: pixelated;
+            min-height: 60px;
+            background-color: #5a9233; /* Grass green */
+            /* Grass pattern */
+            background-image: 
+                linear-gradient(45deg, #478221 25%, transparent 25%),
+                linear-gradient(-45deg, #478221 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #478221 75%),
+                linear-gradient(-45deg, transparent 75%, #478221 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 0, 10px -10px, 0px 10px;
         }
         
+        /* Stone Brick Wall */
         #wall {
             position: absolute;
             width: 60vw;
             max-width: 300px;
             height: 40vw;
             max-height: 200px;
-            background-image: url('https://i.imgur.com/3KJjQ9W.png');
-            background-size: cover;
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
-            text-align: center;
+            background-color: #7a7a7a;
+            /* Stone brick pattern */
+            background-image: 
+                linear-gradient(#8a8a8a 1px, transparent 1px),
+                linear-gradient(90deg, #8a8a8a 1px, transparent 1px);
+            background-size: 10px 10px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: min(8vw, 32px);
             color: white;
             text-shadow: 2px 2px #000;
-            box-shadow: 0 0 0 5px #5a5a5a;
+            border: 4px solid #5a5a5a;
+            box-sizing: border-box;
             z-index: 10;
-            image-rendering: pixelated;
         }
         
+        /* Creeper - Pure CSS Pixel Art */
         #creeper {
             position: absolute;
             width: 12vw;
             max-width: 60px;
             height: 20vw;
             max-height: 100px;
-            background-image: url('https://i.imgur.com/9mJQ9vQ.png');
-            background-size: contain;
-            background-repeat: no-repeat;
             right: -20vw;
             top: 50%;
             transform: translateY(-50%);
             animation: approach 3s forwards;
             z-index: 20;
-            image-rendering: pixelated;
+            
+            /* Creeper body */
+            background-color: #5a9233;
+            /* Creeper face pattern using box shadows */
+            box-shadow: 
+                /* Left eye */
+                3vw 4vw 0 0 #000,
+                4vw 4vw 0 0 #000,
+                3vw 5vw 0 0 #000,
+                4vw 5vw 0 0 #000,
+                /* Right eye */
+                7vw 4vw 0 0 #000,
+                8vw 4vw 0 0 #000,
+                7vw 5vw 0 0 #000,
+                8vw 5vw 0 0 #000,
+                /* Mouth */
+                4vw 8vw 0 0 #000,
+                5vw 8vw 0 0 #000,
+                6vw 8vw 0 0 #000,
+                7vw 8vw 0 0 #000,
+                4vw 9vw 0 0 #000,
+                5vw 9vw 0 0 #000,
+                6vw 9vw 0 0 #000,
+                7vw 9vw 0 0 #000;
         }
         
         @keyframes approach {
@@ -86,7 +117,7 @@
             70% { right: 42%; }
             100% { 
                 right: 42%;
-                filter: brightness(1.5) hue-rotate(30deg);
+                background-color: #ff3333;
                 animation: flash 0.1s infinite;
             }
         }
@@ -97,6 +128,7 @@
             100% { opacity: 1; }
         }
         
+        /* Explosion Effect */
         .exploded {
             animation: explode 0.5s forwards;
         }
@@ -106,6 +138,7 @@
             100% { transform: translate(-50%, -50%) scale(5); opacity: 0; }
         }
         
+        /* 404 Message */
         #message {
             position: absolute;
             left: 50%;
@@ -127,18 +160,23 @@
             to { opacity: 1; }
         }
         
+        /* Explosion Particles */
         .block {
             position: absolute;
             width: 5vw;
             max-width: 30px;
             height: 5vw;
             max-height: 30px;
-            background-image: url('https://i.imgur.com/3KJjQ9W.png');
-            background-size: cover;
+            background-color: #7a7a7a;
+            /* Stone pattern */
+            background-image: 
+                linear-gradient(#8a8a8a 1px, transparent 1px),
+                linear-gradient(90deg, #8a8a8a 1px, transparent 1px);
+            background-size: 5px 5px;
             z-index: 5;
-            image-rendering: pixelated;
         }
         
+        /* Home Button */
         #home-button {
             position: absolute;
             bottom: 10vh;
@@ -153,7 +191,6 @@
             opacity: 0;
             transition: all 0.3s;
             z-index: 100;
-            image-rendering: pixelated;
         }
         
         #home-button:hover {
@@ -168,10 +205,10 @@
             to { opacity: 1; }
         }
         
-        /* Mobile-specific adjustments */
+        /* Mobile Adjustments */
         @media (max-width: 600px) {
             #wall {
-                box-shadow: 0 0 0 3px #5a5a5a;
+                border-width: 3px;
             }
             
             #message {
@@ -181,6 +218,30 @@
             #home-button {
                 padding: 1.5vh 6vw;
                 font-size: 5vw;
+            }
+            
+            /* Adjust creeper face for small screens */
+            #creeper {
+                box-shadow: 
+                    /* Left eye */
+                    2.5vw 3.5vw 0 0 #000,
+                    3.5vw 3.5vw 0 0 #000,
+                    2.5vw 4.5vw 0 0 #000,
+                    3.5vw 4.5vw 0 0 #000,
+                    /* Right eye */
+                    6.5vw 3.5vw 0 0 #000,
+                    7.5vw 3.5vw 0 0 #000,
+                    6.5vw 4.5vw 0 0 #000,
+                    7.5vw 4.5vw 0 0 #000,
+                    /* Mouth */
+                    3.5vw 7vw 0 0 #000,
+                    4.5vw 7vw 0 0 #000,
+                    5.5vw 7vw 0 0 #000,
+                    6.5vw 7vw 0 0 #000,
+                    3.5vw 8vw 0 0 #000,
+                    4.5vw 8vw 0 0 #000,
+                    5.5vw 8vw 0 0 #000,
+                    6.5vw 8vw 0 0 #000;
             }
         }
     </style>
@@ -203,7 +264,6 @@
             const wall = document.getElementById('wall');
             const message = document.getElementById('message');
             const homeButton = document.getElementById('home-button');
-            const scene = document.getElementById('scene');
             
             // After creeper approaches
             creeper.addEventListener('animationend', function() {
