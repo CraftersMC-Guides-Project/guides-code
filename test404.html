@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background: #72a7ff; /* Minecraft sky blue */
+            font-family: 'Minecraft', sans-serif;
+            overflow: hidden;
+        }
+        
+        #scene {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #wall {
+            position: absolute;
+            width: 300px;
+            height: 200px;
+            background: url('stone-bricks.png');
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            line-height: 200px;
+            font-size: 32px;
+            color: white;
+            text-shadow: 2px 2px #000;
+        }
+        
+        #creeper {
+            position: absolute;
+            width: 60px;
+            height: 100px;
+            background: url('creeper.png');
+            right: 20%;
+            top: 50%;
+            transform: translateY(-50%);
+            animation: approach 2s forwards;
+        }
+        
+        @keyframes approach {
+            to { right: 40%; }
+        }
+        
+        .exploded {
+            animation: explode 0.5s forwards;
+        }
+        
+        @keyframes explode {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(5); opacity: 0; }
+        }
+        
+        #message {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff5555;
+            font-size: 48px;
+            text-shadow: 3px 3px #000;
+            opacity: 0;
+        }
+        
+        .show-message {
+            animation: showText 1s 0.5s forwards;
+        }
+        
+        @keyframes showText {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="scene">
+        <div id="wall">Page</div>
+        <div id="creeper"></div>
+        <div id="message">404 Not Found</div>
+    </div>
+
+    <script>
+        document.getElementById('creeper').addEventListener('animationend', function() {
+            this.style.animation = 'flash 0.2s infinite';
+            setTimeout(function() {
+                document.getElementById('wall').classList.add('exploded');
+                document.getElementById('creeper').style.display = 'none';
+                document.getElementById('message').classList.add('show-message');
+                
+                // Add particle effects here
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
