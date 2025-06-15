@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Minecraft 404 Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         @font-face {
             font-family: 'Minecraft';
@@ -11,83 +12,81 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #71a7ff; /* Minecraft sky blue */
+            background-color: #71a7ff;
             font-family: 'Minecraft', sans-serif;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AkEEjIZJ1Z5LgAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAADJklEQVRYw+2XTUhUURTHf+85M+pkjqWOfpRlH1uUFkGRUEEUbYIgaBEErYIWQYsgCFoEQdAiaBG0CIKgRRC0CAI/SgqCICj6WFhmamqamZZfM6/FeXe8M+9NRsqc4MCDe9+5557/ueece+8TTjzxZR3wAqgHqoASwAMkgQlgCOgGWoFmYBrx5RjQAHwEXgNfgH5gFJgB8oFioBKoBmqBJ0A/4ssW4DnwDmgCvgKjwF8hvpQAt4H7wGPgIeLLbqABaAY+AL+BOeZCfCkF7gF3gEfAA8SXHcBToAV4BwwD8/NBfNkK3AXuAveBu4gv24EG4C3wBRgBFhaC+LIFuAPcAW4DtxBftgFPgFbgPTAKLC4G8WUzcAu4CdwAbiC+bAUeA63AB2AMWF4K4stG4AZwHbgGXEN82QI8AtqAj8A4sLJcxJcNwHXgKnAFuIz4shloBNqBT8AEsLpaxJf1wFXgMnAJuIj4sgloADqAT8AksLZWxJd1wGXgInABOI/4sgGoBzqBz8AUsL5exJe1wEXgAnAeOIf4sh6oA7qAL8A0sLFRxJe1wHngHHAWOIP4sg6oBbqBLmAG2Nws4staywFnLQectRxw1nLAWcsBZy0HnLUccNZywFnLAWctB5y1HHDWcsBZywFnLQectRxw1nLAWcsBZ60QcAD/AeG2vFgB0UZ6AAAAAElFTkSuQmCC'), auto;
+            touch-action: manipulation;
         }
         
         #scene {
             position: relative;
             width: 100%;
             height: 100%;
+            max-width: 800px;
+            margin: 0 auto;
         }
         
         #ground {
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 100px;
-            background-color: #5a9233; /* Minecraft grass green */
-            background-image: 
-                linear-gradient(45deg, #478221 25%, transparent 25%),
-                linear-gradient(-45deg, #478221 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #478221 75%),
-                linear-gradient(-45deg, transparent 75%, #478221 75%);
-            background-size: 20px 20px;
+            height: 20vh;
+            min-height: 80px;
+            background-image: url('https://i.imgur.com/Q3ZQJ9v.png');
+            background-size: 100% 100%;
+            image-rendering: pixelated;
         }
         
         #wall {
             position: absolute;
-            width: 300px;
-            height: 200px;
-            background-color: #7a7a7a;
-            background-image: 
-                linear-gradient(#8a8a8a 1px, transparent 1px),
-                linear-gradient(90deg, #8a8a8a 1px, transparent 1px);
-            background-size: 10px 10px;
+            width: 60vw;
+            max-width: 300px;
+            height: 40vw;
+            max-height: 200px;
+            background-image: url('https://i.imgur.com/3KJjQ9W.png');
+            background-size: cover;
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            line-height: 200px;
-            font-size: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: min(8vw, 32px);
             color: white;
             text-shadow: 2px 2px #000;
             box-shadow: 0 0 0 5px #5a5a5a;
             z-index: 10;
+            image-rendering: pixelated;
         }
         
         #creeper {
             position: absolute;
-            width: 60px;
-            height: 100px;
-            background-color: #5a9233;
-            background-image: 
-                linear-gradient(transparent 80%, #3a3a3a 80%),
-                linear-gradient(90deg, 
-                    #3a3a3a 10%, transparent 10%, transparent 20%, 
-                    #3a3a3a 20%, #3a3a3a 30%, transparent 30%, transparent 40%, 
-                    #3a3a3a 40%, #3a3a3a 50%, transparent 50%, transparent 60%, 
-                    #3a3a3a 60%, #3a3a3a 70%, transparent 70%, transparent 80%, 
-                    #3a3a3a 80%);
-            right: -100px;
+            width: 12vw;
+            max-width: 60px;
+            height: 20vw;
+            max-height: 100px;
+            background-image: url('https://i.imgur.com/9mJQ9vQ.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            right: -20vw;
             top: 50%;
             transform: translateY(-50%);
             animation: approach 3s forwards;
             z-index: 20;
+            image-rendering: pixelated;
         }
         
         @keyframes approach {
-            0% { right: -100px; }
+            0% { right: -20vw; }
             70% { right: 42%; }
             100% { 
                 right: 42%;
-                background-color: #ff3333;
+                filter: brightness(1.5) hue-rotate(30deg);
                 animation: flash 0.1s infinite;
             }
         }
@@ -113,10 +112,11 @@
             top: 50%;
             transform: translate(-50%, -50%);
             color: #ff5555;
-            font-size: 48px;
+            font-size: min(10vw, 48px);
             text-shadow: 3px 3px #000;
             opacity: 0;
             text-align: center;
+            width: 90%;
         }
         
         .show-message {
@@ -129,26 +129,31 @@
         
         .block {
             position: absolute;
-            width: 20px;
-            height: 20px;
-            background-color: #7a7a7a;
+            width: 5vw;
+            max-width: 30px;
+            height: 5vw;
+            max-height: 30px;
+            background-image: url('https://i.imgur.com/3KJjQ9W.png');
+            background-size: cover;
             z-index: 5;
+            image-rendering: pixelated;
         }
         
         #home-button {
             position: absolute;
-            bottom: 50px;
+            bottom: 10vh;
             left: 50%;
             transform: translateX(-50%);
-            padding: 10px 20px;
+            padding: 2vh 4vw;
             background-color: #c6c6c6;
             border: 3px solid #8b8b8b;
             font-family: 'Minecraft', sans-serif;
-            font-size: 18px;
+            font-size: min(4vw, 18px);
             cursor: pointer;
             opacity: 0;
             transition: all 0.3s;
             z-index: 100;
+            image-rendering: pixelated;
         }
         
         #home-button:hover {
@@ -162,6 +167,22 @@
         @keyframes showButton {
             to { opacity: 1; }
         }
+        
+        /* Mobile-specific adjustments */
+        @media (max-width: 600px) {
+            #wall {
+                box-shadow: 0 0 0 3px #5a5a5a;
+            }
+            
+            #message {
+                font-size: 8vw;
+            }
+            
+            #home-button {
+                padding: 1.5vh 6vw;
+                font-size: 5vw;
+            }
+        }
     </style>
 </head>
 <body>
@@ -171,7 +192,7 @@
         <div id="creeper"></div>
         <div id="message">
             404 Not Found<br>
-            <span style="font-size: 24px;">The page went boom!</span>
+            <span style="font-size: 0.5em;">The page went boom!</span>
         </div>
         <button id="home-button">Return to Safety</button>
     </div>
@@ -189,9 +210,13 @@
                 // Flash for 2 seconds then explode
                 setTimeout(function() {
                     // Play explosion sound (if enabled)
-                    const explosionSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-explosion-impact-1684.mp3');
-                    explosionSound.volume = 0.3;
-                    explosionSound.play().catch(e => console.log("Audio play failed:", e));
+                    try {
+                        const explosionSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-explosion-impact-1684.mp3');
+                        explosionSound.volume = 0.3;
+                        explosionSound.play();
+                    } catch (e) {
+                        console.log("Audio play failed or not supported");
+                    }
                     
                     // Hide creeper and explode wall
                     creeper.style.display = 'none';
@@ -209,9 +234,10 @@
             });
             
             function createExplosionParticles() {
-                const particleCount = 30;
-                const centerX = wall.offsetLeft + wall.offsetWidth / 2;
-                const centerY = wall.offsetTop + wall.offsetHeight / 2;
+                const particleCount = Math.min(30, window.innerWidth / 15);
+                const wallRect = wall.getBoundingClientRect();
+                const centerX = wallRect.left + wallRect.width / 2;
+                const centerY = wallRect.top + wallRect.height / 2;
                 
                 for (let i = 0; i < particleCount; i++) {
                     const particle = document.createElement('div');
@@ -226,16 +252,18 @@
                     particle.style.left = x + 'px';
                     particle.style.top = y + 'px';
                     
-                    // Random rotation and size
-                    const size = Math.random() * 15 + 5;
-                    particle.style.width = size + 'px';
-                    particle.style.height = size + 'px';
+                    // Random size
+                    const size = Math.random() * 3 + 2;
+                    particle.style.width = size + 'vw';
+                    particle.style.height = size + 'vw';
+                    particle.style.maxWidth = (size * 6) + 'px';
+                    particle.style.maxHeight = (size * 6) + 'px';
                     
                     // Random animation
                     const duration = Math.random() * 2 + 1;
                     particle.style.animation = `fall ${duration}s forwards`;
                     
-                    scene.appendChild(particle);
+                    document.body.appendChild(particle);
                     
                     // Remove particle after animation
                     setTimeout(() => {
@@ -258,6 +286,12 @@
             
             // Home button functionality
             homeButton.addEventListener('click', function() {
+                window.location.href = '/';
+            });
+            
+            // Touch support for mobile
+            homeButton.addEventListener('touchend', function(e) {
+                e.preventDefault();
                 window.location.href = '/';
             });
         });
