@@ -10,6 +10,10 @@
         .field label { display: inline-block; width: 100px; font-weight: bold; }
         .field input { width: 200px; padding: 3px; }
         .field select { width: 200px; padding: 3px; }
+        .button-loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -100,6 +104,7 @@
             }
             const saveButton = document.getElementById('saveButton');
             saveButton.disabled = true; 
+            saveButton.classList.add('button-loading');
             saveButton.textContent = 'Saving...';
 
             const updatedSeller = {
@@ -159,6 +164,11 @@
                     alert('Error saving changes: ' + error.message);
                     successText.textContent = 'Error saving changes. Please try again.' + error.message;
                     console.error('Error:', error);
+                } finally {
+                    // Always reset button state
+                    saveButton.disabled = false;
+                    saveButton.classList.remove('button-loading');
+                    saveButton.textContent = 'Save Changes';
                 }
             }
         }
