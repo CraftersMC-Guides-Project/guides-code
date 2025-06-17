@@ -132,8 +132,11 @@
                     });
                     const fileData = await fileResponse.json();
                     
-                    // Prepare the update
-                    const content = btoa(JSON.stringify(allSellers, null, 2)); // Convert to base64
+                    // Prepare the update with proper UTF-8 encoding
+                    const jsonString = JSON.stringify(allSellers, null, 2);
+                    const encoder = new TextEncoder();
+                    const data = encoder.encode(jsonString);
+                    const content = btoa(String.fromCharCode(...data)); // Convert to base64 with UTF-8 support
                     
                     // Commit the changes
                     const response = await fetch('https://api.github.com/repos/CraftersMC-Guides-Project/guides-code/contents/ranksellers/ranksellers.txt', {
