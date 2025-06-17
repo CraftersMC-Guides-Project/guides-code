@@ -85,6 +85,7 @@
                         </div>
                         <button onclick="saveChanges()">Save Changes</button>
                     </div>
+                    <div><p id="successText"></p></div>
                 `;
             } else {
                 resultDiv.innerHTML = `<p class="error">Access code not found. Please try again.</p>`;
@@ -112,7 +113,7 @@
                 dia: document.getElementById('dia').value,
                 em: document.getElementById('em').value
             };
-
+            const successText = document.getElementById('successText');
             // Update the seller in the array
             const index = allSellers.findIndex(s => s["access-code"] === currentAccessCode);
             if (index !== -1) {
@@ -148,11 +149,13 @@
 
                     if (response.ok) {
                         alert('Changes saved successfully!');
+                        successText.textContent = 'Changes saved successfully!';
                     } else {
                         throw new Error('Failed to save changes');
                     }
                 } catch (error) {
                     alert('Error saving changes: ' + error.message);
+                    successText.textContent = 'Error saving changes. Please try again.' + error.message;
                     console.error('Error:', error);
                 }
             }
