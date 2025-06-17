@@ -1,0 +1,162 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Seller Access</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        .profile { margin-top: 2em; border: 1px solid #ccc; padding: 1em; width: 400px; }
+        .error { color: red; }
+        .field { margin-bottom: 10px; }
+        .field label { display: inline-block; width: 100px; font-weight: bold; }
+        .field input { width: 200px; padding: 3px; }
+        .field select { width: 200px; padding: 3px; }
+    </style>
+</head>
+<body>
+    <h2>Enter Access Code</h2>
+    <input type="text" id="accessCodeInput" placeholder="Access Code">
+    <button onclick="checkAccessCode()">Submit</button>
+    <div id="result"></div>
+
+    <script>
+        let allSellers = []; // Store all sellers data
+        let currentAccessCode = ''; // Store current access code
+
+        async function checkAccessCode() {
+            const [sellerRes] = await Promise.all([
+                fetch('ranksellers/ranksellers.txt')
+            ]);
+            const sellerData = await sellerRes.text();
+            allSellers = JSON.parse(sellerData);
+            const code = document.getElementById('accessCodeInput').value.trim();
+            currentAccessCode = code;
+            const seller = allSellers.find(s => s["access-code"] === code.toUpperCase());
+            const resultDiv = document.getElementById('result');
+            if (seller) {
+                resultDiv.innerHTML = `
+                    <div class="profile">
+                        <div class="field">
+                            <label>Name:</label>
+                            <input type="text" id="name" value="${seller.name}">
+                        </div>
+                        <div class="field">
+                            <label>Discord:</label>
+                            <input type="text" id="discord" value="${seller.discord}">
+                        </div>
+                        <div class="field">
+                            <label>Rank:</label>
+                            <input type="text" id="rank" value="${seller.rank}">
+                        </div>
+                        <div class="field">
+                            <label>Status:</label>
+                            <select id="status">
+                                <option value="Selling" ${seller.status === 'Selling' ? 'selected' : ''}>Selling</option>
+                                <option value="Inactive" ${seller.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
+                                <option value="On Leave" ${seller.status === 'On Leave' ? 'selected' : ''}>On Leave</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Timezone:</label>
+                            <input type="text" id="timezone" value="${seller.timezone}">
+                        </div>
+                        <div class="field">
+                            <label>Gems:</label>
+                            <input type="text" id="gems" value="${seller.gems}">
+                        </div>
+                        <div class="field">
+                            <label>Stock:</label>
+                            <input type="text" id="stock" value="${seller.stock}">
+                        </div>
+                        <div class="field">
+                            <label>Sales:</label>
+                            <input type="text" id="sales" value="${seller.sales}">
+                        </div>
+                        <div class="field">
+                            <label>Gold:</label>
+                            <input type="text" id="gold" value="${seller.gold}">
+                        </div>
+                        <div class="field">
+                            <label>Diamond:</label>
+                            <input type="text" id="dia" value="${seller.dia}">
+                        </div>
+                        <div class="field">
+                            <label>Emerald:</label>
+                            <input type="text" id="em" value="${seller.em}">
+                        </div>
+                        <button onclick="saveChanges()">Save Changes</button>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `<p class="error">Access code not found. Please try again.</p>`;
+            }
+        }
+
+        async function saveChanges() {
+            const token = "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";
+            if (!token) {
+                alert('GitHub token is not working. Please contact the team to get it fixed. - TechonTheDev (on behalf of the team)');
+                return;
+            }
+
+            const updatedSeller = {
+                "access-code": currentAccessCode,
+                name: document.getElementById('name').value,
+                discord: document.getElementById('discord').value,
+                rank: document.getElementById('rank').value,
+                status: document.getElementById('status').value,
+                timezone: document.getElementById('timezone').value,
+                gems: document.getElementById('gems').value,
+                stock: document.getElementById('stock').value,
+                sales: document.getElementById('sales').value,
+                gold: document.getElementById('gold').value,
+                dia: document.getElementById('dia').value,
+                em: document.getElementById('em').value
+            };
+
+            // Update the seller in the array
+            const index = allSellers.findIndex(s => s["access-code"] === currentAccessCode);
+            if (index !== -1) {
+                allSellers[index] = updatedSeller;
+                
+                try {
+                    // Get the current file from GitHub
+                    const fileResponse = await fetch('https://api.github.com/repos/CraftersMC-Guides-Project/guides-code/contents/ranksellers/ranksellers.txt', {
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+                    const fileData = await fileResponse.json();
+                    
+                    // Prepare the update
+                    const content = btoa(JSON.stringify(allSellers, null, 2)); // Convert to base64
+                    
+                    // Commit the changes
+                    const response = await fetch('https://api.github.com/repos/CraftersMC-Guides-Project/guides-code/contents/ranksellers/ranksellers.txt', {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: `Update seller data for ${updatedSeller.name}`,
+                            content: content,
+                            sha: fileData.sha
+                        })
+                    });
+
+                    if (response.ok) {
+                        alert('Changes saved successfully!');
+                    } else {
+                        throw new Error('Failed to save changes');
+                    }
+                } catch (error) {
+                    alert('Error saving changes: ' + error.message);
+                    console.error('Error:', error);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
