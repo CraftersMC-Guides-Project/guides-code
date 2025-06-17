@@ -99,77 +99,91 @@
         async function saveChanges() {
             const token = "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";
             if (!token) {
-                alert('GitHub token is not working. Please contact the team to get it fixed. - TechonTheDev (on behalf of the team)');
+                alert('GitHub token is not working. Please contact the team to get it fixed.');
                 return;
             }
             const saveButton = document.getElementById('saveButton');
+            const successText = document.getElementById('successText');
             saveButton.disabled = true; 
             saveButton.classList.add('button-loading');
             saveButton.textContent = 'Saving...';
 
-            const updatedSeller = {
-                "access-code": currentAccessCode,
-                name: document.getElementById('name').value,
-                discord: document.getElementById('discord').value,
-                rank: document.getElementById('rank').value,
-                status: document.getElementById('status').value,
-                timezone: document.getElementById('timezone').value,
-                gems: document.getElementById('gems').value,
-                stock: document.getElementById('stock').value,
-                sales: document.getElementById('sales').value,
-                gold: document.getElementById('gold').value,
-                dia: document.getElementById('dia').value,
-                em: document.getElementById('em').value
-            };
-            const successText = document.getElementById('successText');
-            const index = allSellers.findIndex(s => s["access-code"] === currentAccessCode);
-            if (index !== -1) {
+            try {
+                const fileResponse = await fetch('https://api.github.com/repos/CraftersMC-Guides-Project/guides-code/contents/ranksellers/ranksellers.txt', {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Origin': window.location.origin
+                    },
+                    mode: 'cors'
+                });
+
+                if (!fileResponse.ok) {
+                    const errorData = await fileResponse.text();
+                    console.error('File fetch error:', errorData);
+                    throw new Error(`GitHub API error: ${fileResponse.status} ${fileResponse.statusText}`);
+                }
+
+                const fileData = await fileResponse.json();
+                
+                // Update seller data
+                const index = allSellers.findIndex(s => s["access-code"] === currentAccessCode);
+                if (index === -1) {
+                    throw new Error('Seller not found in array');
+                }
+
+                const updatedSeller = {
+                    "access-code": currentAccessCode,
+                    name: document.getElementById('name').value,
+                    discord: document.getElementById('discord').value,
+                    rank: document.getElementById('rank').value,
+                    status: document.getElementById('status').value,
+                    timezone: document.getElementById('timezone').value,
+                    gems: document.getElementById('gems').value,
+                    stock: document.getElementById('stock').value,
+                    sales: document.getElementById('sales').value,
+                    gold: document.getElementById('gold').value,
+                    dia: document.getElementById('dia').value,
+                    em: document.getElementById('em').value
+                };
+
                 allSellers[index] = updatedSeller;
                 
-                try {
-                    const fileResponse = await fetch('https://api.github.com/repos/CraftersMC-Guides-Project/guides-code/contents/ranksellers/ranksellers.txt', {
-                        headers: {
-                            'Authorization': `token ${token}`,
-                            'Accept': 'application/vnd.github.v3+json'
-                        }
-                    });
-                    const fileData = await fileResponse.json();
-                    
-                    const jsonString = JSON.stringify(allSellers, null, 2);
-                    const encoder = new TextEncoder();
-                    const data = encoder.encode(jsonString);
-                    const content = btoa(String.fromCharCode(...data));
-                    
-                    const response = await fetch('https://api.github.com/repos/CraftersMC-Guides-Project/guides-code/contents/ranksellers/ranksellers.txt', {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${token}`,
-                            'Accept': 'application/vnd.github.v3+json',
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            message: `Update seller data for ${updatedSeller.name}`,
-                            content: content,
-                            sha: fileData.sha
-                        })
-                    });
+                const jsonString = JSON.stringify(allSellers, null, 2);
+                const encoder = new TextEncoder();
+                const data = encoder.encode(jsonString);
+                const content = btoa(String.fromCharCode(...data));
+                
+                const response = await fetch('https://api.github.com/repos/CraftersMC-Guides-Project/guides-code/contents/ranksellers/ranksellers.txt', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin
+                    },
+                    mode: 'cors',
+                    body: JSON.stringify({
+                        message: `Update seller data for ${updatedSeller.name}`,
+                        content: content,
+                        sha: fileData.sha
+                    })
+                });
 
-                    if (response.ok) {
-                        alert('Changes saved successfully!');
-                        successText.textContent = 'Changes saved successfully!';
-                    } else {
-                        throw new Error('Failed to save changes');
-                    }
-                } catch (error) {
-                    alert('Error saving changes: ' + error.message);
-                    successText.textContent = 'Error saving changes. Please try again.' + error.message;
-                    console.error('Error:', error);
-                } finally {
-                    // Always reset button state
-                    saveButton.disabled = false;
-                    saveButton.classList.remove('button-loading');
-                    saveButton.textContent = 'Save Changes';
+                if (!response.ok) {
+                    const errorData = await response.text();
+                    console.error('Update error:', errorData);
+                    throw new Error(`Update failed: ${response.status} ${response.statusText}`);
                 }
+
+                successText.textContent = 'Changes saved successfully!';
+            } catch (error) {
+                console.error('Detailed error:', error);
+                successText.textContent = `Error: ${error.message}. Check console for details.`;
+            } finally {
+                saveButton.disabled = false;
+                saveButton.classList.remove('button-loading');
+                saveButton.textContent = 'Save Changes';
             }
         }
     </script>
