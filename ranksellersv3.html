@@ -106,11 +106,6 @@
         width: 90%;
         margin: 0 auto;
         padding: 20px;
-        backdrop-filter: blur(12px) saturate(200%);
-        -webkit-backdrop-filter: blur(12px) saturate(200%);
-        border-radius: 24px;
-        border: 1px solid rgba(255, 255, 255, 0.125);
-        box-shadow: 0 4px 8px var(--box-shadow-color);
       }
 
       .seller-card {
@@ -137,13 +132,13 @@
       }
 
       .inactive {
-        border: 1px solid rgba(255, 0, 0, 0.3);
+        border: 3px solid rgba(255, 0, 0, 0.3);
         background-color: var(--seller-card-background);
-        background-image: linear-gradient(135deg, var(--seller-card-background), rgba(255, 0, 0, 0.6));
+        background-image: linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(255, 0, 0, 0.2));
       }
 
       .darkmode .inactive {
-        background-color: rgba(100, 36, 36, 0.4);
+        background-color: rgba(36, 36, 36, 0.4);
       }
 
       .seller-card:hover {
@@ -280,6 +275,8 @@
 
     <div id="footer"></div>
     <script>
+        let onlyGems = false;
+        let filterInactive = false;
         async function loadMinions() {
             try {
                 const minionsRes = await fetch('ranksellers/ranksellers.txt');
@@ -288,11 +285,29 @@
 
                 if (minionsData.length > 0) {
                     const itemsHTML = minionsData.map(item => {
+                        if (!item.name || !item.id || !item.rank || !item.gems) {
+                            return ''; // Skip items with missing data
+                        }
+                        if (item.gemStatus === "No" && onlyGems) {
+                          return;
+                        }
+                        let inactive = false;
+                        if (item.status !== "Selling") {
+                            inactive = true;
+                        } 
+                        let sellingGems = false;
+                        if (item.gemStatus === "Yes") {
+                            sellingGems = true;
+                        }
+
+                        if (inactive && filterInactive) {
+                            return;
+                        }
                         return `
-                            <div class="seller-card" onclick="window.location.href='seller.html?id=${String(item.id).padStart(2, '0')}'">
+                            <div class="seller-card ${inactive ? "inactive" : " "}" onclick="window.location.href='seller.html?id=${String(item.id).padStart(2, '0')}'">
                                 <img class="rank" src="../rank/${item.rank}.png" alt="emerald">
                                 <h3><b>${item.name}</b></h3>
-                                <p><b>Gems: <span>${item.gems}</span></b></p>
+                                <p><b>Gems: <span>${item.gems} per</span></b></p>
                                 <p class="status">Status: <b class="Selling" id="status-badge">Selling</b></p>
                                 <p><b>Discord: <span>hollowspooky</span></b></p>
                             </div><br>
