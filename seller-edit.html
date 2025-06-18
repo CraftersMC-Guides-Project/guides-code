@@ -269,6 +269,7 @@
     <script>
         let allSellers = [];
         let currentAccessCode = '';
+        let id = 0;
 
         async function checkAccessCode() {
             const [sellerRes] = await Promise.all([
@@ -281,6 +282,7 @@
             const seller = allSellers.find(s => s["access-code"] === code.toUpperCase());
             const resultDiv = document.getElementById('result');
             if (seller) {
+                id = seller.id;
                 resultDiv.innerHTML = `
                     <div class="profile">
                         <div class="field">
@@ -389,7 +391,7 @@
 
                 const updatedSeller = {
                     "access-code": currentAccessCode.toUpperCase(),
-                    id: seller.id,
+                    id: id,
                     name: document.getElementById('name').value,
                     discord: document.getElementById('discord').value,
                     rank: document.getElementById('rank').value,
