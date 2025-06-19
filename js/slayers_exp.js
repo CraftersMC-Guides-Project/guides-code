@@ -3,7 +3,7 @@ const collectionsData = [
     "name": "Zombie Slayer",
     "image": "https://craftersmc.wiki.gg/images/8/8e/Revenant_Horror.png?b5e98d",
     "players": [
-      { "rank": 1, "name": "SphinxWraith", "score": "44M+" },
+      { "rank": 1, "name": "SphinxWraith", "score": "50M+" },
       { "rank": 2, "name": "HeGzoStRqFe", "score": "N/A" },
       { "rank": 3, "name": "DueBacon2007102", "score": "34M+" },
       { "rank": 4, "name": "Itzomkar1232891", "score": "24M+" },
