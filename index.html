@@ -5,29 +5,6 @@
     <link rel="icon" href="assets/cmc-icon.png" type="image/png">
     <!-- Other meta tags and title -->
     <link rel="icon" href="assets/cmc-guides.png" type="image/png">
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
-        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
-
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-        const firebaseConfig = {
-            apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
-            authDomain: "craftersmc-guides.firebaseapp.com",
-            projectId: "craftersmc-guides",
-            storageBucket: "craftersmc-guides.firebasestorage.app",
-            messagingSenderId: "647290515320",
-            appId: "1:647290515320:web:44e1be1528c86af00d628d",
-            measurementId: "G-K3WGXSF9DQ"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-    </script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,53 +33,6 @@
     <link rel="stylesheet" href="css/home.css">
     <script src="js/script.js"></script>
     <script src="js/home.js"></script>
-    <script>
-        function loadSidebar() {
-            fetch('sidebar.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('sidebar').innerHTML = data;
-                    const script = document.createElement('script');
-                    script.textContent = `
-                        document.addEventListener("DOMContentLoaded", () => {
-                            const profileImg = document.getElementById("sidebarProfilePic");
-                            const usernameText = document.getElementById("sidebarUsername");
-
-                            try {
-                                const user = JSON.parse(localStorage.getItem("user"));
-                                if (!user || !user.email) {
-                                    profileImg.src = "assets/cmc-guides.png"; // Default icon
-                                    usernameText.textContent = "";
-                                    return;
-                                }
-
-                                const userSettings = JSON.parse(localStorage.getItem(\`userSettings_\${user.email}\`)) || {};
-
-                                if (userSettings.profilePic) {
-                                    profileImg.src = userSettings.profilePic;
-                                } else {
-                                    profileImg.src = "assets/cmc-guides.png"; // Fallback
-                                }
-
-                                if (userSettings.username) {
-                                    usernameText.textContent = userSettings.username;
-                                } else {
-                                    usernameText.textContent = "";
-                                }
-                            } catch (err) {
-                                profileImg.src = "assets/cmc-guides.png"; // Default icon on error
-                                usernameText.textContent = "";
-                            }
-                        });
-                    `;
-                    document.getElementById('sidebar').appendChild(script);
-                });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadSidebar();
-        });
-    </script>
 </head>
 
 <body>
@@ -170,14 +100,13 @@
     <div class="main-container">
 
         <!-- Notice Board Section -->
-        <section id="notice-board"
-            style="max-width: 18rem; margin: 2.5em 1rem 1.5em auto; background: var(--glass-bg); border-radius: 10px; box-shadow: 0 2px 12px #0002; padding: 1.5em 1.5em 1em 1.5em; border: 2px solid var(--primary-text-color); display: flex; flex-direction: column; width:90%; align-items:center;">
-            <h2 style="margin-top:0; font-size:1.5em; display: flex; align-items: center; ">
+        <section id="notice-board" class="notice-board">
+            <h2>
                 <span class="material-icons"
                     style="font-size:1.3em;vertical-align:middle;margin-right:8px;">campaign</span>
                 Notice Board
             </h2><br><br>
-            <ul style="margin:0 0 0 10px; padding:0; color: var(--main-text-color); font-size:1.08em;">
+            <ul style="margin:0 0 0 10px; padding: 1.5em 1.5em 1em 1.5em; font-size:1.08em;">
                 <li style="color: #ff3838;">⚠️ <b>Alert: Privacy Policy has been updated <em>June 9 2025</em> <a
                             href="privacypolicy.html" style="color: var(--primary-text-color);">Check it
                             out</a></b></li><br>
