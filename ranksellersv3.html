@@ -68,7 +68,7 @@
         --shadow-color-solid : rgba(100, 100, 100, 0.5);
         --border-card: 1px solid rgba(255, 255, 255, 0.4);
         --card-drop-shadow: transparent;
-        --opacity: 0.1;
+        --opacity: 0.4;
       }
 
       body {
@@ -128,8 +128,8 @@
         padding: 15px;
         transition: transform 0.3s, box-shadow 0.3s;
         overflow-wrap: break-word;
-        min-height: 250px;
         min-width: 250px;
+        min-height: 250px;
         display: flex;
         flex-direction: column;
         justify-content: space-around;
@@ -267,6 +267,129 @@
         }
       }
 
+      .container input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+      }
+
+      .container {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        gap: 8px;
+        font-size: 30px;
+        user-select: none;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .checkmark {
+        position: relative;
+        top: 0;
+        left: 0;
+        height: 1.6em;
+        width: 1.6em;
+        border-radius: 50%;
+        background: #ffeded38;
+        transition: all 0.2s ease;
+      }
+
+      .checkmark {
+        opacity: 0.4;
+      }
+
+      .container input:checked ~ .checkmark {
+        background: linear-gradient(144deg,#af40ff,#5b42f3 50%,#00ddeb);
+        opacity: 0.9;
+        transition: all 0.5s ease;
+      }
+
+      .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+      }
+
+      .container input:checked ~ .checkmark:after {
+        display: block;
+      }
+      
+      .container .checkmark:after {
+        left: 0.61em;
+        top: 0.43em;
+        width: 0.25em;
+        height: 0.5em;
+        border: solid rgb(255, 255, 255);
+        border-width: 0 0.15em 0.15em 0;
+        transform: rotate(45deg);
+      }
+
+
+      .checkbox-container-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .checkbox-container {
+        width: 90%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        margin: 20px 0;
+        background: var(--seller-card-background);
+        backdrop-filter: blur(2px) saturate(180%);
+        border: var(--border-card);
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
+        inset 0 4px 20px var(--shadow-color);
+        border-radius: 50px;
+
+      } 
+
+      .checkbox-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 2rem;
+        backdrop-filter: blur(1px);
+        box-shadow: inset -10px -8px 0px -11px var(--shadow-color-solid),
+                    inset 0px -9px 0px -8px var(--shadow-color-solid);
+        opacity: var(--opacity);
+        z-index: -1;
+        filter: blur(1px) drop-shadow(10px 4px 6px var(--card-drop-shadow)) brightness(115%);
+      }
+
+      .checkbox-container p {
+        margin: 0 0 0 0;
+        padding: 0;
+        color: var(--text-color);
+        font-size: 1.5rem;
+        text-align: center;
+        display: inline-block;
+      }
+
+      .label-and-checkmark {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 10px;
+      }
+
+      .label-and-checkmark:last-child {
+        border-right: none;
+      }
+      
     </style>
     <script src="js/script.js"></script>
 </head>
@@ -280,12 +403,7 @@
     <div class="top"></div>
     <div class="sidebar" id="sidebar"></div>
     <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-    <button id="float">
-        <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
-        <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
-        <span class="material-icons"id="ai" onclick="aiBtn()">smart_toy</span>
-        <span class="material-icons" id="scrollToTopBtn">north</span>
-    </button>
+    
   <h1 class="title">CraftersMC Trusted Rank Sellers V2</h1>
   <p class="warning" style="color: white;">
     This is a list of trusted rank sellers on CraftersMC. These sellers have been verified and are known to be trustworthy. They are not affiliated with CraftersMC in any way. This list is for your convenience and safety when buying ranks from other players.<br><br>
@@ -295,6 +413,23 @@
   <p class="warning">
     Beware of scammers and impersonators. Make sure you are buying from the right people and not fakes.
   </p>
+  <div class="checkbox-container-container">
+    <div class="checkbox-container">
+      <div class="label-and-checkmark">
+      <p>Active only</p>
+      <label class="container">
+        <input type="checkbox" id="filterInactive">
+        <div class="checkmark"></div></label>
+</div><div class="label-and-checkmark">
+<p>Gems only</p>
+
+      <label class="container">
+        <input type="checkbox" id="onlyGems">
+        <div class="checkmark"></div></label>
+</div>
+
+    </div></div>
+
     <div id="seller-container" class="seller-container">
         <p>Loading sellers...</p>
     </div>
@@ -303,6 +438,16 @@
     <script>
         let onlyGems = false;
         let filterInactive = false;
+        const gemToggle = document.getElementById('onlyGems');
+        const inactiveToggle = document.getElementById('filterInactive');
+        gemToggle.addEventListener('change', () => {
+            onlyGems = gemToggle.checked;
+            loadMinions();
+        });
+        inactiveToggle.addEventListener('change', () => {
+            filterInactive = inactiveToggle.checked;
+            loadMinions();
+        });
         async function loadMinions() {
             try {
                 const minionsRes = await fetch('ranksellers/ranksellers.txt');
@@ -314,7 +459,7 @@
                         if (!item.name || !item.id || !item.rank || !item.gems) {
                             return ''; // Skip items with missing data
                         }
-                        if (item.gemStatus === "No" && onlyGems) {
+                        if ((item.gemStatus === "No" || !item.gemStatus) && onlyGems) {
                           return;
                         }
                         let inactive = false;
