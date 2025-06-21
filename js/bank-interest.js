@@ -26,7 +26,7 @@ function updateInterestTimes() {
 }
 
 function toggleInterestContainer() {
-    let content = document.querySelector('.interest-container .content');
+    let content = document.querySelector('.event-container .content');
     content.style.display = (content.style.display === "none" || content.style.display === "") ? "block" : "none";
 }
 
