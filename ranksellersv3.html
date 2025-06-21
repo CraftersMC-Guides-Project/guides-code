@@ -11,12 +11,12 @@
     <style>
       :root {
         --background-color: #f9f9f9;
-        --text-color: #222;
+        --text-color: #fff;
         --title-color: #ffffff;
         --text-shadow-color: #000000;
         --credits-footer-color: #6c757d;
         --seller-list-background: rgba(255, 255, 255, 0.0);
-        --seller-card-background: rgba(255, 255, 255, 0.3);
+        --seller-card-background: rgba(255, 255, 255, 0.1);
         --box-shadow-color: rgba(0, 0, 0, 0.1);
         --box-shadow-hover-color: rgba(255, 255, 255, 0.3);
         --box-shadow-seller-card: rgba(0, 0, 0, 0.2);
@@ -35,16 +35,21 @@
         --guides-blue-hover: #0056b3;
         --background: #f4f4f4;
         --sidebar-text: #2f2f2f;
+        --shadow-color: rgba(255, 255, 255, 0.3);
+        --shadow-color-solid: rgba(255, 255, 255, 1);
+        --border-card: 1px solid rgba(255, 255, 255, 0.8);
+        --card-drop-shadow: black;
+        --opacity: 0.8;
       }
 
-      .dark-mode {
+      .darkmode {
         --background-color: #222222;
         --text-color: #eee;
         --title-color: #ffffff;
         --text-shadow-color: #000000;
         --credits-footer-color: #6c757d;
         --seller-list-background: rgba(0, 0, 0, 0.2);
-        --seller-card-background: rgba(0, 0, 0, 0.2);
+        --seller-card-background: rgba(100, 100, 100, 0.1);
         --box-shadow-color: rgba(1, 1, 1, 0.1);
         --box-shadow-hover-color: rgba(0, 0, 0, 0.3);
         --box-shadow-seller-card: rgba(200, 200, 200, 0.2);
@@ -59,6 +64,11 @@
         --warning-color: red;
         --warning-text-shadow-color: #000000;
         --background-tint: rgba(0, 0, 0, 0.5);
+        --shadow-color: rgba(200, 200, 200, 0.3);
+        --shadow-color-solid : rgba(100, 100, 100, 0.5);
+        --border-card: 1px solid rgba(255, 255, 255, 0.4);
+        --card-drop-shadow: transparent;
+        --opacity: 0.8;
       }
 
       body {
@@ -109,17 +119,17 @@
       }
 
       .seller-card {
-        backdrop-filter: blur(8px) saturate(180%);
-        -webkit-backdrop-filter: blur(8px) saturate(180%);
-        background-color: var(--seller-card-background);
-        border-radius: 10px;
+        background: var(--seller-card-background);
+        backdrop-filter: blur(2px) saturate(180%);
+        border: var(--border-card);
+        border-radius: 2rem;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
+        inset 0 4px 20px var(--shadow-color);
         padding: 15px;
         transition: transform 0.3s, box-shadow 0.3s;
-        box-shadow: 0 2px 5px var(--box-shadow-seller-card);
         overflow-wrap: break-word;
-        min-height: 200px;
-        color: var(--text-color);
-        border: 1px solid rgba(255, 255, 255, 0.125);
+        min-width: 250px;
+        min-height: 250px;
         display: flex;
         flex-direction: column;
         justify-content: space-around;
@@ -127,19 +137,28 @@
         position: relative;
       }
 
-      .darkmode .seller-card {
-        background-color: rgba(36, 36, 36, 0.6);
+      .seller-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 2rem;
+        backdrop-filter: blur(1px);
+        box-shadow: inset -10px -8px 0px -11px var(--shadow-color-solid),
+                    inset 0px -9px 0px -8px var(--shadow-color-solid);
+        opacity: var(--opacity);
+        z-index: -1;
+        filter: blur(1px) drop-shadow(10px 4px 6px var(--card-drop-shadow)) brightness(115%);
       }
 
       .inactive {
         border: 3px solid rgba(255, 0, 0, 0.3);
         background-color: var(--seller-card-background);
-        background-image: linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(255, 0, 0, 0.2));
+        background-image: linear-gradient(135deg, rgba(255, 0, 0, 0.1), rgba(255, 0, 0, 0.1));
       }
 
-      .darkmode .inactive {
-        background-color: rgba(36, 36, 36, 0.4);
-      }
 
       .seller-card:hover {
         transform: scale(1.05);
@@ -229,7 +248,7 @@
           color: var(--credits-footer-color);
           text-align: center;
       }
-      @media (max-width: 1200px) and (min-width: 600px) {
+      @media (max-width: 800px) and (min-width: 600px) {
         .seller-container {
           grid-template-columns: repeat(2, 1fr);
         }
@@ -241,6 +260,129 @@
         }
       }
 
+      .container input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+      }
+
+      .container {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        gap: 8px;
+        font-size: 30px;
+        user-select: none;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .checkmark {
+        position: relative;
+        top: 0;
+        left: 0;
+        height: 1.6em;
+        width: 1.6em;
+        border-radius: 50%;
+        background: #ffeded38;
+        transition: all 0.2s ease;
+      }
+
+      .checkmark {
+        opacity: 0.4;
+      }
+
+      .container input:checked ~ .checkmark {
+        background: linear-gradient(144deg,#af40ff,#5b42f3 50%,#00ddeb);
+        opacity: 0.9;
+        transition: all 0.5s ease;
+      }
+
+      .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+      }
+
+      .container input:checked ~ .checkmark:after {
+        display: block;
+      }
+      
+      .container .checkmark:after {
+        left: 0.61em;
+        top: 0.43em;
+        width: 0.25em;
+        height: 0.5em;
+        border: solid rgb(255, 255, 255);
+        border-width: 0 0.15em 0.15em 0;
+        transform: rotate(45deg);
+      }
+
+
+      .checkbox-container-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .checkbox-container {
+        width: 90%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        margin: 20px 0;
+        background: var(--seller-card-background);
+        backdrop-filter: blur(2px) saturate(180%);
+        border: var(--border-card);
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
+        inset 0 4px 20px var(--shadow-color);
+        border-radius: 50px;
+
+      } 
+
+      .checkbox-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 2rem;
+        backdrop-filter: blur(1px);
+        box-shadow: inset -10px -8px 0px -11px var(--shadow-color-solid),
+                    inset 0px -9px 0px -8px var(--shadow-color-solid);
+        opacity: var(--opacity);
+        z-index: -1;
+        filter: blur(1px) drop-shadow(10px 4px 6px var(--card-drop-shadow)) brightness(115%);
+      }
+
+      .checkbox-container p {
+        margin: 0 0 0 0;
+        padding: 0;
+        color: var(--text-color);
+        font-size: 1.5rem;
+        text-align: center;
+        display: inline-block;
+      }
+
+      .label-and-checkmark {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 10px;
+      }
+
+      .label-and-checkmark:last-child {
+        border-right: none;
+      }
+      
     </style>
     <script src="js/script.js"></script>
 </head>
@@ -254,12 +396,7 @@
     <div class="top"></div>
     <div class="sidebar" id="sidebar"></div>
     <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-    <button id="float">
-        <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
-        <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
-        <span class="material-icons"id="ai" onclick="aiBtn()">smart_toy</span>
-        <span class="material-icons" id="scrollToTopBtn">north</span>
-    </button>
+    
   <h1 class="title">CraftersMC Trusted Rank Sellers V2</h1>
   <p class="warning" style="color: white;">
     This is a list of trusted rank sellers on CraftersMC. These sellers have been verified and are known to be trustworthy. They are not affiliated with CraftersMC in any way. This list is for your convenience and safety when buying ranks from other players.<br><br>
@@ -269,6 +406,23 @@
   <p class="warning">
     Beware of scammers and impersonators. Make sure you are buying from the right people and not fakes.
   </p>
+  <div class="checkbox-container-container">
+    <div class="checkbox-container">
+      <div class="label-and-checkmark">
+      <p>Active only</p>
+      <label class="container">
+        <input type="checkbox" id="filterInactive">
+        <div class="checkmark"></div></label>
+</div><div class="label-and-checkmark">
+<p>Gems only</p>
+
+      <label class="container">
+        <input type="checkbox" id="onlyGems">
+        <div class="checkmark"></div></label>
+</div>
+
+    </div></div>
+
     <div id="seller-container" class="seller-container">
         <p>Loading sellers...</p>
     </div>
@@ -277,6 +431,16 @@
     <script>
         let onlyGems = false;
         let filterInactive = false;
+        const gemToggle = document.getElementById('onlyGems');
+        const inactiveToggle = document.getElementById('filterInactive');
+        gemToggle.addEventListener('change', () => {
+            onlyGems = gemToggle.checked;
+            loadMinions();
+        });
+        inactiveToggle.addEventListener('change', () => {
+            filterInactive = inactiveToggle.checked;
+            loadMinions();
+        });
         async function loadMinions() {
             try {
                 const minionsRes = await fetch('ranksellers/ranksellers.txt');
@@ -288,7 +452,7 @@
                         if (!item.name || !item.id || !item.rank || !item.gems) {
                             return ''; // Skip items with missing data
                         }
-                        if (item.gemStatus === "No" && onlyGems) {
+                        if ((item.gemStatus === "No" || !item.gemStatus) && onlyGems) {
                           return;
                         }
                         let inactive = false;
@@ -304,17 +468,18 @@
                             return;
                         }
                         return `
-                            <div class="seller-card ${inactive ? "inactive" : " "}" onclick="window.location.href='seller.html?id=${String(item.id).padStart(2, '0')}'">
-                                <img class="rank" src="../rank/${item.rank}.png" alt="emerald">
+                            <div class="seller-card ${inactive ? "inactive" : " "}" onclick="window.location.href='seller.html?id=${String(item.id)}'">
+                                <img class="rank" src="../rank/${item.rank.trim()}.png" alt="emerald">
                                 <h3><b>${item.name}</b></h3>
                                 <p><b>Gems: <span style="${!sellingGems ? "color:red;" : "color:limegreen"}">${item.gems} per</span></b></p>
-                                <p class="status">Status: <b class="Selling" id="status-badge">Selling</b></p>
-                                <p><b>Discord: <span>hollowspooky</span></b></p>
-                            </div><br>
+                                <p class="status">Status: <b class="${item.status.trim()}" id="status-badge">${item.status}</b></p>
+                                <p><b>Prices: <span><b style="color:lime;">${item.em}</b>, <b style="color:darkturquoise;">${item.dia}</b>, <b style="color:gold;">${item.gold}</b></span></b></p>
+                                <p><b>Discord: <span>${item.discord}</span></b></p>
+                            </div>
                         `;
                     }).join('');
 
-                    document.getElementById('seller-container').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
+                    document.getElementById('seller-container').innerHTML = `${itemsHTML}`;
                 } else {
                     document.getElementById('seller-container').innerHTML = '<p>No minions found.</p>';
                 }
