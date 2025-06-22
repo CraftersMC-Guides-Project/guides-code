@@ -118,7 +118,15 @@
             const diaBox = document.getElementById('dia');
             const emBox = document.getElementById('em');
             const name = document.getElementById('name');
-
+            let inactive = false;
+            if (seller.status !== "Selling") {
+                inactive = true;
+            } 
+            let sellingGems = false;
+            if (seller.gemStatus === "Yes") {
+                sellingGems = true;
+            }
+            console.log(seller);
             sellerDetailsDiv.innerHTML = `
               <h1>${seller.name}</h1>
               ${seller.rank ? `<img src="rank/${seller.rank}.png" alt="${seller.rank}"` : ''}
@@ -126,7 +134,7 @@
               <p><strong>ID:</strong> ${seller.id}</p>
               ${seller.timezone ? `<p><strong>Description:</strong> ${seller.timezone}</p>` : ''}
               <p><strong>discord:</strong> ${seller.discord}</p>
-              <p><strong>Gems:</strong> ${seller.gems}</p>
+              <p><strong>Gems:</strong> ${sellingGems ? seller.gems + " per gem" : "Not Selling"}</p>
               <p><strong>Stock:</strong> ${seller.stock}</p>
               <p><strong>Sales:</strong> ${seller.sales}</p>
               <p><strong>banner:</strong> ${seller.banner}</p>
