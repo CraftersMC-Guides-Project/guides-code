@@ -6,8 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="css/essential.css">
+  <link rel="stylesheet" href="css/categories.css"> <!-- Add this line to reuse Minecraft styles -->
   <script src="js/script.js"></script>
   <style>
+    @font-face {
+      font-family: 'MinecraftTen';
+      src: url('https://craftersmc.opendevsflow.xyz/src/font.woff2') format('woff2');
+    }
     :root {
   --main-bg: #f5f7fa;
   --main-text: #1c1c1c;
@@ -35,17 +40,12 @@
 }
 
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background-color: var(--main-bg);
-  color: var(--main-text);
+  font-family: 'MinecraftTen', 'Segoe UI', sans-serif !important;
+  background: #181818 url("img/mc-bg.png") repeat; /* Use a Minecraft-style bg if you have one */
+  color: #e1e1e1;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-image: url("../Backgrounds/IMG_4498.jpeg");
-  background-repeat: no-repeat;
-  background-position: center center;
+  min-height: 100vh;
   background-size: cover;
 }
 
@@ -56,50 +56,49 @@ body {
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  margin: 10rem auto;
+  margin: 7rem auto 2rem auto;
 }
 
-.gw-container p {
-  color: #ffffff;
-  padding: 5px 20px 10px;
-  font-size: 1rem;
-  text-align: center;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+.gw-container p, .current-gw {
+  font-family: 'MinecraftTen', 'Segoe UI', sans-serif !important;
+  color: #fff;
+  text-shadow: 2px 2px 0 #000, 0 0 8px #000;
 }
 
 .current-gw {
-  font-size: 50px;
+  font-size: 2.5rem;
   font-weight: bold;
-  color: white;
-  text-align: center;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  margin-bottom: 1rem;
+  letter-spacing: 2px;
+  background: #c6c6c6;
+  color: #242424;
+  box-shadow: 2px 2px 0 0 #fff inset, -1px -1px 0px 3px #777 inset;
+  border-radius: 8px;
+  padding: 16px 0;
 }
 
 .giveaway-grid {
   display: flex;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 3fr));
+  flex-wrap: wrap;
   gap: 24px;
   width: 100%;
-  flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .giveaway-card {
-  position: relative;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: var(--card-radius);
+  font-family: 'MinecraftTen', 'Segoe UI', sans-serif !important;
+  background: #111111e0;
+  border: 2.5px solid #c6c6c6;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px #000a, 0 0 0 4px #777 inset;
   padding: 1.5rem;
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  box-shadow: var(--glass-shadow);
-  transition: transform 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  width: 320px;
+  margin: 0.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  color: #fff;
+  position: relative;
   overflow: hidden;
-  width: 300px;
 }
 
 .giveaway-card::before {
@@ -131,7 +130,9 @@ body {
 }
 
 .giveaway-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 8px 24px #000c, 0 0 0 4px #fff inset;
+  background: #222222f0;
 }
 
 .status-badge {
@@ -160,11 +161,16 @@ body {
 }
 
 .giveaway-title {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   font-weight: 700;
   text-align: center;
   margin-top: 0.5rem;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  background: #c6c6c6;
+  color: #242424;
+  border-radius: 6px;
+  padding: 8px 0;
+  box-shadow: 2px 2px 0 0 #fff inset, -1px -1px 0px 3px #777 inset;
+  margin-bottom: 0.5rem;
 }
 
 .giveaway-reward {
@@ -172,15 +178,15 @@ body {
   margin: 0.8rem 0;
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--reward);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  color: #ffd700;
+  text-shadow: 1px 1px 2px #000a;
 }
 
-.giveaway-date {
-  text-align: left;
-  font-size: 0.9rem;
-  opacity: 1;
-  margin-bottom: 1.2rem;
+.giveaway-date, .giveaway-status {
+  font-size: 1rem;
+  margin-bottom: 0.7rem;
+  color: #e1e1e1;
+  text-shadow: 1px 1px 2px #000a;
 }
 
 .giveaway-actions {
@@ -189,95 +195,56 @@ body {
   flex-direction: column;
 }
 
-.giveaway-card .btn {
-  padding: 0.75rem;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.95rem;
+.giveaway-card .btn-participate, .giveaway-card .btn-view {
+  font-family: 'MinecraftTen', 'Segoe UI', sans-serif !important;
+  width: 95%;
+  font-size: 1rem;
+  padding: 0.7rem;
+  border: 0;
+  border-radius: 10px;
+  background: #379f21;
+  color: #fff;
+  margin: 5px auto;
+  box-shadow: 2px 2px 0 #000a;
+  transition: background 0.2s, box-shadow 0.2s;
   cursor: pointer;
-  text-align: center;
-  border: none;
-  background-color: var(--primary);
-  color: var(--primary-color);
-  transition: background 0.3s ease;
-  margin-top: 0.5rem;
+  letter-spacing: 1px;
 }
 
-.giveaway-card .btn:hover {
-  background-color: var(--navbar-light);
-  cursor: pointer;
+.giveaway-card .btn-view {
+  background: #007bff;
 }
 
-.btn-participate:hover .btn-view:hover {
-  cursor: pointer;
-}
-
-.giveaway-card .btn:disabled {
-  background-color: #ccc;
-  color: #666;
+.giveaway-card .btn-participate:disabled {
+  background: #888;
+  color: #ccc;
   cursor: not-allowed;
 }
 
 .winner-badge {
-  border-left: 4px solid #379f21;
-  padding: 0.75rem;
-  margin: 1rem 0 0.5rem;
-  background: rgba(255, 255, 0, 0.2);
+  border-left: 4px solid #ffd700;
+  background: #222a;
   border-radius: 10px;
   text-align: center;
-  color: var(--reward);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  color: #ffd700;
   font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.btn-participate {
-  width: 95%;
-  font-size: 13px;
-  padding: 0.50rem;
-  border: 0px;
-  border-radius: 15px;
-  background: green;
-  color: white;
-  margin: 5px auto;
-}
-
-.btn-view {
-  width: 95%;
-  font-size: 13px;
-  padding: 0.50rem;
-  border: 0px;
-  border-radius: 15px;
-  background: #007bff;
-  color: white;
-  margin: 5px auto;
-}
-
-@media (max-width: 768px) {
-  .giveaway-card {
-    padding: 1.2rem;
-  }
-
-  .giveaway-grid {
-    gap: 18px;
-  }
-
-  .current-gw {
-    margin-top: 2rem;
-  }
+  font-size: 1rem;
+  margin: 1rem 0 0.5rem;
+  box-shadow: 1px 1px 0 #000a;
+  padding: 0.75rem;
 }
 
 .login-prompt {
-  text-align: center;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: var(--card-radius);
+  font-family: 'MinecraftTen', 'Segoe UI', sans-serif !important;
+  background: #111111e0;
+  border: 2.5px solid #c6c6c6;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px #000a, 0 0 0 4px #777 inset;
   padding: 2rem;
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  box-shadow: var(--glass-shadow);
   max-width: 400px;
   margin: 2rem auto;
+  color: #fff;
+  text-align: center;
 }
 
 .login-message {
@@ -287,20 +254,42 @@ body {
 }
 
 .btn-discord-login {
+  font-family: 'MinecraftTen', 'Segoe UI', sans-serif !important;
   padding: 0.8rem 1.5rem;
   background-color: #5865F2;
   color: #fff;
   border: none;
-  border-radius: 25px;
-  font-size: 1rem;
+  border-radius: 10px;
+  font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s;
+  box-shadow: 2px 2px 0 #000a;
+  margin-top: 1rem;
 }
 
 .btn-discord-login:hover {
   background-color: #4752c4;
+}
+
+/* Optional: pixel border for Minecraft look */
+.giveaway-card, .login-prompt {
+  image-rendering: pixelated;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .giveaway-card {
+    width: 98vw;
+    max-width: 98vw;
+    padding: 1rem;
+  }
+  .giveaway-grid {
+    gap: 12px;
+  }
+  .current-gw {
+    font-size: 1.3rem;
+  }
 }
   </style>
 </head>
