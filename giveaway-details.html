@@ -38,15 +38,23 @@
       font-family: 'Segoe UI', Arial, sans-serif;
       margin: 0 auto;
       padding: 0;
-      color: var(--main-text);
       min-height: 100vh;
-      background-image: url("../Backgrounds/IMG_4498.jpeg");
-      background-repeat: no-repeat;
-      background-position: center center;
-      background-size: cover;
       display: flex;
       flex-direction: column;
       align-items: center;
+    }
+
+    .background {
+      background: url("../Backgrounds/IMG_4498.jpeg");
+      background-color: #847474;
+      background-blend-mode: multiply;
+      background-size: cover;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
     }
 
     .status-active {
@@ -69,13 +77,8 @@
 
     .giveaway-details-card {
       position: relative;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--card-radius);
-      padding: 2.5rem 2rem 2rem 2rem;
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      box-shadow: var(--glass-shadow);
+      background: #00000070;
+      border: 2px solid #c6c6c6;
       transition: background 0.3s, color 0.3s, transform 0.2s;
       display: flex;
       flex-direction: column;
@@ -112,13 +115,14 @@
     }
 
     .giveaway-title {
-      font-size: 2em;
-      font-weight: 700;
+      font-size: 1.3rem;
+      color: #242424;
+      margin-bottom: 5px;
       text-align: center;
-      margin-bottom: 0.7em;
-      color: var(--main-text);
-      letter-spacing: 1px;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      font-family: 'MyFont';
+      background: #c6c6c6;
+      padding: 10px;
+      box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 3px #777 inset !important;
     }
 
     .giveaway-reward {
@@ -148,19 +152,18 @@
 
     .giveaway-description {
       margin-bottom: 0.5em;
-      color: var(--main-text);
       opacity: 0.95;
       text-align: center;
     }
 
     .giveaway-meta {
       font-size: 0.98em;
-      color: var(--main-text);
       opacity: 0.8;
       display: flex;
       flex-direction: column;
       gap: 0.2em;
       margin: 1rem 0;
+      padding-left: 2rem;
     }
 
     .giveaway-meta span {
@@ -184,6 +187,8 @@
       background: #e3f2fd;
       color: #1565c0;
       transition: background 0.3s, color 0.3s;
+      margin-left: 2rem;
+      margin-right: 2rem;
     }
 
     .alert-success {
@@ -203,12 +208,13 @@
       border-top: 1px solid var(--card-border);
       padding-top: 1.2em;
       background: transparent;
+      padding-left: 2rem;
+      padding-right: 2rem;
     }
 
     .participants-list h3 {
       margin: 0 0 0.7em 0;
       font-size: 1.1em;
-      color: var(--main-text);
       letter-spacing: 1px;
     }
 
@@ -222,10 +228,7 @@
     }
 
     .participants-list li {
-      background: var(--main-bg);
-      color: var(--main-text);
       border: 1px solid var(--card-border);
-      border-radius: 6px;
       padding: 5px 12px;
       font-size: 0.98em;
       margin-bottom: 0.3em;
@@ -263,21 +266,28 @@
     }
 
     .btn-submit {
-      background: var(--primary);
-      color: #fff;
-      border: none;
       padding: 10px;
-      border-radius: 6px;
       cursor: pointer;
       font-size: 1.08em;
       font-weight: 600;
       margin-top: 0.5em;
-      box-shadow: 0 2px 8px 0 var(--glass-shadow);
+      background: #c6c6c6;
+      color: #3c3c3c;
+      box-shadow: 2px 2px 0 0 #ffffff inset,
+        -1px -1px 0px 3px #777 inset;
+      justify-content: space-between;
+      border: 2px solid #2a2a2a;
       transition: background 0.2s;
+      margin-left: 2rem;
+      margin-right: 2rem;
     }
 
     .btn-submit:hover {
-      background: #1765c1;
+      border: 2px solid #fff;
+      box-shadow: 2px 2px 0 0 #2ccb1d inset,
+        -1px -1px 0px 3px #1d681a inset;
+      background: #218306;
+      color: #fff !important;
     }
 
     a {
@@ -305,6 +315,7 @@
     <div></div>
     <div></div>
   </div>
+  <div class="background"></div>
   <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
@@ -648,7 +659,16 @@
   </script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
     crossorigin="anonymous"></script>
-
+  <!-- developmental Login Bypass -->
+  <script>
+    if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+      document.cookie = 'discordUser=' + encodeURIComponent(JSON.stringify({
+        id: "devuser",
+        username: "DevUser",
+        avatar: "",
+      })) + '; path=/';
+    }
+  </script>
 </body>
 
 </html>
