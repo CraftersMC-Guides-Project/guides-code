@@ -56,7 +56,7 @@ function toggleLid() {
   if (!sidelid) return;
 
   const isOpening = !sidelid.classList.contains("openlid");
-  
+
   if (isOpening) {
     sidelid.style.display = "block";
     sidelid.offsetHeight;
@@ -83,7 +83,7 @@ function toggleSidebar() {
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("sidebar-overlay");
   const sidelid = document.getElementById("sidelid");
-  
+
   sidebar.classList.toggle("openSbar");
 
   if (sidebar.classList.contains("openSbar")) {
@@ -220,7 +220,7 @@ function checkLoginStatus() {
   var userLoggedIn = localStorage.getItem('discordUser') !== null;
 }
 
-window.onload = function() {
+window.onload = function () {
   setTimeout(checkLoginStatus, 2000);
 };
 
@@ -331,9 +331,9 @@ function updateSidebarLoginButton() {
 }
 
 function closeAnnouncementBanner() {
-    document.getElementById('announcement-banner').style.display = 'none';
-    document.querySelector('.navbar').style.marginTop = '0';
-  }
+  document.getElementById('announcement-banner').style.display = 'none';
+  document.querySelector('.navbar').style.marginTop = '0';
+}
 
 // --- Cookie Consent Logic ---
 function showCookieConsent() {
@@ -452,11 +452,11 @@ function showCookieConsent() {
 
   document.body.appendChild(banner);
 
-  document.getElementById('cookie-allow-btn').onclick = function() {
+  document.getElementById('cookie-allow-btn').onclick = function () {
     localStorage.setItem('cookieConsent', 'allowed');
     banner.remove();
   };
-  document.getElementById('cookie-deny-btn').onclick = function() {
+  document.getElementById('cookie-deny-btn').onclick = function () {
     localStorage.setItem('cookieConsent', 'denied');
     banner.remove();
     alert("You have denied cookies. You will not be able to join giveaways or access login-required services.");
@@ -469,3 +469,13 @@ document.addEventListener("DOMContentLoaded", function () {
     showCookieConsent();
   }
 });
+
+// developmental Login Bypass
+
+if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+  document.cookie = 'discordUser=' + encodeURIComponent(JSON.stringify({
+    id: "devuser",
+    username: "DevUser",
+    avatar: "",
+  })) + '; path=/';
+}
