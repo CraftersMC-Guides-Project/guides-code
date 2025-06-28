@@ -454,12 +454,12 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "Icezane5011",
+                    "name": "ENTITY_3038628",
                     "score": "N/A"
                 },
                 {
                     "rank": 2,
-                    "name": "Unknown",
+                    "name": "Icezane5011",
                     "score": "N/A"
                 },
                 {
