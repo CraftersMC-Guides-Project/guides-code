@@ -479,3 +479,37 @@ if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
     avatar: "",
   })) + '; path=/';
 }
+
+// --- Play sound on link/button/toggle click ---
+(function () {
+  // Create audio element (replace with your own mp3 file path if needed)
+  const clickAudio = document.createElement('audio');
+  clickAudio.src = '/assets/audio/click.mp3'; // <-- Make sure this file exists
+  clickAudio.preload = 'auto';
+  document.body.appendChild(clickAudio);
+
+  function playClickSound() {
+    console.log("Trying to play sound"); // Debug line
+    clickAudio.currentTime = 0;
+    clickAudio.play().catch((err) => { console.warn("Audio play error:", err); });
+  }
+
+  document.addEventListener('click', function (e) {
+    // Check for <a>, <button>, or toggle-like elements
+    let el = e.target;
+    // Traverse up to handle icons inside buttons/links
+    while (el && el !== document.body) {
+      if (
+        el.tagName === 'A' ||
+        el.tagName === 'BUTTON' ||
+        el.classList.contains('toggle') ||
+        el.getAttribute('role') === 'switch' ||
+        el.getAttribute('aria-pressed') !== null
+      ) {
+        playClickSound();
+        break;
+      }
+      el = el.parentElement;
+    }
+  }, true); // Use capture to catch before default actions
+})();
