@@ -84,6 +84,15 @@ function toggleSidebar() {
   const overlay = document.getElementById("sidebar-overlay");
   const sidelid = document.getElementById("sidelid");
 
+  const isOpening = !sidebar.classList.contains("openSbar");
+
+  // Play chest open or close sound
+  if (isOpening) {
+    if (window.playChestOpenSound) window.playChestOpenSound();
+  } else {
+    if (window.playChestCloseSound) window.playChestCloseSound();
+  }
+
   sidebar.classList.toggle("openSbar");
 
   if (sidebar.classList.contains("openSbar")) {
@@ -480,24 +489,41 @@ if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
   })) + '; path=/';
 }
 
-// --- Play sound on link/button/toggle click ---
-(function () {
-  // Create audio element (replace with your own mp3 file path if needed)
+// Audio handling for click and chest sounds
+document.addEventListener("DOMContentLoaded", function () {
+
   const clickAudio = document.createElement('audio');
-  clickAudio.src = '/assets/audio/click.mp3'; // <-- Make sure this file exists
+  clickAudio.src = '/assets/audio/click.mp3';
   clickAudio.preload = 'auto';
   document.body.appendChild(clickAudio);
 
+  const chestOpenAudio = document.createElement('audio');
+  chestOpenAudio.src = '/assets/audio/chest-open.mp3';
+  chestOpenAudio.preload = 'auto';
+  document.body.appendChild(chestOpenAudio);
+
+  const chestCloseAudio = document.createElement('audio');
+  chestCloseAudio.src = '/assets/audio/chest-close.mp3';
+  chestCloseAudio.preload = 'auto';
+  document.body.appendChild(chestCloseAudio);
+
   function playClickSound() {
-    console.log("Trying to play sound"); // Debug line
-    clickAudio.currentTime = 0;
-    clickAudio.play().catch((err) => { console.warn("Audio play error:", err); });
+    clickAudio.currentTime = 0.2;
+    clickAudio.play().catch(() => {});
   }
 
-  document.addEventListener('click', function (e) {
-    // Check for <a>, <button>, or toggle-like elements
+  function playChestOpenSound() {
+    chestOpenAudio.currentTime = 0;
+    chestOpenAudio.play().catch(() => {});
+  }
+
+  function playChestCloseSound() {
+    chestCloseAudio.currentTime = 0;
+    chestCloseAudio.play().catch(() => {});
+  }
+
+  document.addEventListener('pointerdown', function (e) {
     let el = e.target;
-    // Traverse up to handle icons inside buttons/links
     while (el && el !== document.body) {
       if (
         el.tagName === 'A' ||
@@ -511,5 +537,8 @@ if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
       }
       el = el.parentElement;
     }
-  }, true); // Use capture to catch before default actions
-})();
+  }, true);
+
+  window.playChestOpenSound = playChestOpenSound;
+  window.playChestCloseSound = playChestCloseSound;
+});
