@@ -40,6 +40,7 @@
         --border-card: 1px solid rgba(255, 255, 255, 0.8);
         --card-drop-shadow: black;
         --opacity: 0.8;
+        --tint: rgba(0, 0, 0, 0.2);
       }
 
       .darkmode {
@@ -69,6 +70,7 @@
         --border-card: 1px solid rgba(255, 255, 255, 0.4);
         --card-drop-shadow: transparent;
         --opacity: 0.8;
+        --tint: rgba(0, 0, 0, 0.5);
       }
 
       body {
@@ -77,9 +79,14 @@
         padding: 0;
         color: var(--text-color);
         text-align: left;
-        background: url("../Backgrounds/IMG_4500.jpeg");
+        background: linear-gradient(
+          to bottom,
+          var(--tint) 0%,
+          rgba(0, 0, 0, 0.6) 100%
+        ), url("../Backgrounds/IMG_4500.jpeg");
         background-size: cover;
-        background-position-x: center;
+        background-position: center;
+        background-repeat: no-repeat;
       }
 
       a.seller-card {
@@ -120,7 +127,7 @@
 
       .seller-card {
         background: var(--seller-card-background);
-        backdrop-filter: blur(6px) saturate(180%);
+        backdrop-filter: blur(2px) saturate(180%);
         border: var(--border-card);
         border-radius: 2rem;
         box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
@@ -154,7 +161,7 @@
       }
 
       .inactive {
-        border: 3px solid rgba(255, 0, 0, 0.3);
+        border: 3px solid rgba(255, 0, 0, 0.2);
         background-color: var(--seller-card-background);
         background-image: linear-gradient(135deg, rgba(255, 0, 0, 0.1), rgba(255, 0, 0, 0.1));
       }
@@ -471,7 +478,7 @@
                             <div class="seller-card ${inactive ? "inactive" : " "}" onclick="window.location.href='seller.html?id=${String(item.id)}'">
                                 <img class="rank" src="../rank/${item.rank.trim()}.png" alt="emerald">
                                 <h3><b>${item.name}</b></h3>
-                                <p><b>Gems: <span style="${!sellingGems ? "color:red;" : "color:limegreen"}">${sellingGems ? item.gems + " per" : "Not Selling"}</span></b></p>
+                                <p><b>Gems: <span style="${!sellingGems ? "color:red;" : "color:limegreen"}">${item.gems} per</span></b></p>
                                 <p class="status">Status: <b class="${item.status.trim()}" id="status-badge">${item.status}</b></p>
                                 <p><b>Prices: <span><b style="color:lime;">${item.em}</b>, <b style="color:darkturquoise;">${item.dia}</b>, <b style="color:gold;">${item.gold}</b></span></b></p>
                                 <p><b>Discord: <span>${item.discord}</span></b></p>
