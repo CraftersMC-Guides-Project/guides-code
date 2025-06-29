@@ -57,6 +57,10 @@ function toggleLid() {
 
   const isOpening = !sidelid.classList.contains("openlid");
 
+  if (isOpening && window.playChestOpenSound) {
+    window.playChestOpenSound();
+  }
+
   if (isOpening) {
     sidelid.style.display = "block";
     sidelid.offsetHeight;
@@ -86,7 +90,6 @@ function toggleSidebar() {
 
   const isOpening = !sidebar.classList.contains("openSbar");
 
-  // Play chest open or close sound
   if (isOpening) {
     if (window.playChestOpenSound) window.playChestOpenSound();
   } else {
@@ -169,9 +172,15 @@ function fetchAllPartials() {
     document.getElementById('sidebar').innerHTML = sidebarHtml;
     document.getElementById('footer').innerHTML = footerHtml;
     setupThemeSwitchers();
-    updateSidebarLoginButton(); // <-- Add this line
+    updateSidebarLoginButton();
+    // Hide loader after all partials are loaded
+    const loader = document.getElementById('loader');
+    if (loader) loader.style.display = 'none';
   }).catch(error => {
     console.error("Error loading partials:", error);
+    // Hide loader even if error
+    const loader = document.getElementById('loader');
+    if (loader) loader.style.display = 'none';
   });
 }
 
@@ -240,9 +249,15 @@ function fetchAllLPartials() {
   ]).then(([sidebarHtml, footerHtml]) => {
     document.getElementById('sidebar').innerHTML = sidebarHtml;
     document.getElementById('footer').innerHTML = footerHtml;
-    updateSidebarLoginButton(); // <-- Add this line
+    updateSidebarLoginButton();
+    // Hide loader after all partials are loaded
+    const loader = document.getElementById('loader');
+    if (loader) loader.style.display = 'none';
   }).catch(err => {
     console.error("[Partials] Failed to load:", err);
+    // Hide loader even if error
+    const loader = document.getElementById('loader');
+    if (loader) loader.style.display = 'none';
   });
 }
 
@@ -483,8 +498,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
   document.cookie = 'discordUser=' + encodeURIComponent(JSON.stringify({
-    id: "devuser",
-    username: "DevUser",
+    id: "AakashNeverDies",
+    username: "AakashNeverDies",
     avatar: "",
   })) + '; path=/';
 }
@@ -508,21 +523,35 @@ document.addEventListener("DOMContentLoaded", function () {
   document.body.appendChild(chestCloseAudio);
 
   function playClickSound() {
-    clickAudio.currentTime = 0.2;
-    clickAudio.play().catch(() => {});
+    console.log("[DEBUG] playClickSound called");
+    try {
+      clickAudio.currentTime = 0.2;
+      clickAudio.play().catch((err) => { console.warn("[DEBUG] clickAudio play error:", err); });
+    } catch (err) {
+      console.warn("[DEBUG] clickAudio play error (outer):", err);
+    }
   }
 
   function playChestOpenSound() {
+    console.log("[DEBUG] playChestOpenSound called");
+    chestOpenAudio.pause();
     chestOpenAudio.currentTime = 0;
-    chestOpenAudio.play().catch(() => {});
+    chestOpenAudio.play().catch((err) => { console.warn("[DEBUG] chestOpenAudio play error:", err); });
   }
 
   function playChestCloseSound() {
+    console.log("[DEBUG] playChestCloseSound called");
+    chestCloseAudio.pause();
     chestCloseAudio.currentTime = 0;
-    chestCloseAudio.play().catch(() => {});
+    chestCloseAudio.play().catch((err) => { console.warn("[DEBUG] chestCloseAudio play error:", err); });
   }
 
+  window.playClickSound = playClickSound;
+  window.playChestOpenSound = playChestOpenSound;
+  window.playChestCloseSound = playChestCloseSound;
+
   document.addEventListener('pointerdown', function (e) {
+    if (e.button !== 0) return; // Only play sound for left-click
     let el = e.target;
     while (el && el !== document.body) {
       if (
@@ -532,13 +561,38 @@ document.addEventListener("DOMContentLoaded", function () {
         el.getAttribute('role') === 'switch' ||
         el.getAttribute('aria-pressed') !== null
       ) {
-        playClickSound();
+        console.log("[DEBUG] pointerdown on clickable element:", el);
+        if (window.playClickSound) window.playClickSound();
         break;
       }
       el = el.parentElement;
     }
   }, true);
-
-  window.playChestOpenSound = playChestOpenSound;
-  window.playChestCloseSound = playChestCloseSound;
 });
+
+function overlay() {
+  const sidelid = document.getElementById("sidelid");
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebar-overlay");
+
+  // Close sidelid if open
+  if (sidelid && sidelid.classList.contains("openlid")) {
+    console.log("[DEBUG] overlay(): closing sidelid");
+    sidelid.classList.remove("openlid");
+    document.body.style.overflow = "";
+    overlay.style.display = "none";
+    setTimeout(() => sidelid.scrollTop = 0, 300);
+    if (window.playChestCloseSound) window.playChestCloseSound();
+    return;
+  }
+
+  // Else, close sidebar if open
+  if (sidebar && sidebar.classList.contains("openSbar")) {
+    console.log("[DEBUG] overlay(): closing sidebar");
+    sidebar.classList.remove("openSbar");
+    document.body.style.overflow = "";
+    overlay.style.display = "none";
+    setTimeout(() => sidebar.scrollTop = 0, 300);
+    if (window.playChestCloseSound) window.playChestCloseSound();
+  }
+}
