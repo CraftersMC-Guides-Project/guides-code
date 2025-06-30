@@ -162,23 +162,30 @@ function aiBtn() {
   window.location.href = "/ai";
 }
 
+function fetchPartial(url, key) {
+  const cached = localStorage.getItem(key);
+  if (cached) return Promise.resolve(cached);
+  return fetch(url).then(res => res.text()).then(html => {
+    localStorage.setItem(key, html);
+    return html;
+  });
+}
+
 function fetchAllPartials() {
   Promise.all([
-    fetch('../navbarv2.html').then(res => res.text()),
-    fetch('../sidebar.html').then(res => res.text()),
-    fetch('../footer.html').then(res => res.text())
+    fetchPartial('../navbarv2.html', 'navbarHtml'),
+    fetchPartial('../sidebar.html', 'sidebarHtml'),
+    fetchPartial('../footer.html', 'footerHtml')
   ]).then(([navbarHtml, sidebarHtml, footerHtml]) => {
     document.querySelector('.top').innerHTML = navbarHtml;
     document.getElementById('sidebar').innerHTML = sidebarHtml;
     document.getElementById('footer').innerHTML = footerHtml;
     setupThemeSwitchers();
     updateSidebarLoginButton();
-    // Hide loader after all partials are loaded
     const loader = document.getElementById('loader');
     if (loader) loader.style.display = 'none';
   }).catch(error => {
     console.error("Error loading partials:", error);
-    // Hide loader even if error
     const loader = document.getElementById('loader');
     if (loader) loader.style.display = 'none';
   });
