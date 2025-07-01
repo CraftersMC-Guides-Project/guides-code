@@ -426,11 +426,11 @@
       const user = userCookie ? JSON.parse(userCookie) : null;
       if (!user) {
         document.getElementById("giveaways-content").innerHTML = `
-  <div class="login-prompt">
-    <p class="login-message">Please login to view giveaways</p>
-    <button class="btn-discord-login" onclick="window.location.href='/login'">Login with Discord</button>
-  </div>
-`;
+      <div class="login-prompt">
+        <p class="login-message">Please login to view giveaways</p>
+        <button class="btn-discord-login" onclick="window.location.href='/login'">Login with Discord</button>
+      </div>
+    `;
         return;
       }
 
@@ -439,7 +439,7 @@
         const response = await fetch('gw/active_giveaways.txt');
         const data = await response.text();
         const giveaways = data.split('\n')
-          .filter(line => line.trim() !== '')
+          .filter(line => line.trim() !== '' && !line.startsWith('//'))
           .map(line => {
             const [id, title, description, startDate, endDate, maxParticipants, reward, status, sponsor, banner] = line.split('|');
             return { id, title, description, startDate, endDate, maxParticipants, reward, status, sponsor, banner };
@@ -449,7 +449,7 @@
         const partResponse = await fetch('gw/participants.txt');
         const partData = await partResponse.text();
         const participations = partData.split('\n')
-          .filter(line => line.trim() !== '')
+          .filter(line => line.trim() !== '' && !line.startsWith('//'))
           .map(line => {
             const [giveawayId, discordId] = line.split('|');
             return { giveawayId, discordId };
@@ -461,7 +461,7 @@
           const winnersResponse = await fetch('gw/winners.txt');
           const winnersText = await winnersResponse.text();
           winners = winnersText.split('\n')
-            .filter(line => line.trim() !== '')
+            .filter(line => line.trim() !== '' && !line.startsWith('//'))
             .map(line => {
               const [gId, , , winnerName] = line.split('|');
               return { gId, winnerName };
@@ -470,7 +470,7 @@
           winners = [];
         }
 
-        // Display giveaways
+        // Display all giveaways
         let html = '<div class="giveaway-grid">';
         giveaways.forEach(giveaway => {
           const now = new Date();
@@ -481,18 +481,18 @@
           let statusClass = '';
           let canParticipate = false;
 
-          if (now < start) {
+          if (giveaway.status === "scheduled") {
             statusLabel = 'Scheduled';
             statusClass = 'scheduled';
             canParticipate = false;
-          } else if (giveaway.status === "ended" || now > end) {
-            statusLabel = 'Ended';
-            statusClass = 'ended';
-            canParticipate = false;
-          } else {
+          } else if (giveaway.status === "active") {
             statusLabel = 'Active';
             statusClass = 'active';
             canParticipate = true;
+          } else if (giveaway.status === "ended") {
+            statusLabel = 'Ended';
+            statusClass = 'ended';
+            canParticipate = false;
           }
 
           const isParticipated = participations.some(p =>
@@ -516,7 +516,7 @@
                 <div class="giveaway-slots">Winners: <b>${giveaway.maxParticipants}</b></div>
               </div>
               <div class="giveaway-date">
-                ${statusClass === 'scheduled' ? `Starts: ${startFormatted}` : `Ends: ${endFormatted}`}
+                ${statusClass === 'scheduled' ? `Scheduled for: ${startFormatted}` : `Ends: ${endFormatted}`}
               </div>
               ${statusClass === 'ended' && winnerEntries.length > 0 ? `
                 <div class="winner-badge">
