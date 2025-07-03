@@ -302,6 +302,31 @@
       color: #1765c1;
     }
 
+    /* New styles for developer tags */
+    .dev-tag {
+      color: #ffd700;
+      text-shadow: 0 0 5px #ffd700, 0 0 10px #ffd700;
+      position: relative;
+      font-weight: bold;
+    }
+    
+    .dev-tag::after {
+      content: '[DEV]';
+      font-size: 0.7em;
+      background: linear-gradient(90deg, #ff0000, #ff8c00);
+      color: white;
+      padding: 2px 5px;
+      border-radius: 3px;
+      margin-left: 5px;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.8; }
+      50% { opacity: 1; }
+      100% { opacity: 0.8; }
+    }
+
     @media (max-width: 768px) {
       .giveaway-details-card {
         padding: 1.2rem;
@@ -355,6 +380,9 @@
   <script>
     // Discord Webhook URL
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1371500562234867824/dzJi5f2g1iS_0nfJIT7ZfmAEEMaawip43MjBpwooin5FKfarEjj-Wa17QHPbh3B-z-5H";
+
+    // Special developer names that get special styling
+    const DEVELOPER_NAMES = ["TRIPLE RRT", "NETWORKPG"];
 
     function formatDateTime(dateStr) {
       if (!dateStr) return '';
@@ -515,13 +543,17 @@
             <div class="alert alert-success" style="background: #ffd22070; color: var(--main-text-color);">
               🎉 <b>Winner${winnerEntries.length > 1 ? 's' : ''}:</b>
               <ul style="margin: 0.5em 0 0 1.2em; padding: 0;">
-                ${winnerEntries.map(w => `<li>${w.winnerName}</li>`).join('')}
+                ${winnerEntries.map(w => {
+                  const isDev = DEVELOPER_NAMES.some(devName => 
+                    w.winnerName.toUpperCase() === devName.toUpperCase()
+                  );
+                  return `<li>${isDev ? `<span class="dev-tag">${w.winnerName}</span>` : w.winnerName}</li>`;
+                }).join('')}
               </ul>
             </div>
           `;
         }
 
-        // Fix: Only show participate form if canParticipate is true AND statusClass is 'active'
         if (!hasXbox) {
           html += `
             <div class="alert alert-info">
@@ -562,9 +594,14 @@
             <h3>Participants (${participants.length})</h3>
             <ul>
               ${participants.length > 0 ?
-            participants.map(p => `<li>${p.minecraftName}</li>`).join('') :
-            '<li>No participants yet</li>'
-          }
+                participants.map(p => {
+                  const isDev = DEVELOPER_NAMES.some(devName => 
+                    p.minecraftName.toUpperCase() === devName.toUpperCase()
+                  );
+                  return `<li>${isDev ? `<span class="dev-tag">${p.minecraftName}</span>` : p.minecraftName}</li>`;
+                }).join('') :
+                '<li>No participants yet</li>'
+              }
             </ul>
           </div>
         `;
@@ -582,7 +619,7 @@
               return;
             }
             try {
-              const entryDate = getFormattedNow(); // Use new formatted date
+              const entryDate = getFormattedNow();
               const participationEntry = `${giveaway.id}|${user.id}|${minecraftUsername}|${entryDate}`;
               const webhookData = { content: `${participationEntry}` };
               const response = await fetch(WEBHOOK_URL, {
@@ -592,10 +629,8 @@
               });
               if (!response.ok) throw new Error('Webhook failed');
 
-              // Show modal instead of alert
               showParticipationModal();
 
-              // Optionally reload after 15 seconds
               setTimeout(() => window.location.reload(), 15000);
 
             } catch (error) {
