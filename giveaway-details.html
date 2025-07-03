@@ -250,6 +250,9 @@
       font-size: 0.98em;
       margin-bottom: 0.3em;
       transition: background 0.3s, color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
     .special-section {
@@ -265,42 +268,25 @@
       font-style: italic;
     }
 
-    .special-tag {
-      position: relative;
-      font-weight: bold;
-      display: inline-flex;
-      align-items: center;
-    }
-
-    .dev-role::after {
-      content: '[DEV]';
+    .role-tag {
       font-size: 0.7em;
-      background: linear-gradient(90deg, #0066ff, #00ccff);
       color: white;
       padding: 2px 5px;
       border-radius: 3px;
       margin-left: 5px;
+    }
+
+    .dev-tag {
+      background: linear-gradient(90deg, #0066ff, #00ccff);
       animation: pulse 1.5s infinite;
     }
 
-    .sponsor-role::after {
-      content: '[SPONSOR]';
-      font-size: 0.7em;
+    .sponsor-tag {
       background: linear-gradient(90deg, #ff9900, #ffcc00);
-      color: white;
-      padding: 2px 5px;
-      border-radius: 3px;
-      margin-left: 5px;
     }
 
-    .both-role::after {
-      content: '[DEV+SPONSOR]';
-      font-size: 0.7em;
+    .both-tag {
       background: linear-gradient(90deg, #ff00cc, #cc00ff);
-      color: white;
-      padding: 2px 5px;
-      border-radius: 3px;
-      margin-left: 5px;
       animation: pulse 1.5s infinite;
     }
 
@@ -469,6 +455,17 @@
       }, '');
     }
 
+    function getRoleTag(member) {
+      if (member.isDev && member.isSponsor) {
+        return '<span class="role-tag both-tag">[DEV+SPONSOR]</span>';
+      } else if (member.isDev) {
+        return '<span class="role-tag dev-tag">[DEV]</span>';
+      } else if (member.isSponsor) {
+        return '<span class="role-tag sponsor-tag">[SPONSOR]</span>';
+      }
+      return '';
+    }
+
     async function loadGiveawayDetails() {
       const userCookie = getCookie('discordUser');
       const user = userCookie ? JSON.parse(userCookie) : null;
@@ -604,24 +601,14 @@
         if (statusClass === 'ended' && winnerEntries.length > 0) {
           html += `
             <div class="alert alert-success" style="background: #ffd22070; color: var(--main-text-color);">
-              🎉 <b>Winner${winnerEntries.length > 1 ? 's' : ''}:</b>
+              � <b>Winner${winnerEntries.length > 1 ? 's' : ''}:</b>
               <ul style="margin: 0.5em 0 0 1.2em; padding: 0;">
                 ${winnerEntries.map(w => {
-                  const isDev = SPECIAL_MEMBERS.some(m => 
-                    m.name.toUpperCase() === w.winnerName.toUpperCase() && m.isDev
+                  const member = SPECIAL_MEMBERS.find(m => 
+                    m.name.toUpperCase() === w.winnerName.toUpperCase()
                   );
-                  const isSponsor = SPECIAL_MEMBERS.some(m => 
-                    m.name.toUpperCase() === w.winnerName.toUpperCase() && m.isSponsor
-                  );
-                  let roleClass = '';
-                  if (isDev && isSponsor) {
-                    roleClass = 'both-role';
-                  } else if (isDev) {
-                    roleClass = 'dev-role';
-                  } else if (isSponsor) {
-                    roleClass = 'sponsor-role';
-                  }
-                  return `<li>${roleClass ? `<span class="special-tag ${roleClass}">${w.winnerName}</span>` : w.winnerName}</li>`;
+                  const roleTag = member ? getRoleTag(member) : '';
+                  return `<li>${w.winnerName}${roleTag}</li>`;
                 }).join('')}
               </ul>
             </div>
@@ -648,9 +635,13 @@
             </div>
           `;
         } else if (userParticipation) {
+          const member = SPECIAL_MEMBERS.find(m => 
+            m.name.toUpperCase() === userParticipation.minecraftName.toUpperCase()
+          );
+          const roleTag = member ? getRoleTag(member) : '';
           html += `
             <div class="alert alert-success">
-              You're participating as: ${userParticipation.minecraftName}
+              You're participating as: ${userParticipation.minecraftName}${roleTag}
             </div>
           `;
         } else if (canParticipate && statusClass === 'active') {
@@ -663,13 +654,19 @@
           `;
         }
 
-        // Show regular participants
+        // Show regular participants with role tags if they're sponsors
         html += `
           <div class="participants-list">
             <h3>Participants (${regularParticipants.length})</h3>
             <ul>
               ${regularParticipants.length > 0 ?
-                regularParticipants.map(p => `<li>${p.minecraftName}</li>`).join('') :
+                regularParticipants.map(p => {
+                  const member = SPECIAL_MEMBERS.find(m => 
+                    m.name.toUpperCase() === p.minecraftName.toUpperCase()
+                  );
+                  const roleTag = member ? getRoleTag(member) : '';
+                  return `<li>${p.minecraftName}${roleTag}</li>`;
+                }).join('') :
                 '<li>No participants yet</li>'
               }
             </ul>
@@ -683,15 +680,8 @@
               <h3>Special Members (Testing Only)</h3>
               <ul>
                 ${specialParticipants.map(p => {
-                  let roleClass = '';
-                  if (p.isDev && p.isSponsor) {
-                    roleClass = 'both-role';
-                  } else if (p.isDev) {
-                    roleClass = 'dev-role';
-                  } else if (p.isSponsor) {
-                    roleClass = 'sponsor-role';
-                  }
-                  return `<li><span class="special-tag ${roleClass}">${p.minecraftName}</span></li>`;
+                  const roleTag = getRoleTag(p);
+                  return `<li>${p.minecraftName}${roleTag}</li>`;
                 }).join('')}
               </ul>
             </div>
