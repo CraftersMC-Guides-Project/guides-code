@@ -327,6 +327,12 @@
       100% { opacity: 0.8; }
     }
 
+    .dev-section {
+      margin-bottom: 1.5em;
+      padding-bottom: 1em;
+      border-bottom: 1px dashed var(--card-border);
+    }
+
     @media (max-width: 768px) {
       .giveaway-details-card {
         padding: 1.2rem;
@@ -493,7 +499,24 @@
         const userParticipation = participations.find(p =>
           p.gId === giveaway.id && p.dId === user.id
         );
-        const participants = participations.filter(p => p.gId === giveaway.id);
+        
+        // Sort participants alphabetically
+        const participants = participations
+          .filter(p => p.gId === giveaway.id)
+          .sort((a, b) => a.minecraftName.localeCompare(b.minecraftName, undefined, { sensitivity: 'base' }));
+
+        // Separate DEV participants
+        const devParticipants = participants.filter(p => 
+          DEVELOPER_NAMES.some(devName => 
+            p.minecraftName.toUpperCase() === devName.toUpperCase()
+          )
+        );
+        
+        const regularParticipants = participants.filter(p => 
+          !DEVELOPER_NAMES.some(devName => 
+            p.minecraftName.toUpperCase() === devName.toUpperCase()
+          )
+        );
 
         const now = new Date();
         const startFormatted = formatDateTime(giveaway.startDate);
@@ -589,17 +612,29 @@
           `;
         }
 
+        // Show DEV participants in their own section
+        if (devParticipants.length > 0) {
+          html += `
+            <div class="dev-section">
+              <div class="participants-list">
+                <h3>Developers (${devParticipants.length})</h3>
+                <ul>
+                  ${devParticipants.map(p => 
+                    `<li><span class="dev-tag">${p.minecraftName}</span></li>`
+                  ).join('')}
+                </ul>
+              </div>
+            </div>
+          `;
+        }
+
+        // Show regular participants
         html += `
           <div class="participants-list">
-            <h3>Participants (${participants.length})</h3>
+            <h3>Participants (${regularParticipants.length})</h3>
             <ul>
-              ${participants.length > 0 ?
-                participants.map(p => {
-                  const isDev = DEVELOPER_NAMES.some(devName => 
-                    p.minecraftName.toUpperCase() === devName.toUpperCase()
-                  );
-                  return `<li>${isDev ? `<span class="dev-tag">${p.minecraftName}</span>` : p.minecraftName}</li>`;
-                }).join('') :
+              ${regularParticipants.length > 0 ?
+                regularParticipants.map(p => `<li>${p.minecraftName}</li>`).join('') :
                 '<li>No participants yet</li>'
               }
             </ul>
