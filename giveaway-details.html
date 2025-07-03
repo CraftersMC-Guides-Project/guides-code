@@ -142,6 +142,23 @@
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     }
 
+    .active-sponsor {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #ffd700;
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 20px;
+      background: rgba(255, 215, 0, 0.1);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+    }
+
+    .active-sponsor::before {
+      content: '👑';
+      font-size: 1.1em;
+    }
+
     .giveaway-banner {
       width: 100%;
       border-radius: 10px 10px 0 0;
@@ -235,6 +252,64 @@
       transition: background 0.3s, color 0.3s;
     }
 
+    .special-section {
+      margin-top: 1.5em;
+      padding: 10px;
+      background: rgba(100, 100, 100, 0.1);
+      border-radius: 10px;
+      border-top: 1px dashed var(--card-border);
+    }
+
+    .special-section h3 {
+      color: #aaa;
+      font-style: italic;
+    }
+
+    .special-tag {
+      position: relative;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .dev-role::after {
+      content: '[DEV]';
+      font-size: 0.7em;
+      background: linear-gradient(90deg, #0066ff, #00ccff);
+      color: white;
+      padding: 2px 5px;
+      border-radius: 3px;
+      margin-left: 5px;
+      animation: pulse 1.5s infinite;
+    }
+
+    .sponsor-role::after {
+      content: '[SPONSOR]';
+      font-size: 0.7em;
+      background: linear-gradient(90deg, #ff9900, #ffcc00);
+      color: white;
+      padding: 2px 5px;
+      border-radius: 3px;
+      margin-left: 5px;
+    }
+
+    .both-role::after {
+      content: '[DEV+SPONSOR]';
+      font-size: 0.7em;
+      background: linear-gradient(90deg, #ff00cc, #cc00ff);
+      color: white;
+      padding: 2px 5px;
+      border-radius: 3px;
+      margin-left: 5px;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.8; }
+      50% { opacity: 1; }
+      100% { opacity: 0.8; }
+    }
+
     .form-group {
       margin: 18px;
       display: flex;
@@ -247,7 +322,6 @@
       color: var(--primary);
       margin-bottom: 0.2em;
     }
-
 
     .form-input {
       padding: 10px;
@@ -302,37 +376,6 @@
       color: #1765c1;
     }
 
-    /* New styles for developer tags */
-    .dev-tag {
-      color: #ffd700;
-      text-shadow: 0 0 5px #ffd700, 0 0 10px #ffd700;
-      position: relative;
-      font-weight: bold;
-    }
-    
-    .dev-tag::after {
-      content: '[DEV]';
-      font-size: 0.7em;
-      background: linear-gradient(90deg, #ff0000, #ff8c00);
-      color: white;
-      padding: 2px 5px;
-      border-radius: 3px;
-      margin-left: 5px;
-      animation: pulse 1.5s infinite;
-    }
-    
-    @keyframes pulse {
-      0% { opacity: 0.8; }
-      50% { opacity: 1; }
-      100% { opacity: 0.8; }
-    }
-
-    .dev-section {
-      margin-bottom: 1.5em;
-      padding-bottom: 1em;
-      border-bottom: 1px dashed var(--card-border);
-    }
-
     @media (max-width: 768px) {
       .giveaway-details-card {
         padding: 1.2rem;
@@ -357,38 +400,18 @@
     <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
     <span class="material-icons" id="scrollToTopBtn">north</span>
   </button>
-  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
-     crossorigin="anonymous"></script>
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-format="fluid"
-     data-ad-layout-key="-ef+6k-2c-b0+sg"
-     data-ad-client="ca-pub-3105845866547691"
-     data-ad-slot="9179828319"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script> -->
   <div class="giveaway-details-container">
     <div id="giveaway-content">Loading giveaway details...</div>
   </div>
-  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
-     crossorigin="anonymous"></script>
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-format="fluid"
-     data-ad-layout-key="-ef+6k-2c-b0+sg"
-     data-ad-client="ca-pub-3105845866547691"
-     data-ad-slot="9179828319"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script> -->
   <div id="footer"></div>
   <script>
-    // Discord Webhook URL
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1371500562234867824/dzJi5f2g1iS_0nfJIT7ZfmAEEMaawip43MjBpwooin5FKfarEjj-Wa17QHPbh3B-z-5H";
 
-    // Special developer names that get special styling
-    const DEVELOPER_NAMES = ["TRIPLE RRT", "NETWORKPG"];
+    const SPECIAL_MEMBERS = [
+      { name: "TRIPLE RRT", isDev: true, isSponsor: false },
+      { name: "NETWORKPG", isDev: true, isSponsor: false },
+      { name: "ROHAN_DLX", isDev: false, isSponsor: true },
+    ];
 
     function formatDateTime(dateStr) {
       if (!dateStr) return '';
@@ -466,9 +489,9 @@
           .filter(line => line.trim() !== '')
           .map(line => {
             const parts = line.split('|');
-            const [id, title, description, startDate, endDate, maxParticipants, reward, status, sponsor, banner] = parts;
+            const [id, title, description, startDate, endDate, maxParticipants, reward, status, sponsor] = parts;
             return {
-              id, title, description, startDate, endDate, maxParticipants, reward, status, sponsor, banner
+              id, title, description, startDate, endDate, maxParticipants, reward, status, sponsor
             };
           })
           .find(g => g.id === giveawayId);
@@ -505,16 +528,25 @@
           .filter(p => p.gId === giveaway.id)
           .sort((a, b) => a.minecraftName.localeCompare(b.minecraftName, undefined, { sensitivity: 'base' }));
 
-        // Separate DEV participants
-        const devParticipants = participants.filter(p => 
-          DEVELOPER_NAMES.some(devName => 
-            p.minecraftName.toUpperCase() === devName.toUpperCase()
+        // Separate special members and regular participants
+        const specialParticipants = participants.filter(p => 
+          SPECIAL_MEMBERS.some(member => 
+            p.minecraftName.toUpperCase() === member.name.toUpperCase()
           )
-        );
+        ).map(p => {
+          const memberData = SPECIAL_MEMBERS.find(m => 
+            m.name.toUpperCase() === p.minecraftName.toUpperCase()
+          );
+          return {
+            ...p,
+            isDev: memberData.isDev,
+            isSponsor: memberData.isSponsor
+          };
+        });
         
         const regularParticipants = participants.filter(p => 
-          !DEVELOPER_NAMES.some(devName => 
-            p.minecraftName.toUpperCase() === devName.toUpperCase()
+          !SPECIAL_MEMBERS.some(member => 
+            p.minecraftName.toUpperCase() === member.name.toUpperCase()
           )
         );
 
@@ -544,12 +576,20 @@
 
         const hasXbox = user.xbox && user.xbox.name;
 
+        let sponsorDisplay = '';
+        if (giveaway.sponsor) {
+          if (statusClass === 'active') {
+            sponsorDisplay = `<div class="giveaway-sponsor">Sponsored by: <span class="active-sponsor">${giveaway.sponsor}</span></div>`;
+          } else {
+            sponsorDisplay = `<div class="giveaway-sponsor">Sponsored by: <b>${giveaway.sponsor}</b></div>`;
+          }
+        }
+
         let html = `
           <div class="giveaway-details-card${statusClass ? ' ' + statusClass : ''}">
-            ${giveaway.banner ? `<img class="giveaway-banner" src="${giveaway.banner}" alt="Giveaway Banner">` : ''}
             <div class="giveaway-title">${giveaway.title}</div>
             <div class="giveaway-reward">🎁 <b>${giveaway.reward}</b></div>
-            ${giveaway.sponsor ? `<div class="giveaway-sponsor">Sponsored by: <b>${giveaway.sponsor}</b></div>` : ''}
+            ${sponsorDisplay}
             <div class="giveaway-description">${giveaway.description}</div>
             <div class="giveaway-meta">
               <div><span style="color:#37fd12;">Start:</span> ${startFormatted}</div>
@@ -567,10 +607,21 @@
               🎉 <b>Winner${winnerEntries.length > 1 ? 's' : ''}:</b>
               <ul style="margin: 0.5em 0 0 1.2em; padding: 0;">
                 ${winnerEntries.map(w => {
-                  const isDev = DEVELOPER_NAMES.some(devName => 
-                    w.winnerName.toUpperCase() === devName.toUpperCase()
+                  const isDev = SPECIAL_MEMBERS.some(m => 
+                    m.name.toUpperCase() === w.winnerName.toUpperCase() && m.isDev
                   );
-                  return `<li>${isDev ? `<span class="dev-tag">${w.winnerName}</span>` : w.winnerName}</li>`;
+                  const isSponsor = SPECIAL_MEMBERS.some(m => 
+                    m.name.toUpperCase() === w.winnerName.toUpperCase() && m.isSponsor
+                  );
+                  let roleClass = '';
+                  if (isDev && isSponsor) {
+                    roleClass = 'both-role';
+                  } else if (isDev) {
+                    roleClass = 'dev-role';
+                  } else if (isSponsor) {
+                    roleClass = 'sponsor-role';
+                  }
+                  return `<li>${roleClass ? `<span class="special-tag ${roleClass}">${w.winnerName}</span>` : w.winnerName}</li>`;
                 }).join('')}
               </ul>
             </div>
@@ -612,22 +663,6 @@
           `;
         }
 
-        // Show DEV participants in their own section
-        if (devParticipants.length > 0) {
-          html += `
-            <div class="dev-section">
-              <div class="participants-list">
-                <h3>Developers (${devParticipants.length})</h3>
-                <ul>
-                  ${devParticipants.map(p => 
-                    `<li><span class="dev-tag">${p.minecraftName}</span></li>`
-                  ).join('')}
-                </ul>
-              </div>
-            </div>
-          `;
-        }
-
         // Show regular participants
         html += `
           <div class="participants-list">
@@ -640,6 +675,28 @@
             </ul>
           </div>
         `;
+
+        // Show special members section
+        if (specialParticipants.length > 0) {
+          html += `
+            <div class="special-section">
+              <h3>Special Members (Testing Only)</h3>
+              <ul>
+                ${specialParticipants.map(p => {
+                  let roleClass = '';
+                  if (p.isDev && p.isSponsor) {
+                    roleClass = 'both-role';
+                  } else if (p.isDev) {
+                    roleClass = 'dev-role';
+                  } else if (p.isSponsor) {
+                    roleClass = 'sponsor-role';
+                  }
+                  return `<li><span class="special-tag ${roleClass}">${p.minecraftName}</span></li>`;
+                }).join('')}
+              </ul>
+            </div>
+          `;
+        }
 
         html += '</div>';
         document.getElementById("giveaway-content").innerHTML = html;
