@@ -250,6 +250,9 @@
       font-size: 0.98em;
       margin-bottom: 0.3em;
       transition: background 0.3s, color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
     .special-section {
@@ -378,9 +381,8 @@
   <script>
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1371500562234867824/dzJi5f2g1iS_0nfJIT7ZfmAEEMaawip43MjBpwooin5FKfarEjj-Wa17QHPbh3B-z-5H";
 
-    // Special members data
+    // Developer list (hardcoded)
     const DEVELOPERS = ["TRIPLE RRT", "NETWORKPG"];
-    const SPONSORS = ["ROHAN_DLX", "PG NETWORK"];
 
     function formatDateTime(dateStr) {
       if (!dateStr) return '';
@@ -438,13 +440,18 @@
       }, '');
     }
 
-    function getRoleTag(username) {
-      if (DEVELOPERS.includes(username.toUpperCase())) {
-        return '<span class="role-tag dev-tag">[DEV]</span>';
-      } else if (SPONSORS.includes(username.toUpperCase())) {
-        return '<span class="role-tag sp-tag">[SP]</span>';
+    function getRoleTag(username, currentSponsor) {
+      const isDev = DEVELOPERS.some(dev => username.toUpperCase() === dev.toUpperCase());
+      const isSponsor = currentSponsor && username.toUpperCase() === currentSponsor.toUpperCase();
+      
+      let tags = '';
+      if (isDev) {
+        tags += '<span class="role-tag dev-tag">[DEV]</span>';
       }
-      return '';
+      if (isSponsor) {
+        tags += '<span class="role-tag sp-tag">[SP]</span>';
+      }
+      return tags;
     }
 
     async function loadGiveawayDetails() {
@@ -477,6 +484,9 @@
           window.location.href = 'giveaway.html';
           return;
         }
+        
+        const currentSponsor = giveaway.sponsor;
+        
         let winnerEntries = [];
         try {
           const winnerResponse = await fetch('gw/winners.txt');
@@ -489,6 +499,7 @@
             })
             .filter(w => w.gId === giveaway.id && w.winnerName && w.winnerName !== "null" && w.winnerName.trim() !== "");
         } catch (e) { winnerEntries = []; }
+        
         const partResponse = await fetch('gw/participants.txt');
         const partData = await partResponse.text();
         const participations = partData.split('\n')
@@ -508,15 +519,13 @@
 
         // Separate special members and regular participants
         const specialParticipants = participants.filter(p => 
-          DEVELOPERS.concat(SPONSORS).some(name => 
-            p.minecraftName.toUpperCase() === name.toUpperCase()
-          )
+          DEVELOPERS.some(dev => p.minecraftName.toUpperCase() === dev.toUpperCase()) ||
+          (currentSponsor && p.minecraftName.toUpperCase() === currentSponsor.toUpperCase())
         );
         
         const regularParticipants = participants.filter(p => 
-          !DEVELOPERS.concat(SPONSORS).some(name => 
-            p.minecraftName.toUpperCase() === name.toUpperCase()
-          )
+          !DEVELOPERS.some(dev => p.minecraftName.toUpperCase() === dev.toUpperCase()) &&
+          (!currentSponsor || p.minecraftName.toUpperCase() !== currentSponsor.toUpperCase())
         );
 
         const now = new Date();
@@ -576,7 +585,7 @@
               🎉 <b>Winner${winnerEntries.length > 1 ? 's' : ''}:</b>
               <ul style="margin: 0.5em 0 0 1.2em; padding: 0;">
                 ${winnerEntries.map(w => {
-                  const roleTag = getRoleTag(w.winnerName);
+                  const roleTag = getRoleTag(w.winnerName, currentSponsor);
                   return `<li>${w.winnerName}${roleTag}</li>`;
                 }).join('')}
               </ul>
@@ -604,7 +613,7 @@
             </div>
           `;
         } else if (userParticipation) {
-          const roleTag = getRoleTag(userParticipation.minecraftName);
+          const roleTag = getRoleTag(userParticipation.minecraftName, currentSponsor);
           html += `
             <div class="alert alert-success">
               You're participating as: ${userParticipation.minecraftName}${roleTag}
@@ -633,14 +642,14 @@
           </div>
         `;
 
-        // Show special members section (devs and participating sponsors)
+        // Show special members section (devs and current sponsor if they participate)
         if (specialParticipants.length > 0) {
           html += `
             <div class="special-section">
               <h3>Special Members</h3>
               <ul>
                 ${specialParticipants.map(p => {
-                  const roleTag = getRoleTag(p.minecraftName);
+                  const roleTag = getRoleTag(p.minecraftName, currentSponsor);
                   return `<li>${p.minecraftName}${roleTag}</li>`;
                 }).join('')}
               </ul>
