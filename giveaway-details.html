@@ -250,9 +250,6 @@
       font-size: 0.98em;
       margin-bottom: 0.3em;
       transition: background 0.3s, color 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 5px;
     }
 
     .special-section {
@@ -277,23 +274,11 @@
     }
 
     .dev-tag {
-      background: linear-gradient(90deg, #0066ff, #00ccff);
-      animation: pulse 1.5s infinite;
+      background: linear-gradient(90deg, #ff3333, #cc0000);
     }
 
-    .sponsor-tag {
-      background: linear-gradient(90deg, #ff9900, #ffcc00);
-    }
-
-    .both-tag {
-      background: linear-gradient(90deg, #ff00cc, #cc00ff);
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 0.8; }
-      50% { opacity: 1; }
-      100% { opacity: 0.8; }
+    .sp-tag {
+      background: linear-gradient(90deg, #ff9900, #ff6600);
     }
 
     .form-group {
@@ -393,11 +378,9 @@
   <script>
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1371500562234867824/dzJi5f2g1iS_0nfJIT7ZfmAEEMaawip43MjBpwooin5FKfarEjj-Wa17QHPbh3B-z-5H";
 
-    const SPECIAL_MEMBERS = [
-      { name: "TRIPLE RRT", isDev: true, isSponsor: false },
-      { name: "NETWORKPG", isDev: true, isSponsor: false },
-      { name: "ROHAN_DLX", isDev: false, isSponsor: true },
-    ];
+    // Special members data
+    const DEVELOPERS = ["TRIPLE RRT", "NETWORKPG"];
+    const SPONSORS = ["ROHAN_DLX", "PG NETWORK"];
 
     function formatDateTime(dateStr) {
       if (!dateStr) return '';
@@ -455,13 +438,11 @@
       }, '');
     }
 
-    function getRoleTag(member) {
-      if (member.isDev && member.isSponsor) {
-        return '<span class="role-tag both-tag">[DEV+SPONSOR]</span>';
-      } else if (member.isDev) {
+    function getRoleTag(username) {
+      if (DEVELOPERS.includes(username.toUpperCase())) {
         return '<span class="role-tag dev-tag">[DEV]</span>';
-      } else if (member.isSponsor) {
-        return '<span class="role-tag sponsor-tag">[SPONSOR]</span>';
+      } else if (SPONSORS.includes(username.toUpperCase())) {
+        return '<span class="role-tag sp-tag">[SP]</span>';
       }
       return '';
     }
@@ -527,23 +508,14 @@
 
         // Separate special members and regular participants
         const specialParticipants = participants.filter(p => 
-          SPECIAL_MEMBERS.some(member => 
-            p.minecraftName.toUpperCase() === member.name.toUpperCase()
+          DEVELOPERS.concat(SPONSORS).some(name => 
+            p.minecraftName.toUpperCase() === name.toUpperCase()
           )
-        ).map(p => {
-          const memberData = SPECIAL_MEMBERS.find(m => 
-            m.name.toUpperCase() === p.minecraftName.toUpperCase()
-          );
-          return {
-            ...p,
-            isDev: memberData.isDev,
-            isSponsor: memberData.isSponsor
-          };
-        });
+        );
         
         const regularParticipants = participants.filter(p => 
-          !SPECIAL_MEMBERS.some(member => 
-            p.minecraftName.toUpperCase() === member.name.toUpperCase()
+          !DEVELOPERS.concat(SPONSORS).some(name => 
+            p.minecraftName.toUpperCase() === name.toUpperCase()
           )
         );
 
@@ -601,13 +573,10 @@
         if (statusClass === 'ended' && winnerEntries.length > 0) {
           html += `
             <div class="alert alert-success" style="background: #ffd22070; color: var(--main-text-color);">
-              � <b>Winner${winnerEntries.length > 1 ? 's' : ''}:</b>
+              🎉 <b>Winner${winnerEntries.length > 1 ? 's' : ''}:</b>
               <ul style="margin: 0.5em 0 0 1.2em; padding: 0;">
                 ${winnerEntries.map(w => {
-                  const member = SPECIAL_MEMBERS.find(m => 
-                    m.name.toUpperCase() === w.winnerName.toUpperCase()
-                  );
-                  const roleTag = member ? getRoleTag(member) : '';
+                  const roleTag = getRoleTag(w.winnerName);
                   return `<li>${w.winnerName}${roleTag}</li>`;
                 }).join('')}
               </ul>
@@ -635,10 +604,7 @@
             </div>
           `;
         } else if (userParticipation) {
-          const member = SPECIAL_MEMBERS.find(m => 
-            m.name.toUpperCase() === userParticipation.minecraftName.toUpperCase()
-          );
-          const roleTag = member ? getRoleTag(member) : '';
+          const roleTag = getRoleTag(userParticipation.minecraftName);
           html += `
             <div class="alert alert-success">
               You're participating as: ${userParticipation.minecraftName}${roleTag}
@@ -654,33 +620,27 @@
           `;
         }
 
-        // Show regular participants with role tags if they're sponsors
+        // Show regular participants
         html += `
           <div class="participants-list">
             <h3>Participants (${regularParticipants.length})</h3>
             <ul>
               ${regularParticipants.length > 0 ?
-                regularParticipants.map(p => {
-                  const member = SPECIAL_MEMBERS.find(m => 
-                    m.name.toUpperCase() === p.minecraftName.toUpperCase()
-                  );
-                  const roleTag = member ? getRoleTag(member) : '';
-                  return `<li>${p.minecraftName}${roleTag}</li>`;
-                }).join('') :
+                regularParticipants.map(p => `<li>${p.minecraftName}</li>`).join('') :
                 '<li>No participants yet</li>'
               }
             </ul>
           </div>
         `;
 
-        // Show special members section
+        // Show special members section (devs and participating sponsors)
         if (specialParticipants.length > 0) {
           html += `
             <div class="special-section">
-              <h3>Special Members (Testing Only)</h3>
+              <h3>Special Members</h3>
               <ul>
                 ${specialParticipants.map(p => {
-                  const roleTag = getRoleTag(p);
+                  const roleTag = getRoleTag(p.minecraftName);
                   return `<li>${p.minecraftName}${roleTag}</li>`;
                 }).join('')}
               </ul>
