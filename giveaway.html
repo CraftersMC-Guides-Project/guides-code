@@ -331,6 +331,27 @@
       background: #218306;
       color: #fff !important;
     }
+
+    /* New styles for section headers */
+    .section-header {
+      font-size: 2rem;
+      font-weight: bold;
+      color: white;
+      text-align: center;
+      margin: 2rem 0 1rem;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .active-section {
+      border-bottom-color: var(--status-active);
+    }
+
+    .archived-section {
+      border-bottom-color: var(--status-ended);
+    }
   </style>
 </head>
 
@@ -470,70 +491,99 @@
           winners = [];
         }
 
+        // Separate active and archived giveaways
+        const activeGiveaways = giveaways.filter(g => g.status === "active" || g.status === "scheduled");
+        const archivedGiveaways = giveaways.filter(g => g.status === "ended");
 
-        // Display all giveaways
-        let html = '<div class="giveaway-grid">';
-        giveaways.forEach(giveaway => {
-          const now = new Date();
-          const start = new Date(giveaway.startDate);
-          const end = new Date(giveaway.endDate);
+        // Display active giveaways
+        let html = '';
+        
+        if (activeGiveaways.length > 0) {
+          html += `<h2 class="section-header active-section">Active Giveaways</h2>`;
+          html += '<div class="giveaway-grid">';
+          activeGiveaways.forEach(giveaway => {
+            html += createGiveawayCard(giveaway, participations, winners, user);
+          });
+          html += '</div>';
+        }
 
-          let statusLabel = '';
-          let statusClass = '';
-          let canParticipate = false;
+        // Display archived giveaways
+        if (archivedGiveaways.length > 0) {
+          html += `<h2 class="section-header archived-section">Archived Giveaways</h2>`;
+          html += '<div class="giveaway-grid">';
+          archivedGiveaways.forEach(giveaway => {
+            html += createGiveawayCard(giveaway, participations, winners, user);
+          });
+          html += '</div>';
+        }
 
-          if (giveaway.status === "scheduled") {
-            statusLabel = 'Scheduled';
-            statusClass = 'scheduled';
-            canParticipate = false;
-          } else if (giveaway.status === "active") {
-            statusLabel = 'Active';
-            statusClass = 'active';
-            canParticipate = true;
-          } else if (giveaway.status === "ended") {
-            statusLabel = 'Ended';
-            statusClass = 'ended';
-            canParticipate = false;
-          }
+        if (activeGiveaways.length === 0 && archivedGiveaways.length === 0) {
+          html = '<p>No giveaways available at the moment</p>';
+        }
 
-          const isParticipated = participations.some(p =>
-            p.giveawayId === giveaway.id && p.discordId === user.id
-          );
-          // Get all winners for this giveaway
-          const winnerEntries = winners.filter(w => w.gId === giveaway.id && w.winnerName && w.winnerName !== "null" && w.winnerName.trim() !== "");
+        document.getElementById("giveaways-content").innerHTML = html;
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById("giveaways-content").innerHTML = '<p>Error loading giveaways</p>';
+      }
+    }
 
-          // Format start and end date
-          const startFormatted = formatDateTime(giveaway.startDate);
-          const endFormatted = formatDateTime(giveaway.endDate);
+    function createGiveawayCard(giveaway, participations, winners, user) {
+      let statusLabel = '';
+      let statusClass = '';
+      let canParticipate = false;
 
-          html += `
-            <div class="giveaway-card${statusClass === 'ended' ? ' ended' : ''}${statusClass === 'scheduled' ? ' scheduled' : ''}">
-              ${giveaway.banner ? `<img src="${giveaway.banner}" alt="Giveaway Banner" style="width:100%;border-radius:10px 10px 0 0;max-height:120px;object-fit:cover;margin-bottom:10px;">` : ''}
-              <div class="giveaway-title">${giveaway.title}</div>
-              <div class="giveaway-reward">🎁 <b>${giveaway.reward}</b></div>
-              ${giveaway.sponsor ? `<div class="giveaway-sponsor" style="margin-left: 20px; font-size:0.95em;color:var(--reward);margin-bottom:6px;text-shadow:1px 1px 2px rgba(0,0,0,0.5);">Sponsored by: <b>${giveaway.sponsor}</b></div>` : ''}
-              <div class="giveaway-status">
-                Status: <span class="status-${statusClass}">${statusLabel}</span>
-                <div class="giveaway-slots">Winners: <b>${giveaway.maxParticipants}</b></div>
-              </div>
-              <div class="giveaway-date">
-                ${statusClass === 'scheduled' ? `Scheduled for: ${startFormatted}` : `Ends: ${endFormatted}`}
-              </div>
-              ${statusClass === 'ended' && winnerEntries.length > 0 ? `
-                <div class="winner-badge">
-                  🏆 Winner${winnerEntries.length > 1 ? 's' : ''}:
-                  <ul style="margin: 0.5em 0 0 1.2em; padding: 0;">
-                    ${winnerEntries.map(w => `<li>${w.winnerName}</li>`).join('')}
-                  </ul>
-                </div>
-              ` : ''
-            }
-              <button 
-                class="btn-participate" 
-                onclick="window.location.href='giveaway-details.html?id=${giveaway.id}'"
-                ${!canParticipate || isParticipated ? 'disabled' : ''}
-              >
-                ${statusClass === 'scheduled'
+      if (giveaway.status === "scheduled") {
+        statusLabel = 'Scheduled';
+        statusClass = 'scheduled';
+        canParticipate = false;
+      } else if (giveaway.status === "active") {
+        statusLabel = 'Active';
+        statusClass = 'active';
+        canParticipate = true;
+      } else if (giveaway.status === "ended") {
+        statusLabel = 'Ended';
+        statusClass = 'ended';
+        canParticipate = false;
+      }
+
+      const isParticipated = participations.some(p =>
+        p.giveawayId === giveaway.id && p.discordId === user.id
+      );
+      // Get all winners for this giveaway
+      const winnerEntries = winners.filter(w => w.gId === giveaway.id && w.winnerName && w.winnerName !== "null" && w.winnerName.trim() !== "");
+
+      // Format start and end date
+      const startFormatted = formatDateTime(giveaway.startDate);
+      const endFormatted = formatDateTime(giveaway.endDate);
+
+      return `
+        <div class="giveaway-card${statusClass === 'ended' ? ' ended' : ''}${statusClass === 'scheduled' ? ' scheduled' : ''}">
+          ${giveaway.banner ? `<img src="${giveaway.banner}" alt="Giveaway Banner" style="width:100%;border-radius:10px 10px 0 0;max-height:120px;object-fit:cover;margin-bottom:10px;">` : ''}
+          <div class="giveaway-title">${giveaway.title}</div>
+          <div class="giveaway-reward">🎁 <b>${giveaway.reward}</b></div>
+          ${giveaway.sponsor ? `<div class="giveaway-sponsor" style="margin-left: 20px; font-size:0.95em;color:var(--reward);margin-bottom:6px;text-shadow:1px 1px 2px rgba(0,0,0,0.5);">Sponsored by: <b>${giveaway.sponsor}</b></div>` : ''}
+          <div class="giveaway-status">
+            Status: <span class="status-${statusClass}">${statusLabel}</span>
+            <div class="giveaway-slots">Winners: <b>${giveaway.maxParticipants}</b></div>
+          </div>
+          <div class="giveaway-date">
+            ${statusClass === 'scheduled' ? `Scheduled for: ${startFormatted}` : `Ends: ${endFormatted}`}
+          </div>
+          ${statusClass === 'ended' && winnerEntries.length > 0 ? `
+            <div class="winner-badge">
+              🏆 Winner${winnerEntries.length > 1 ? 's' : ''}:
+              <ul style="margin: 0.5em 0 0 1.2em; padding: 0;">
+                ${winnerEntries.map(w => `<li>${w.winnerName}</li>`).join('')}
+              </ul>
+            </div>
+          ` : ''}
+          <button 
+            class="btn-participate" 
+            onclick="window.location.href='giveaway-details.html?id=${giveaway.id}'"
+            ${!canParticipate || isParticipated ? 'disabled' : ''}
+          >
+            ${statusClass === 'scheduled'
               ? 'Not Started'
               : isParticipated
                 ? 'Participated'
@@ -541,18 +591,10 @@
                   ? 'Ended'
                   : 'Participate'
             }
-              </button>
-              <button class="btn-view" onclick="window.location.href='giveaway-details.html?id=${giveaway.id}'">View</button>
-            </div>
-          `;
-        });
-        html += '</div>';
-
-        document.getElementById("giveaways-content").innerHTML = html || '<p>No active giveaways</p>';
-      } catch (error) {
-        console.error('Error:', error);
-        document.getElementById("giveaways-content").innerHTML = '<p>Error loading giveaways</p>';
-      }
+          </button>
+          <button class="btn-view" onclick="window.location.href='giveaway-details.html?id=${giveaway.id}'">View</button>
+        </div>
+      `;
     }
 
     // Load giveaways when page loads
