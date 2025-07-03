@@ -270,18 +270,24 @@
 
     .role-tag {
       font-size: 0.7em;
-      color: white;
       padding: 2px 5px;
       border-radius: 3px;
       margin-left: 5px;
+      font-weight: bold;
     }
 
-    .dev-tag {
-      background: linear-gradient(90deg, #ff3333, #cc0000);
+    .triple-rrt-tag {
+      background: linear-gradient(90deg, #000000, #333333);
+      color: white;
+      border: 1px solid;
+      border-image: linear-gradient(90deg, #ff0000, #cc0000) 1;
     }
 
-    .sp-tag {
-      background: linear-gradient(90deg, #ff9900, #ff6600);
+    .pg-tag {
+      background: linear-gradient(90deg, #aa00ff, #ff00ff);
+      color: white;
+      border: 1px solid;
+      border-image: linear-gradient(90deg, #ffffff, #cccccc) 1;
     }
 
     .form-group {
@@ -381,9 +387,6 @@
   <script>
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1371500562234867824/dzJi5f2g1iS_0nfJIT7ZfmAEEMaawip43MjBpwooin5FKfarEjj-Wa17QHPbh3B-z-5H";
 
-    // Developer list (hardcoded)
-    const DEVELOPERS = ["TRIPLE RRT", "NETWORKPG"];
-
     function formatDateTime(dateStr) {
       if (!dateStr) return '';
       let [datePart, timePart, ampm] = dateStr.split(/[\s:]+/);
@@ -440,18 +443,13 @@
       }, '');
     }
 
-    function getRoleTag(username, currentSponsor) {
-      const isDev = DEVELOPERS.some(dev => username.toUpperCase() === dev.toUpperCase());
-      const isSponsor = currentSponsor && username.toUpperCase() === currentSponsor.toUpperCase();
-      
-      let tags = '';
-      if (isDev) {
-        tags += '<span class="role-tag dev-tag">[DEV]</span>';
+    function getCustomTag(username) {
+      if (username.toUpperCase() === "TRIPLE RRT") {
+        return '<span class="role-tag triple-rrt-tag">[DEV]</span>';
+      } else if (username.toUpperCase() === "PG NETWORK") {
+        return '<span class="role-tag pg-tag">[DEV]</span>';
       }
-      if (isSponsor) {
-        tags += '<span class="role-tag sp-tag">[SP]</span>';
-      }
-      return tags;
+      return '';
     }
 
     async function loadGiveawayDetails() {
@@ -485,8 +483,6 @@
           return;
         }
         
-        const currentSponsor = giveaway.sponsor;
-        
         let winnerEntries = [];
         try {
           const winnerResponse = await fetch('gw/winners.txt');
@@ -519,13 +515,11 @@
 
         // Separate special members and regular participants
         const specialParticipants = participants.filter(p => 
-          DEVELOPERS.some(dev => p.minecraftName.toUpperCase() === dev.toUpperCase()) ||
-          (currentSponsor && p.minecraftName.toUpperCase() === currentSponsor.toUpperCase())
+          ["TRIPLE RRT", "PG NETWORK"].includes(p.minecraftName.toUpperCase())
         );
         
         const regularParticipants = participants.filter(p => 
-          !DEVELOPERS.some(dev => p.minecraftName.toUpperCase() === dev.toUpperCase()) &&
-          (!currentSponsor || p.minecraftName.toUpperCase() !== currentSponsor.toUpperCase())
+          !["TRIPLE RRT", "PG NETWORK"].includes(p.minecraftName.toUpperCase())
         );
 
         const now = new Date();
@@ -585,8 +579,8 @@
               🎉 <b>Winner${winnerEntries.length > 1 ? 's' : ''}:</b>
               <ul style="margin: 0.5em 0 0 1.2em; padding: 0;">
                 ${winnerEntries.map(w => {
-                  const roleTag = getRoleTag(w.winnerName, currentSponsor);
-                  return `<li>${w.winnerName}${roleTag}</li>`;
+                  const customTag = getCustomTag(w.winnerName);
+                  return `<li>${w.winnerName}${customTag}</li>`;
                 }).join('')}
               </ul>
             </div>
@@ -613,10 +607,10 @@
             </div>
           `;
         } else if (userParticipation) {
-          const roleTag = getRoleTag(userParticipation.minecraftName, currentSponsor);
+          const customTag = getCustomTag(userParticipation.minecraftName);
           html += `
             <div class="alert alert-success">
-              You're participating as: ${userParticipation.minecraftName}${roleTag}
+              You're participating as: ${userParticipation.minecraftName}${customTag}
             </div>
           `;
         } else if (canParticipate && statusClass === 'active') {
@@ -642,15 +636,15 @@
           </div>
         `;
 
-        // Show special members section (devs and current sponsor if they participate)
+        // Show special members section
         if (specialParticipants.length > 0) {
           html += `
             <div class="special-section">
               <h3>Special Members</h3>
               <ul>
                 ${specialParticipants.map(p => {
-                  const roleTag = getRoleTag(p.minecraftName, currentSponsor);
-                  return `<li>${p.minecraftName}${roleTag}</li>`;
+                  const customTag = getCustomTag(p.minecraftName);
+                  return `<li>${p.minecraftName}${customTag}</li>`;
                 }).join('')}
               </ul>
             </div>
