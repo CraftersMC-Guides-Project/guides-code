@@ -2089,22 +2089,22 @@ const collectionsData = {
                 },
                 {
                     "rank": 2,
-                    "name": "TRIGUN2212",
+                    "name": "ST4ANG3",
                     "score": "N/A"
                 },
                 {
                     "rank": 3,
-                    "name": "BoneJ5945",
+                    "name": "TRIGUN2212",
                     "score": "9M+"
                 },
                 {
                     "rank": 4,
-                    "name": "GPK4",
+                    "name": "BoneJ5945",
                     "score": "N/A"
                 },
                 {
                     "rank": 5,
-                    "name": "Unknown",
+                    "name": "GPK4",
                     "score": "N/A"
                 },
                 {
