@@ -2124,8 +2124,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "ST4ANG3",
-                    "score": "9M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 10,
