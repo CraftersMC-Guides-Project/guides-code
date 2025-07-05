@@ -385,7 +385,14 @@
 
             const storedUser = getCookie('discordUser');
             if (storedUser) {
-                showLoggedInState(JSON.parse(storedUser));
+                try {
+                    const userObj = JSON.parse(storedUser);
+                    if (userObj && userObj.id && userObj.username) {
+                        showLoggedInState(userObj);
+                    }
+                } catch (e) {
+                    // Invalid cookie, ignore
+                }
             } else {
                 if (messageDiv) {
                     messageDiv.textContent = 'Please log in to continue.';
@@ -501,6 +508,41 @@
             logoutButton.addEventListener('click', logout);
 
             function showLoggedInState(userData) {
+                // Check for Xbox connection
+                if (!userData.xbox || !userData.xbox.name) {
+                    // Show danger message and block login
+                    let dangerMsg = document.getElementById('xbox-danger-msg');
+                    if (dangerMsg) dangerMsg.remove();
+
+                    dangerMsg = document.createElement('div');
+                    dangerMsg.id = 'xbox-danger-msg';
+                    dangerMsg.style.background = '#dc3545';
+                    dangerMsg.style.color = '#fff';
+                    dangerMsg.style.padding = '16px';
+                    dangerMsg.style.borderRadius = '8px';
+                    dangerMsg.style.margin = '18px 0 10px 0';
+                    dangerMsg.style.textAlign = 'center';
+                    dangerMsg.style.fontWeight = 'bold';
+                    dangerMsg.innerHTML = `
+                <span style="font-size:1.3em;">&#9888;</span>
+                Xbox account not connected!<br>
+                Please connect your Xbox account to Discord:<br>
+                <a href="https://discord.com/channels/@me" target="_blank" style="color:#ffd700;text-decoration:underline;">Discord Connections</a>
+            `;
+                    // Insert at top of your login container
+                    document.querySelector('.container').prepend(dangerMsg);
+
+                    // Hide login success UI, buttons, etc.
+                    document.querySelector('.button-container').style.display = 'none';
+                    document.querySelector('.other-options').style.display = 'none';
+                    document.querySelector('hr').style.display = 'none';
+                    if (logoutButton) logoutButton.style.display = 'none';
+                    if (usernameDisplay) usernameDisplay.style.display = 'none';
+                    if (userAvatar) userAvatar.style.display = 'none';
+                    if (loginStatus) loginStatus.style.display = 'none';
+                    return;
+                }
+
                 loginStatus.textContent = 'Logged in Successfully!';
                 loginStatus.style.display = 'block';
 
