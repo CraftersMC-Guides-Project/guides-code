@@ -1,1 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyblock Trade Calculator</title>
+    <style>
+        body {
+            font-family: 'Minecraft', Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+        }
 
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffaa00;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .calculator {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .trade-side {
+            flex: 1;
+            background-color: #2d2d2d;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 0 10px 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            min-width: 300px;
+        }
+
+        .seller-side {
+            border: 2px solid #55ff55;
+        }
+
+        .buyer-side {
+            border: 2px solid #ff5555;
+        }
+
+        .result-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 200px;
+            margin: 0 10px 20px;
+        }
+
+        .result-box {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .coins-input {
+            margin-bottom: 15px;
+        }
+
+        .coins-input label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .coins-input input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #555;
+            background-color: #222;
+            color: #fff;
+        }
+
+        .items-container {
+            min-height: 400px;
+            border: 1px dashed #555;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .item-slot {
+            display: flex;
+            align-items: center;
+            background-color: #3a3a3a;
+            padding: 8px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .item-slot img {
+            width: 32px;
+            height: 32px;
+            margin-right: 10px;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: bold;
+        }
+
+        .item-price {
+            color: #ffaa00;
+        }
+
+        .remove-item {
+            background: none;
+            border: none;
+            color: #ff5555;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+
+        .add-item-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .add-item-btn:hover {
+            background-color: #45a049;
+        }
+
+        .calculate-btn {
+            padding: 10px 20px;
+            background-color: #ffaa00;
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        .calculate-btn:hover {
+            background-color: #e69500;
+        }
+
+        .total-value {
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+        }
+
+        .modal-content {
+            background-color: #2d2d2d;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #555;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 8px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+        }
+
+        .search-box {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-box input, .search-box select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #555;
+            background-color: #222;
+            color: #fff;
+            min-width: 150px;
+        }
+
+        .search-box input {
+            flex: 1;
+        }
+
+        .item-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .item-option {
+            background-color: #3a3a3a;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .item-option:hover {
+            background-color: #4a4a4a;
+        }
+
+        .item-option img {
+            width: 32px;
+            height: 32px;
+            margin-right: 10px;
+        }
+
+        .item-option span {
+            flex: 1;
+        }
+
+        /* Minion tier and pet rarity selectors */
+        .item-extra-options {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #333;
+            border-radius: 4px;
+        }
+
+        .item-extra-options select {
+            width: 100%;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #555;
+            background-color: #222;
+            color: #fff;
+        }
+
+        /* Profit/Loss colors */
+        .profit {
+            color: #55ff55;
+        }
+
+        .loss {
+            color: #ff5555;
+        }
+
+        .neutral {
+            color: #aaaaaa;
+        }
+
+        @media (max-width: 768px) {
+            .calculator {
+                flex-direction: column;
+            }
+            
+            .trade-side, .result-section {
+                width: 100%;
+                margin: 0 0 20px 0;
+            }
+            
+            .item-list {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Skyblock Trade Calculator</h1>
+        
+        <div class="calculator">
+            <div class="trade-side seller-side">
+                <h2>Seller (You)</h2>
+                <div class="coins-input">
+                    <label for="seller-coins">Coins:</label>
+                    <input type="number" id="seller-coins" min="0" value="0">
+                </div>
+                <div class="items-container" id="seller-items">
+                    <!-- Seller items will be added here -->
+                </div>
+                <button class="add-item-btn" onclick="addItem('seller')">+ Add Item</button>
+                <div class="total-value">
+                    <h3>Total Value: <span id="seller-total">0</span> coins</h3>
+                </div>
+            </div>
+            
+            <div class="result-section">
+                <div class="result-box" id="result">
+                    <h3>Trade Result</h3>
+                    <p>Add items to calculate</p>
+                </div>
+                <button class="calculate-btn" onclick="calculateTrade()">Calculate Trade</button>
+            </div>
+            
+            <div class="trade-side buyer-side">
+                <h2>Buyer (Them)</h2>
+                <div class="coins-input">
+                    <label for="buyer-coins">Coins:</label>
+                    <input type="number" id="buyer-coins" min="0" value="0">
+                </div>
+                <div class="items-container" id="buyer-items">
+                    <!-- Buyer items will be added here -->
+                </div>
+                <button class="add-item-btn" onclick="addItem('buyer')">+ Add Item</button>
+                <div class="total-value">
+                    <h3>Total Value: <span id="buyer-total">0</span> coins</h3>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Item selection modal -->
+        <div class="modal" id="item-modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+                <h3>Select Item</h3>
+                <div class="search-box">
+                    <input type="text" id="item-search" placeholder="Search items..." oninput="searchItems()">
+                    <select id="item-type" onchange="filterItems()">
+                        <option value="all">All Items</option>
+                        <option value="item">Regular Items</option>
+                        <option value="minion">Minions</option>
+                        <option value="pet">Pets</option>
+                    </select>
+                </div>
+                <div class="item-list" id="item-list">
+                    <!-- Items will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Global variables
+        let currentSide = 'seller'; // Track which side we're adding items to
+        let itemsData = {
+            items: [],
+            minions: [],
+            pets: []
+        };
+        let minionPricesData = [];
+        let petPricesData = [];
+
+        // DOM elements
+        const sellerItemsContainer = document.getElementById('seller-items');
+        const buyerItemsContainer = document.getElementById('buyer-items');
+        const sellerTotalElement = document.getElementById('seller-total');
+        const buyerTotalElement = document.getElementById('buyer-total');
+        const sellerCoinsInput = document.getElementById('seller-coins');
+        const buyerCoinsInput = document.getElementById('buyer-coins');
+        const resultElement = document.getElementById('result');
+        const itemModal = document.getElementById('item-modal');
+        const itemListElement = document.getElementById('item-list');
+        const itemSearchInput = document.getElementById('item-search');
+        const itemTypeSelect = document.getElementById('item-type');
+
+        // Initialize the calculator
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load all data
+            loadData();
+            
+            // Set up event listeners
+            sellerCoinsInput.addEventListener('input', updateTotals);
+            buyerCoinsInput.addEventListener('input', updateTotals);
+        });
+
+        // Load all data
+        function loadData() {
+            // Sample data - in a real implementation, you would load this from your files
+            // Regular items (from mprices.txt)
+            itemsData.items = [
+                {id: 1, name: "Enchanted rotten flesh", buyPrice: 720, sellPrice: 320},
+                {id: 2, name: "Zombie Pickaxe", buyPrice: 999, sellPrice: 3},
+                {id: 3, name: "Zombie hat", buyPrice: 100, sellPrice: 8},
+                {id: 4, name: "Zombie heart", buyPrice: 180000, sellPrice: 123000},
+                {id: 5, name: "Zombie sword", buyPrice: 400000, sellPrice: 300000}
+            ];
+
+            // Minions (from minions.txt)
+            itemsData.minions = [
+                {id: 1, name: "Wheat Minion", category: "Farming", description: "This Minion produces Wheat and Wheat seeds.", nature: "[UNDERPAID]", demand: "[2/10]"},
+                {id: 2, name: "Carrot Minion", category: "Farming", description: "This Minion produces Carrot.", nature: "[STABLE]", demand: "[4/10]"},
+                {id: 3, name: "Potato Minion", category: "Farming", description: "This Minion produces Potato.", nature: "[STABLE]", demand: "[7/10]"}
+            ];
+
+            // Pets (from pets.txt)
+            itemsData.pets = [
+                {id: "1", name: "Rabbit Pet", category: "Pets", rarity: ["common", "uncommon", "rare", "epic", "legendary"], description: "OG pet, best for beginners super helpful!", nature: "[UNDERPAID]", demand: "[4/10]"},
+                {id: "2", name: "Elephant Pet", category: "Pets", rarity: ["common", "uncommon", "rare", "epic", "legendary"], description: "Elephant Pet can be bought from Creedon (NPC) during the Traveling Zoo event.", nature: "[STABLE]", demand: "[6/10]"},
+                {id: "3", name: "Bee Pet", category: "Pets", rarity: ["common", "uncommon", "rare", "epic", "legendary"], description: "Bee Pet can be bought from Buzz (NPC).", nature: "[UNDERPAID]", demand: "[2/10]"}
+            ];
+
+            // Minion prices (from minion-prices.txt)
+            minionPricesData = [
+                {
+                    minionId: 1,
+                    tiers: {
+                        tier1: [2000, 1000],
+                        tier2: [6000, 3000],
+                        tier3: [14000, 5000],
+                        tier4: [27000, 8000],
+                        tier5: [35000, 10000],
+                        tier6: [55000, 15000],
+                        tier7: [95000, 25000],
+                        tier8: [175000, 40000],
+                        tier9: [225000, 120000],
+                        tier10: [415000, 280000],
+                        tier11: [735000, 600000]
+                    }
+                },
+                {
+                    minionId: 2,
+                    tiers: {
+                        tier1: [500, 1000],
+                        tier2: [1500, 3000],
+                        tier3: [3500, 5000],
+                        tier4: [7500, 10000],
+                        tier5: [20000, 20000],
+                        tier6: [55000, 40000],
+                        tier7: [120000, 80000],
+                        tier8: [250000, 170000],
+                        tier9: [500000, 350000],
+                        tier10: [1300000, 800000],
+                        tier11: [2700000, 1700000]
+                    }
+                }
+            ];
+
+            // Pet prices (from pet-prices.txt)
+            petPricesData = [
+                {
+                    petId: "1",
+                    name: "Rabbit Pet",
+                    common: 1000,
+                    uncommon: 10000,
+                    rare: 70000,
+                    epic: 280000,
+                    legendary: 600000,
+                    ncommon: 100,
+                    nuncommon: 500,
+                    nrare: 1000,
+                    nepic: 2000,
+                    nlegendary: 5000
+                },
+                {
+                    petId: "2",
+                    name: "Elephant Pet",
+                    common: 15000,
+                    uncommon: 30000,
+                    rare: 150000,
+                    epic: 1500000,
+                    legendary: 19000000,
+                    ncommon: 5000,
+                    nuncommon: 12500,
+                    nrare: 50000,
+                    nepic: 500000,
+                    nlegendary: 5000000
+                }
+            ];
+
+            // Populate the item list for the modal
+            populateItemList();
+        }
+
+        // Add an item to either seller or buyer side
+        function addItem(side) {
+            currentSide = side;
+            itemModal.style.display = 'block';
+        }
+
+        // Close the modal
+        function closeModal() {
+            itemModal.style.display = 'none';
+        }
+
+        // Filter items based on search and type
+        function searchItems() {
+            const searchTerm = itemSearchInput.value.toLowerCase();
+            const itemType = itemTypeSelect.value;
+            
+            const filteredItems = [];
+            
+            if (itemType === 'all' || itemType === 'item') {
+                itemsData.items.forEach(item => {
+                    if (item.name.toLowerCase().includes(searchTerm)) {
+                        filteredItems.push({...item, type: 'item'});
+                    }
+                });
+            }
+            
+            if (itemType === 'all' || itemType === 'minion') {
+                itemsData.minions.forEach(minion => {
+                    if (minion.name.toLowerCase().includes(searchTerm)) {
+                        filteredItems.push({...minion, type: 'minion'});
+                    }
+                });
+            }
+            
+            if (itemType === 'all' || itemType === 'pet') {
+                itemsData.pets.forEach(pet => {
+                    if (pet.name.toLowerCase().includes(searchTerm)) {
+                        filteredItems.push({...pet, type: 'pet'});
+                    }
+                });
+            }
+            
+            // Display filtered items
+            displayItems(filteredItems);
+        }
+
+        // Filter items by type
+        function filterItems() {
+            searchItems(); // Just trigger a new search
+        }
+
+        // Display items in the modal
+        function displayItems(items) {
+            itemListElement.innerHTML = '';
+            
+            if (items.length === 0) {
+                itemListElement.innerHTML = '<p>No items found</p>';
+                return;
+            }
+            
+            items.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'item-option';
+                
+                // Create image element (placeholder)
+                const img = document.createElement('img');
+                img.src = 'https://via.placeholder.com/32';
+                img.alt = item.name;
+                
+                // Create name element
+                const nameElement = document.createElement('span');
+                nameElement.textContent = item.name;
+                
+                // Append elements
+                itemElement.appendChild(img);
+                itemElement.appendChild(nameElement);
+                
+                // Add click event to select the item
+                itemElement.addEventListener('click', () => selectItem(item));
+                
+                itemListElement.appendChild(itemElement);
+            });
+        }
+
+        // Select an item to add to the trade
+        function selectItem(item) {
+            closeModal();
+            
+            // Create the item slot
+            const itemSlot = document.createElement('div');
+            itemSlot.className = 'item-slot';
+            itemSlot.dataset.type = item.type;
+            itemSlot.dataset.id = item.id;
+            
+            // Create image
+            const img = document.createElement('img');
+            img.src = 'https://via.placeholder.com/32';
+            img.alt = item.name;
+            
+            // Create details div
+            const detailsDiv = document.createElement('div');
+            detailsDiv.className = 'item-details';
+            
+            // Create name element
+            const nameElement = document.createElement('div');
+            nameElement.className = 'item-name';
+            nameElement.textContent = item.name;
+            
+            // Create price element
+            const priceElement = document.createElement('div');
+            priceElement.className = 'item-price';
+            
+            // Create remove button
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-item';
+            removeBtn.innerHTML = '&times;';
+            removeBtn.addEventListener('click', function() {
+                itemSlot.remove();
+                updateTotals();
+            });
+            
+            // Add extra options for minions and pets
+            const extraOptionsDiv = document.createElement('div');
+            extraOptionsDiv.className = 'item-extra-options';
+            
+            if (item.type === 'minion') {
+                // Add tier selector for minions
+                const tierSelect = document.createElement('select');
+                tierSelect.dataset.option = 'tier';
+                
+                // Get the minion's price data
+                const minionPriceData = minionPricesData.find(m => m.minionId === item.id);
+                if (minionPriceData) {
+                    // Add tier options
+                    for (const tier in minionPriceData.tiers) {
+                        const option = document.createElement('option');
+                        option.value = tier;
+                        option.textContent = tier.charAt(0).toUpperCase() + tier.slice(1) + 
+                                            ` (Buy: ${minionPriceData.tiers[tier][0].toLocaleString()}, Sell: ${minionPriceData.tiers[tier][1].toLocaleString()})`;
+                        tierSelect.appendChild(option);
+                    }
+                }
+                
+                extraOptionsDiv.appendChild(tierSelect);
+                priceElement.textContent = 'Select tier';
+                extraOptionsDiv.style.display = 'block';
+            } else if (item.type === 'pet') {
+                // Add rarity selector for pets
+                const raritySelect = document.createElement('select');
+                raritySelect.dataset.option = 'rarity';
+                
+                // Get the pet's price data
+                const petPriceData = petPricesData.find(p => p.petId === item.id);
+                if (petPriceData && item.rarity) {
+                    // Add rarity options
+                    item.rarity.forEach(rarity => {
+                        const option = document.createElement('option');
+                        option.value = rarity;
+                        const price = petPriceData[rarity] || 0;
+                        option.textContent = rarity.charAt(0).toUpperCase() + rarity.slice(1) + 
+                                            ` (${price.toLocaleString()} coins)`;
+                        raritySelect.appendChild(option);
+                    });
+                }
+                
+                extraOptionsDiv.appendChild(raritySelect);
+                priceElement.textContent = 'Select rarity';
+                extraOptionsDiv.style.display = 'block';
+            } else {
+                // Regular item - show buy/sell price
+                const price = currentSide === 'seller' ? item.sellPrice : item.buyPrice;
+                priceElement.textContent = `${price.toLocaleString()} coins`;
+                itemSlot.dataset.price = price;
+            }
+            
+            // Add change event to update price when tier/rarity changes
+            const selectElements = extraOptionsDiv.querySelectorAll('select');
+            selectElements.forEach(select => {
+                select.addEventListener('change', function() {
+                    updateItemPrice(itemSlot);
+                });
+            });
+            
+            // Append all elements
+            detailsDiv.appendChild(nameElement);
+            detailsDiv.appendChild(priceElement);
+            
+            itemSlot.appendChild(img);
+            itemSlot.appendChild(detailsDiv);
+            itemSlot.appendChild(removeBtn);
+            itemSlot.appendChild(extraOptionsDiv);
+            
+            // Add to the appropriate side
+            if (currentSide === 'seller') {
+                sellerItemsContainer.appendChild(itemSlot);
+            } else {
+                buyerItemsContainer.appendChild(itemSlot);
+            }
+            
+            // Update the price immediately if it's a regular item
+            if (item.type === 'item') {
+                updateItemPrice(itemSlot);
+            }
+            
+            updateTotals();
+        }
+
+        // Update the price display for an item slot
+        function updateItemPrice(itemSlot) {
+            const type = itemSlot.dataset.type;
+            const id = type === 'item' ? parseInt(itemSlot.dataset.id) : itemSlot.dataset.id;
+            const priceElement = itemSlot.querySelector('.item-price');
+            
+            if (type === 'item') {
+                const item = itemsData.items.find(i => i.id === id);
+                if (item) {
+                    const price = currentSide === 'seller' ? item.sellPrice : item.buyPrice;
+                    priceElement.textContent = `${price.toLocaleString()} coins`;
+                    itemSlot.dataset.price = price;
+                }
+            } else if (type === 'minion') {
+                const tierSelect = itemSlot.querySelector('select[data-option="tier"]');
+                if (tierSelect) {
+                    const selectedTier = tierSelect.value;
+                    const minionPriceData = minionPricesData.find(m => m.minionId === parseInt(id));
+                    if (minionPriceData && minionPriceData.tiers[selectedTier]) {
+                        const prices = minionPriceData.tiers[selectedTier];
+                        const price = currentSide === 'seller' ? prices[1] : prices[0];
+                        priceElement.textContent = `${price.toLocaleString()} coins`;
+                        itemSlot.dataset.price = price;
+                    }
+                }
+            } else if (type === 'pet') {
+                const raritySelect = itemSlot.querySelector('select[data-option="rarity"]');
+                if (raritySelect) {
+                    const selectedRarity = raritySelect.value;
+                    const petPriceData = petPricesData.find(p => p.petId === id);
+                    if (petPriceData && petPriceData[selectedRarity]) {
+                        const price = petPriceData[selectedRarity];
+                        priceElement.textContent = `${price.toLocaleString()} coins`;
+                        itemSlot.dataset.price = price;
+                    }
+                }
+            }
+            
+            updateTotals();
+        }
+
+        // Calculate the total value for a side
+        function calculateSideTotal(side) {
+            let total = 0;
+            const coinsInput = side === 'seller' ? sellerCoinsInput : buyerCoinsInput;
+            const coinsValue = parseInt(coinsInput.value) || 0;
+            total += coinsValue;
+            
+            const itemsContainer = side === 'seller' ? sellerItemsContainer : buyerItemsContainer;
+            const items = itemsContainer.querySelectorAll('.item-slot');
+            
+            items.forEach(item => {
+                const price = parseInt(item.dataset.price) || 0;
+                total += price;
+            });
+            
+            return total;
+        }
+
+        // Update the totals for both sides
+        function updateTotals() {
+            const sellerTotal = calculateSideTotal('seller');
+            const buyerTotal = calculateSideTotal('buyer');
+            
+            sellerTotalElement.textContent = sellerTotal.toLocaleString();
+            buyerTotalElement.textContent = buyerTotal.toLocaleString();
+            
+            // Update the result display
+            calculateTrade();
+        }
+
+        // Calculate the trade result
+        function calculateTrade() {
+            const sellerTotal = parseInt(sellerTotalElement.textContent.replace(/,/g, '')) || 0;
+            const buyerTotal = parseInt(buyerTotalElement.textContent.replace(/,/g, '')) || 0;
+            
+            const difference = buyerTotal - sellerTotal;
+            
+            let resultText = '';
+            let resultClass = 'neutral';
+            
+            if (difference > 0) {
+                resultText = `Profit: +${difference.toLocaleString()} coins`;
+                resultClass = 'profit';
+            } else if (difference < 0) {
+                resultText = `Loss: ${difference.toLocaleString()} coins`;
+                resultClass = 'loss';
+            } else {
+                resultText = 'Trade is even';
+            }
+            
+            resultElement.innerHTML = `<h3>Trade Result</h3><p class="${resultClass}">${resultText}</p>`;
+        }
+
+        // Populate the item list with all available items
+        function populateItemList() {
+            const allItems = [];
+            
+            // Add regular items
+            itemsData.items.forEach(item => {
+                allItems.push({...item, type: 'item'});
+            });
+            
+            // Add minions
+            itemsData.minions.forEach(minion => {
+                allItems.push({...minion, type: 'minion'});
+            });
+            
+            // Add pets
+            itemsData.pets.forEach(pet => {
+                allItems.push({...pet, type: 'pet'});
+            });
+            
+            // Display all items initially
+            displayItems(allItems);
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === itemModal) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
