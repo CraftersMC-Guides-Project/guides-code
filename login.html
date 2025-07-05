@@ -289,6 +289,7 @@
     </script> -->
     <div class="container">
         <h3>Login</h3>
+        <div id="xbox-danger-msg-container"></div>
         <img id="user-avatar" class="avatar" src="" alt="User Avatar">
         <div class="button-container">
             <a id="discord-login-button" class="discord-login-button">
@@ -478,8 +479,15 @@
                                 xbox: data.user.xbox || null
                             };
 
-                            setCookie('discordUser', JSON.stringify(userData), 7);
-                            showLoggedInState(userData);
+                            // Only save login if Xbox is connected
+                            if (userData.xbox && userData.xbox.name) {
+                                setCookie('discordUser', JSON.stringify(userData), 7);
+                                showLoggedInState(userData);
+                            } else {
+                                // Show danger message and block login
+                                showLoggedInState(userData); // This will show the danger message and hide UI
+                                deleteCookie('discordUser'); // Ensure cookie is not set
+                            }
                         }
                     })
                     .catch(error => {
@@ -530,7 +538,7 @@
                 <a href="https://discord.com/channels/@me" target="_blank" style="color:#ffd700;text-decoration:underline;">Discord Connections</a>
             `;
                     // Insert at top of your login container
-                    document.querySelector('.container').prepend(dangerMsg);
+                    document.querySelector('#xbox-danger-msg-container').prepend(dangerMsg);
 
                     // Hide login success UI, buttons, etc.
                     document.querySelector('.button-container').style.display = 'none';
