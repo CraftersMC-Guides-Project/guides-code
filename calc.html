@@ -112,6 +112,7 @@
             width: 32px;
             height: 32px;
             margin-right: 10px;
+            image-rendering: pixelated;
         }
 
         .item-details {
@@ -250,28 +251,28 @@
             width: 32px;
             height: 32px;
             margin-right: 10px;
+            image-rendering: pixelated;
         }
 
         .item-option span {
             flex: 1;
         }
 
-        /* Minion tier and pet rarity selectors */
-        .item-extra-options {
-            display: none;
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #333;
-            border-radius: 4px;
+        /* Rarity colors */
+        .common {
+            color: #ffffff;
         }
-
-        .item-extra-options select {
-            width: 100%;
-            padding: 5px;
-            border-radius: 4px;
-            border: 1px solid #555;
-            background-color: #222;
-            color: #fff;
+        .uncommon {
+            color: #55ff55;
+        }
+        .rare {
+            color: #5555ff;
+        }
+        .epic {
+            color: #aa00aa;
+        }
+        .legendary {
+            color: #ffaa00;
         }
 
         /* Profit/Loss colors */
@@ -354,11 +355,21 @@
                 <h3>Select Item</h3>
                 <div class="search-box">
                     <input type="text" id="item-search" placeholder="Search items..." oninput="searchItems()">
-                    <select id="item-type" onchange="filterItems()">
-                        <option value="all">All Items</option>
-                        <option value="item">Regular Items</option>
-                        <option value="minion">Minions</option>
-                        <option value="pet">Pets</option>
+                    <select id="item-category" onchange="filterItems()">
+                        <option value="all">All Categories</option>
+                        <option value="combat">Combat</option>
+                        <option value="farming">Farming</option>
+                        <option value="mining">Mining</option>
+                        <option value="foraging">Foraging</option>
+                        <option value="fishing">Fishing</option>
+                    </select>
+                    <select id="item-rarity" onchange="filterItems()">
+                        <option value="all">All Rarities</option>
+                        <option value="common">Common</option>
+                        <option value="uncommon">Uncommon</option>
+                        <option value="rare">Rare</option>
+                        <option value="epic">Epic</option>
+                        <option value="legendary">Legendary</option>
                     </select>
                 </div>
                 <div class="item-list" id="item-list">
@@ -371,11 +382,7 @@
     <script>
         // Global variables
         let currentSide = 'seller'; // Track which side we're adding items to
-        let itemsData = {
-            items: [],
-            minions: [],
-            pets: []
-        };
+        let marketItems = [];
         let minionPricesData = [];
         let petPricesData = [];
 
@@ -390,7 +397,8 @@
         const itemModal = document.getElementById('item-modal');
         const itemListElement = document.getElementById('item-list');
         const itemSearchInput = document.getElementById('item-search');
-        const itemTypeSelect = document.getElementById('item-type');
+        const itemCategorySelect = document.getElementById('item-category');
+        const itemRaritySelect = document.getElementById('item-rarity');
 
         // Initialize the calculator
         document.addEventListener('DOMContentLoaded', function() {
@@ -404,31 +412,147 @@
 
         // Load all data
         function loadData() {
-            // Sample data - in a real implementation, you would load this from your files
-            // Regular items (from mprices.txt)
-            itemsData.items = [
-                {id: 1, name: "Enchanted rotten flesh", buyPrice: 720, sellPrice: 320},
-                {id: 2, name: "Zombie Pickaxe", buyPrice: 999, sellPrice: 3},
-                {id: 3, name: "Zombie hat", buyPrice: 100, sellPrice: 8},
-                {id: 4, name: "Zombie heart", buyPrice: 180000, sellPrice: 123000},
-                {id: 5, name: "Zombie sword", buyPrice: 400000, sellPrice: 300000}
+            // Sample market data (replace with your actual market.txt content)
+            marketItems = [
+                {
+                    "id": "1",
+                    "name": "Enchanted Rotten Flesh",
+                    "picture": "img/Enchanted_Rotten_Flesh.png",
+                    "rarity": "uncommon",
+                    "price": "720",
+                    "description": "Crafted from 2.5 stacks of Rotten Flesh.",
+                    "nature": "[UNDERPRICE]",
+                    "demand": "[6/10]",
+                    "category": "combat",
+                    "craftable": true,
+                    "enchantable": false,
+                    "tradable": true,
+                    "auctionable": false,
+                    "bazaarable": true,
+                    "reforgable": false
+                },
+                {
+                    "id": "2",
+                    "name": "Zombie Pickaxe",
+                    "picture": "img/zombie_pic.png",
+                    "rarity": "common",
+                    "price": "999",
+                    "description": "Gives Haste II for 5 seconds while mining ores.",
+                    "nature": "[UNDERPAID]",
+                    "demand": "[2/10]",
+                    "category": "combat",
+                    "craftable": true,
+                    "enchantable": true,
+                    "tradable": true,
+                    "auctionable": true,
+                    "bazaarable": false,
+                    "reforgable": false
+                },
+                {
+                    "id": "3",
+                    "name": "Zombie Hat",
+                    "picture": "img/zombie_hat.png",
+                    "rarity": "common",
+                    "price": "100",
+                    "description": "A hat that makes you look like a zombie.",
+                    "nature": "[STABLE]",
+                    "demand": "[3/10]",
+                    "category": "combat",
+                    "craftable": true,
+                    "enchantable": false,
+                    "tradable": true,
+                    "auctionable": true,
+                    "bazaarable": false,
+                    "reforgable": false
+                },
+                {
+                    "id": "4",
+                    "name": "Zombie Heart",
+                    "picture": "img/zombie_heart.png",
+                    "rarity": "rare",
+                    "price": "180000",
+                    "description": "The heart of a powerful zombie.",
+                    "nature": "[OVERPRICE]",
+                    "demand": "[5/10]",
+                    "category": "combat",
+                    "craftable": true,
+                    "enchantable": false,
+                    "tradable": true,
+                    "auctionable": true,
+                    "bazaarable": false,
+                    "reforgable": false
+                },
+                {
+                    "id": "5",
+                    "name": "Zombie Sword",
+                    "picture": "img/zombie_sword.png",
+                    "rarity": "epic",
+                    "price": "400000",
+                    "description": "A sword infused with zombie essence.",
+                    "nature": "[STABLE]",
+                    "demand": "[7/10]",
+                    "category": "combat",
+                    "craftable": true,
+                    "enchantable": true,
+                    "tradable": true,
+                    "auctionable": true,
+                    "bazaarable": false,
+                    "reforgable": true
+                },
+                {
+                    "id": "6",
+                    "name": "Zombie Armor",
+                    "picture": "img/zombie_armor.png",
+                    "rarity": "legendary",
+                    "price": "1200000",
+                    "description": "Armor crafted from zombie remains.",
+                    "nature": "[OVERPRICE]",
+                    "demand": "[4/10]",
+                    "category": "combat",
+                    "craftable": true,
+                    "enchantable": true,
+                    "tradable": true,
+                    "auctionable": true,
+                    "bazaarable": false,
+                    "reforgable": true
+                },
+                {
+                    "id": "7",
+                    "name": "Skeleton Helmet",
+                    "picture": "img/skeleton_helmet.png",
+                    "rarity": "uncommon",
+                    "price": "100",
+                    "description": "A helmet made from skeleton bones.",
+                    "nature": "[UNDERPAID]",
+                    "demand": "[3/10]",
+                    "category": "combat",
+                    "craftable": true,
+                    "enchantable": true,
+                    "tradable": true,
+                    "auctionable": true,
+                    "bazaarable": false,
+                    "reforgable": false
+                },
+                {
+                    "id": "8",
+                    "name": "Enchanted Bone",
+                    "picture": "img/enchanted_bone.png",
+                    "rarity": "uncommon",
+                    "price": "1174",
+                    "description": "Crafted from 2.5 stacks of bones.",
+                    "nature": "[STABLE]",
+                    "demand": "[5/10]",
+                    "category": "combat",
+                    "craftable": true,
+                    "enchantable": false,
+                    "tradable": true,
+                    "auctionable": false,
+                    "bazaarable": true,
+                    "reforgable": false
+                }
             ];
 
-            // Minions (from minions.txt)
-            itemsData.minions = [
-                {id: 1, name: "Wheat Minion", category: "Farming", description: "This Minion produces Wheat and Wheat seeds.", nature: "[UNDERPAID]", demand: "[2/10]"},
-                {id: 2, name: "Carrot Minion", category: "Farming", description: "This Minion produces Carrot.", nature: "[STABLE]", demand: "[4/10]"},
-                {id: 3, name: "Potato Minion", category: "Farming", description: "This Minion produces Potato.", nature: "[STABLE]", demand: "[7/10]"}
-            ];
-
-            // Pets (from pets.txt)
-            itemsData.pets = [
-                {id: "1", name: "Rabbit Pet", category: "Pets", rarity: ["common", "uncommon", "rare", "epic", "legendary"], description: "OG pet, best for beginners super helpful!", nature: "[UNDERPAID]", demand: "[4/10]"},
-                {id: "2", name: "Elephant Pet", category: "Pets", rarity: ["common", "uncommon", "rare", "epic", "legendary"], description: "Elephant Pet can be bought from Creedon (NPC) during the Traveling Zoo event.", nature: "[STABLE]", demand: "[6/10]"},
-                {id: "3", name: "Bee Pet", category: "Pets", rarity: ["common", "uncommon", "rare", "epic", "legendary"], description: "Bee Pet can be bought from Buzz (NPC).", nature: "[UNDERPAID]", demand: "[2/10]"}
-            ];
-
-            // Minion prices (from minion-prices.txt)
+            // Sample minion prices (from minion-prices.txt)
             minionPricesData = [
                 {
                     minionId: 1,
@@ -445,26 +569,10 @@
                         tier10: [415000, 280000],
                         tier11: [735000, 600000]
                     }
-                },
-                {
-                    minionId: 2,
-                    tiers: {
-                        tier1: [500, 1000],
-                        tier2: [1500, 3000],
-                        tier3: [3500, 5000],
-                        tier4: [7500, 10000],
-                        tier5: [20000, 20000],
-                        tier6: [55000, 40000],
-                        tier7: [120000, 80000],
-                        tier8: [250000, 170000],
-                        tier9: [500000, 350000],
-                        tier10: [1300000, 800000],
-                        tier11: [2700000, 1700000]
-                    }
                 }
             ];
 
-            // Pet prices (from pet-prices.txt)
+            // Sample pet prices (from pet-prices.txt)
             petPricesData = [
                 {
                     petId: "1",
@@ -479,20 +587,6 @@
                     nrare: 1000,
                     nepic: 2000,
                     nlegendary: 5000
-                },
-                {
-                    petId: "2",
-                    name: "Elephant Pet",
-                    common: 15000,
-                    uncommon: 30000,
-                    rare: 150000,
-                    epic: 1500000,
-                    legendary: 19000000,
-                    ncommon: 5000,
-                    nuncommon: 12500,
-                    nrare: 50000,
-                    nepic: 500000,
-                    nlegendary: 5000000
                 }
             ];
 
@@ -511,42 +605,30 @@
             itemModal.style.display = 'none';
         }
 
-        // Filter items based on search and type
+        // Filter items based on search, category, and rarity
         function searchItems() {
             const searchTerm = itemSearchInput.value.toLowerCase();
-            const itemType = itemTypeSelect.value;
+            const category = itemCategorySelect.value;
+            const rarity = itemRaritySelect.value;
             
-            const filteredItems = [];
-            
-            if (itemType === 'all' || itemType === 'item') {
-                itemsData.items.forEach(item => {
-                    if (item.name.toLowerCase().includes(searchTerm)) {
-                        filteredItems.push({...item, type: 'item'});
-                    }
-                });
-            }
-            
-            if (itemType === 'all' || itemType === 'minion') {
-                itemsData.minions.forEach(minion => {
-                    if (minion.name.toLowerCase().includes(searchTerm)) {
-                        filteredItems.push({...minion, type: 'minion'});
-                    }
-                });
-            }
-            
-            if (itemType === 'all' || itemType === 'pet') {
-                itemsData.pets.forEach(pet => {
-                    if (pet.name.toLowerCase().includes(searchTerm)) {
-                        filteredItems.push({...pet, type: 'pet'});
-                    }
-                });
-            }
+            const filteredItems = marketItems.filter(item => {
+                // Search term filter
+                const nameMatch = item.name.toLowerCase().includes(searchTerm);
+                
+                // Category filter
+                const categoryMatch = category === 'all' || item.category === category;
+                
+                // Rarity filter
+                const rarityMatch = rarity === 'all' || item.rarity === rarity;
+                
+                return nameMatch && categoryMatch && rarityMatch;
+            });
             
             // Display filtered items
             displayItems(filteredItems);
         }
 
-        // Filter items by type
+        // Filter items by category and rarity
         function filterItems() {
             searchItems(); // Just trigger a new search
         }
@@ -564,18 +646,28 @@
                 const itemElement = document.createElement('div');
                 itemElement.className = 'item-option';
                 
-                // Create image element (placeholder)
+                // Create image element
                 const img = document.createElement('img');
-                img.src = 'https://via.placeholder.com/32';
+                img.src = item.picture;
                 img.alt = item.name;
+                img.onerror = function() {
+                    this.src = 'https://via.placeholder.com/32';
+                };
                 
-                // Create name element
+                // Create name element with rarity color
                 const nameElement = document.createElement('span');
                 nameElement.textContent = item.name;
+                nameElement.className = item.rarity;
+                
+                // Create price element
+                const priceElement = document.createElement('div');
+                priceElement.className = 'item-price';
+                priceElement.textContent = `${parseInt(item.price).toLocaleString()} coins`;
                 
                 // Append elements
                 itemElement.appendChild(img);
                 itemElement.appendChild(nameElement);
+                itemElement.appendChild(priceElement);
                 
                 // Add click event to select the item
                 itemElement.addEventListener('click', () => selectItem(item));
@@ -591,26 +683,31 @@
             // Create the item slot
             const itemSlot = document.createElement('div');
             itemSlot.className = 'item-slot';
-            itemSlot.dataset.type = item.type;
+            itemSlot.dataset.type = 'item';
             itemSlot.dataset.id = item.id;
+            itemSlot.dataset.price = item.price;
             
             // Create image
             const img = document.createElement('img');
-            img.src = 'https://via.placeholder.com/32';
+            img.src = item.picture;
             img.alt = item.name;
+            img.onerror = function() {
+                this.src = 'https://via.placeholder.com/32';
+            };
             
             // Create details div
             const detailsDiv = document.createElement('div');
             detailsDiv.className = 'item-details';
             
-            // Create name element
+            // Create name element with rarity color
             const nameElement = document.createElement('div');
-            nameElement.className = 'item-name';
+            nameElement.className = `item-name ${item.rarity}`;
             nameElement.textContent = item.name;
             
             // Create price element
             const priceElement = document.createElement('div');
             priceElement.className = 'item-price';
+            priceElement.textContent = `${parseInt(item.price).toLocaleString()} coins`;
             
             // Create remove button
             const removeBtn = document.createElement('button');
@@ -621,68 +718,6 @@
                 updateTotals();
             });
             
-            // Add extra options for minions and pets
-            const extraOptionsDiv = document.createElement('div');
-            extraOptionsDiv.className = 'item-extra-options';
-            
-            if (item.type === 'minion') {
-                // Add tier selector for minions
-                const tierSelect = document.createElement('select');
-                tierSelect.dataset.option = 'tier';
-                
-                // Get the minion's price data
-                const minionPriceData = minionPricesData.find(m => m.minionId === item.id);
-                if (minionPriceData) {
-                    // Add tier options
-                    for (const tier in minionPriceData.tiers) {
-                        const option = document.createElement('option');
-                        option.value = tier;
-                        option.textContent = tier.charAt(0).toUpperCase() + tier.slice(1) + 
-                                            ` (Buy: ${minionPriceData.tiers[tier][0].toLocaleString()}, Sell: ${minionPriceData.tiers[tier][1].toLocaleString()})`;
-                        tierSelect.appendChild(option);
-                    }
-                }
-                
-                extraOptionsDiv.appendChild(tierSelect);
-                priceElement.textContent = 'Select tier';
-                extraOptionsDiv.style.display = 'block';
-            } else if (item.type === 'pet') {
-                // Add rarity selector for pets
-                const raritySelect = document.createElement('select');
-                raritySelect.dataset.option = 'rarity';
-                
-                // Get the pet's price data
-                const petPriceData = petPricesData.find(p => p.petId === item.id);
-                if (petPriceData && item.rarity) {
-                    // Add rarity options
-                    item.rarity.forEach(rarity => {
-                        const option = document.createElement('option');
-                        option.value = rarity;
-                        const price = petPriceData[rarity] || 0;
-                        option.textContent = rarity.charAt(0).toUpperCase() + rarity.slice(1) + 
-                                            ` (${price.toLocaleString()} coins)`;
-                        raritySelect.appendChild(option);
-                    });
-                }
-                
-                extraOptionsDiv.appendChild(raritySelect);
-                priceElement.textContent = 'Select rarity';
-                extraOptionsDiv.style.display = 'block';
-            } else {
-                // Regular item - show buy/sell price
-                const price = currentSide === 'seller' ? item.sellPrice : item.buyPrice;
-                priceElement.textContent = `${price.toLocaleString()} coins`;
-                itemSlot.dataset.price = price;
-            }
-            
-            // Add change event to update price when tier/rarity changes
-            const selectElements = extraOptionsDiv.querySelectorAll('select');
-            selectElements.forEach(select => {
-                select.addEventListener('change', function() {
-                    updateItemPrice(itemSlot);
-                });
-            });
-            
             // Append all elements
             detailsDiv.appendChild(nameElement);
             detailsDiv.appendChild(priceElement);
@@ -690,59 +725,12 @@
             itemSlot.appendChild(img);
             itemSlot.appendChild(detailsDiv);
             itemSlot.appendChild(removeBtn);
-            itemSlot.appendChild(extraOptionsDiv);
             
             // Add to the appropriate side
             if (currentSide === 'seller') {
                 sellerItemsContainer.appendChild(itemSlot);
             } else {
                 buyerItemsContainer.appendChild(itemSlot);
-            }
-            
-            // Update the price immediately if it's a regular item
-            if (item.type === 'item') {
-                updateItemPrice(itemSlot);
-            }
-            
-            updateTotals();
-        }
-
-        // Update the price display for an item slot
-        function updateItemPrice(itemSlot) {
-            const type = itemSlot.dataset.type;
-            const id = type === 'item' ? parseInt(itemSlot.dataset.id) : itemSlot.dataset.id;
-            const priceElement = itemSlot.querySelector('.item-price');
-            
-            if (type === 'item') {
-                const item = itemsData.items.find(i => i.id === id);
-                if (item) {
-                    const price = currentSide === 'seller' ? item.sellPrice : item.buyPrice;
-                    priceElement.textContent = `${price.toLocaleString()} coins`;
-                    itemSlot.dataset.price = price;
-                }
-            } else if (type === 'minion') {
-                const tierSelect = itemSlot.querySelector('select[data-option="tier"]');
-                if (tierSelect) {
-                    const selectedTier = tierSelect.value;
-                    const minionPriceData = minionPricesData.find(m => m.minionId === parseInt(id));
-                    if (minionPriceData && minionPriceData.tiers[selectedTier]) {
-                        const prices = minionPriceData.tiers[selectedTier];
-                        const price = currentSide === 'seller' ? prices[1] : prices[0];
-                        priceElement.textContent = `${price.toLocaleString()} coins`;
-                        itemSlot.dataset.price = price;
-                    }
-                }
-            } else if (type === 'pet') {
-                const raritySelect = itemSlot.querySelector('select[data-option="rarity"]');
-                if (raritySelect) {
-                    const selectedRarity = raritySelect.value;
-                    const petPriceData = petPricesData.find(p => p.petId === id);
-                    if (petPriceData && petPriceData[selectedRarity]) {
-                        const price = petPriceData[selectedRarity];
-                        priceElement.textContent = `${price.toLocaleString()} coins`;
-                        itemSlot.dataset.price = price;
-                    }
-                }
             }
             
             updateTotals();
@@ -803,25 +791,8 @@
 
         // Populate the item list with all available items
         function populateItemList() {
-            const allItems = [];
-            
-            // Add regular items
-            itemsData.items.forEach(item => {
-                allItems.push({...item, type: 'item'});
-            });
-            
-            // Add minions
-            itemsData.minions.forEach(minion => {
-                allItems.push({...minion, type: 'minion'});
-            });
-            
-            // Add pets
-            itemsData.pets.forEach(pet => {
-                allItems.push({...pet, type: 'pet'});
-            });
-            
             // Display all items initially
-            displayItems(allItems);
+            displayItems(marketItems);
         }
 
         // Close modal when clicking outside
