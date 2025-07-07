@@ -54,7 +54,7 @@
 
 <body>
   <div id="loader"><div></div><div></div><div></div></div>
-  <div class="navbar"></div>
+  <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
   <button id="float">
@@ -63,7 +63,13 @@
         <span class="material-icons"id="ai" onclick="aiBtn()">smart_toy</span>
         <span class="material-icons" id="scrollToTopBtn">north</span>
     </button>
-
+<!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
+        crossorigin="anonymous"></script>
+    <ins class="adsbygoogle" style="display:block;width:90%;height:100px;z-index: 9999999;"
+        data-ad-client="ca-pub-3105845866547691" data-ad-slot="9849702725"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script> -->
   <div class="item-container" id="itemDetails">
     <p>Loading item details...</p>
   </div>
@@ -200,6 +206,12 @@
 
       let natureText = nature.replace('[', ' ').toLowerCase();
       natureText = natureText.replace(']', '').replace(/_/g, ' ').trim();
+      if(nature.includes("UNDERPAID")){
+         natureText = "UNDERPAID";}
+        else if(nature.includes("OVERPAID")){
+         natureText = "OVERPAID";}
+        else{
+         natureText = "STABLE";}
 
       return `
         <div class="nature-pill ${natureText}">
@@ -239,7 +251,5 @@
 
     loadItemDetails();
   </script>
-
-  <script src="js/script.js"></script>
 </body>
 </html>
