@@ -756,13 +756,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "GMG_games",
-                    "score": "25M+"
+                    "name": "aPumpkinGod2",
+                    "score": "28.2M+"
                 },
                 {
                     "rank": 6,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "GMG_games",
+                    "score": "25M+"
                 },
                 {
                     "rank": 7,
@@ -2150,12 +2150,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "Unknown",
+                    "name": "Kg_lcky_01",
                     "score": "N/A"
                 },
                 {
                     "rank": 4,
-                    "name": "Kg_lcky_01",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
