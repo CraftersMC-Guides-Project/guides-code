@@ -1240,12 +1240,12 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "AweomedudeW10",
-                    "score": "4M+"
+                    "name": "sagnikisawesome",
+                    "score": "10M+"
                 },
                 {
                     "rank": 2,
-                    "name": "sagnikisawesome",
+                    "name": "AweomedudeW10",
                     "score": "4M+"
                 },
                 {
