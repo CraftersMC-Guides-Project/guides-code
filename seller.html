@@ -8,6 +8,39 @@
     <link rel="stylesheet" href="css/essential.css">
     <link rel="stylesheet" href="css/seller-profile.css">
     <script src="js/script.js"></script>
+    <style>
+      /* ...existing code... */
+      #backgroundSelect {
+        background: rgba(0, 0, 0, 0.4);
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        font-size: 1rem;
+        font-weight: bold;
+        margin: 10px 0;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        outline: none;
+        backdrop-filter: blur(2px);
+      }
+      #backgroundSelect:hover, #backgroundSelect:focus {
+        background: rgba(0, 0, 0, 0.2);
+      }
+      #backgroundSelect option, #backgroundSelect optgroup {
+        background: rgba(0, 0, 0, 0.2);
+        color: #000;
+      }
+      #backgroundSelect optgroup {
+        font-weight: bold;
+        color: #888;
+        background: rgba(0, 0, 0, 0.2);
+      }
+      /* ...existing code... */
+    </style>
 </head>
 
 <body>
@@ -21,15 +54,38 @@
     <div class="sidebar" id="sidebar"></div>
 
     <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Move background switcher dropdown here, before profile-banner -->
     
+
     <div class="profile-banner" style="background-image: url('../Backgrounds/IMG_0179.jpeg');" id="banner">
     <div class="banner-content">
-      <div class="banner-info">
+      <div class="banner-info"><select id="backgroundSelect" style="margin: 1rem; z-index:10; position:relative;">
+      <optgroup label="Image">
+        <option value="default">Default</option>
+        <option value="forest">Village Houses</option>
+        <option value="mountain">Harvest Haven</option>
+        <option value="desert">Ruins</option>
+        <option value="ocean">Wilderness</option>
+      </optgroup>
+      <optgroup label="Real Life">
+        <option value="rose">Rose</option>
+        <option value="bush">Red leaves</option>
+        <option value="fireworks">Fireworks</option>
+        <option value="snowdrops">Snowdrops</option>
+        <option value="fountain">Fountain</option>
+        <option value="skylights">Light Show</option>
+      </optgroup>
+      <optgroup label="Gradients">
+        <option value="random">Random</option>
+        <option value="cyberpunk">CyberPunk</option>
+        <option value="sunset">Sunset</option>
+      </optgroup>
+    </select>
         <h1 class="banner-name" id="name">No seller ID found</h1>
       </div>
     </div>
   </div>
-  
   <div id="sellerDetails"></div>
     <div class="grid-container-container">
         <div class="grid-container">
@@ -80,6 +136,59 @@
 
     <div id="footer"></div>
     <script>
+    // Background changer with localStorage support
+    function changeBackground(type, save = true) {
+      const backgrounds = {
+        'default': 'url("Backgrounds/IMG_4504.webp")',
+        'forest': 'url("Backgrounds/IMG_4498.webp")',
+        'mountain': 'url("Backgrounds/IMG_4499.webp")',
+        'desert': 'url("Backgrounds/IMG_4500.webp")',
+        'ocean': 'url("Backgrounds/IMG_4502.webp")',
+        'rose': 'url("Backgrounds/IMG_0007.webp")',
+        'bush': 'url("Backgrounds/IMG_0004.webp")',
+        'fireworks': 'url("Backgrounds/IMG_0097.webp")',
+        'snowdrops': 'url("Backgrounds/IMG_0669.webp")',
+        'fountain': 'url("Backgrounds/IMG_0179.webp")',
+        'skylights': 'url("Backgrounds/IMG_0205.webp")',
+        'crocus': 'url("Backgrounds/Crocus.webp")',
+        'daisy': 'url("Backgrounds/Daisy.webp")',
+        'oldtree': 'url("Backgrounds/OldTree.webp")',
+        'cyberpunk': 'linear-gradient(135deg, #ff00ff, #00ffff)',
+        'sunset': 'linear-gradient(135deg, #ff5f3f, #e5df3f)',
+        'random': () => {
+          const randomColor1 = `hsl(${Math.random() * 360}, 70%, 50%)`;
+          const randomColor2 = `hsl(${Math.random() * 360}, 70%, 50%)`;
+          return `linear-gradient(135deg, ${randomColor1}, ${randomColor2})`;
+        }
+      };
+      const background = typeof backgrounds[type] === 'function'
+        ? backgrounds[type]()
+        : backgrounds[type];
+
+      // Apply to body instead of .background div
+      document.body.style.background = background;
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundRepeat = 'no-repeat';
+      document.body.style.backgroundPosition = 'center center';
+
+      // Save preference if needed
+      if (save) {
+        localStorage.setItem('selectedBackground', type);
+      }
+    }
+
+    // dropdown code with localStorage load
+    document.addEventListener('DOMContentLoaded', () => {
+      const backgroundSelect = document.getElementById('backgroundSelect');
+      const savedBg = localStorage.getItem('selectedBackground') || 'default';
+      if (backgroundSelect) {
+        backgroundSelect.value = savedBg;
+        backgroundSelect.addEventListener('change', (e) => {
+          changeBackground(e.target.value, true);
+        });
+      }
+      changeBackground(savedBg, false);
+    });
     async function loadSellerDetails() {
       const urlParams = new URLSearchParams(window.location.search);
       const sellerId = urlParams.get('id');
