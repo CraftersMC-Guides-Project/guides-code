@@ -183,6 +183,31 @@
 
 
 
+    <script>
+  // Check connection on load
+  if (!navigator.onLine) {
+    // Try to load from cache
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'no-internet.html', true);
+    xhr.onload = function() {
+      if (this.status === 200) {
+        document.write(this.responseText);
+      } else {
+        document.body.innerHTML = '<h1>Offline</h1><p>No internet connection</p>';
+      }
+    };
+    xhr.send();
+  }
+
+  // Listen for connection changes
+  window.addEventListener('offline', function() {
+    window.location.href = 'no-internet.html';
+  });
+    </script>
+
+    
+
 </body>
 
 </html>
+

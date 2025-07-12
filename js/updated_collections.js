@@ -1301,13 +1301,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 2,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "sboi146433",
+                    "score": "24.6M+"
                 },
                 {
                     "rank": 3,
-                    "name": "sboi146433",
-                    "score": "24.6M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 4,

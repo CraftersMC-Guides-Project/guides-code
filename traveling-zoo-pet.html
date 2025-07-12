@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Travelling Zoo Pet Cycle – CraftersMC Guides</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="js/script.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/essential.css">
+    <link rel="stylesheet" href="css/event-timer.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <script src="js/script.js"></script>
+    <style>
+        .background {
+            background: url("../Backgrounds/imag38606-003424.webp");
+            background-color: #847474;
+            background-blend-mode: multiply;
+            background-size: cover;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loader">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <div class="background"></div>
+    <!-- Top Navbar -->
+    <div class="top"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar"></div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <button id="float">
+        <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
+        <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
+        <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
+        <span class="material-icons" id="scrollToTopBtn">north</span>
+    </button>
+    <div class="container">
+        <h3>Traveling Zoo Pet Cycle</h3>
+        <p style="margin-top: 30px;">There's an order in which the travelling zoo pets come.</p>
+        <p style="color: rgb(246, 51, 51);">THESE INFORMATION ARE OF ONLY LEGENDARY PETS, OTHER 2 PETS COMING WILL BE
+            SENT LATER... </p>
+        <p>Credit to - <span style="color: rgb(35, 202, 35);">Frosty7155</span> for finding this.</p>
+        <p id="timer" class="timer"></p>
+
+        <div class="progress">
+            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+
+        <p>Previous - <span id="lastEventTime"></span></p>
+        <p>Next - <span id="nextEventTime"></span></p>
+
+        <!-- Optional: This displays the pet -->
+        <p id="nextPet" class="mt-4 fw-bold text-warning fs-5"></p>
+
+        <!-- Optional: Pet Event List -->
+        <div class="event-container mt-4">
+            <button class="collapsible" onclick="toggleEventContainer()">
+                Next Events (Click to Expand)
+            </button>
+            <div class="content" style="display: none;">
+                <div class="event-list-container" id="eventContainer"></div>
+            </div>
+        </div>
+
+    </div>
+    <div id="footer"></div>
+    <script>
+        const intervalDuration = (2 * 24 + 14) * 60 * 60 * 1000; // 2 days 14 hours
+        const eventDuration = 60 * 60 * 1000; // 1 hour
+        const baseEventTime = new Date('2025-01-27T14:30:00+05:30').getTime();
+
+        const petCycle = ["Giraffe", "Tiger", "Lion", "Monkey", "Elephant"];
+        const basePetIndex = 0; // Tiger
+
+        function formatTime(date) {
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            };
+            return date.toLocaleString('en-IN', options).replace(':00', '').trim();
+        }
+
+        function getNextPet(indexOffset = 1) {
+            const periodsSinceStart = Math.floor((Date.now() - baseEventTime) / intervalDuration);
+            const nextIndex = (basePetIndex + periodsSinceStart + indexOffset) % petCycle.length;
+            return petCycle[nextIndex];
+        }
+
+        function calculateEventTimes() {
+            const times = [];
+            const now = Date.now();
+            const base = baseEventTime;
+            const count = 50;
+            const currentPeriod = Math.floor((now - base) / intervalDuration);
+            for (let i = 1; i <= count; i++) {
+                const eventTime = new Date(base + (currentPeriod + i) * intervalDuration);
+                const pet = petCycle[(basePetIndex + currentPeriod + i) % petCycle.length];
+                times.push({ time: formatTime(eventTime), pet });
+            }
+            return times;
+        }
+
+        function displayNextEvent() {
+            const now = Date.now();
+            const nextEventTime = baseEventTime + (Math.floor((now - baseEventTime) / intervalDuration) + 1) * intervalDuration;
+            const lastEventTime = nextEventTime - intervalDuration;
+
+            document.getElementById("nextEventTime").textContent = formatTime(new Date(nextEventTime));
+            document.getElementById("lastEventTime").textContent = formatTime(new Date(lastEventTime));
+        }
+
+        function displayEvents() {
+            const eventContainer = document.getElementById("eventContainer");
+            eventContainer.innerHTML = "";
+            const events = calculateEventTimes();
+            events.slice(0, 10).forEach(event => {
+                const div = document.createElement("div");
+                div.className = "event-item";
+                div.textContent = `${event.time} — ${event.pet} Pet`;
+                eventContainer.appendChild(div);
+            });
+        }
+
+        function toggleEventContainer() {
+            const content = document.querySelector(".content");
+            content.classList.toggle("show");
+            displayEvents();
+            displayNextEvent();
+            const collapsible = document.querySelector(".collapsible");
+            if (content.classList.contains("show")) {
+                collapsible.innerHTML = "Next Events (Click to Collapse)";
+                content.style.display = "block";
+            } else {
+                collapsible.innerHTML = "Next Events (Click to Expand)";
+                content.style.display = "none";
+            }
+        }
+
+        function updateCountdown() {
+            const now = Date.now();
+            const lastEventTime = baseEventTime + Math.floor((now - baseEventTime) / intervalDuration) * intervalDuration;
+            const nextEventTime = lastEventTime + intervalDuration;
+            const remainingTime = nextEventTime - now;
+
+            if (remainingTime <= 0) {
+                displayNextEvent();
+                displayEvents();
+                return;
+            }
+
+            const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+            document.getElementById("timer").innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            document.getElementById("progressBar").style.width = ((intervalDuration - remainingTime) / intervalDuration) * 100 + "%";
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            displayNextEvent();
+            displayEvents();
+            document.getElementById("eventContainer").addEventListener("click", toggleEventContainer);
+
+            // Show next pet in top section if needed
+            const nextPetElement = document.getElementById("nextPet");
+            if (nextPetElement) nextPetElement.innerText = `Next Legendary Pet: ${getNextPet()}`;
+        });
+
+        setInterval(updateCountdown, 1000);
+
+    </script>
+</body>
+
+</html>
