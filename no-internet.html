@@ -3,128 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>No Internet Connection</title>
-  <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+  <title>Offline</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
       font-family: Arial, sans-serif;
-      background-color: #1d1d1d;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      background: #1d1d1d;
+      color: white;
       text-align: center;
       padding: 20px;
     }
-
-    .box {
-      background-color: rgba(0, 0, 0, 0.65);
-      padding: 40px 30px;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    .container {
       max-width: 500px;
-      width: 100%;
-      animation: fadeIn 1s ease-out;
+      margin: 100px auto;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 15px;
-    }
-
-    p {
-      font-size: 1.1rem;
-      margin-bottom: 30px;
-      color: #ccc;
-    }
-
-    .btn {
-      font-size: 16px;
-      padding: 12px 24px;
-      background-color: #007bff;
+    h1 { font-size: 2rem; }
+    p { font-size: 1.2rem; }
+    button {
+      background: #007bff;
       color: white;
       border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
       cursor: pointer;
-      border-radius: 8px;
-      transition: background-color 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    .btn:hover {
-      background-color: #0056b3;
-    }
-
-    .btn-secondary {
-      background-color: #6c757d;
-      margin-left: 10px;
-    }
-
-    .btn-secondary:hover {
-      background-color: #5a6268;
-    }
-
-    .icon {
-      font-size: 3.5rem;
-      margin-bottom: 20px;
-    }
-
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 1.8rem;
-      }
-      p {
-        font-size: 1rem;
-      }
-      .btn {
-        display: block;
-        width: 100%;
-        margin-bottom: 10px;
-      }
-      .btn-secondary {
-        margin-left: 0;
-      }
     }
   </style>
 </head>
 <body>
-  <div class="box">
-    <div class="icon">📶</div>
-    <h1>No Internet Connection</h1>
-    <p>You're currently offline. Please check your network connection.</p>
-    <a href="#" class="btn" id="retryBtn">Retry Connection</a>
-    <a href="index.html" class="btn btn-secondary">Homepage</a>
+  <div class="container">
+    <h1>⚠️ No Internet Connection</h1>
+    <p>You're currently offline. Please check your network.</p>
+    <button onclick="window.location.reload()">Retry</button>
+    <button onclick="window.location.href='index.html'">Home</button>
   </div>
-
-  <script>
-    // Simple connection check
-    document.getElementById('retryBtn').addEventListener('click', function(e) {
-      e.preventDefault();
-      if (navigator.onLine) {
-        window.location.reload();
-      } else {
-        alert('Still offline. Please check your connection.');
-      }
-    });
-
-    // Check every 5 seconds if we're back online
-    setInterval(function() {
-      if (navigator.onLine) {
-        window.location.reload();
-      }
-    }, 5000);
-  </script>
 </body>
 </html>
