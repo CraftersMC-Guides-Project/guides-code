@@ -357,13 +357,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "HeGzoStRqFe",
-                    "score": "N/A"
+                    "name": "C4P2L",
+                    "score": "84.8M+"
                 },
                 {
                     "rank": 5,
-                    "name": "C4P2L",
-                    "score": "70.6M+"
+                    "name": "HeGzoStRqFe",
+                    "score": "N/A"
                 },
                 {
                     "rank": 6,
@@ -1143,13 +1143,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "TopsideMender34",
-                    "score": "82M+"
+                    "name": "Perry3338",
+                    "score": "93.2M+"
                 },
                 {
                     "rank": 5,
-                    "name": "Perry3338",
-                    "score": "N/A"
+                    "name": "TopsideMender34",
+                    "score": "82M+"
                 },
                 {
                     "rank": 6,
