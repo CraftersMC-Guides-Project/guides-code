@@ -451,16 +451,81 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        reportForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
 
-            const submitBtn = document.getElementById("submitBtn");
-            submitBtn.disabled = true;
-            submitBtn.textContent = "Submitting...";
-            submitBtn.style.opacity = "0.7";
+reportForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
+    const submitBtn = document.getElementById("submitBtn");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+    submitBtn.style.opacity = "0.7";
+
+    const bug = document.getElementById("bug").value.trim();
+    const inGameName = document.getElementById("username").value.trim();
+
+    try {
+        let attachment = null;
+
+        if (uploadedFile) {
+            attachment = {
+                name: uploadedFile.name,
+                type: uploadedFile.type,
+                size: uploadedFile.size
+            };
+        }
+
+        const payload = {
+            type: "bug_report",
+            username: "Bug Reporter",
+            content: {
+                reporter: {
+                    discord_id: loggedInUserId,
+                    discord_username: loggedInUsername,
+                    in_game_name: inGameName
+                },
+                description: bug,
+                timestamp: new Date().toISOString(),
+                attachment: attachment
+            }
+        };
+
+        const response = await fetch("https://webhook-manager.roumakdatta.workers.dev/report", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            panel.classList.add("show");
+
+            setTimeout(() => {
+                panel.classList.remove("show");
+                reportContainer.classList.add("hidden");
+                successMessage.style.display = "block";
+            }, 2000);
+        } else {
+            throw new Error("Failed to submit report");
+        }
+    } catch (err) {
+        console.error("Error:", err);
+        panel.innerHTML = "An error occurred. Please try again.";
+        panel.style.color = "red";
+        panel.classList.add("show");
+        setTimeout(() => {
+            panel.classList.remove("show");
+        }, 3000);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit Report";
+        submitBtn.style.opacity = "1";
+        progressContainer.style.display = "none";
+    }
+});
+
+
+        
+        
             const bug = document.getElementById("bug").value.trim();
-            const webhook = "https://discord.com/api/webhooks/1361692940933796041/w2cigWcNOTdnUaX4jIBVxbpDqVovWw0qJaEKQ-ZDG6l-E1U83vamW3mumbrbo1FOVVXV";
             const inGameName = document.getElementById("username").value.trim();
 
             try {
