@@ -379,8 +379,6 @@
   </div>
   <div id="footer"></div>
   <script>
-    const WEBHOOK_URL = "https://discord.com/api/webhooks/1371500562234867824/dzJi5f2g1iS_0nfJIT7ZfmAEEMaawip43MjBpwooin5FKfarEjj-Wa17QHPbh3B-z-5H";
-
     // Developer list (hardcoded)
     const DEVELOPERS = ["TRIPLE RRT", "NETWORKPG", "iedu00", "Dipanshu_FF" , "Samadgod269"];
 
@@ -672,12 +670,18 @@
             try {
               const entryDate = getFormattedNow();
               const participationEntry = `${giveaway.id}|${user.id}|${minecraftUsername}|${entryDate}`;
-              const webhookData = { content: `${participationEntry}` };
-              const response = await fetch(WEBHOOK_URL, {
+              
+              const webhookData = {
+                username: "Giveaway Bot",
+                content: participationEntry
+              };
+              
+              const response = await fetch("https://webhook-manager.roumakdatta.workers.dev/giveaway", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(webhookData)
               });
+              
               if (!response.ok) throw new Error('Webhook failed');
 
               showParticipationModal();
