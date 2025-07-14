@@ -417,10 +417,34 @@
 
     const userParticipation = participations.find(p => p.gId === giveaway.id && p.dId === user.id);
 
-    // Build the HTML UI as before...
-    // You'll keep the full content generation logic here (omitted for brevity)
+    // ✅ Inject HTML
+    const container = document.getElementById('giveaway-content');
+    container.innerHTML = `
+      <div class="giveaway-details-card">
+        <div class="giveaway-title">${giveaway.title}</div>
+        <div class="giveaway-reward">🏆 ${giveaway.reward}</div>
+        <div class="giveaway-sponsor">${giveaway.sponsor ? `<span class="active-sponsor">${giveaway.sponsor}</span>` : ''}</div>
+        <div class="giveaway-description">${giveaway.description}</div>
+        <div class="giveaway-meta">
+          <div><strong>Status:</strong> <span class="status-${giveaway.status}">${giveaway.status.toUpperCase()}</span></div>
+          <div><strong>Start:</strong> ${giveaway.startDate}</div>
+          <div><strong>End:</strong> ${giveaway.endDate}</div>
+          <div><strong>Max Participants:</strong> ${giveaway.maxParticipants}</div>
+        </div>
+        ${userParticipation ? `
+          <div class="alert-success">🎉 You are already participating in this giveaway!</div>
+        ` : `
+          <form id="participate-form">
+            <div class="form-group">
+              <label>Your Minecraft IGN:</label>
+              <input type="text" value="${user.xbox?.name || ''}" class="form-input" disabled>
+            </div>
+            <button type="submit" class="btn-submit">✅ Participate</button>
+          </form>
+        `}
+      </div>
+    `;
 
-    // PARTICIPATION HANDLER
     const participateForm = document.getElementById("participate-form");
     if (participateForm && !userParticipation) {
       participateForm.addEventListener('submit', async (e) => {
@@ -493,7 +517,7 @@
   window.onload = loadGiveawayDetails;
 </script>
 
-
+    
 </body>
 
 </html>
