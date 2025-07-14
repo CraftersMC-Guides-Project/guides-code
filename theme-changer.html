@@ -24,6 +24,8 @@
       display: flex;
       gap: 1rem;
       margin-bottom: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .theme-btn {
@@ -71,6 +73,7 @@
   <div class="theme-buttons">
     <button class="theme-btn" onclick="selectTheme('default')" id="defaultBtn">Default</button>
     <button class="theme-btn" onclick="selectTheme('essential')" id="essentialBtn">Essential</button>
+    <button class="theme-btn" onclick="selectTheme('minecraft')" id="minecraftBtn">Minecraft</button>
   </div>
 
   <button class="save-btn" onclick="saveTheme()">Save Changes</button>
@@ -93,8 +96,6 @@
 
     function selectTheme(theme) {
       selectedTheme = theme;
-
-      // Highlight selected button
       document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('selected'));
       document.getElementById(theme + 'Btn').classList.add('selected');
     }
@@ -104,7 +105,6 @@
       location.reload();
     }
 
-    // On page load, mark selected theme
     window.onload = () => {
       const current = getCookie('theme') || 'default';
       selectTheme(current);
@@ -113,3 +113,4 @@
 
 </body>
 </html>
+
