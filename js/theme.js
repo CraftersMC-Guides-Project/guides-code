@@ -2,13 +2,13 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Set default theme if not set
     if (!getCookie('theme')) {
-        setTheme('default');
+        setTheme('default/default');
     } else {
         loadTheme(getCookie('theme'));
     }
 });
 
-function loadTheme(themeName) {
+function loadTheme(themePath) {
     // Remove any existing theme stylesheets
     const oldTheme = document.querySelector('link[data-theme]');
     if (oldTheme) {
@@ -18,19 +18,19 @@ function loadTheme(themeName) {
     // Create new theme link
     const themeLink = document.createElement('link');
     themeLink.rel = 'stylesheet';
-    themeLink.href = `themes/${themeName}.css`;
-    themeLink.dataset.theme = themeName;
+    themeLink.href = `themes/${themePath}.css`;
+    themeLink.dataset.theme = themePath;
     document.head.appendChild(themeLink);
     
     // Update cookie if different
-    if (getCookie('theme') !== themeName) {
-        setCookie('theme', themeName, 365);
+    if (getCookie('theme') !== themePath) {
+        setCookie('theme', themePath, 365);
     }
 }
 
-function setTheme(themeName) {
-    loadTheme(themeName);
-    setCookie('theme', themeName, 365);
+function setTheme(themePath) {
+    loadTheme(themePath);
+    setCookie('theme', themePath, 365);
 }
 
 // Cookie helper functions
