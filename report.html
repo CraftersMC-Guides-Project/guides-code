@@ -206,6 +206,31 @@ dropArea.addEventListener('drop', e => {
     if (files.length) handleFile(files[0]);
 });
 
+let loggedInUsername = null;
+let loggedInUserId = null;
+
+function getCookie(name) {
+    return document.cookie.split('; ').reduce((r, v) => {
+        const parts = v.split('=');
+        return parts[0] === name ? decodeURIComponent(parts[1]) : r
+    }, '');
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const storedUserCookie = getCookie("discordUser");
+    if (storedUserCookie) {
+        try {
+            const userData = JSON.parse(storedUserCookie);
+            loggedInUsername = userData.username;
+            loggedInUserId = userData.id;
+        } catch (err) {
+            console.warn("Invalid user cookie format");
+        }
+    }
+});
+
+    
+
 reportForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
