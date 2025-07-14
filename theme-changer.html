@@ -1,108 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Theme Changer - CraftersMC Guides</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="js/theme.js" defer></script>
-    <style>
-        /* [Previous CSS styles remain exactly the same] */
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Theme Changer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background: #f0f0f0;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .theme-selector {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .theme-selector label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+    .theme-selector select {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .theme-selector button {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .theme-selector button:hover {
+      background-color: #0056b3;
+    }
+    .note {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #777;
+      margin-top: 1rem;
+    }
+  </style>
 </head>
 <body>
-    <h1>Theme Selector</h1>
-    
-    <div class="current-theme">
-        Current Theme: <span id="current-theme-name">Loading...</span>
-    </div>
-    
-    <div class="theme-container" id="theme-container">
-        <!-- Themes will be loaded here -->
-    </div>
-    
-    <div class="action-buttons">
-        <a href="index.html" class="btn btn-secondary">
-            <span class="material-icons">arrow_back</span> Back to Home
-        </a>
-        <button id="save-btn" class="btn" disabled>
-            <span class="material-icons">save</span> Save Changes
-        </button>
-    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Available themes data - now with correct paths
-            const availableThemes = [
-                {
-                    id: 'default/default',
-                    name: 'Default Theme',
-                    desc: 'The standard theme with all visual features',
-                    previewColor: 'linear-gradient(135deg, #007bff, #6610f2)'
-                },
-                {
-                    id: 'essential/essential',
-                    name: 'Essential Theme',
-                    desc: 'Clean and minimal theme with core styling',
-                    previewColor: 'linear-gradient(135deg, #28a745, #20c997)'
-                }
-            ];
-            
-            // Display current theme
-            const currentTheme = getCookie('theme') || 'default/default';
-            document.getElementById('current-theme-name').textContent = 
-                availableThemes.find(t => t.id === currentTheme)?.name || 'Default Theme';
-            
-            const container = document.getElementById('theme-container');
-            let selectedTheme = currentTheme;
-            
-            // Create theme cards
-            availableThemes.forEach(theme => {
-                const card = document.createElement('div');
-                card.className = `theme-card ${theme.id === currentTheme ? 'selected' : ''}`;
-                card.dataset.themeId = theme.id;
-                card.innerHTML = `
-                    <div class="theme-preview" style="--preview-bg: ${theme.previewColor}">
-                        ${theme.name}
-                    </div>
-                    <div class="theme-name">${theme.name}</div>
-                    <div class="theme-desc">${theme.desc}</div>
-                `;
-                
-                card.addEventListener('click', () => {
-                    // Update selection
-                    selectedTheme = theme.id;
-                    
-                    // Update UI
-                    document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
-                    card.classList.add('selected');
-                    
-                    // Enable save button if different from current
-                    document.getElementById('save-btn').disabled = selectedTheme === currentTheme;
-                });
-                
-                container.appendChild(card);
-            });
-            
-            // Save button handler
-            document.getElementById('save-btn').addEventListener('click', () => {
-                if (selectedTheme && selectedTheme !== currentTheme) {
-                    setTheme(selectedTheme);
-                    document.getElementById('current-theme-name').textContent = 
-                        availableThemes.find(t => t.id === selectedTheme)?.name || selectedTheme;
-                    document.getElementById('save-btn').disabled = true;
-                    
-                    // Show success feedback
-                    const btn = document.getElementById('save-btn');
-                    btn.innerHTML = '<span class="material-icons">check</span> Saved!';
-                    setTimeout(() => {
-                        btn.innerHTML = '<span class="material-icons">save</span> Save Changes';
-                    }, 2000);
-                }
-            });
-        });
-        
-        // [Cookie and theme functions remain the same]
-    </script>
+  <h1>Theme Settings</h1>
+  <div class="theme-selector">
+    <label for="themeSelect">Choose Theme:</label>
+    <select id="themeSelect">
+      <option value="default">Default</option>
+      <option value="essential">Essential</option>
+    </select>
+    <button onclick="saveTheme()">Save Changes</button>
+    <p class="note">Theme will apply on all pages using the theme system.</p>
+  </div>
+
+  <script>
+    function setCookie(name, value, days) {
+      const expires = new Date(Date.now() + days * 864e5).toUTCString();
+      document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+    }
+
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function saveTheme() {
+      const selectedTheme = document.getElementById("themeSelect").value;
+      setCookie("theme", selectedTheme, 365);
+      alert("Theme saved! Reloading...");
+      location.reload();
+    }
+
+    // Set current theme in select box
+    const currentTheme = getCookie("theme") || "default";
+    document.getElementById("themeSelect").value = currentTheme;
+  </script>
+
 </body>
 </html>
+
