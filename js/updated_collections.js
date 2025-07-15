@@ -1990,7 +1990,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "Ghosthunter4233",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
@@ -2005,13 +2005,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 8,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Rehan2038",
+                    "score": "45.2M+"
                 },
                 {
                     "rank": 9,
-                    "name": "Rehan2038",
-                    "score": "45.2M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 10,
