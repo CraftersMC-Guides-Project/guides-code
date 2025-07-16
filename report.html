@@ -229,31 +229,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-    
-
-reportForm.addEventListener("submit", async (e) => {
+    reportForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const inGameName = document.getElementById("username").value.trim();
     const bug = document.getElementById("bug").value.trim();
 
     const payload = {
-        type: "bug_report",
-        username: "Bug Reporter",
-        content: {
-            reporter: {
-                discord_id: loggedInUserId || "anonymous",
-                discord_username: loggedInUsername || "anonymous",
-                in_game_name: inGameName
-            },
-            description: bug,
-            timestamp: new Date().toISOString(),
-            attachment: uploadedFile ? {
-                name: uploadedFile.name,
-                type: uploadedFile.type,
-                size: uploadedFile.size
-            } : null
-        }
+        type: "bug_report",  // This stays at the top level
+        reporter: {  // Moved from content.reporter to just reporter
+            discord_id: loggedInUserId || "anonymous",
+            discord_username: loggedInUsername || "anonymous",
+            in_game_name: inGameName
+        },
+        description: bug,  // Moved from content.description
+        timestamp: new Date().toISOString(),  // Moved from content.timestamp
+        attachment: uploadedFile ? {  // Moved from content.attachment
+            name: uploadedFile.name,
+            type: uploadedFile.type,
+            size: uploadedFile.size
+        } : null
     };
 
     try {
@@ -279,6 +274,8 @@ reportForm.addEventListener("submit", async (e) => {
         alert("An error occurred. Check console.");
     }
 });
+
+
 </script>
 </body>
 </html>
