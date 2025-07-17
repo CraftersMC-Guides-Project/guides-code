@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CraftersMC - Posts</title>
+    <link rel="stylesheet" href="css/essential.css">
+    <style>
+        body {
+            color: #ffffff;
+            font-family: MyFont, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .background {
+            background: url("Backgrounds/IMG_4502.webp");
+            background-blend-mode: multiply;
+            background-size: cover;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #c6c6c6;
+            padding-bottom: 1rem;
+        }
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .post-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 5px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        .post-card:hover {
+            transform: translateY(-5px);
+        }
+        .post-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .post-content {
+            padding: 1rem;
+        }
+        .post-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .post-date {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .create-btn {
+            background: #c6c6c6;
+            color: #3c3c3c;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .create-btn:hover {
+            background: #218306;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="container">
+        <div class="header">
+            <h1>Recent Posts</h1>
+            <a href="create.html" id="createBtn" class="create-btn" style="display: none;">Create Post</a>
+        </div>
+        
+        <div class="posts-grid" id="postsContainer">
+            <!-- Posts will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        // Check if user is authorized to create posts
+        function getCookie(name) {
+            return document.cookie.split('; ').reduce((r, v) => {
+                const parts = v.split('=');
+                return parts[0] === name ? decodeURIComponent(parts[1]) : r
+            }, '');
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const storedUserCookie = getCookie("discordUser");
+            if (storedUserCookie) {
+                try {
+                    const userData = JSON.parse(storedUserCookie);
+                    if (userData.id === "783972385882767400") {
+                        document.getElementById("createBtn").style.display = "block";
+                    }
+                } catch (err) {
+                    console.warn("Invalid user cookie format");
+                }
+            }
+
+            // Load posts
+            fetchPosts();
+        });
+
+        async function fetchPosts() {
+            try {
+                const response = await fetch('posts/posts.json');
+                const posts = await response.json();
+                
+                const container = document.getElementById('postsContainer');
+                container.innerHTML = '';
+                
+                // Sort by date (newest first)
+                posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                posts.forEach(post => {
+                    const postCard = document.createElement('a');
+                    postCard.href = `post.html?id=${post.id}`;
+                    postCard.className = 'post-card';
+                    postCard.innerHTML = `
+                        <img src="${post.image}" alt="${post.title}" class="post-image">
+                        <div class="post-content">
+                            <h3 class="post-title">${post.title}</h3>
+                            <div class="post-date">${new Date(post.date).toLocaleDateString()}</div>
+                        </div>
+                    `;
+                    container.appendChild(postCard);
+                });
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                document.getElementById('postsContainer').innerHTML = 
+                    '<p>Error loading posts. Please try again later.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
