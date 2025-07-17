@@ -1,286 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="assets/cmc-icon.png" type="image/png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Post - CraftersMC</title>
-    <style>
-        body {
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #121212;
-        }
-        .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 8px;
-        }
-        h1 {
-            color: #4CAF50;
-            text-align: center;
-        }
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #ccc;
-            font-size: 1.1rem;
-        }
-        input[type="text"],
-        textarea {
-            width: 100%;
-            padding: 10px;
-            background: #333;
-            border: 1px solid #444;
-            color: white;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-        textarea {
-            min-height: 300px;
-            resize: vertical;
-        }
-        button {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background: #45a049;
-        }
-        #status {
-            margin-top: 1rem;
-            padding: 10px;
-            border-radius: 4px;
-            display: none;
-        }
-        .success {
-            background-color: rgba(76, 175, 80, 0.2);
-            border: 1px solid #4CAF50;
-            color: #4CAF50;
-        }
-        .error {
-            background-color: rgba(255, 0, 0, 0.2);
-            border: 1px solid #f44336;
-            color: #f44336;
-        }
-        #imagePreview {
-            max-width: 100%;
-            max-height: 200px;
-            margin-top: 10px;
-            display: none;
-        }
-        .back-btn {
-            display: inline-block;
-            color: #4CAF50;
-            text-decoration: none;
-            margin-bottom: 1rem;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Post - CraftersMC</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: white;
+    }
+    .container {
+      display: flex;
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+    .sidebar {
+      width: 250px;
+      border-right: 1px solid #333;
+      padding-right: 20px;
+    }
+    .editor {
+      flex: 1;
+      padding-left: 20px;
+    }
+    h1 {
+      color: #4CAF50;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input, textarea, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background: #222;
+      color: white;
+    }
+    button {
+      background: #4CAF50;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .preview {
+      margin-top: 30px;
+      background: #1d1d1d;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .block {
+      margin-bottom: 20px;
+    }
+    .link-btn {
+      background-color: #4CAF50;
+      padding: 10px 20px;
+      border-radius: 4px;
+      display: inline-block;
+      color: white;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <a href="index.html" class="back-btn">← Back to Posts</a>
-        <h1>Create New Post</h1>
 
-        <form id="postForm">
-            <div class="form-group">
-                <label for="postTitle">Post Title *</label>
-                <input type="text" id="postTitle" required placeholder="Enter post title">
-            </div>
+<div class="container">
+  <div class="sidebar">
+    <h2>Add Elements</h2>
+    <button onclick="addElement('image')">Image</button>
+    <button onclick="addElement('text')">Text</button>
+    <button onclick="addElement('link')">Link</button>
+  </div>
 
-            <div class="form-group">
-                <label for="postImage">Featured Image URL *</label>
-                <input type="text" id="postImage" required placeholder="https://example.com/image.jpg">
-                <img id="imagePreview" alt="Preview will appear here">
-            </div>
+  <div class="editor">
+    <h1>Create New Post</h1>
+    <form id="postForm">
+      <div class="form-group">
+        <label for="postTitle">Post Title</label>
+        <input type="text" id="postTitle" required>
+      </div>
+      <div class="form-group">
+        <label for="mainImage">Main Image URL</label>
+        <input type="text" id="mainImage" required>
+      </div>
+      <div id="elementOptions" class="form-group"></div>
 
-            <div class="form-group">
-                <label for="postContent">Post Content *</label>
-                <textarea id="postContent" required placeholder="Write your post content here... (HTML allowed)"></textarea>
-            </div>
+      <div class="form-group">
+        <button type="submit">Publish</button>
+      </div>
+    </form>
 
-            <button type="submit" id="submitBtn">Publish Post</button>
-            <div id="status"></div>
-        </form>
+    <div class="preview" id="previewArea">
+      <!-- Dynamic content will go here -->
     </div>
+  </div>
+</div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            function getCookie(name) {
-                return document.cookie.split('; ').reduce((r, v) => {
-                    const parts = v.split('=');
-                    return parts[0] === name ? decodeURIComponent(parts[1]) : r
-                }, '');
-            }
+<script>
+  const elements = [];
 
-            const storedUserCookie = getCookie("discordUser");
-            let isAuthorized = false;
+  function addElement(type) {
+    const options = document.getElementById('elementOptions');
+    options.innerHTML = ''; // Clear previous
 
-            if (storedUserCookie) {
-                try {
-                    const userData = JSON.parse(storedUserCookie);
-                    if (userData.id === "783972385882767400") {
-                        isAuthorized = true;
-                    }
-                } catch (err) {
-                    console.warn("Invalid user cookie format");
-                }
-            }
+    if (type === 'image') {
+      options.innerHTML = `
+        <label>Image URL</label>
+        <input type="text" id="imageUrl">
+        <button onclick="createPreviewElement('image')">Add Image</button>
+      `;
+    }
 
-            if (!isAuthorized) {
-                window.location.href = "index.html";
-            }
+    if (type === 'text') {
+      options.innerHTML = `
+        <label>Font</label>
+        <select id="textFont">
+          <option value="Arial">Arial</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Courier New">Courier New</option>
+          <option value="Tahoma">Tahoma</option>
+        </select>
+        <label>Size</label>
+        <select id="textSize">
+          <option value="h1">H1</option>
+          <option value="h2">H2</option>
+          <option value="h3">H3</option>
+          <option value="h4">H4</option>
+        </select>
+        <label>Content</label>
+        <textarea id="textContent"></textarea>
+        <button onclick="createPreviewElement('text')">Add Text</button>
+      `;
+    }
 
-            document.getElementById('postImage').addEventListener('input', function () {
-                const preview = document.getElementById('imagePreview');
-                if (this.value) {
-                    preview.src = this.value;
-                    preview.style.display = 'block';
-                } else {
-                    preview.style.display = 'none';
-                }
-            });
+    if (type === 'link') {
+      options.innerHTML = `
+        <label>URL</label>
+        <input type="text" id="linkHref">
+        <label>Text</label>
+        <input type="text" id="linkText">
+        <label>Type</label>
+        <select id="linkType">
+          <option value="link">Hyperlink</option>
+          <option value="button">Button</option>
+        </select>
+        <button onclick="createPreviewElement('link')">Add Link</button>
+      `;
+    }
+  }
 
-            document.getElementById('postForm').addEventListener('submit', async function (e) {
-                e.preventDefault();
+  function createPreviewElement(type) {
+    const preview = document.getElementById('previewArea');
+    let el = document.createElement('div');
+    el.className = 'block';
 
-                const title = document.getElementById('postTitle').value.trim();
-                const image = document.getElementById('postImage').value.trim();
-                const content = document.getElementById('postContent').value.trim();
-                const submitBtn = document.getElementById('submitBtn');
-                const status = document.getElementById('status');
+    if (type === 'image') {
+      const url = document.getElementById('imageUrl').value;
+      el.innerHTML = `<img src="${url}" style="max-width:100%; border-radius:4px;">`;
+      elements.push({ type, url });
+    }
 
-                if (!title || !image || !content) {
-                    showStatus('Please fill in all required fields', 'error');
-                    return;
-                }
+    if (type === 'text') {
+      const font = document.getElementById('textFont').value;
+      const size = document.getElementById('textSize').value;
+      const content = document.getElementById('textContent').value;
+      el.innerHTML = `<${size} style="font-family:${font};">${content}</${size}>`;
+      elements.push({ type, font, size, content });
+    }
 
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Publishing...';
-                status.style.display = 'none';
+    if (type === 'link') {
+      const href = document.getElementById('linkHref').value;
+      const text = document.getElementById('linkText').value;
+      const mode = document.getElementById('linkType').value;
+      if (mode === 'link') {
+        el.innerHTML = `<a href="${href}" target="_blank">${text}</a>`;
+      } else {
+        el.innerHTML = `<a href="${href}" class="link-btn" target="_blank">${text}</a>`;
+      }
+      elements.push({ type, href, text, mode });
+    }
 
-                const htmlContent = generatePostHTML(title, image, content);
+    preview.appendChild(el);
+    document.getElementById('elementOptions').innerHTML = ''; // Reset UI
+  }
 
-                try {
-                    showStatus('Creating post...', 'success');
+  document.getElementById('postForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-                    const fileName = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".html";
-                    const fileBlob = new Blob([htmlContent], { type: "text/html" });
+    const title = document.getElementById('postTitle').value.trim();
+    const mainImage = document.getElementById('mainImage').value.trim();
 
-                    const formData = new FormData();
-                    formData.append("file", fileBlob, fileName);
-                    formData.append("payload_json", JSON.stringify({
-                        username: "CraftersMC Post Bot",
-                        content: `📄 New post created: **${title}**\nPreview: ${content.substring(0, 100)}...`
-                    }));
+    let htmlContent = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>${title}</title></head>
+<body style="font-family: Arial, sans-serif; max-width: 800px; margin:auto; padding:20px;">
+  <h1>${title}</h1>
+  <img src="${mainImage}" style="width:100%; border-radius: 8px; margin-bottom:20px;">
+`;
 
-                    const response = await fetch('https://webhook-manager.roumakdatta.workers.dev/post', {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`Server responded with ${response.status}`);
-                    }
-
-                    showStatus('Post created successfully!', 'success');
-                    document.getElementById('postForm').reset();
-                    document.getElementById('imagePreview').style.display = 'none';
-
-                } catch (error) {
-                    console.error('Error:', error);
-                    showStatus(`Failed to create post: ${error.message}`, 'error');
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Publish Post';
-                }
-            });
-
-            function generatePostHTML(title, image, content) {
-                return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${escapeHtml(title)} - CraftersMC</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            color: #333;
+    for (const el of elements) {
+      if (el.type === 'image') {
+        htmlContent += `<img src="${el.url}" style="max-width:100%; margin-bottom:20px;">\n`;
+      }
+      if (el.type === 'text') {
+        htmlContent += `<${el.size} style="font-family:${el.font};">${el.content}</${el.size}>\n`;
+      }
+      if (el.type === 'link') {
+        if (el.mode === 'link') {
+          htmlContent += `<p><a href="${el.href}" target="_blank">${el.text}</a></p>\n`;
+        } else {
+          htmlContent += `<p><a href="${el.href}" target="_blank" style="background:#4CAF50; color:white; padding:10px 15px; border-radius:4px; text-decoration:none;">${el.text}</a></p>\n`;
         }
-        .post-header {
-            margin-bottom: 2rem;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 1rem;
-        }
-        .post-title {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-        .post-meta {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        .post-image {
-            width: 100%;
-            max-height: 400px;
-            object-fit: cover;
-            margin-bottom: 1rem;
-            border-radius: 4px;
-        }
-        .post-content {
-            line-height: 1.6;
-        }
-    </style>
-</head>
-<body>
-    <div class="post-header">
-        <h1 class="post-title">${escapeHtml(title)}</h1>
-        <div class="post-meta">Posted on ${new Date().toLocaleDateString()}</div>
-    </div>
-    ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" class="post-image">` : ''}
-    <div class="post-content">
-        ${content}
-    </div>
-</body>
-</html>`;
-            }
+      }
+    }
 
-            function showStatus(message, type) {
-                const status = document.getElementById('status');
-                status.textContent = message;
-                status.className = type;
-                status.style.display = 'block';
-            }
+    htmlContent += `</body></html>`;
 
-            function escapeHtml(unsafe) {
-                return unsafe
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
-            }
-        });
-    </script>
+    const fileBlob = new Blob([htmlContent], { type: "text/html" });
+    const fileName = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".html";
+
+    const formData = new FormData();
+    formData.append("file", fileBlob, fileName);
+    formData.append("payload_json", JSON.stringify({
+      username: "CraftersMC Post Bot",
+      content: `📝 New post created: **${title}**`
+    }));
+
+    const response = await fetch('https://webhook-manager.roumakdatta.workers.dev/post', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (response.ok) {
+      alert("Post sent successfully!");
+      window.location.reload();
+    } else {
+      alert("Failed to publish post");
+    }
+  });
+</script>
+
 </body>
 </html>
 
