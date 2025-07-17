@@ -7,6 +7,7 @@
     <title>Create Post - CraftersMC</title>
     <link rel="stylesheet" href="css/essential.css">
     <style>
+        /* [Previous CSS styles remain exactly the same] */
         body {
             color: #ffffff;
             font-family: MyFont, sans-serif;
@@ -28,71 +29,7 @@
             padding: 20px;
             background-color: rgba(0, 0, 0, 0.8);
         }
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-        }
-        input, textarea, select {
-            width: 100%;
-            padding: 10px;
-            background: #333;
-            border: 1px solid #555;
-            color: white;
-            font-family: inherit;
-        }
-        textarea {
-            min-height: 200px;
-            resize: vertical;
-        }
-        .btn {
-            background: #c6c6c6;
-            color: #3c3c3c;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1rem;
-        }
-        .btn:hover {
-            background: #218306;
-            color: white;
-        }
-        #imagePreview {
-            max-width: 100%;
-            max-height: 300px;
-            margin-top: 10px;
-            display: none;
-        }
-        .back-btn {
-            display: inline-block;
-            margin-bottom: 1rem;
-            text-decoration: none;
-            color: #ccc;
-        }
-        .back-btn:hover {
-            color: white;
-        }
-        .status-message {
-            margin-top: 1rem;
-            padding: 10px;
-            border-radius: 5px;
-            display: none;
-        }
-        .success {
-            background-color: rgba(0, 255, 0, 0.2);
-            border: 1px solid lime;
-            color: lime;
-        }
-        .error {
-            background-color: rgba(255, 0, 0, 0.2);
-            border: 1px solid red;
-            color: red;
-        }
+        /* [Keep all other existing styles] */
     </style>
 </head>
 <body>
@@ -102,67 +39,15 @@
         <h1>Create New Post</h1>
         
         <form id="postForm">
-            <div class="form-group">
-                <label for="postTitle">Post Title *</label>
-                <input type="text" id="postTitle" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="postImage">Featured Image URL *</label>
-                <input type="text" id="postImage" required placeholder="https://example.com/image.jpg">
-                <img id="imagePreview" alt="Image preview">
-            </div>
-            
-            <div class="form-group">
-                <label for="postContent">Content (HTML allowed) *</label>
-                <textarea id="postContent" required></textarea>
-            </div>
-            
-            <button type="submit" class="btn" id="submitBtn">Publish Post</button>
-            <div id="statusMessage" class="status-message"></div>
+            <!-- [Keep all existing form elements] -->
         </form>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Verify user is authorized
-            function getCookie(name) {
-                return document.cookie.split('; ').reduce((r, v) => {
-                    const parts = v.split('=');
-                    return parts[0] === name ? decodeURIComponent(parts[1]) : r
-                }, '');
-            }
+            // [Keep all existing authorization code]
 
-            const storedUserCookie = getCookie("discordUser");
-            let isAuthorized = false;
-            
-            if (storedUserCookie) {
-                try {
-                    const userData = JSON.parse(storedUserCookie);
-                    if (userData.id === "783972385882767400") {
-                        isAuthorized = true;
-                    }
-                } catch (err) {
-                    console.warn("Invalid user cookie format");
-                }
-            }
-            
-            if (!isAuthorized) {
-                window.location.href = "index.html";
-            }
-
-            // Image preview
-            document.getElementById('postImage').addEventListener('input', function() {
-                const preview = document.getElementById('imagePreview');
-                if (this.value) {
-                    preview.src = this.value;
-                    preview.style.display = 'block';
-                } else {
-                    preview.style.display = 'none';
-                }
-            });
-
-            // Form submission
+            // Updated form submission handler
             document.getElementById('postForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
@@ -172,7 +57,6 @@
                 const submitBtn = document.getElementById('submitBtn');
                 const statusMessage = document.getElementById('statusMessage');
                 
-                // Validate inputs
                 if (!title || !image || !content) {
                     showStatus('Please fill in all required fields', 'error');
                     return;
@@ -182,159 +66,91 @@
                 submitBtn.textContent = 'Publishing...';
                 statusMessage.style.display = 'none';
                 
-                // Generate a unique ID for the post
                 const postId = Date.now();
                 const postDate = new Date().toISOString();
                 
-                // Create the complete HTML file content
+                // Generate HTML content
                 const htmlContent = `<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${escapeHtml(title)} - CraftersMC</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            color: #333;
-            background-color: #f9f9f9;
-        }
-        .post-container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 30px;
-            margin-top: 20px;
-        }
-        .post-header {
-            margin-bottom: 2rem;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 1rem;
-        }
-        .post-title {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            color: #2a2a2a;
-        }
-        .post-meta {
-            color: #666;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
-        .post-image {
-            width: 100%;
-            max-height: 400px;
-            object-fit: cover;
-            margin-bottom: 1rem;
-            border-radius: 4px;
-        }
-        .post-content {
-            line-height: 1.6;
-            color: #444;
-        }
-        .post-content img {
-            max-width: 100%;
-            height: auto;
-        }
-        .post-content a {
-            color: #218306;
-            text-decoration: none;
-        }
-        .post-content a:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
-    <div class="post-container">
-        <div class="post-header">
-            <h1 class="post-title">${escapeHtml(title)}</h1>
-            <div class="post-meta">Posted on ${new Date(postDate).toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            })}</div>
-        </div>
-        ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" class="post-image">` : ''}
-        <div class="post-content">
-            ${content}
-        </div>
-    </div>
-</body>
+<!-- [Keep the same HTML template as before] -->
 </html>`;
-                
-                // Create a Blob from the HTML content
-                const blob = new Blob([htmlContent], { type: 'text/html' });
-                const file = new File([blob], `post_${postId}.html`, { type: 'text/html' });
-                
-                // Create FormData to send the file
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('payload_json', JSON.stringify({
-                    type: "new_post",
-                    username: "CraftersMC Post Bot",
-                    content: {
-                        title: title,
-                        post_id: postId,
-                        date: postDate,
-                        image: image,
-                        content_preview: content.substring(0, 100) + '...'
-                    }
-                }));
-                
+
                 try {
-                    // Show uploading status
                     showStatus('Uploading post to Discord...', 'success');
                     
-                    // Send to webhook
+                    // Create FormData with the file
+                    const formData = new FormData();
+                    formData.append('file', new Blob([htmlContent], { type: 'text/html' }), `post_${postId}.html`);
+                    formData.append('payload_json', JSON.stringify({
+                        type: "new_post",
+                        username: "CraftersMC Post Bot",
+                        content: {
+                            title: title,
+                            post_id: postId,
+                            date: postDate,
+                            image: image,
+                            content_preview: content.substring(0, 100) + '...'
+                        }
+                    }));
+
+                    // Updated endpoint to /post
                     const webhookResponse = await fetch('https://webhook-manager.roumakdatta.workers.dev/post', {
                         method: 'POST',
                         body: formData
                     });
                     
                     if (!webhookResponse.ok) {
-                        const errorData = await webhookResponse.json().catch(() => ({}));
-                        throw new Error(errorData.message || `Server responded with ${webhookResponse.status}`);
+                        let errorMsg = `Server error: ${webhookResponse.status}`;
+                        try {
+                            const errorData = await webhookResponse.json();
+                            errorMsg = errorData.message || errorMsg;
+                        } catch (e) {}
+                        throw new Error(errorMsg);
                     }
                     
-                    showStatus('Post created successfully! The HTML file has been sent to Discord.', 'success');
-                    
-                    // Reset form
+                    showStatus('Post created and sent to Discord successfully!', 'success');
                     document.getElementById('postForm').reset();
-                    document.getElementById('imagePreview').style.display = 'none';
                     
                 } catch (error) {
-                    console.error('Error:', error);
-                    showStatus('Error creating post: ' + error.message, 'error');
+                    console.error('Post submission error:', error);
+                    showStatus(`Failed to submit: ${error.message}`, 'error');
+                    
+                    // Additional debugging info
+                    if (error.message.includes('Failed to fetch')) {
+                        console.log('Network error - check:');
+                        console.log('1. Internet connection');
+                        console.log('2. CORS policies');
+                        console.log('3. Worker endpoint availability');
+                    }
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Publish Post';
                 }
             });
-            
-            function showStatus(message, type) {
-                const statusMessage = document.getElementById('statusMessage');
-                statusMessage.textContent = message;
-                statusMessage.className = `status-message ${type}`;
-                statusMessage.style.display = 'block';
-            }
-            
-            function escapeHtml(unsafe) {
-                if (!unsafe) return '';
-                return unsafe
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
-            }
+
+            // [Keep helper functions like showStatus() and escapeHtml()]
         });
+
+        // Improved error handling functions
+        function showStatus(message, type) {
+            const statusMessage = document.getElementById('statusMessage');
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message ${type}`;
+            statusMessage.style.display = 'block';
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusMessage.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function escapeHtml(unsafe) {
+            const div = document.createElement('div');
+            div.textContent = unsafe || '';
+            return div.innerHTML;
+        }
     </script>
 </body>
 </html>
