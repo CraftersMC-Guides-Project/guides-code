@@ -13,10 +13,7 @@
     }
     .container {
       display: flex;
-      flex-direction: column;
-      max-width: 1200px;
-      margin: auto;
-      padding: 20px;
+      flex-direction: column-reverse;
     }
     @media (min-width: 768px) {
       .container {
@@ -26,12 +23,37 @@
     .sidebar {
       width: 100%;
       max-width: 250px;
-      border-right: 1px solid #333;
-      padding-right: 20px;
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-left: 1px solid #333;
+      transition: right 0.3s ease;
+    }
+    .sidebar-toggle {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 10px;
+      display: block;
+    }
+    .sidebar-wrapper {
+      position: fixed;
+      top: 0;
+      right: -260px;
+      height: 100%;
+      width: 260px;
+      background: #1e1e1e;
+      z-index: 999;
+      transition: right 0.3s ease;
+    }
+    .sidebar-wrapper.open {
+      right: 0;
     }
     .editor {
       flex: 1;
-      padding-left: 20px;
+      padding: 20px;
     }
     h1 {
       color: #4CAF50;
@@ -52,11 +74,11 @@
       background: #222;
       color: white;
     }
-    button {
+    button[type="submit"] {
       background: #4CAF50;
       cursor: pointer;
     }
-    button:hover {
+    button[type="submit"]:hover {
       background: #45a049;
     }
     .preview {
@@ -93,20 +115,19 @@
       font-size: 14px;
       color: #aaa;
     }
+    #statusMessage {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #f44336;
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <div class="sidebar">
-    <h2>Add Elements</h2>
-    <button onclick="addElement('media')">Media</button>
-    <button onclick="addElement('text')">Text</button>
-    <button onclick="addElement('link')">Link</button>
-  </div>
-
   <div class="editor">
     <h1>Create New Post</h1>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Tools</button>
     <form id="postForm">
       <div class="form-group">
         <label for="postTitle">Post Title</label>
@@ -119,143 +140,46 @@
       <div id="elementOptions" class="form-group"></div>
       <div class="form-group">
         <button type="submit">Publish</button>
+        <div id="statusMessage"></div>
       </div>
     </form>
     <div class="preview" id="previewArea"></div>
   </div>
+
+  <div class="sidebar-wrapper" id="sidebar">
+    <div class="sidebar">
+      <h2>Tools</h2>
+      <button onclick="addElement('media')">Media</button>
+      <button onclick="addElement('text')">Text</button>
+      <button onclick="addElement('link')">Link</button>
+    </div>
+  </div>
 </div>
 
 <script>
+let elements = [];
+let userData = null;
+
 document.addEventListener("DOMContentLoaded", () => {
-  let elements = [];
-  let userData = null;
-
-  function getCookie(name) {
-    return document.cookie.split('; ').reduce((r, v) => {
-      const parts = v.split('=');
-      return parts[0] === name ? decodeURIComponent(parts[1]) : r;
-    }, '');
-  }
-
-  const userCookie = getCookie("discordUser");
-  if (!userCookie) return window.location.href = "news.html";
-
+  const cookie = document.cookie.split("; ").find(r => r.startsWith("discordUser="));
+  if (!cookie) return location.href = "news.html";
   try {
-    userData = JSON.parse(userCookie);
+    userData = JSON.parse(decodeURIComponent(cookie.split("=")[1]));
     if (userData.id !== "783972385882767400") throw Error();
   } catch {
-    return window.location.href = "news.html";
+    return location.href = "news.html";
   }
 
-  window.addElement = function(type) {
-    const options = document.getElementById('elementOptions');
-    options.innerHTML = '';
-
-    if (type === 'media') {
-      options.innerHTML = `
-        <label>Media URL</label>
-        <input type="text" id="mediaUrl">
-        <label>Media Type</label>
-        <select id="mediaType">
-          <option value="image">Image</option>
-          <option value="gif">GIF</option>
-          <option value="video">Video</option>
-          <option value="audio">Audio</option>
-        </select>
-        <button type="button" onclick="createPreviewElement('media')">Add Media</button>
-      `;
-    }
-
-    if (type === 'text') {
-      options.innerHTML = `
-        <label>Font</label>
-        <select id="textFont">
-          <option value="Arial">Arial</option>
-          <option value="Georgia">Georgia</option>
-          <option value="Courier New">Courier New</option>
-          <option value="Tahoma">Tahoma</option>
-        </select>
-        <label>Size</label>
-        <select id="textSize">
-          <option value="h1">H1</option>
-          <option value="h2">H2</option>
-          <option value="h3">H3</option>
-          <option value="h4">H4</option>
-        </select>
-        <label>Content</label>
-        <textarea id="textContent"></textarea>
-        <button type="button" onclick="createPreviewElement('text')">Add Text</button>
-      `;
-    }
-
-    if (type === 'link') {
-      options.innerHTML = `
-        <label>URL</label>
-        <input type="text" id="linkHref">
-        <label>Text</label>
-        <input type="text" id="linkText">
-        <label>Type</label>
-        <select id="linkType">
-          <option value="link">Hyperlink</option>
-          <option value="button">Button</option>
-        </select>
-        <button type="button" onclick="createPreviewElement('link')">Add Link</button>
-      `;
-    }
-  }
-
-  window.createPreviewElement = function(type) {
-    const preview = document.getElementById('previewArea');
-    const el = document.createElement('div');
-    el.className = 'block';
-
-    if (type === 'media') {
-      const url = document.getElementById('mediaUrl').value;
-      const mediaType = document.getElementById('mediaType').value;
-      if (mediaType === 'image' || mediaType === 'gif') {
-        el.innerHTML = `<img src="${url}" style="max-width:100%; border-radius:4px;">`;
-      } else if (mediaType === 'video') {
-        el.innerHTML = `<video controls style="max-width:100%;"><source src="${url}"></video>`;
-      } else if (mediaType === 'audio') {
-        el.innerHTML = `<audio controls style="width:100%;"><source src="${url}"></audio>`;
-      }
-      elements.push({ type, url, mediaType });
-    }
-
-    if (type === 'text') {
-      const font = document.getElementById('textFont').value;
-      const size = document.getElementById('textSize').value;
-      const content = document.getElementById('textContent').value;
-      el.innerHTML = `<${size} style="font-family:${font};">${content}</${size}>`;
-      elements.push({ type, font, size, content });
-    }
-
-    if (type === 'link') {
-      const href = document.getElementById('linkHref').value;
-      const text = document.getElementById('linkText').value;
-      const mode = document.getElementById('linkType').value;
-      if (mode === 'link') {
-        el.innerHTML = `<a href="${href}" target="_blank">${text}</a>`;
-      } else {
-        el.innerHTML = `<a href="${href}" class="link-btn" target="_blank">${text}</a>`;
-      }
-      elements.push({ type, href, text, mode });
-    }
-
-    preview.appendChild(el);
-    document.getElementById('elementOptions').innerHTML = '';
-  }
-
-  document.getElementById('postForm').addEventListener('submit', async function (e) {
+  document.getElementById("postForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const title = document.getElementById('postTitle').value.trim();
-    const mainImage = document.getElementById('mainImage').value.trim();
-
+    const title = document.getElementById("postTitle").value.trim();
+    const mainImage = document.getElementById("mainImage").value.trim();
     const avatar = `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png?size=256`;
     const username = `${userData.username}#${userData.discriminator}`;
     const displayName = userData.global_name || userData.username;
+    const status = document.getElementById("statusMessage");
 
-    let htmlContent = `
+    let html = `
 <!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"><title>${title}</title></head>
@@ -264,24 +188,23 @@ document.addEventListener("DOMContentLoaded", () => {
 <img src="${mainImage}" style="width: 100%; border-radius: 8px; margin-bottom: 20px;">`;
 
     for (const el of elements) {
-      if (el.type === 'media') {
-        if (el.mediaType === 'image' || el.mediaType === 'gif') {
-          htmlContent += `<img src="${el.url}" style="max-width:100%; margin-bottom:20px;">\n`;
-        } else if (el.mediaType === 'video') {
-          htmlContent += `<video controls style="max-width:100%; margin-bottom:20px;"><source src="${el.url}"></video>\n`;
-        } else if (el.mediaType === 'audio') {
-          htmlContent += `<audio controls style="width:100%; margin-bottom:20px;"><source src="${el.url}"></audio>\n`;
-        }
-      } else if (el.type === 'text') {
-        htmlContent += `<${el.size} style="font-family:${el.font};">${el.content}</${el.size}>\n`;
-      } else if (el.type === 'link') {
-        htmlContent += el.mode === 'link'
+      if (el.type === "media") {
+        const tag = el.mediaType === "image" || el.mediaType === "gif"
+          ? `<img src="${el.url}" style="max-width:100%; margin-bottom:20px;">`
+          : el.mediaType === "video"
+          ? `<video controls style="max-width:100%; margin-bottom:20px;"><source src="${el.url}"></video>`
+          : `<audio controls style="width:100%; margin-bottom:20px;"><source src="${el.url}"></audio>`;
+        html += tag + "\n";
+      } else if (el.type === "text") {
+        html += `<${el.size} style="font-family:${el.font};">${el.content}</${el.size}>\n`;
+      } else if (el.type === "link") {
+        html += el.mode === "link"
           ? `<p><a href="${el.href}" target="_blank">${el.text}</a></p>\n`
           : `<p><a href="${el.href}" target="_blank" style="background:#4CAF50; color:white; padding:10px 15px; border-radius:4px; text-decoration:none;">${el.text}</a></p>\n`;
       }
     }
 
-    htmlContent += `
+    html += `
 <div class="author">
   <img src="${avatar}" alt="avatar">
   <div class="meta">
@@ -291,9 +214,8 @@ document.addEventListener("DOMContentLoaded", () => {
 </div>
 </body></html>`;
 
-    const blob = new Blob([htmlContent], { type: "text/html" });
+    const blob = new Blob([html], { type: "text/html" });
     const fileName = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".html";
-
     const formData = new FormData();
     formData.append("file", blob, fileName);
     formData.append("payload_json", JSON.stringify({
@@ -301,19 +223,126 @@ document.addEventListener("DOMContentLoaded", () => {
       content: `📝 New post created: **${title}** by ${displayName}`
     }));
 
-    const res = await fetch('https://webhook-manager.roumakdatta.workers.dev/post', {
-      method: "POST",
-      body: formData
-    });
+    try {
+      const res = await fetch('https://webhook-manager.roumakdatta.workers.dev/post', {
+        method: "POST",
+        body: formData
+      });
 
-    if (res.ok) {
-      alert("Post submitted!");
-      window.location.reload();
-    } else {
-      alert("Failed to publish.");
+      if (res.ok) {
+        location.href = "news.html";
+      } else {
+        status.textContent = "Failed to publish post. Please try again.";
+      }
+    } catch {
+      status.textContent = "Network error. Please check your connection.";
     }
   });
 });
+
+function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  sidebar.classList.toggle("open");
+}
+
+function addElement(type) {
+  const options = document.getElementById('elementOptions');
+  options.innerHTML = '';
+
+  if (type === 'media') {
+    options.innerHTML = `
+      <label>Media URL</label>
+      <input type="text" id="mediaUrl">
+      <label>Media Type</label>
+      <select id="mediaType">
+        <option value="image">Image</option>
+        <option value="gif">GIF</option>
+        <option value="video">Video</option>
+        <option value="audio">Audio</option>
+      </select>
+      <button type="button" onclick="createPreviewElement('media')">Add Media</button>
+    `;
+  }
+
+  if (type === 'text') {
+    options.innerHTML = `
+      <label>Font</label>
+      <select id="textFont">
+        <option value="Arial">Arial</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Tahoma">Tahoma</option>
+      </select>
+      <label>Size</label>
+      <select id="textSize">
+        <option value="h1">H1</option>
+        <option value="h2">H2</option>
+        <option value="h3">H3</option>
+        <option value="h4">H4</option>
+      </select>
+      <label>Content</label>
+      <textarea id="textContent"></textarea>
+      <button type="button" onclick="createPreviewElement('text')">Add Text</button>
+    `;
+  }
+
+  if (type === 'link') {
+    options.innerHTML = `
+      <label>URL</label>
+      <input type="text" id="linkHref">
+      <label>Text</label>
+      <input type="text" id="linkText">
+      <label>Type</label>
+      <select id="linkType">
+        <option value="link">Hyperlink</option>
+        <option value="button">Button</option>
+      </select>
+      <button type="button" onclick="createPreviewElement('link')">Add Link</button>
+    `;
+  }
+}
+
+function createPreviewElement(type) {
+  const preview = document.getElementById('previewArea');
+  const el = document.createElement('div');
+  el.className = 'block';
+
+  if (type === 'media') {
+    const url = document.getElementById('mediaUrl').value;
+    const mediaType = document.getElementById('mediaType').value;
+    if (mediaType === 'image' || mediaType === 'gif') {
+      el.innerHTML = `<img src="${url}" style="max-width:100%; border-radius:4px;">`;
+    } else if (mediaType === 'video') {
+      el.innerHTML = `<video controls style="max-width:100%;"><source src="${url}"></video>`;
+    } else if (mediaType === 'audio') {
+      el.innerHTML = `<audio controls style="width:100%;"><source src="${url}"></audio>`;
+    }
+    elements.push({ type, url, mediaType });
+  }
+
+  if (type === 'text') {
+    const font = document.getElementById('textFont').value;
+    const size = document.getElementById('textSize').value;
+    const content = document.getElementById('textContent').value;
+    el.innerHTML = `<${size} style="font-family:${font};">${content}</${size}>`;
+    elements.push({ type, font, size, content });
+  }
+
+  if (type === 'link') {
+    const href = document.getElementById('linkHref').value;
+    const text = document.getElementById('linkText').value;
+    const mode = document.getElementById('linkType').value;
+    if (mode === 'link') {
+      el.innerHTML = `<a href="${href}" target="_blank">${text}</a>`;
+    } else {
+      el.innerHTML = `<a href="${href}" class="link-btn" target="_blank">${text}</a>`;
+    }
+    elements.push({ type, href, text, mode });
+  }
+
+  preview.appendChild(el);
+  document.getElementById('elementOptions').innerHTML = '';
+}
 </script>
 
 </body>
