@@ -77,6 +77,22 @@
         .back-btn:hover {
             color: white;
         }
+        .status-message {
+            margin-top: 1rem;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background-color: rgba(0, 255, 0, 0.2);
+            border: 1px solid lime;
+            color: lime;
+        }
+        .error {
+            background-color: rgba(255, 0, 0, 0.2);
+            border: 1px solid red;
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -87,22 +103,23 @@
         
         <form id="postForm">
             <div class="form-group">
-                <label for="postTitle">Post Title</label>
+                <label for="postTitle">Post Title *</label>
                 <input type="text" id="postTitle" required>
             </div>
             
             <div class="form-group">
-                <label for="postImage">Featured Image URL</label>
+                <label for="postImage">Featured Image URL *</label>
                 <input type="text" id="postImage" required placeholder="https://example.com/image.jpg">
                 <img id="imagePreview" alt="Image preview">
             </div>
             
             <div class="form-group">
-                <label for="postContent">Content (HTML allowed)</label>
+                <label for="postContent">Content (HTML allowed) *</label>
                 <textarea id="postContent" required></textarea>
             </div>
             
-            <button type="submit" class="btn">Publish Post</button>
+            <button type="submit" class="btn" id="submitBtn">Publish Post</button>
+            <div id="statusMessage" class="status-message"></div>
         </form>
     </div>
 
@@ -149,57 +166,144 @@
             document.getElementById('postForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                const title = document.getElementById('postTitle').value;
-                const image = document.getElementById('postImage').value;
-                const content = document.getElementById('postContent').value;
+                const title = document.getElementById('postTitle').value.trim();
+                const image = document.getElementById('postImage').value.trim();
+                const content = document.getElementById('postContent').value.trim();
+                const submitBtn = document.getElementById('submitBtn');
+                const statusMessage = document.getElementById('statusMessage');
+                
+                // Validate inputs
+                if (!title || !image || !content) {
+                    showStatus('Please fill in all required fields', 'error');
+                    return;
+                }
+                
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Publishing...';
+                statusMessage.style.display = 'none';
                 
                 // Generate a unique ID for the post
                 const postId = Date.now();
                 const postDate = new Date().toISOString();
                 
-                // Create the HTML file content
-                const htmlContent = `
-                    <div class="post-header">
-                        <h1 class="post-title">${title}</h1>
-                        <div class="post-meta">Posted on ${new Date(postDate).toLocaleDateString()}</div>
-                    </div>
-                    <img src="${image}" alt="${title}" class="post-image">
-                    <div class="post-content">
-                        ${content}
-                    </div>
-                `;
+                // Create the complete HTML file content
+                const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${escapeHtml(title)} - CraftersMC</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .post-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-top: 20px;
+        }
+        .post-header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+        .post-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #2a2a2a;
+        }
+        .post-meta {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        .post-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+        .post-content {
+            line-height: 1.6;
+            color: #444;
+        }
+        .post-content img {
+            max-width: 100%;
+            height: auto;
+        }
+        .post-content a {
+            color: #218306;
+            text-decoration: none;
+        }
+        .post-content a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="post-container">
+        <div class="post-header">
+            <h1 class="post-title">${escapeHtml(title)}</h1>
+            <div class="post-meta">Posted on ${new Date(postDate).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            })}</div>
+        </div>
+        ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" class="post-image">` : ''}
+        <div class="post-content">
+            ${content}
+        </div>
+    </div>
+</body>
+</html>`;
                 
-                // Create the post data for posts.json
-                const postData = {
-                    id: postId,
-                    title: title,
-                    image: image,
-                    date: postDate
-                };
+                // Create a Blob from the HTML content
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const file = new File([blob], `post_${postId}.html`, { type: 'text/html' });
+                
+                // Create FormData to send the file
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('payload_json', JSON.stringify({
+                    type: "new_post",
+                    username: "CraftersMC Post Bot",
+                    content: {
+                        title: title,
+                        post_id: postId,
+                        date: postDate,
+                        image: image,
+                        content_preview: content.substring(0, 100) + '...'
+                    }
+                }));
                 
                 try {
+                    // Show uploading status
+                    showStatus('Uploading post to Discord...', 'success');
+                    
                     // Send to webhook
                     const webhookResponse = await fetch('https://webhook-manager.roumakdatta.workers.dev/post', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            type: "new_post",
-                            username: "Post Creator",
-                            content: {
-                                title: title,
-                                image: image,
-                                post_id: postId,
-                                preview: content.substring(0, 200) + '...',
-                                html_content: htmlContent
-                            }
-                        })
+                        body: formData
                     });
                     
-                    if (!webhookResponse.ok) throw new Error('Webhook failed');
+                    if (!webhookResponse.ok) {
+                        const errorData = await webhookResponse.json().catch(() => ({}));
+                        throw new Error(errorData.message || `Server responded with ${webhookResponse.status}`);
+                    }
                     
-                    // In a real static site, you would need to manually upload these files
-                    // For now, we'll just show a success message
-                    alert(`Post created successfully! (Simulated)\n\nPost ID: ${postId}\n\nIn a real implementation, you would need to:\n1. Save the content as posts/${postId}.html\n2. Update posts/posts.json with the new post data`);
+                    showStatus('Post created successfully! The HTML file has been sent to Discord.', 'success');
                     
                     // Reset form
                     document.getElementById('postForm').reset();
@@ -207,9 +311,29 @@
                     
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Error creating post: ' + error.message);
+                    showStatus('Error creating post: ' + error.message, 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Publish Post';
                 }
             });
+            
+            function showStatus(message, type) {
+                const statusMessage = document.getElementById('statusMessage');
+                statusMessage.textContent = message;
+                statusMessage.className = `status-message ${type}`;
+                statusMessage.style.display = 'block';
+            }
+            
+            function escapeHtml(unsafe) {
+                if (!unsafe) return '';
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
         });
     </script>
 </body>
