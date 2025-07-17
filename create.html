@@ -5,49 +5,137 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Post - CraftersMC</title>
-    <link rel="stylesheet" href="css/essential.css">
     <style>
-        /* [Previous CSS styles remain exactly the same] */
         body {
             color: #ffffff;
-            font-family: MyFont, sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-        }
-        .background {
-            background: url("Backgrounds/IMG_4502.webp");
-            background-blend-mode: multiply;
-            background-size: cover;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: -1;
+            background-color: #121212;
         }
         .container {
             max-width: 800px;
             margin: 2rem auto;
-            padding: 20px;
-            background-color: rgba(0, 0, 0, 0.8);
+            padding: 2rem;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
         }
-        /* [Keep all other existing styles] */
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ccc;
+            font-size: 1.1rem;
+        }
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            background: #333;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        textarea {
+            min-height: 300px;
+            resize: vertical;
+            font-family: monospace;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #status {
+            margin-top: 1rem;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+            color: #4CAF50;
+        }
+        .error {
+            background-color: rgba(255, 0, 0, 0.2);
+            border: 1px solid #f44336;
+            color: #f44336;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+            display: none;
+        }
+        .back-btn {
+            display: inline-block;
+            color: #4CAF50;
+            text-decoration: none;
+            margin-bottom: 1rem;
+        }
+        .back-btn:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-    <div class="background"></div>
     <div class="container">
         <a href="index.html" class="back-btn">← Back to Posts</a>
         <h1>Create New Post</h1>
         
         <form id="postForm">
-            <!-- [Keep all existing form elements] -->
+            <div class="form-group">
+                <label for="postTitle">Post Title *</label>
+                <input type="text" id="postTitle" required placeholder="Enter post title">
+            </div>
+            
+            <div class="form-group">
+                <label for="postImage">Featured Image URL *</label>
+                <input type="text" id="postImage" required placeholder="https://example.com/image.jpg">
+                <img id="imagePreview" alt="Preview will appear here">
+            </div>
+            
+            <div class="form-group">
+                <label for="postContent">Post Content *</label>
+                <textarea id="postContent" required placeholder="Write your post content here... (HTML allowed)"></textarea>
+            </div>
+            
+            <button type="submit" id="submitBtn">Publish Post</button>
+            <div id="status"></div>
         </form>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // [Keep all existing authorization code]
+            // Image preview functionality
+            document.getElementById('postImage').addEventListener('input', function() {
+                const preview = document.getElementById('imagePreview');
+                if (this.value) {
+                    preview.src = this.value;
+                    preview.style.display = 'block';
+                } else {
+                    preview.style.display = 'none';
+                }
+            });
 
-            // Updated form submission handler
+            // Form submission
             document.getElementById('postForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
@@ -55,8 +143,9 @@
                 const image = document.getElementById('postImage').value.trim();
                 const content = document.getElementById('postContent').value.trim();
                 const submitBtn = document.getElementById('submitBtn');
-                const statusMessage = document.getElementById('statusMessage');
+                const status = document.getElementById('status');
                 
+                // Validate inputs
                 if (!title || !image || !content) {
                     showStatus('Please fill in all required fields', 'error');
                     return;
@@ -64,93 +153,124 @@
                 
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Publishing...';
-                statusMessage.style.display = 'none';
-                
-                const postId = Date.now();
-                const postDate = new Date().toISOString();
+                status.style.display = 'none';
                 
                 // Generate HTML content
-                const htmlContent = `<!DOCTYPE html>
-<html lang="en">
-<!-- [Keep the same HTML template as before] -->
-</html>`;
-
+                const htmlContent = generatePostHTML(title, image, content);
+                
                 try {
-                    showStatus('Uploading post to Discord...', 'success');
+                    showStatus('Creating post and sending to Discord...', 'success');
                     
                     // Create FormData with the file
                     const formData = new FormData();
-                    formData.append('file', new Blob([htmlContent], { type: 'text/html' }), `post_${postId}.html`);
+                    formData.append('file', new Blob([htmlContent], { type: 'text/html' }), `post_${Date.now()}.html`);
                     formData.append('payload_json', JSON.stringify({
                         type: "new_post",
                         username: "CraftersMC Post Bot",
                         content: {
                             title: title,
-                            post_id: postId,
-                            date: postDate,
                             image: image,
                             content_preview: content.substring(0, 100) + '...'
                         }
                     }));
 
-                    // Updated endpoint to /post
-                    const webhookResponse = await fetch('https://webhook-manager.roumakdatta.workers.dev/post', {
+                    // Send to webhook
+                    const response = await fetch('https://webhook-manager.roumakdatta.workers.dev/post', {
                         method: 'POST',
                         body: formData
                     });
                     
-                    if (!webhookResponse.ok) {
-                        let errorMsg = `Server error: ${webhookResponse.status}`;
-                        try {
-                            const errorData = await webhookResponse.json();
-                            errorMsg = errorData.message || errorMsg;
-                        } catch (e) {}
-                        throw new Error(errorMsg);
+                    if (!response.ok) {
+                        throw new Error(`Server responded with ${response.status}`);
                     }
                     
                     showStatus('Post created and sent to Discord successfully!', 'success');
                     document.getElementById('postForm').reset();
+                    document.getElementById('imagePreview').style.display = 'none';
                     
                 } catch (error) {
-                    console.error('Post submission error:', error);
-                    showStatus(`Failed to submit: ${error.message}`, 'error');
-                    
-                    // Additional debugging info
-                    if (error.message.includes('Failed to fetch')) {
-                        console.log('Network error - check:');
-                        console.log('1. Internet connection');
-                        console.log('2. CORS policies');
-                        console.log('3. Worker endpoint availability');
-                    }
+                    console.error('Error:', error);
+                    showStatus(`Failed to create post: ${error.message}`, 'error');
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Publish Post';
                 }
             });
-
-            // [Keep helper functions like showStatus() and escapeHtml()]
-        });
-
-        // Improved error handling functions
-        function showStatus(message, type) {
-            const statusMessage = document.getElementById('statusMessage');
-            statusMessage.textContent = message;
-            statusMessage.className = `status-message ${type}`;
-            statusMessage.style.display = 'block';
             
-            // Auto-hide success messages after 5 seconds
-            if (type === 'success') {
-                setTimeout(() => {
-                    statusMessage.style.display = 'none';
-                }, 5000);
+            function generatePostHTML(title, image, content) {
+                return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${escapeHtml(title)} - CraftersMC</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        .post-header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+        .post-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .post-meta {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .post-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+        .post-content {
+            line-height: 1.6;
+        }
+        .post-content img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="post-header">
+        <h1 class="post-title">${escapeHtml(title)}</h1>
+        <div class="post-meta">Posted on ${new Date().toLocaleDateString()}</div>
+    </div>
+    ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" class="post-image">` : ''}
+    <div class="post-content">
+        ${content}
+    </div>
+</body>
+</html>`;
             }
-        }
-
-        function escapeHtml(unsafe) {
-            const div = document.createElement('div');
-            div.textContent = unsafe || '';
-            return div.innerHTML;
-        }
+            
+            function showStatus(message, type) {
+                const status = document.getElementById('status');
+                status.textContent = message;
+                status.className = type;
+                status.style.display = 'block';
+            }
+            
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+        });
     </script>
 </body>
 </html>
