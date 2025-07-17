@@ -1,10 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idk what to post - CraftersMC</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        .post-header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+        .post-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .post-meta {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .post-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+        .post-content {
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="post-header">
+        <h1 class="post-title">Idk what to post</h1>
+        <div class="post-meta">Posted on 7/17/2025</div>
+    </div>
+    <img src="https://image.google.com" alt="Idk what to post" class="post-image">
+    <div class="post-content">
+        <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Post - CraftersMC</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: white;
+    }
+    .container {
+      display: flex;
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+    .sidebar {
+      width: 250px;
+      border-right: 1px solid #333;
+      padding-right: 20px;
+    }
+    .editor {
+      flex: 1;
+      padding-left: 20px;
+    }
+    h1 {
+      color: #4CAF50;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input, textarea, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background: #222;
+      color: white;
+    }
+    button {
+      background: #4CAF50;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .preview {
+      margin-top: 30px;
+      background: #1d1d1d;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .block {
+      margin-bottom: 20px;
+    }
+    .link-btn {
+      background-color: #4CAF50;
+      padding: 10px 20px;
+      border-radius: 4px;
+      display: inline-block;
+      color: white;
+      text-decoration: none;
+    }
+    .author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 30px;
+      padding-top: 15px;
+      border-top: 1px solid #ccc;
+    }
+    .author img {
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+    }
+    .author .meta {
+      font-size: 14px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
 
+<div class="container">
+  <div class="sidebar">
+    <h2>Add Elements</h2>
+    <button onclick="addElement('media')">Media</button>
+    <button onclick="addElement('text')">Text</button>
+    <button onclick="addElement('link')">Link</button>
+  </div>
+
+  <div class="editor">
+    <h1>Create New Post</h1>
+    <form id="postForm">
+      <div class="form-group">
+        <label for="postTitle">Post Title</label>
+        <input type="text" id="postTitle" required>
+      </div>
+      <div class="form-group">
+        <label for="mainImage">Main Image URL</label>
+        <input type="text" id="mainImage" required>
+      </div>
+      <div id="elementOptions" class="form-group"></div>
+      <div class="form-group">
+        <button type="submit">Publish</button>
+      </div>
+    </form>
+
+    <div class="preview" id="previewArea"></div>
+  </div>
+</div>
+
+<script>
+let elements = [];
+let userData = null;
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Check user cookie
+  function getCookie(name) {
+    return document.cookie.split('; ').reduce((r, v) => {
+      const parts = v.split('=');
+      return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+    }, '');
+  }
+
+  const userCookie = getCookie("discordUser");
+  if (!userCookie) return redirect();
+
+  try {
+    userData = JSON.parse(userCookie);
+    if (userData.id !== "783972385882767400") return redirect();
+  } catch {
+    return redirect();
+  }
+
+  function redirect() {
+    window.location.href = "news.html";
+  }
+
+  // Dynamic media preview
+  document.getElementById('mainImage').addEventListener('input', function () {
+    const preview = document.getElementById('previewMainImage');
+    if (this.value) {
+      preview.src = this.value;
+      preview.style.display = 'block';
+    }
+  });
+});
+
+function addElement(type) {
+  const options = document.getElementById('elementOptions');
+  options.innerHTML = '';
+
+  if (type === 'media') {
+    options.innerHTML = `
+      <label>Media URL</label>
+      <input type="text" id="mediaUrl">
+      <label>Media Type</label>
+      <select id="mediaType">
+        <option value="image">Image</option>
+        <option value="gif">GIF</option>
+        <option value="video">Video</option>
+        <option value="audio">Audio</option>
+      </select>
+      <button onclick="createPreviewElement('media')">Add Media</button>
+    `;
+  }
+
+  if (type === 'text') {
+    options.innerHTML = `
+      <label>Font</label>
+      <select id="textFont">
+        <option value="Arial">Arial</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Tahoma">Tahoma</option>
+      </select>
+      <label>Size</label>
+      <select id="textSize">
+        <option value="h1">H1</option>
+        <option value="h2">H2</option>
+        <option value="h3">H3</option>
+        <option value="h4">H4</option>
+      </select>
+      <label>Content</label>
+      <textarea id="textContent"></textarea>
+      <button onclick="createPreviewElement('text')">Add Text</button>
+    `;
+  }
+
+  if (type === 'link') {
+    options.innerHTML = `
+      <label>URL</label>
+      <input type="text" id="linkHref">
+      <label>Text</label>
+      <input type="text" id="linkText">
+      <label>Type</label>
+      <select id="linkType">
+        <option value="link">Hyperlink</option>
+        <option value="button">Button</option>
+      </select>
+      <button onclick="createPreviewElement('link')">Add Link</button>
+    `;
+  }
+}
+
+function createPreviewElement(type) {
+  const preview = document.getElementById('previewArea');
+  const el = document.createElement('div');
+  el.className = 'block';
+
+  if (type === 'media') {
+    const url = document.getElementById('mediaUrl').value;
+    const mediaType = document.getElementById('mediaType').value;
+    if (mediaType === 'image' || mediaType === 'gif') {
+      el.innerHTML = `<img src="${url}" style="max-width:100%; border-radius:4px;">`;
+    } else if (mediaType === 'video') {
+      el.innerHTML = `<video controls style="max-width:100%;"><source src="${url}"></video>`;
+    } else if (mediaType === 'audio') {
+      el.innerHTML = `<audio controls style="width:100%;"><source src="${url}"></audio>`;
+    }
+    elements.push({ type, url, mediaType });
+  }
+
+  if (type === 'text') {
+    const font = document.getElementById('textFont').value;
+    const size = document.getElementById('textSize').value;
+    const content = document.getElementById('textContent').value;
+    el.innerHTML = `<${size} style="font-family:${font};">${content}</${size}>`;
+    elements.push({ type, font, size, content });
+  }
+
+  if (type === 'link') {
+    const href = document.getElementById('linkHref').value;
+    const text = document.getElementById('linkText').value;
+    const mode = document.getElementById('linkType').value;
+    if (mode === 'link') {
+      el.innerHTML = `<a href="${href}" target="_blank">${text}</a>`;
+    } else {
+      el.innerHTML = `<a href="${href}" class="link-btn" target="_blank">${text}</a>`;
+    }
+    elements.push({ type, href, text, mode });
+  }
+
+  preview.appendChild(el);
+  document.getElementById('elementOptions').innerHTML = '';
+}
+
+document.getElementById('postForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const title = document.getElementById('postTitle').value.trim();
+  const mainImage = document.getElementById('mainImage').value.trim();
+
+  const avatar = `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png?size=256`;
+  const username = `${userData.username}#${userData.discriminator}`;
+  const displayName = userData.global_name || userData.username;
+
+  let htmlContent = `
 <!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"><title>First post</title></head>
-<body style="font-family: Arial, sans-serif; max-width: 800px; margin:auto; padding:20px;">
-  <h1>First post</h1>
-  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0UEwS9003QooFNLEQ_AnACpklM5jGeuoSQg&s" style="width:100%; border-radius: 8px; margin-bottom:20px;">
-<h3 style="font-family:Georgia;">Best text should be pinned here</h3>
-<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQl9O1ZGB6i-sjy40-q8kZ7oa_l42VEQWZ66w&s" style="max-width:100%; margin-bottom:20px;">
-</body></html>
+<head><meta charset="UTF-8"><title>${title}</title></head>
+<body style="font-family: Arial; max-width: 800px; margin: auto; padding: 20px;">
+<h1>${title}</h1>
+<img src="${mainImage}" style="width: 100%; border-radius: 8px; margin-bottom: 20px;">`;
+
+  for (const el of elements) {
+    if (el.type === 'media') {
+      if (el.mediaType === 'image' || el.mediaType === 'gif') {
+        htmlContent += `<img src="${el.url}" style="max-width:100%; margin-bottom:20px;">\n`;
+      } else if (el.mediaType === 'video') {
+        htmlContent += `<video controls style="max-width:100%; margin-bottom:20px;"><source src="${el.url}"></video>\n`;
+      } else if (el.mediaType === 'audio') {
+        htmlContent += `<audio controls style="width:100%; margin-bottom:20px;"><source src="${el.url}"></audio>\n`;
+      }
+    } else if (el.type === 'text') {
+      htmlContent += `<${el.size} style="font-family:${el.font};">${el.content}</${el.size}>\n`;
+    } else if (el.type === 'link') {
+      htmlContent += el.mode === 'link'
+        ? `<p><a href="${el.href}" target="_blank">${el.text}</a></p>\n`
+        : `<p><a href="${el.href}" target="_blank" style="background:#4CAF50; color:white; padding:10px 15px; border-radius:4px; text-decoration:none;">${el.text}</a></p>\n`;
+    }
+  }
+
+  htmlContent += `
+<div class="author">
+  <img src="${avatar}" alt="avatar">
+  <div class="meta">
+    <strong>${displayName}</strong><br>
+    <span>@${username}</span>
+  </div>
+</div>
+</body></html>`;
+
+  const blob = new Blob([htmlContent], { type: "text/html" });
+  const fileName = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".html";
+
+  const formData = new FormData();
+  formData.append("file", blob, fileName);
+  formData.append("payload_json", JSON.stringify({
+    username: "CraftersMC Post Bot",
+    content: `📝 New post created: **${title}** by ${displayName}`
+  }));
+
+  const res = await fetch('https://webhook-manager.roumakdatta.workers.dev/post', {
+    method: "POST",
+    body: formData
+  });
+
+  if (res.ok) {
+    alert("Post submitted!");
+    window.location.reload();
+  } else {
+    alert("Failed to publish.");
+  }
+});
+</script>
+
+</body>
+</html>
+    </div>
+</body>
+</html>
