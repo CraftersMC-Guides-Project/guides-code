@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post - CraftersMC</title>
+    <link rel="stylesheet" href="css/essential.css">
+    <style>
+        body {
+            color: #ffffff;
+            font-family: MyFont, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .background {
+            background: url("Backgrounds/IMG_4502.webp");
+            background-blend-mode: multiply;
+            background-size: cover;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            background: #333;
+            border: 1px solid #555;
+            color: white;
+            font-family: inherit;
+        }
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        .btn {
+            background: #c6c6c6;
+            color: #3c3c3c;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        .btn:hover {
+            background: #218306;
+            color: white;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 10px;
+            display: none;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 1rem;
+            text-decoration: none;
+            color: #ccc;
+        }
+        .back-btn:hover {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Back to Posts</a>
+        <h1>Create New Post</h1>
+        
+        <form id="postForm">
+            <div class="form-group">
+                <label for="postTitle">Post Title</label>
+                <input type="text" id="postTitle" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="postImage">Featured Image URL</label>
+                <input type="text" id="postImage" required placeholder="https://example.com/image.jpg">
+                <img id="imagePreview" alt="Image preview">
+            </div>
+            
+            <div class="form-group">
+                <label for="postContent">Content (HTML allowed)</label>
+                <textarea id="postContent" required></textarea>
+            </div>
+            
+            <button type="submit" class="btn">Publish Post</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Verify user is authorized
+            function getCookie(name) {
+                return document.cookie.split('; ').reduce((r, v) => {
+                    const parts = v.split('=');
+                    return parts[0] === name ? decodeURIComponent(parts[1]) : r
+                }, '');
+            }
+
+            const storedUserCookie = getCookie("discordUser");
+            let isAuthorized = false;
+            
+            if (storedUserCookie) {
+                try {
+                    const userData = JSON.parse(storedUserCookie);
+                    if (userData.id === "783972385882767400") {
+                        isAuthorized = true;
+                    }
+                } catch (err) {
+                    console.warn("Invalid user cookie format");
+                }
+            }
+            
+            if (!isAuthorized) {
+                window.location.href = "index.html";
+            }
+
+            // Image preview
+            document.getElementById('postImage').addEventListener('input', function() {
+                const preview = document.getElementById('imagePreview');
+                if (this.value) {
+                    preview.src = this.value;
+                    preview.style.display = 'block';
+                } else {
+                    preview.style.display = 'none';
+                }
+            });
+
+            // Form submission
+            document.getElementById('postForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const title = document.getElementById('postTitle').value;
+                const image = document.getElementById('postImage').value;
+                const content = document.getElementById('postContent').value;
+                
+                // Generate a unique ID for the post
+                const postId = Date.now();
+                const postDate = new Date().toISOString();
+                
+                // Create the HTML file content
+                const htmlContent = `
+                    <div class="post-header">
+                        <h1 class="post-title">${title}</h1>
+                        <div class="post-meta">Posted on ${new Date(postDate).toLocaleDateString()}</div>
+                    </div>
+                    <img src="${image}" alt="${title}" class="post-image">
+                    <div class="post-content">
+                        ${content}
+                    </div>
+                `;
+                
+                // Create the post data for posts.json
+                const postData = {
+                    id: postId,
+                    title: title,
+                    image: image,
+                    date: postDate
+                };
+                
+                try {
+                    // Send to webhook
+                    const webhookResponse = await fetch('https://webhook-manager.roumakdatta.workers.dev/post', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            type: "new_post",
+                            username: "Post Creator",
+                            content: {
+                                title: title,
+                                image: image,
+                                post_id: postId,
+                                preview: content.substring(0, 200) + '...',
+                                html_content: htmlContent
+                            }
+                        })
+                    });
+                    
+                    if (!webhookResponse.ok) throw new Error('Webhook failed');
+                    
+                    // In a real static site, you would need to manually upload these files
+                    // For now, we'll just show a success message
+                    alert(`Post created successfully! (Simulated)\n\nPost ID: ${postId}\n\nIn a real implementation, you would need to:\n1. Save the content as posts/${postId}.html\n2. Update posts/posts.json with the new post data`);
+                    
+                    // Reset form
+                    document.getElementById('postForm').reset();
+                    document.getElementById('imagePreview').style.display = 'none';
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error creating post: ' + error.message);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
