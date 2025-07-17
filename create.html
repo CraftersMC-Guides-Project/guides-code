@@ -76,7 +76,7 @@
 <div class="container">
   <div class="sidebar">
     <h2>Add Elements</h2>
-    <button onclick="addElement('image')">Image</button>
+    <button onclick="addElement('media')">Media</button>
     <button onclick="addElement('text')">Text</button>
     <button onclick="addElement('link')">Link</button>
   </div>
@@ -99,9 +99,7 @@
       </div>
     </form>
 
-    <div class="preview" id="previewArea">
-      <!-- Dynamic content will go here -->
-    </div>
+    <div class="preview" id="previewArea"></div>
   </div>
 </div>
 
@@ -110,13 +108,20 @@
 
   function addElement(type) {
     const options = document.getElementById('elementOptions');
-    options.innerHTML = ''; // Clear previous
+    options.innerHTML = '';
 
-    if (type === 'image') {
+    if (type === 'media') {
       options.innerHTML = `
-        <label>Image URL</label>
-        <input type="text" id="imageUrl">
-        <button onclick="createPreviewElement('image')">Add Image</button>
+        <label>Media URL</label>
+        <input type="text" id="mediaUrl">
+        <label>Media Type</label>
+        <select id="mediaType">
+          <option value="image">Image</option>
+          <option value="gif">GIF</option>
+          <option value="video">Video</option>
+          <option value="audio">Audio</option>
+        </select>
+        <button onclick="createPreviewElement('media')">Add Media</button>
       `;
     }
 
@@ -160,13 +165,22 @@
 
   function createPreviewElement(type) {
     const preview = document.getElementById('previewArea');
-    let el = document.createElement('div');
+    const el = document.createElement('div');
     el.className = 'block';
 
-    if (type === 'image') {
-      const url = document.getElementById('imageUrl').value;
-      el.innerHTML = `<img src="${url}" style="max-width:100%; border-radius:4px;">`;
-      elements.push({ type, url });
+    if (type === 'media') {
+      const url = document.getElementById('mediaUrl').value;
+      const mediaType = document.getElementById('mediaType').value;
+
+      if (mediaType === 'image' || mediaType === 'gif') {
+        el.innerHTML = `<img src="${url}" style="max-width:100%; border-radius:4px;">`;
+      } else if (mediaType === 'video') {
+        el.innerHTML = `<video controls style="max-width:100%; border-radius:4px;"><source src="${url}"></video>`;
+      } else if (mediaType === 'audio') {
+        el.innerHTML = `<audio controls style="width:100%;"><source src="${url}"></audio>`;
+      }
+
+      elements.push({ type, url, mediaType });
     }
 
     if (type === 'text') {
@@ -190,7 +204,7 @@
     }
 
     preview.appendChild(el);
-    document.getElementById('elementOptions').innerHTML = ''; // Reset UI
+    document.getElementById('elementOptions').innerHTML = '';
   }
 
   document.getElementById('postForm').addEventListener('submit', async function (e) {
@@ -209,8 +223,14 @@
 `;
 
     for (const el of elements) {
-      if (el.type === 'image') {
-        htmlContent += `<img src="${el.url}" style="max-width:100%; margin-bottom:20px;">\n`;
+      if (el.type === 'media') {
+        if (el.mediaType === 'image' || el.mediaType === 'gif') {
+          htmlContent += `<img src="${el.url}" style="max-width:100%; border-radius:4px; margin-bottom:20px;">\n`;
+        } else if (el.mediaType === 'video') {
+          htmlContent += `<video controls style="max-width:100%; margin-bottom:20px;"><source src="${el.url}"></video>\n`;
+        } else if (el.mediaType === 'audio') {
+          htmlContent += `<audio controls style="width:100%; margin-bottom:20px;"><source src="${el.url}"></audio>\n`;
+        }
       }
       if (el.type === 'text') {
         htmlContent += `<${el.size} style="font-family:${el.font};">${el.content}</${el.size}>\n`;
@@ -226,14 +246,14 @@
 
     htmlContent += `</body></html>`;
 
-    const fileBlob = new Blob([htmlContent], { type: "text/html" });
-    const fileName = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".html";
+    const htmlBlob = new Blob([htmlContent], { type: "text/html" });
+    const htmlFileName = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".html";
 
     const formData = new FormData();
-    formData.append("file", fileBlob, fileName);
+    formData.append("file", htmlBlob, htmlFileName);
     formData.append("payload_json", JSON.stringify({
       username: "CraftersMC Post Bot",
-      content: `📝 New post created: **${title}**`
+      content: `📄 New post created: **${title}**`
     }));
 
     const response = await fetch('https://webhook-manager.roumakdatta.workers.dev/post', {
@@ -242,10 +262,10 @@
     });
 
     if (response.ok) {
-      alert("Post sent successfully!");
+      alert("Post created successfully!");
       window.location.reload();
     } else {
-      alert("Failed to publish post");
+      alert("Failed to post");
     }
   });
 </script>
