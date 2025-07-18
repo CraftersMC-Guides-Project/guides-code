@@ -1540,8 +1540,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "AK_GAMERR5398",
+                    "score": "13.6M+"
                 },
                 {
                     "rank": 6,
@@ -1555,8 +1555,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 8,
-                    "name": "AK_GAMERR5398",
-                    "score": "6.9M+"
+                    "name": "unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 9,
