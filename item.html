@@ -9,48 +9,6 @@
   <link rel="stylesheet" href="css/essential.css">
   <link rel="stylesheet" href="css/item.css">
   <script src="js/script.js"></script>
-  <style>
-    .attribute-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .attribute-box {
-      width: 156px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      background-color: #333;
-      color: white;
-      font-weight: bold;
-      text-align: center;
-      gap: 6px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      padding: 0 5px;
-      font-family: revert;
-    }
-
-    .attribute-box img {
-      width: 20px;
-      height: 20px;
-    }
-
-    .attribute-box.yes {
-  background-color: #2ecc7138;
-  color: var(--main-text-color);
-  border: 1px solid #2ecc71;
-}
-
-    .attribute-box.no {
-      background-color: #e74c3c38;
-      color: var(--main-text-color);
-      border: 1px solid  #e74c3c;
-    }
-  </style>
 </head>
 
 <body>
@@ -68,6 +26,10 @@
     </script> -->
   <div class="item-container" id="itemDetails">
     <p>Loading item details...</p>
+  </div>
+  <div class="item-nav-buttons">
+    <button id="prevItemBtn" class="btn" type="button">&larr; Previous</button>
+    <button id="nextItemBtn" class="btn" type="button">Next &rarr;</button>
   </div>
 
   <div id="footer"></div>
@@ -144,8 +106,43 @@
             `;
 
             applyRarityBackgroundColor(item.rarity);
+            // Navigation button logic (enable/disable based on valid IDs)
+            const prevBtn = document.getElementById('prevItemBtn');
+            const nextBtn = document.getElementById('nextItemBtn');
+            // Find previous and next valid IDs
+            let prevId = null, nextId = null;
+            let foundCurrent = false;
+            for (let i = 0; i < items.length; i++) {
+              if (items[i].id === itemId) {
+                if (i > 0) prevId = items[i-1].id;
+                if (i < items.length - 1) nextId = items[i+1].id;
+                foundCurrent = true;
+                break;
+              }
+            }
+            if (prevId) {
+              prevBtn.disabled = false;
+              prevBtn.onclick = function() {
+                window.location.search = '?item=' + prevId;
+              };
+            } else {
+              prevBtn.disabled = true;
+            }
+            if (nextId) {
+              nextBtn.disabled = false;
+              nextBtn.onclick = function() {
+                window.location.search = '?item=' + nextId;
+              };
+            } else {
+              nextBtn.disabled = true;
+            }
           } else {
             document.getElementById('itemDetails').innerHTML = '<p>Item not found.</p> <a href="index.html">Back to Home</a>';
+            // Disable both buttons if item not found
+            const prevBtn = document.getElementById('prevItemBtn');
+            const nextBtn = document.getElementById('nextItemBtn');
+            prevBtn.disabled = true;
+            nextBtn.disabled = true;
           }
         } catch (error) {
           console.error('Error loading item details:', error);
@@ -153,6 +150,11 @@
         }
       } else {
         document.getElementById('itemDetails').innerHTML = '<p>No item ID specified.</p> <a href="index.html">Back to Home</a>';
+        // Disable both buttons if no item ID
+        const prevBtn = document.getElementById('prevItemBtn');
+        const nextBtn = document.getElementById('nextItemBtn');
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
       }
     }
 
