@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const mainImage = document.getElementById("mainImage").value.trim();
     const avatar = `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png?size=256`;
     const username = userData.username;
-    const displayName = "iPhyruss";
+    const displayName = userData.global_name || userData.username;
     const status = document.getElementById("statusMessage");
 
     let html = `
@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-html += `
+    html += `
 <hr style="margin-top: 40px; margin-bottom: 20px; border: none; border-top: 1px solid #ccc;">
 <h3 style="color: #888; font-weight: normal;">Author</h3>
 <div style="display: flex; align-items: center; gap: 15px; margin-top: 10px;">
@@ -201,7 +201,6 @@ html += `
   </div>
 </div>
 </body></html>`;
-
 
     const blob = new Blob([html], { type: "text/html" });
     const fileName = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".html";
