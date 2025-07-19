@@ -149,6 +149,7 @@
   <div class="sidebar-wrapper" id="sidebar">
     <div class="sidebar">
       <h2>Tools</h2>
+      <button onclick="toggleSidebar()" style="margin-bottom: 15px; background: #f44336;">✕ Close</button>
       <button onclick="addElement('media')">Media</button>
       <button onclick="addElement('text')">Text</button>
       <button onclick="addElement('link')">Link</button>
@@ -159,14 +160,14 @@
 <script>
 let elements = [];
 let userData = null;
-const slaves = ["783972385882767400", "947868777528307742", "835769112000593950", "1099047739209293944"]
+const slaves = ["783972385882767400", "947868777528307742", "835769112000593950", "1099047739209293944"];
 
 document.addEventListener("DOMContentLoaded", () => {
   const cookie = document.cookie.split("; ").find(r => r.startsWith("discordUser="));
   if (!cookie) return location.href = "news.html";
   try {
     userData = JSON.parse(decodeURIComponent(cookie.split("=")[1]));
-    if () throw Error();
+    if (!slaves.includes(userData.id)) throw Error();
   } catch {
     return location.href = "news.html";
   }
