@@ -237,6 +237,14 @@
   </button>
   <!--  -->
 
+  <div class="pet-filter-buttons" style="display:flex;gap:10px;justify-content:center;margin:5rem 0;">
+    <button class="btn pet-filter-btn" data-nature="all">All</button>
+    <button class="btn pet-filter-btn" data-nature="stable">Stable</button>
+    <button class="btn pet-filter-btn" data-nature="overpaid">Overpaid</button>
+    <button class="btn pet-filter-btn" data-nature="underpaid">Underpaid</button>
+    <button class="btn pet-filter-btn" data-nature="reset">Reset</button>
+  </div>
+
   <div class="item-container" id="petDetails">
     <p>Loading pet details...</p>
   </div>
@@ -316,10 +324,14 @@
             const nextBtn = document.getElementById('nextPetBtn');
             const urlParams = new URLSearchParams(window.location.search);
             const selectedNature = urlParams.get('nature');
+            const selectedCategory = urlParams.get('cat');
             // Filter pets by selected nature if present
             let filteredPets = pets;
+            if (selectedCategory) {
+              filteredPets = filteredPets.filter(p => p.category && p.category.toLowerCase() === selectedCategory.toLowerCase());
+            }
             if (selectedNature && selectedNature !== 'all') {
-              filteredPets = pets.filter(p => {
+              filteredPets = filteredPets.filter(p => {
                 if (!p.nature) return false;
                 if (selectedNature === 'stable') return p.nature.toUpperCase().includes('STABLE');
                 if (selectedNature === 'overpaid') return p.nature.toUpperCase().includes('OVERPAID');
@@ -340,6 +352,7 @@
               prevBtn.disabled = false;
               prevBtn.onclick = function() {
                 let url = '?pet=' + prevId;
+                if (selectedCategory) url += '&cat=' + encodeURIComponent(selectedCategory);
                 if (selectedNature) url += '&nature=' + selectedNature;
                 window.location.search = url;
               };
@@ -350,6 +363,7 @@
               nextBtn.disabled = false;
               nextBtn.onclick = function() {
                 let url = '?pet=' + nextId;
+                if (selectedCategory) url += '&cat=' + encodeURIComponent(selectedCategory);
                 if (selectedNature) url += '&nature=' + selectedNature;
                 window.location.search = url;
               };
@@ -485,7 +499,32 @@
       updatePrice(petId, rarity);
     }
 
-    loadPetDetails();
+    // Add filter button logic
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPetDetails();
+      // Highlight active filter
+      const urlParams = new URLSearchParams(window.location.search);
+      const selectedNature = urlParams.get('nature') || 'all';
+      const selectedCategory = urlParams.get('cat');
+      document.querySelectorAll('.pet-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-nature') === selectedNature) {
+          btn.classList.add('active');
+        } else if (selectedNature === null && btn.getAttribute('data-nature') === 'all') {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+        btn.onclick = function() {
+          let base = window.location.pathname + '?pet=' + urlParams.get('pet');
+          if (selectedCategory) base += '&cat=' + encodeURIComponent(selectedCategory);
+          if (btn.getAttribute('data-nature') === 'reset' || btn.getAttribute('data-nature') === 'all') {
+            window.location.href = base;
+          } else {
+            window.location.href = base + '&nature=' + btn.getAttribute('data-nature');
+          }
+        };
+      });
+    });
   </script>
 
   <script src="js/script.js"></script>

@@ -29,6 +29,14 @@
   </button>
   <!--  -->
 
+  <div class="minion-filter-buttons" style="display:flex;gap:10px;justify-content:center;margin:5rem 0;">
+    <button class="btn minion-filter-btn" data-nature="all">All</button>
+    <button class="btn minion-filter-btn" data-nature="stable">Stable</button>
+    <button class="btn minion-filter-btn" data-nature="overpaid">Overpaid</button>
+    <button class="btn minion-filter-btn" data-nature="underpaid">Underpaid</button>
+    <button class="btn minion-filter-btn" data-nature="reset">Reset</button>
+  </div>
+
   <div class="item-container" id="minionDetails">
     <p>Loading minion details...</p>
   </div>
@@ -51,6 +59,7 @@
         try {
           const minionId = new URLSearchParams(window.location.search).get('minion');
           const selectedNature = new URLSearchParams(window.location.search).get('nature');
+          const selectedCategory = new URLSearchParams(window.location.search).get('cat');
           if (!minionId) throw new Error('No minion ID specified');
 
           const [minions, prices] = await Promise.all([
@@ -58,10 +67,13 @@
             this.fetchData('market/minion-prices.txt')
           ]);
 
-          // Filter minions by selected nature if present
+          // Filter minions by selected category and nature if present
           let filteredMinions = minions;
+          if (selectedCategory) {
+            filteredMinions = filteredMinions.filter(m => m.category && m.category.toLowerCase() === selectedCategory.toLowerCase());
+          }
           if (selectedNature && selectedNature !== 'all') {
-            filteredMinions = minions.filter(m => {
+            filteredMinions = filteredMinions.filter(m => {
               if (!m.nature) return false;
               if (selectedNature === 'stable') return m.nature.toUpperCase().includes('STABLE');
               if (selectedNature === 'overpaid') return m.nature.toUpperCase().includes('OVERPAID');
@@ -95,6 +107,7 @@
             prevBtn.disabled = false;
             prevBtn.onclick = function() {
               let url = '?minion=' + prevId;
+              if (selectedCategory) url += '&cat=' + encodeURIComponent(selectedCategory);
               if (selectedNature) url += '&nature=' + selectedNature;
               window.location.search = url;
             };
@@ -105,6 +118,7 @@
             nextBtn.disabled = false;
             nextBtn.onclick = function() {
               let url = '?minion=' + nextId;
+              if (selectedCategory) url += '&cat=' + encodeURIComponent(selectedCategory);
               if (selectedNature) url += '&nature=' + selectedNature;
               window.location.search = url;
             };
@@ -240,6 +254,28 @@
     // Initialize when DOM is loaded
     document.addEventListener('DOMContentLoaded', () => {
       MinionManager.loadMinionDetails();
+      // Highlight active filter
+      const urlParams = new URLSearchParams(window.location.search);
+      const selectedNature = urlParams.get('nature') || 'all';
+      const selectedCategory = urlParams.get('cat');
+      document.querySelectorAll('.minion-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-nature') === selectedNature) {
+          btn.classList.add('active');
+        } else if (selectedNature === null && btn.getAttribute('data-nature') === 'all') {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+        btn.onclick = function() {
+          let base = window.location.pathname + '?minion=' + urlParams.get('minion');
+          if (selectedCategory) base += '&cat=' + encodeURIComponent(selectedCategory);
+          if (btn.getAttribute('data-nature') === 'reset' || btn.getAttribute('data-nature') === 'all') {
+            window.location.href = base;
+          } else {
+            window.location.href = base + '&nature=' + btn.getAttribute('data-nature');
+          }
+        };
+      });
     });
   </script>
 

@@ -24,6 +24,13 @@
     <script>
         (adsbygoogle = window.adsbygoogle || []).push({});
     </script> -->
+  <div class="item-filter-buttons" style="display:flex;gap:10px;justify-content:center;margin:5rem 0;">
+    <button class="btn item-filter-btn" data-nature="all">All</button>
+    <button class="btn item-filter-btn" data-nature="stable">Stable</button>
+    <button class="btn item-filter-btn" data-nature="overpaid">Overpaid</button>
+    <button class="btn item-filter-btn" data-nature="underpaid">Underpaid</button>
+    <button class="btn item-filter-btn" data-nature="reset">Reset</button>
+  </div>
   <div class="item-container" id="itemDetails">
     <p>Loading item details...</p>
   </div>
@@ -39,6 +46,7 @@
       const urlParams = new URLSearchParams(window.location.search);
       const itemId = urlParams.get('item');
       const selectedNature = urlParams.get('nature'); // Get the selected nature filter from URL
+      const selectedCategory = urlParams.get('cat'); // Get the selected category from URL
 
       if (itemId) {
         try {
@@ -110,10 +118,13 @@
             // Navigation button logic (enable/disable based on valid IDs)
             const prevBtn = document.getElementById('prevItemBtn');
             const nextBtn = document.getElementById('nextItemBtn');
-            // Filter items by selected nature if present
+            // Filter items by selected category and nature if present
             let filteredItems = items;
+            if (selectedCategory) {
+              filteredItems = filteredItems.filter(it => it.category && it.category.toLowerCase() === selectedCategory.toLowerCase());
+            }
             if (selectedNature && selectedNature !== 'all') {
-              filteredItems = items.filter(it => {
+              filteredItems = filteredItems.filter(it => {
                 if (!it.nature) return false;
                 if (selectedNature === 'stable') return it.nature.toUpperCase().includes('STABLE');
                 if (selectedNature === 'overpaid') return it.nature.toUpperCase().includes('OVERPAID');
@@ -136,6 +147,7 @@
               prevBtn.disabled = false;
               prevBtn.onclick = function() {
                 let url = '?item=' + prevId;
+                if (selectedCategory) url += '&cat=' + encodeURIComponent(selectedCategory);
                 if (selectedNature) url += '&nature=' + selectedNature;
                 window.location.search = url;
               };
@@ -146,6 +158,7 @@
               nextBtn.disabled = false;
               nextBtn.onclick = function() {
                 let url = '?item=' + nextId;
+                if (selectedCategory) url += '&cat=' + encodeURIComponent(selectedCategory);
                 if (selectedNature) url += '&nature=' + selectedNature;
                 window.location.search = url;
               };
@@ -264,6 +277,30 @@
     }
 
     loadItemDetails();
+
+    // Add filter button logic
+    document.addEventListener('DOMContentLoaded', () => {
+      // Highlight active filter
+      const urlParams = new URLSearchParams(window.location.search);
+      const selectedNature = urlParams.get('nature') || 'all';
+      document.querySelectorAll('.item-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-nature') === selectedNature) {
+          btn.classList.add('active');
+        } else if (selectedNature === null && btn.getAttribute('data-nature') === 'all') {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+        btn.onclick = function() {
+          let base = window.location.pathname + '?item=' + urlParams.get('item');
+          if (btn.getAttribute('data-nature') === 'reset' || btn.getAttribute('data-nature') === 'all') {
+            window.location.href = base;
+          } else {
+            window.location.href = base + '&nature=' + btn.getAttribute('data-nature');
+          }
+        };
+      });
+    });
   </script>
 
   <script src="js/script.js"></script>
