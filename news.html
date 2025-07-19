@@ -97,7 +97,6 @@
     </div>
 
     <script>
-        // Check if user is authorized to create posts
         function getCookie(name) {
             return document.cookie.split('; ').reduce((r, v) => {
                 const parts = v.split('=');
@@ -107,18 +106,19 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             const storedUserCookie = getCookie("discordUser");
+            const slaves = ["783972385882767400", "947868777528307742", "835769112000593950", "1099047739209293944"];
+            
             if (storedUserCookie) {
                 try {
                     const userData = JSON.parse(storedUserCookie);
-                    if (userData.id === "783972385882767400") {
-                        document.getElementById("createBtn").style.display = "block";
+                    if (slaves.includes(userData.id)) {
+                        document.getElementById("createBtn").style.display = "inline-block";
                     }
                 } catch (err) {
                     console.warn("Invalid user cookie format");
                 }
             }
 
-            // Load posts
             fetchPosts();
         });
 
@@ -130,7 +130,6 @@
                 const container = document.getElementById('postsContainer');
                 container.innerHTML = '';
                 
-                // Sort by date (newest first)
                 posts.sort((a, b) => new Date(b.date) - new Date(a.date));
                 
                 posts.forEach(post => {
@@ -155,3 +154,4 @@
     </script>
 </body>
 </html>
+
