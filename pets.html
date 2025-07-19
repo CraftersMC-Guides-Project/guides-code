@@ -207,6 +207,16 @@
       align-items: center;
       width: 16%;
     }
+
+    .pet-nav-buttons {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 600px;
+      width: 100%;
+      margin: 10px auto;
+  }
   </style>
 </head>
 
@@ -229,6 +239,10 @@
 
   <div class="item-container" id="petDetails">
     <p>Loading pet details...</p>
+  </div>
+  <div class="pet-nav-buttons">
+    <button id="prevPetBtn" class="btn" type="button">&larr; Previous</button>
+    <button id="nextPetBtn" class="btn" type="button">Next &rarr;</button>
   </div>
 
   <div id="footer"></div>
@@ -296,15 +310,58 @@
             // Set up rarity navigation
             currentPetRarities = pet.rarity;
             currentRarityIndex = 0;
+
+            // Navigation button logic (enable/disable based on valid IDs)
+            const prevBtn = document.getElementById('prevPetBtn');
+            const nextBtn = document.getElementById('nextPetBtn');
+            let prevId = null, nextId = null;
+            for (let i = 0; i < pets.length; i++) {
+              if (pets[i].id === petId) {
+                if (i > 0) prevId = pets[i-1].id;
+                if (i < pets.length - 1) nextId = pets[i+1].id;
+                break;
+              }
+            }
+            if (prevId !== null && prevId !== undefined) {
+              prevBtn.disabled = false;
+              prevBtn.onclick = function() {
+                window.location.search = '?pet=' + prevId;
+              };
+            } else {
+              prevBtn.disabled = true;
+            }
+            if (nextId !== null && nextId !== undefined) {
+              nextBtn.disabled = false;
+              nextBtn.onclick = function() {
+                window.location.search = '?pet=' + nextId;
+              };
+            } else {
+              nextBtn.disabled = true;
+            }
           } else {
             document.getElementById('petDetails').innerHTML = '<p>Pet not found.</p> <a href="index.html">Back to Home</a>';
+            // Disable both buttons if pet not found
+            const prevBtn = document.getElementById('prevPetBtn');
+            const nextBtn = document.getElementById('nextPetBtn');
+            prevBtn.disabled = true;
+            nextBtn.disabled = true;
           }
         } catch (error) {
           console.error('Error loading pet details:', error);
           document.getElementById('petDetails').innerHTML = '<p>Failed to load pet details.</p> <a href="index.html">Back to Home</a>';
+          // Disable both buttons if error
+          const prevBtn = document.getElementById('prevPetBtn');
+          const nextBtn = document.getElementById('nextPetBtn');
+          prevBtn.disabled = true;
+          nextBtn.disabled = true;
         }
       } else {
         document.getElementById('petDetails').innerHTML = '<p>No pet ID specified.</p> <a href="index.html">Back to Home</a>';
+        // Disable both buttons if no pet ID
+        const prevBtn = document.getElementById('prevPetBtn');
+        const nextBtn = document.getElementById('nextPetBtn');
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
       }
     }
 

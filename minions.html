@@ -10,83 +10,6 @@
   <link rel="stylesheet" href="css/essential.css">
   <link rel="stylesheet" href="css/item.css">
   <link rel="stylesheet" href="css/minion.css">
-  <style>
-    .nature-pill {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 0px;
-      font-weight: bold;
-      margin-right: 10px;
-      background-color: #22222230;
-      font-family: inherit;
-    }
-
-    .nature-pill.STABLE {
-      background-color: #2ecc7138;
-      border: 1px solid #2ecc71;
-      color: #14b959;
-    }
-
-    .nature-pill.UNDERPAID {
-      background-color: #e74c3c38;
-      border: 1px solid #e74c3c;
-      color: #ff2a14;
-    }
-
-    .nature-pill.OVERPAID {
-      background-color: #f39c1238;
-      border: 1px solid #f39c12;
-      color: #e08d07;
-    }
-
-    .stability {
-      margin: 15px 0;
-    }
-
-    .demand-box div {
-      background-color: #22222230;
-      height: 18px;
-      overflow: hidden;
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
-    }
-
-    .demand-box div div {
-      height: 100%;
-      transition: width 0.3s ease;
-    }
-
-    .demand-score {
-      display: flex;
-      border-radius: 0px !important;
-      background: transparent !important;
-      box-shadow: none !important;
-      margin: 4px;
-      width: auto;
-      height: 22px !important;
-      gap: 8px;
-    }
-
-    .rarity-arrow {
-      background: var(--arrow-bg);
-      border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background 0.2s;
-      color: var(--arrow-color);
-      font-size: 1.5em;
-      box-shadow: 0 2px 8px #0002;
-    }
-
-    .rarity-arrow:hover {
-      background: #ffd700;
-      color: #23272e;
-    }
-  </style>
 </head>
 
 <body>
@@ -108,6 +31,10 @@
 
   <div class="item-container" id="minionDetails">
     <p>Loading minion details...</p>
+  </div>
+  <div class="minion-nav-buttons">
+    <button id="prevMinionBtn" class="btn" type="button">&larr; Previous</button>
+    <button id="nextMinionBtn" class="btn" type="button">Next &rarr;</button>
   </div>
 
   <div id="footer"></div>
@@ -140,8 +67,41 @@
           this.tierList = Object.keys(this.currentMinion.prices);
           this.currentTierIndex = 0;
           this.renderMinionDetails('tier1');
+
+          // Navigation button logic (enable/disable based on valid IDs)
+          const prevBtn = document.getElementById('prevMinionBtn');
+          const nextBtn = document.getElementById('nextMinionBtn');
+          let prevId = null, nextId = null;
+          for (let i = 0; i < minions.length; i++) {
+            if (minions[i].id === parseInt(minionId)) {
+              if (i > 0) prevId = minions[i-1].id;
+              if (i < minions.length - 1) nextId = minions[i+1].id;
+              break;
+            }
+          }
+          if (prevId !== null && prevId !== undefined) {
+            prevBtn.disabled = false;
+            prevBtn.onclick = function() {
+              window.location.search = '?minion=' + prevId;
+            };
+          } else {
+            prevBtn.disabled = true;
+          }
+          if (nextId !== null && nextId !== undefined) {
+            nextBtn.disabled = false;
+            nextBtn.onclick = function() {
+              window.location.search = '?minion=' + nextId;
+            };
+          } else {
+            nextBtn.disabled = true;
+          }
         } catch (error) {
           this.showError(error.message);
+          // Disable both buttons if error
+          const prevBtn = document.getElementById('prevMinionBtn');
+          const nextBtn = document.getElementById('nextMinionBtn');
+          prevBtn.disabled = true;
+          nextBtn.disabled = true;
         }
       },
 
