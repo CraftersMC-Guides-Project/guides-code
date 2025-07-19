@@ -314,26 +314,44 @@
             // Navigation button logic (enable/disable based on valid IDs)
             const prevBtn = document.getElementById('prevPetBtn');
             const nextBtn = document.getElementById('nextPetBtn');
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedNature = urlParams.get('nature');
+            // Filter pets by selected nature if present
+            let filteredPets = pets;
+            if (selectedNature && selectedNature !== 'all') {
+              filteredPets = pets.filter(p => {
+                if (!p.nature) return false;
+                if (selectedNature === 'stable') return p.nature.toUpperCase().includes('STABLE');
+                if (selectedNature === 'overpaid') return p.nature.toUpperCase().includes('OVERPAID');
+                if (selectedNature === 'underpaid') return p.nature.toUpperCase().includes('UNDERPAID');
+                return false;
+              });
+            }
+            // Find previous and next valid IDs in filtered list
             let prevId = null, nextId = null;
-            for (let i = 0; i < pets.length; i++) {
-              if (pets[i].id === petId) {
-                if (i > 0) prevId = pets[i-1].id;
-                if (i < pets.length - 1) nextId = pets[i+1].id;
+            for (let i = 0; i < filteredPets.length; i++) {
+              if (filteredPets[i].id === pet.id) {
+                if (i > 0) prevId = filteredPets[i-1].id;
+                if (i < filteredPets.length - 1) nextId = filteredPets[i+1].id;
                 break;
               }
             }
-            if (prevId !== null && prevId !== undefined) {
+            if (prevId) {
               prevBtn.disabled = false;
               prevBtn.onclick = function() {
-                window.location.search = '?pet=' + prevId;
+                let url = '?pet=' + prevId;
+                if (selectedNature) url += '&nature=' + selectedNature;
+                window.location.search = url;
               };
             } else {
               prevBtn.disabled = true;
             }
-            if (nextId !== null && nextId !== undefined) {
+            if (nextId) {
               nextBtn.disabled = false;
               nextBtn.onclick = function() {
-                window.location.search = '?pet=' + nextId;
+                let url = '?pet=' + nextId;
+                if (selectedNature) url += '&nature=' + selectedNature;
+                window.location.search = url;
               };
             } else {
               nextBtn.disabled = true;

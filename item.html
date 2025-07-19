@@ -38,6 +38,7 @@
     async function loadItemDetails() {
       const urlParams = new URLSearchParams(window.location.search);
       const itemId = urlParams.get('item');
+      const selectedNature = urlParams.get('nature'); // Get the selected nature filter from URL
 
       if (itemId) {
         try {
@@ -109,13 +110,24 @@
             // Navigation button logic (enable/disable based on valid IDs)
             const prevBtn = document.getElementById('prevItemBtn');
             const nextBtn = document.getElementById('nextItemBtn');
-            // Find previous and next valid IDs
+            // Filter items by selected nature if present
+            let filteredItems = items;
+            if (selectedNature && selectedNature !== 'all') {
+              filteredItems = items.filter(it => {
+                if (!it.nature) return false;
+                if (selectedNature === 'stable') return it.nature.toUpperCase().includes('STABLE');
+                if (selectedNature === 'overpaid') return it.nature.toUpperCase().includes('OVERPAID');
+                if (selectedNature === 'underpaid') return it.nature.toUpperCase().includes('UNDERPAID');
+                return false;
+              });
+            }
+            // Find previous and next valid IDs in filtered list
             let prevId = null, nextId = null;
             let foundCurrent = false;
-            for (let i = 0; i < items.length; i++) {
-              if (items[i].id === itemId) {
-                if (i > 0) prevId = items[i-1].id;
-                if (i < items.length - 1) nextId = items[i+1].id;
+            for (let i = 0; i < filteredItems.length; i++) {
+              if (filteredItems[i].id === itemId) {
+                if (i > 0) prevId = filteredItems[i-1].id;
+                if (i < filteredItems.length - 1) nextId = filteredItems[i+1].id;
                 foundCurrent = true;
                 break;
               }
@@ -123,7 +135,9 @@
             if (prevId) {
               prevBtn.disabled = false;
               prevBtn.onclick = function() {
-                window.location.search = '?item=' + prevId;
+                let url = '?item=' + prevId;
+                if (selectedNature) url += '&nature=' + selectedNature;
+                window.location.search = url;
               };
             } else {
               prevBtn.disabled = true;
@@ -131,7 +145,9 @@
             if (nextId) {
               nextBtn.disabled = false;
               nextBtn.onclick = function() {
-                window.location.search = '?item=' + nextId;
+                let url = '?item=' + nextId;
+                if (selectedNature) url += '&nature=' + selectedNature;
+                window.location.search = url;
               };
             } else {
               nextBtn.disabled = true;

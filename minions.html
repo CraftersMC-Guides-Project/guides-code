@@ -50,6 +50,7 @@
       async loadMinionDetails() {
         try {
           const minionId = new URLSearchParams(window.location.search).get('minion');
+          const selectedNature = new URLSearchParams(window.location.search).get('nature');
           if (!minionId) throw new Error('No minion ID specified');
 
           const [minions, prices] = await Promise.all([
@@ -57,7 +58,18 @@
             this.fetchData('market/minion-prices.txt')
           ]);
 
-          const minion = minions.find(m => m.id === parseInt(minionId));
+          // Filter minions by selected nature if present
+          let filteredMinions = minions;
+          if (selectedNature && selectedNature !== 'all') {
+            filteredMinions = minions.filter(m => {
+              if (!m.nature) return false;
+              if (selectedNature === 'stable') return m.nature.toUpperCase().includes('STABLE');
+              if (selectedNature === 'overpaid') return m.nature.toUpperCase().includes('OVERPAID');
+              if (selectedNature === 'underpaid') return m.nature.toUpperCase().includes('UNDERPAID');
+              return false;
+            });
+          }
+          const minion = filteredMinions.find(m => m.id === parseInt(minionId));
           if (!minion) throw new Error('Minion not found');
 
           const minionPrice = prices.find(p => p.minionId === parseInt(minionId));
@@ -72,17 +84,19 @@
           const prevBtn = document.getElementById('prevMinionBtn');
           const nextBtn = document.getElementById('nextMinionBtn');
           let prevId = null, nextId = null;
-          for (let i = 0; i < minions.length; i++) {
-            if (minions[i].id === parseInt(minionId)) {
-              if (i > 0) prevId = minions[i-1].id;
-              if (i < minions.length - 1) nextId = minions[i+1].id;
+          for (let i = 0; i < filteredMinions.length; i++) {
+            if (filteredMinions[i].id === parseInt(minionId)) {
+              if (i > 0) prevId = filteredMinions[i-1].id;
+              if (i < filteredMinions.length - 1) nextId = filteredMinions[i+1].id;
               break;
             }
           }
           if (prevId !== null && prevId !== undefined) {
             prevBtn.disabled = false;
             prevBtn.onclick = function() {
-              window.location.search = '?minion=' + prevId;
+              let url = '?minion=' + prevId;
+              if (selectedNature) url += '&nature=' + selectedNature;
+              window.location.search = url;
             };
           } else {
             prevBtn.disabled = true;
@@ -90,7 +104,9 @@
           if (nextId !== null && nextId !== undefined) {
             nextBtn.disabled = false;
             nextBtn.onclick = function() {
-              window.location.search = '?minion=' + nextId;
+              let url = '?minion=' + nextId;
+              if (selectedNature) url += '&nature=' + selectedNature;
+              window.location.search = url;
             };
           } else {
             nextBtn.disabled = true;

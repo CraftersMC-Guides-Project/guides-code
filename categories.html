@@ -98,12 +98,18 @@
                     return false;
                 });
             }
+            // Get current category from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentCategory = urlParams.get('cat');
+            // Use the current nature filter for links
+            const currentNature = natureFilter || 'all';
             if (filtered.length > 0) {
                 const itemsHTML = filtered.map(item => {
                     const price = 'Unknown'; // price not shown
                     const isSkyCanvas = item.name === "Sky Canvas";
+                    // Add cat and nature to the item link
                     return `
-                        <div class="item-card" onclick="window.location.href='item.html?item=${item.id}'">
+                        <div class="item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
                             <h2>${item.name}</h2>
                             ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="sky-canvas-img"' : ''}>` : ''}
                             <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>

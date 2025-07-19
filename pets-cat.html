@@ -62,10 +62,13 @@
                     return false;
                 });
             }
+            // Use the current nature filter for links
+            const currentNature = natureFilter || 'all';
             if (filtered.length > 0) {
                 const itemsHTML = filtered.map(item => {
+                    // Add nature to the pet link
                     return `
-                        <div class="item-card" onclick="window.location.href='pets.html?pet=${item.id}'">
+                        <div class="item-card" onclick="window.location.href='pets.html?pet=${item.id}&nature=${encodeURIComponent(currentNature)}'">
                             <h2>${item.name}</h2>
                             <div class="main-data">
                                 ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}

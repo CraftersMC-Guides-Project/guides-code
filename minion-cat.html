@@ -62,10 +62,13 @@
                     return false;
                 });
             }
+            // Use the current nature filter for links
+            const currentNature = natureFilter || 'all';
             if (filtered.length > 0) {
                 const itemsHTML = filtered.map(item => {
+                    // Add nature to the minion link
                     return `
-                        <div class="item-card" onclick="window.location.href='minions.html?minion=${String(item.id).padStart(2, '0')}'">
+                        <div class="item-card" onclick="window.location.href='minions.html?minion=${String(item.id).padStart(2, '0')}&nature=${encodeURIComponent(currentNature)}'">
                             <h2>${item.name}</h2>
                             <div class="main-data">
                                 ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
