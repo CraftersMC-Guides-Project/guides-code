@@ -24,6 +24,12 @@
   <span class="material-icons" id="scrollToTopBtn">north</span>
     <!--  -->
 
+    <div id="minionFilter" style="display: flex; gap: 10px; justify-content: center; margin: 5rem 0;">
+      <button class="btn minion-filter-btn active" data-nature="all">All</button>
+      <button class="btn minion-filter-btn" data-nature="stable">Stable</button>
+      <button class="btn minion-filter-btn" data-nature="overpaid">Overpaid</button>
+      <button class="btn minion-filter-btn" data-nature="underpaid">Underpaid</button>
+    </div>
     <div id="categoryItems">
         <p>Loading minions...</p>
     </div>
@@ -35,34 +41,67 @@
                 const minionsRes = await fetch('market/minions.txt');
                 const minionsData = await minionsRes.json();
 
-                if (minionsData.length > 0) {
-                    const itemsHTML = minionsData.map(item => {
-                        return `
-                            <div class="item-card" onclick="window.location.href='minions.html?minion=${String(item.id).padStart(2, '0')}'">
-                                <h2>${item.name}</h2>
-                                <div class="main-data">
-                                    ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
-                                    <div class="main-data-val">
-                                        <p><strong>Category:</strong> ${item.category}</p>
-                                        <p><strong>ID:</strong> ${item.id}</p>
-                                    </div>
-                                </div>
-                                ${item.description ? `<p>${item.description}</p>` : ''}
-                            </div>
-                        `;
-                    }).join('');
-
-                    document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
-                } else {
-                    document.getElementById('categoryItems').innerHTML = '<p>No minions found.</p>';
-                }
+                // Store all minions for filtering
+                window._allMinions = minionsData;
+                renderMinions('all');
             } catch (error) {
                 console.error('Error loading minions:', error);
                 document.getElementById('categoryItems').innerHTML = '<p>Failed to load minions.</p>';
             }
         }
 
-        loadMinions();
+        function renderMinions(natureFilter) {
+            const minions = window._allMinions || [];
+            let filtered = minions;
+            if (natureFilter && natureFilter !== 'all') {
+                filtered = minions.filter(item => {
+                    if (!item.nature) return false;
+                    if (natureFilter === 'stable') return item.nature.toUpperCase().includes('STABLE');
+                    if (natureFilter === 'overpaid') return item.nature.toUpperCase().includes('OVERPAID');
+                    if (natureFilter === 'underpaid') return item.nature.toUpperCase().includes('UNDERPAID');
+                    return false;
+                });
+            }
+            if (filtered.length > 0) {
+                const itemsHTML = filtered.map(item => {
+                    return `
+                        <div class="item-card" onclick="window.location.href='minions.html?minion=${String(item.id).padStart(2, '0')}'">
+                            <h2>${item.name}</h2>
+                            <div class="main-data">
+                                ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
+                                <div class="main-data-val">
+                                    <p><strong>Category:</strong> ${item.category}</p>
+                                    <p><strong>ID:</strong> ${item.id}</p>
+                                    ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
+                                </div>
+                            </div>
+                            ${item.description ? `<p>${item.description}</p>` : ''}
+                        </div>
+                    `;
+                }).join('');
+                document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
+            } else {
+                document.getElementById('categoryItems').innerHTML = '<p>No minions found.</p>';
+            }
+        }
+
+        function formatNature(nature) {
+            let natureText = nature.replace('[', ' ').toLowerCase();
+            natureText = natureText.replace(']', '').replace(/_/g, ' ').trim();
+            return natureText;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMinions();
+            // Filter button logic
+            document.getElementById('minionFilter').addEventListener('click', function(e) {
+                if (e.target.classList.contains('minion-filter-btn')) {
+                    document.querySelectorAll('.minion-filter-btn').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    renderMinions(e.target.getAttribute('data-nature'));
+                }
+            });
+        });
     </script>
   
 </body>

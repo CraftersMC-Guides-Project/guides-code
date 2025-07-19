@@ -24,6 +24,12 @@
   <span class="material-icons" id="scrollToTopBtn">north</span>
 
     <!--  -->
+    <div id="petFilter" style="display: flex; gap: 10px; justify-content: center; margin: 5rem 0;">
+      <button class="btn pet-filter-btn active" data-nature="all">All</button>
+      <button class="btn pet-filter-btn" data-nature="stable">Stable</button>
+      <button class="btn pet-filter-btn" data-nature="overpaid">Overpaid</button>
+      <button class="btn pet-filter-btn" data-nature="underpaid">Underpaid</button>
+    </div>
     <div id="categoryItems">
         <p>Loading special pets...</p>
     </div>
@@ -35,33 +41,66 @@
                 const petsRes = await fetch('market/pets.txt');
                 const petsData = await petsRes.json();
 
-                if (petsData.length > 0) {
-                    const itemsHTML = petsData.map(item => {
-                        return `
-                            <div class="item-card" onclick="window.location.href='pets.html?pet=${item.id}'">
-                                <h2>${item.name}</h2>
-                                <div class="main-data">
-                                    ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
-                                    <div class="main-data-val">
-                                        <p><strong>ID:</strong> ${item.id}</p>
-                                    </div>
-                                </div>
-                                ${item.description ? `<p>${item.description}</p>` : ''}
-                            </div>
-                        `;
-                    }).join('');
-
-                    document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
-                } else {
-                    document.getElementById('categoryItems').innerHTML = '<p>No special pets found.</p>';
-                }
+                // Store all pets for filtering
+                window._allPets = petsData;
+                renderPets('all');
             } catch (error) {
                 console.error('Error loading special pets:', error);
                 document.getElementById('categoryItems').innerHTML = '<p>Failed to load special pets.</p>';
             }
         }
 
-        loadSpecialPets();
+        function renderPets(natureFilter) {
+            const pets = window._allPets || [];
+            let filtered = pets;
+            if (natureFilter && natureFilter !== 'all') {
+                filtered = pets.filter(item => {
+                    if (!item.nature) return false;
+                    if (natureFilter === 'stable') return item.nature.toUpperCase().includes('STABLE');
+                    if (natureFilter === 'overpaid') return item.nature.toUpperCase().includes('OVERPAID');
+                    if (natureFilter === 'underpaid') return item.nature.toUpperCase().includes('UNDERPAID');
+                    return false;
+                });
+            }
+            if (filtered.length > 0) {
+                const itemsHTML = filtered.map(item => {
+                    return `
+                        <div class="item-card" onclick="window.location.href='pets.html?pet=${item.id}'">
+                            <h2>${item.name}</h2>
+                            <div class="main-data">
+                                ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
+                                <div class="main-data-val">
+                                    <p><strong>ID:</strong> ${item.id}</p>
+                                    ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
+                                </div>
+                            </div>
+                            ${item.description ? `<p>${item.description}</p>` : ''}
+                        </div>
+                    `;
+                }).join('');
+                document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
+            } else {
+                document.getElementById('categoryItems').innerHTML = '<p>No special pets found.</p>';
+            }
+        }
+
+        function formatNature(nature) {
+            let natureText = nature.replace('[', ' ').toLowerCase();
+            natureText = natureText.replace(']', '').replace(/_/g, ' ').trim();
+            return natureText;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSpecialPets();
+            // Filter button logic
+            document.getElementById('petFilter').addEventListener('click', function(e) {
+                if (e.target.classList.contains('pet-filter-btn')) {
+                    document.querySelectorAll('.pet-filter-btn').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    renderPets(e.target.getAttribute('data-nature'));
+                }
+            });
+        });
     </script>
   
 </body>

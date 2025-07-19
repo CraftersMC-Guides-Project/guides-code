@@ -30,6 +30,12 @@
   <span class="material-icons" id="scrollToTopBtn">north</span>
     <!--  -->
 
+    <div id="categoryFilter" style="display: flex; gap: 10px; justify-content: center; margin: 5rem 0;">
+      <button class="btn cat-filter-btn active" data-nature="all">All</button>
+      <button class="btn cat-filter-btn" data-nature="stable">Stable</button>
+      <button class="btn cat-filter-btn" data-nature="overpaid">Overpaid</button>
+      <button class="btn cat-filter-btn" data-nature="underpaid">Underpaid</button>
+    </div>
     <div id="categoryItems">
         <p>Loading items...</p>
     </div>
@@ -69,37 +75,49 @@
                     }
                 });
 
-                const categoryItems = marketData.filter(item =>
+                // Store all items for filtering
+                window._allCategoryItems = marketData.filter(item =>
                     item.category && item.category.toLowerCase() === category.toLowerCase()
                 );
-
-                if (categoryItems.length > 0) {
-                    const itemsHTML = categoryItems.map(item => {
-                        const price = pricesMap.get(item.id) || item.price || "Unknown";
-                        const isSkyCanvas = item.name === "Sky Canvas"; // Check if this is the Sky Canvas item
-                        
-                        return `
-                            <div class="item-card" onclick="window.location.href='item.html?item=${item.id}'">
-                                <h2>${item.name}</h2>
-                                ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="sky-canvas-img"' : ''}>` : ''}
-                                <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
-                                <!-- <p><div class="price-with-coin"><strong>Price:</strong> ${formatPrice(price)}</div></p> -->
-                                ${item.description ? `<p class="description">${item.description}</p>` : ''}
-                                ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
-                                ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
-                                ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
-                                </div></div>
-                            </div>
-                        `;
-                    }).join('');
-
-                    document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
-                } else {
-                    document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
-                }
+                renderCategoryItems('all');
             } catch (error) {
                 console.error('Error loading category items:', error);
                 document.getElementById('categoryItems').innerHTML = '<p>Failed to load items.</p>';
+            }
+        }
+
+        function renderCategoryItems(natureFilter) {
+            const items = window._allCategoryItems || [];
+            let filtered = items;
+            if (natureFilter && natureFilter !== 'all') {
+                filtered = items.filter(item => {
+                    if (!item.nature) return false;
+                    if (natureFilter === 'stable') return item.nature.toUpperCase().includes('STABLE');
+                    if (natureFilter === 'overpaid') return item.nature.toUpperCase().includes('OVERPAID');
+                    if (natureFilter === 'underpaid') return item.nature.toUpperCase().includes('UNDERPAID');
+                    return false;
+                });
+            }
+            if (filtered.length > 0) {
+                const itemsHTML = filtered.map(item => {
+                    const price = 'Unknown'; // price not shown
+                    const isSkyCanvas = item.name === "Sky Canvas";
+                    return `
+                        <div class="item-card" onclick="window.location.href='item.html?item=${item.id}'">
+                            <h2>${item.name}</h2>
+                            ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="sky-canvas-img"' : ''}>` : ''}
+                            <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
+                            ${item.description ? `<p class="description">${item.description}</p>` : ''}
+                            ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
+                            ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
+                            ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
+                            </div></div>
+                        </div>
+                    `;
+                }).join('');
+                document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
+            } else {
+                document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
             }
         }
 
@@ -121,6 +139,14 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             loadCategoryItems();
+            // Filter button logic
+            document.getElementById('categoryFilter').addEventListener('click', function(e) {
+                if (e.target.classList.contains('cat-filter-btn')) {
+                    document.querySelectorAll('.cat-filter-btn').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    renderCategoryItems(e.target.getAttribute('data-nature'));
+                }
+            });
         });
     </script>
   
