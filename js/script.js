@@ -184,6 +184,7 @@ function fetchAllPartials() {
     updateSidebarLoginButton();
     const loader = document.getElementById('loader');
     if (loader) loader.style.display = 'none';
+    setupPgNetworkScrambler();
   }).catch(error => {
     console.error("Error loading partials:", error);
     const loader = document.getElementById('loader');
@@ -257,9 +258,9 @@ function fetchAllLPartials() {
     document.getElementById('sidebar').innerHTML = sidebarHtml;
     document.getElementById('footer').innerHTML = footerHtml;
     updateSidebarLoginButton();
-    // Hide loader after all partials are loaded
     const loader = document.getElementById('loader');
     if (loader) loader.style.display = 'none';
+    setupPgNetworkScrambler();
   }).catch(err => {
     console.error("[Partials] Failed to load:", err);
     // Hide loader even if error
@@ -603,3 +604,79 @@ function overlay() {
     if (window.playChestCloseSound) window.playChestCloseSound();
   }
 }
+
+function setupPgNetworkScrambler() {
+    const link = document.getElementById("pg-network-anim");
+    if (!link) return;
+
+    const originalText = "Pg Network (Developer)";
+    const scrambleText = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#&^%$!*-_=+;:|~`";
+    let interval = null;
+
+    function randomizeText(text) {
+        return text.split('').map(char => {
+            if (char === ' ' || char === '(' || char === ')') return char;
+            return scrambleText[Math.floor(Math.random() * scrambleText.length)];
+        }).join('');
+    }
+
+    link.addEventListener("mouseenter", function() {
+        let frame = 0;
+        clearInterval(interval);
+        link.style.color = "red";
+        interval = setInterval(() => {
+            if (frame < 10) {
+                link.textContent = randomizeText(originalText);
+                frame++;
+            } else {
+                clearInterval(interval);
+                link.textContent = originalText;
+                link.style.color = "";
+            }
+        }, 50);
+    });
+
+    link.addEventListener("mouseleave", function() {
+        clearInterval(interval);
+        link.textContent = originalText;
+        link.style.color = "";
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const link = document.getElementById("pg-network-anim");
+    if (!link) return;
+
+    const originalText = "Pg Network (Developer)";
+    const scrambleText = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let interval = null;
+
+    function randomizeText(text) {
+        return text.split('').map(char => {
+            if (char === ' ' || char === '(' || char === ')') return char;
+            return scrambleText[Math.floor(Math.random() * scrambleText.length)];
+        }).join('');
+    }
+
+    link.addEventListener("mouseenter", function() {
+        let frame = 0;
+        clearInterval(interval);
+        link.style.color = "red";
+        interval = setInterval(() => {
+            if (frame < 10) {
+                link.textContent = randomizeText(originalText);
+                frame++;
+            } else {
+                clearInterval(interval);
+                link.textContent = originalText;
+                link.style.color = "";
+            }
+        }, 1000);
+    });
+
+    link.addEventListener("mouseleave", function() {
+        clearInterval(interval);
+        link.textContent = originalText;
+        link.style.color = "";
+    });
+});
