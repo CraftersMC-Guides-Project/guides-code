@@ -1,49 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Category Items</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="css/essential.css">
   <link rel="stylesheet" href="css/categories.css">
   <style>
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f5f5f5;
+    img[alt="Sky Canvas"] {
+      filter: brightness(90%) saturate(95%);
     }
 
-    #categoryFilter {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 2rem 0 1rem;
-    }
-
-    .cat-filter-btn {
-      padding: 6px 12px;
-      border: 1px solid #ccc;
-      background: #eee;
-      cursor: pointer;
-    }
-
-    .cat-filter-btn.active {
-      background: #333;
-      color: white;
-    }
-
+    /* Demand Slider Styling */
     #demandSliderBox {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 3rem;
     }
 
     .range-slider {
       position: relative;
       width: 220px;
       height: 30px;
-      margin: 1rem auto;
+      margin: 1rem auto 0;
     }
 
     .range-slider input[type="range"] {
@@ -73,39 +53,26 @@
       background: teal;
       z-index: 1;
     }
-
-    .item-list {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem;
-      padding: 1rem;
-    }
-
-    .item-card {
-      background: white;
-      border: 1px solid #ccc;
-      padding: 1rem;
-      width: 200px;
-      cursor: pointer;
-    }
-
-    .item-card img {
-      width: 100%;
-      max-height: 100px;
-      object-fit: contain;
-    }
   </style>
+  <script src="js/script.js"></script>
 </head>
-<body>
 
-  <div id="categoryFilter">
-    <button class="cat-filter-btn active" data-nature="all">All</button>
-    <button class="cat-filter-btn" data-nature="stable">Stable</button>
-    <button class="cat-filter-btn" data-nature="overpaid">Overpaid</button>
-    <button class="cat-filter-btn" data-nature="underpaid">Underpaid</button>
+<body>
+  <div id="loader"><div></div><div></div><div></div></div>
+  <div class="top"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <span class="material-icons" id="scrollToTopBtn">north</span>
+
+  <!-- Filter Buttons -->
+  <div id="categoryFilter" style="display: flex; gap: 10px; justify-content: center; margin: 5rem 0 1rem;">
+    <button class="btn cat-filter-btn active" data-nature="all">All</button>
+    <button class="btn cat-filter-btn" data-nature="stable">Stable</button>
+    <button class="btn cat-filter-btn" data-nature="overpaid">Overpaid</button>
+    <button class="btn cat-filter-btn" data-nature="underpaid">Underpaid</button>
   </div>
 
+  <!-- Demand Range Slider -->
   <div id="demandSliderBox">
     <div><strong>Demand:</strong> <span id="rangeVal">1 – 10</span></div>
     <div class="range-slider">
@@ -116,6 +83,7 @@
   </div>
 
   <div id="categoryItems"><p>Loading items...</p></div>
+  <div id="footer"></div>
 
   <script>
     let currentNatureFilter = 'all';
@@ -123,107 +91,141 @@
     let maxDemandVal = 10;
 
     async function loadCategoryItems() {
-      const cat = new URLSearchParams(window.location.search).get('cat');
-      if (!cat) {
-        document.getElementById('categoryItems').innerHTML = '<p>No category selected.</p>';
+      const urlParams = new URLSearchParams(window.location.search);
+      const category = urlParams.get('cat');
+
+      if (!category) {
+        document.getElementById('categoryItems').innerHTML = '<p>No category specified.</p>';
         return;
       }
 
       try {
-        const res = await fetch('market/market.txt');
-        const data = await res.json();
+        const [marketRes, pricesRes] = await Promise.all([
+          fetch('market/market.txt'),
+          fetch('market/mprices.txt')
+        ]);
 
-        const filtered = data.filter(item =>
-          item.category && item.category.toLowerCase() === cat.toLowerCase()
+        const marketData = await marketRes.json();
+        const pricesData = await pricesRes.text();
+
+        const pricesMap = new Map();
+        pricesData.split('\n').forEach(line => {
+          const [id, arrayStr] = line.split(':').map(part => part.trim());
+          if (id && arrayStr) {
+            try {
+              const parsedArray = JSON.parse(arrayStr);
+              if (Array.isArray(parsedArray) && parsedArray.length === 2) {
+                pricesMap.set(id, parsedArray[1]);
+              }
+            } catch (e) {
+              console.warn(`Invalid price format for ID ${id}`, e);
+            }
+          }
+        });
+
+        window._allCategoryItems = marketData.filter(item =>
+          item.category && item.category.toLowerCase() === category.toLowerCase()
         );
 
-        if (filtered.length === 0) {
-          document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
-          return;
-        }
-
-        window._allCategoryItems = filtered;
-        renderCategoryItems();
-      } catch (err) {
-        document.getElementById('categoryItems').innerHTML = `<p>Failed to load items. ${err.message}</p>`;
-        console.error(err);
+        renderCategoryItems(currentNatureFilter);
+      } catch (error) {
+        console.error('Error loading category items:', error);
+        document.getElementById('categoryItems').innerHTML = '<p>Failed to load items.</p>';
       }
     }
 
-    function renderCategoryItems() {
-      const items = window._allCategoryItems || [];
-      let result = items;
-
-      if (currentNatureFilter !== 'all') {
-        result = result.filter(i => i.nature?.toUpperCase().includes(currentNatureFilter.toUpperCase()));
-      }
-
-      result = result.filter(i => {
-        const d = parseDemand(i.demand);
-        return d !== null && d >= minDemandVal && d <= maxDemandVal;
-      });
-
-      if (result.length === 0) {
-        document.getElementById('categoryItems').innerHTML = '<p>No matching items found.</p>';
-        return;
-      }
-
-      document.getElementById('categoryItems').innerHTML = `<div class="item-list">
-        ${result.map(item => `
-          <div class="item-card" onclick="location.href='item.html?item=${item.id}'">
-            <h4>${item.name}</h4>
-            ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
-            <p><strong>ID:</strong> ${item.id}</p>
-            ${item.nature ? `<p><strong>Nature:</strong> ${item.nature}</p>` : ''}
-            ${item.demand ? `<p><strong>Demand:</strong> ${item.demand}</p>` : ''}
-          </div>
-        `).join('')}
-      </div>`;
-    }
-
-    function parseDemand(str) {
-      if (!str) return null;
-      const match = str.match(/\[(\d+)\s*\/\s*10\]/);
+    function parseDemandNumber(demandStr) {
+      if (!demandStr) return null;
+      const match = demandStr.match(/\[(\d+)\s*\/\s*10\]/);
       return match ? parseInt(match[1]) : null;
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function renderCategoryItems(natureFilter) {
+      const items = window._allCategoryItems || [];
+      let filtered = items;
+
+      if (natureFilter !== 'all') {
+        filtered = items.filter(item => {
+          if (!item.nature) return false;
+          return item.nature.toUpperCase().includes(natureFilter.toUpperCase());
+        });
+      }
+
+      filtered = filtered.filter(item => {
+        const demand = parseDemandNumber(item.demand);
+        return demand !== null && demand >= minDemandVal && demand <= maxDemandVal;
+      });
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentCategory = urlParams.get('cat');
+      const currentNature = natureFilter || 'all';
+
+      if (filtered.length > 0) {
+        const itemsHTML = filtered.map(item => {
+          const isSkyCanvas = item.name === "Sky Canvas";
+          return `
+            <div class="item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
+              <h2>${item.name}</h2>
+              ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="sky-canvas-img"' : ''}>` : ''}
+              <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
+              ${item.description ? `<p class="description">${item.description}</p>` : ''}
+              ${item.rarity ? `<p class="rarity-display"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
+              ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
+              ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
+              </div></div>
+            </div>`;
+        }).join('');
+        document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
+      } else {
+        document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
+      }
+    }
+
+    function formatNature(nature) {
+      return nature.replace('[', '').replace(']', '').replace(/_/g, ' ').toLowerCase().trim();
+    }
+
+    function formatDemand(demand) {
+      return demand.replace('[', '').replace(']', '').trim();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
       loadCategoryItems();
 
-      document.getElementById('categoryFilter').addEventListener('click', e => {
+      document.getElementById('categoryFilter').addEventListener('click', function (e) {
         if (e.target.classList.contains('cat-filter-btn')) {
-          document.querySelectorAll('.cat-filter-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.cat-filter-btn').forEach(btn => btn.classList.remove('active'));
           e.target.classList.add('active');
-          currentNatureFilter = e.target.dataset.nature;
-          renderCategoryItems();
+          currentNatureFilter = e.target.getAttribute('data-nature');
+          renderCategoryItems(currentNatureFilter);
         }
       });
 
       const minSlider = document.getElementById("minRange");
       const maxSlider = document.getElementById("maxRange");
       const sliderTrack = document.getElementById("sliderTrack");
-      const rangeVal = document.getElementById("rangeVal");
+      const sliderLabel = document.getElementById("rangeVal");
 
-      function updateSlider() {
-        let min = +minSlider.value;
-        let max = +maxSlider.value;
+      function updateSliderUI() {
+        let min = parseInt(minSlider.value);
+        let max = parseInt(maxSlider.value);
 
-        if (min > max) [min, max] = [max, min];
+        if (min > max) [minSlider.value, maxSlider.value] = [maxSlider.value, minSlider.value];
         minDemandVal = min;
         maxDemandVal = max;
-        rangeVal.textContent = `${min} – ${max}`;
 
+        sliderLabel.textContent = `${min} – ${max}`;
         const percent1 = ((min - 1) / 9) * 100;
         const percent2 = ((max - 1) / 9) * 100;
         sliderTrack.style.left = percent1 + "%";
         sliderTrack.style.width = (percent2 - percent1) + "%";
 
-        renderCategoryItems();
+        renderCategoryItems(currentNatureFilter);
       }
 
-      minSlider.addEventListener('input', updateSlider);
-      maxSlider.addEventListener('input', updateSlider);
-      updateSlider();
+      minSlider.addEventListener("input", updateSliderUI);
+      maxSlider.addEventListener("input", updateSliderUI);
+      updateSliderUI();
     });
   </script>
 </body>
