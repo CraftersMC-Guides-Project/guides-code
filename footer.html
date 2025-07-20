@@ -33,7 +33,7 @@
                                 <li><a href="https://discord.com/channels/users/1347959964152627241">Iedu00 (Writer)</a></li>
                                 <li><a href="https://github.com/TGJASSIYT">TGJASSIYT (Developer)</a></li>
                                 <li><a href="https://github.com/TechonVS">TechonTheDev (Developer)</a></li>
-                                <li><a href="https://github.com/PgNetwork01">Pg Network (Developer)</a></li>
+                                <li><a href="https://github.com/PgNetwork01" id="pg-network-anim">Pg Network (Developer)</a></li>
                                 <li><a href="https://github.com/dev-odf" class="dev-link">Dev. (Developer)</a></li>
                                 <li><a href="https://github.com/DipanshuFF">Dipanshu FF (Designer)</a></li>
                             </ul>
@@ -69,3 +69,43 @@
         color: red !important;
     }
 </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const link = document.getElementById("pg-network-anim");
+    if (!link) return;
+
+    const originalText = "Pg Network (Developer)";
+    const scrambleText = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let interval = null;
+
+    function randomizeText(text) {
+        return text.split('').map(char => {
+            if (char === ' ' || char === '(' || char === ')') return char;
+            return scrambleText[Math.floor(Math.random() * scrambleText.length)];
+        }).join('');
+    }
+
+    link.addEventListener("mouseenter", function() {
+        let frame = 0;
+        clearInterval(interval);
+        link.style.color = "red";
+        interval = setInterval(() => {
+            if (frame < 10) {
+                link.textContent = randomizeText(originalText);
+                frame++;
+            } else {
+                clearInterval(interval);
+                link.textContent = originalText;
+                link.style.color = "";
+            }
+        }, 1000); // <-- Change this from 1000 to 50
+    });
+
+    link.addEventListener("mouseleave", function() {
+        clearInterval(interval);
+        link.textContent = originalText;
+        link.style.color = "";
+    });
+});
+</script>
