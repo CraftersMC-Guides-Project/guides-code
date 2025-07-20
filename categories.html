@@ -1,160 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <link rel="icon" href="assets/cmc-icon.png" type="image/png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Category Items</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="css/essential.css">
-    <link rel="stylesheet" href="css/categories.css">
-    <style>
-        /* Special style for Sky Canvas image only */
-        img[alt="Sky Canvas"] {
-            filter: brightness(90%) saturate(95%);
-        }
-    </style>
-    <script src="js/script.js"></script>
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Category Items</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="css/essential.css">
+  <link rel="stylesheet" href="css/categories.css">
+  <style>
+    img[alt="Sky Canvas"] {
+      filter: brightness(90%) saturate(95%);
+    }
+  </style>
+  <script src="js/script.js"></script>
 </head>
-
 <body>
-    <div id="loader">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-    <div class="top"></div>
-    <div class="sidebar" id="sidebar"></div>
-    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <div id="loader"><div></div><div></div><div></div></div>
+  <div class="top"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
   <span class="material-icons" id="scrollToTopBtn">north</span>
-    <!--  -->
 
-    <div id="categoryFilter" style="display: flex; gap: 10px; justify-content: center; margin: 5rem 0;">
-      <button class="btn cat-filter-btn active" data-nature="all">All</button>
-      <button class="btn cat-filter-btn" data-nature="stable">Stable</button>
-      <button class="btn cat-filter-btn" data-nature="overpaid">Overpaid</button>
-      <button class="btn cat-filter-btn" data-nature="underpaid">Underpaid</button>
-    </div>
-    <div id="categoryItems">
-        <p>Loading items...</p>
-    </div>
+  <div id="categoryFilter" style="display: flex; gap: 10px; justify-content: center; margin: 5rem 0; flex-wrap: wrap;">
+    <button class="btn cat-filter-btn active" data-nature="all">All</button>
+    <button class="btn cat-filter-btn" data-nature="stable">Stable</button>
+    <button class="btn cat-filter-btn" data-nature="overpaid">Overpaid</button>
+    <button class="btn cat-filter-btn" data-nature="underpaid">Underpaid</button>
 
-    <div id="footer"></div>
-    <script>
-        async function loadCategoryItems() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const category = urlParams.get('cat');
+    <!-- Demand filter -->
+    <select id="demandFilter" style="padding: 0.5rem; font-size: 1rem;">
+      <option value="all">All Demands</option>
+      <option value="0-2">0 - 2</option>
+      <option value="3-5">3 - 5</option>
+      <option value="6-8">6 - 8</option>
+      <option value="9-10">9 - 10</option>
+    </select>
+  </div>
 
-            if (!category) {
-                document.getElementById('categoryItems').innerHTML = '<p>No category specified.</p>';
-                return;
-            }
+  <div id="categoryItems"><p>Loading items...</p></div>
+  <div id="footer"></div>
 
+  <script>
+    let pricesMap = new Map();
+    let currentNatureFilter = 'all';
+    let currentDemandRange = 'all';
+
+    async function loadCategoryItems() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const category = urlParams.get('cat');
+      if (!category) {
+        document.getElementById('categoryItems').innerHTML = '<p>No category specified.</p>';
+        return;
+      }
+
+      try {
+        const [marketRes, pricesRes] = await Promise.all([
+          fetch('market/market.txt'),
+          fetch('market/mprices.txt')
+        ]);
+        const marketData = await marketRes.json();
+        const pricesData = await pricesRes.text();
+
+        pricesData.split('\n').forEach(line => {
+          const [id, arrayStr] = line.split(':').map(part => part.trim());
+          if (id && arrayStr) {
             try {
-                const [marketRes, pricesRes] = await Promise.all([
-                    fetch('market/market.txt'),
-                    fetch('market/mprices.txt')
-                ]);
-
-                const marketData = await marketRes.json();
-                const pricesData = await pricesRes.text();
-
-                const pricesMap = new Map();
-                pricesData.split('\n').forEach(line => {
-                    const [id, arrayStr] = line.split(':').map(part => part.trim());
-                    if (id && arrayStr) {
-                        try {
-                            const parsedArray = JSON.parse(arrayStr);
-                            if (Array.isArray(parsedArray) && parsedArray.length === 2) {
-                                pricesMap.set(id, parsedArray[1]);
-                            }
-                        } catch (e) {
-                            console.warn(`Invalid price format for ID ${id}`, e);
-                        }
-                    }
-                });
-
-                // Store all items for filtering
-                window._allCategoryItems = marketData.filter(item =>
-                    item.category && item.category.toLowerCase() === category.toLowerCase()
-                );
-                renderCategoryItems('all');
-            } catch (error) {
-                console.error('Error loading category items:', error);
-                document.getElementById('categoryItems').innerHTML = '<p>Failed to load items.</p>';
+              const parsedArray = JSON.parse(arrayStr);
+              if (Array.isArray(parsedArray) && parsedArray.length === 2) {
+                pricesMap.set(id, parsedArray);
+              }
+            } catch (e) {
+              console.warn(`Invalid price format for ID ${id}`, e);
             }
-        }
-
-        function renderCategoryItems(natureFilter) {
-            const items = window._allCategoryItems || [];
-            let filtered = items;
-            if (natureFilter && natureFilter !== 'all') {
-                filtered = items.filter(item => {
-                    if (!item.nature) return false;
-                    if (natureFilter === 'stable') return item.nature.toUpperCase().includes('STABLE');
-                    if (natureFilter === 'overpaid') return item.nature.toUpperCase().includes('OVERPAID');
-                    if (natureFilter === 'underpaid') return item.nature.toUpperCase().includes('UNDERPAID');
-                    return false;
-                });
-            }
-            // Get current category from URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const currentCategory = urlParams.get('cat');
-            // Use the current nature filter for links
-            const currentNature = natureFilter || 'all';
-            if (filtered.length > 0) {
-                const itemsHTML = filtered.map(item => {
-                    const price = 'Unknown'; // price not shown
-                    const isSkyCanvas = item.name === "Sky Canvas";
-                    // Add cat and nature to the item link
-                    return `
-                        <div class="item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
-                            <h2>${item.name}</h2>
-                            ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="sky-canvas-img"' : ''}>` : ''}
-                            <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
-                            ${item.description ? `<p class="description">${item.description}</p>` : ''}
-                            ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
-                            ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
-                            ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
-                            </div></div>
-                        </div>
-                    `;
-                }).join('');
-                document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
-            } else {
-                document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
-            }
-        }
-
-        function formatPrice(price) {
-            return `${Number(price).toLocaleString()} <img class="coin" src="img/coin.png" alt="Coin">`;
-        }
-
-        function formatNature(nature) {
-            let natureText = nature.replace('[', ' ').toLowerCase();
-            natureText = natureText.replace(']', '').replace(/_/g, ' ').trim();
-            return natureText;
-        }
-
-        function formatDemand(demand) {
-            let demandText = demand.replace('[', ' ').toLowerCase();
-            demandText = demandText.replace(']', '').replace(/_/g, ' ').trim();
-            return demandText;
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            loadCategoryItems();
-            // Filter button logic
-            document.getElementById('categoryFilter').addEventListener('click', function(e) {
-                if (e.target.classList.contains('cat-filter-btn')) {
-                    document.querySelectorAll('.cat-filter-btn').forEach(btn => btn.classList.remove('active'));
-                    e.target.classList.add('active');
-                    renderCategoryItems(e.target.getAttribute('data-nature'));
-                }
-            });
+          }
         });
-    </script>
-  
+
+        window._allCategoryItems = marketData.filter(item =>
+          item.category && item.category.toLowerCase() === category.toLowerCase()
+        );
+        renderCategoryItems();
+      } catch (error) {
+        console.error('Error loading category items:', error);
+        document.getElementById('categoryItems').innerHTML = '<p>Failed to load items.</p>';
+      }
+    }
+
+    function renderCategoryItems() {
+      const items = window._allCategoryItems || [];
+      let filtered = items;
+
+
+      if (currentDemandRange !== 'all') {
+        const [min, max] = currentDemandRange.split('-').map(Number);
+        filtered = filtered.filter(item => {
+          const priceData = pricesMap.get(item.id);
+          if (!priceData || isNaN(priceData[0])) return false;
+          return priceData[0] >= min && priceData[0] <= max;
+        });
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentCategory = urlParams.get('cat');
+      const currentNature = currentNatureFilter || 'all';
+
+      if (filtered.length > 0) {
+        const itemsHTML = filtered.map(item => {
+          const isSkyCanvas = item.name === "Sky Canvas";
+          const priceData = pricesMap.get(item.id);
+          const demandValue = priceData ? priceData[0] : null;
+          const demandDisplay = demandValue != null ? `<p class="demand"><strong>Demand:</strong> ${demandValue}</p>` : '';
+          return `
+            <div class="item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
+              <h2>${item.name}</h2>
+              ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="sky-canvas-img"' : ''}>` : ''}
+              <div class="main-data-val">
+                <p><strong>ID:</strong> ${item.id}</p>
+                ${item.description ? `<p class="description">${item.description}</p>` : ''}
+                ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
+                ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
+                ${demandDisplay}
+              </div></div>
+            </div>`;
+        }).join('');
+        document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
+      } else {
+        document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
+      }
+    }
+
+    function formatNature(nature) {
+      return nature.replace('[', '').replace(']', '').replace(/_/g, ' ').toLowerCase().trim();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      loadCategoryItems();
+
+
+
+      document.getElementById('demandFilter').addEventListener('change', function (e) {
+        currentDemandRange = e.target.value;
+        renderCategoryItems();
+      });
+    });
+  </script>
 </body>
 </html>
