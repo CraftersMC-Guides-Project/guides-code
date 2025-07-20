@@ -17,8 +17,6 @@
       background: #121212;
       color: white;
       height: 100%;
-      display: flex;
-      flex-direction: column;
     }
     .background {
       background: url("Backgrounds/IMG_4502.webp");
@@ -29,26 +27,55 @@
       width: 100%; height: 100%;
       z-index: -1;
     }
-    .top,
-    .sidebar,
-    #sidebar-overlay,
-    #float {
+    .top, .sidebar, #sidebar-overlay, #float {
       position: relative;
       z-index: 10;
     }
+
     .main-content {
-      flex: 1;
       padding-top: 80px;
       display: flex;
-      flex-wrap: wrap;
-      align-items: flex-start;
-    }
-    .container {
-      flex: 1 1 0%;
+      flex-direction: column;
+      align-items: stretch;
       max-width: 1200px;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.8);
+      margin: auto;
+      padding-left: 20px;
+      padding-right: 20px;
     }
+
+    @media (min-width: 769px) {
+      .main-content {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 20px;
+      }
+    }
+
+    .editor {
+      flex: 1;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 6px;
+    }
+
+    .sidebar-wrapper {
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 6px;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    @media (min-width: 769px) {
+      .sidebar-wrapper {
+        width: 260px;
+        margin-top: 0;
+      }
+      .sidebar-toggle {
+        display: none;
+      }
+    }
+
     .form-group {
       margin-bottom: 15px;
     }
@@ -94,58 +121,6 @@
       font-size: 14px;
       color: #f44336;
     }
-    .sidebar-wrapper {
-      height: 100%;
-      width: 260px;
-      background: #1e1e1e;
-      transition: right 0.3s ease;
-    }
-    .sidebar-tools {
-      padding: 20px;
-    }
-    .sidebar-tools button {
-      width: 100%;
-      margin-bottom: 10px;
-    }
-
-    /* MOBILE: Tools toggleable */
-    @media (max-width: 768px) {
-      .sidebar-wrapper {
-        position: fixed;
-        top: 0;
-        right: -260px;
-        z-index: 999;
-      }
-      .sidebar-wrapper.open {
-        right: 0;
-      }
-      .sidebar-toggle {
-        display: inline-block;
-        margin-bottom: 20px;
-        background: #4CAF50;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        font-size: 16px;
-        cursor: pointer;
-      }
-      .mobile-only {
-        display: block;
-      }
-    }
-
-    /* DESKTOP: Tools always visible */
-    @media (min-width: 769px) {
-      .sidebar-wrapper {
-        position: static;
-      }
-      .sidebar-toggle {
-        display: none;
-      }
-      .mobile-only {
-        display: none;
-      }
-    }
   </style>
 </head>
 <body>
@@ -163,9 +138,8 @@
   </button>
 
   <div class="main-content">
-    <div class="container">
+    <div class="editor">
       <h1>Create New Post</h1>
-      <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Tools</button>
       <form id="postForm">
         <div class="form-group">
           <label for="postTitle">Post Title</label>
@@ -184,22 +158,202 @@
       <div class="preview" id="previewArea"></div>
     </div>
 
-    <div class="sidebar-wrapper" id="sidebarTools">
-      <div class="sidebar-tools">
-        <h2>Tools</h2>
-        <button onclick="toggleSidebar()" style="margin-bottom: 15px; background: #f44336;" class="mobile-only">✕ Close</button>
-        <button onclick="addElement('media')">Media</button>
-        <button onclick="addElement('text')">Text</button>
-        <button onclick="addElement('link')">Link</button>
-      </div>
+    <div class="sidebar-wrapper">
+      <h2>Tools</h2>
+      <button onclick="addElement('media')">Media</button>
+      <button onclick="addElement('text')">Text</button>
+      <button onclick="addElement('link')">Link</button>
     </div>
   </div>
 
   <div id="footer"></div>
 
-  <!-- JS stays unchanged -->
   <script>
-    // Your JavaScript logic here (same as previously given)
+    let elements = [];
+    let userData = null;
+    const slaves = ["783972385882767400", "947868777528307742", "835769112000593950", "1099047739209293944"];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const cookie = document.cookie.split("; ").find(r => r.startsWith("discordUser="));
+      if (!cookie) return location.href = "news.html";
+      try {
+        userData = JSON.parse(decodeURIComponent(cookie.split("=")[1]));
+        if (!slaves.includes(userData.id)) throw Error();
+      } catch {
+        return location.href = "news.html";
+      }
+
+      document.getElementById("postForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const title = document.getElementById("postTitle").value.trim();
+        const mainImage = document.getElementById("mainImage").value.trim();
+        const avatar = `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png?size=256`;
+        const username = userData.username;
+        const displayName = userData.global_name || userData.username;
+        const status = document.getElementById("statusMessage");
+
+        let html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>${title}</title></head>
+<body style="font-family: Arial; max-width: 800px; margin: auto; padding: 20px;">
+<h1>${title}</h1>
+<img src="${mainImage}" style="width: 100%; border-radius: 8px; margin-bottom: 20px;">`;
+
+        for (const el of elements) {
+          if (el.type === "media") {
+            const tag = el.mediaType === "image" || el.mediaType === "gif"
+              ? `<img src="${el.url}" style="max-width:100%; margin-bottom:20px;">`
+              : el.mediaType === "video"
+              ? `<video controls style="max-width:100%; margin-bottom:20px;"><source src="${el.url}"></video>`
+              : `<audio controls style="width:100%; margin-bottom:20px;"><source src="${el.url}"></audio>`;
+            html += tag + "\n";
+          } else if (el.type === "text") {
+            html += `<${el.size} style="font-family:${el.font};">${el.content}</${el.size}>\n`;
+          } else if (el.type === "link") {
+            html += el.mode === "link"
+              ? `<p><a href="${el.href}" target="_blank">${el.text}</a></p>\n`
+              : `<p><a href="${el.href}" target="_blank" style="background:#4CAF50; color:white; padding:10px 15px; border-radius:4px; text-decoration:none;">${el.text}</a></p>\n`;
+          }
+        }
+
+        html += `
+<hr style="margin-top: 40px; margin-bottom: 20px; border: none; border-top: 1px solid #ccc;">
+<h3 style="color: #888; font-weight: normal;">Author</h3>
+<div style="display: flex; align-items: center; gap: 15px; margin-top: 10px;">
+  <img src="${avatar}" alt="avatar" style="border-radius: 50%; width: 64px; height: 64px;">
+  <div>
+    <div style="font-size: 18px; font-weight: bold;">${displayName}</div>
+    <div style="margin-top: 5px; font-size: 14px; color: #aaa;">@${username}</div>
+    <div style="display: inline-block; margin-top: 6px; padding: 2px 8px; background: #e53935; color: white; border-radius: 12px; font-size: 12px; font-weight: bold;">DEV</div>
+  </div>
+</div>
+</body></html>`;
+
+        const blob = new Blob([html], { type: "text/html" });
+        const fileName = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".html";
+        const formData = new FormData();
+        formData.append("file", blob, fileName);
+        formData.append("payload_json", JSON.stringify({
+          username: "CraftersMC Post Bot",
+          content: `📝 New post created: **${title}** by ${displayName}`
+        }));
+
+        try {
+          const res = await fetch('https://webhook-manager.roumakdatta.workers.dev/post', {
+            method: "POST",
+            body: formData
+          });
+
+          if (res.ok) {
+            location.href = "news.html";
+          } else {
+            status.textContent = "Failed to publish post. Please try again.";
+          }
+        } catch {
+          status.textContent = "Network error. Please check your connection.";
+        }
+      });
+    });
+
+    function addElement(type) {
+      const options = document.getElementById('elementOptions');
+      options.innerHTML = '';
+
+      if (type === 'media') {
+        options.innerHTML = `
+          <label>Media URL</label>
+          <input type="text" id="mediaUrl">
+          <label>Media Type</label>
+          <select id="mediaType">
+            <option value="image">Image</option>
+            <option value="gif">GIF</option>
+            <option value="video">Video</option>
+            <option value="audio">Audio</option>
+          </select>
+          <button type="button" onclick="createPreviewElement('media')">Add Media</button>
+        `;
+      }
+
+      if (type === 'text') {
+        options.innerHTML = `
+          <label>Font</label>
+          <select id="textFont">
+            <option value="Arial">Arial</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Tahoma">Tahoma</option>
+          </select>
+          <label>Size</label>
+          <select id="textSize">
+            <option value="h1">H1</option>
+            <option value="h2">H2</option>
+            <option value="h3">H3</option>
+            <option value="h4">H4</option>
+          </select>
+          <label>Content</label>
+          <textarea id="textContent"></textarea>
+          <button type="button" onclick="createPreviewElement('text')">Add Text</button>
+        `;
+      }
+
+      if (type === 'link') {
+        options.innerHTML = `
+          <label>URL</label>
+          <input type="text" id="linkHref">
+          <label>Text</label>
+          <input type="text" id="linkText">
+          <label>Type</label>
+          <select id="linkType">
+            <option value="link">Hyperlink</option>
+            <option value="button">Button</option>
+          </select>
+          <button type="button" onclick="createPreviewElement('link')">Add Link</button>
+        `;
+      }
+    }
+
+    function createPreviewElement(type) {
+      const preview = document.getElementById('previewArea');
+      const el = document.createElement('div');
+      el.className = 'block';
+
+      if (type === 'media') {
+        const url = document.getElementById('mediaUrl').value;
+        const mediaType = document.getElementById('mediaType').value;
+        if (mediaType === 'image' || mediaType === 'gif') {
+          el.innerHTML = `<img src="${url}" style="max-width:100%; border-radius:4px;">`;
+        } else if (mediaType === 'video') {
+          el.innerHTML = `<video controls style="max-width:100%;"><source src="${url}"></video>`;
+        } else if (mediaType === 'audio') {
+          el.innerHTML = `<audio controls style="width:100%;"><source src="${url}"></audio>`;
+        }
+        elements.push({ type, url, mediaType });
+      }
+
+      if (type === 'text') {
+        const font = document.getElementById('textFont').value;
+        const size = document.getElementById('textSize').value;
+        const content = document.getElementById('textContent').value;
+        el.innerHTML = `<${size} style="font-family:${font};">${content}</${size}>`;
+        elements.push({ type, font, size, content });
+      }
+
+      if (type === 'link') {
+        const href = document.getElementById('linkHref').value;
+        const text = document.getElementById('linkText').value;
+        const mode = document.getElementById('linkType').value;
+        if (mode === 'link') {
+          el.innerHTML = `<a href="${href}" target="_blank">${text}</a>`;
+        } else {
+          el.innerHTML = `<a href="${href}" class="link-btn" target="_blank">${text}</a>`;
+        }
+        elements.push({ type, href, text, mode });
+      }
+
+      preview.appendChild(el);
+      document.getElementById('elementOptions').innerHTML = '';
+    }
   </script>
 </body>
 </html>
