@@ -10,11 +10,14 @@
   <link rel="stylesheet" href="css/essential.css">
   <script src="js/script.js" defer></script>
   <style>
-    body {
-      color: #ffffff;
-      font-family: MyFont, sans-serif;
+    html, body {
+      height: 100%;
       margin: 0;
       padding: 0;
+      color: #ffffff;
+      font-family: MyFont, sans-serif;
+      display: flex;
+      flex-direction: column;
     }
     .background {
       background: url("Backgrounds/IMG_4502.webp");
@@ -25,9 +28,20 @@
       width: 100%; height: 100%;
       z-index: -1;
     }
+    .top,
+    .sidebar,
+    #sidebar-overlay,
+    #float {
+      position: relative;
+      z-index: 10;
+    }
+    .main-content {
+      flex: 1;
+      padding-top: 80px; /* space for fixed header */
+    }
     .container {
       max-width: 1200px;
-      margin: 2rem auto;
+      margin: auto;
       padding: 20px;
       background-color: rgba(0, 0, 0, 0.8);
     }
@@ -105,6 +119,7 @@
   <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
   <button id="float">
     <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
     <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
@@ -112,12 +127,14 @@
     <span class="material-icons" id="scrollToTopBtn">north</span>
   </button>
 
-  <div class="container">
-    <div class="header">
-      <h1>Recent Posts</h1>
-      <a href="create.html" id="createBtn" class="create-btn" style="display: none;">Create Post</a>
+  <div class="main-content">
+    <div class="container">
+      <div class="header">
+        <h1>Recent Posts</h1>
+        <a href="create.html" id="createBtn" class="create-btn" style="display: none;">Create Post</a>
+      </div>
+      <div class="posts-grid" id="postsContainer"></div>
     </div>
-    <div class="posts-grid" id="postsContainer"></div>
   </div>
 
   <div id="footer"></div>
@@ -183,4 +200,3 @@
   </script>
 </body>
 </html>
-
