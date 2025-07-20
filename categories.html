@@ -160,42 +160,32 @@
       const urlParams = new URLSearchParams(window.location.search);
       const currentCategory = urlParams.get('cat');
       const currentNature = natureFilter || 'all';
-      function natureChange(item) {
-  const nature = formatNature(item.nature);
-  
-  if (nature === "stable") {
-    return "stable";
-  } else if (nature === "overpaid") {
-    return "overpaid";
-  } else {
-    return "underpaid";
-  }
-}
 
-const natureChangeText = natureChange(item);
+      const itemsHTML = filtered.map(item => {
+        const isSkyCanvas = item.name === "Sky Canvas";
+        const natureChangeText = (() => {
+          const nature = formatNature(item.nature);
+          if (nature === "stable") return "stable";
+          if (nature === "overpaid") return "overpaid";
+          return "underpaid";
+        })();
 
-      if (filtered.length > 0) {
-        const itemsHTML = filtered.map(item => {
-          const isSkyCanvas = item.name === "Sky Canvas";
-          return `
-            <div class="item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
-              <h2>${item.name}</h2>
-              ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="sky-canvas-img"' : ''}>` : ''}
-              <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
-              ${item.description ? `<p class="description">${item.description}</p>` : ''}
-              ${item.rarity ? `<p class="rarity-display"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
-              ${item.nature ? `<p class="nature ${natureChangeText}"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
-              ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
-              </div></div>
-            </div>`;
-        }).join('');
-        document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
-      } else {
-        document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
-      }
+        return `
+          <div class="item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
+            <h2>${item.name}</h2>
+            ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="sky-canvas-img"' : ''}>` : ''}
+            <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
+            ${item.description ? `<p class="description">${item.description}</p>` : ''}
+            ${item.rarity ? `<p class="rarity-display"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
+            ${item.nature ? `<p class="nature ${natureChangeText}"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
+            ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
+            </div></div>
+          </div>`;
+      }).join('');
+      document.getElementById('categoryItems').innerHTML = filtered.length > 0
+        ? `<div class="item-list">${itemsHTML}</div>`
+        : '<p>No items found in this category.</p>';
     }
-    
-    
 
     function formatNature(nature) {
       return nature.replace('[', '').replace(']', '').replace(/_/g, ' ').toLowerCase().trim();
