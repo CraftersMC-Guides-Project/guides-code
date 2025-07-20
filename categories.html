@@ -12,6 +12,26 @@
     img[alt="Sky Canvas"] {
       filter: brightness(90%) saturate(95%);
     }
+
+    #demandRanges {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .demand-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid #999;
+      border-radius: 4px;
+      background: #f3f3f3;
+      cursor: pointer;
+    }
+
+    .demand-btn.active {
+      background-color: #666;
+      color: white;
+    }
   </style>
   <script src="js/script.js"></script>
 </head>
@@ -22,20 +42,28 @@
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
   <span class="material-icons" id="scrollToTopBtn">north</span>
 
-  <div id="categoryFilter" style="display: flex; gap: 10px; justify-content: center; margin: 5rem 0; flex-wrap: wrap;">
-    <select id="demandFilter" style="padding: 0.5rem; font-size: 1rem;">
-      <option value="all">All Demands</option>
-      <option value="0-2">0 - 2</option>
-      <option value="3-5">3 - 5</option>
-      <option value="6-8">6 - 8</option>
-      <option value="9-10">9 - 10</option>
-    </select>
+  <!-- Filter Buttons -->
+  <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin: 5rem 1rem 2rem;">
+    <div id="categoryFilter" style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <button class="btn cat-filter-btn active" data-nature="all">All</button>
+      <button class="btn cat-filter-btn" data-nature="stable">Stable</button>
+      <button class="btn cat-filter-btn" data-nature="overpaid">Overpaid</button>
+      <button class="btn cat-filter-btn" data-nature="underpaid">Underpaid</button>
+    </div>
+    <div id="demandRanges">
+      <div class="demand-btn active" data-range="all">All Demands</div>
+      <div class="demand-btn" data-range="0-2">0–2</div>
+      <div class="demand-btn" data-range="3-5">3–5</div>
+      <div class="demand-btn" data-range="6-8">6–8</div>
+      <div class="demand-btn" data-range="9-10">9–10</div>
+    </div>
   </div>
 
   <div id="categoryItems"><p>Loading items...</p></div>
   <div id="footer"></div>
 
   <script>
+    let currentNatureFilter = 'all';
     let currentDemandRange = 'all';
 
     async function loadCategoryItems() {
@@ -65,6 +93,16 @@
       const items = window._allCategoryItems || [];
       let filtered = items;
 
+      if (currentNatureFilter !== 'all') {
+        filtered = filtered.filter(item => {
+          if (!item.nature) return false;
+          const nature = item.nature.toUpperCase();
+          return currentNatureFilter === 'stable' && nature.includes('STABLE') ||
+                 currentNatureFilter === 'overpaid' && nature.includes('OVERPAID') ||
+                 currentNatureFilter === 'underpaid' && nature.includes('UNDERPAID');
+        });
+      }
+
       if (currentDemandRange !== 'all') {
         const [min, max] = currentDemandRange.split('-').map(Number);
         filtered = filtered.filter(item => {
@@ -75,18 +113,20 @@
 
       const urlParams = new URLSearchParams(window.location.search);
       const currentCategory = urlParams.get('cat');
+      const currentNature = currentNatureFilter;
 
       if (filtered.length > 0) {
         const itemsHTML = filtered.map(item => {
           const isSkyCanvas = item.name === "Sky Canvas";
           return `
-            <div class="item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}'">
+            <div class="item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
               <h2>${item.name}</h2>
               ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="sky-canvas-img"' : ''}>` : ''}
               <div class="main-data-val">
                 <p><strong>ID:</strong> ${item.id}</p>
                 ${item.description ? `<p class="description">${item.description}</p>` : ''}
                 ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
+                ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
                 ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
               </div></div>
             </div>`;
@@ -97,22 +137,38 @@
       }
     }
 
-    function formatDemand(demand) {
-      return demand.replace('[', '').replace(']', '').trim();
-    }
-
     function parseDemandNumber(demandStr) {
       if (!demandStr) return null;
       const match = demandStr.match(/\[(\d+)\s*\/\s*10\]/);
       return match ? parseInt(match[1]) : null;
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    function formatNature(nature) {
+      return nature.replace('[', '').replace(']', '').replace(/_/g, ' ').toLowerCase().trim();
+    }
+
+    function formatDemand(demand) {
+      return demand.replace('[', '').replace(']', '').trim();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
       loadCategoryItems();
 
-      document.getElementById('demandFilter').addEventListener('change', function (e) {
-        currentDemandRange = e.target.value;
-        renderCategoryItems();
+      document.getElementById('categoryFilter').addEventListener('click', function (e) {
+        if (e.target.classList.contains('cat-filter-btn')) {
+          document.querySelectorAll('.cat-filter-btn').forEach(btn => btn.classList.remove('active'));
+          e.target.classList.add('active');
+          currentNatureFilter = e.target.getAttribute('data-nature');
+          renderCategoryItems();
+        }
+      });
+      document.getElementById('demandRanges').addEventListener('click', function (e) {
+        if (e.target.classList.contains('demand-btn')) {
+          document.querySelectorAll('.demand-btn').forEach(btn => btn.classList.remove('active'));
+          e.target.classList.add('active');
+          currentDemandRange = e.target.getAttribute('data-range');
+          renderCategoryItems();
+        }
       });
     });
   </script>
