@@ -23,12 +23,6 @@
   <span class="material-icons" id="scrollToTopBtn">north</span>
 
   <div id="categoryFilter" style="display: flex; gap: 10px; justify-content: center; margin: 5rem 0; flex-wrap: wrap;">
-    <button class="btn cat-filter-btn active" data-nature="all">All</button>
-    <button class="btn cat-filter-btn" data-nature="stable">Stable</button>
-    <button class="btn cat-filter-btn" data-nature="overpaid">Overpaid</button>
-    <button class="btn cat-filter-btn" data-nature="underpaid">Underpaid</button>
-
-    <!-- Demand filter -->
     <select id="demandFilter" style="padding: 0.5rem; font-size: 1rem;">
       <option value="all">All Demands</option>
       <option value="0-2">0 - 2</option>
@@ -42,8 +36,6 @@
   <div id="footer"></div>
 
   <script>
-    let pricesMap = new Map();
-    let currentNatureFilter = 'all';
     let currentDemandRange = 'all';
 
     async function loadCategoryItems() {
@@ -55,30 +47,13 @@
       }
 
       try {
-        const [marketRes, pricesRes] = await Promise.all([
-          fetch('market/market.txt'),
-          fetch('market/mprices.txt')
-        ]);
+        const marketRes = await fetch('market/market.txt');
         const marketData = await marketRes.json();
-        const pricesData = await pricesRes.text();
-
-        pricesData.split('\n').forEach(line => {
-          const [id, arrayStr] = line.split(':').map(part => part.trim());
-          if (id && arrayStr) {
-            try {
-              const parsedArray = JSON.parse(arrayStr);
-              if (Array.isArray(parsedArray) && parsedArray.length === 2) {
-                pricesMap.set(id, parsedArray);
-              }
-            } catch (e) {
-              console.warn(`Invalid price format for ID ${id}`, e);
-            }
-          }
-        });
 
         window._allCategoryItems = marketData.filter(item =>
           item.category && item.category.toLowerCase() === category.toLowerCase()
         );
+
         renderCategoryItems();
       } catch (error) {
         console.error('Error loading category items:', error);
@@ -90,36 +65,29 @@
       const items = window._allCategoryItems || [];
       let filtered = items;
 
-
       if (currentDemandRange !== 'all') {
         const [min, max] = currentDemandRange.split('-').map(Number);
         filtered = filtered.filter(item => {
-          const priceData = pricesMap.get(item.id);
-          if (!priceData || isNaN(priceData[0])) return false;
-          return priceData[0] >= min && priceData[0] <= max;
+          const demand = parseDemandNumber(item.demand);
+          return demand !== null && demand >= min && demand <= max;
         });
       }
 
       const urlParams = new URLSearchParams(window.location.search);
       const currentCategory = urlParams.get('cat');
-      const currentNature = currentNatureFilter || 'all';
 
       if (filtered.length > 0) {
         const itemsHTML = filtered.map(item => {
           const isSkyCanvas = item.name === "Sky Canvas";
-          const priceData = pricesMap.get(item.id);
-          const demandValue = priceData ? priceData[0] : null;
-          const demandDisplay = demandValue != null ? `<p class="demand"><strong>Demand:</strong> ${demandValue}</p>` : '';
           return `
-            <div class="item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
+            <div class="item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}'">
               <h2>${item.name}</h2>
               ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="sky-canvas-img"' : ''}>` : ''}
               <div class="main-data-val">
                 <p><strong>ID:</strong> ${item.id}</p>
                 ${item.description ? `<p class="description">${item.description}</p>` : ''}
                 ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
-                ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
-                ${demandDisplay}
+                ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
               </div></div>
             </div>`;
         }).join('');
@@ -129,14 +97,18 @@
       }
     }
 
-    function formatNature(nature) {
-      return nature.replace('[', '').replace(']', '').replace(/_/g, ' ').toLowerCase().trim();
+    function formatDemand(demand) {
+      return demand.replace('[', '').replace(']', '').trim();
+    }
+
+    function parseDemandNumber(demandStr) {
+      if (!demandStr) return null;
+      const match = demandStr.match(/\[(\d+)\s*\/\s*10\]/);
+      return match ? parseInt(match[1]) : null;
     }
 
     document.addEventListener('DOMContentLoaded', function () {
       loadCategoryItems();
-
-
 
       document.getElementById('demandFilter').addEventListener('change', function (e) {
         currentDemandRange = e.target.value;
