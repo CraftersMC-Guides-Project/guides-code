@@ -160,18 +160,19 @@
       const urlParams = new URLSearchParams(window.location.search);
       const currentCategory = urlParams.get('cat');
       const currentNature = natureFilter || 'all';
-      function natureChange(){
-        if (formatNature(item.nature) == "stable"){
-        return "satble";
-    }
-    else if(formatNature(item.nature) == "overpaid"){
-      return "overpaid";
-    }
-    else{
-      return "underpaid";
-    }}
-      const natureChangeText = natureChange();
-      
+      function natureChange(item) {
+  const nature = formatNature(item.nature);
+  
+  if (nature === "stable") {
+    return "stable";
+  } else if (nature === "overpaid") {
+    return "overpaid";
+  } else {
+    return "underpaid";
+  }
+}
+
+const natureChangeText = natureChange(item);
 
       if (filtered.length > 0) {
         const itemsHTML = filtered.map(item => {
