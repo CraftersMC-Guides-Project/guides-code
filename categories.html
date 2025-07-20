@@ -160,6 +160,17 @@
       const urlParams = new URLSearchParams(window.location.search);
       const currentCategory = urlParams.get('cat');
       const currentNature = natureFilter || 'all';
+      function natureChange(){
+        if (formatNature(item.nature) == "stable"){
+        return "satble";
+    }
+    else if(formatNature(item.nature) == "overpaid"){
+      return "overpaid";
+    }
+    else{
+      return "underpaid";
+    }}
+      const natureChangeText = natureChange();
       
 
       if (filtered.length > 0) {
@@ -172,7 +183,7 @@
               <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
               ${item.description ? `<p class="description">${item.description}</p>` : ''}
               ${item.rarity ? `<p class="rarity-display"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
-              ${item.nature ? `<p class="nature" id="natureChange"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
+              ${item.nature ? `<p class="nature ${natureChangeText}"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
               ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
               </div></div>
             </div>`;
@@ -182,15 +193,7 @@
         document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
       }
     }
-    if (formatNature(item.nature) == "stable"){
-        document.getElementById("natureChange").classList.add(stable);
-    }
-    else if(formatNature(item.nature) == "overpaid"){
-      document.getElementById("natureChange").classList.add(overpaid);
-    }
-    else{
-      document.getElementById("natureChange").classList.add(underpaid);
-    }
+    
     
 
     function formatNature(nature) {
