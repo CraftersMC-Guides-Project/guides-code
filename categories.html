@@ -13,6 +13,7 @@
       filter: brightness(90%) saturate(95%);
     }
 
+    /* Demand Slider Styles */
     #demandSliderBox {
       margin-top: 1rem;
       text-align: center;
@@ -22,48 +23,38 @@
       position: relative;
       width: 220px;
       margin: 1rem auto;
+      height: 30px;
     }
 
     .range-slider input[type="range"] {
+      pointer-events: none;
       position: absolute;
       width: 100%;
-      height: 4px;
-      background: transparent;
-      pointer-events: none;
+      height: 8px;
+      background: none;
+      margin: 0;
+      padding: 0;
+      z-index: 2;
     }
 
     .range-slider input[type="range"]::-webkit-slider-thumb {
-      pointer-events: auto;
+      pointer-events: all;
       appearance: none;
       height: 16px;
       width: 16px;
       border-radius: 50%;
-      background: teal;
+      background: red;
       cursor: pointer;
-      border: 1px solid #333;
+      border: none;
+      margin-top: -4px;
     }
 
     .slider-track {
       position: absolute;
       height: 4px;
       background: teal;
+      top: 12px;
       z-index: 1;
-      top: 6px;
-    }
-
-    #slider-label {
-      font-size: 0.9rem;
-      margin-bottom: 0.5rem;
-    }
-
-    #goBtn {
-      margin-top: 1rem;
-      padding: 6px 16px;
-      border-radius: 4px;
-      font-size: 0.9rem;
-      border: 1px solid #333;
-      background: #f0f0f0;
-      cursor: pointer;
     }
   </style>
   <script src="js/script.js"></script>
@@ -75,6 +66,7 @@
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
   <span class="material-icons" id="scrollToTopBtn">north</span>
 
+  <!-- Filters -->
   <div id="categoryFilter" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 5rem;">
     <button class="btn cat-filter-btn active" data-nature="all">All</button>
     <button class="btn cat-filter-btn" data-nature="stable">Stable</button>
@@ -82,14 +74,14 @@
     <button class="btn cat-filter-btn" data-nature="underpaid">Underpaid</button>
   </div>
 
+  <!-- Demand Range Slider -->
   <div id="demandSliderBox">
-    <div id="slider-label"><strong>Demand: </strong><span id="rangeVal">1 – 10</span></div>
+    <div id="slider-label"><strong>Demand:</strong> <span id="rangeVal">1 – 10</span></div>
     <div class="range-slider">
+      <div class="slider-track" id="sliderTrack"></div>
       <input type="range" id="minRange" min="1" max="10" value="1">
       <input type="range" id="maxRange" min="1" max="10" value="10">
-      <div class="slider-track" id="sliderTrack"></div>
     </div>
-    <button id="goBtn">Go</button>
   </div>
 
   <div id="categoryItems"><p>Loading items...</p></div>
@@ -127,6 +119,7 @@
       const items = window._allCategoryItems || [];
       let filtered = items;
 
+      // Nature filter
       if (currentNatureFilter !== 'all') {
         filtered = filtered.filter(item => {
           if (!item.nature) return false;
@@ -137,6 +130,7 @@
         });
       }
 
+      // Demand filter
       filtered = filtered.filter(item => {
         const demand = parseDemandNumber(item.demand);
         return demand !== null && demand >= minDemandVal && demand <= maxDemandVal;
@@ -185,6 +179,17 @@
     document.addEventListener('DOMContentLoaded', () => {
       loadCategoryItems();
 
+      // Nature filter
+      document.getElementById('categoryFilter').addEventListener('click', function (e) {
+        if (e.target.classList.contains('cat-filter-btn')) {
+          document.querySelectorAll('.cat-filter-btn').forEach(btn => btn.classList.remove('active'));
+          e.target.classList.add('active');
+          currentNatureFilter = e.target.getAttribute('data-nature');
+          renderCategoryItems();
+        }
+      });
+
+      // Demand dual-slider logic
       const minSlider = document.getElementById("minRange");
       const maxSlider = document.getElementById("maxRange");
       const sliderTrack = document.getElementById("sliderTrack");
@@ -205,20 +210,201 @@
         const percent2 = ((max - 1) / 9) * 100;
         sliderTrack.style.left = percent1 + "%";
         sliderTrack.style.width = (percent2 - percent1) + "%";
+
+        minDemandVal = min;
+        maxDemandVal = max;
+        renderCategoryItems();
       }
 
       minSlider.addEventListener("input", updateSliderUI);
       maxSlider.addEventListener("input", updateSliderUI);
       updateSliderUI();
+    });
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Category Items</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="css/essential.css">
+  <link rel="stylesheet" href="css/categories.css">
+  <style>
+    img[alt="Sky Canvas"] {
+      filter: brightness(90%) saturate(95%);
+    }
 
-      document.getElementById('goBtn').addEventListener('click', () => {
-        minDemandVal = parseInt(minSlider.value);
-        maxDemandVal = parseInt(maxSlider.value);
-        if (minDemandVal > maxDemandVal) [minDemandVal, maxDemandVal] = [maxDemandVal, minDemandVal];
+    /* Demand Slider Styles */
+    #demandSliderBox {
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .range-slider {
+      position: relative;
+      width: 220px;
+      margin: 1rem auto;
+      height: 30px;
+    }
+
+    .range-slider input[type="range"] {
+      pointer-events: none;
+      position: absolute;
+      width: 100%;
+      height: 8px;
+      background: none;
+      margin: 0;
+      padding: 0;
+      z-index: 2;
+    }
+
+    .range-slider input[type="range"]::-webkit-slider-thumb {
+      pointer-events: all;
+      appearance: none;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background: red;
+      cursor: pointer;
+      border: none;
+      margin-top: -4px;
+    }
+
+    .slider-track {
+      position: absolute;
+      height: 4px;
+      background: teal;
+      top: 12px;
+      z-index: 1;
+    }
+  </style>
+  <script src="js/script.js"></script>
+</head>
+<body>
+  <div id="loader"><div></div><div></div><div></div></div>
+  <div class="top"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <span class="material-icons" id="scrollToTopBtn">north</span>
+
+  <!-- Filters -->
+  <div id="categoryFilter" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 5rem;">
+    <button class="btn cat-filter-btn active" data-nature="all">All</button>
+    <button class="btn cat-filter-btn" data-nature="stable">Stable</button>
+    <button class="btn cat-filter-btn" data-nature="overpaid">Overpaid</button>
+    <button class="btn cat-filter-btn" data-nature="underpaid">Underpaid</button>
+  </div>
+
+  <!-- Demand Range Slider -->
+  <div id="demandSliderBox">
+    <div id="slider-label"><strong>Demand:</strong> <span id="rangeVal">1 – 10</span></div>
+    <div class="range-slider">
+      <div class="slider-track" id="sliderTrack"></div>
+      <input type="range" id="minRange" min="1" max="10" value="1">
+      <input type="range" id="maxRange" min="1" max="10" value="10">
+    </div>
+  </div>
+
+  <div id="categoryItems"><p>Loading items...</p></div>
+  <div id="footer"></div>
+
+  <script>
+    let currentNatureFilter = 'all';
+    let minDemandVal = 1;
+    let maxDemandVal = 10;
+
+    async function loadCategoryItems() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const category = urlParams.get('cat');
+      if (!category) {
+        document.getElementById('categoryItems').innerHTML = '<p>No category specified.</p>';
+        return;
+      }
+
+      try {
+        const marketRes = await fetch('market/market.txt');
+        const marketData = await marketRes.json();
+
+        window._allCategoryItems = marketData.filter(item =>
+          item.category && item.category.toLowerCase() === category.toLowerCase()
+        );
+
         renderCategoryItems();
+      } catch (error) {
+        console.error('Error loading category items:', error);
+        document.getElementById('categoryItems').innerHTML = '<p>Failed to load items.</p>';
+      }
+    }
+
+    function renderCategoryItems() {
+      const items = window._allCategoryItems || [];
+      let filtered = items;
+
+      // Nature filter
+      if (currentNatureFilter !== 'all') {
+        filtered = filtered.filter(item => {
+          if (!item.nature) return false;
+          const nature = item.nature.toUpperCase();
+          return currentNatureFilter === 'stable' && nature.includes('STABLE') ||
+                 currentNatureFilter === 'overpaid' && nature.includes('OVERPAID') ||
+                 currentNatureFilter === 'underpaid' && nature.includes('UNDERPAID');
+        });
+      }
+
+      // Demand filter
+      filtered = filtered.filter(item => {
+        const demand = parseDemandNumber(item.demand);
+        return demand !== null && demand >= minDemandVal && demand <= maxDemandVal;
       });
 
-      // Nature buttons
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentCategory = urlParams.get('cat');
+      const currentNature = currentNatureFilter;
+
+      if (filtered.length > 0) {
+        const itemsHTML = filtered.map(item => {
+          const isSkyCanvas = item.name === "Sky Canvas";
+          return `
+            <div class="item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
+              <h2>${item.name}</h2>
+              ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="sky-canvas-img"' : ''}>` : ''}
+              <div class="main-data-val">
+                <p><strong>ID:</strong> ${item.id}</p>
+                ${item.description ? `<p class="description">${item.description}</p>` : ''}
+                ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
+                ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
+                ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
+              </div></div>
+            </div>`;
+        }).join('');
+        document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
+      } else {
+        document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
+      }
+    }
+
+    function parseDemandNumber(demandStr) {
+      if (!demandStr) return null;
+      const match = demandStr.match(/\[(\d+)\s*\/\s*10\]/);
+      return match ? parseInt(match[1]) : null;
+    }
+
+    function formatNature(nature) {
+      return nature.replace('[', '').replace(']', '').replace(/_/g, ' ').toLowerCase().trim();
+    }
+
+    function formatDemand(demand) {
+      return demand.replace('[', '').replace(']', '').trim();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCategoryItems();
+
+      // Nature filter
       document.getElementById('categoryFilter').addEventListener('click', function (e) {
         if (e.target.classList.contains('cat-filter-btn')) {
           document.querySelectorAll('.cat-filter-btn').forEach(btn => btn.classList.remove('active'));
@@ -227,6 +413,37 @@
           renderCategoryItems();
         }
       });
+
+      // Demand dual-slider logic
+      const minSlider = document.getElementById("minRange");
+      const maxSlider = document.getElementById("maxRange");
+      const sliderTrack = document.getElementById("sliderTrack");
+      const sliderLabel = document.getElementById("rangeVal");
+
+      function updateSliderUI() {
+        let min = parseInt(minSlider.value);
+        let max = parseInt(maxSlider.value);
+
+        if (min > max) {
+          [minSlider.value, maxSlider.value] = [maxSlider.value, minSlider.value];
+          min = parseInt(minSlider.value);
+          max = parseInt(maxSlider.value);
+        }
+
+        sliderLabel.textContent = `${min} – ${max}`;
+        const percent1 = ((min - 1) / 9) * 100;
+        const percent2 = ((max - 1) / 9) * 100;
+        sliderTrack.style.left = percent1 + "%";
+        sliderTrack.style.width = (percent2 - percent1) + "%";
+
+        minDemandVal = min;
+        maxDemandVal = max;
+        renderCategoryItems();
+      }
+
+      minSlider.addEventListener("input", updateSliderUI);
+      maxSlider.addEventListener("input", updateSliderUI);
+      updateSliderUI();
     });
   </script>
 </body>
