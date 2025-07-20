@@ -13,24 +13,38 @@
       filter: brightness(90%) saturate(95%);
     }
 
-    #demandRanges {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
+    #demandSliderBox {
+      text-align: center;
+      margin-top: 1rem;
     }
 
-    .demand-btn {
-      padding: 0.5rem 1rem;
-      border: 1px solid #999;
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 1rem;
+    }
+
+    .slider-container input[type="range"] {
+      width: 200px;
+    }
+
+    #slider-values {
+      font-size: 0.9rem;
+    }
+
+    #goBtn {
+      padding: 6px 16px;
       border-radius: 4px;
-      background: #f3f3f3;
+      font-size: 0.9rem;
+      border: 1px solid #333;
+      background: #f0f0f0;
       cursor: pointer;
     }
 
-    .demand-btn.active {
-      background-color: #666;
-      color: white;
+    #categoryFilter {
+      margin-bottom: 1rem;
     }
   </style>
   <script src="js/script.js"></script>
@@ -42,20 +56,20 @@
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
   <span class="material-icons" id="scrollToTopBtn">north</span>
 
-  <!-- Filter Buttons -->
-  <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin: 5rem 1rem 2rem;">
-    <div id="categoryFilter" style="display: flex; gap: 10px; flex-wrap: wrap;">
-      <button class="btn cat-filter-btn active" data-nature="all">All</button>
-      <button class="btn cat-filter-btn" data-nature="stable">Stable</button>
-      <button class="btn cat-filter-btn" data-nature="overpaid">Overpaid</button>
-      <button class="btn cat-filter-btn" data-nature="underpaid">Underpaid</button>
-    </div>
-    <div id="demandRanges">
-      <div class="demand-btn active" data-range="all">All Demands</div>
-      <div class="demand-btn" data-range="0-2">0–2</div>
-      <div class="demand-btn" data-range="3-5">3–5</div>
-      <div class="demand-btn" data-range="6-8">6–8</div>
-      <div class="demand-btn" data-range="9-10">9–10</div>
+  <div id="categoryFilter" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 5rem;">
+    <button class="btn cat-filter-btn active" data-nature="all">All</button>
+    <button class="btn cat-filter-btn" data-nature="stable">Stable</button>
+    <button class="btn cat-filter-btn" data-nature="overpaid">Overpaid</button>
+    <button class="btn cat-filter-btn" data-nature="underpaid">Underpaid</button>
+  </div>
+
+  <div id="demandSliderBox">
+    <label><strong>Demand Range</strong></label>
+    <div class="slider-container">
+      <input type="range" id="minDemand" min="1" max="10" value="1">
+      <input type="range" id="maxDemand" min="1" max="10" value="10">
+      <div id="slider-values">1 – 10</div>
+      <button id="goBtn">Go</button>
     </div>
   </div>
 
@@ -64,7 +78,8 @@
 
   <script>
     let currentNatureFilter = 'all';
-    let currentDemandRange = 'all';
+    let minDemandVal = 1;
+    let maxDemandVal = 10;
 
     async function loadCategoryItems() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -93,6 +108,7 @@
       const items = window._allCategoryItems || [];
       let filtered = items;
 
+      // Filter by nature
       if (currentNatureFilter !== 'all') {
         filtered = filtered.filter(item => {
           if (!item.nature) return false;
@@ -103,13 +119,11 @@
         });
       }
 
-      if (currentDemandRange !== 'all') {
-        const [min, max] = currentDemandRange.split('-').map(Number);
-        filtered = filtered.filter(item => {
-          const demand = parseDemandNumber(item.demand);
-          return demand !== null && demand >= min && demand <= max;
-        });
-      }
+      // Filter by demand
+      filtered = filtered.filter(item => {
+        const demand = parseDemandNumber(item.demand);
+        return demand !== null && demand >= minDemandVal && demand <= maxDemandVal;
+      });
 
       const urlParams = new URLSearchParams(window.location.search);
       const currentCategory = urlParams.get('cat');
@@ -154,6 +168,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       loadCategoryItems();
 
+      // Nature buttons
       document.getElementById('categoryFilter').addEventListener('click', function (e) {
         if (e.target.classList.contains('cat-filter-btn')) {
           document.querySelectorAll('.cat-filter-btn').forEach(btn => btn.classList.remove('active'));
@@ -162,13 +177,28 @@
           renderCategoryItems();
         }
       });
-      document.getElementById('demandRanges').addEventListener('click', function (e) {
-        if (e.target.classList.contains('demand-btn')) {
-          document.querySelectorAll('.demand-btn').forEach(btn => btn.classList.remove('active'));
-          e.target.classList.add('active');
-          currentDemandRange = e.target.getAttribute('data-range');
-          renderCategoryItems();
-        }
+
+      // Range slider UI
+      const minSlider = document.getElementById('minDemand');
+      const maxSlider = document.getElementById('maxDemand');
+      const sliderValues = document.getElementById('slider-values');
+      const goBtn = document.getElementById('goBtn');
+
+      function updateSliderLabel() {
+        let minVal = parseInt(minSlider.value);
+        let maxVal = parseInt(maxSlider.value);
+        if (minVal > maxVal) [minSlider.value, maxSlider.value] = [maxSlider.value, minSlider.value];
+        sliderValues.textContent = `${minSlider.value} – ${maxSlider.value}`;
+      }
+
+      minSlider.addEventListener('input', updateSliderLabel);
+      maxSlider.addEventListener('input', updateSliderLabel);
+
+      goBtn.addEventListener('click', () => {
+        minDemandVal = parseInt(minSlider.value);
+        maxDemandVal = parseInt(maxSlider.value);
+        if (minDemandVal > maxDemandVal) [minDemandVal, maxDemandVal] = [maxDemandVal, minDemandVal];
+        renderCategoryItems();
       });
     });
   </script>
