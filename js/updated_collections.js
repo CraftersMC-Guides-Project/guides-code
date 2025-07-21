@@ -939,7 +939,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 8,
-                    "name": "Unknown",
+                    "name": "club32",
                     "score": "N/A"
                 },
                 {
