@@ -1,139 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Skimmer Application</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="../css/essential.css">
-    <link rel="stylesheet" href="../css/SkillCalculator.css">
-      <link rel="stylesheet" href="css/essential.css" />
-    <script src="js/script.js"></script>
-    <style>
-        .l {
-            margin-top:5rem;
-        }
-        h3 {
-            font-family: 'MyFont';
-            width: 100% ;
-            text-align: center;
-            margin-bottom: 10px;
-            background: transparent;
-            padding: 8px;
-            color: #242424;
-            background-color: #c6c6c6;
-            box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 3px #777 inset !important;
-        }
-        .lvlbtn-container {
-            margin:5px;
-            display: flex;
-            flex-wrap:wrap;
-            justify-content: center ;
-            justify-content: space-bettween;
-            
-        }
-        .lvlbtn {
-            margin-left:7px;
-            margin-right:7px;
-            font-family: 'MyFont';
-            width: 25% ;
-            text-align: center;
-            margin-bottom: 10px;
-            background: transparent;
-            padding: 8px;
-            color: #242424;
-            background-color: #c6c6c6;
-            box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 3px #777 inset !important;
-        
-        }
-        .lvlbtn:hover {
-            border: 0px solid #fff;
-            box-shadow: 2px 2px 0 0 #2ccb1d inset,-1px -1px 0px 3px #1d681a inset;
-            background: #218306;
-            color: #fff !important;
-        }
-        .result {
-            font-family: 'MyFont';
-            width: 80% ;
-            text-align: center;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            background: transparent;
-            padding: 8px;
-            color: #242424;
-            background-color: #c6c6c6;
-            box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 3px #777 inset !important;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SKILL CALCULATOR</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../css/essential.css">
+  <link rel="stylesheet" href="../css/SkillCalculator.css">
+  <link rel="stylesheet" href="css/essential.css" />
+  <style>
+    .l {
+      margin-top: 5rem;
+    }
+
+    h3 {
+      font-family: 'MyFont';
+      width: 100%;
+      text-align: center;
+      margin-bottom: 10px;
+      background: transparent;
+      padding: 8px;
+      color: #242424;
+      background-color: #c6c6c6;
+      box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 3px #777 inset !important;
+    }
+
+    .lvlbtn-container {
+      margin: 5px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .lvlbtn {
+      value: "1";
+      margin: 7px;
+      font-family: 'MyFont';
+      width: 25%;
+      text-align: center;
+      margin-bottom: 10px;
+      background: transparent;
+      padding: 8px;
+      color: #242424;
+      background-color: #c6c6c6;
+      box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 3px #777 inset !important;
+      transition: border 0.3s ease;
+    }
+
+    .lvlbtn:hover {
+      border: 0px solid #fff;
+      box-shadow: 2px 2px 0 0 #2ccb1d inset,-1px -1px 0px 3px #1d681a inset;
+      background: #218306;
+      color: #fff !important;
+    }
+
+    .btncolor {
+      border: 3px solid #007BFF !important; /* Nice blue */
+      box-shadow: 0 0 10px #007BFF;
+      transition: border 0.3s ease;
+    }
+
+    .result {
+      font-family: 'MyFont';
+      width: 80%;
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      background: transparent;
+      padding: 8px;
+      color: #242424;
+      background-color: #c6c6c6;
+      box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 3px #777 inset !important;
+    }
+  </style>
 </head>
 <body>
- <div id="loader">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-    <div class="background"></div>
-    <div class="top"></div>
-    <div class="sidebar" id="sidebar"></div>
+  <div id="loader"><div></div><div></div><div></div></div>
+  <div class="background"></div>
+  <div class="top"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <span class="material-icons" id="scrollToTopBtn">north</span>
+  <div class="l"></div>
 
-    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-    <span class="material-icons" id="scrollToTopBtn">north</span>
-    <div class="l"></div>
-    <div class="lvlbtn-container">
-    <div class="lvlbtn">Level 1</div>
-    <div class="lvlbtn">Level 2</div>
-    <div class="lvlbtn">Level 3</div>
-    <div class="lvlbtn">Level 4</div>
-    <div class="lvlbtn">Level 5</div>
-    <div class="lvlbtn">Level 6</div>
-    <div class="lvlbtn">Level 7</div>
-    <div class="lvlbtn">Level 8</div>
-    <div class="lvlbtn">Level 9</div>
-    <div class="lvlbtn">Level 10</div>
-    <div class="lvlbtn">Level 11</div>
-    <div class="lvlbtn">Level 12</div>
-    <div class="lvlbtn">Level 13</div>
-    <div class="lvlbtn">Level 14</div>
-    <div class="lvlbtn">Level 15</div>
-    <div class="lvlbtn">Level 16</div>
-    <div class="lvlbtn">Level 17</div>
-    <div class="lvlbtn">Level 18</div>
-    <div class="lvlbtn">Level 19</div>
-    <div class="lvlbtn">Level 20</div>
-    <div class="lvlbtn">Level 21</div>
-    <div class="lvlbtn">Level 22</div>
-    <div class="lvlbtn">Level 23</div>
-    <div class="lvlbtn">Level 24</div>
-    <div class="lvlbtn">Level 25</div>
-    <div class="lvlbtn">Level 26</div>
-    <div class="lvlbtn">Level 27</div>
-    <div class="lvlbtn">Level 28</div>
-    <div class="lvlbtn">Level 29</div>
-    <div class="lvlbtn">Level 30</div>
-    <div class="lvlbtn">Level 31</div>
-    <div class="lvlbtn">Level 32</div>
-    <div class="lvlbtn">Level 33</div>
-    <div class="lvlbtn">Level 34</div>
-    <div class="lvlbtn">Level 35</div>
-    <div class="lvlbtn">Level 36</div>
-    <div class="lvlbtn">Level 37</div>
-    <div class="lvlbtn">Level 38</div>
-    <div class="lvlbtn">Level 39</div>
-    <div class="lvlbtn">Level 40</div>
-    <div class="lvlbtn">Level 41</div>
-    <div class="lvlbtn">Level 42</div>
-    <div class="lvlbtn">Level 43</div>
-    <div class="lvlbtn">Level 44</div>
-    <div class="lvlbtn">Level 45</div>
-    <div class="lvlbtn">Level 46</div>
-    <div class="lvlbtn">Level 47</div>
-    <div class="lvlbtn">Level 48</div>
-    <div class="lvlbtn">Level 49</div>
-    <div class="lvlbtn">Level 50</div>
-    </div>
-    <div class=lvlbtn-container>
+  <div class="lvlbtn-container">
+    <!-- LEVEL BUTTONS: Value="1" added -->
+    ${[...Array(50)].map((_, i) =>
+      `<div class="lvlbtn" value="1">Level ${i + 1}</div>`).join('\n')}
+  </div>
+
+  <div class="lvlbtn-container">
     <div class="result">Result</div>
-    </div>
+  </div>
+
+  <script>
+    const maxSelections = 2;
+    const buttons = document.querySelectorAll('.lvlbtn');
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const selected = document.querySelectorAll('.lvlbtn.btncolor');
+
+        if (btn.classList.contains('btncolor')) {
+          btn.classList.remove('btncolor'); // Unselect
+        } else {
+          if (selected.length < maxSelections) {
+            btn.classList.add('btncolor'); // Select
+          } else {
+            // Optional: alert or ignore click
+            selected[0].classList.remove('btncolor'); // Remove oldest
+            btn.classList.add('btncolor'); // Add new
+          }
+        }
+      });
+    });
+  </script>
 </body>
 </html>
