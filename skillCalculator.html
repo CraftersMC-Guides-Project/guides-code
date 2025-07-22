@@ -93,8 +93,8 @@
     <p class="calcText">he</p>
     <div class="lvlbtn-container">
         
-    <div class="lvlbtn">Level 1</div>
-    <div class="lvlbtn">Level 2</div>
+    <div class="lvlbtn" value="1">Level 1</div>
+    <div class="lvlbtn" value="2">Level 2</div>
     <div class="lvlbtn">Level 3</div>
     <div class="lvlbtn">Level 4</div>
     <div class="lvlbtn">Level 5</div>
@@ -148,7 +148,44 @@
     <div class="result">Result</div>
     </div>
     <script>
-        
+  const buttons = document.querySelectorAll('.lvlbtn');
+  const output = document.getElementById('calcText');
+
+  let selectedButtons = [];
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const value = btn.getAttribute('value');
+
+      if (btn.classList.contains('lvlcolor')) {
+        // Unselect the button
+        btn.classList.remove('lvlcolor');
+        selectedButtons = selectedButtons.filter(b => b !== btn);
+      } else {
+        if (selectedButtons.length < 2) {
+          btn.classList.add('lvlcolor');
+          selectedButtons.push(btn);
+        } else {
+          // Remove the first selected one
+          selectedButtons[0].classList.remove('lvlcolor');
+          selectedButtons.shift();
+
+          btn.classList.add('lvlcolor');
+          selectedButtons.push(btn);
+        }
+      }
+
+      // Update the output
+      const values = selectedButtons.map(b => b.getAttribute('value'));
+      if (values.length === 1) {
+        output.innerText = `Value1 = ${values[0]}`;
+      } else if (values.length === 2) {
+        output.innerText = `Value1 = ${values[0]} + +{${values[1]}}`;
+      } else {
+        output.innerText = '';
+      }
+    });
+  });
     </script>
 </body>
 </html>
