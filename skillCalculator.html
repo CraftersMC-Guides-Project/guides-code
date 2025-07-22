@@ -152,36 +152,44 @@
     <div class="result">Result</div>
     </div>
     <script>
+  <script>
   const buttons = document.querySelectorAll('.lvlbtn');
   const output = document.getElementById('calcText');
 
-  let selectedButtons = [];
+  let selected = [];
 
   buttons.forEach(btn => {
     btn.addEventListener('click', () => {
-      const value = btn.getAttribute('value');
-
       if (btn.classList.contains('lvlcolor')) {
-        // Unselect the button
+        // Deselect if already selected
         btn.classList.remove('lvlcolor');
-        selectedButtons = selectedButtons.filter(b => b !== btn);
+        selected = selected.filter(b => b !== btn);
       } else {
-        if (selectedButtons.length < 3) {
+        if (selected.length < 2) {
           btn.classList.add('lvlcolor');
-          selectedButtons.push(btn);
+          selected.push(btn);
         } else {
-          // Remove the first selected one
-          selectedButtons[0].classList.remove('lvlcolor');
-          selectedButtons.shift();
-
+          // Replace the first selected button
+          selected[0].classList.remove('lvlcolor');
+          selected.shift();
           btn.classList.add('lvlcolor');
-          selectedButtons.push(btn);
+          selected.push(btn);
         }
       }
 
-      // Update the output
-      const values = selectedButtons.map(b => b.getAttribute('value'));
-      document.getElementById("calcText").textContect = `${values[0]}+${values[1]}`;
+      // Display the selected values
+      if (selected.length === 1) {
+        output.textContent = selected[0].getAttribute('value');
+      } else if (selected.length === 2) {
+        const v1 = selected[0].getAttribute('value');
+        const v2 = selected[1].getAttribute('value');
+        output.textContent = `${v1} + ${v2}`;
+      } else {
+        output.textContent = '';
+      }
+    });
+  });
+</script>
     </script>
 </body>
 </html>
