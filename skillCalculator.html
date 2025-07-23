@@ -2,131 +2,141 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Skimmer Application</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="../css/essential.css">
-    <link rel="stylesheet" href="../css/SkillCalculator.css">
-      <link rel="stylesheet" href="css/essential.css" />
-    <script src="js/script.js"></script>
-    <style>
-        .l {
-            margin-top:5rem;
-        }
-        .lvlbtn-container {
-            margin-top:20px;
-            margin:5px;
-            display: flex;
-            flex-wrap:wrap;
-            justify-content: center ;
-            justify-content: space-bettween;
-            
-        }
-        .box {
-            display: flex;
-            font-family: 'MyFont';
-            width: 90%;
-            max-width: 600px;
-            padding: 10px 20px;
-            margin: 15px auto;
-            display: block;
-            border: 2px solid #1a1a1b;
-            font-size: 16px;
-            color: #fff;
-            outline: none;
-            background-color: #313233;
-            box-shadow: 0 4px 0 0 #242425 inset;
-        }
-        .result {
-            font-family: 'MyFont';
-            width: 80% ;
-            text-align: center;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            background: transparent;
-            padding: 8px;
-            color: #242424;
-            background-color: #c6c6c6;
-            box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 3px #777 inset !important;
-        }
-        #calcText{
-            font-family: 'MyFont';
-            text-align: right;
-            width: 77%;
-            background-color: #383836;
-            margin: auto;
-            height: 40px;
-            font-size: 2rem;
-            border-radius: 8px;
-        }
-        .lvlcolor{
-            border: 2px solid blue;
-            transition: border 0.3s ease;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Skimmer Application</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../css/essential.css">
+  <link rel="stylesheet" href="../css/SkillCalculator.css">
+  <script src="js/script.js"></script>
+  <style>
+    .container {
+      position: relative;
+      width: 95%;
+      max-width: 600px;
+      overflow: hidden;
+      box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease-in-out;
+      cursor: pointer;
+      margin: 5rem auto;
+      border: 2px solid #777;
+    }
+
+    .inner-container {
+      margin: 1rem;
+      width: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .container h3 {
+      text-align: center;
+      padding: 10px;
+      background-color: #c6c6c6 !important;
+      color: #242424;
+      box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 2px #777 inset !important;
+      width: 100%;
+    }
+
+    .grp-main {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      width: 100%;
+    }
+  </style>
 </head>
+
 <body>
- <div id="loader">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-    <div class="background"></div>
-    <div class="top"></div>
-    <div class="sidebar" id="sidebar"></div>
+  <div id="loader">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  <div class="background"></div>
+  <div class="top"></div>
+  <div class="sidebar" id="sidebar"></div>
 
-    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <button id="float">
+    <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
+    <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
+    <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
     <span class="material-icons" id="scrollToTopBtn">north</span>
-    <div class="l"></div>
-    <p id="calcText"> </p>
-    <div class="lvlbtn-container">
-        <input class="box" type="text" placeholder="your lvl">
-        <input class="box" type="text" placeholder="your lvl xp">
-        <input class="box" type="text" placeholder="Your target level (max 50)">
+  </button>
+  <div class="container">
+    <h3>Skill Calculator</h3>
+    <div class="inner-container">
+      <div class="grp-main">
+        <div class="grp">
+          <label for="currentLevel">Current Level: <span id="currentLevelValue">1</span></label><br>
+          <input id="currentLevel" class="box" type="range" min="1" max="50" value="1"><br>
+        </div>
+          <div class="grp">
+            <label for="requiredLevel">Required Level: <span id="requiredLevelValue">1</span></label><br>
+            <input id="requiredLevel" class="box" type="range" min="1" max="50" value="1">
+        </div>
+      </div>
+        <div class="grp">
+          <button id="calcBtn" class="btn" style="cursor:pointer;">Result</button>
+          <div class="result" id="resultBox">Result</div>
+        </div>
     </div>
-    <div class=lvlbtn-container>
-    <div class="result">Result</div>
-    </div>
-    <script>
+  </div>
+
+  <div id="footer"></div>
   <script>
-  const buttons = document.querySelectorAll('.lvlbtn');
-  const output = document.getElementById('calcText');
+    let skillData = [];
 
-  let selected = [];
+    fetch('skill-exp/skill_exp.json')
+      .then(res => res.json())
+      .then(data => {
+        skillData = data;
+      });
 
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (btn.classList.contains('lvlcolor')) {
-        // Deselect if already selected
-        btn.classList.remove('lvlcolor');
-        selected = selected.filter(b => b !== btn);
-      } else {
-        if (selected.length < 2) {
-          btn.classList.add('lvlcolor');
-          selected.push(btn);
-        } else {
-          // Replace the first selected button
-          selected[0].classList.remove('lvlcolor');
-          selected.shift();
-          btn.classList.add('lvlcolor');
-          selected.push(btn);
-        }
+    const currentLevel = document.getElementById('currentLevel');
+    const requiredLevel = document.getElementById('requiredLevel');
+    const currentLevelValue = document.getElementById('currentLevelValue');
+    const requiredLevelValue = document.getElementById('requiredLevelValue');
+    const calcBtn = document.getElementById('calcBtn');
+    const resultBox = document.getElementById('resultBox');
+
+    // Update display values
+    currentLevel.addEventListener('input', () => {
+      currentLevelValue.textContent = currentLevel.value;
+      // Ensure required level is not less than current
+      if (parseInt(requiredLevel.value) < parseInt(currentLevel.value)) {
+        requiredLevel.value = currentLevel.value;
+        requiredLevelValue.textContent = requiredLevel.value;
       }
+      requiredLevel.min = currentLevel.value;
+    });
+    requiredLevel.addEventListener('input', () => {
+      requiredLevelValue.textContent = requiredLevel.value;
+    });
 
-      // Display the selected values
-      if (selected.length === 1) {
-        output.textContent = selected[0].getAttribute('value');
-      } else if (selected.length === 2) {
-        const v1 = selected[0].getAttribute('value');
-        const v2 = selected[1].getAttribute('value');
-        output.textContent = `${v1} + ${v2}`;
+    calcBtn.addEventListener('click', () => {
+      const curLvl = parseInt(currentLevel.value);
+      const reqLvl = parseInt(requiredLevel.value);
+      if (reqLvl < curLvl) {
+        resultBox.textContent = 'Required level must be greater than or equal to current level.';
+        return;
+      }
+      // Find total XP for current and required level
+      const curTotal = curLvl > 1 ? skillData[curLvl - 2].total_exp_required : 0;
+      const reqTotal = skillData[reqLvl - 1].total_exp_required;
+      const xpNeeded = reqTotal - curTotal;
+      if (xpNeeded <= 0) {
+        resultBox.textContent = 'You have already reached or exceeded the required level!';
       } else {
-        output.textContent = '';
+        resultBox.textContent = `XP needed to reach level ${reqLvl}: ${xpNeeded.toLocaleString()}`;
       }
     });
-  });
-</script>
-    </script>
+  </script>
 </body>
+
 </html>
