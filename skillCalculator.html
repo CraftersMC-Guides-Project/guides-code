@@ -42,9 +42,9 @@
             <input id="requiredLevel" class="box" type="number" min="1" max="50" value="1">
         </div>
       </div>
-      <div>
+      <div class="grp">
         <label>Current Experience:</label>
-        <input>
+        <input id="currentExp">
       </div>
         <div class="grp">
           <button id="calcBtn" class="btn" style="cursor:pointer;">Result</button>
@@ -104,6 +104,19 @@
       } else {
         resultBox.textContent = `XP needed to reach level ${reqLvl}: ${xpNeeded.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
       }
+      const val = Number(document.getElementById("currentExp").value);
+      try {
+      if (xpNeeded > val) {
+        xpNeeded = xpNeeded - val;
+        resultBox.textContent = `The Exp needed to reach level ${requiredLevel} is: ${xpNeeded}`;
+      } else if (xpNeeded < val) {
+        throw new Error("You have already reached that level!");
+      } else if (xpNeeded === val) {
+        resultBox.textContent = `The Exp needed to reach level ${requiredLevel.value} is: ${xpNeeded}`;
+      }
+    } catch (error) {
+      resultBox.textContent = error.message;
+    }
     });
   </script>
 </body>
