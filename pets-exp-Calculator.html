@@ -154,7 +154,12 @@
       const reqTotal = skillData[reqLvl - 1].total_exp_required;
       const xpNeeded = reqTotal - curTotal;
     const val = Number(document.getElementById("currentExp").value);
-
+if (xpNeeded <= 0) {
+        resultBox.textContent = 'You have already reached or exceeded the required level!';
+      } else {
+        resultBox.textContent = `XP needed to reach level ${reqLvl}: ${xpNeeded.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+      }
+    });
 try {
   if (xpNeeded > val) {
     xpNeeded = xpNeeded - val;
