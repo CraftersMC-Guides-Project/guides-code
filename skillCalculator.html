@@ -48,6 +48,13 @@
       align-items: center;
       width: 100%;
     }
+
+    .grp {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
   </style>
 </head>
 
@@ -126,6 +133,10 @@
         resultBox.textContent = 'Required level must be greater than or equal to current level.';
         return;
       }
+      if (curLvl === reqLvl) {
+        resultBox.textContent = 'You are already at the required level!';
+        return;
+      }
       // Find total XP for current and required level
       const curTotal = curLvl > 1 ? skillData[curLvl - 2].total_exp_required : 0;
       const reqTotal = skillData[reqLvl - 1].total_exp_required;
@@ -133,7 +144,7 @@
       if (xpNeeded <= 0) {
         resultBox.textContent = 'You have already reached or exceeded the required level!';
       } else {
-        resultBox.textContent = `XP needed to reach level ${reqLvl}: ${xpNeeded.toLocaleString()}`;
+        resultBox.textContent = `XP needed to reach level ${reqLvl}: ${xpNeeded.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
       }
     });
   </script>
