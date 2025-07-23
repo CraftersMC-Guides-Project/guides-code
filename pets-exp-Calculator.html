@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skill Calculator</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../css/essential.css">
+  <link rel="stylesheet" href="../css/SkillCalculator.css">
+  <script src="js/script.js"></script>
+  <style>
+    .container {
+      position: relative;
+      width: 95%;
+      max-width: 600px;
+      overflow: hidden;
+      box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease-in-out;
+      cursor: pointer;
+      margin: 5rem auto;
+      border: 2px solid #777;
+    }
+
+    .inner-container {
+      margin: 1rem;
+      width: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .container h3 {
+      text-align: center;
+      padding: 10px;
+      background-color: #c6c6c6 !important;
+      color: #242424;
+      box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 2px #777 inset !important;
+      width: 100%;
+    }
+
+    .grp-main {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      width: 100%;
+    }
+
+    .grp {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="loader">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  <div class="background"></div>
+  <div class="top"></div>
+  <div class="sidebar" id="sidebar"></div>
+
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <button id="float">
+    <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
+    <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
+    <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
+    <span class="material-icons" id="scrollToTopBtn">north</span>
+  </button>
+  <div class="container">
+    <h3>Skill Calculator</h3>
+    <div class="inner-container">
+      <p style="margin-bottom: 10px; font-size: 12.5px;">Note: <em>All the skills require same amount of exp for each level.</em></p>
+      <div class="grp-main">
+        <div class="grp">
+          <label for="currentLevel">Current Level: <span id="currentLevelValue">1</span></label><br>
+          <input id="currentLevel" class="box" type="range" min="1" max="50" value="1"><br>
+        </div>
+          <div class="grp">
+            <label for="requiredLevel">Required Level: <span id="requiredLevelValue">1</span></label><br>
+            <input id="requiredLevel" class="box" type="range" min="1" max="50" value="1">
+        </div>
+      </div>
+        <div class="grp">
+          <button id="calcBtn" class="btn" style="cursor:pointer;">Result</button>
+          <div class="result" id="resultBox">Result</div>
+        </div>
+    </div>
+  </div>
+
+  <div id="footer"></div>
+  <script>
+    let skillData = [];
+
+    fetch('skill-exp/Pets-exp.json')
+      .then(res => res.json())
+      .then(data => {
+        skillData = data;
+      });
+
+    const currentLevel = document.getElementById('currentLevel');
+    const requiredLevel = document.getElementById('requiredLevel');
+    const currentLevelValue = document.getElementById('currentLevelValue');
+    const requiredLevelValue = document.getElementById('requiredLevelValue');
+    const calcBtn = document.getElementById('calcBtn');
+    const resultBox = document.getElementById('resultBox');
+
+    // Update display values
+    currentLevel.addEventListener('input', () => {
+      currentLevelValue.textContent = currentLevel.value;
+      // Ensure required level is not less than current
+      if (parseInt(requiredLevel.value) < parseInt(currentLevel.value)) {
+        requiredLevel.value = currentLevel.value;
+        requiredLevelValue.textContent = requiredLevel.value;
+      }
+      requiredLevel.min = currentLevel.value;
+    });
+    requiredLevel.addEventListener('input', () => {
+      requiredLevelValue.textContent = requiredLevel.value;
+    });
+
+    calcBtn.addEventListener('click', () => {
+      const curLvl = parseInt(currentLevel.value);
+      const reqLvl = parseInt(requiredLevel.value);
+      if (reqLvl < curLvl) {
+        resultBox.textContent = 'Required level must be greater than or equal to current level.';
+        return;
+      }
+      if (curLvl === reqLvl) {
+        resultBox.textContent = 'You are already at the required level!';
+        return;
+      }
+      // Find total XP for current and required level
+      const curTotal = skillData[curLvl - 1].total_exp_required;
+      const reqTotal = skillData[reqLvl - 1].total_exp_required;
+      const xpNeeded = reqTotal - curTotal;
+      if (xpNeeded <= 0) {
+        resultBox.textContent = 'You have already reached or exceeded the required level!';
+      } else {
+        resultBox.textContent = `XP needed to reach level ${reqLvl}: ${xpNeeded.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+      }
+    });
+  </script>
+</body>
+
+</html>
