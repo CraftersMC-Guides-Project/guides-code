@@ -98,14 +98,14 @@
           let prevId = null, nextId = null;
           for (let i = 0; i < filteredMinions.length; i++) {
             if (filteredMinions[i].id === parseInt(minionId)) {
-              if (i > 0) prevId = filteredMinions[i-1].id;
-              if (i < filteredMinions.length - 1) nextId = filteredMinions[i+1].id;
+              if (i > 0) prevId = filteredMinions[i - 1].id;
+              if (i < filteredMinions.length - 1) nextId = filteredMinions[i + 1].id;
               break;
             }
           }
           if (prevId !== null && prevId !== undefined) {
             prevBtn.disabled = false;
-            prevBtn.onclick = function() {
+            prevBtn.onclick = function () {
               let url = '?minion=' + prevId;
               if (selectedCategory) url += '&cat=' + encodeURIComponent(selectedCategory);
               if (selectedNature) url += '&nature=' + selectedNature;
@@ -116,7 +116,7 @@
           }
           if (nextId !== null && nextId !== undefined) {
             nextBtn.disabled = false;
-            nextBtn.onclick = function() {
+            nextBtn.onclick = function () {
               let url = '?minion=' + nextId;
               if (selectedCategory) url += '&cat=' + encodeURIComponent(selectedCategory);
               if (selectedNature) url += '&nature=' + selectedNature;
@@ -177,9 +177,8 @@
           }
         }
 
-        // Selling price is only for the current tier
-        const tierPrices = prices[selectedTier] || [0, 0];
-        const sellingPrice = tierPrices[1];
+        // Selling price is 80% of making cost
+        const sellingPrice = Math.floor(makingCost * 0.8);
 
         document.getElementById('minionDetails').innerHTML = `
           <div class="item-card">
@@ -276,12 +275,15 @@
         let natureText = nature.replace('[', ' ').toLowerCase();
         natureText = natureText.replace(']', '').replace(/_/g, ' ').trim();
         // Overriding the natureText
-        if(nature.includes("UNDERPAID")){
-         natureText = "UNDERPAID";}
-        else if(nature.includes("OVERPAID")){
-         natureText = "OVERPAID";}
-        else{
-         natureText = "STABLE";}
+        if (nature.includes("UNDERPAID")) {
+          natureText = "UNDERPAID";
+        }
+        else if (nature.includes("OVERPAID")) {
+          natureText = "OVERPAID";
+        }
+        else {
+          natureText = "STABLE";
+        }
 
         return `
           <div class="nature-pill ${natureText}">
@@ -333,7 +335,7 @@
         } else {
           btn.classList.remove('active');
         }
-        btn.onclick = function() {
+        btn.onclick = function () {
           let base = window.location.pathname + '?minion=' + urlParams.get('minion');
           if (selectedCategory) base += '&cat=' + encodeURIComponent(selectedCategory);
           if (btn.getAttribute('data-nature') === 'reset' || btn.getAttribute('data-nature') === 'all') {
