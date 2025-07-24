@@ -143,31 +143,67 @@
 
       renderMinionDetails(selectedTier) {
         const { name, picture, category, id, description, prices, nature, demand } = this.currentMinion;
+        const tierKeys = Object.keys(prices);
+        const currentTierIndex = tierKeys.indexOf(selectedTier);
+
+        // Calculate making cost as: previous tier's making cost + current tier's price
+        let makingCost = 0;
+        for (let i = 0; i <= currentTierIndex; i++) {
+          const tierPrice = prices[tierKeys[i]];
+          if (tierPrice && tierPrice[0] !== undefined) {
+            let priceVal = tierPrice[0];
+            let addCost = 0;
+            if (typeof priceVal === 'string' && priceVal.includes('*')) {
+              const [itemIdStr, amountStr] = priceVal.split('*');
+              const itemId = parseInt(itemIdStr);
+              const amount = parseInt(amountStr);
+              if (this.minionPrices && Array.isArray(this.minionPrices)) {
+                const line = this.minionPrices.find(line => {
+                  const match = line.match(/^(\d+):/);
+                  return match && parseInt(match[1]) === itemId;
+                });
+                if (line) {
+                  const match = line.match(/: \["[^"]+",\s*([\d.]+)/);
+                  if (match) {
+                    const itemPrice = parseFloat(match[1]);
+                    addCost = itemPrice * amount;
+                  }
+                }
+              }
+            } else if (typeof priceVal === 'number') {
+              addCost = priceVal;
+            }
+            makingCost += addCost;
+          }
+        }
+
+        // Selling price is only for the current tier
         const tierPrices = prices[selectedTier] || [0, 0];
+        const sellingPrice = tierPrices[1];
 
         document.getElementById('minionDetails').innerHTML = `
           <div class="item-card">
             <h1>${name}</h1>
             <img src="${picture}" alt="${name}" class="item-image">
             <div class="rarity-dropdown" style="display:flex;align-items:center;justify-content:center;gap:8px;margin:20px 0;">
-  <button class="rarity-arrow left" onclick="MinionManager.changeTier(-1)">
-    <span class="material-icons">chevron_left</span>
-  </button>
-  <div class="selected" id="selectedTier" style="min-width:120px;display:inline-flex;align-items:center;justify-content:center;">
-    <span style="font-size:1.08em;letter-spacing:0.5px;">${selectedTier.toUpperCase()}</span>
-  </div>
-  <button class="rarity-arrow right" onclick="MinionManager.changeTier(1)">
-    <span class="material-icons">chevron_right</span>
-  </button>
-</div>
+              <button class="rarity-arrow left" onclick="MinionManager.changeTier(-1)">
+                <span class="material-icons">chevron_left</span>
+              </button>
+              <div class="selected" id="selectedTier" style="min-width:120px;display:inline-flex;align-items:center;justify-content:center;">
+                <span style="font-size:1.08em;letter-spacing:0.5px;">${selectedTier.toUpperCase()}</span>
+              </div>
+              <button class="rarity-arrow right" onclick="MinionManager.changeTier(1)">
+                <span class="material-icons">chevron_right</span>
+              </button>
+            </div>
             <div class="price-container">
               <div class="price-section">
                 <span class="priceText">Making Cost:</span>
-                <span class="making-price">${this.formatPrice(tierPrices[0])}</span>
+                <span class="making-price">${makingCost ? makingCost.toLocaleString() + ' coins' : 'Not available'}</span>
               </div>
               <div class="price-section">
                 <span class="priceText">Selling Price:</span>
-                <span class="selling-price">${this.formatPrice(tierPrices[1])}</span>
+                <span class="selling-price">${sellingPrice !== undefined ? sellingPrice.toLocaleString() + ' coins' : 'Not available'}</span>
               </div>
             </div>
             <p><strong>Category:</strong> ${category}</p>
