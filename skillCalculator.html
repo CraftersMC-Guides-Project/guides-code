@@ -69,8 +69,18 @@
     const requiredLevelValue = document.getElementById('requiredLevelValue');
     const calcBtn = document.getElementById('calcBtn');
     const resultBox = document.getElementById('resultBox');
-    if(Number(currentLevelValue.value) >= 50){
-      currentLevelValue.value = "50";}
+    
+  const input = document.getElementById('currentLevelValue');
+
+  input.addEventListener('input', () => {
+    let currentval = parseInt(input.value, 10);
+
+    // If it's not a number, do nothing
+    if (isNaN(val)) return;
+
+    if (currentval < 1) input.value = 1;
+    if (currentval > 50) input.value = 50;
+  });
     // Update display values
     currentLevel.addEventListener('input', () => {
       currentLevelValue.textContent = currentLevel.value;
