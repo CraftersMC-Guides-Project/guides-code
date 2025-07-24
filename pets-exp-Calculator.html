@@ -238,47 +238,46 @@ document.querySelectorAll('input[type=range]').forEach(slider => {
   });
 
   calcBtn.addEventListener('click', () => {
-    const curLvl = parseInt(currentLevel.value);
-    const reqLvl = parseInt(requiredLevel.value);
-    const val = Number(document.getElementById("currentExp").value);
+  const curLvl = parseInt(currentLevel.value);
+  const reqLvl = parseInt(requiredLevel.value);
+  const cExp = document.getElementById("currentExp");
+  const val = Number(cExp.value);
 
-    if (reqLvl < curLvl) {
-      resultBox.textContent = 'Required level must be greater than or equal to current level.';
-      return;
-    }
+  if (reqLvl < curLvl) {
+    resultBox.textContent = 'Required level must be greater than or equal to current level.';
+    return;
+  }
 
-    if (curLvl === reqLvl) {
-      resultBox.textContent = 'You are already at the required level!';
-      return;
-    }
+  if (curLvl === reqLvl) {
+    resultBox.textContent = 'You are already at the required level!';
+    return;
+  }
 
-    const curTotal = skillData[curLvl - 1].total_exp_required;
-    const reqTotal = skillData[reqLvl - 1].total_exp_required;
-    let xpNeeded = reqTotal - curTotal;
-    const cExp = document.getElementById("currentExp");
-cExp.addEventListener('input', () => {
+  const curTotal = skillData[curLvl - 1].total_exp_required;
+  const reqTotal = skillData[reqLvl - 1].total_exp_required;
+  let xpNeeded = reqTotal - curTotal;
+
+  
   cExp.max = xpNeeded;
+
+  if (xpNeeded <= 0) {
+    resultBox.textContent = 'You have already reached or exceeded the required level!';
+    return;
+  }
+
+  try {
+    if (xpNeeded > val) {
+      const remaining = xpNeeded - val;
+      resultBox.textContent = `The Exp needed to reach level ${requiredLevel.value} is: ${remaining}`;
+    } else if (xpNeeded < val) {
+      throw new Error("You have already reached that level!");
+    } else {
+      resultBox.textContent = `Perfect! You've got the exact amount of Exp required!`;
+    }
+  } catch (error) {
+    resultBox.textContent = error.message;
+  }
 });
-
-    if (xpNeeded <= 0) {
-      resultBox.textContent = 'You have already reached or exceeded the required level!';
-      return;
-    }
-
-    
-    try {
-      if (xpNeeded > val) {
-        xpNeeded = xpNeeded - val;
-        resultBox.textContent = `The Exp needed to reach level ${requiredLevel.value} is: ${xpNeeded}`;
-      } else if (xpNeeded < val) {
-        throw new Error("You have already reached that level!");
-      } else if (xpNeeded === val) {
-        resultBox.textContent = `The Exp needed to reach level ${requiredLevel.value} is: ${xpNeeded}`;
-      }
-    } catch (error) {
-      resultBox.textContent = error.message;
-    }
-  });
   </script>
 </body>
 
