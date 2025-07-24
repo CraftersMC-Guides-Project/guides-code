@@ -5,6 +5,9 @@ const eventAlertMessage = `
 🦁 Did you know? 🦁 The Creedon NPC is there with his random pets near the spawn inside the event stand area. Go online to buy those pets! 🐾
 `;
 
+// Set the last cake number here
+const lastCakeNumber = 234;
+
 function formatTime(date) {
     const options = {
         weekday: 'long',
@@ -43,18 +46,23 @@ function displayNextEvent() {
     const periodsSinceBase = Math.floor((now - baseEventTime) / intervalDuration);
     const nextEventTime = baseEventTime + (periodsSinceBase + 1) * intervalDuration;
     const lastEventTime = nextEventTime - intervalDuration;
-    document.getElementById("nextEventTime").textContent = formatTime(new Date(nextEventTime));
-    document.getElementById("lastEventTime").textContent = formatTime(new Date(lastEventTime));
+
+    // Show cake numbers
+    document.getElementById("nextEventTime").textContent =
+        `${formatTime(new Date(nextEventTime))} (Y${lastCakeNumber + 1})`;
+    document.getElementById("lastEventTime").textContent =
+        `${formatTime(new Date(lastEventTime))} (Y${lastCakeNumber})`;
 }
 
 function displayEvents() {
     const eventContainer = document.getElementById("eventContainer");
     eventContainer.innerHTML = ""; // Clear previous events
     const events = calculateEventTimes();
+    // Start from Y236 for future events
     for (let i = 0; i < 10; i++) {
         const div = document.createElement("div");
         div.classList.add("event-item");
-        div.textContent = events[i];
+        div.textContent = `${events[i]} (Y${lastCakeNumber + 2 + i})`;
         eventContainer.appendChild(div);
     }
 }

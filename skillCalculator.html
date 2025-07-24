@@ -31,20 +31,20 @@
   <div class="container">
     <h3>Skill Calculator</h3>
     <div class="inner-container">
-      <p style="margin-bottom: 10px; font-size: 12.5px;">Note: <em>All the skills require same amount of exp for each level.</em></p>
+      <p style="margin-bottom: 10px; font-size: 12.5px; text-align: center; color: #e0db36;">Note: <em>All the skills require same amount of exp for each level.</em></p>
       <div class="grp-main">
         <div class="grp">
           <label for="currentLevel">Current Level: <span id="currentLevelValue">1</span></label><br>
           <input id="currentLevel" class="box" type="number" min="1" max="50" value="1"><br>
         </div>
+        <div class="grp temp">
+        <label>Current Experience:</label>
+        <input id="currentExp" type="number">
+        </div>
           <div class="grp">
             <label for="requiredLevel">Required Level: <span id="requiredLevelValue">1</span></label><br>
             <input id="requiredLevel" class="box" type="number" min="1" max="50" value="1">
         </div>
-      </div>
-      <div class="grp">
-        <label>Current Experience:</label>
-        <input id="currentExp" type="number">
       </div>
         <div class="grp">
           <button id="calcBtn" class="btn" style="cursor:pointer;">Result</button>
@@ -69,7 +69,8 @@
     const requiredLevelValue = document.getElementById('requiredLevelValue');
     const calcBtn = document.getElementById('calcBtn');
     const resultBox = document.getElementById('resultBox');
-
+    if(Number(currentLevelValue.value) >= 50){
+      currentLevelValue.value = "50";}
     // Update display values
     currentLevel.addEventListener('input', () => {
       currentLevelValue.textContent = currentLevel.value;

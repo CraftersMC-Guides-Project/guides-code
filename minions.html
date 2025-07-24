@@ -60,8 +60,12 @@
 
           const [minions, prices] = await Promise.all([
             this.fetchData('market/minions.txt'),
-            this.fetchData('market/minion-prices.txt')
+            this.fetchData('market/minion-prices.json')
           ]);
+
+          // Add this in your loadMinionDetails() after fetching mprices.txt
+          const mpricesText = await fetch('market/mprices.txt').then(r => r.text());
+          this.minionPrices = mpricesText.split('\n');
 
           // Filter minions by selected category and nature if present
           let filteredMinions = minions;
@@ -94,14 +98,14 @@
           let prevId = null, nextId = null;
           for (let i = 0; i < filteredMinions.length; i++) {
             if (filteredMinions[i].id === parseInt(minionId)) {
-              if (i > 0) prevId = filteredMinions[i-1].id;
-              if (i < filteredMinions.length - 1) nextId = filteredMinions[i+1].id;
+              if (i > 0) prevId = filteredMinions[i - 1].id;
+              if (i < filteredMinions.length - 1) nextId = filteredMinions[i + 1].id;
               break;
             }
           }
           if (prevId !== null && prevId !== undefined) {
             prevBtn.disabled = false;
-            prevBtn.onclick = function() {
+            prevBtn.onclick = function () {
               let url = '?minion=' + prevId;
               if (selectedCategory) url += '&cat=' + encodeURIComponent(selectedCategory);
               if (selectedNature) url += '&nature=' + selectedNature;
@@ -112,7 +116,7 @@
           }
           if (nextId !== null && nextId !== undefined) {
             nextBtn.disabled = false;
-            nextBtn.onclick = function() {
+            nextBtn.onclick = function () {
               let url = '?minion=' + nextId;
               if (selectedCategory) url += '&cat=' + encodeURIComponent(selectedCategory);
               if (selectedNature) url += '&nature=' + selectedNature;
@@ -139,31 +143,67 @@
 
       renderMinionDetails(selectedTier) {
         const { name, picture, category, id, description, prices, nature, demand } = this.currentMinion;
-        const tierPrices = prices[selectedTier] || [0, 0];
+        const tierKeys = Object.keys(prices);
+        const currentTierIndex = tierKeys.indexOf(selectedTier);
+
+        // Calculate making cost as: previous tier's making cost + current tier's price
+        let makingCost = 0;
+        for (let i = 0; i <= currentTierIndex; i++) {
+          const tierPrice = prices[tierKeys[i]];
+          if (tierPrice && tierPrice[0] !== undefined) {
+            let priceVal = tierPrice[0];
+            let addCost = 0;
+            if (typeof priceVal === 'string' && priceVal.includes('*')) {
+              const [itemIdStr, amountStr] = priceVal.split('*');
+              const itemId = parseInt(itemIdStr);
+              const amount = parseInt(amountStr);
+              if (this.minionPrices && Array.isArray(this.minionPrices)) {
+                const line = this.minionPrices.find(line => {
+                  const match = line.match(/^(\d+):/);
+                  return match && parseInt(match[1]) === itemId;
+                });
+                if (line) {
+                  const match = line.match(/: \["[^"]+",\s*([\d.]+)/);
+                  if (match) {
+                    const itemPrice = parseFloat(match[1]);
+                    addCost = itemPrice * amount;
+                  }
+                }
+              }
+            } else if (typeof priceVal === 'number') {
+              addCost = priceVal;
+            }
+            makingCost += addCost;
+          }
+        }
+
+        // Selling price is 80% of making cost
+        const sellPercent = this.currentMinion.sellPercent !== undefined ? this.currentMinion.sellPercent : 80;
+        const sellingPrice = Math.floor(makingCost * (sellPercent / 100));
 
         document.getElementById('minionDetails').innerHTML = `
           <div class="item-card">
             <h1>${name}</h1>
             <img src="${picture}" alt="${name}" class="item-image">
             <div class="rarity-dropdown" style="display:flex;align-items:center;justify-content:center;gap:8px;margin:20px 0;">
-  <button class="rarity-arrow left" onclick="MinionManager.changeTier(-1)">
-    <span class="material-icons">chevron_left</span>
-  </button>
-  <div class="selected" id="selectedTier" style="min-width:120px;display:inline-flex;align-items:center;justify-content:center;">
-    <span style="font-size:1.08em;letter-spacing:0.5px;">${selectedTier.toUpperCase()}</span>
-  </div>
-  <button class="rarity-arrow right" onclick="MinionManager.changeTier(1)">
-    <span class="material-icons">chevron_right</span>
-  </button>
-</div>
+              <button class="rarity-arrow left" onclick="MinionManager.changeTier(-1)">
+                <span class="material-icons">chevron_left</span>
+              </button>
+              <div class="selected" id="selectedTier" style="min-width:120px;display:inline-flex;align-items:center;justify-content:center;">
+                <span style="font-size:1.08em;letter-spacing:0.5px;">${selectedTier.toUpperCase()}</span>
+              </div>
+              <button class="rarity-arrow right" onclick="MinionManager.changeTier(1)">
+                <span class="material-icons">chevron_right</span>
+              </button>
+            </div>
             <div class="price-container">
               <div class="price-section">
                 <span class="priceText">Making Cost:</span>
-                <span class="making-price">${this.formatPrice(tierPrices[0])}</span>
+                <span class="making-price">${makingCost ? makingCost.toLocaleString() + ' coins' : 'Not available'}</span>
               </div>
               <div class="price-section">
                 <span class="priceText">Selling Price:</span>
-                <span class="selling-price">${this.formatPrice(tierPrices[1])}</span>
+                <span class="selling-price">${sellingPrice !== undefined ? sellingPrice.toLocaleString() + ' coins' : 'Not available'}</span>
               </div>
             </div>
             <p><strong>Category:</strong> ${category}</p>
@@ -187,7 +227,38 @@
       },
 
       formatPrice(price) {
-        return typeof price === 'number' ? `${price.toLocaleString()} coins` : 'Not available';
+        // If price is a string like "157*80"
+        if (typeof price === 'string' && price.includes('*')) {
+          const [itemIdStr, amountStr] = price.split('*');
+          const itemId = parseInt(itemIdStr);
+          const amount = parseInt(amountStr);
+
+          // Assume MinionManager.minionPrices is loaded with mprices.txt data as an array
+          // Find the item in mprices.txt (should be loaded and available)
+          if (this.minionPrices && Array.isArray(this.minionPrices)) {
+            // mprices.txt format: id: ["name", making, selling]
+            const line = this.minionPrices.find(line => {
+              // Each line is like: '1: ["Enchanted rotten flesh", 849, 320]'
+              const match = line.match(/^(\d+):/);
+              return match && parseInt(match[1]) === itemId;
+            });
+            if (line) {
+              // Extract the making price
+              const match = line.match(/: \["[^"]+",\s*([\d.]+)/);
+              if (match) {
+                const itemPrice = parseFloat(match[1]);
+                const total = itemPrice * amount;
+                return `${total.toLocaleString()} coins`;
+              }
+            }
+          }
+          return 'Not available';
+        }
+        // If price is a number
+        if (typeof price === 'number') {
+          return `${price.toLocaleString()} coins`;
+        }
+        return 'Not available';
       },
 
       generateNatureBox(nature) {
@@ -205,12 +276,15 @@
         let natureText = nature.replace('[', ' ').toLowerCase();
         natureText = natureText.replace(']', '').replace(/_/g, ' ').trim();
         // Overriding the natureText
-        if(nature.includes("UNDERPAID")){
-         natureText = "UNDERPAID";}
-        else if(nature.includes("OVERPAID")){
-         natureText = "OVERPAID";}
-        else{
-         natureText = "STABLE";}
+        if (nature.includes("UNDERPAID")) {
+          natureText = "UNDERPAID";
+        }
+        else if (nature.includes("OVERPAID")) {
+          natureText = "OVERPAID";
+        }
+        else {
+          natureText = "STABLE";
+        }
 
         return `
           <div class="nature-pill ${natureText}">
@@ -262,7 +336,7 @@
         } else {
           btn.classList.remove('active');
         }
-        btn.onclick = function() {
+        btn.onclick = function () {
           let base = window.location.pathname + '?minion=' + urlParams.get('minion');
           if (selectedCategory) base += '&cat=' + encodeURIComponent(selectedCategory);
           if (btn.getAttribute('data-nature') === 'reset' || btn.getAttribute('data-nature') === 'all') {

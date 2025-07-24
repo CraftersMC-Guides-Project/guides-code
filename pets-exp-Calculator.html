@@ -170,7 +170,7 @@ input[type=range]::-webkit-slider-thumb:hover {
   <div class="container">
     <h3>Pets Experience Calculator</h3>
     <div class="inner-container">
-      <p style="margin-bottom: 15px; font-size: 12.5px; color: #e0db36;">Note: <em>All the Pets, irrespective of their rarity will take <b>same</b> amount of exp to level up.</em></p>
+      <p style="margin-bottom: 15px; font-size: 12.5px; color: #e0db36; text-align: center;">Note: <em>All the Pets, irrespective of their rarity will take <b>same</b> amount of exp to level up.</em></p>
       <div class="grp-main">
         <div class="grp">
           <label for="currentLevel">Current Pet Level: <span id="currentLevelValue">1</span></label><br>
@@ -183,7 +183,7 @@ input[type=range]::-webkit-slider-thumb:hover {
       </div>
       <div class="grp">
         <label>Current Experience:</label>
-        <input id="currentExp" type="number">
+        <input id="currentExp" type="number" min="0" max="100">
       </div>
         <div class="grp">
           <button id="calcBtn" class="btn" style="cursor:pointer;">Result</button>
@@ -241,43 +241,46 @@ document.querySelectorAll('input[type=range]').forEach(slider => {
   });
 
   calcBtn.addEventListener('click', () => {
-    const curLvl = parseInt(currentLevel.value);
-    const reqLvl = parseInt(requiredLevel.value);
-    const val = Number(document.getElementById("currentExp").value);
+  const curLvl = parseInt(currentLevel.value);
+  const reqLvl = parseInt(requiredLevel.value);
+  const cExp = document.getElementById("currentExp");
+  const val = Number(cExp.value);
 
-    if (reqLvl < curLvl) {
-      resultBox.textContent = 'Required level must be greater than or equal to current level.';
-      return;
+  if (reqLvl < curLvl) {
+    resultBox.textContent = 'Required level must be greater than or equal to current level.';
+    return;
+  }
+
+  if (curLvl === reqLvl) {
+    resultBox.textContent = 'You are already at the required level!';
+    return;
+  }
+
+  const curTotal = skillData[curLvl - 1].total_exp_required;
+  const reqTotal = skillData[reqLvl - 1].total_exp_required;
+  let xpNeeded = reqTotal - curTotal;
+
+  
+  cExp.max = xpNeeded;
+
+  if (xpNeeded <= 0) {
+    resultBox.textContent = 'You have already reached or exceeded the required level!';
+    return;
+  }
+
+  try {
+    if (xpNeeded > val) {
+      const remaining = xpNeeded - val;
+      resultBox.textContent = `The Exp needed to reach level ${requiredLevel.value} is: ${remaining}`;
+    } else if (xpNeeded < val) {
+      throw new Error("You have already reached that level!");
+    } else {
+      resultBox.textContent = `Perfect! You've got the exact amount of Exp required!`;
     }
-
-    if (curLvl === reqLvl) {
-      resultBox.textContent = 'You are already at the required level!';
-      return;
-    }
-
-    const curTotal = skillData[curLvl - 1].total_exp_required;
-    const reqTotal = skillData[reqLvl - 1].total_exp_required;
-    let xpNeeded = reqTotal - curTotal;
-
-    if (xpNeeded <= 0) {
-      resultBox.textContent = 'You have already reached or exceeded the required level!';
-      return;
-    }
-
-    
-    try {
-      if (xpNeeded > val) {
-        xpNeeded = xpNeeded - val;
-        resultBox.textContent = `The Exp needed to reach level ${requiredLevel.value} is: ${xpNeeded}`;
-      } else if (xpNeeded < val) {
-        throw new Error("You have already reached that level!");
-      } else if (xpNeeded === val) {
-        resultBox.textContent = `The Exp needed to reach level ${requiredLevel.value} is: ${xpNeeded}`;
-      }
-    } catch (error) {
-      resultBox.textContent = error.message;
-    }
-  });
+  } catch (error) {
+    resultBox.textContent = error.message;
+  }
+});
   </script>
 </body>
 
