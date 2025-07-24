@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <body>
 <p>plotly.js example by tech</p>
 <div id="myPlot" style="width:100%;"></div>
+<link rel="stylesheet" href="css/essential.css">
 
 <script>
 const xArray = [
@@ -25,6 +26,73 @@ const layout = {
 };
 
 Plotly.newPlot("myPlot", data, layout);
+</script>
+
+</body>
+</html>-->
+<!DOCTYPE html>
+<html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.1.0/dist/chartjs-chart-financial.min.js"></script>
+<link rel="stylesheet" href="css/essential.css">
+<title>graph?</title>
+<body>
+  <h1>Market Graphs</h1>
+  <p>someone get the worker made soon pls</p>
+<canvas id="myChart" style="width:100%;"></canvas>
+
+<script>
+const candlestickData = [
+  {x: "2024-06-01", o: 7, h: 8, l: 7, c: 8},
+  {x: "2024-06-02", o: 8, h: 9, l: 8, c: 8},
+  {x: "2024-06-03", o: 8, h: 9, l: 8, c: 8},
+  {x: "2024-06-04", o: 9, h: 10, l: 9, c: 9},
+  {x: "2024-06-05", o: 9, h: 10, l: 9, c: 9},
+  {x: "2024-06-06", o: 9, h: 10, l: 9, c: 9},
+  {x: "2024-06-07", o: 10, h: 11, l: 10, c: 10},
+  {x: "2024-06-08", o: 11, h: 12, l: 11, c: 11},
+  {x: "2024-06-09", o: 14, h: 15, l: 14, c: 14},
+  {x: "2024-06-10", o: 14, h: 15, l: 14, c: 14},
+  {x: "2024-06-11", o: 15, h: 16, l: 15, c: 15}
+];
+
+new Chart("myChart", {
+  type: 'candlestick',
+  data: {
+    datasets: [{
+      label: 'Market Prices',
+      data: candlestickData,
+      color: {
+        up: 'rgba(0,255,100,1.0)',
+        down: 'rgba(255,0,100,1.0)',
+        unchanged: 'gray'
+      }
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    title: {
+      display: true,
+      text: "Market Prices",
+      fontSize: 20
+    },
+    scales: {
+      xAxes: [{
+        type: 'time',
+        time: {
+          unit: 'day'
+        },
+        ticks: {
+          source: 'data'
+        }
+      }],
+      yAxes: [{
+        ticks: {min: 6, max:16}
+      }]
+    }
+  }
+});
 </script>
 
 </body>
