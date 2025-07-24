@@ -28,32 +28,36 @@
     <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
     <span class="material-icons" id="scrollToTopBtn">north</span>
   </button>
+
   <div class="container">
     <h3>Skill Calculator</h3>
     <div class="inner-container">
-      <p style="margin-bottom: 10px; font-size: 12.5px; text-align: center; color: #e0db36;">Note: <em>All the skills require same amount of exp for each level.</em></p>
+      <p style="margin-bottom: 20px; font-size: 12.5px; text-align: center; color: #e0db36;">
+        Note: <em>All the skills require same amount of exp for each level.</em>
+      </p>
       <div class="grp-main">
         <div class="grp">
           <label for="currentLevel">Current Level: <span id="currentLevelValue">1</span></label><br>
           <input id="currentLevel" class="box" type="number" min="1" max="50" value="1"><br>
         </div>
         <div class="grp temp">
-        <label>Current Experience:</label>
-        <input id="currentExp" type="number">
+          <label>Current Level Experience:</label>
+          <input id="currentExp" type="number">
         </div>
-          <div class="grp">
-            <label for="requiredLevel">Required Level: <span id="requiredLevelValue">1</span></label><br>
-            <input id="requiredLevel" class="box" type="number" min="1" max="50" value="1">
+        <div class="grp">
+          <label for="requiredLevel">Required Level: <span id="requiredLevelValue">1</span></label><br>
+          <input id="requiredLevel" class="box" type="number" min="1" max="50" value="1">
         </div>
       </div>
-        <div class="grp">
-          <button id="calcBtn" class="btn" style="cursor:pointer;">Result</button>
-          <div class="result" id="resultBox">Result</div>
-        </div>
+      <div class="grp">
+        <button id="calcBtn" class="btn" style="cursor:pointer;">Result</button>
+        <div class="result" id="resultBox">Result</div>
+      </div>
     </div>
   </div>
 
   <div id="footer"></div>
+
   <script>
     let skillData = [];
 
@@ -69,67 +73,75 @@
     const requiredLevelValue = document.getElementById('requiredLevelValue');
     const calcBtn = document.getElementById('calcBtn');
     const resultBox = document.getElementById('resultBox');
-    
-  const input = document.getElementById('currentLevelValue');
 
-  input.addEventListener('input', () => {
-    let currentval = parseInt(input.value, 10);
-
-    // If it's not a number, do nothing
-    if (isNaN(val)) return;
-
-    if (currentval < 1) input.value = 1;
-    if (currentval > 50) input.value = 50;
-  });
-    // Update display values
+    // Clamp and sync current level input
     currentLevel.addEventListener('input', () => {
-      currentLevelValue.textContent = currentLevel.value;
-      // Ensure required level is not less than current
-      if (parseInt(requiredLevel.value) < parseInt(currentLevel.value)) {
-        requiredLevel.value = currentLevel.value;
+      let currentval = parseInt(currentLevel.value, 10);
+
+      if (isNaN(currentval)) return;
+
+      if (currentval < 1) currentval = 1;
+      if (currentval > 50) currentval = 50;
+
+      currentLevel.value = currentval;
+      currentLevelValue.textContent = currentval;
+
+      if (parseInt(requiredLevel.value) < currentval) {
+        requiredLevel.value = currentval;
         requiredLevelValue.textContent = requiredLevel.value;
       }
-      requiredLevel.min = currentLevel.value;
+
+      requiredLevel.min = currentval;
     });
+
     requiredLevel.addEventListener('input', () => {
-      requiredLevelValue.textContent = requiredLevel.value;
+      let reqVal = parseInt(requiredLevel.value, 10);
+      if (reqVal > 50) {
+        requiredLevel.value = 50;
+        reqVal = 50;
+      }
+      requiredLevelValue.textContent = reqVal;
     });
 
     calcBtn.addEventListener('click', () => {
       const curLvl = parseInt(currentLevel.value);
       const reqLvl = parseInt(requiredLevel.value);
+
       if (reqLvl < curLvl) {
         resultBox.textContent = 'Required level must be greater than or equal to current level.';
         return;
       }
+
       if (curLvl === reqLvl) {
         resultBox.textContent = 'You are already at the required level!';
         return;
       }
-      // Find total XP for current and required level
+
       const curTotal = skillData[curLvl - 1].total_exp_required;
       const reqTotal = skillData[reqLvl - 1].total_exp_required;
       let xpNeeded = reqTotal - curTotal;
+
       if (xpNeeded <= 0) {
         resultBox.textContent = 'You have already reached or exceeded the required level!';
       } else {
         resultBox.textContent = `XP needed to reach level ${reqLvl}: ${xpNeeded.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
       }
+
       const val = Number(document.getElementById("currentExp").value);
       try {
-      if (xpNeeded > val) {
-        xpNeeded = xpNeeded - val;
-        resultBox.textContent = `The Exp needed to reach level ${requiredLevel.value} is: ${xpNeeded}`;
-      } else if (xpNeeded < val) {
-        throw new Error("You have already reached that level!");
-      } else if (xpNeeded === val) {
-        resultBox.textContent = `The Exp needed to reach level ${requiredLevel.value} is: ${xpNeeded}`;
+        if (xpNeeded > val) {
+          xpNeeded = xpNeeded - val;
+          resultBox.textContent = `The Exp needed to reach level ${requiredLevel.value} is: ${xpNeeded}`;
+        } else if (xpNeeded < val) {
+          throw new Error("You have already reached that level!");
+        } else if (xpNeeded === val) {
+          resultBox.textContent = `The Exp needed to reach level ${requiredLevel.value} is: ${xpNeeded}`;
+        }
+      } catch (error) {
+        resultBox.textContent = error.message;
       }
-    } catch (error) {
-      resultBox.textContent = error.message;
-    }
     });
   </script>
 </body>
 
-</html>
+            </html>
