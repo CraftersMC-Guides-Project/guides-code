@@ -60,8 +60,12 @@
 
           const [minions, prices] = await Promise.all([
             this.fetchData('market/minions.txt'),
-            this.fetchData('market/minion-prices.txt')
+            this.fetchData('market/minion-prices.json')
           ]);
+
+          // Add this in your loadMinionDetails() after fetching mprices.txt
+          const mpricesText = await fetch('market/mprices.txt').then(r => r.text());
+          this.minionPrices = mpricesText.split('\n');
 
           // Filter minions by selected category and nature if present
           let filteredMinions = minions;
@@ -187,7 +191,38 @@
       },
 
       formatPrice(price) {
-        return typeof price === 'number' ? `${price.toLocaleString()} coins` : 'Not available';
+        // If price is a string like "157*80"
+        if (typeof price === 'string' && price.includes('*')) {
+          const [itemIdStr, amountStr] = price.split('*');
+          const itemId = parseInt(itemIdStr);
+          const amount = parseInt(amountStr);
+
+          // Assume MinionManager.minionPrices is loaded with mprices.txt data as an array
+          // Find the item in mprices.txt (should be loaded and available)
+          if (this.minionPrices && Array.isArray(this.minionPrices)) {
+            // mprices.txt format: id: ["name", making, selling]
+            const line = this.minionPrices.find(line => {
+              // Each line is like: '1: ["Enchanted rotten flesh", 849, 320]'
+              const match = line.match(/^(\d+):/);
+              return match && parseInt(match[1]) === itemId;
+            });
+            if (line) {
+              // Extract the making price
+              const match = line.match(/: \["[^"]+",\s*([\d.]+)/);
+              if (match) {
+                const itemPrice = parseFloat(match[1]);
+                const total = itemPrice * amount;
+                return `${total.toLocaleString()} coins`;
+              }
+            }
+          }
+          return 'Not available';
+        }
+        // If price is a number
+        if (typeof price === 'number') {
+          return `${price.toLocaleString()} coins`;
+        }
+        return 'Not available';
       },
 
       generateNatureBox(nature) {
