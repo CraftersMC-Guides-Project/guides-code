@@ -121,6 +121,7 @@
         
     </div>
 <button>Result</button>
+  <div id="resultText">Result</div>
 </div>
   <button id="float">
     <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
@@ -148,6 +149,36 @@
         rarity.value = inc + 1;
       }
     };
+    let c = 0;
+let ac = 0;
+let sdata = [];
+
+fetch('skill-exp/minion-production.json').then(response => response.json()).then(data => {
+    sdata = data;
+  });
+
+document.getElementById("resultbtn").onclick = () => {
+  const name = document.getElementById("nameId").value;
+
+  
+  c = 0;
+  ac = -1;
+
+  sdata.forEach(d => {
+    if (d.name === name) {
+      ac = c;
+    }
+    c += 1;
+  });
+
+  if (ac === -1) {
+    document.getElementById("resultText").textContent = "Name not found!";
+    return;
+  }
+
+  const result = (sdata[ac].time / 2) * sdata[ac].chance;
+  document.getElementById("resultText").textContent = `The production is ${result}`;
+};
 </script>
   
 
