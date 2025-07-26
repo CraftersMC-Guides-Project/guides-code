@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minion Inventory Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2c2f33;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #ffcc00;
+        }
+        .container {
+            background: #23272a;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #40444b;
+            color: white;
+        }
+        button {
+            background-color: #43b581;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #3ba55c;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: #43b581;
+        }
+        .credits {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #b9bbbe;
+        }
+        #note {
+            font-size: 12px;
+            color: #b9bbbe;
+            margin-top: 10px;
+        }
+        .wiki-link {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        .wiki-link a {
+            color: #43b581;
+            text-decoration: none;
+        }
+        .wiki-link a:hover {
+            text-decoration: underline;
+        }
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body>
+
+<div class="wiki-link">
+    <p>Need help? Check out the <a href="https://tgjassiyt.github.io/wiki-minion-inv-calc/" target="_blank">"How to Use the Minion Inventory Calculator"</a>.</p>
+</div>
+
+<div class="container">
+    <h1>Minion Inventory Calculator</h1>
+    <label for="inventorySlots">Minion Inventory Slots:</label>
+    <input type="number" id="inventorySlots" placeholder="Enter number of slots" required>
+
+    <label for="backpackSlots">Backpack Slots (optional):</label>
+    <input type="number" id="backpackSlots" placeholder="Enter number of slots" min="0">
+
+    <label for="fuel">Fuel Percentage (0-100, optional):</label>
+    <input type="number" id="fuel" placeholder="Enter fuel percentage" min="0" max="100">
+
+    <label for="diamondSpreading">Diamond Spreading:</label>
+    <select id="diamondSpreading">
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+    </select>
+
+    <label for="blockConversion">Does your minion convert items to block form?</label>
+    <select id="blockConversion">
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+    </select>
+
+    <label for="production">Production in 1 Day:</label>
+    <input type="number" id="production" placeholder="Enter production amount" step="0.000001" required>
+
+    <button onclick="calculateDays()">Calculate Days to Fill Inventory</button>
+
+    <div class="result" id="result"></div>
+    <p id="note" style="display: none;">Note: The time shown above is in real-life days.</p>
+</div>
+
+<div class="credits">
+    <p>Coder: TGJASSIYT (Discord Username: jassi_xc)</p>
+</div>
+
+<script>
+    function calculateDays() {
+        const inventorySlots = parseFloat(document.getElementById('inventorySlots').value) || 0;
+        const backpackSlots = parseFloat(document.getElementById('backpackSlots').value) || 0;
+        const fuelPercentage = parseFloat(document.getElementById('fuel').value) || 0;
+        const diamondSpreading = document.getElementById('diamondSpreading').value;
+        const blockConversion = document.getElementById('blockConversion').value;
+        const production = parseFloat(document.getElementById('production').value) || 0;
+
+        const note = document.getElementById('note');
+
+        if (inventorySlots <= 0 || production <= 0 || isNaN(production)) {
+            document.getElementById('result').innerText = "Please fill the required fields correctly.";
+            document.getElementById('result').className = "result error";
+            note.style.display = "none";
+            return;
+        }
+
+        const totalSlots = (inventorySlots * 64) + (backpackSlots * 64);
+
+        let effectiveProduction = production;
+
+        if (blockConversion === 'yes') {
+            effectiveProduction /= 160;
+        }
+
+        if (fuelPercentage > 0) {
+            effectiveProduction += (effectiveProduction * (fuelPercentage / 100));
+        }
+
+        if (diamondSpreading === 'yes') {
+            effectiveProduction += (effectiveProduction * 0.1);
+        }
+
+        const daysToFill = totalSlots / effectiveProduction;
+
+        const averageMonth = 30.42;
+        const averageYear = 365.04;
+        let breakdown = "";
+
+        if (daysToFill >= averageYear) {
+            const years = Math.floor(daysToFill / averageYear);
+            breakdown += `${years} year${years > 1 ? "s" : ""} `;
+        }
+        if (daysToFill >= averageMonth) {
+            const months = Math.floor((daysToFill % averageYear) / averageMonth);
+            breakdown += `${months} month${months > 1 ? "s" : ""} `;
+        }
+
+        const days = (daysToFill % averageMonth).toFixed(2);
+        breakdown += `${days} day${days > 1 ? "s" : ""}`;
+
+        document.getElementById('result').innerHTML = `Days to fill inventory: ${daysToFill.toFixed(2)}<br>${breakdown}`;
+        document.getElementById('result').className = "result success";
+
+        note.style.display = "block";
+    }
+</script>
+
+</body>
+</html>
