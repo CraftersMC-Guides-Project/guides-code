@@ -212,7 +212,16 @@ fetch('skill-exp/minion-production.json')
 async function loadMinionPrices() {
   try {
     const mpricesText = await fetch('market/mprices.txt').then(r => r.text());
-    const minionPrices = mpricesText .split('\n').map(line => line.split(': ')[1]).filter(Boolean).map(JSON.parse);
+    const minionPrices = mpricesText
+      .split('\n')
+      .map(line => {
+        try {
+          return JSON.parse(line.split(': ')[1]);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
     return minionPrices;
   } catch (error) {
     console.error("Parsing error:", error);
@@ -222,17 +231,11 @@ async function loadMinionPrices() {
 }
 
 document.getElementById("result").onclick = async () => {
-  const name = document.getElementById("input2").value;
+  const name = document.getElementById("input2").value.trim();
 
-  let ac = -1;
-  sdata.forEach((d, index) => {
-    if (d.name === name) {
-      ac = index;
-    }
-  });
+  let ac = sdata.findIndex(d => d.name === name);
 
   if (ac === -1) {
-    
     document.getElementById("second").style.display = "none";
     document.getElementById("resultText").textContent = "Name not found!";
     return;
@@ -247,32 +250,34 @@ document.getElementById("result").onclick = async () => {
     return;
   }
 
-  const mprice = await loadMinionPrices(); // ✅ Await the price data
-  if (!mprice) return; // ❌ In case loading fails
-  const id2 = sdata[ac].id2;
-  const id = sdata[ac].id;
-  const realprice = mprice[id - 1]?.[1]; // safe access
+  const mprice = await loadMinionPrices();
+  if (!mprice) return;
 
-  if (realprice === undefined) {
+  const id = sdata[ac].id;
+  const id2 = sdata[ac].id2;
+  const realprice = mprice[id - 1]?.[1];
+  const realprice2 = id2 !== 0 ? mprice[id2 - 1]?.[1] : null;
+
+  if (realprice === undefined || (id2 !== 0 && realprice2 === undefined)) {
     document.getElementById("resultText").textContent = "Price not found!";
     return;
   }
- if(id2 !== 0){
-  const result = ((tier.chance * 60 * 60 * 24) / (tier.time * 2)) * realprice;
-  document.getElementById("resultText").textContent = `The production is of ${Math.round(result)} coins`;
-  document.getElementById("second").style.display = "block";
-  const result2 = (tier.chance * 60 * 60 * 24) / (tier.time * 2);
-  document.getElementById("second").textContent = `The required minion produced ${result2}x of certified item.`;}
-  else{
-    const realprice2 = mprice[id2 - 1]?.[1];
-    const result = ((tier.chance * 60 * 60 * 24) / (tier.time * 2)) * realprice;
-    const result3 = ((tier.chance * 60 * 60 * 24) / (tier.time * 2)) * realprice2;
-    const totalR = result + result3;
-  document.getElementById("resultText").textContent = `The production is of ${Math.round(totalR)} coins`;
-  document.getElementById("second").style.display = "block";
-  const result2 = (tier.chance * 60 * 60 * 24) / (tier.time * 2);
-  const result4 = (tier.chance * 60 * 60 * 24) / (tier.time * 2);
-  document.getElementById("second").textContent = `The required minion produced ${result2}x and ${result3}x of certified item.`;}
+
+  const produced = (tier.chance * 60 * 60 * 24) / (tier.time * 2);
+
+  if (id2 === 0) {
+    const result = produced * realprice;
+    document.getElementById("resultText").textContent = `The production is of ${Math.round(result)} coins`;
+    document.getElementById("second").style.display = "block";
+    document.getElementById("second").textContent = `The required minion produced ${produced.toFixed(2)}x of certified item.`;
+  } else {
+    const result1 = produced * realprice;
+    const result2 = produced * realprice2;
+    const totalR = result1 + result2;
+
+    document.getElementById("resultText").textContent = `The production is of ${Math.round(totalR)} coins`;
+    document.getElementById("second").style.display = "block";
+    document.getElementById("second").textContent = `The required minion produced ${produced.toFixed(2)}x and ${produced.toFixed(2)}x of certified item.`;
   }
 };
   </script>
