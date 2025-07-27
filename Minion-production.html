@@ -191,11 +191,13 @@ document.getElementById("result").onclick = () => {
     document.getElementById("resultText").textContent = "Tier data not available!";
     return;
   }
-
-  const result = ((tier.chance * 60 * 60 * 24) / (tier.time * 2)) * tier.price;
+ let mprice = loadMinionPrices();
+ let id = sdata[ac].id;
+ let realprice = mprice[id - 1][1];
+  const result = ((tier.chance * 60 * 60 * 24) / (tier.time * 2)) * realprice;
   document.getElementById("resultText").textContent = `The production is of ${result} coins`;
 };
-    let mprice = loadMinionPrices();
+    
     
     try{
       async function loadMinionPrices() {
