@@ -190,40 +190,36 @@
     <span class="material-icons" id="scrollToTopBtn">north</span>
   </button>
   <script>
+
 let rarity = document.getElementById("rarity");
 let previous = document.getElementById("previous");
 let after = document.getElementById("after");
 
+// Handle rarity switching
 previous.onclick = function () {
-  let inc = parseInt(rarity.value);
-  if (inc === 1) {
-    rarity.value = "11";
-  } else {
-    rarity.value = inc - 1;
-  }
+  let level = parseInt(rarity.value);
+  rarity.value = level === 1 ? "11" : level - 1;
 };
 
 after.onclick = function () {
-  let inc = parseInt(rarity.value);
-  if (inc === 11) {
-    rarity.value = "1";
-  } else {
-    rarity.value = inc + 1;
-  }
+  let level = parseInt(rarity.value);
+  rarity.value = level === 11 ? "1" : level + 1;
 };
 
 let sdata = [];
 
+// Load minion data
 fetch('skill-exp/minion-production.json')
-  .then(response => response.json())
+  .then(res => res.json())
   .then(data => {
     sdata = data;
   });
 
+// Load market prices
 async function loadMinionPrices() {
   try {
-    const mpricesText = await fetch('market/mprices.txt').then(r => r.text());
-    const minionPrices = mpricesText
+    let txt = await fetch('market/mprices.txt').then(res => res.text());
+    return txt
       .split('\n')
       .map(line => {
         try {
@@ -233,9 +229,8 @@ async function loadMinionPrices() {
         }
       })
       .filter(Boolean);
-    return minionPrices;
-  } catch (error) {
-    console.error("Parsing error:", error);
+  } catch (e) {
+    console.error("Error loading prices:", e);
     document.getElementById("resultText").textContent = "Error loading market prices!";
     return null;
   }
@@ -243,58 +238,66 @@ async function loadMinionPrices() {
 
 document.getElementById("result").onclick = async () => {
   const name = document.getElementById("input2").value.trim();
-
-  let ac = sdata.findIndex(d => d.name === name);
-
-  if (ac === -1) {
-    document.getElementById("second").style.display = "none";
-    document.getElementById("resultText").textContent = "Name not found!";
-    return;
-  }
-
   const tierIndex = parseInt(rarity.value) - 1;
-  const tier = sdata[ac].tiers[tierIndex];
 
-  if (!tier) {
+  const minion = sdata.find(m => m.name === name);
+  if (!minion) {
+    document.getElementById("resultText").textContent = "Name not found!";
     document.getElementById("second").style.display = "none";
+    return;
+  }
+
+  const tier = minion.tiers[tierIndex];
+  if (!tier) {
     document.getElementById("resultText").textContent = "Tier data not available!";
+    document.getElementById("second").style.display = "none";
     return;
   }
 
-  const mprice = await loadMinionPrices();
-  if (!mprice) return;
+  const prices = await loadMinionPrices();
+  if (!prices) return;
 
-  const id1 = sdata[ac].id;
-  const id2 = sdata[ac].id2;
-
-  const price1 = mprice[id1 - 1]?.[1];
-  const price2 = id2 !== 0 ? mprice[id2 - 1]?.[1] : null;
-
-  if (price1 === undefined || (id2 !== 0 && price2 === undefined)) {
-    document.getElementById("resultText").textContent = "Price not found!";
-    return;
-  }
-
-  // Production rate formula: (chance * secondsPerDay) / (time * 2)
   const secondsPerDay = 60 * 60 * 24;
-  const production1 = (tier.chance1 * secondsPerDay) / (tier.time * 2);
-  const production2 = (tier.chance2 * secondsPerDay) / (tier.time * 2);
+  const time = tier.time;
+  let totalCoins = 0;
+  let outputText = [];
 
-  const coins1 = production1 * price1;
-  const coins2 = id2 !== 0 ? production2 * price2 : 0;
-  const total = coins1 + coins2;
-
-  document.getElementById("resultText").textContent =
-    `The production is of ${Math.round(total)} coins`;
-  document.getElementById("second").style.display = "block";
-
-  if (id2 !== 0) {
-    document.getElementById("second").textContent =
-      `The minion produced ${production1.toFixed(2)}x and ${production2.toFixed(2)}x of certified items.`;
-  } else {
-    document.getElementById("second").textContent =
-      `The minion produced ${production1.toFixed(2)}x of certified item.`;
+  // Handle chance1
+  if (minion.id && tier.chance1 > 0) {
+    const price = prices[minion.id - 1]?.[1];
+    if (price !== undefined) {
+      const produced = (tier.chance1 * secondsPerDay) / (time * 2);
+      totalCoins += produced * price;
+      outputText.push(`${produced.toFixed(2)}x`);
+    }
   }
+
+  // Handle chance2
+  if (minion.id2 && minion.id2 > 0 && tier.chance2 > 0) {
+    const price = prices[minion.id2 - 1]?.[1];
+    if (price !== undefined) {
+      const produced = (tier.chance2 * secondsPerDay) / (time * 2);
+      totalCoins += produced * price;
+      outputText.push(`${produced.toFixed(2)}x`);
+    }
+  }
+
+  // Handle chance3
+  if (minion.id3 && minion.id3 > 0 && tier.chance3 > 0) {
+    const price = prices[minion.id3 - 1]?.[1];
+    if (price !== undefined) {
+      const produced = (tier.chance3 * secondsPerDay) / (time * 2);
+      totalCoins += produced * price;
+      outputText.push(`${produced.toFixed(2)}x`);
+    }
+  }
+
+  // Display result
+  document.getElementById("resultText").textContent =
+    `The production is of ${Math.round(totalCoins)} coins`;
+  document.getElementById("second").style.display = "block";
+  document.getElementById("second").textContent =
+    `The minion produced ${outputText.join(" and ")} of certified item(s).`;
 };
   </script>
   
