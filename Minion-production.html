@@ -249,7 +249,7 @@ document.getElementById("result").onclick = async () => {
 
   const mprice = await loadMinionPrices(); // ✅ Await the price data
   if (!mprice) return; // ❌ In case loading fails
-
+  const id2 = sdata[ac].id2;
   const id = sdata[ac].id;
   const realprice = mprice[id - 1]?.[1]; // safe access
 
@@ -257,12 +257,23 @@ document.getElementById("result").onclick = async () => {
     document.getElementById("resultText").textContent = "Price not found!";
     return;
   }
-
+ if(id2 !== 0){
   const result = ((tier.chance * 60 * 60 * 24) / (tier.time * 2)) * realprice;
   document.getElementById("resultText").textContent = `The production is of ${Math.round(result)} coins`;
   document.getElementById("second").style.display = "block";
   const result2 = (tier.chance * 60 * 60 * 24) / (tier.time * 2);
-  document.getElementById("second").textContent = `The required minion produced ${result2}x of certified item.`;
+  document.getElementById("second").textContent = `The required minion produced ${result2}x of certified item.`;}
+  else{
+    const realprice2 = mprice[id2 - 1]?.[1];
+    const result = ((tier.chance * 60 * 60 * 24) / (tier.time * 2)) * realprice;
+    const result3 = ((tier.chance * 60 * 60 * 24) / (tier.time * 2)) * realprice2;
+    const totalR = result + result3;
+  document.getElementById("resultText").textContent = `The production is of ${Math.round(totalR)} coins`;
+  document.getElementById("second").style.display = "block";
+  const result2 = (tier.chance * 60 * 60 * 24) / (tier.time * 2);
+  const result4 = (tier.chance * 60 * 60 * 24) / (tier.time * 2);
+  document.getElementById("second").textContent = `The required minion produced ${result2}x and ${result3}x of certified item.`;}
+  }
 };
   </script>
   
