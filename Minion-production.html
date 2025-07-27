@@ -195,6 +195,24 @@ document.getElementById("result").onclick = () => {
   const result = ((tier.chance * 60 * 60 * 24) / (tier.time * 2)) * tier.price;
   document.getElementById("resultText").textContent = `The production is of ${result} coins`;
 };
+    let mprice = loadMinionPrices();
+    
+    try{
+      async function loadMinionPrices() {
+  const mpricesText = await fetch('market/mprices.txt').then(r => r.text());
+
+  const minionPrices = mpricesText
+    .split('\n')                      // Split text into lines
+    .map(line => line.split(': ')[1]) // Remove the index part ("1: ")
+    .map(JSON.parse);                 // Parse the string as a real array
+
+  console.log(minionPrices);
+  return minionPrices;
+      }
+    }
+    catch(error){
+      document.getElementById("resultText").textContent = "An error occurred while parsing data";
+    }
 </script>
   
 
