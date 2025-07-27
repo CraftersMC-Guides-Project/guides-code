@@ -135,36 +135,40 @@
   </button>
   <script>
     let rarity = document.getElementById("rarity");
-    let previous = document.getElementById("previous");
-    let after = document.getElementById("after");
-    previous.onclick = function () {
-      let inc = parseInt(rarity.value);
-      if (inc === 1) {
-        rarity.value = "11";
-      } else {
-        rarity.value = inc - 1;
-      }
-    };
-    after.onclick = function () {
-      let inc = parseInt(rarity.value);
-      if (inc === 11) {
-        rarity.value = "1";
-      } else {
-        rarity.value = inc + 1;
-      }
-    };
-    let c = 0;
+let previous = document.getElementById("previous");
+let after = document.getElementById("after");
+
+previous.onclick = function () {
+  let inc = parseInt(rarity.value);
+  if (inc === 1) {
+    rarity.value = "11";
+  } else {
+    rarity.value = inc - 1;
+  }
+};
+
+after.onclick = function () {
+  let inc = parseInt(rarity.value);
+  if (inc === 11) {
+    rarity.value = "1";
+  } else {
+    rarity.value = inc + 1;
+  }
+};
+
+let c = 0;
 let ac = 0;
 let sdata = [];
 
-fetch('skill-exp/minion-production.json').then(response => response.json()).then(data => {
+fetch('skill-exp/minion-production.json')
+  .then(response => response.json())
+  .then(data => {
     sdata = data;
   });
 
 document.getElementById("result").onclick = () => {
   const name = document.getElementById("input2").value;
 
-  
   c = 0;
   ac = -1;
 
@@ -180,7 +184,15 @@ document.getElementById("result").onclick = () => {
     return;
   }
 
-  const result = ((sdata[ac].tiers[rarity.value - 1].chance * 60 * 60 * 24) / (sdata[ac].tiers[rarity.value - 1].time * 2)) * (sdata[ac].tiers[rarity.value - 1].price;
+  const tierIndex = parseInt(rarity.value) - 1;
+  const tier = sdata[ac].tiers[tierIndex];
+
+  if (!tier) {
+    document.getElementById("resultText").textContent = "Tier data not available!";
+    return;
+  }
+
+  const result = ((tier.chance * 60 * 60 * 24) / (tier.time * 2)) * tier.price;
   document.getElementById("resultText").textContent = `The production is of ${result} coins`;
 };
 </script>
