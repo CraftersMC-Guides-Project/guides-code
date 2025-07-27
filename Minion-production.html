@@ -253,31 +253,36 @@ document.getElementById("result").onclick = async () => {
   const mprice = await loadMinionPrices();
   if (!mprice) return;
 
-  const id = sdata[ac].id;
+  const id1 = sdata[ac].id;
   const id2 = sdata[ac].id2;
-  const realprice = mprice[id - 1]?.[1];
-  const realprice2 = id2 !== 0 ? mprice[id2 - 1]?.[1] : null;
 
-  if (realprice === undefined || (id2 !== 0 && realprice2 === undefined)) {
+  const price1 = mprice[id1 - 1]?.[1];
+  const price2 = id2 !== 0 ? mprice[id2 - 1]?.[1] : null;
+
+  if (price1 === undefined || (id2 !== 0 && price2 === undefined)) {
     document.getElementById("resultText").textContent = "Price not found!";
     return;
   }
 
-  const produced = (tier.chance * 60 * 60 * 24) / (tier.time * 2);
+  // Production rate formula: (chance * secondsPerDay) / (time * 2)
+  const secondsPerDay = 60 * 60 * 24;
+  const production1 = (tier.chance1 * secondsPerDay) / (tier.time * 2);
+  const production2 = (tier.chance2 * secondsPerDay) / (tier.time * 2);
 
-  if (id2 === 0) {
-    const result = produced * realprice;
-    document.getElementById("resultText").textContent = `The production is of ${Math.round(result)} coins`;
-    document.getElementById("second").style.display = "block";
-    document.getElementById("second").textContent = `The required minion produced ${produced.toFixed(2)}x of certified item.`;
+  const coins1 = production1 * price1;
+  const coins2 = id2 !== 0 ? production2 * price2 : 0;
+  const total = coins1 + coins2;
+
+  document.getElementById("resultText").textContent =
+    `The production is of ${Math.round(total)} coins`;
+  document.getElementById("second").style.display = "block";
+
+  if (id2 !== 0) {
+    document.getElementById("second").textContent =
+      `The minion produced ${production1.toFixed(2)}x and ${production2.toFixed(2)}x of certified items.`;
   } else {
-    const result1 = produced * realprice;
-    const result2 = produced * realprice2;
-    const totalR = result1 + result2;
-
-    document.getElementById("resultText").textContent = `The production is of ${Math.round(totalR)} coins`;
-    document.getElementById("second").style.display = "block";
-    document.getElementById("second").textContent = `The required minion produced ${produced.toFixed(2)}x and ${produced.toFixed(2)}x of certified item.`;
+    document.getElementById("second").textContent =
+      `The minion produced ${production1.toFixed(2)}x of certified item.`;
   }
 };
   </script>
