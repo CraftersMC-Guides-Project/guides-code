@@ -134,7 +134,7 @@
     <span class="material-icons" id="scrollToTopBtn">north</span>
   </button>
   <script>
-    let rarity = document.getElementById("rarity");
+let rarity = document.getElementById("rarity");
 let previous = document.getElementById("previous");
 let after = document.getElementById("after");
 
@@ -156,8 +156,6 @@ after.onclick = function () {
   }
 };
 
-let c = 0;
-let ac = 0;
 let sdata = [];
 
 fetch('skill-exp/minion-production.json')
@@ -166,17 +164,26 @@ fetch('skill-exp/minion-production.json')
     sdata = data;
   });
 
-document.getElementById("result").onclick = () => {
+async function loadMinionPrices() {
+  try {
+    const mpricesText = await fetch('market/mprices.txt').then(r => r.text());
+    const minionPrices = mpricesText .split('\n').map(line => line.split(': ')[1]).filter(Boolean).map(JSON.parse);
+    return minionPrices;
+  } catch (error) {
+    console.error("Parsing error:", error);
+    document.getElementById("resultText").textContent = "Error loading market prices!";
+    return null;
+  }
+}
+
+document.getElementById("result").onclick = async () => {
   const name = document.getElementById("input2").value;
 
-  c = 0;
-  ac = -1;
-
-  sdata.forEach(d => {
+  let ac = -1;
+  sdata.forEach((d, index) => {
     if (d.name === name) {
-      ac = c;
+      ac = index;
     }
-    c += 1;
   });
 
   if (ac === -1) {
@@ -191,31 +198,22 @@ document.getElementById("result").onclick = () => {
     document.getElementById("resultText").textContent = "Tier data not available!";
     return;
   }
- let mprice = loadMinionPrices();
- let id = sdata[ac].id;
- let realprice = mprice[id - 1][1];
+
+  const mprice = await loadMinionPrices(); // ✅ Await the price data
+  if (!mprice) return; // ❌ In case loading fails
+
+  const id = sdata[ac].id;
+  const realprice = mprice[id - 1]?.[1]; // safe access
+
+  if (realprice === undefined) {
+    document.getElementById("resultText").textContent = "Price not found!";
+    return;
+  }
+
   const result = ((tier.chance * 60 * 60 * 24) / (tier.time * 2)) * realprice;
-  document.getElementById("resultText").textContent = `The production is of ${result} coins`;
+  document.getElementById("resultText").textContent = `The production is of ${Math.round(result)} coins`;
 };
-    
-    
-    try{
-      async function loadMinionPrices() {
-  const mpricesText = await fetch('market/mprices.txt').then(r => r.text());
-
-  const minionPrices = mpricesText
-    .split('\n')                      // Split text into lines
-    .map(line => line.split(': ')[1]) // Remove the index part ("1: ")
-    .map(JSON.parse);                 // Parse the string as a real array
-
-  console.log(minionPrices);
-  return minionPrices;
-      }
-    }
-    catch(error){
-      document.getElementById("resultText").textContent = "An error occurred while parsing data";
-    }
-</script>
+  </script>
   
 
   <div id="footer"></div>
