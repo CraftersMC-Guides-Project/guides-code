@@ -1,0 +1,242 @@
+<!---- example website ---->
+<!---- example website ---->
+<!---- example website ---->
+<!---- example website ---->
+<!---- example website ---->
+<!---- example website ---->
+<!---- example website ---->
+<!---- example website ---->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Price History</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for creating the chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts for a modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 flex items-center justify-center min-h-screen p-4">
+
+    <main class="bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-4xl border border-gray-700">
+        
+        <!-- Header Section -->
+        <div id="header" class="mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-white">Item Price History</h1>
+            <p id="item-id-display" class="text-lg text-cyan-400 font-mono"></p>
+        </div>
+
+        <!-- Loading, Error, and Content Sections -->
+        <div id="loading-state" class="text-center py-10">
+            <svg class="animate-spin h-8 w-8 text-cyan-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="mt-4 text-lg font-medium text-gray-400">Fetching price data...</p>
+        </div>
+
+        <div id="error-state" class="hidden text-center bg-red-900/50 border border-red-700 rounded-lg p-6">
+            <h2 class="text-xl font-bold text-red-300">Could Not Load Data</h2>
+            <p id="error-message" class="mt-2 text-red-400"></p>
+        </div>
+
+        <div id="content" class="hidden">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <div class="bg-gray-700/50 p-4 rounded-lg border border-gray-600">
+                    <p class="text-sm font-medium text-gray-400">Current Price</p>
+                    <p id="current-price" class="text-2xl font-bold text-white"></p>
+                </div>
+                <div class="bg-gray-700/50 p-4 rounded-lg border border-gray-600">
+                    <p class="text-sm font-medium text-gray-400">30-Day High</p>
+                    <p id="high-price" class="text-2xl font-bold text-green-400"></p>
+                </div>
+                <div class="bg-gray-700/50 p-4 rounded-lg border border-gray-600">
+                    <p class="text-sm font-medium text-gray-400">30-Day Low</p>
+                    <p id="low-price" class="text-2xl font-bold text-red-400"></p>
+                </div>
+            </div>
+
+            <!-- Chart Canvas -->
+            <div class="bg-gray-900/70 p-4 rounded-lg">
+                <canvas id="priceChart"></canvas>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get UI elements
+            const loadingState = document.getElementById('loading-state');
+            const errorState = document.getElementById('error-state');
+            const errorMessage = document.getElementById('error-message');
+            const content = document.getElementById('content');
+            const itemIdDisplay = document.getElementById('item-id-display');
+
+            // 1. Get item ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const itemId = urlParams.get('id');
+
+            if (!itemId) {
+                showError('No item ID provided in the URL. Please add `?id=<item_id>` to the end of the URL.');
+                return;
+            }
+
+            itemIdDisplay.textContent = `Item ID: ${itemId}`;
+            const apiUrl = `https://chart-bot.roumakdatta.workers.dev/item?id=${itemId}`;
+
+            // 2. Fetch data from the worker API
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw new Error(err.error || `HTTP error! Status: ${response.status}`) });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!Array.isArray(data) || data.length === 0) {
+                        throw new Error('Received invalid or empty data from the API.');
+                    }
+                    // 3. Process and display data
+                    processAndDisplayData(data);
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    showError(error.message);
+                });
+            
+            function processAndDisplayData(data) {
+                // Extract dates and prices for the chart
+                const labels = data.map(entry => entry.date);
+                const prices = data.map(entry => entry.price);
+
+                // Calculate stats
+                const currentPrice = prices[prices.length - 1];
+                const highPrice = Math.max(...prices);
+                const lowPrice = Math.min(...prices);
+
+                // Update stat cards
+                document.getElementById('current-price').textContent = currentPrice.toLocaleString();
+                document.getElementById('high-price').textContent = highPrice.toLocaleString();
+                document.getElementById('low-price').textContent = lowPrice.toLocaleString();
+
+                // 4. Create the chart
+                createChart(labels, prices);
+
+                // Show content and hide loading spinner
+                loadingState.classList.add('hidden');
+                content.classList.remove('hidden');
+            }
+
+            function createChart(labels, prices) {
+                const ctx = document.getElementById('priceChart').getContext('2d');
+                
+                // Create a gradient for the chart background
+                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, 'rgba(74, 222, 128, 0.4)'); // A nice green
+                gradient.addColorStop(1, 'rgba(34, 197, 94, 0)');
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Price',
+                            data: prices,
+                            borderColor: 'rgb(74, 222, 128)',
+                            backgroundColor: gradient,
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgb(74, 222, 128)',
+                            pointRadius: 0, // Hide points by default
+                            pointHoverRadius: 6, // Show on hover
+                            tension: 0.1, // Makes the line slightly curved
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)',
+                                    // Format ticks to be more readable (e.g., 1k, 1M)
+                                    callback: function(value) {
+                                        if (value >= 1000000) return (value / 1000000) + 'M';
+                                        if (value >= 1000) return (value / 1000) + 'k';
+                                        return value;
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)',
+                                    maxTicksLimit: 10 // Show fewer labels on x-axis to prevent clutter
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleFont: { size: 14, weight: 'bold' },
+                                bodyFont: { size: 12 },
+                                padding: 10,
+                                cornerRadius: 4,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y.toLocaleString();
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                });
+            }
+
+            function showError(message) {
+                loadingState.classList.add('hidden');
+                errorMessage.textContent = message;
+                errorState.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
