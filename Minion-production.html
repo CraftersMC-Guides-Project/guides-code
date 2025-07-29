@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Minion production</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="../css/essential.css">
   <script src="js/script.js"></script>
   <style>
+    .background {
+      background: url("../Backgrounds/2.webp");
+      background-color: #5e5454;
+      background-blend-mode: multiply;
+      background-size: cover;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
     body {
       font-family: 'MyFont';
     }
@@ -18,19 +32,20 @@
     }
 
     .container {
-  position: relative;
-  width: 95%;
-  max-width: 600px;
-  margin: 5rem auto;
-  border: 2px solid #777;
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s ease-in-out;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center; 
-  justify-content: center; 
-  gap: 10px; 
+      position: relative;
+      width: 95%;
+      max-width: 600px;
+      margin: 5rem auto;
+      border: 2px solid #777;
+      box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease-in-out;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background-color: #00000070;
     }
 
     .ibtn {
@@ -50,89 +65,103 @@
       box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 2px #777 inset !important;
       width: 100%;
     }
+
     #input2 {
-    font-family: 'MyFont';
-    width: 50%;
-    max-width: 600px;
-    padding: 10px 10px;
-    margin: 0px;
-    border: 2px solid #1a1a1b;
-    font-size: 16px;
-    color: #fff;
-    outline: none;
-    background-color: #313233;
-    box-shadow: 0 4px 0 0 #242425 inset;
-    align-item: center;
-    align-text: center;
+      font-family: 'MyFont';
+      width: 50%;
+      max-width: 600px;
+      padding: 10px 10px;
+      margin: 0px;
+      border: 2px solid #1a1a1b;
+      font-size: 16px;
+      color: #fff;
+      outline: none;
+      background-color: #313233;
+      box-shadow: 0 4px 0 0 #242425 inset;
+      align-items: center;
+      text-align: center;
     }
+
     .input input {
       background-color: #222;
-  color: #fff;
-  border: none;
-  outline: none;
-  padding: 10px;
-  font-family: 'MyFont';
-  font-size: 20px;
-  box-shadow: inset 2px 2px 0 #444, inset -2px -2px 0 #000;
-  text-align: center;
-  width: 80px; /* Adjust based on your layout */
-      }
-    .lable {
-    margin-top:20px;
+      color: #fff;
+      border: none;
+      outline: none;
+      padding: 10px;
+      font-family: 'MyFont';
+      font-size: 20px;
+      box-shadow: inset 2px 2px 0 #444, inset -2px -2px 0 #000;
+      text-align: center;
+      width: 80px;
+      /* Adjust based on your layout */
     }
+
+    .lable {
+      margin-top: 20px;
+    }
+
     #result {
       font-family: 'MyFont';
-    width: 15%;
-    text-align: center;
-    margin-bottom: 5px;
-    background: transparent;
-    padding: 8px;
-    color: #242424;
-    background-color: #c6c6c6;
-    box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 3px #777 inset !important;
+      width: 15%;
+      text-align: center;
+      margin-bottom: 5px;
+      background: transparent;
+      padding: 8px;
+      color: #242424;
+      background-color: #c6c6c6;
+      box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 3px #777 inset !important;
     }
-  
-      #resultText{
-        margin-bottom: 5px;
-        text-align: centre;
-      }
-    #second{
+
+    #resultText {
+      margin-bottom: 5px;
+      text-align: centre;
+    }
+
+    #second {
       display: none;
       margin-bottom: 5px;
       text-align: centre;
     }
-    #note{
+
+    #note {
       text-align: centre;
     }
-    #npcPrice{
+
+    #npcPrice {
       display: none;
       margin-bottom: 5px;
       text-align: centre;
     }
-    #exp{
+
+    #exp {
       display: none;
       margin-bottom: 5px;
       text-align: centre;
     }
-    @media(max-width: 480px){
-      #result{
+
+    @media(max-width: 480px) {
+      #result {
         width: 25%;
       }
-      #input2{
+
+      #input2 {
         width: 90%;
       }
     }
-.fuleoption {
-      display:flex;
+
+    .fuleoption {
+      display: flex;
       flex-direction: column;
       justify-content: start;
       font-family: 'MyFont';
-}
-  .fuleoption div{
-    gap: 5px;
-  }
+    }
+
+    .fuleoption div {
+      gap: 5px;
+    }
   </style>
 </head>
+
 <body>
   <div id="loader">
     <div></div>
@@ -144,74 +173,74 @@
   <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-<div class="container">
+  <div class="container">
     <h3 class="tit">Minion Production Calculator</h3>
-  <div id="note">
-  <span id="note">Note: <em>All the production are as per 24 hours concept.</em></span>
-  </div>
-  <lable>Select the minion</lable>
-  <select id="input2">
-    <option value="Acacia Log Minion">Acacia Log Minion</option>
-<option value="Beetroot Minion">Beetroot Minion</option>
-<option value="Birch Log Minion">Birch Log Minion</option>
-<option value="Blaze Minion">Blaze Minion</option>
-<option value="Cactus Minion">Cactus Minion</option>
-<option value="Carrot Minion">Carrot Minion</option>
-<option value="Cave Spider Minion">Cave Spider Minion</option>
-<option value="Chicken Minion">Chicken Minion</option>
-<option value="Coal Minion">Coal Minion</option>
-<option value="Cobblestone Minion">Cobblestone Minion</option>
-<option value="Cocoa Beans Minion">Cocoa Beans Minion</option>
-<option value="Cow Minion">Cow Minion</option>
-<option value="Creeper Minion">Creeper Minion</option>
-<option value="Dark Oak Log Minion">Dark Oak Log Minion</option>
-<option value="Diamond Minion">Diamond Minion</option>
-<option value="Duck Minion">Duck Minion</option>
-<option value="Emerald Minion">Emerald Minion</option>
-<option value="Gold Minion">Gold Minion</option>
-<option value="Ice Minion">Ice Minion</option>
-<option value="Iron Minion">Iron Minion</option>
-<option value="Jungle Log Minion">Jungle Log Minion</option>
-<option value="Lapis Lazuli Minion">Lapis Lazuli Minion</option>
-<option value="Magma Cube Minion">Magma Cube Minion</option>
-<option value="Melon Minion">Melon Minion</option>
-<option value="Mushroom Minion">Mushroom Minion</option>
-<option value="Oak Log Minion">Oak Log Minion</option>
-<option value="Obsidian Minion">Obsidian Minion</option>
-<option value="Pig Minion">Pig Minion</option>
-<option value="Potato Minion">Potato Minion</option>
-<option value="Pumpkin Minion">Pumpkin Minion</option>
-<option value="Rabbit Minion">Rabbit Minion</option>
-<option value="Redstone Minion">Redstone Minion</option>
-<option value="Revenant Minion">Revenant Minion</option>
-<option value="Sheep Minion">Sheep Minion</option>
-<option value="Skeleton Minion">Skeleton Minion</option>
-<option value="Slime Minion">Slime Minion</option>
-<option value="Spider Minion">Spider Minion</option>
-<option value="Spruce Log Minion">Spruce Log Minion</option>
-<option value="Sugar Cane Minion">Sugar Cane Minion</option>
-<option value="Wheat Minion">Wheat Minion</option>
-<option value="Zombie Minion">Zombie Minion</option>
-  </select>
-  <lable>Select minion tier</lable>
+    <div id="note">
+      <span id="note">Note: <em>All the production are as per 24 hours concept.</em></span>
+    </div>
+    <lable>Select the minion</lable>
+    <select id="input2">
+      <option value="Acacia Log Minion">Acacia Log Minion</option>
+      <option value="Beetroot Minion">Beetroot Minion</option>
+      <option value="Birch Log Minion">Birch Log Minion</option>
+      <option value="Blaze Minion">Blaze Minion</option>
+      <option value="Cactus Minion">Cactus Minion</option>
+      <option value="Carrot Minion">Carrot Minion</option>
+      <option value="Cave Spider Minion">Cave Spider Minion</option>
+      <option value="Chicken Minion">Chicken Minion</option>
+      <option value="Coal Minion">Coal Minion</option>
+      <option value="Cobblestone Minion">Cobblestone Minion</option>
+      <option value="Cocoa Beans Minion">Cocoa Beans Minion</option>
+      <option value="Cow Minion">Cow Minion</option>
+      <option value="Creeper Minion">Creeper Minion</option>
+      <option value="Dark Oak Log Minion">Dark Oak Log Minion</option>
+      <option value="Diamond Minion">Diamond Minion</option>
+      <option value="Duck Minion">Duck Minion</option>
+      <option value="Emerald Minion">Emerald Minion</option>
+      <option value="Gold Minion">Gold Minion</option>
+      <option value="Ice Minion">Ice Minion</option>
+      <option value="Iron Minion">Iron Minion</option>
+      <option value="Jungle Log Minion">Jungle Log Minion</option>
+      <option value="Lapis Lazuli Minion">Lapis Lazuli Minion</option>
+      <option value="Magma Cube Minion">Magma Cube Minion</option>
+      <option value="Melon Minion">Melon Minion</option>
+      <option value="Mushroom Minion">Mushroom Minion</option>
+      <option value="Oak Log Minion">Oak Log Minion</option>
+      <option value="Obsidian Minion">Obsidian Minion</option>
+      <option value="Pig Minion">Pig Minion</option>
+      <option value="Potato Minion">Potato Minion</option>
+      <option value="Pumpkin Minion">Pumpkin Minion</option>
+      <option value="Rabbit Minion">Rabbit Minion</option>
+      <option value="Redstone Minion">Redstone Minion</option>
+      <option value="Revenant Minion">Revenant Minion</option>
+      <option value="Sheep Minion">Sheep Minion</option>
+      <option value="Skeleton Minion">Skeleton Minion</option>
+      <option value="Slime Minion">Slime Minion</option>
+      <option value="Spider Minion">Spider Minion</option>
+      <option value="Spruce Log Minion">Spruce Log Minion</option>
+      <option value="Sugar Cane Minion">Sugar Cane Minion</option>
+      <option value="Wheat Minion">Wheat Minion</option>
+      <option value="Zombie Minion">Zombie Minion</option>
+    </select>
+    <lable>Select minion tier</lable>
     <div class="input">
       <button class="ibtn" id="previous">&lt;</button>
       <input id="rarity" type="text" readonly value="1">
       <button class="ibtn" id="after">&gt;</button>
-        
+
     </div>
-<div class="fuleoption">
-<div><input type="radio" value="fule" name="fule">Enchanted lava bucket</div>
-<div><input type="radio" value="fule" name="fule">Hamster wheel </div>
-<div><input type="radio" value="fule" name="fule">Foul flesh </div>
-</div>
-<button id="result">Result</button>
-  <div id="resultText">Result</div>
-  <div id="npcPrice"></div>
-  <div id="exp"></div>
-  <div id="second"></div>
-  
-</div>
+    <div class="fuleoption">
+      <div><input type="radio" value="fule" name="fule">Enchanted lava bucket</div>
+      <div><input type="radio" value="fule" name="fule">Hamster wheel </div>
+      <div><input type="radio" value="fule" name="fule">Foul flesh </div>
+    </div>
+    <a id="result">Result</a>
+    <div id="resultText"></div>
+    <div id="npcPrice"></div>
+    <div id="exp"></div>
+    <div id="second"></div>
+
+  </div>
   <button id="float">
     <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
     <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
@@ -220,160 +249,161 @@
   </button>
   <script>
 
-let rarity = document.getElementById("rarity");
-let previous = document.getElementById("previous");
-let after = document.getElementById("after");
+    let rarity = document.getElementById("rarity");
+    let previous = document.getElementById("previous");
+    let after = document.getElementById("after");
 
-// Handle rarity switching
-previous.onclick = function () {
-  let level = parseInt(rarity.value);
-  rarity.value = level === 1 ? "11" : level - 1;
-};
+    // Handle rarity switching
+    previous.onclick = function () {
+      let level = parseInt(rarity.value);
+      rarity.value = level === 1 ? "11" : level - 1;
+    };
 
-after.onclick = function () {
-  let level = parseInt(rarity.value);
-  rarity.value = level === 11 ? "1" : level + 1;
-};
+    after.onclick = function () {
+      let level = parseInt(rarity.value);
+      rarity.value = level === 11 ? "1" : level + 1;
+    };
 
-let sdata = [];
+    let sdata = [];
 
-// Load minion data
-fetch('skill-exp/minion-production.json')
-  .then(res => res.json())
-  .then(data => {
-    sdata = data;
-  });
+    // Load minion data
+    fetch('skill-exp/minion-production.json')
+      .then(res => res.json())
+      .then(data => {
+        sdata = data;
+      });
 
-// Load market prices
-async function loadMinionPrices() {
-  try {
-    let txt = await fetch('market/mprices.txt').then(res => res.text());
-    return txt
-      .split('\n')
-      .map(line => {
-        try {
-          return JSON.parse(line.split(': ')[1]);
-        } catch {
-          return null;
+    // Load market prices
+    async function loadMinionPrices() {
+      try {
+        let txt = await fetch('market/mprices.txt').then(res => res.text());
+        return txt
+          .split('\n')
+          .map(line => {
+            try {
+              return JSON.parse(line.split(': ')[1]);
+            } catch {
+              return null;
+            }
+          })
+          .filter(Boolean);
+      } catch (e) {
+        console.error("Error loading prices:", e);
+        document.getElementById("resultText").textContent = "Error loading market prices!";
+        document.getElementById("second").style.display = "none";
+        document.getElementById("npcPrice").style.display = "none";
+        document.getElementById("exp").style.display = "none";
+        return null;
+      }
+    }
+
+    document.getElementById("result").onclick = async () => {
+      const name = document.getElementById("input2").value.trim();
+      const tierIndex = parseInt(rarity.value) - 1;
+
+      const minion = sdata.find(m => m.name === name);
+      if (!minion) {
+        document.getElementById("resultText").textContent = "Name not found!";
+        document.getElementById("second").style.display = "none";
+        document.getElementById("npcPrice").style.display = "none";
+        document.getElementById("exp").style.display = "none";
+        return;
+      }
+
+      const tier = minion.tiers[tierIndex];
+      if (!tier) {
+        document.getElementById("resultText").textContent = "Tier data not available!";
+        document.getElementById("second").style.display = "none";
+        document.getElementById("npcPrice").style.display = "none";
+        document.getElementById("exp").style.display = "none";
+        return;
+      }
+
+      const prices = await loadMinionPrices();
+      if (!prices) return;
+
+      const secondsPerDay = 60 * 60 * 24;
+      const time = tier.time;
+      let totalCoins = 0;
+      let outputText = [];
+      let npcOut = 0;
+
+      let p1 = 0, p2 = 0, p3 = 0;
+
+      // Handle chance1
+      if (minion.id && tier.chance1 > 0) {
+        const price = prices[minion.id - 1]?.[1];
+        if (price !== undefined) {
+          p1 = ((tier.chance1 * secondsPerDay) / (time * 2)) / 160;
+          totalCoins += p1 * price;
+          outputText.push(`${Math.round(p1)}x of ${prices[minion.id - 1]?.[0]}`);
+          npcOut += prices[minion.id - 1]?.[2] * p1;
         }
-      })
-      .filter(Boolean);
-  } catch (e) {
-    console.error("Error loading prices:", e);
-    document.getElementById("resultText").textContent = "Error loading market prices!";
-    document.getElementById("second").style.display = "none";
-    document.getElementById("npcPrice").style.display = "none";
-    document.getElementById("exp").style.display = "none";
-    return null;
-  }
-}
+      }
 
-document.getElementById("result").onclick = async () => {
-  const name = document.getElementById("input2").value.trim();
-  const tierIndex = parseInt(rarity.value) - 1;
+      // Handle chance2
+      if (minion.id2 && minion.id2 > 0 && tier.chance2 > 0) {
+        const price = prices[minion.id2 - 1]?.[1];
+        if (price !== undefined) {
+          p2 = ((tier.chance2 * secondsPerDay) / (time * 2)) / 160;
+          totalCoins += p2 * price;
+          outputText.push(`${Math.round(p2)}x of ${prices[minion.id2 - 1]?.[0]}`);
+          npcOut += prices[minion.id2 - 1]?.[2] * p2;
+        }
+      }
 
-  const minion = sdata.find(m => m.name === name);
-  if (!minion) {
-    document.getElementById("resultText").textContent = "Name not found!";
-    document.getElementById("second").style.display = "none";
-    document.getElementById("npcPrice").style.display = "none";
-    document.getElementById("exp").style.display = "none";
-    return;
-  }
+      // Handle chance3
+      if (minion.id3 && minion.id3 > 0 && tier.chance3 > 0) {
+        const price = prices[minion.id3 - 1]?.[1];
+        if (price !== undefined) {
+          p3 = ((tier.chance3 * secondsPerDay) / (time * 2)) / 160;
+          totalCoins += p3 * price;
+          outputText.push(`${Math.round(p3)}x of ${prices[minion.id3 - 1]?.[0]}`);
+          npcOut += prices[minion.id3 - 1]?.[2] * p3;
+        }
+      }
 
-  const tier = minion.tiers[tierIndex];
-  if (!tier) {
-    document.getElementById("resultText").textContent = "Tier data not available!";
-    document.getElementById("second").style.display = "none";
-    document.getElementById("npcPrice").style.display = "none";
-    document.getElementById("exp").style.display = "none";
-    return;
-  }
+      // EXP calculation
+      let totalExp = 0;
+      let expOut = [];
 
-  const prices = await loadMinionPrices();
-  if (!prices) return;
+      if (minion.exp1) {
+        totalExp += p1 * minion.exp1;
+        if (p1 > 0) expOut.push(`${(p1 * minion.exp1).toFixed(2)} EXP from ${prices[minion.id - 1]?.[0]}`);
+      }
 
-  const secondsPerDay = 60 * 60 * 24;
-  const time = tier.time;
-  let totalCoins = 0;
-  let outputText = [];
-  let npcOut = 0;
+      if (minion.exp2) {
+        totalExp += p2 * minion.exp2;
+        if (p2 > 0) expOut.push(`${(p2 * minion.exp2).toFixed(2)} EXP from ${prices[minion.id2 - 1]?.[0]}`);
+      }
 
-  let p1 = 0, p2 = 0, p3 = 0;
+      if (minion.exp3 && minion.exp3 > 0) {
+        totalExp += p3 * minion.exp3;
+        if (p3 > 0) expOut.push(`${(p3 * minion.exp3).toFixed(2)} EXP from ${prices[minion.id3 - 1]?.[0]}`);
+      }
 
-  // Handle chance1
-  if (minion.id && tier.chance1 > 0) {
-    const price = prices[minion.id - 1]?.[1];
-    if (price !== undefined) {
-      p1 = ((tier.chance1 * secondsPerDay) / (time * 2)) / 160;
-      totalCoins += p1 * price;
-      outputText.push(`${Math.round(p1)}x of ${prices[minion.id - 1]?.[0]}`);
-      npcOut += prices[minion.id - 1]?.[2] * p1;
-    }
-  }
 
-  // Handle chance2
-  if (minion.id2 && minion.id2 > 0 && tier.chance2 > 0) {
-    const price = prices[minion.id2 - 1]?.[1];
-    if (price !== undefined) {
-      p2 = ((tier.chance2 * secondsPerDay) / (time * 2)) / 160;
-      totalCoins += p2 * price;
-      outputText.push(`${Math.round(p2)}x of ${prices[minion.id2 - 1]?.[0]}`);
-      npcOut += prices[minion.id2 - 1]?.[2] * p2;
-    }
-  }
+      // Show result
+      document.getElementById("resultText").textContent =
+        `The production is of ${Math.round(totalCoins)} coins.`;
 
-  // Handle chance3
-  if (minion.id3 && minion.id3 > 0 && tier.chance3 > 0) {
-    const price = prices[minion.id3 - 1]?.[1];
-    if (price !== undefined) {
-      p3 = ((tier.chance3 * secondsPerDay) / (time * 2)) / 160;
-      totalCoins += p3 * price;
-      outputText.push(`${Math.round(p3)}x of ${prices[minion.id3 - 1]?.[0]}`);
-      npcOut += prices[minion.id3 - 1]?.[2] * p3;
-    }
-  }
+      document.getElementById("npcPrice").style.display = "block";
+      document.getElementById("npcPrice").textContent =
+        `The NPC price of production is ${Math.round(npcOut)} coins.`;
 
-  // EXP calculation
-  let totalExp = 0;
-  let expOut = [];
+      document.getElementById("second").style.display = "block";
+      document.getElementById("second").textContent =
+        `The minion produced ${outputText.join(" and ")}.`;
 
-  if (minion.exp1) {
-    totalExp += p1 * minion.exp1;
-    if (p1 > 0) expOut.push(`${(p1 * minion.exp1).toFixed(2)} EXP from ${prices[minion.id - 1]?.[0]}`);
-  }
-
-  if (minion.exp2) {
-    totalExp += p2 * minion.exp2;
-    if (p2 > 0) expOut.push(`${(p2 * minion.exp2).toFixed(2)} EXP from ${prices[minion.id2 - 1]?.[0]}`);
-  }
-
-  if (minion.exp3 && minion.exp3 > 0) {
-    totalExp += p3 * minion.exp3;
-    if (p3 > 0) expOut.push(`${(p3 * minion.exp3).toFixed(2)} EXP from ${prices[minion.id3 - 1]?.[0]}`);
-  }
-  
-
-  // Show result
-  document.getElementById("resultText").textContent =
-    `The production is of ${Math.round(totalCoins)} coins.`;
-
-  document.getElementById("npcPrice").style.display = "block";
-  document.getElementById("npcPrice").textContent =
-    `The NPC price of production is ${Math.round(npcOut)} coins.`;
-
-  document.getElementById("second").style.display = "block";
-  document.getElementById("second").textContent =
-    `The minion produced ${outputText.join(" and ")}.`;
-
-  document.getElementById("exp").style.display = "block";
-  document.getElementById("exp").textContent =
-    `Total EXP gained is ${totalExp.toFixed(2)} (${expOut.join(" + ")}).`;
-};
+      document.getElementById("exp").style.display = "block";
+      document.getElementById("exp").textContent =
+        `Total EXP gained is ${totalExp.toFixed(2)} (${expOut.join(" + ")}).`;
+    };
   </script>
-  
+
 
   <div id="footer"></div>
-  
+
 </body>
+
 </html>
