@@ -6,7 +6,7 @@ const eventAlertMessage = `
 `;
 
 // Set the last cake number here
-const lastCakeNumber = 234;
+const lastCakeNumber = 235;
 
 function formatTime(date) {
     const options = {
