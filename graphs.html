@@ -1,71 +1,93 @@
 <!DOCTYPE html>
 <html>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1/dist/chartjs-adapter-moment.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@4.0.0/dist/chartjs-chart-financial.min.js"></script>
 <link rel="stylesheet" href="css/essential.css">
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <title>graph?</title>
 <body>
   <h1>Market Graphs</h1>
   <p>someone get the worker made soon pls</p>
-<canvas id="myChart" width="900" height="400" style="width:100%;max-width:900px;"></canvas>
+  <div id="myChart" style="width: 90%; margin: auto;"></div>
 
 <script>
-const candlestickData = [
-  {x: "2024-06-01", o: 7, h: 8, l: 7, c: 8},
-  {x: "2024-06-02", o: 8, h: 9, l: 8, c: 8},
-  {x: "2024-06-03", o: 8, h: 9, l: 8, c: 8},
-  {x: "2024-06-04", o: 9, h: 10, l: 9, c: 9},
-  {x: "2024-06-05", o: 9, h: 10, l: 9, c: 9},
-  {x: "2024-06-06", o: 9, h: 10, l: 9, c: 9},
-  {x: "2024-06-07", o: 10, h: 11, l: 10, c: 10},
-  {x: "2024-06-08", o: 11, h: 12, l: 11, c: 11},
-  {x: "2024-06-09", o: 14, h: 15, l: 14, c: 14},
-  {x: "2024-06-10", o: 14, h: 15, l: 14, c: 14},
-  {x: "2024-06-11", o: 15, h: 16, l: 15, c: 15}
-];
 
-const ctx = document.getElementById('myChart').getContext('2d');
-new Chart(ctx, {
-  type: 'candlestick',
-  data: {
-    datasets: [{
-      label: 'Market Prices',
-      data: candlestickData,
-      upColor: 'rgba(0,255,100,1.0)',
-      downColor: 'rgba(255,0,100,1.0)',
-      borderColor: 'gray'
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      title: {
-        display: true,
-        text: "Market Prices",
-        font: { size: 20 }
-      }
-    },
-    scales: {
-      x: {
-        type: 'time',
-        time: {
-          unit: 'day',
-          parser: 'YYYY-MM-DD'
-        },
-        ticks: {
-          source: 'data'
+async function generateGraph(itemId) {
+  try {
+          const historyResponse = await axios.get(`https://chart-bot.roumakdatta.workers.dev/item?id=${itemId}`);
+          const historyData = historyResponse.data;
+          let chartUrl = null;
+          if (Array.isArray(historyData) && historyData.length > 0) {
+            const chartConfig = {
+              type: 'line',
+              data: {
+                labels: historyData.map(d => d.date.substring(5)), 
+                datasets: [{
+                  label: 'Price',
+                  data: historyData.map(d => d.price),
+                  borderColor: 'rgb(74, 222, 128)',
+                  backgroundColor: 'rgba(74, 222, 128, 0.4)',
+                  pointRadius: 0,
+                  fill: true,
+                  tension: 0.1,
+                }],
+              },
+              options: {
+                title: { display: false },
+                legend: { display: false },
+                scales: {
+                  yAxes: [{
+                    ticks: { fontColor: 'rgba(255, 255, 255, 0.7)', beginAtZero: false,
+                      callback: (value) => {
+                          if (value >= 1e6) return (value / 1e6) + 'M';
+                          if (value >= 1e3) return (value / 1e3) + 'k';
+                          return value;
+                      }
+                    },
+                    gridLines: { color: 'rgba(255, 255, 255, 0.1)' }
+                  }],
+                  xAxes: [{
+                    ticks: { fontColor: 'rgba(255, 255, 255, 0.7)', maxTicksLimit: 6 },
+                    gridLines: { display: false }
+                  }],
+                },
+              },
+            };
+            
+            const encodedConfig = encodeURIComponent(JSON.stringify(chartConfig));
+                     const baseChartUrl = `https://quickchart.io/chart?b=rgb(47,49,54)&c=${encodedConfig}`;
+
+            const watermarkImageUrl = 'https://craftersmc-guides.pages.dev/assets/cmc-guides.png'; // Replace with your actual watermark image URL
+            const encodedMainImageUrl = encodeURIComponent(baseChartUrl);
+            const encodedMarkImageUrl = encodeURIComponent(watermarkImageUrl);
+
+            const watermarkRatio = 0.2; 
+            const watermarkPosition = 'center';
+            const watermarkOpacity = 0.1; 
+
+            chartUrl = `https://quickchart.io/watermark?mainImageUrl=${encodedMainImageUrl}&markImageUrl=${encodedMarkImageUrl}&markRatio=${watermarkRatio}&position=${watermarkPosition}&opacity=${watermarkOpacity}`;
+
+            return chartUrl;
+          }
+        } catch (chartError) {
+          console.error(`Could not generate chart for item ${itemId}: ${chartError.message}`);
+          // If chart fails, we still send the embed without it.
         }
-      },
-      y: {
-        min: 6,
-        max: 16
-      }
-    }
+}
+
+async function displayGraph() {
+  const itemId = '1'; // Replace with the actual item ID you want to graph
+  const chartUrl = await generateGraph(itemId);
+  
+  if (chartUrl) {
+    const img = document.createElement('img');
+    img.src = chartUrl;
+    img.style.width = '100%';
+    img.style.maxWidth = '900px';
+    document.getElementById('myChart').appendChild(img);
+  } else {
+    console.error('No chart URL generated.');
   }
-});
+}
+displayGraph();
 </script>
 
 </body>
