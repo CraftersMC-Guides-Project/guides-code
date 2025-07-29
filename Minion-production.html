@@ -33,7 +33,7 @@
 
     .container {
       justify-content: center;
-      align-items:center;
+      align-items: center;
       position: relative;
       width: 95%;
       max-width: 600px;
@@ -107,9 +107,7 @@
       padding: 8px;
       color: #242424;
       background-color: #c6c6c6;
-      border:none;
       box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 3px #777 inset !important;
-margin-top:5px;
     }
 
     #resultText {
@@ -149,34 +147,71 @@ margin-top:5px;
       }
     }
 
-    .fuleoption {
+    .fuel-options {
       display: flex;
-      flex-direction: column;
-      justify-content: none;
-      font-family: 'MyFont';
-      align-items: none;
-      right: 0;
-margin-right:0px;
-margin-left:0px;
+      flex-direction: row;
+      gap: 12px;
+      justify-content: center;
+      margin: 10px 0;
     }
 
-    #option {
-      margin: 5px auto;
-      background: black;
+    .mc-radio {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      background: #222;
+      border: 2px solid #414141;
+      padding: 4px 10px 4px 4px;
+      font-family:'MyFont';
       color: #fff;
-      border: none;
+      box-shadow: 0 2px #000, 2px 0px #000, -1px 0px 0px 1px #444, -2px 0px #444;
+      margin: 0;
+      font-size: 15px;
+      transition: border 0.15s;
+    }
+
+    .mc-radio input[type="radio"] {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      margin-right: 7px;
+      border: 2px solid #888;
+      background: #181818;
       outline: none;
-      padding: 10px;
-      font-family: 'MyFont';
-      font-size: 20px;
-      box-shadow: inset 2px 2px 0 #444, inset -2px -2px 0 #000;
-      width:20px;
-      height:20px;
-      accent-color:red;
-      text-align: center;
-      background-color: blue;
-border-radius:10%;
-}
+      box-shadow: 1px 1px 0 #000;
+      position: relative;
+      vertical-align: middle;
+      transition: border 0.15s;
+      display: inline-block;
+    }
+
+    .mc-radio input[type="radio"]:checked {
+      border: 2px solid #989898;
+      background: #222;
+    }
+
+    .mc-radio input[type="radio"]:checked::before {
+      content: "";
+      display: block;
+      width: 10px;
+      height: 10px;
+      background: #989898;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+    }
+
+    .mc-radio input[type="radio"]:focus {
+      border: 2px solid #3d3d3d;
+    }
+
+    .mc-radio span {
+      font-size: 15px;
+      color: #fff;
+      text-shadow: 1px 1px 0 #000;
+      letter-spacing: 0.5px;
+      font-family: 'Minecraftia', 'MyFont', monospace;
+    }
   </style>
 </head>
 
@@ -247,10 +282,19 @@ border-radius:10%;
       <button class="ibtn" id="after">&gt;</button>
 
     </div>
-    <div class="fuleoption">
-      <div class=""><input id="option" type="radio" value="fule" name="fule">Enchanted lava bucket</div>
-      <div><input id="option" type="radio" value="fule" name="fule">Hamster wheel </div>
-      <div><input id="option" type="radio" value="fule" name="fule">Foul flesh </div>
+    <div class="fuel-options">
+      <label class="mc-radio">
+        <input type="radio" name="fule" value="lava">
+        <span>Enchanted Lava Bucket</span>
+      </label>
+      <label class="mc-radio">
+        <input type="radio" name="fule" value="hamster">
+        <span>Hamster Wheel</span>
+      </label>
+      <label class="mc-radio">
+        <input type="radio" name="fule" value="foul">
+        <span>Foul Flesh</span>
+      </label>
     </div>
     <a id="result">Result</a>
     <div id="resultText"></div>
