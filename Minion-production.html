@@ -303,7 +303,7 @@ document.getElementById("result").onclick = async () => {
     if (price !== undefined) {
       p1 = ((tier.chance1 * secondsPerDay) / (time * 2)) / 160;
       totalCoins += p1 * price;
-      outputText.push(`${p1.toFixed(2)}x of ${prices[minion.id - 1]?.[0]}`);
+      outputText.push(`${Math.round(p1)}x of ${prices[minion.id - 1]?.[0]}`);
       npcOut += prices[minion.id - 1]?.[2] * p1;
     }
   }
@@ -314,7 +314,7 @@ document.getElementById("result").onclick = async () => {
     if (price !== undefined) {
       p2 = ((tier.chance2 * secondsPerDay) / (time * 2)) / 160;
       totalCoins += p2 * price;
-      outputText.push(`${p2.toFixed(2)}x of ${prices[minion.id2 - 1]?.[0]}`);
+      outputText.push(`${Math.round(p2)}x of ${prices[minion.id2 - 1]?.[0]}`);
       npcOut += prices[minion.id2 - 1]?.[2] * p2;
     }
   }
@@ -325,7 +325,7 @@ document.getElementById("result").onclick = async () => {
     if (price !== undefined) {
       p3 = ((tier.chance3 * secondsPerDay) / (time * 2)) / 160;
       totalCoins += p3 * price;
-      outputText.push(`${p3.toFixed(2)}x of ${prices[minion.id3 - 1]?.[0]}`);
+      outputText.push(`${Math.round(p3)}x of ${prices[minion.id3 - 1]?.[0]}`);
       npcOut += prices[minion.id3 - 1]?.[2] * p3;
     }
   }
@@ -348,9 +348,7 @@ document.getElementById("result").onclick = async () => {
     totalExp += p3 * minion.exp3;
     if (p3 > 0) expOut.push(`${(p3 * minion.exp3).toFixed(2)} EXP from ${prices[minion.id3 - 1]?.[0]}`);
   }
-  for(let i = 0; i<= outputText.length; i++){
-    outputText[i] = Math.round(outputText[i]);
-  }
+  
 
   // Show result
   document.getElementById("resultText").textContent =
