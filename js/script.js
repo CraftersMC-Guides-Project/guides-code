@@ -609,9 +609,13 @@ function setupPgNetworkScrambler() {
     const link = document.getElementById("pg-network-anim");
     if (!link) return;
 
-    const originalText = "Pg Network (Developer)";
+    const originalText = 'Pg Network <img src="../assets/dev-ui.svg" alt="Developer" class="ui" title="Developer">';
     const scrambleText = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#&^%$!*-_=+;:|~`";
     let interval = null;
+
+    // Extract the text and HTML parts
+    const textPart = "Pg Network";
+    const htmlPart = ' <img src="../assets/dev-ui.svg" alt="Developer" class="ui" title="Developer">';
 
     function randomizeText(text) {
         return text.split('').map(char => {
@@ -626,11 +630,11 @@ function setupPgNetworkScrambler() {
         link.style.color = "red";
         interval = setInterval(() => {
             if (frame < 10) {
-                link.textContent = randomizeText(originalText);
+                link.innerHTML = randomizeText(textPart) + htmlPart;
                 frame++;
             } else {
                 clearInterval(interval);
-                link.textContent = originalText;
+                link.innerHTML = originalText;
                 link.style.color = "";
             }
         }, 50);
@@ -638,45 +642,10 @@ function setupPgNetworkScrambler() {
 
     link.addEventListener("mouseleave", function() {
         clearInterval(interval);
-        link.textContent = originalText;
+        link.innerHTML = originalText;
         link.style.color = "";
     });
 }
-
-document.addEventListener("DOMContentLoaded", function() {
-    const link = document.getElementById("pg-network-anim");
-    if (!link) return;
-
-    const originalText = "Pg Network (Developer)";
-    const scrambleText = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let interval = null;
-
-    function randomizeText(text) {
-        return text.split('').map(char => {
-            if (char === ' ' || char === '(' || char === ')') return char;
-            return scrambleText[Math.floor(Math.random() * scrambleText.length)];
-        }).join('');
-    }
-
-    link.addEventListener("mouseenter", function() {
-        let frame = 0;
-        clearInterval(interval);
-        link.style.color = "red";
-        interval = setInterval(() => {
-            if (frame < 10) {
-                link.textContent = randomizeText(originalText);
-                frame++;
-            } else {
-                clearInterval(interval);
-                link.textContent = originalText;
-                link.style.color = "";
-            }
-        }, 1000);
-    });
-
-    link.addEventListener("mouseleave", function() {
-        clearInterval(interval);
-        link.textContent = originalText;
-        link.style.color = "";
-    });
+document.addEventListener("DOMContentLoaded", function () {
+  setupPgNetworkScrambler();
 });

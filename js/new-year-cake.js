@@ -6,7 +6,8 @@ const eventAlertMessage = `
 `;
 
 // Set the last cake number here
-const lastCakeNumber = 234;
+const lastCakeNumber = 233;
+const lastCakeTime = new Date('2025-07-14T16:00:00+01:00').getTime(); // <-- set this to the time when cake 235 happened
 
 function formatTime(date) {
     const options = {
@@ -41,28 +42,38 @@ function calculateEventTimes() {
     return eventTimes;
 }
 
+function getCurrentCakeNumber() {
+    const now = Date.now();
+    const periodsSinceLastCake = Math.floor((now - lastCakeTime) / intervalDuration);
+    return lastCakeNumber + periodsSinceLastCake + 1;
+}
+
 function displayNextEvent() {
     const now = Date.now();
-    const periodsSinceBase = Math.floor((now - baseEventTime) / intervalDuration);
-    const nextEventTime = baseEventTime + (periodsSinceBase + 1) * intervalDuration;
+    const periodsSinceLastCake = Math.floor((now - lastCakeTime) / intervalDuration);
+    const nextEventTime = lastCakeTime + (periodsSinceLastCake + 1) * intervalDuration;
     const lastEventTime = nextEventTime - intervalDuration;
 
-    // Show cake numbers
+    const currentCakeNumber = lastCakeNumber + periodsSinceLastCake + 1;
+    const previousCakeNumber = currentCakeNumber - 1;
+
     document.getElementById("nextEventTime").textContent =
-        `${formatTime(new Date(nextEventTime))} (Y${lastCakeNumber + 1})`;
+        `${formatTime(new Date(nextEventTime))} (Y${currentCakeNumber})`;
     document.getElementById("lastEventTime").textContent =
-        `${formatTime(new Date(lastEventTime))} (Y${lastCakeNumber})`;
+        `${formatTime(new Date(lastEventTime))} (Y${previousCakeNumber})`;
 }
 
 function displayEvents() {
     const eventContainer = document.getElementById("eventContainer");
     eventContainer.innerHTML = ""; // Clear previous events
     const events = calculateEventTimes();
-    // Start from Y236 for future events
+    const now = Date.now();
+    const periodsSinceBase = Math.floor((now - baseEventTime) / intervalDuration);
+    const startCakeNumber = lastCakeNumber + periodsSinceBase + 2;
     for (let i = 0; i < 10; i++) {
         const div = document.createElement("div");
         div.classList.add("event-item");
-        div.textContent = `${events[i]} (Y${lastCakeNumber + 2 + i})`;
+        div.textContent = `${events[i]} (Y${startCakeNumber + i})`;
         eventContainer.appendChild(div);
     }
 }
