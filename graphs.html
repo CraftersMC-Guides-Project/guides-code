@@ -2,100 +2,97 @@
 <html>
 <link rel="stylesheet" href="css/essential.css">
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <title>graph?</title>
 <body>
   <h1>Market Graphs</h1>
   <p>someone get the worker made soon pls</p>
-  <div id="myChart" style="width: 90%; margin: auto;">
-    <canvas id="priceChart"></canvas>
-  </div>
+  <div id="myChart" style="width: 90%; margin: auto;"></div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const itemId = urlParams.get('id');
+async function generateGraph(itemId) {
+  try {
+    const historyResponse = await axios.get(`https://chart-bot.roumakdatta.workers.dev/item?id=${itemId}`);
+    const historyData = historyResponse.data;
+    let chartUrl = null;
 
-  if (!itemId) {
-    console.error("No item ID provided in the URL. Use '?id=123'");
-    return;
-  }
-
-  const apiUrl = `https://chart-bot.roumakdatta.workers.dev/item?id=${itemId}`;
-
-  fetch(apiUrl)
-    .then(res => {
-      if (!res.ok) return res.json().then(err => { throw new Error(err.error || 'Fetch failed') });
-      return res.json();
-    })
-    .then(data => {
-      if (!Array.isArray(data) || data.length === 0) throw new Error('No valid data received.');
-      displayChart(data);
-    })
-    .catch(err => {
-      console.error('Error loading chart:', err.message);
-    });
-
-  function displayChart(data) {
-    const labels = data.map(e => e.date);
-    const prices = data.map(e => e.price);
-
-    const ctx = document.getElementById('priceChart').getContext('2d');
-
-    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(74, 222, 128, 0.4)');
-    gradient.addColorStop(1, 'rgba(34, 197, 94, 0)');
-
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Price',
-          data: prices,
-          borderColor: 'rgb(74, 222, 128)',
-          backgroundColor: gradient,
-          borderWidth: 2,
-          pointRadius: 0,
-          pointHoverRadius: 6,
-          tension: 0.1,
-          fill: true,
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            ticks: {
-              color: 'rgba(255,255,255,0.7)',
-              callback: value => value >= 1e6 ? value / 1e6 + 'M' : value >= 1e3 ? value / 1e3 + 'k' : value
-            },
-            grid: { color: 'rgba(255,255,255,0.1)' }
-          },
-          x: {
-            ticks: { color: 'rgba(255,255,255,0.7)', maxTicksLimit: 10 },
-            grid: { display: false }
-          }
+    if (Array.isArray(historyData) && historyData.length > 0) {
+      const chartConfig = {
+        type: 'line',
+        data: {
+          labels: historyData.map(d => d.date.substring(5)),
+          datasets: [{
+            label: 'Price',
+            data: historyData.map(d => d.price),
+            borderColor: 'rgb(74, 222, 128)',
+            backgroundColor: 'rgba(74, 222, 128, 0.4)',
+            pointRadius: 0,
+            fill: true,
+            tension: 0.1,
+          }],
         },
-        plugins: {
+        options: {
+          title: { display: false },
           legend: { display: false },
-          tooltip: {
-            mode: 'index',
-            intersect: false,
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            callbacks: {
-              label: context => `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`
-            }
-          }
+          scales: {
+            yAxes: [{
+              ticks: {
+                fontColor: 'rgba(255, 255, 255, 0.7)',
+                beginAtZero: false,
+                callback: (value) => {
+                  if (value >= 1e6) return (value / 1e6) + 'M';
+                  if (value >= 1e3) return (value / 1e3) + 'k';
+                  return value;
+                }
+              },
+              gridLines: { color: 'rgba(255, 255, 255, 0.1)' }
+            }],
+            xAxes: [{
+              ticks: { fontColor: 'rgba(255, 255, 255, 0.7)', maxTicksLimit: 6 },
+              gridLines: { display: false }
+            }],
+          },
         },
-        interaction: {
-          mode: 'index',
-          intersect: false
-        }
-      }
-    });
+      };
+
+      const encodedConfig = encodeURIComponent(JSON.stringify(chartConfig));
+      const baseChartUrl = `https://quickchart.io/chart?b=rgb(47,49,54)&c=${encodedConfig}`;
+
+      const watermarkImageUrl = 'https://craftersmc-guides.pages.dev/assets/cmc-guides.png'; // CMC Logo
+      const encodedMainImageUrl = encodeURIComponent(baseChartUrl);
+      const encodedMarkImageUrl = encodeURIComponent(watermarkImageUrl);
+
+      const watermarkRatio = 0.2;
+      const watermarkPosition = 'center';
+      const watermarkOpacity = 0.1;
+
+      chartUrl = `https://quickchart.io/watermark?mainImageUrl=${encodedMainImageUrl}&markImageUrl=${encodedMarkImageUrl}&markRatio=${watermarkRatio}&position=${watermarkPosition}&opacity=${watermarkOpacity}`;
+
+      return chartUrl;
+    }
+  } catch (chartError) {
+    console.error(`Could not generate chart for item ${itemId}: ${chartError.message}`);
   }
-});
+}
+
+async function displayGraph() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const itemId = urlParams.get('id') || '1'; // fallback to id=1
+
+  const chartUrl = await generateGraph(itemId);
+
+  if (chartUrl) {
+    const img = document.createElement('img');
+    img.src = chartUrl;
+    img.style.width = '100%';
+    img.style.maxWidth = '900px';
+    img.style.display = 'block';
+    img.style.margin = 'auto';
+    document.getElementById('myChart').appendChild(img);
+  } else {
+    console.error('No chart URL generated.');
+  }
+}
+displayGraph();
 </script>
 
 </body>
