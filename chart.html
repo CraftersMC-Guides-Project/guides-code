@@ -1,28 +1,14 @@
-<!---- example website ---->
-<!---- example website ---->
-<!---- example website ---->
-<!---- example website ---->
-<!---- example website ---->
-<!---- example website ---->
-<!---- example website ---->
-<!---- example website ---->
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Item Price History</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for creating the chart -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Google Fonts for a modern look -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -76,19 +62,16 @@
                 <canvas id="priceChart"></canvas>
             </div>
         </div>
-
     </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Get UI elements
             const loadingState = document.getElementById('loading-state');
             const errorState = document.getElementById('error-state');
             const errorMessage = document.getElementById('error-message');
             const content = document.getElementById('content');
             const itemIdDisplay = document.getElementById('item-id-display');
 
-            // 1. Get item ID from URL
             const urlParams = new URLSearchParams(window.location.search);
             const itemId = urlParams.get('id');
 
@@ -100,11 +83,10 @@
             itemIdDisplay.textContent = `Item ID: ${itemId}`;
             const apiUrl = `https://chart-bot.roumakdatta.workers.dev/item?id=${itemId}`;
 
-            // 2. Fetch data from the worker API
             fetch(apiUrl)
                 .then(response => {
                     if (!response.ok) {
-                        return response.json().then(err => { throw new Error(err.error || `HTTP error! Status: ${response.status}`) });
+                        return response.json().then(err => { throw new Error(err.error || `HTTP error! Status: ${response.status}`); });
                     }
                     return response.json();
                 })
@@ -112,59 +94,71 @@
                     if (!Array.isArray(data) || data.length === 0) {
                         throw new Error('Received invalid or empty data from the API.');
                     }
-                    // 3. Process and display data
                     processAndDisplayData(data);
                 })
                 .catch(error => {
                     console.error('Fetch error:', error);
                     showError(error.message);
                 });
-            
+
             function processAndDisplayData(data) {
-                // Extract dates and prices for the chart
                 const labels = data.map(entry => entry.date);
                 const prices = data.map(entry => entry.price);
 
-                // Calculate stats
                 const currentPrice = prices[prices.length - 1];
                 const highPrice = Math.max(...prices);
                 const lowPrice = Math.min(...prices);
 
-                // Update stat cards
                 document.getElementById('current-price').textContent = currentPrice.toLocaleString();
                 document.getElementById('high-price').textContent = highPrice.toLocaleString();
                 document.getElementById('low-price').textContent = lowPrice.toLocaleString();
 
-                // 4. Create the chart
                 createChart(labels, prices);
 
-                // Show content and hide loading spinner
                 loadingState.classList.add('hidden');
                 content.classList.remove('hidden');
             }
 
             function createChart(labels, prices) {
                 const ctx = document.getElementById('priceChart').getContext('2d');
-                
-                // Create a gradient for the chart background
+
                 const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-                gradient.addColorStop(0, 'rgba(74, 222, 128, 0.4)'); // A nice green
+                gradient.addColorStop(0, 'rgba(74, 222, 128, 0.4)');
                 gradient.addColorStop(1, 'rgba(34, 197, 94, 0)');
+
+                const watermarkPlugin = {
+                    id: 'customWatermark',
+                    beforeDraw: (chart) => {
+                        const { width, height } = chart;
+                        const ctx = chart.ctx;
+                        const image = new Image();
+                        image.src = 'https://craftersmc-guides.pages.dev/assets/cmc-guides.png';
+                        const size = Math.min(width, height) * 0.25;
+
+                        image.onload = () => {
+                            ctx.save();
+                            ctx.globalAlpha = 0.08;
+                            ctx.drawImage(image, (width - size) / 2, (height - size) / 2, size, size);
+                            ctx.restore();
+                        };
+                    }
+                };
+
+                Chart.register(watermarkPlugin);
 
                 new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: labels,
+                        labels,
                         datasets: [{
                             label: 'Price',
                             data: prices,
                             borderColor: 'rgb(74, 222, 128)',
                             backgroundColor: gradient,
                             borderWidth: 2,
-                            pointBackgroundColor: 'rgb(74, 222, 128)',
-                            pointRadius: 0, // Hide points by default
-                            pointHoverRadius: 6, // Show on hover
-                            tension: 0.1, // Makes the line slightly curved
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            tension: 0.1,
                             fill: true,
                         }]
                     },
@@ -176,31 +170,24 @@
                                 beginAtZero: false,
                                 ticks: {
                                     color: 'rgba(255, 255, 255, 0.7)',
-                                    // Format ticks to be more readable (e.g., 1k, 1M)
                                     callback: function(value) {
                                         if (value >= 1000000) return (value / 1000000) + 'M';
                                         if (value >= 1000) return (value / 1000) + 'k';
                                         return value;
                                     }
                                 },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)'
-                                }
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
                             },
                             x: {
                                 ticks: {
                                     color: 'rgba(255, 255, 255, 0.7)',
-                                    maxTicksLimit: 10 // Show fewer labels on x-axis to prevent clutter
+                                    maxTicksLimit: 10
                                 },
-                                grid: {
-                                    display: false
-                                }
+                                grid: { display: false }
                             }
                         },
                         plugins: {
-                            legend: {
-                                display: false
-                            },
+                            legend: { display: false },
                             tooltip: {
                                 mode: 'index',
                                 intersect: false,
@@ -212,12 +199,8 @@
                                 callbacks: {
                                     label: function(context) {
                                         let label = context.dataset.label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
-                                        if (context.parsed.y !== null) {
-                                            label += context.parsed.y.toLocaleString();
-                                        }
+                                        if (label) label += ': ';
+                                        if (context.parsed.y !== null) label += context.parsed.y.toLocaleString();
                                         return label;
                                     }
                                 }
