@@ -1,13 +1,7 @@
-const intervalDuration = (5 * 24 + 4) * 60 * 60 * 1000; // 5 days 4 hours in ms
+const intervalDuration = 84*3600*1000; // 84hrs
 const eventDuration = 60 * 60 * 1000; // 1 hour in ms
-const baseEventTime = new Date('2025-05-01T16:00:00+01:00').getTime();
-const eventAlertMessage = `
-🦁 Did you know? 🦁 The Creedon NPC is there with his random pets near the spawn inside the event stand area. Go online to buy those pets! 🐾
-`;
-
-// Set the last cake number here
-const lastCakeNumber = 233;
-const lastCakeTime = new Date('2025-07-14T16:00:00+01:00').getTime(); // <-- set this to the time when cake 235 happened
+const lastCakeNumber = 235;
+const lastCakeTime = new Date('2025-07-30T08:30:00+05:30').getTime(); // for IST (India Standard Time)
 
 function formatTime(date) {
     const options = {
@@ -32,9 +26,9 @@ function getCurrentEventStartTime() {
 function calculateEventTimes() {
     const eventTimes = [];
     const now = Date.now();
-    // Find the next event start time after now
-    const periodsSinceBase = Math.floor((now - baseEventTime) / intervalDuration);
-    let nextEventTime = baseEventTime + (periodsSinceBase + 1) * intervalDuration;
+    // Find the next event start time after now, based on lastCakeTime
+    const periodsSinceLastCake = Math.floor((now - lastCakeTime) / intervalDuration);
+    let nextEventTime = lastCakeTime + (periodsSinceLastCake + 1) * intervalDuration;
     for (let i = 0; i < 50; i++) {
         const eventDate = new Date(nextEventTime + i * intervalDuration);
         eventTimes.push(formatTime(eventDate));
@@ -68,8 +62,8 @@ function displayEvents() {
     eventContainer.innerHTML = ""; // Clear previous events
     const events = calculateEventTimes();
     const now = Date.now();
-    const periodsSinceBase = Math.floor((now - baseEventTime) / intervalDuration);
-    const startCakeNumber = lastCakeNumber + periodsSinceBase + 2;
+    const periodsSinceLastCake = Math.floor((now - lastCakeTime) / intervalDuration);
+    const startCakeNumber = lastCakeNumber + periodsSinceLastCake + 1; // Y236 for next event
     for (let i = 0; i < 10; i++) {
         const div = document.createElement("div");
         div.classList.add("event-item");
@@ -103,8 +97,8 @@ function showEventAlert(eventStartTime) {
 
 function updateCountdown() {
     const now = Date.now();
-    const periodsSinceBase = Math.floor((now - baseEventTime) / intervalDuration);
-    const lastEventTime = baseEventTime + periodsSinceBase * intervalDuration;
+    const periodsSinceLastCake = Math.floor((now - lastCakeTime) / intervalDuration);
+    const lastEventTime = lastCakeTime + periodsSinceLastCake * intervalDuration;
     const nextEventTime = lastEventTime + intervalDuration;
     const remainingTime = nextEventTime - now;
 
