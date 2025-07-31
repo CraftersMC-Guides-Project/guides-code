@@ -301,6 +301,10 @@
         <input type="radio" name="fule" value="foul" id="foul">
         <span>Foul Flesh</span>
       </label>
+      <label class="mc-radio">
+        <input type="radio" name="diamond" value="diamond" id="diamond">
+        <span>Diamond Spreading</span>
+      </label>
     </div>
     <a id="result">Result</a>
     <div id="resultText"></div>
@@ -474,7 +478,11 @@
         if (p3 > 0) expOut.push(`${(p3 * minion.exp3).toFixed(2)} EXP from ${prices[minion.id3 - 1]?.[0]}`);
       }
 
-
+     if(document.getElementById("diamond").checked){
+       const totalP = p1 + p1 + p3;
+       totalCoins = totalCoins + ((totalP / 10) * prices[minion.id3 - 1]?.[1]);
+       npcOut = npcOut + ((totalP / 10) * prices[minion.id3 - 1]?.[2]); 
+     }
       // Show result
       document.getElementById("resultText").textContent =
         `The production is of ${Math.round(totalCoins)} coins.`;
