@@ -286,7 +286,7 @@
 <lable class="lable2">Select the fule.</lable>
     <div class="fuel-options">
        <label class="mc-radio">
-         <input type="radio" name="fule"   value="foul">
+         <input type="radio" name="fule"   value="foul" id="bread">
         <span>Enchanted bread</span>
       </label>
       <label class="mc-radio">
@@ -294,11 +294,11 @@
         <span>Enchanted Lava Bucket</span>
       </label>
       <label class="mc-radio">
-        <input type="radio" name="fule" value="hamster">
+        <input type="radio" name="fule" value="hamster" id="wheel">
         <span>Hamster Wheel</span>
       </label>
       <label class="mc-radio">
-        <input type="radio" name="fule" value="foul">
+        <input type="radio" name="fule" value="foul" id="foul">
         <span>Foul Flesh</span>
       </label>
     </div>
@@ -403,9 +403,14 @@
         const price = prices[minion.id - 1]?.[1];
         if (price !== undefined) {
           p1 = ((tier.chance1 * secondsPerDay) / (time * 2)) / 160;
-          if(document.getElementById("lava").checked){
+          if(document.getElementById("lava").checked)
           p1 = p1 + (p1 * 0.25);
-          }
+          else if(document.getElementById("bread").checked)
+          p1 = p1 + (p1 * (5/100));
+          else if(document.getElementById("wheel").checked)
+          p1 = p1 + (p1 * (40/100));
+          else
+          p1 = p1 + (p1 * (80/100));
           totalCoins += p1 * price;
           outputText.push(`${Math.round(p1)}x of ${prices[minion.id - 1]?.[0]}`);
           npcOut += prices[minion.id - 1]?.[2] * p1;
@@ -417,6 +422,14 @@
         const price = prices[minion.id2 - 1]?.[1];
         if (price !== undefined) {
           p2 = ((tier.chance2 * secondsPerDay) / (time * 2)) / 160;
+          if(document.getElementById("lava").checked)
+          p2 = p2 + (p2 * 0.25);
+          else if(document.getElementById("bread").checked)
+          p2 = p2 + (p2 * (5/100));
+          else if(document.getElementById("wheel").checked
+          p2 = p2 + (p2 * (40/100));
+          else
+          p2 = p2 + (p2 * (80/100));
           totalCoins += p2 * price;
           outputText.push(`${Math.round(p2)}x of ${prices[minion.id2 - 1]?.[0]}`);
           npcOut += prices[minion.id2 - 1]?.[2] * p2;
@@ -428,6 +441,14 @@
         const price = prices[minion.id3 - 1]?.[1];
         if (price !== undefined) {
           p3 = ((tier.chance3 * secondsPerDay) / (time * 2)) / 160;
+          if(document.getElementById("lava").checked)
+          p3 = p3 + (p3 * 0.25);
+          else if(document.getElementById("bread").checked)
+          p3 = p3 + (p3 * (5/100));
+          else if(document.getElementById("wheel").checked
+          p3 = p3 + (p3 * (40/100));
+          else
+          p3 = p3 + (p3 * (80/100));
           totalCoins += p3 * price;
           outputText.push(`${Math.round(p3)}x of ${prices[minion.id3 - 1]?.[0]}`);
           npcOut += prices[minion.id3 - 1]?.[2] * p3;
