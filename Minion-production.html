@@ -494,11 +494,13 @@
         totalExp += p3 * minion.exp3;
         if (p3 > 0) expOut.push(`${(p3 * minion.exp3).toFixed(2)} EXP from ${prices[minion.id3 - 1]?.[0]}`);
       }
-   const totalP = 0;
+   let totalP = 0;
      if(document.getElementById("diamond").checked){
         totalP = p1 + p1 + p3;
        totalCoins = totalCoins + ((totalP / 10) * prices[sdata[0].diamond - 1]?.[1]);
        npcOut = npcOut + ((totalP / 10) * prices[sdata[0].diamond - 1]?.[2]); 
+       expOut.push(`${(totalP / 10) * 10} Exp from Enchanted Diamond`);
+       outputText.push(`${totalP / 10}x of Enchanted Diamond`);
      }
       // Show result
       document.getElementById("resultText").textContent =
@@ -510,11 +512,11 @@
 
       document.getElementById("second").style.display = "block";
       document.getElementById("second").textContent =
-        `Total minion production: ${outputText.join(" and ")} and ${totalP / 10} of Enchanted Diamond.`;
+        `Total minion production: ${outputText.join(" and ")}.`;
 
       document.getElementById("exp").style.display = "block";
       document.getElementById("exp").textContent =
-        `Total EXP gained: ${totalExp.toFixed(2) + (totalP / 10) * 2} (${expOut.join(" + ")} + ${(totalP / 10) * 2} Exp from Enchanted Diamond).`;
+        `Total EXP gained: ${totalExp.toFixed(2)} (${expOut.join(" + ")} + ${(totalP / 10) * 2}).`;
     };
   </script>
 
