@@ -222,6 +222,48 @@
       height: 50%;
       background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
     }
+    
+    /* Added Theme Changer CSS */
+    .theme-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .theme-btn {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border: 2px solid #c6c6c6;
+      background: transparent;
+      color: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .theme-btn.selected {
+      background: #c6c6c6;
+      color: #3c3c3c;
+    }
+
+    .save-btn {
+      padding: 0.8rem 2rem;
+      font-size: 1rem;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .save-btn:hover {
+      background: #218838;
+    }
   </style>
 </head>
 
@@ -241,21 +283,42 @@
     <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
     <span class="material-icons" id="scrollToTopBtn">north</span>
   </button>
-  <!--  -->
-
   <div class="profile-container">
     <div class="profile" id="profile">
     </div>
   </div>
   <div id="footer"></div>
   <script>
-    // Helper to get cookie value by name
-    function getCookie(name) {
-      return document.cookie.split('; ').reduce((r, v) => {
-        const parts = v.split('=');
-        return parts[0] === name ? decodeURIComponent(parts[1]) : r
-      }, '');
+    // --- Start: Added Theme Changer Code ---
+    let selectedTheme = 'minecraft'; // Default fallback
+    const validThemes = ['essential', 'minecraft'];
+
+    function setCookie(name, value, days) {
+      const expires = new Date(Date.now() + days * 864e5).toUTCString();
+      document.cookie = `${name}=${value}; expires=${expires}; path=/`;
     }
+    
+    // Updated getCookie function to handle both needs
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+      return '';
+    }
+
+    function selectTheme(theme) {
+      selectedTheme = theme;
+      document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('selected'));
+      const btn = document.getElementById(theme + 'Btn');
+      if (btn) btn.classList.add('selected');
+    }
+
+    function saveTheme() {
+      setCookie('theme', selectedTheme, 365);
+      // Displaying a simple alert instead of reloading to not interrupt the user.
+      alert('Theme saved! The new theme will be applied on your next page load.');
+    }
+    // --- End: Added Theme Changer Code ---
 
     function loadProfile() {
       const storedUser = getCookie("discordUser");
@@ -308,6 +371,14 @@
           <div class="detail-value"><span class="detail-value-head">Last Login:</span> <span class="detail-value-data">${lastLogin}</span></div>
           <div class="detail-value"><span class="detail-value-head">Login Count:</span> <span class="detail-value-data">${user.login_count || 1}</span></div>
         </div>
+        <div class="detail-card">
+            <div class="detail-title">Theme Settings</div>
+            <div class="theme-buttons">
+                <button class="theme-btn" onclick="selectTheme('essential')" id="essentialBtn">Essential</button>
+                <button class="theme-btn" onclick="selectTheme('minecraft')" id="minecraftBtn">Minecraft</button>
+            </div>
+            <button class="save-btn" onclick="saveTheme()">Save Changes</button>
+        </div>
       </div>
       <div class="profile-actions">
         <button class="btn" onclick="window.location.href='/'">
@@ -328,7 +399,19 @@
       window.location.reload();
     }
 
-    window.onload = loadProfile;
+    // Merged onload function
+    window.onload = () => {
+        loadProfile();
+        
+        // This needs to run after loadProfile() populates the innerHTML
+        // if the user is logged in.
+        let currentTheme = getCookie('theme');
+        if (!validThemes.includes(currentTheme)) {
+            currentTheme = 'minecraft'; // Default
+            setCookie('theme', currentTheme, 365);
+        }
+        selectTheme(currentTheme);
+    };
   </script>
 
 </body>
