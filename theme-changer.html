@@ -80,7 +80,9 @@
   <p class="footer-note">The selected theme will apply across all pages.</p>
 
   <script>
-    let selectedTheme = 'minecraft'; // Default to Minecraft
+    let selectedTheme = 'minecraft'; // Default fallback
+
+    const validThemes = ['essential', 'minecraft'];
 
     function setCookie(name, value, days) {
       const expires = new Date(Date.now() + days * 864e5).toUTCString();
@@ -96,7 +98,8 @@
     function selectTheme(theme) {
       selectedTheme = theme;
       document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('selected'));
-      document.getElementById(theme + 'Btn').classList.add('selected');
+      const btn = document.getElementById(theme + 'Btn');
+      if (btn) btn.classList.add('selected');
     }
 
     function saveTheme() {
@@ -105,7 +108,11 @@
     }
 
     window.onload = () => {
-      const current = getCookie('theme') || 'minecraft';
+      let current = getCookie('theme');
+      if (!validThemes.includes(current)) {
+        current = 'minecraft';
+        setCookie('theme', current, 365); // Force correct value
+      }
       selectTheme(current);
     };
   </script>
