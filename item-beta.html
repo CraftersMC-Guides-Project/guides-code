@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Item Details - CraftersMC Guides</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="css/essential.css">
+  <link rel="stylesheet" href="css/item.css">
+  <script src="js/script.js"></script>
+</head>
+
+<body>
+  <div id="loader"><div></div><div></div><div></div></div>
+  <div class="top"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <span class="material-icons" id="scrollToTopBtn">north</span>
+  <div class="item-filter-buttons" style="display:flex;gap:10px;justify-content:center;margin:5rem 0;">
+    <button class="btn item-filter-btn" data-nature="reset">Reset Filter</button>
+  </div>
+  <div class="item-container" id="itemDetails">
+    <p>Loading item details...</p>
+  </div>
+  <div class="item-nav-buttons">
+    <button id="prevItemBtn" class="btn" type="button">&larr; Previous</button>
+    <button id="nextItemBtn" class="btn" type="button">Next &rarr;</button>
+  </div>
+  <div id="footer"></div>
+
+  <script>
+    async function loadItemDetails() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const itemId = urlParams.get('item');
+
+      if (itemId) {
+        try {
+          const [marketRes, pricesRes] = await Promise.all([
+            fetch('market/market.txt'),
+            fetch('market/mprices.txt')
+          ]);
+
+          const marketData = await marketRes.text();
+          const pricesData = await pricesRes.text();
+
+          const items = JSON.parse(marketData);
+          const item = items.find(item => item.id === itemId);
+
+          const pricesMap = new Map();
+          const npcPricesMap = new Map();
+
+          pricesData.split('\n').forEach(line => {
+            const [id, arrayStr] = line.split(':').map(part => part.trim());
+            if (id && arrayStr) {
+              try {
+                const parsedArray = JSON.parse(arrayStr);
+                if (Array.isArray(parsedArray) && parsedArray.length >= 2) {
+                  pricesMap.set(id, parsedArray[1]);
+                  if (parsedArray.length >= 3) {
+                    npcPricesMap.set(id, parsedArray[2]);
+                  }
+                }
+              } catch (e) {}
+            }
+          });
+
+          if (item) {
+            const itemDetailsDiv = document.getElementById('itemDetails');
+            const marketPrice = pricesMap.get(item.id) || item.price || "N/A";
+            const npcPrice = npcPricesMap.get(item.id) || "N/A";
+
+            itemDetailsDiv.innerHTML = `
+              <h1>${item.name}</h1>
+              ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
+              ${item.rarity ? `<div class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></div>` : ''}
+              <p><strong>ID:</strong> ${item.id}</p>
+              <div class="price-container">
+                <p class="price"><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p><hr width="150px">
+                <p class="price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>
+              </div>
+              <div id="graph-section" style="margin-top: 30px;">
+                <button id="toggleGraph" class="btn" style="margin-bottom: 10px;">\ud83d\udcca Show Price Graph</button>
+                <div id="graphContainer" style="display: none; text-align: center;">
+                  <p>Loading graph...</p>
+                  <img id="graphImage" src="" alt="Price Graph" style="max-width: 100%; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.4);"/>
+                </div>
+              </div>
+            `;
+          }
+        } catch (error) {
+          console.error('Error loading item details:', error);
+        }
+      }
+    }
+
+    function formatPrice(price) {
+      if (price === "N/A" || price === "NAN") {
+        return `<span class="price-img">N/A</span>`;
+      }
+      return `<span class="price-img">${Number(price).toLocaleString()} <img src="img/coin.png" alt="Coin"></span>`;
+    }
+
+    loadItemDetails();
+
+    // GRAPH BUTTON EVENT
+    const apiflashKeys = [
+      "612d60a878184aa1bb6cb0fca5a6633d",
+      "5defcf23c7d74e9c8da04ebdde227ea6",
+      "6fba982c2f3144a7ac4663a7b3cb7634",
+      "9fc900f283f143d896fe0a26d5d5ecda",
+      "6656246bb8cb4497852e1dae3a2cfa6e",
+      "fe938e5a82204e8599ea2ca3d47c57d5",
+      "fe336c265e614e8bbc94ed83aaee9387",
+      "435cb900215e4c96ab03c51d080f01bb"
+    ];
+
+    document.addEventListener('click', async function (e) {
+      if (e.target && e.target.id === 'toggleGraph') {
+        const graph = document.getElementById('graphContainer');
+        const image = document.getElementById('graphImage');
+        if (graph.style.display === 'none') {
+          graph.style.display = 'block';
+          const itemId = new URLSearchParams(window.location.search).get('item');
+          for (const key of apiflashKeys) {
+            const graphUrl = `https://api.apiflash.com/v1/urltoimage?access_key=${key}&url=https%3A%2F%2Fcraftersmc-guides.pages.dev%2Fchart%3Fid%3D${itemId}&format=webp&width=1000&height=800&quality=100&delay=3&ttl=86400&wait_until=page_loaded&response_type=image`;
+            try {
+              const res = await fetch(graphUrl, { method: "HEAD" });
+              if (res.ok) {
+                image.src = graphUrl;
+                break;
+              }
+            } catch (e) {
+              console.warn("Graph load failed for key", key);
+            }
+          }
+          image.onload = () => {
+            graph.querySelector("p").style.display = "none";
+          };
+        } else {
+          graph.style.display = 'none';
+        }
+      }
+    });
+  </script>
+</body>
+</html>
