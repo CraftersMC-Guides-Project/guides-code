@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Item Price History</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* bg-gray-900 */
+            color: #e5e7eb; /* text-gray-200 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem; /* p-4 */
+        }
+
+        .main-container {
+            background-color: #1f2937; /* bg-gray-800 */
+            padding: 1.5rem; /* p-6 */
+            border-radius: 1rem; /* rounded-2xl */
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* shadow-2xl */
+            width: 100%;
+            max-width: 56rem; /* max-w-4xl */
+            border: 1px solid #374151; /* border-gray-700 */
+        }
+        
+        @media (min-width: 640px) {
+            .main-container {
+                padding: 2rem; /* sm:p-8 */
+            }
+        }
+
+        .header {
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+
+        .header-title {
+            font-size: 1.5rem; /* text-2xl */
+            line-height: 2rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            color: #ffffff; /* text-white */
+        }
+
+        @media (min-width: 640px) {
+            .header-title {
+                font-size: 1.875rem; /* sm:text-3xl */
+                line-height: 2.25rem; /* sm:text-3xl */
+            }
+        }
+
+        .item-id {
+            font-size: 1.125rem; /* text-lg */
+            line-height: 1.75rem; /* text-lg */
+            color: #22d3ee; /* text-cyan-400 */
+            font-family: monospace; /* font-mono */
+        }
+
+        .loading-state {
+            text-align: center;
+            padding-top: 2.5rem; /* py-10 */
+            padding-bottom: 2.5rem; /* py-10 */
+        }
+
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+            height: 2rem; /* h-8 */
+            width: 2rem; /* w-8 */
+            color: #06b6d4; /* text-cyan-500 */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 1rem; /* mt-4 */
+            font-size: 1.125rem; /* text-lg */
+            line-height: 1.75rem; /* text-lg */
+            font-weight: 500; /* font-medium */
+            color: #9ca3af; /* text-gray-400 */
+        }
+
+        .error-state {
+            display: none;
+            text-align: center;
+            background-color: rgba(127, 29, 29, 0.5); /* bg-red-900/50 */
+            border: 1px solid #b91c1c; /* border-red-700 */
+            border-radius: 0.5rem; /* rounded-lg */
+            padding: 1.5rem; /* p-6 */
+        }
+
+        .error-title {
+            font-size: 1.25rem; /* text-xl */
+            line-height: 1.75rem; /* text-xl */
+            font-weight: 700; /* font-bold */
+            color: #fca5a5; /* text-red-300 */
+        }
+
+        .error-message {
+            margin-top: 0.5rem; /* mt-2 */
+            color: #f87171; /* text-red-400 */
+        }
+
+        .content {
+            display: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem; /* gap-4 */
+            margin-bottom: 2rem; /* mb-8 */
+        }
+
+        @media (min-width: 640px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr); /* sm:grid-cols-3 */
+            }
+        }
+
+        .stat-card {
+            background-color: rgba(55, 65, 81, 0.5); /* bg-gray-700/50 */
+            padding: 1rem; /* p-4 */
+            border-radius: 0.5rem; /* rounded-lg */
+            border: 1px solid #4b5563; /* border-gray-600 */
+        }
+
+        .stat-label {
+            font-size: 0.875rem; /* text-sm */
+            line-height: 1.25rem; /* text-sm */
+            font-weight: 500; /* font-medium */
+            color: #9ca3af; /* text-gray-400 */
+        }
+
+        .stat-value {
+            font-size: 1.5rem; /* text-2xl */
+            line-height: 2rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+        }
+
+        .current-price {
+            color: #ffffff; /* text-white */
+        }
+
+        .high-price {
+            color: #4ade80; /* text-green-400 */
+        }
+
+        .low-price {
+            color: #f87171; /* text-red-400 */
+        }
+
+        .chart-container {
+            background-color: rgba(17, 24, 39, 0.7); /* bg-gray-900/70 */
+            padding: 1rem; /* p-4 */
+            border-radius: 0.5rem; /* rounded-lg */
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 flex items-center justify-center min-h-screen p-4">
+
+    <main class="main-container">
+        
+        <div id="header" class="header">
+            <h1 class="header-title">Item Price History</h1>
+            <p id="item-id-display" class="item-id"></p>
+        </div>
+
+        <div id="loading-state" class="loading-state">
+            <svg class="loading-spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="loading-text">Fetching price data...</p>
+        </div>
+
+        <div id="error-state" class="error-state">
+            <h2 class="error-title">Could Not Load Data</h2>
+            <p id="error-message" class="error-message"></p>
+        </div>
+
+        <div id="content" class="content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <p class="stat-label">Current Price</p>
+                    <p id="current-price" class="stat-value current-price"></p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">30-Day High</p>
+                    <p id="high-price" class="stat-value high-price"></p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">30-Day Low</p>
+                    <p id="low-price" class="stat-value low-price"></p>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="priceChart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loadingState = document.getElementById('loading-state');
+            const errorState = document.getElementById('error-state');
+            const errorMessage = document.getElementById('error-message');
+            const content = document.getElementById('content');
+            const itemIdDisplay = document.getElementById('item-id-display');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const itemId = urlParams.get('id');
+
+            if (!itemId) {
+                showError('No item ID provided in the URL. Please add `?id=<item_id>` to the end of the URL.');
+                return;
+            }
+
+            itemIdDisplay.textContent = `Item ID: ${itemId}`;
+            const apiUrl = `https://chart-bot.roumakdatta.workers.dev/item?id=${itemId}`;
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw new Error(err.error || `HTTP error! Status: ${response.status}`); });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!Array.isArray(data) || data.length === 0) {
+                        throw new Error('Received invalid or empty data from the API.');
+                    }
+                    processAndDisplayData(data);
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    showError(error.message);
+                });
+
+            function processAndDisplayData(data) {
+                const labels = data.map(entry => entry.date);
+                const prices = data.map(entry => entry.price);
+
+                const currentPrice = prices[prices.length - 1];
+                const highPrice = Math.max(...prices);
+                const lowPrice = Math.min(...prices);
+
+                document.getElementById('current-price').textContent = currentPrice.toLocaleString();
+                document.getElementById('high-price').textContent = highPrice.toLocaleString();
+                document.getElementById('low-price').textContent = lowPrice.toLocaleString();
+
+                createChart(labels, prices);
+
+                loadingState.classList.add('hidden');
+                content.classList.remove('hidden');
+            }
+
+            function createChart(labels, prices) {
+                const ctx = document.getElementById('priceChart').getContext('2d');
+
+                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, 'rgba(74, 222, 128, 0.4)');
+                gradient.addColorStop(1, 'rgba(34, 197, 94, 0)');
+
+                const watermarkPlugin = {
+                    id: 'customWatermark',
+                    beforeDraw: (chart) => {
+                        const { width, height } = chart;
+                        const ctx = chart.ctx;
+                        const image = new Image();
+                        image.src = 'https://craftersmc-guides.pages.dev/assets/cmc-guides.png';
+                        const size = Math.min(width, height) * 0.25;
+
+                        image.onload = () => {
+                            ctx.save();
+                            ctx.globalAlpha = 0.08;
+                            ctx.drawImage(image, (width - size) / 2, (height - size) / 2, size, size);
+                            ctx.restore();
+                        };
+                    }
+                };
+
+                Chart.register(watermarkPlugin);
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [{
+                            label: 'Price',
+                            data: prices,
+                            borderColor: 'rgb(74, 222, 128)',
+                            backgroundColor: gradient,
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            tension: 0.1,
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)',
+                                    callback: function(value) {
+                                        if (value >= 1000000) return (value / 1000000) + 'M';
+                                        if (value >= 1000) return (value / 1000) + 'k';
+                                        return value;
+                                    }
+                                },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            },
+                            x: {
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)',
+                                    maxTicksLimit: 10
+                                },
+                                grid: { display: false }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleFont: { size: 14, weight: 'bold' },
+                                bodyFont: { size: 12 },
+                                padding: 10,
+                                cornerRadius: 4,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) label += ': ';
+                                        if (context.parsed.y !== null) label += context.parsed.y.toLocaleString();
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                });
+            }
+
+            function showError(message) {
+                loadingState.classList.add('hidden');
+                errorMessage.textContent = message;
+                errorState.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
