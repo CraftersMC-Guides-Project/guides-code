@@ -284,10 +284,24 @@ h1, h2, h3, h4, h5, h6 {
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 #float span.material-icons:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--primary-glow); }
-#sweepBtn { transition: transform 0.3s ease !important; }
-#homeBtn, #ai, #scrollToTopBtn { transform: scale(0) translateY(20px); opacity: 0; transform-origin: bottom center; }
-#float.open #sweepBtn { transform: rotate(225deg); }
-#float.open #homeBtn, #float.open #ai, #float.open #scrollToTopBtn { transform: scale(1) translateY(0); opacity: 1; }
+/* Corrected rotation logic for sweepBtn */
+#sweepBtn {
+    transform: rotate(180deg); /* Start pointing left */
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+#homeBtn, #ai, #scrollToTopBtn {
+    transform: scale(0) translateY(20px);
+    opacity: 0;
+    transform-origin: bottom center;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+#float.open #sweepBtn {
+    transform: rotate(0deg); /* Point right when open */
+}
+#float.open #homeBtn, #float.open #ai, #float.open #scrollToTopBtn {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
 #float.open #homeBtn { transition-delay: 0.1s; }
 #float.open #ai { transition-delay: 0.15s; }
 #float.open #scrollToTopBtn { transition-delay: 0.2s; }
