@@ -1,4 +1,4 @@
-/* ===== Futuristic Neon Theme (V7) by Gemini ===== */
+/* ===== Futuristic Neon Theme (V8) by Gemini ===== */
 /* A complete and functional visual overhaul, targeting all static and dynamic elements. */
 
 /* --- Font & Icon Imports --- */
@@ -116,6 +116,14 @@ h1, h2, h3, h4, h5, h6 {
     width: 100%;
     height: 60px;
     z-index: 1000;
+    padding: 0; /* Remove padding to allow navbar to fill it */
+    animation: slideDown 0.7s ease-out forwards;
+}
+
+/* This targets the dynamically loaded navbar */
+.navbar {
+    width: 100%;
+    height: 100%;
     background: var(--glass-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -124,17 +132,44 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     justify-content: space-between;
     padding: 0 20px;
-    animation: slideDown 0.7s ease-out forwards;
 }
 
-.top img, .top .main-name {
-    height: 40px;
-    width: auto;
-    object-fit: contain;
+.navbar .menu-icon {
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 2rem !important;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.navbar .menu-icon:hover {
+    background-color: rgba(0, 229, 255, 0.1);
+    color: var(--primary-glow);
+    text-shadow: 0 0 8px var(--primary-glow);
+}
+
+.navbar .main-name {
     color: var(--text-color);
     text-decoration: none;
     font-size: 1.5rem;
+    font-family: var(--font-primary) !important;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
+
+.navbar img {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+.navbar img:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 8px var(--primary-glow));
+}
+
 
 @keyframes slideDown {
     from { top: -60px; opacity: 0; }
