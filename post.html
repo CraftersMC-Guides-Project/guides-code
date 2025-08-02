@@ -5,79 +5,144 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Post Viewer - CraftersMC</title>
+    
+    <!-- Icons and Fonts -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Essential Stylesheets from index.html -->
     <link rel="stylesheet" href="css/essential.css">
+    <link rel="stylesheet" href="css/home.css">
+    
+    <!-- Scripts from index.html for dynamic elements -->
+    <script src="js/script.js" defer></script>
+    <script src="js/home.js" defer></script>
+    
+    <!-- Page-specific styles for the post viewer -->
     <style>
+        /* Inherits base styles from essential.css and home.css */
         body {
             color: #ffffff;
             font-family: MyFont, sans-serif;
             margin: 0;
             padding: 0;
         }
+
         .background {
-            background: url("Backgrounds/IMG_4502.webp");
+            /* Using a background image consistent with the theme */
+            background-image: url("Backgrounds/IMG_4502.webp");
+            background-color: rgba(0,0,0,0.6); /* Dark overlay for readability */
             background-blend-mode: multiply;
             background-size: cover;
+            background-attachment: fixed; /* Keeps background stationary on scroll */
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: -1;
         }
+
         .container {
             max-width: 800px;
-            margin: 2rem auto;
-            padding: 20px;
-            background-color: rgba(0, 0, 0, 0.8);
+            margin: 8rem auto 4rem auto; /* More margin at the top to avoid navbar overlap */
+            padding: 2rem;
+            background-color: rgba(0, 0, 0, 0.85); /* Slightly more opaque for better text contrast */
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
+
         .post-header {
             margin-bottom: 2rem;
-            border-bottom: 2px solid #c6c6c6;
+            border-bottom: 2px solid #555; /* Softer border color */
             padding-bottom: 1rem;
         }
+
         .post-title {
-            font-size: 2rem;
+            font-size: 2.5rem;
+            font-weight: bold;
             margin-bottom: 0.5rem;
         }
+
         .post-meta {
-            color: #888;
+            color: #b0b0b0; /* Lighter meta text for better readability */
             margin-bottom: 1rem;
+            font-size: 0.9rem;
         }
+
         .post-image {
             width: 100%;
-            max-height: 400px;
+            max-height: 450px;
             object-fit: cover;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
         }
+
         .post-content {
-            line-height: 1.6;
+            line-height: 1.7;
+            font-size: 1.1rem;
         }
+        
+        /* Improved Back Button Style */
         .back-btn {
-            background: #c6c6c6;
-            color: #3c3c3c;
-            padding: 10px 20px;
+            background: #333;
+            color: #fff;
+            padding: 12px 24px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             text-decoration: none;
             font-weight: bold;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
             display: inline-block;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
+
         .back-btn:hover {
-            background: #218306;
+            background: #218306; /* Keep the brand hover color */
             color: white;
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
+    <!-- Loader from index.html -->
+    <div id="loader">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <!-- Background div -->
     <div class="background"></div>
+
+    <!-- Top bar from index.html -->
+    <div class="top"></div>
+
+    <!-- Sidebar placeholder (content loaded by script.js) -->
+    <div class="sidebar" id="sidebar"></div>
+
+    <!-- Sidebar overlay -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Floating action button from index.html -->
+    <button id="float">
+        <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
+        <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
+        <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
+        <span class="material-icons" id="scrollToTopBtn">north</span>
+    </button>
+
+    <!-- Main Content Area -->
     <div class="container">
-        <a href="index.html" class="back-btn">← Back to Posts</a>
+        <a href="index.html" class="back-btn">← Back to Home</a>
         <div id="postContainer">
-            <!-- Post content will be loaded here -->
+            <!-- Asynchronous post content will be loaded here by JavaScript -->
         </div>
     </div>
 
+    <!-- Footer placeholder (content loaded by script.js) -->
+    <div id="footer"></div>
+
     <script>
+        // This script specifically loads the content for a single post.
         document.addEventListener("DOMContentLoaded", () => {
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
@@ -85,24 +150,51 @@
             if (postId) {
                 loadPost(postId);
             } else {
-                document.getElementById('postContainer').innerHTML = 
-                    '<p>Post not found. <a href="index.html">Return to homepage</a></p>';
+                const postContainer = document.getElementById('postContainer');
+                postContainer.innerHTML = 
+                    '<div class="post-header"><h1 class="post-title">Error</h1></div><p>No post ID was provided in the URL. Please return to the homepage and select a post.</p>';
             }
         });
 
         async function loadPost(postId) {
+            const postContainer = document.getElementById('postContainer');
             try {
+                // Fetch the HTML content of the specific post
                 const response = await fetch(`posts/${postId}.html`);
-                if (!response.ok) throw new Error('Post not found');
+                if (!response.ok) {
+                    throw new Error(`Post not found. Server responded with status: ${response.status}`);
+                }
                 
                 const postContent = await response.text();
-                document.getElementById('postContainer').innerHTML = postContent;
+                postContainer.innerHTML = postContent;
+
             } catch (error) {
                 console.error('Error loading post:', error);
-                document.getElementById('postContainer').innerHTML = 
-                    '<p>Error loading post. <a href="index.html">Return to homepage</a></p>';
+                postContainer.innerHTML = 
+                    '<div class="post-header"><h1 class="post-title">Error Loading Post</h1></div><p>Sorry, the post could not be loaded. It might have been moved or deleted. Please <a href="index.html" style="color: #aaffaa;">return to the homepage</a>.</p>';
             }
         }
+
+        // Offline detection script from index.html
+        if (!navigator.onLine) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', 'no-internet.html', true);
+            xhr.onload = function() {
+                if (this.status === 200) {
+                    document.write(this.responseText);
+                } else {
+                    document.body.innerHTML = '<h1>You are Offline</h1><p>Please check your internet connection.</p>';
+                }
+            };
+            xhr.onerror = function() { // Handle cases where even the offline page can't be fetched
+                 document.body.innerHTML = '<h1>You are Offline</h1><p>Please check your internet connection.</p>';
+            }
+            xhr.send();
+        }
+
+        window.addEventListener('offline', function() {
+            window.location.href = 'no-internet.html';
+        });
     </script>
 </body>
 </html>

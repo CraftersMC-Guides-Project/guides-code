@@ -1138,8 +1138,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "Unknown",
-                    "score": "95M+"
+                    "name": "TopsideMender34",
+                    "score": "101.5M+"
                 },
                 {
                     "rank": 4,
@@ -1148,8 +1148,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "TopsideMender34",
-                    "score": "82M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 6,
@@ -1970,8 +1970,8 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "TGJASSIYT",
+                    "score": "80.9M+"
                 },
                 {
                     "rank": 2,
@@ -2084,13 +2084,13 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "Darkshadow52195",
-                    "score": "19M+"
+                    "name": "ST4ANG3",
+                    "score": "32.9M+"
                 },
                 {
                     "rank": 2,
-                    "name": "ST4ANG3",
-                    "score": "N/A"
+                    "name": "Darkshadow52195",
+                    "score": "19M+"
                 },
                 {
                     "rank": 3,
@@ -2196,32 +2196,32 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
+                    "name": "Oak_Optic",
+                    "score": "100M+"
+                },
+                {
+                    "rank": 2,
                     "name": "Gameryash322",
                     "score": "60M+"
                 },
                 {
-                    "rank": 2,
+                    "rank": 3,
                     "name": "SphinxWraith",
                     "score": "N/A"
                 },
                 {
-                    "rank": 3,
+                    "rank": 4,
                     "name": "GRAVITY8303",
                     "score": "34.2M+"
                 },
                 {
-                    "rank": 4,
+                    "rank": 5,
                     "name": "Iceberg899",
                     "score": "N/A"
                 },
                 {
-                    "rank": 5,
-                    "name": "Hefty6248",
-                    "score": "N/A"
-                },
-                {
                     "rank": 6,
-                    "name": "Unknown",
+                    "name": "Hefty6248",
                     "score": "N/A"
                 },
                 {
