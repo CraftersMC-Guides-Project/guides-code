@@ -6,114 +6,138 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CraftersMC - Posts</title>
   <meta name="theme-color" content="#007bff">
+  
+  <!-- Icons and Fonts -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <!-- Essential Stylesheets -->
   <link rel="stylesheet" href="css/essential.css">
+  <link rel="stylesheet" href="css/home.css">
+  
+  <!-- Essential Scripts -->
   <script src="js/script.js" defer></script>
+  <script src="js/home.js" defer></script>
+
   <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
+    /* Inherits base styles from essential.css and home.css */
+    body {
       color: #ffffff;
       font-family: MyFont, sans-serif;
-      display: flex;
-      flex-direction: column;
     }
+
     .background {
-      background: url("Backgrounds/IMG_4502.webp");
+      background-image: url("Backgrounds/IMG_4502.webp");
+      background-color: rgba(0,0,0,0.6);
       background-blend-mode: multiply;
       background-size: cover;
+      background-attachment: fixed;
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       z-index: -1;
     }
-    .top,
-    .sidebar,
-    #sidebar-overlay,
-    #float {
-      position: relative;
-      z-index: 10;
-    }
-    .main-content {
-      flex: 1;
-      padding-top: 80px; /* space for fixed header */
-    }
+
     .container {
       max-width: 1200px;
-      margin: auto;
-      padding: 20px;
-      background-color: rgba(0, 0, 0, 0.8);
+      margin: 8rem auto 4rem auto; /* Consistent margin with post.html */
+      padding: 2rem;
+      background-color: rgba(0, 0, 0, 0.85);
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     }
+
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 2rem;
-      border-bottom: 2px solid #c6c6c6;
+      border-bottom: 2px solid #555;
       padding-bottom: 1rem;
     }
+
+    .header h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+
     .posts-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 2rem;
     }
+
     .post-card {
       position: relative;
       overflow: hidden;
       border-radius: 10px;
-      height: 200px;
-      background-color: #111;
+      height: 220px; /* Slightly taller cards */
+      background-color: #222;
       cursor: pointer;
-      transition: transform 0.3s;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
       text-decoration: none;
+      display: block;
     }
+
     .post-card:hover {
       transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.4);
     }
+
     .post-image {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      display: block;
+      transition: transform 0.4s ease;
     }
+    
+    .post-card:hover .post-image {
+        transform: scale(1.05);
+    }
+
     .post-overlay {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
-      padding: 1rem;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
+      padding: 1.2rem;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
     }
+
     .post-title {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: bold;
       margin-bottom: 0.3rem;
       color: white;
-      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9);
     }
+
     .post-date {
-      color: #ddd;
+      color: #ccc;
       font-size: 0.9rem;
       text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
     }
+
     .create-btn {
-      background: #c6c6c6;
-      color: #3c3c3c;
-      padding: 10px 20px;
+      background: #333;
+      color: #fff;
+      padding: 12px 24px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       text-decoration: none;
       font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.2s ease;
     }
+
     .create-btn:hover {
       background: #218306;
       color: white;
+      transform: translateY(-2px);
     }
   </style>
 </head>
 <body>
+  <!-- Re-using standard components -->
   <div id="loader"><div></div><div></div><div></div></div>
   <div class="background"></div>
   <div class="top"></div>
@@ -127,19 +151,22 @@
     <span class="material-icons" id="scrollToTopBtn">north</span>
   </button>
 
-  <div class="main-content">
-    <div class="container">
-      <div class="header">
-        <h1>Recent Posts</h1>
-        <a href="create.html" id="createBtn" class="create-btn" style="display: none;">Create Post</a>
-      </div>
-      <div class="posts-grid" id="postsContainer"></div>
+  <!-- Main content container -->
+  <div class="container">
+    <div class="header">
+      <h1>Recent Posts</h1>
+      <a href="create.html" id="createBtn" class="create-btn" style="display: none;">Create Post</a>
+    </div>
+    <div class="posts-grid" id="postsContainer">
+        <!-- Posts will be loaded here by JS -->
     </div>
   </div>
 
+  <!-- Standard footer -->
   <div id="footer"></div>
 
   <script>
+    // Helper function to get cookie by name
     function getCookie(name) {
       return document.cookie.split('; ').reduce((r, v) => {
         const parts = v.split('=');
@@ -147,14 +174,17 @@
       }, '');
     }
 
+    // Helper function to format date string
     function formatDate(dateStr) {
       const date = new Date(dateStr);
       const options = { day: 'numeric', month: 'long', year: 'numeric' };
       return date.toLocaleDateString('en-US', options);
     }
 
+    // Main logic on DOM content loaded
     document.addEventListener("DOMContentLoaded", () => {
       const storedUserCookie = getCookie("discordUser");
+      // List of authorized user IDs
       const slaves = ["783972385882767400", "947868777528307742", "835769112000593950", "1099047739209293944"];
       
       if (storedUserCookie) {
@@ -164,19 +194,25 @@
             document.getElementById("createBtn").style.display = "inline-block";
           }
         } catch (err) {
-          console.warn("Invalid user cookie format");
+          console.warn("Invalid user cookie format. Could not parse:", storedUserCookie);
         }
       }
 
       fetchPosts();
     });
 
+    // Function to fetch and display posts
     async function fetchPosts() {
+      const container = document.getElementById('postsContainer');
       try {
         const response = await fetch('posts/posts.json');
+        if (!response.ok) {
+            throw new Error(`Failed to fetch posts.json. Status: ${response.status}`);
+        }
         const posts = await response.json();
-        const container = document.getElementById('postsContainer');
-        container.innerHTML = '';
+        container.innerHTML = ''; // Clear previous content
+        
+        // Sort posts by date, newest first
         posts.sort((a, b) => new Date(b.date) - new Date(a.date));
         
         posts.forEach(post => {
@@ -184,7 +220,7 @@
           postCard.href = `post.html?id=${post.id}`;
           postCard.className = 'post-card';
           postCard.innerHTML = `
-            <img src="${post.image}" alt="${post.title}" class="post-image">
+            <img src="${post.image}" alt="${post.title}" class="post-image" onerror="this.onerror=null;this.src='https://placehold.co/600x400/222/FFF?text=Image+Not+Found';">
             <div class="post-overlay">
               <div class="post-title">${post.title}</div>
               <div class="post-date">${formatDate(post.date)}</div>
@@ -193,10 +229,31 @@
         });
       } catch (error) {
         console.error('Error loading posts:', error);
-        document.getElementById('postsContainer').innerHTML = 
+        container.innerHTML = 
           '<p>Error loading posts. Please try again later.</p>';
       }
     }
+
+    // Offline detection script from index.html
+    if (!navigator.onLine) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'no-internet.html', true);
+        xhr.onload = function() {
+            if (this.status === 200) {
+                document.write(this.responseText);
+            } else {
+                document.body.innerHTML = '<h1>You are Offline</h1><p>Please check your internet connection.</p>';
+            }
+        };
+        xhr.onerror = function() {
+             document.body.innerHTML = '<h1>You are Offline</h1><p>Please check your internet connection.</p>';
+        }
+        xhr.send();
+    }
+
+    window.addEventListener('offline', function() {
+        window.location.href = 'no-internet.html';
+    });
   </script>
 </body>
 </html>
