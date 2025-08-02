@@ -2196,32 +2196,32 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
+                    "name": "Oak_Optic",
+                    "score": "100M+"
+                },
+                {
+                    "rank": 2,
                     "name": "Gameryash322",
                     "score": "60M+"
                 },
                 {
-                    "rank": 2,
+                    "rank": 3,
                     "name": "SphinxWraith",
                     "score": "N/A"
                 },
                 {
-                    "rank": 3,
+                    "rank": 4,
                     "name": "GRAVITY8303",
                     "score": "34.2M+"
                 },
                 {
-                    "rank": 4,
+                    "rank": 5,
                     "name": "Iceberg899",
                     "score": "N/A"
                 },
                 {
-                    "rank": 5,
-                    "name": "Hefty6248",
-                    "score": "N/A"
-                },
-                {
                     "rank": 6,
-                    "name": "Unknown",
+                    "name": "Hefty6248",
                     "score": "N/A"
                 },
                 {
