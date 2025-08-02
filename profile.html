@@ -7,6 +7,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   
+  <!-- The old <link> and <style> tags have been removed. -->
+  
   <!-- Dynamic Theme Loader Script -->
   <script>
     function getCookie(name) {
@@ -26,6 +28,7 @@
     document.head.appendChild(themeLink);
   </script>
 
+  <!-- Your original script.js is kept -->
   <script src="js/script.js" defer></script>
 </head>
 
@@ -36,7 +39,6 @@
     <div></div>
   </div>
 
-  <!-- The background div is now controlled by the theme's CSS -->
   <div class="background"></div>
 
   <div class="top"></div>
@@ -51,16 +53,15 @@
   </button>
 
   <div class="profile-container">
-    <!-- The content of this div will be populated by the script below -->
     <div class="profile" id="profile">
     </div>
   </div>
 
   <div id="footer"></div>
 
+  <!-- Your original profile logic script is preserved below -->
   <script>
     // --- Helper Functions ---
-    // This getCookie function is also in the head, but having it here ensures it's available for the profile logic
     function getCookie(name) {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
@@ -91,9 +92,11 @@
 
     function saveTheme() {
       setCookie('theme', selectedThemeForSaving, 365);
-      // Add a loader or visual indicator before reloading
       const saveButton = document.querySelector('.save-btn');
-      if(saveButton) saveButton.innerText = 'Reloading...';
+      if(saveButton) {
+          saveButton.innerText = 'Reloading...';
+          saveButton.disabled = true;
+      }
       window.location.reload();
     }
 
@@ -106,16 +109,16 @@
         profileElement.innerHTML = `
         <div class="login-prompt">
           <h3>Login to view your profile</h3>
-          <div class="profile-actions">
-            <a class="btn btn-primary" href="/login">
-              <span class="material-icons">login</span>
-              Login with Discord
-            </a>
-            <a class="btn" href="/">
-              <span class="material-icons">home</span>
-              Return Home
-            </a>
-          </div>
+        <div class="profile-actions">
+          <button class="btn btn-logout" onclick="window.location.href='/login'">
+            <span class="material-icons">login</span>
+            Login with Discord
+          </button>
+          <button class="btn" onclick="window.location.href='/'">
+            <span class="material-icons">home</span>
+            Return Home
+          </button>
+        </div>
         </div>
       `;
         return;
@@ -151,14 +154,14 @@
                 <button class="theme-btn" onclick="selectTheme('essential')" id="essentialBtn">Essential</button>
                 <button class="theme-btn" onclick="selectTheme('minecraft')" id="minecraftBtn">Minecraft</button>
             </div>
-            <button class="save-btn" onclick="saveTheme()">Save & Reload</button>
+            <button class="save-btn" onclick="saveTheme()">Save Changes</button>
         </div>
       </div>
       <div class="profile-actions">
-        <a class="btn" href="/">
+        <button class="btn" onclick="window.location.href='/'">
           <span class="material-icons">home</span>
           Return Home
-        </a>
+        </button>
         <button class="btn btn-logout" onclick="logout()">
           <span class="material-icons">logout</span>
           Logout
@@ -175,15 +178,17 @@
 
     // --- Page Load Logic ---
     window.onload = () => {
-      // Create the profile HTML, which includes the theme buttons.
+      // First, create the profile HTML. This is essential because it adds the theme buttons to the page.
       loadProfile();
 
-      // Now that the buttons exist, get the saved theme from the cookie and highlight the active button.
+      // Now that the buttons exist, get the saved theme from the cookie.
       const savedTheme = getCookie('theme');
+
+      // Check if the saved theme is valid. If not, default to 'minecraft'.
       if (validThemes.includes(savedTheme)) {
         selectTheme(savedTheme);
       } else {
-        selectTheme('minecraft'); // Default to minecraft if cookie is invalid
+        selectTheme('minecraft');
       }
     };
   </script>
