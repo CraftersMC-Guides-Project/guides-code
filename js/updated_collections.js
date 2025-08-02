@@ -1970,8 +1970,8 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "TGJASSIYT",
+                    "score": "80.9M+"
                 },
                 {
                     "rank": 2,
