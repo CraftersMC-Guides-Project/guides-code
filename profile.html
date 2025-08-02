@@ -1,4 +1,4 @@
-e<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,265 +6,27 @@ e<!DOCTYPE html>
   <title>User Profile - CraftersMC Guide</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="css/essential.css">
-  <script src="js/script.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--body-bg);
-      color: var(--main-text-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      min-height: 100vh;
+  
+  <!-- Dynamic Theme Loader Script -->
+  <script>
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
     }
 
-    .background {
-      background: url("../Backgrounds/mine-portal.webp");
-      background-color: #4d4343;
-      background-blend-mode: multiply;
-      background-size: cover;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-    }
-
-    .profile-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      max-width: 800px;
-      padding: 2rem;
-      margin-top: 5rem;
-    }
-
-    .profile {
-      background: #00000099;
-      padding: 2.5rem;
-      width: 100%;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-      position: relative;
-      margin-bottom: 2rem;
-      border: 2px solid #c6c6c6;
-    }
-
-    .profile-header {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 1.5rem;
-      top: 20;
-    }
-
-    .profile-avatar {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 4px solid var(--avtar-border);
-      object-fit: cover;
-      margin-bottom: 1rem;
-      left: 0;
-      right: 0;
-      position: relative;
-      z-index: 100;
-      top: 15px;
-    }
-
-    .profile-name {
-      font-size: 1.5rem;
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-    }
-
-    .profile-discriminator {
-      font-size: 1rem;
-    }
-
-    .profile-details {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1.5rem;
-    }
-
-    .detail-card {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
-      padding: 1rem;
-      border: 1px solid var(--border-color);
-    }
-
-    .detail-title {
-      font-size: 0.9rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .detail-value {
-      font-size: 10px;
-      word-break: break-all;
-      margin-bottom: 10px;
-      justify-content: space-around;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .profile-badges {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .badge {
-      background: var(--primary-color);
-      padding: 0.3rem 0.6rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    .badge-icon {
-      font-size: 1rem;
-    }
-
-    .profile-actions {
-      display: flex;
-      gap: 1rem;
-      margin-top: 2rem;
-      justify-content: center;
-      flex-direction: row;
-    }
-
-    .btn {
-      background: #c6c6c6;
-      color: #3c3c3c;
-      font-weight: bold;
-      font-size: 18px;
-      padding: 5px 15px 10px 15px;
-      transition: all 0.1s;
-      text-transform: capitalize;
-      text-decoration: none;
-      cursor: pointer;
-      box-shadow: 2px 2px 0 0 #ffffff inset,
-        -1px -1px 0px 3px #777 inset;
-      justify-content: space-between;
-      border: 2px solid #2a2a2a;
-      display: flex;
-      align-items: center;
-    }
-
-    .btn:hover {
-      border: 2px solid #fff;
-      box-shadow: 2px 2px 0 0 #2ccb1d inset,
-        -1px -1px 0px 3px #1d681a inset;
-      background: #218306;
-      color: #fff !important;
-    }
-    .btn-logout:hover {
-      border: 2px solid #fff;
-      box-shadow: 2px 2px 0 0 rgb(244, 81, 97) inset,
-        -1px -1px 0px 3px rgb(124, 20, 31) inset;
-      background: rgb(108, 16, 26);
-      color: #fff !important;
-    }
-
-    .btn-logout {
-      background: rgb(206, 29, 47);
-      box-shadow: 2px 2px 0 0 rgb(244, 81, 97) inset,
-        -1px -1px 0px 3px rgb(124, 20, 31) inset;
-      color: #fff;
-    }
-
-    .login-prompt {
-      text-align: center;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-    }
-
-    @media (max-width: 768px) {
-      .profile {
-        padding: 1.5rem;
-      }
-
-      .profile-details {
-        grid-template-columns: 1fr;
-      }
-
-      .profile-actions {
-        flex-direction: column;
-      }
-    }
-
-    /* Banner styling */
-    .profile-banner {
-      height: 150px;
-      width: 100%;
-      border-radius: 12px 12px 0 0;
-      background-size: cover;
-      background-position: center;
-      margin-bottom: -64px;
-      /* Half of avatar size */
-      position: relative;
-    }
-
-    .profile-banner-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 50%;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-    }
+    // Set 'minecraft' as the default theme if one isn't set
+    const theme = getCookie('theme') || 'minecraft'; 
     
-    /* Added Theme Changer CSS */
-    .theme-buttons {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+    const themeLink = document.createElement('link');
+    themeLink.rel = 'stylesheet';
+    // Load the stylesheet from the /themes/ directory
+    themeLink.href = `themes/${theme}/style.css`; 
+    document.head.appendChild(themeLink);
+  </script>
 
-    .theme-btn {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      border: 2px solid #c6c6c6;
-      background: transparent;
-      color: #fff;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .theme-btn.selected {
-      background: #c6c6c6;
-      color: #3c3c3c;
-    }
-
-    .save-btn {
-      padding: 0.8rem 2rem;
-      font-size: 1rem;
-      background: #28a745;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.2s ease;
-      width: 100%;
-      margin-top: 10px;
-    }
-
-    .save-btn:hover {
-      background: #218838;
-    }
-  </style>
+  <script src="js/script.js" defer></script>
 </head>
 
 <body>
@@ -273,25 +35,32 @@ e<!DOCTYPE html>
     <div></div>
     <div></div>
   </div>
+
+  <!-- The background div is now controlled by the theme's CSS -->
   <div class="background"></div>
+
   <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
   <button id="float">
     <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
     <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
     <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
     <span class="material-icons" id="scrollToTopBtn">north</span>
   </button>
-  <!--  -->
 
   <div class="profile-container">
+    <!-- The content of this div will be populated by the script below -->
     <div class="profile" id="profile">
     </div>
   </div>
+
   <div id="footer"></div>
+
   <script>
     // --- Helper Functions ---
+    // This getCookie function is also in the head, but having it here ensures it's available for the profile logic
     function getCookie(name) {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
@@ -301,12 +70,12 @@ e<!DOCTYPE html>
 
     function setCookie(name, value, days) {
       const expires = new Date(Date.now() + days * 864e5).toUTCString();
-      document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+      document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
     }
 
     // --- Theme Changer Functions ---
     const validThemes = ['essential', 'minecraft'];
-    let selectedThemeForSaving = 'minecraft'; // This holds the theme choice before it's saved.
+    let selectedThemeForSaving = getCookie('theme') || 'minecraft';
 
     function selectTheme(theme) {
       if (!validThemes.includes(theme)) return;
@@ -322,6 +91,9 @@ e<!DOCTYPE html>
 
     function saveTheme() {
       setCookie('theme', selectedThemeForSaving, 365);
+      // Add a loader or visual indicator before reloading
+      const saveButton = document.querySelector('.save-btn');
+      if(saveButton) saveButton.innerText = 'Reloading...';
       window.location.reload();
     }
 
@@ -334,16 +106,16 @@ e<!DOCTYPE html>
         profileElement.innerHTML = `
         <div class="login-prompt">
           <h3>Login to view your profile</h3>
-        <div class="profile-actions">
-          <button class="btn btn-logout" onclick="window.location.href='/login'">
-            <span class="material-icons">login</span>
-            Login with Discord
-          </button>
-          <button class="btn" onclick="window.location.href='/'">
-            <span class="material-icons">home</span>
-            Return Home
-          </button>
-        </div>
+          <div class="profile-actions">
+            <a class="btn btn-primary" href="/login">
+              <span class="material-icons">login</span>
+              Login with Discord
+            </a>
+            <a class="btn" href="/">
+              <span class="material-icons">home</span>
+              Return Home
+            </a>
+          </div>
         </div>
       `;
         return;
@@ -356,7 +128,7 @@ e<!DOCTYPE html>
 
       profileElement.innerHTML = `
       <div class="header">
-        <img class="profile-avatar" src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="User Avatar" id="avatar" crossorigin="anonymous">
+        <img class="profile-avatar" src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="User Avatar" id="avatar" crossorigin="anonymous" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
         <h2 class="profile-name">${displayName}</h2>
       </div>
       <div class="profile-details">
@@ -373,21 +145,20 @@ e<!DOCTYPE html>
           <div class="detail-value"><span class="detail-value-head">Last Login:</span> <span class="detail-value-data">${lastLogin}</span></div>
           <div class="detail-value"><span class="detail-value-head">Login Count:</span> <span class="detail-value-data">${user.login_count || 1}</span></div>
         </div>
-        <!-- Added Theme Settings Card -->
         <div class="detail-card">
             <div class="detail-title">Theme Settings</div>
             <div class="theme-buttons">
                 <button class="theme-btn" onclick="selectTheme('essential')" id="essentialBtn">Essential</button>
                 <button class="theme-btn" onclick="selectTheme('minecraft')" id="minecraftBtn">Minecraft</button>
             </div>
-            <button class="save-btn" onclick="saveTheme()">Save Changes</button>
+            <button class="save-btn" onclick="saveTheme()">Save & Reload</button>
         </div>
       </div>
       <div class="profile-actions">
-        <button class="btn" onclick="window.location.href='/'">
+        <a class="btn" href="/">
           <span class="material-icons">home</span>
           Return Home
-        </button>
+        </a>
         <button class="btn btn-logout" onclick="logout()">
           <span class="material-icons">logout</span>
           Logout
@@ -404,21 +175,18 @@ e<!DOCTYPE html>
 
     // --- Page Load Logic ---
     window.onload = () => {
-      // First, create the profile HTML. This is essential because it adds the theme buttons to the page.
+      // Create the profile HTML, which includes the theme buttons.
       loadProfile();
 
-      // Now that the buttons exist, get the saved theme from the cookie.
+      // Now that the buttons exist, get the saved theme from the cookie and highlight the active button.
       const savedTheme = getCookie('theme');
-
-      // Check if the saved theme is valid. If not, default to 'minecraft'.
       if (validThemes.includes(savedTheme)) {
         selectTheme(savedTheme);
       } else {
-        selectTheme('minecraft');
+        selectTheme('minecraft'); // Default to minecraft if cookie is invalid
       }
     };
   </script>
 
 </body>
-
 </html>
