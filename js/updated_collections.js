@@ -2084,13 +2084,13 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "Darkshadow52195",
-                    "score": "19M+"
+                    "name": "ST4ANG3",
+                    "score": "32.9M+"
                 },
                 {
                     "rank": 2,
-                    "name": "ST4ANG3",
-                    "score": "N/A"
+                    "name": "Darkshadow52195",
+                    "score": "19M+"
                 },
                 {
                     "rank": 3,
