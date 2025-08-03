@@ -35,6 +35,7 @@
     <title>Home - CraftersMC Guides</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+    <!-- Dynamically load theme CSS from /themes/[theme]/style.css -->
     <script>
         function getCookie(name) {
             const value = `; ${document.cookie}`;
@@ -47,15 +48,17 @@
             document.cookie = `${name}=${value}; expires=${expires}; path=/`;
         }
 
-        // Check for the theme cookie. If it doesn't exist, set it to 'minecraft' by default.
-        if (!getCookie('theme')) {
-            setCookie('theme', 'minecraft', 365);
+        // Try to get the theme from the cookie.
+        let theme = getCookie('theme');
+
+        // If no theme is found in the cookie (i.e., for a new user),
+        // set the theme to 'minecraft' and create the cookie for next time.
+        if (!theme) {
+            theme = 'minecraft';
+            setCookie('theme', theme, 365);
         }
 
-        // Get the current theme from the cookie.
-        const theme = getCookie('theme');
-
-        // Create and append the stylesheet link to the head of the document.
+        // Create the stylesheet link with the correct theme and add it to the page.
         const themeLink = document.createElement('link');
         themeLink.rel = 'stylesheet';
         themeLink.href = `themes/${theme}/style.css`;
