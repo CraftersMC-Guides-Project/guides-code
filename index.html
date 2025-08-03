@@ -35,7 +35,6 @@
     <title>Home - CraftersMC Guides</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <!-- Dynamically load theme CSS from /themes/[theme]/style.css -->
     <script>
         function getCookie(name) {
             const value = `; ${document.cookie}`;
@@ -48,9 +47,15 @@
             document.cookie = `${name}=${value}; expires=${expires}; path=/`;
         }
 
-        const theme = getCookie('theme') || 'default';
-        if (!getCookie('theme')) setCookie('theme', 'default', 365);
+        // Check for the theme cookie. If it doesn't exist, set it to 'minecraft' by default.
+        if (!getCookie('theme')) {
+            setCookie('theme', 'minecraft', 365);
+        }
 
+        // Get the current theme from the cookie.
+        const theme = getCookie('theme');
+
+        // Create and append the stylesheet link to the head of the document.
         const themeLink = document.createElement('link');
         themeLink.rel = 'stylesheet';
         themeLink.href = `themes/${theme}/style.css`;
@@ -172,5 +177,3 @@
     </script>
 </body>
 </html>
-
-
