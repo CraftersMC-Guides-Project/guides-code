@@ -1710,7 +1710,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "MythicalPanda30",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
