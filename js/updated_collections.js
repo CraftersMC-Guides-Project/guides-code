@@ -1302,7 +1302,7 @@ const collectionsData = {
                 {
                     "rank": 2,
                     "name": "sboi146433",
-                    "score": "24.6M+"
+                    "score": "47.1M+"
                 },
                 {
                     "rank": 3,
