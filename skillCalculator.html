@@ -1,147 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Skill Calculator</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="themes/minecraft/style.css" />
+    <!-- <link rel="stylesheet" href="../css/SkillCalculator.css" /> -->
+    <script src="js/script.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Skill Calculator</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="../css/essential.css">
-  <link rel="stylesheet" href="../css/SkillCalculator.css">
-  <script src="js/script.js"></script>
-</head>
+  <body>
+    <div id="loader">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <div class="skill-calc-background"></div>
+    <div class="top"></div>
+    <div class="sidebar" id="sidebar"></div>
 
-<body>
-  <div id="loader">
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
-  <div class="background"></div>
-  <div class="top"></div>
-  <div class="sidebar" id="sidebar"></div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <button id="float">
+      <span
+        class="material-icons"
+        id="sweepBtn"
+        style="background: #222; border-radius: 50px"
+        >chevron_right</span
+      >
+      <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
+      <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
+      <span class="material-icons" id="scrollToTopBtn">north</span>
+    </button>
 
-  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-  <button id="float">
-    <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
-    <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
-    <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
-    <span class="material-icons" id="scrollToTopBtn">north</span>
-  </button>
-
-  <div class="container">
-    <h3>Skill Calculator</h3>
-    <div class="inner-container">
-      <p style="margin-bottom: 20px; font-size: 12.5px; text-align: center; color: #e0db36;">
-        Note: <em>All the skills require same amount of exp for each level.</em>
-      </p>
-      <div class="grp-main">
-        <div class="grp">
-          <label for="currentLevel">Current Level: <span id="currentLevelValue">1</span></label><br>
-          <input id="currentLevel" class="box" type="number" min="1" max="50" value="1"><br>
+    <div class="skill-calc-container">
+      <h3>Skill Calculator</h3>
+      <div class="skill-calc-inner-container">
+        <p
+          style="
+            margin-bottom: 20px;
+            font-size: 12.5px;
+            text-align: center;
+            color: #e0db36;
+          "
+        >
+          Note:
+          <em>All the skills require same amount of exp for each level.</em>
+        </p>
+        <div class="skill-calc-grp-main">
+          <div class="skill-calc-grp">
+            <label for="currentLevel"
+              >Current Level: <span id="currentLevelValue">1</span></label
+            ><br />
+            <input
+              id="currentLevel"
+              class="skill-calc-box skill-calc-input"
+              type="number"
+              min="1"
+              max="50"
+              value="1"
+            /><br />
+          </div>
+          <div class="skill-calc-grp skill-calc-temp">
+            <label>Current Level Experience:</label>
+            <input id="currentExp" class="skill-calc-input" type="number" />
+          </div>
+          <div class="skill-calc-grp">
+            <label for="requiredLevel"
+              >Required Level: <span id="requiredLevelValue">1</span></label
+            ><br />
+            <input
+              id="requiredLevel"
+              class="skill-calc-box skill-calc-input"
+              type="number"
+              min="1"
+              max="50"
+              value="1"
+            />
+          </div>
         </div>
-        <div class="grp temp">
-          <label>Current Level Experience:</label>
-          <input id="currentExp" type="number">
+        <div class="skill-calc-grp">
+          <button id="calcBtn" class="btn" style="cursor: pointer">
+            Result
+          </button>
+          <div class="skill-calc-result" id="resultBox">Result</div>
         </div>
-        <div class="grp">
-          <label for="requiredLevel">Required Level: <span id="requiredLevelValue">1</span></label><br>
-          <input id="requiredLevel" class="box" type="number" min="1" max="50" value="1">
-        </div>
-      </div>
-      <div class="grp">
-        <button id="calcBtn" class="btn" style="cursor:pointer;">Result</button>
-        <div class="result" id="resultBox">Result</div>
       </div>
     </div>
-  </div>
 
-  <div id="footer"></div>
+    <div id="footer"></div>
 
-  <script>
-    let skillData = [];
+    <script>
+      let skillData = [];
 
-    fetch('skill-exp/skill_exp.json')
-      .then(res => res.json())
-      .then(data => {
-        skillData = data;
+      fetch("skill-exp/skill_exp.json")
+        .then((res) => res.json())
+        .then((data) => {
+          skillData = data;
+        });
+
+      const currentLevel = document.getElementById("currentLevel");
+      const requiredLevel = document.getElementById("requiredLevel");
+      const currentLevelValue = document.getElementById("currentLevelValue");
+      const requiredLevelValue = document.getElementById("requiredLevelValue");
+      const calcBtn = document.getElementById("calcBtn");
+      const resultBox = document.getElementById("resultBox");
+
+      // Clamp and sync current level input
+      currentLevel.addEventListener("input", () => {
+        let currentval = parseInt(currentLevel.value, 10);
+
+        if (isNaN(currentval)) return;
+
+        if (currentval < 1) currentval = 1;
+        if (currentval > 50) currentval = 50;
+
+        currentLevel.value = currentval;
+        currentLevelValue.textContent = currentval;
+
+        if (parseInt(requiredLevel.value) < currentval) {
+          requiredLevel.value = currentval;
+          requiredLevelValue.textContent = requiredLevel.value;
+        }
+
+        requiredLevel.min = currentval;
       });
 
-    const currentLevel = document.getElementById('currentLevel');
-    const requiredLevel = document.getElementById('requiredLevel');
-    const currentLevelValue = document.getElementById('currentLevelValue');
-    const requiredLevelValue = document.getElementById('requiredLevelValue');
-    const calcBtn = document.getElementById('calcBtn');
-    const resultBox = document.getElementById('resultBox');
-
-    // Clamp and sync current level input
-    currentLevel.addEventListener('input', () => {
-      let currentval = parseInt(currentLevel.value, 10);
-
-      if (isNaN(currentval)) return;
-
-      if (currentval < 1) currentval = 1;
-      if (currentval > 50) currentval = 50;
-
-      currentLevel.value = currentval;
-      currentLevelValue.textContent = currentval;
-
-      if (parseInt(requiredLevel.value) < currentval) {
-        requiredLevel.value = currentval;
-        requiredLevelValue.textContent = requiredLevel.value;
-      }
-
-      requiredLevel.min = currentval;
-    });
-
-    requiredLevel.addEventListener('input', () => {
-      let reqVal = parseInt(requiredLevel.value, 10);
-      if (reqVal > 50) {
-        requiredLevel.value = 50;
-        reqVal = 50;
-      }
-      requiredLevelValue.textContent = reqVal;
-    });
-
-    calcBtn.addEventListener('click', () => {
-      const curLvl = parseInt(currentLevel.value);
-      const reqLvl = parseInt(requiredLevel.value);
-
-      if (reqLvl < curLvl) {
-        resultBox.textContent = 'Required level must be greater than or equal to current level.';
-        return;
-      }
-
-      if (curLvl === reqLvl) {
-        resultBox.textContent = 'You are already at the required level!';
-        return;
-      }
-
-      const curTotal = skillData[curLvl - 1].total_exp_required;
-      const reqTotal = skillData[reqLvl - 1].total_exp_required;
-      let xpNeeded = reqTotal - curTotal;
-
-      if (xpNeeded <= 0) {
-        resultBox.textContent = 'You have already reached or exceeded the required level!';
-      } else {
-        resultBox.textContent = `XP needed to reach level ${reqLvl}: ${xpNeeded.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
-      }
-
-      const val = Number(document.getElementById("currentExp").value);
-      try {
-        if (xpNeeded > val) {
-          xpNeeded = xpNeeded - val;
-          resultBox.textContent = `The Exp needed to reach level ${requiredLevel.value} is: ${xpNeeded}`;
-        } else if (xpNeeded < val) {
-          throw new Error("You have already reached that level!");
-        } else if (xpNeeded === val) {
-          resultBox.textContent = `The Exp needed to reach level ${requiredLevel.value} is: ${xpNeeded}`;
+      requiredLevel.addEventListener("input", () => {
+        let reqVal = parseInt(requiredLevel.value, 10);
+        if (reqVal > 50) {
+          requiredLevel.value = 50;
+          reqVal = 50;
         }
-      } catch (error) {
-        resultBox.textContent = error.message;
-      }
-    });
-  </script>
-</body>
+        requiredLevelValue.textContent = reqVal;
+      });
 
-            </html>
+      calcBtn.addEventListener("click", () => {
+        const curLvl = parseInt(currentLevel.value);
+        const reqLvl = parseInt(requiredLevel.value);
+
+        if (reqLvl < curLvl) {
+          resultBox.textContent =
+            "Required level must be greater than or equal to current level.";
+          return;
+        }
+
+        if (curLvl === reqLvl) {
+          resultBox.textContent = "You are already at the required level!";
+          return;
+        }
+
+        const curTotal = skillData[curLvl - 1].total_exp_required;
+        const reqTotal = skillData[reqLvl - 1].total_exp_required;
+        let xpNeeded = reqTotal - curTotal;
+
+        if (xpNeeded <= 0) {
+          resultBox.textContent =
+            "You have already reached or exceeded the required level!";
+        } else {
+          resultBox.textContent = `XP needed to reach level ${reqLvl}: ${xpNeeded.toLocaleString(
+            "en-US",
+            { maximumFractionDigits: 0 }
+          )}`;
+        }
+
+        const val = Number(document.getElementById("currentExp").value);
+        try {
+          if (xpNeeded > val) {
+            xpNeeded = xpNeeded - val;
+            resultBox.textContent = `The Exp needed to reach level ${requiredLevel.value} is: ${xpNeeded}`;
+          } else if (xpNeeded < val) {
+            throw new Error("You have already reached that level!");
+          } else if (xpNeeded === val) {
+            resultBox.textContent = `The Exp needed to reach level ${requiredLevel.value} is: ${xpNeeded}`;
+          }
+        } catch (error) {
+          resultBox.textContent = error.message;
+        }
+      });
+    </script>
+  </body>
+</html>
