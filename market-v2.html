@@ -53,7 +53,7 @@
     let items = [], prices = {}, pets = [], petPrices = {}, minions = [], minionPrices = {};
     let isDataLoaded = false;
 
-    // Debug-friendly JSON fetcher
+    // Advanced JSON debug loader
     async function fetchAndParseJSON(url) {
       try {
         const response = await fetch(url);
@@ -62,30 +62,51 @@
         try {
           return JSON.parse(text);
         } catch (parseError) {
-          let lineInfo = "";
+          let output = `\n❌ JSON Syntax Error in ${url}`;
           let match = parseError.message.match(/at position (\d+)/);
 
           if (match) {
-            const position = parseInt(match[1], 10);
-            const lines = text.substring(0, position).split("\n");
-            const lineNumber = lines.length;
-            const columnNumber = lines[lines.length - 1].length + 1;
+            const pos = parseInt(match[1], 10);
+            const linesBeforeErr = text.substring(0, pos).split("\n");
+            const lineNumber = linesBeforeErr.length;
+            const columnNumber = linesBeforeErr[linesBeforeErr.length - 1].length + 1;
+
+            const allLines = text.split("\n");
+            const errorLine = allLines[lineNumber - 1];
+            const pointer = " ".repeat(columnNumber - 1) + "^";
+
+            // Context lines
             const snippetStart = Math.max(0, lineNumber - 3);
-            const snippetEnd = Math.min(text.split("\n").length, lineNumber + 2);
-            const snippet = text.split("\n")
+            const snippetEnd = Math.min(allLines.length, lineNumber + 2);
+            const snippet = allLines
               .slice(snippetStart, snippetEnd)
               .map((l, i) => `${snippetStart + i + 1}: ${l}`)
               .join("\n");
 
-            lineInfo = `\nFile: ${url}\nLine: ${lineNumber}, Column: ${columnNumber}\n\nContext:\n${snippet}`;
+            // Guess cause
+            let foundChar = errorLine[columnNumber - 1] || "";
+            let guess = "";
+            if (foundChar.toLowerCase() === "t") guess = "Maybe you meant 'true'?";
+            if (foundChar.toLowerCase() === "f") guess = "Maybe you meant 'false'?";
+            if (foundChar.toLowerCase() === "n") guess = "Maybe you meant 'null'?";
+            if (foundChar === "'") guess = "JSON strings must use double quotes (\").";
+            if (/[A-Za-z]/.test(foundChar) && !guess) guess = "Possibly missing quotes around a string.";
+
+            output += `\nMessage: ${parseError.message}`;
+            output += `\nLine: ${lineNumber}, Column: ${columnNumber}`;
+            output += `\nFound: '${foundChar}'  ${guess ? "→ " + guess : ""}`;
+            output += `\n\nProblem line:\n${lineNumber}: ${errorLine}\n${pointer}`;
+            output += `\n\nContext:\n${snippet}`;
+          } else {
+            output += `\nMessage: ${parseError.message}`;
           }
 
-          console.error(`❌ JSON Syntax Error in ${url}\n${parseError.message}${lineInfo}`);
+          console.error(output);
           throw parseError;
         }
-      } catch (err) {
-        console.error(`❌ Failed to load file: ${url}`, err);
-        throw err;
+      } catch (networkError) {
+        console.error(`❌ Failed to load file: ${url}`, networkError);
+        throw networkError;
       }
     }
 
