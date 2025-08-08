@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<link rel="icon" href="assets/cmc-icon.png" type="image/png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Market Prices - CraftersMC Guides</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="stylesheet" href="css/essential.css" />
+  <link rel="stylesheet" href="css/market.css" />
+  <script src="js/script.js"></script>
+  <style>
+    .result { padding: 10px; cursor: pointer; display: flex; align-items: center; }
+    .result img { width: 30px; height: 30px; margin-right: 10px; align-items: center; }
+    .info b { display: block; }
+    .info span { font-size: 0.9em; }
+    .info .description { font-size: 0.8em; margin-top: 5px; display: -webkit-box; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
+    #results p { padding: 10px; text-align: center; }
+    .info-head { display: flex; align-items: center; justify-content: space-between; }
+    .info-head img { width: 65px; height: 65px; }
+  </style>
+</head>
+
+<body>
+  <div id="loader"><div></div><div></div><div></div></div>
+  <div class="background"></div>
+  <div class="top"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+<span class="material-icons" id="scrollToTopBtn">north</span>
+
+  <h1 class="title">CraftersMC Market Prices</h1>
+  <input type="text" id="searchBox" placeholder="Search Items..." oninput="searchItems()" />
+  <div class="boxy-box"><div id="results"></div></div>
+  <div class="categories">Discover the prices</div>
+  <div class="divider"></div>
+
+  <div class="category-section">
+    <div class="category-grid">
+      <div class="category-item" onclick="goToCategory('farming')"><img src="assets/ui-icons/ui_bazaar_category_farming_active.png" alt="farming" class="bz"><div class="category-name"><p>Farming</p></div></div>
+      <div class="category-item" onclick="goToCategory('mining')"><img src="assets/ui-icons/ui_bazaar_category_mining_active.png" alt="mining" class="bz"><div class="category-name"><p>Mining</p></div></div>
+      <div class="category-item" onclick="goToCategory('combat')"><img src="assets/ui-icons/ui_bazaar_category_combat_active.png" alt="Combat" class="bz"><div class="category-name"><p>Combat</p></div></div>
+      <div class="category-item" onclick="goToCategory('foraging')"><img src="assets/ui-icons/ui_bazaar_category_foraging_active.png" alt="foraging" class="bz"><div class="category-name"><p>Foraging</p></div></div>
+      <div class="category-item" onclick="goToCategory('special')"><img src="assets/ui-icons/ui_star_active.png" alt="special" class="bz"><div class="category-name"><p>Special</p></div></div>
+      <div class="category-item" onclick="goToCategory('slayer')"><img src="img/Atoned_Heart.webp" alt="special" class="bz"><div class="category-name"><p>Slayer</p></div></div>
+      <div class="category-item" onclick="window.location.href='pets-cat.html'"><img src="img/pets/Phoenix_Pet.webp" alt="Pets"><div class="category-name"><p>Pets</p></div></div>
+    </div>
+  </div>
+  <div id="footer"></div>
+
+  <script>
+    let items = [], prices = {}, pets = [], petPrices = {}, minions = [], minionPrices = {};
+    let isDataLoaded = false;
+
+    // Debug-friendly JSON fetcher
+    async function fetchAndParseJSON(url) {
+      try {
+        const response = await fetch(url);
+        const text = await response.text();
+
+        try {
+          return JSON.parse(text);
+        } catch (parseError) {
+          let lineInfo = "";
+          let match = parseError.message.match(/at position (\d+)/);
+
+          if (match) {
+            const position = parseInt(match[1], 10);
+            const lines = text.substring(0, position).split("\n");
+            const lineNumber = lines.length;
+            const columnNumber = lines[lines.length - 1].length + 1;
+            const snippetStart = Math.max(0, lineNumber - 3);
+            const snippetEnd = Math.min(text.split("\n").length, lineNumber + 2);
+            const snippet = text.split("\n")
+              .slice(snippetStart, snippetEnd)
+              .map((l, i) => `${snippetStart + i + 1}: ${l}`)
+              .join("\n");
+
+            lineInfo = `\nFile: ${url}\nLine: ${lineNumber}, Column: ${columnNumber}\n\nContext:\n${snippet}`;
+          }
+
+          console.error(`❌ JSON Syntax Error in ${url}\n${parseError.message}${lineInfo}`);
+          throw parseError;
+        }
+      } catch (err) {
+        console.error(`❌ Failed to load file: ${url}`, err);
+        throw err;
+      }
+    }
+
+    function parsePrices(text) {
+      const priceMap = {};
+      const lines = text.trim().split('\n');
+      lines.forEach((line, idx) => {
+        const match = line.match(/^(\d+):\s*(\[.*\])$/);
+        if (match) {
+          try {
+            const arr = JSON.parse(match[2]);
+            priceMap[match[1]] = arr[1];
+          } catch (e) {
+            console.warn(`Invalid price JSON at line ${idx + 1} in mprices.txt\nLine: ${line}\nError: ${e.message}`);
+          }
+        }
+      });
+      return priceMap;
+    }
+
+    async function loadItems() {
+      try {
+        const [marketData, priceText, petData, petPriceData, minionData, minionPriceData] = await Promise.all([
+          fetchAndParseJSON('market/market.txt'),
+          fetch('market/mprices.txt').then(r => r.text()),
+          fetchAndParseJSON('market/pets.txt'),
+          fetchAndParseJSON('market/pet-prices.txt'),
+          fetchAndParseJSON('market/minions.txt'),
+          fetchAndParseJSON('market/minion-prices.json')
+        ]);
+
+        items = marketData;
+        prices = parsePrices(priceText);
+        pets = petData;
+        petPrices = petPriceData;
+        minions = minionData;
+        minionPrices = minionPriceData;
+
+        isDataLoaded = true;
+        searchItems();
+      } catch (error) {
+        console.error("Error loading data:", error);
+        document.getElementById('results').innerHTML = '<p>Failed to load item data.</p>';
+      } finally {
+        document.getElementById('loader').style.display = 'none';
+      }
+    }
+
+    function searchItems() {
+      const query = document.getElementById('searchBox').value.toLowerCase();
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      if (!isDataLoaded) {
+        resultsDiv.innerHTML = '<p>Loading items...</p>';
+        return;
+      }
+
+      const filteredItems = items.filter(item => item.name.toLowerCase().includes(query));
+      const filteredPets = pets.filter(pet => pet.name.toLowerCase().includes(query));
+      const filteredMinions = minions.filter(minion => minion.name.toLowerCase().includes(query));
+
+      if (filteredItems.length === 0 && query.trim() !== '' && filteredPets.length === 0 && filteredMinions.length === 0) {
+        resultsDiv.innerHTML = '<p>No results found.</p>';
+        return;
+      }
+      if (query.trim() === '') return;
+
+      const renderResult = (obj, type, priceInfo) => {
+        const div = document.createElement('div');
+        div.className = 'result';
+        div.innerHTML = `
+          <div class="info">
+            <div class="info-head">
+              <b>${obj.name}</b>
+              <img src="${obj.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : obj.picture}" alt="${obj.name}">
+            </div>
+            <div class="result-div-info">ID: ${type === 'minion' ? String(obj.id).padStart(2, '0') : obj.id}</div>
+            <div class="result-div-info">Market price: ${priceInfo}</div>
+            ${obj.description ? `<div class="description">${obj.description}</div>` : ''}
+          </div>`;
+        div.onclick = () => {
+          if (type === 'item') window.location.href = `item.html?item=${obj.id}`;
+          if (type === 'pet') window.location.href = `pets.html?pet=${obj.id}`;
+          if (type === 'minion') window.location.href = `minions.html?minion=${String(obj.id).padStart(2, '0')}`;
+        };
+        resultsDiv.appendChild(div);
+      };
+
+      filteredItems.slice(0, 10).forEach(item => renderResult(item, 'item', `${prices[item.id] || 'N/A'} <img class="coin" src="img/coin.png" alt="Coin">`));
+      filteredPets.slice(0, 10).forEach(pet => renderResult(pet, 'pet', 'Varies by rarity'));
+      filteredMinions.slice(0, 10).forEach(minion => renderResult(minion, 'minion', 'Varies by tier'));
+    }
+
+    function goToCategory(category) {
+      window.location.href = `categories.html?cat=${category}`;
+    }
+
+    loadItems();
+  </script>
+</body>
+</html>
