@@ -9,7 +9,6 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="themes/minecraft/style.css" />
-    <!-- <link rel="stylesheet" href="../css/SkillCalculator.css" /> -->
     <script src="js/script.js"></script>
   </head>
 
@@ -51,6 +50,18 @@
           <em>All the skills require same amount of exp for each level.</em>
         </p>
         <div class="skill-calc-grp-main">
+          <!-- New Skill Type Select -->
+          <div class="skill-calc-grp">
+            <label for="skillType">Skill Type:</label><br />
+            <select
+              id="skillType"
+              class="skill-calc-box skill-calc-input"
+            >
+              <option value="combat">Combat</option>
+              <option value="farming">Farming</option>
+            </select>
+          </div>
+
           <div class="skill-calc-grp">
             <label for="currentLevel"
               >Current Level: <span id="currentLevelValue">1</span></label
@@ -102,6 +113,7 @@
           skillData = data;
         });
 
+      const skillType = document.getElementById("skillType");
       const currentLevel = document.getElementById("currentLevel");
       const requiredLevel = document.getElementById("requiredLevel");
       const currentLevelValue = document.getElementById("currentLevelValue");
@@ -109,14 +121,32 @@
       const calcBtn = document.getElementById("calcBtn");
       const resultBox = document.getElementById("resultBox");
 
+      // Function to update level caps based on skill type
+      function updateLevelCap() {
+        const maxCap = skillType.value === "farming" ? 60 : 50;
+
+        if (parseInt(currentLevel.value) > maxCap) {
+          currentLevel.value = maxCap;
+        }
+        if (parseInt(requiredLevel.value) > maxCap) {
+          requiredLevel.value = maxCap;
+        }
+
+        currentLevel.max = maxCap;
+        requiredLevel.max = maxCap;
+      }
+
+      skillType.addEventListener("change", updateLevelCap);
+
       // Clamp and sync current level input
       currentLevel.addEventListener("input", () => {
+        let maxCap = skillType.value === "farming" ? 60 : 50;
         let currentval = parseInt(currentLevel.value, 10);
 
         if (isNaN(currentval)) return;
 
         if (currentval < 1) currentval = 1;
-        if (currentval > 50) currentval = 50;
+        if (currentval > maxCap) currentval = maxCap;
 
         currentLevel.value = currentval;
         currentLevelValue.textContent = currentval;
@@ -130,10 +160,11 @@
       });
 
       requiredLevel.addEventListener("input", () => {
+        let maxCap = skillType.value === "farming" ? 60 : 50;
         let reqVal = parseInt(requiredLevel.value, 10);
-        if (reqVal > 50) {
-          requiredLevel.value = 50;
-          reqVal = 50;
+        if (reqVal > maxCap) {
+          requiredLevel.value = maxCap;
+          reqVal = maxCap;
         }
         requiredLevelValue.textContent = reqVal;
       });
