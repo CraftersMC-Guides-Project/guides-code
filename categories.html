@@ -7,8 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Category Items</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="css/essential.css">
-    <link rel="stylesheet" href="css/categories.css">
+    <link rel="stylesheet" href="themes/minecraft/style.css">
     <style>
         /* Special style for Sky Canvas image only */
         img[alt="Sky Canvas"] {
@@ -109,26 +108,26 @@
                     const isSkyCanvas = item.name === "Sky Canvas";
                     // Add cat and nature to the item link
                     return `
-                        <div class="item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
+                        <div class="category-item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
                             <h2>${item.name}</h2>
-                            ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="sky-canvas-img"' : ''}>` : ''}
-                            <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
-                            ${item.description ? `<p class="description">${item.description}</p>` : ''}
-                            ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
-                            ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
-                            ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
+                            ${item.picture ? `<div class="category-main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="category-sky-canvas-img"' : ''}>` : ''}
+                            <div class="category-main-data-val"><p><strong>ID:</strong> ${item.id}</p>
+                            ${item.description ? `<p class="category-description">${item.description}</p>` : ''}
+                            ${item.rarity ? `<p class="category-rarity-display" id="rarityDisplay"><img class="category-rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
+                            ${item.nature ? `<p class="category-nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
+                            ${item.demand ? `<p class="category-demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
                             </div></div>
                         </div>
                     `;
                 }).join('');
-                document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
+                document.getElementById('categoryItems').innerHTML = `<div class="category-item-list">${itemsHTML}</div>`;
             } else {
                 document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
             }
         }
 
         function formatPrice(price) {
-            return `${Number(price).toLocaleString()} <img class="coin" src="img/coin.png" alt="Coin">`;
+            return `${Number(price).toLocaleString()} <img class="category-coin" src="img/coin.png" alt="Coin">`;
         }
 
         function formatNature(nature) {
