@@ -79,13 +79,6 @@
                 <p class="price"><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p><hr width="150px">
                 <p class="price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>
               </div>
-              <div id="graph-section" style="margin-top: 30px;">
-                <button id="toggleGraph" class="btn" style="margin-bottom: 10px;">📊 Show Price Graph</button>
-                <div id="graphContainer" style="display: none; text-align: center;">
-                  <p>Loading graph...</p>
-                  <img id="graphImage" src="" alt="Price Graph" style="max-width: 100%; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.4);"/>
-                </div>
-              </div>
             `;
           }
         } catch (error) {
@@ -100,46 +93,6 @@
       }
       return `<span class="price-img">${Number(price).toLocaleString()} <img src="img/coin.png" alt="Coin"></span>`;
     }
-
-    // GRAPH BUTTON EVENT
-    const apiflashKeys = [
-      "612d60a878184aa1bb6cb0fca5a6633d",
-      "5defcf23c7d74e9c8da04ebdde227ea6",
-      "6fba982c2f3144a7ac4663a7b3cb7634",
-      "9fc900f283f143d896fe0a26d5d5ecda",
-      "6656246bb8cb4497852e1dae3a2cfa6e",
-      "fe938e5a82204e8599ea2ca3d47c57d5",
-      "fe336c265e614e8bbc94ed83aaee9387",
-      "435cb900215e4c96ab03c51d080f01bb"
-    ];
-
-    document.addEventListener('click', async function (e) {
-      if (e.target && e.target.id === 'toggleGraph') {
-        const graph = document.getElementById('graphContainer');
-        const image = document.getElementById('graphImage');
-        if (graph.style.display === 'none') {
-          graph.style.display = 'block';
-          const itemId = new URLSearchParams(window.location.search).get('item');
-          for (const key of apiflashKeys) {
-            const graphUrl = `https://api.apiflash.com/v1/urltoimage?access_key=${key}&url=https%3A%2F%2Fcraftersmc-guides.pages.dev%2Fchart%3Fid%3D${itemId}&format=webp&width=1000&height=800&quality=100&delay=3&ttl=86400&wait_until=page_loaded&response_type=image`;
-            try {
-              const res = await fetch(graphUrl, { method: "HEAD" });
-              if (res.ok) {
-                image.src = graphUrl;
-                break;
-              }
-            } catch (e) {
-              console.warn("Graph load failed for key", key);
-            }
-          }
-          image.onload = () => {
-            graph.querySelector("p").style.display = "none";
-          };
-        } else {
-          graph.style.display = 'none';
-        }
-      }
-    });
 
     // Simple Prev/Next Navigation by Incrementing/Decrementing ID
     document.getElementById("prevItemBtn").addEventListener("click", () => {
