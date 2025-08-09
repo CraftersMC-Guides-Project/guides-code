@@ -80,7 +80,7 @@
                 <p class="price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>
               </div>
               <div id="graph-section" style="margin-top: 30px;">
-                <button id="toggleGraph" class="btn" style="margin-bottom: 10px;">\ud83d\udcca Show Price Graph</button>
+                <button id="toggleGraph" class="btn" style="margin-bottom: 10px;">📊 Show Price Graph</button>
                 <div id="graphContainer" style="display: none; text-align: center;">
                   <p>Loading graph...</p>
                   <img id="graphImage" src="" alt="Price Graph" style="max-width: 100%; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.4);"/>
@@ -100,8 +100,6 @@
       }
       return `<span class="price-img">${Number(price).toLocaleString()} <img src="img/coin.png" alt="Coin"></span>`;
     }
-
-    loadItemDetails();
 
     // GRAPH BUTTON EVENT
     const apiflashKeys = [
@@ -142,6 +140,25 @@
         }
       }
     });
+
+    // Simple Prev/Next Navigation by Incrementing/Decrementing ID
+    document.getElementById("prevItemBtn").addEventListener("click", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      let id = parseInt(urlParams.get("item"), 10);
+      if (!isNaN(id) && id > 1) {
+        window.location.href = `item?item=${id - 1}`;
+      }
+    });
+
+    document.getElementById("nextItemBtn").addEventListener("click", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      let id = parseInt(urlParams.get("item"), 10);
+      if (!isNaN(id)) {
+        window.location.href = `item?item=${id + 1}`;
+      }
+    });
+
+    loadItemDetails();
   </script>
 </body>
 </html>
