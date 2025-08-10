@@ -1,318 +1,354 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<link rel="icon" href="assets/cmc-icon.png" type="image/png">
+  <head>
+    <link rel="icon" href="assets/cmc-icon.png" type="image/png" />
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bug Hunters - CraftersMC Guides</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="css/essential.css">
-    <link rel="stylesheet" href="css/item.css">
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/essential.css" />
+    <link rel="stylesheet" href="css/item.css" />
     <style>
-        body {
-            background: url("../Backgrounds/IMG_4502.webp");
-            background-size: cover;
-            background-position-x: center;
-            background-repeat: no-repeat;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+      .bug-background {
+        background: url("../Backgrounds/IMG_4502.webp");
+        background-color: #5e5454;
+        background-blend-mode: multiply;
+        background-size: cover;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+      }
+
+      .bug-hunters-container {
+        padding: 2rem;
+        max-width: 1000px;
+        margin: 10vh auto;
+        border-radius: 10px;
+        background-color: rgba(0, 0, 0, 0.8);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+      }
+
+      .bug-h1 {
+        color: #4a90e2;
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .bug-intro-text {
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+        line-height: 1.6;
+      }
+
+      .bug-hunters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+
+      .bug-hunter-card {
+        background-color: #282828;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .bug-hunter-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        border-color: #4a90e2;
+      }
+
+      .bug-hunter-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 1rem;
+        border: 3px solid #4a90e2;
+      }
+
+      .bug-top-hunter-avatar {
+        width: 120px;
+        height: 120px;
+      }
+
+      .bug-hunter-name {
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 0.25rem;
+        color: #fff;
+        word-break: break-word;
+        max-width: 100%;
+      }
+
+      .bug-hunter-ign {
+        font-size: 1rem;
+        color: #aaa;
+        margin-bottom: 0.5rem;
+        font-style: italic;
+      }
+
+      .bug-hunter-bugs {
+        font-size: 1.1rem;
+        color: #4a90e2;
+        margin-bottom: 1rem;
+      }
+
+      .bug-hunter-rank {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: bold;
+        margin-top: 0.5rem;
+      }
+
+      .bug-rank-1 {
+        background-color: gold;
+        color: #000;
+      }
+
+      .bug-rank-2 {
+        background-color: silver;
+        color: #000;
+      }
+
+      .bug-rank-3 {
+        background-color: #cd7f32; /* bronze */
+        color: #000;
+      }
+
+      .bug-rank-other {
+        background-color: #4a90e2;
+        color: #fff;
+      }
+
+      .bug-top-hunters {
+        margin-bottom: 3rem;
+      }
+
+      .bug-top-hunters .bug-hunters-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .bug-top-hunters .bug-hunter-card {
+        padding: 2rem;
+      }
+
+      .bug-trophy-container {
+        position: relative;
+        margin-bottom: 1rem;
+      }
+
+      .bug-trophy-icon {
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 2.5rem;
+        z-index: 2;
+      }
+
+      .bug-gold {
+        color: gold;
+      }
+
+      .bug-silver {
+        color: silver;
+      }
+
+      .bug-bronze {
+        color: #cd7f32;
+      }
+
+      .bug-loading {
+        text-align: center;
+        font-size: 1.2rem;
+        padding: 2rem;
+        color: #ccc;
+      }
+
+      @media (max-width: 768px) {
+        .bug-hunters-container {
+          padding: 1.5rem;
         }
 
-        .navbar, .sidebar {
-            background-color: #1c1c1c;
+        .bug-hunters-grid {
+          grid-template-columns: 1fr;
         }
 
-        .hunters-container {
-            padding: 2rem;
-            max-width: 1000px;
-            margin: 10vh auto;
-            border-radius: 10px;
-            background-color: rgba(0, 0, 0, 0.8);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+        .bug-top-hunters .bug-hunters-grid {
+          grid-template-columns: 1fr;
         }
+      }
 
-        h1 {
-            color: #4a90e2;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .intro-text {
-            text-align: center;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
-
-        .hunters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .hunter-card {
-            background-color: #282828;
-            border-radius: 10px;
-            padding: 1.5rem;
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .hunter-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-            border-color: #4a90e2;
-        }
-
-        .hunter-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 1rem;
-            border: 3px solid #4a90e2;
-        }
-
-        .top-hunter-avatar {
-            width: 120px;
-            height: 120px;
-        }
-
-        .hunter-name {
-            font-size: 1.3rem;
-            font-weight: bold;
-            margin-bottom: 0.25rem;
-            color: #fff;
-            word-break: break-word;
-            max-width: 100%;
-        }
-
-        .hunter-ign {
-            font-size: 1rem;
-            color: #aaa;
-            margin-bottom: 0.5rem;
-            font-style: italic;
-        }
-
-        .hunter-bugs {
-            font-size: 1.1rem;
-            color: #4a90e2;
-            margin-bottom: 1rem;
-        }
-
-        .hunter-rank {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            margin-top: 0.5rem;
-        }
-
-        .rank-1 {
-            background-color: gold;
-            color: #000;
-        }
-
-        .rank-2 {
-            background-color: silver;
-            color: #000;
-        }
-
-        .rank-3 {
-            background-color: #cd7f32; /* bronze */
-            color: #000;
-        }
-
-        .rank-other {
-            background-color: #4a90e2;
-            color: #fff;
-        }
-
-        .top-hunters {
-            margin-bottom: 3rem;
-        }
-
-        .top-hunters .hunters-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        .top-hunters .hunter-card {
-            padding: 2rem;
-        }
-
-        .trophy-container {
-            position: relative;
-            margin-bottom: 1rem;
-        }
-
-        .trophy-icon {
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 2.5rem;
-            z-index: 2;
-        }
-
-        .gold {
-            color: gold;
-        }
-
-        .silver {
-            color: silver;
-        }
-
-        .bronze {
-            color: #cd7f32;
-        }
-
-        .loading {
-            text-align: center;
-            font-size: 1.2rem;
-            padding: 2rem;
-            color: #ccc;
-        }
-
-        @media (max-width: 768px) {
-            .hunters-container {
-                padding: 1.5rem;
-            }
-            
-            .hunters-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .top-hunters .hunters-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .material-icons {
-            vertical-align: middle;
-        }
+      .bug-mat-icons {
+        vertical-align: middle;
+      }
     </style>
-</head>
-<body>
-    <div id="loader"><div></div><div></div><div></div></div>
+  </head>
+  <body>
+    <div id="loader">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <div class="bug-background"></div>
     <div class="top"></div>
     <div class="sidebar" id="sidebar"></div>
     <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-  <span class="material-icons" id="scrollToTopBtn">north</span>
+    <span class="material-icons bug-mat-icons" id="scrollToTopBtn">north</span>
 
     <!--  -->
-    <div class="hunters-container">
-        <h1>Bug Hunters Hall of Fame</h1>
-        <div class="intro-text">
-            <p>These are the amazing community members who have helped improve CraftersMC Guides by reporting bugs and issues. We appreciate their contributions!</p>
-            <p>The more bugs you report, the higher you'll climb on the leaderboard!</p>
-        </div>
+    <div class="bug-hunters-container">
+      <h1 class="bug-h1">Bug Hunters Hall of Fame</h1>
+      <div class="bug-intro-text">
+        <p>
+          These are the amazing community members who have helped improve
+          CraftersMC Guides by reporting bugs and issues. We appreciate their
+          contributions!
+        </p>
+        <p>
+          The more bugs you report, the higher you'll climb on the leaderboard!
+        </p>
+      </div>
 
-        <div id="topHunters" class="top-hunters">
-            <h2>Top Bug Hunters</h2>
-            <div class="hunters-grid" id="topHuntersGrid">
-                <div class="loading">Loading top hunters...</div>
-            </div>
+      <div id="topHunters" class="bug-top-hunters">
+        <h2>Top Bug Hunters</h2>
+        <div class="bug-hunters-grid" id="topHuntersGrid">
+          <div class="bug-loading">Loading top hunters...</div>
         </div>
+      </div>
 
-        <div id="allHunters">
-            <h2>All Bug Hunters</h2>
-            <div class="hunters-grid" id="allHuntersGrid">
-                <div class="loading">Loading all hunters...</div>
-            </div>
+      <div id="allHunters">
+        <h2>All Bug Hunters</h2>
+        <div class="bug-hunters-grid" id="allHuntersGrid">
+          <div class="bug-loading">Loading all hunters...</div>
         </div>
+      </div>
     </div>
 
     <div id="footer"></div>
 
     <script src="js/script.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            try {
-                // Fetch the bug hunters data
-                const response = await fetch('bugs/hunters.json');
-                if (!response.ok) {
-                    throw new Error('Failed to load bug hunters data');
-                }
-                const huntersData = await response.json();
-                
-                // Convert object to array, filter out negative bug counts, and sort by bug count (descending)
-                const sortedHunters = Object.entries(huntersData)
-                    .map(([id, hunter]) => ({ 
-                        id,
-                        username: hunter.username,
-                        ign: hunter.ign || hunter.username, // Fallback to Discord username if IGN not provided
-                        avatar: hunter.avatar,
-                        bugCount: hunter.bugCount 
-                    }))
-                    .filter(hunter => hunter.bugCount >= 0) // Exclude hunters with negative bug counts
-                    .sort((a, b) => b.bugCount - a.bugCount);
-                
-                // Display top 3 hunters
-                const topHuntersGrid = document.getElementById('topHuntersGrid');
-                topHuntersGrid.innerHTML = '';
-                
-                sortedHunters.slice(0, 3).forEach((hunter, index) => {
-                    const rankClass = `rank-${index + 1}`;
-                    const trophyIcon = index === 0 ? 'emoji_events' : 
-                                     index === 1 ? 'military_tech' : 'workspace_premium';
-                    const trophyColor = index === 0 ? 'gold' : 
-                                      index === 1 ? 'silver' : 'bronze';
-                    
-                    topHuntersGrid.innerHTML += `
-                        <div class="hunter-card">
-                            <div class="trophy-container">
+      document.addEventListener("DOMContentLoaded", async () => {
+        try {
+          // Fetch the bug hunters data
+          const response = await fetch("bugs/hunters.json");
+          if (!response.ok) {
+            throw new Error("Failed to load bug hunters data");
+          }
+          const huntersData = await response.json();
+
+          // Convert object to array, filter out negative bug counts, and sort by bug count (descending)
+          const sortedHunters = Object.entries(huntersData)
+            .map(([id, hunter]) => ({
+              id,
+              username: hunter.username,
+              ign: hunter.ign || hunter.username, // Fallback to Discord username if IGN not provided
+              avatar: hunter.avatar,
+              bugCount: hunter.bugCount,
+            }))
+            .filter((hunter) => hunter.bugCount >= 0) // Exclude hunters with negative bug counts
+            .sort((a, b) => b.bugCount - a.bugCount);
+
+          // Display top 3 hunters
+          const topHuntersGrid = document.getElementById("topHuntersGrid");
+          topHuntersGrid.innerHTML = "";
+
+          sortedHunters.slice(0, 3).forEach((hunter, index) => {
+            const rankClass = `bug-rank-${index + 1}`;
+            const trophyIcon =
+              index === 0
+                ? "emoji_events"
+                : index === 1
+                ? "military_tech"
+                : "workspace_premium";
+            const trophyColor =
+              index === 0 ? "bug-gold" : index === 1 ? "bug-silver" : "bug-bronze";
+
+            topHuntersGrid.innerHTML += `
+                        <div class="bug-hunter-card">
+                            <div class="bug-trophy-container">
                                 <img src="${hunter.avatar}" 
-                                     alt="${hunter.username}" class="hunter-avatar top-hunter-avatar">
-                                <span class="material-icons trophy-icon ${trophyColor}">${trophyIcon}</span>
+                                     alt="${
+                                       hunter.username
+                                     }" class="bug-hunter-avatar top-hunter-avatar">
+                                <span class="material-icons bug-mat-icons bug-trophy-icon ${trophyColor}">${trophyIcon}</span>
                             </div>
-                            <div class="hunter-name">${hunter.username}</div>
-                            <div class="hunter-ign">${hunter.ign}</div>
-                            <div class="hunter-bugs">${hunter.bugCount} bug${hunter.bugCount !== 1 ? 's' : ''} reported</div>
-                            <div class="hunter-rank ${rankClass}">
-                                ${index === 0 ? '1st Place' : index === 1 ? '2nd Place' : '3rd Place'}
+                            <div class="bug-hunter-name">${
+                              hunter.username
+                            }</div>
+                            <div class="bug-hunter-ign">${hunter.ign}</div>
+                            <div class="bug-hunter-bugs">${
+                              hunter.bugCount
+                            } bug${
+              hunter.bugCount !== 1 ? "s" : ""
+            } reported</div>
+                            <div class="bug-hunter-rank ${rankClass}">
+                                ${
+                                  index === 0
+                                    ? "1st Place"
+                                    : index === 1
+                                    ? "2nd Place"
+                                    : "3rd Place"
+                                }
                             </div>
                         </div>
                     `;
-                });
-                
-                // Display all hunters
-                const allHuntersGrid = document.getElementById('allHuntersGrid');
-                allHuntersGrid.innerHTML = '';
-                
-                sortedHunters.slice(3).forEach((hunter, index) => {
-                    allHuntersGrid.innerHTML += `
-                        <div class="hunter-card">
+          });
+
+          // Display all hunters
+          const allHuntersGrid = document.getElementById("allHuntersGrid");
+          allHuntersGrid.innerHTML = "";
+
+          sortedHunters.slice(3).forEach((hunter, index) => {
+            allHuntersGrid.innerHTML += `
+                        <div class="bug-hunter-card">
                             <img src="${hunter.avatar}" 
-                                 alt="${hunter.username}" class="hunter-avatar">
-                            <div class="hunter-name">${hunter.username}</div>
-                            <div class="hunter-ign">${hunter.ign}</div>
-                            <div class="hunter-bugs">${hunter.bugCount} bug${hunter.bugCount !== 1 ? 's' : ''} reported</div>
-                            <div class="hunter-rank rank-other">
+                                 alt="${
+                                   hunter.username
+                                 }" class="bug-hunter-avatar">
+                            <div class="bug-hunter-name">${
+                              hunter.username
+                            }</div>
+                            <div class="bug-hunter-ign">${hunter.ign}</div>
+                            <div class="bug-hunter-bugs">${
+                              hunter.bugCount
+                            } bug${
+              hunter.bugCount !== 1 ? "s" : ""
+            } reported</div>
+                            <div class="bug-hunter-rank bug-rank-other">
                                 #${index + 4}
                             </div>
                         </div>
                     `;
-                });
-                
-            } catch (error) {
-                console.error('Error loading bug hunters:', error);
-                document.getElementById('topHuntersGrid').innerHTML = `
+          });
+        } catch (error) {
+          console.error("Error loading bug hunters:", error);
+          document.getElementById("topHuntersGrid").innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; color: #ff4444;">
                         Failed to load bug hunters data. Please try again later.
                     </div>
                 `;
-                document.getElementById('allHuntersGrid').innerHTML = '';
-            }
-        });
+          document.getElementById("allHuntersGrid").innerHTML = "";
+        }
+      });
     </script>
-  
-</body>
+  </body>
 </html>
