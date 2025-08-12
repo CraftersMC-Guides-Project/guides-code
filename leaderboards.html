@@ -80,10 +80,6 @@
 
             <!-- Leaderboard Display Area -->
             <div class="lb-container" id="leaderboard-display-area" style="display: none;">
-                <div class="leaderboard-type-selector">
-                    <button id="collectionsBtn">Collections</button>
-                    <button id="slayersBtn">Slayers</button>
-                </div>
                 <h3 class="lb-h3" id="mainTitle">CraftersMC Leaderboards</h3>
                 <p>Find out who is at what ranking and how much collection they have using our easy to use tool.</p>
                 <br>
@@ -139,8 +135,6 @@
             const selectionPanel = document.getElementById("selection-panel");
             const lastUpdatedP = document.getElementById("lastUpdated");
             const leaderboardHeader = document.getElementById("leaderboard-header");
-            const collectionsBtn = document.getElementById("collectionsBtn");
-            const slayersBtn = document.getElementById("slayersBtn");
 
             let activeLeaderboardType = 'collections';
             const dataCache = {};
@@ -283,8 +277,6 @@
             window.setLeaderboardType = async (type) => {
                 leaderboardDisplayArea.style.display = 'block';
                 activeLeaderboardType = type;
-                collectionsBtn.classList.toggle('active', type === 'collections');
-                slayersBtn.classList.toggle('active', type === 'slayers');
 
                 renderSelectionPanel();
 
@@ -309,9 +301,6 @@
                     }
                 }
             }
-
-            collectionsBtn.onclick = () => setLeaderboardType('collections');
-            slayersBtn.onclick = () => setLeaderboardType('slayers');
 
             // --- Initialization ---
             async function initialize() {
