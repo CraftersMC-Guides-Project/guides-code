@@ -116,7 +116,16 @@
             const tabsContainer = document.querySelector(".lb-tabs");
             const lastUpdatedP = document.getElementById("lastUpdated");
 
-            let collectionsData = {};
+            // Data will be cached here after being fetched
+            const collectionsData = {};
+
+            // Define categories and their data files
+            const categories = {
+                "Mining": { path: '../data/collection/mining.json', icon: '../assets/mining/pickaxe.png' },
+                "Farming": { path: '../data/collection/farming.json', icon: '../assets/farming/hoe.png' },
+                "Combat": { path: '../data/collection/combat.json', icon: '../assets/combat/sword.png' },
+                "Foraging": { path: '../data/collection/foraging.json', icon: '../assets/foraging/axe.png' }
+            };
 
             // --- Cookie Helper Functions ---
             function setCookie(name, value, days) {
@@ -140,68 +149,69 @@
                 return null;
             }
 
-
-            // Modern async function to fetch data
-            async function fetchData() {
+            // Fetches data for a specific category, using cache if available
+            async function fetchCategoryData(categoryName) {
+                if (collectionsData[categoryName]) {
+                    return collectionsData[categoryName]; // Return from cache
+                }
                 try {
-                    // Added a cache-busting query parameter to ensure fresh data
-                    const response = await fetch(`../data/collection.json?v=${new Date().getTime()}`);
+                    const path = categories[categoryName].path;
+                    const response = await fetch(`${path}?v=${new Date().getTime()}`);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    return await response.json();
+                    const data = await response.json();
+                    collectionsData[categoryName] = data; // Cache the fetched data
+                    return data;
                 } catch (error) {
-                    console.error('Failed to fetch leaderboard data:', error);
-                    // Display a user-friendly error message on the page
-                    collectionTitle.textContent = 'Error: Could not load data.';
-                    return null; // Return null to indicate failure
+                    console.error(`Failed to fetch leaderboard data for ${categoryName}:`, error);
+                    collectionTitle.textContent = `Error: Could not load ${categoryName} data.`;
+                    return null;
                 }
             }
 
-            function loadCategories() {
+            // This function now builds the category tabs from our predefined `categories` object
+            function loadCategoryTabs() {
                 tabsContainer.innerHTML = "";
-                const categoryIcons = {
-                    "Mining": "../assets/mining/pickaxe.png",
-                    "Farming": "../assets/farming/hoe.png",
-                    "Combat": "../assets/combat/sword.png",
-                    "Foraging": "../assets/foraging/axe.png"
-                };
-
-                Object.keys(collectionsData).forEach(category => {
+                Object.keys(categories).forEach(categoryName => {
                     const tab = document.createElement("a");
                     tab.className = "lb-tab";
                     tab.href = "javascript:void(0)";
-                    tab.onclick = () => switchCategory(category);
+                    tab.onclick = () => switchCategory(categoryName);
 
                     const img = document.createElement("img");
-                    img.src = categoryIcons[category] || "default-icon.png";
+                    img.src = categories[categoryName].icon;
                     img.width = 30;
-                    img.alt = category;
-                    img.onerror = () => img.src = 'default-icon.png'; // Fallback for broken images
+                    img.alt = categoryName;
+                    img.onerror = () => img.src = 'default-icon.png';
 
                     tab.appendChild(img);
                     tabsContainer.appendChild(tab);
                 });
             }
             
-            // Make this function globally available for the inline onclick attribute
-            window.switchCategory = (category) => {
-                // Deactivate all tabs
+            // This function is now async as it waits for data to be fetched
+            window.switchCategory = async (categoryName) => {
                 document.querySelectorAll(".lb-tab").forEach(tab => tab.classList.remove("active"));
                 
-                // Activate the clicked tab
-                const categoryIndex = Object.keys(collectionsData).indexOf(category);
+                const categoryIndex = Object.keys(categories).indexOf(categoryName);
                 if (categoryIndex !== -1) {
                     tabsContainer.children[categoryIndex].classList.add("active");
                 }
                 
-                loadCollections(category);
+                // Show loading state
+                collectionGrid.innerHTML = "<p>Loading collections...</p>";
+                const categoryData = await fetchCategoryData(categoryName);
+                if (categoryData) {
+                    loadCollections(categoryName);
+                } else {
+                    collectionGrid.innerHTML = `<p>Error loading collections for ${categoryName}.</p>`;
+                }
             };
 
-
-            function loadCollections(category) {
+            function loadCollections(categoryName) {
                 collectionGrid.innerHTML = "";
-                const collections = collectionsData[category];
+                const collections = collectionsData[categoryName];
                 if (!collections) return;
 
                 collections.forEach((collection, index) => {
@@ -211,23 +221,21 @@
                     const img = document.createElement("img");
                     img.src = collection.image;
                     img.alt = collection.name;
-                    img.onerror = () => img.src = 'https://placehold.co/32x32/222/fff?text=?'; // Placeholder for missing images
+                    img.onerror = () => img.src = 'https://placehold.co/32x32/222/fff?text=?';
                     
                     item.appendChild(img);
-                    item.onclick = () => loadLeaderboard(category, index);
+                    item.onclick = () => loadLeaderboard(categoryName, index);
                     collectionGrid.appendChild(item);
                 });
             }
 
-            function loadLeaderboard(category, index) {
-                // Save the current selection to a cookie
-                setCookie('lastCategory', category, 7); // Expires in 7 days
+            function loadLeaderboard(categoryName, index) {
+                setCookie('lastCategory', categoryName, 7);
                 setCookie('lastCollectionIndex', index, 7);
 
-                const collection = collectionsData[category][index];
+                const collection = collectionsData[categoryName][index];
                 collectionTitle.textContent = `${collection.name} Leaderboard`;
 
-                // Display last updated time
                 if (collection.lastUpdated) {
                     const date = new Date(collection.lastUpdated);
                     lastUpdatedP.textContent = `Last Updated: ${date.toLocaleDateString()}`;
@@ -235,7 +243,6 @@
                     lastUpdatedP.textContent = '';
                 }
 
-                // Use a document fragment for performance when creating many rows
                 const fragment = document.createDocumentFragment();
                 if (collection.players && collection.players.length > 0) {
                     collection.players.forEach(player => {
@@ -250,40 +257,51 @@
                         fragment.appendChild(tr);
                     }
                 }
-                leaderboardData.innerHTML = ""; // Clear existing data
+                leaderboardData.innerHTML = "";
                 leaderboardData.appendChild(fragment);
                 
                 collectionTitle.scrollIntoView({ behavior: 'smooth' });
             }
 
             // --- Initialization ---
-            collectionsData = await fetchData();
-            if (collectionsData) {
-                loadCategories();
+            async function initialize() {
+                loadCategoryTabs();
                 
                 const lastCategory = getCookie('lastCategory');
                 const lastCollectionIndex = getCookie('lastCollectionIndex');
 
-                // Check if a valid last session exists in cookies
-                if (lastCategory && lastCollectionIndex !== null && collectionsData[lastCategory] && collectionsData[lastCategory][lastCollectionIndex]) {
-                    // Load from cookies
-                    switchCategory(lastCategory);
-                    loadLeaderboard(lastCategory, parseInt(lastCollectionIndex, 10));
+                let initialCategory;
+                let initialIndex;
+
+                if (lastCategory && categories[lastCategory] && lastCollectionIndex !== null) {
+                    initialCategory = lastCategory;
+                    initialIndex = parseInt(lastCollectionIndex, 10);
                 } else {
-                    // **FALLBACK:** Load a random leaderboard on startup if no valid cookie is found
-                    const categories = Object.keys(collectionsData);
-                    if (categories.length > 0) {
-                        const randomCategoryName = categories[Math.floor(Math.random() * categories.length)];
-                        const collectionsInCategory = collectionsData[randomCategoryName];
-                        
-                        if (collectionsInCategory.length > 0) {
-                            const randomCollectionIndex = Math.floor(Math.random() * collectionsInCategory.length);
-                            switchCategory(randomCategoryName);
-                            loadLeaderboard(randomCategoryName, randomCollectionIndex);
-                        }
+                    const categoryNames = Object.keys(categories);
+                    initialCategory = categoryNames[Math.floor(Math.random() * categoryNames.length)];
+                    initialIndex = null; // Will pick a random index after fetching
+                }
+
+                // Activate the tab first
+                const categoryIndex = Object.keys(categories).indexOf(initialCategory);
+                if (categoryIndex !== -1) {
+                    tabsContainer.children[categoryIndex].classList.add("active");
+                }
+
+                const initialData = await fetchCategoryData(initialCategory);
+
+                if (initialData) {
+                    loadCollections(initialCategory);
+                    if (initialIndex === null || !initialData[initialIndex]) {
+                        initialIndex = Math.floor(Math.random() * initialData.length);
+                    }
+                    if (initialData[initialIndex]) {
+                       loadLeaderboard(initialCategory, initialIndex);
                     }
                 }
             }
+
+            initialize();
         })();
     </script>
 </body>
