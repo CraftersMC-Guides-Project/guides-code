@@ -6,8 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Item Details - CraftersMC Guides</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="css/essential.css">
-  <link rel="stylesheet" href="css/item.css">
+  <link rel="stylesheet" href="themes/minecraft/style.css">
   <script src="js/script.js"></script>
 </head>
 
@@ -16,7 +15,7 @@
   <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-  <span class="material-icons" id="scrollToTopBtn">north</span>
+  <span class="item-material-icons" id="scrollToTopBtn">north</span>
   <div class="item-filter-buttons" style="display:flex;gap:10px;justify-content:center;margin:5rem 0;">
     <button class="btn item-filter-btn" data-nature="reset">Reset Filter</button>
   </div>
@@ -73,11 +72,11 @@
             itemDetailsDiv.innerHTML = `
               <h1>${item.name}</h1>
               ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
-              ${item.rarity ? `<div class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></div>` : ''}
-              <p><strong>ID:</strong> ${item.id}</p>
-              <div class="price-container">
-                <p class="price"><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p><hr width="150px">
-                <p class="price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>
+              ${item.rarity ? `<div class="item-rarity-display" id="rarityDisplay"><img class="item-rarity" src="img/rarity/${item.rarity}.webp"></div>` : ''}
+              <p><strong class="item-strong">ID:</strong> ${item.id}</p>
+              <div class="item-price-container">
+                <p class="item-price"><strong class="item-strong">Market Price:</strong> ${formatPrice(marketPrice)}</p><hr width="150px">
+                <p class="item-price"><strong class="item-strong">NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>
               </div>
             `;
           }
@@ -89,9 +88,9 @@
 
     function formatPrice(price) {
       if (price === "N/A" || price === "NAN") {
-        return `<span class="price-img">N/A</span>`;
+        return `<span class="item-price-img">N/A</span>`;
       }
-      return `<span class="price-img">${Number(price).toLocaleString()} <img src="img/coin.png" alt="Coin"></span>`;
+      return `<span class="item-price-img">${Number(price).toLocaleString()} <img src="img/coin.png" alt="Coin"></span>`;
     }
 
     // Simple Prev/Next Navigation by Incrementing/Decrementing ID
