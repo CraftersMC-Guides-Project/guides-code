@@ -6,7 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:title" content="CraftersMC Leaderboards">
-    <meta property="og:description" content="Explore all types of leaderboards here! Whether you want to find out positions or collections, all data is available here!">
+    <meta property="og:description"
+        content="Explore all types of leaderboards here! Whether you want to find out positions or collections, all data is available here!">
     <meta property="og:image" content="">
     <meta property="og:url" content="https://craftersmc-guides.pages.dev/leaderboards">
     <meta property="og:type" content="website">
@@ -23,87 +24,148 @@
         <div></div>
         <div></div>
     </div>
-    <div class="leaderboard-unified-background"></div>
-    <div id="sidebar-overlay" onclick="overlay()"></div>
-    <!-- Navbar -->
-    <div class="custom-navbar">
-        <div class="left">
-            <div class="button-wrapper">
-                <div class="button-tip" id="tooltip">Click to proceed!</div>
-                <span class="openbtn menu-icon material-icons" onclick="toggleLid()" id="continue-btn">sort</span>
-            </div>
-            <span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
-        </div>
-        <div class="right">
-            <a href="index.html"><img src="assets/cmc-guides.png"></a>
-        </div>
-    </div>
-    <div id="sidelid" class="sidelid">
-        <div id="selection-panel">
-            <!-- Content changes based on leaderboard type -->
-        </div>
-    </div>
-    <div class="lb-content">
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar"></div>
-        <button id="float">
-            <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
-            <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
-            <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
-            <span class="material-icons" id="scrollToTopBtn">north</span>
-        </button>
-        <div>
-            <div class="lb-container">
-                <div class="leaderboard-type-selector">
-                    <button id="collectionsBtn" class="active">Collections</button>
-                    <button id="slayersBtn">Slayers</button>
+
+    <!-- This is the main selection view, shown on first visit -->
+    <div id="main-selection-view">
+        <div class="leaderboard-interface-background"></div>
+        <div class="top"></div>
+        <div class="sidebar" id="main-sidebar"></div>
+        <div id="main-sidebar-overlay" onclick="toggleSidebar()"></div>
+        <span class="material-icons" id="main-scrollToTopBtn">north</span>
+        <div class="event-log-card-container">
+            <div class="event-log-card">
+                <img src="Backgrounds/IMG_4504.webp" alt="Collections Leaderboards">
+                <div class="event-log-card-content">
+                    <h3>Collections Leaderboards</h3>
+                    <p>Find out who is at what ranking and how much collection they have.</p>
+                    <button onclick="showLeaderboardView('collections')">View Leaderboards</button>
                 </div>
-                <h3 class="lb-h3" id="mainTitle">CraftersMC Leaderboards</h3>
-                <p>Find out who is at what ranking and how much collection they have using our easy to use tool.</p><br>
-                <p id="mobileGuide">Click on the icon with 3 different length lines at the top left of the screen to select any collection and see the top 10 highest ranked players in the collection on the table.</p>
-                <br id="mobileGuide">
-                <p>Select a category and collection to view the top 10 players.</p>
-                <div class="lb-leaderboard">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2 class="lb-h2" id="collectionTitle">Select a Collection</h2>
-                        <p id="lastUpdated" style="font-size: 0.8em; color: #ccc;"></p>
+            </div>
+            <div class="event-log-card">
+                <img src="Backgrounds/image9489.webp" alt="Slayers Leaderboards">
+                <div class="event-log-card-content">
+                    <h3>Slayers Leaderboards</h3>
+                    <p>Find out who is at what position and how much experience they have.</p>
+                    <button onclick="showLeaderboardView('slayers')">View Leaderboards</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- This is the dynamic leaderboard view, hidden by default -->
+    <div id="leaderboard-view" style="display: none;">
+        <div class="leaderboard-unified-background"></div>
+        <div id="sidebar-overlay" onclick="overlay()"></div>
+        <!-- Navbar -->
+        <div class="custom-navbar">
+            <div class="left">
+                <div class="button-wrapper">
+                    <div class="button-tip" id="tooltip">Click to proceed!</div>
+                    <span class="openbtn menu-icon material-icons" onclick="toggleLid()" id="continue-btn">sort</span>
+                </div>
+                <span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
+            </div>
+            <div class="right">
+                <a href="index.html"><img src="assets/cmc-guides.png"></a>
+            </div>
+        </div>
+        <div id="sidelid" class="sidelid">
+            <div id="selection-panel">
+                <!-- Content changes based on leaderboard type -->
+            </div>
+        </div>
+        <div class="lb-content">
+            <!-- Sidebar -->
+            <div class="sidebar" id="leaderboard-sidebar"></div>
+            <button id="float">
+                 <span class="material-icons" id="homeBtn" onclick="goHome()">home</span>
+                <span class="material-icons" id="sweepBtn"
+                    style="background: #222; border-radius: 50px;">chevron_right</span>
+                <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
+                <span class="material-icons" id="scrollToTopBtn">north</span>
+            </button>
+            <div>
+                <div class="lb-container">
+                    <div class="leaderboard-type-selector">
+                        <button id="collectionsBtn">Collections</button>
+                        <button id="slayersBtn">Slayers</button>
                     </div>
-                    <table class="lb-table">
-                        <thead>
-                            <tr id="leaderboard-header">
-                                <th>Rank</th>
-                                <th>Player</th>
-                                <th>Collection</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leaderboardData"></tbody>
-                    </table>
+                    <h3 class="lb-h3" id="mainTitle">CraftersMC Leaderboards</h3>
+                    <p>Find out who is at what ranking and how much collection they have using our easy to use tool.</p>
                     <br>
-                    <details>
-                        <summary>What Once Was: A Legacy Remembered</summary>
-                        <hr>
-                        <div class="lb-message">
-                            The first leaderboard website was made by NumberOne230564 and David_R06 using Google Docs, which was pretty basic. Later, CraftersMC Guides made it better by designing a new, nicer website and got information from the original Google Docs site. This message gives a shoutout to their work, and we want to make it clear that we didn't gather all the early data ourselves. Right now, NumberOne230564 and his team run a different website that is new and was created after their Google Docs site, while we take care of this other website and collect our own data.
+                    <p id="mobileGuide">Click on the icon with 3 different length lines at the top left of the screen to
+                        select any collection and see the top 10 highest ranked players in the collection on the table.
+                    </p>
+                    <br id="mobileGuide">
+                    <p>Select a category and collection to view the top 10 players.</p>
+                    <div class="lb-leaderboard">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h2 class="lb-h2" id="collectionTitle">Select a Collection</h2>
+                            <p id="lastUpdated" style="font-size: 0.8em; color: #ccc;"></p>
                         </div>
-                    </details>
+                        <table class="lb-table">
+                            <thead>
+                                <tr id="leaderboard-header">
+                                    <th>Rank</th>
+                                    <th>Player</th>
+                                    <th>Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboardData"></tbody>
+                        </table>
+                        <br>
+                        <details>
+                            <summary>What Once Was: A Legacy Remembered</summary>
+                            <hr>
+                            <div class="lb-message">
+                                The first leaderboard website was made by NumberOne230564 and David_R06 using Google
+                                Docs,
+                                which was pretty basic. Later, CraftersMC Guides made it better by designing a new,
+                                nicer
+                                website and got information from the original Google Docs site. This message gives a
+                                shoutout to their work, and we want to make it clear that we didn't gather all the early
+                                data ourselves. Right now, NumberOne230564 and his team run a different website that is
+                                new
+                                and was created after their Google Docs site, while we take care of this other website
+                                and
+                                collect our own data.
+                            </div>
+                        </details>
+                    </div>
                 </div>
             </div>
         </div>
-        <div id="footer"></div>
     </div>
+    <div id="footer"></div>
+
     <script>
-        (async () => {
+        const mainSelectionView = document.getElementById('main-selection-view');
+        const leaderboardView = document.getElementById('leaderboard-view');
+
+        function goHome() {
+            leaderboardView.style.display = 'none';
+            mainSelectionView.style.display = 'block';
+        }
+
+        function showLeaderboardView(type) {
+            mainSelectionView.style.display = 'none';
+            leaderboardView.style.display = 'block';
+            initializeLeaderboard(type);
+        }
+        
+        // This IIFE handles the leaderboard logic once it's displayed
+        const initializeLeaderboard = (function () {
+            let hasInitialized = false;
+            let activeLeaderboardType = 'collections';
+            const dataCache = {};
+
             const collectionTitle = document.getElementById("collectionTitle");
             const leaderboardData = document.getElementById("leaderboardData");
             const selectionPanel = document.getElementById("selection-panel");
             const lastUpdatedP = document.getElementById("lastUpdated");
             const leaderboardHeader = document.getElementById("leaderboard-header");
-
             const collectionsBtn = document.getElementById("collectionsBtn");
             const slayersBtn = document.getElementById("slayersBtn");
-
-            let activeLeaderboardType = 'collections'; // 'collections' or 'slayers'
-            const dataCache = {};
 
             const config = {
                 collections: {
@@ -125,7 +187,7 @@
                     }
                 }
             };
-
+            
             function setCookie(name, value, days) {
                 let expires = "";
                 if (days) {
@@ -175,13 +237,13 @@
                     <div class="lb-collections" id="itemGrid"></div>
                 `;
             }
-            
+
             window.switchDisplayCategory = async (categoryName) => {
                 const currentConfig = config[activeLeaderboardType];
                 const itemGrid = document.getElementById("itemGrid");
+                if(!itemGrid) return;
                 itemGrid.innerHTML = "<p>Loading...</p>";
 
-                // Update active tab visual
                 const tabs = selectionPanel.querySelectorAll('.lb-tab');
                 const catIndex = Object.keys(currentConfig.categories).indexOf(categoryName);
                 tabs.forEach(tab => tab.classList.remove('active'));
@@ -222,7 +284,7 @@
                             fragment.appendChild(tr);
                         });
                     } else {
-                        for (let i = 1; i <= 10; i++) {
+                         for (let i = 1; i <= 10; i++) {
                             const tr = document.createElement('tr');
                             tr.innerHTML = `<td>${i}</td><td>???</td><td>???</td>`;
                             fragment.appendChild(tr);
@@ -234,52 +296,58 @@
                 }
             };
 
-            async function setLeaderboardType(type) {
+            async function setLeaderboardType(type, loadDefault = true) {
                 activeLeaderboardType = type;
                 collectionsBtn.classList.toggle('active', type === 'collections');
                 slayersBtn.classList.toggle('active', type === 'slayers');
                 
                 renderSelectionPanel();
 
-                // Load the first category of the new type by default
-                const firstCategory = Object.keys(config[type].categories)[0];
-                if (firstCategory) {
-                    await window.switchDisplayCategory(firstCategory);
-                    const data = await fetchData(config[type].categories[firstCategory].path);
-                    if (data && data.length > 0) {
-                        window.loadLeaderboard(firstCategory, 0); // Load first item
+                if (loadDefault) {
+                    const firstCategory = Object.keys(config[type].categories)[0];
+                    if (firstCategory) {
+                        await window.switchDisplayCategory(firstCategory);
+                        const data = await fetchData(config[type].categories[firstCategory].path);
+                        if (data && data.length > 0) {
+                            window.loadLeaderboard(firstCategory, 0);
+                        }
                     }
                 }
             }
-
+            
             collectionsBtn.onclick = () => setLeaderboardType('collections');
             slayersBtn.onclick = () => setLeaderboardType('slayers');
 
-            async function initialize() {
-                const lastType = getCookie('lastLeaderboardType') || 'collections';
+            // The main initialization function
+            return async function(type) {
+                if (hasInitialized && activeLeaderboardType === type) return; // Don't re-init same view
+
+                await setLeaderboardType(type, false); // Set type without loading default
+
+                const currentConfig = config[type];
                 const lastCategory = getCookie('lastCategory');
                 const lastItemIndex = getCookie('lastItemIndex');
 
-                activeLeaderboardType = lastType;
-                collectionsBtn.classList.toggle('active', lastType === 'collections');
-                slayersBtn.classList.toggle('active', lastType === 'slayers');
-                
-                renderSelectionPanel();
-
-                const currentConfig = config[activeLeaderboardType];
                 let categoryToLoad = lastCategory && currentConfig.categories[lastCategory] ? lastCategory : Object.keys(currentConfig.categories)[0];
                 
                 await window.switchDisplayCategory(categoryToLoad);
-                
                 const data = await fetchData(currentConfig.categories[categoryToLoad].path);
-                if(data) {
+
+                if (data) {
                     let indexToLoad = lastItemIndex && data[lastItemIndex] ? parseInt(lastItemIndex, 10) : 0;
                     window.loadLeaderboard(categoryToLoad, indexToLoad);
                 }
-            }
-
-            initialize();
+                hasInitialized = true;
+            };
         })();
+
+        // Check for a cookie on page load to bypass selection screen
+        document.addEventListener('DOMContentLoaded', () => {
+            const lastType = getCookie('lastLeaderboardType');
+            if (lastType) {
+                showLeaderboardView(lastType);
+            }
+        });
     </script>
 </body>
 
