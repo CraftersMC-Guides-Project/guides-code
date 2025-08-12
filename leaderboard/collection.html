@@ -118,6 +118,29 @@
 
             let collectionsData = {};
 
+            // --- Cookie Helper Functions ---
+            function setCookie(name, value, days) {
+                let expires = "";
+                if (days) {
+                    const date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + (value || "") + expires + "; path=/";
+            }
+
+            function getCookie(name) {
+                const nameEQ = name + "=";
+                const ca = document.cookie.split(';');
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+                }
+                return null;
+            }
+
+
             // Modern async function to fetch data
             async function fetchData() {
                 try {
@@ -197,6 +220,10 @@
             }
 
             function loadLeaderboard(category, index) {
+                // Save the current selection to a cookie
+                setCookie('lastCategory', category, 7); // Expires in 7 days
+                setCookie('lastCollectionIndex', index, 7);
+
                 const collection = collectionsData[category][index];
                 collectionTitle.textContent = `${collection.name} Leaderboard`;
 
@@ -234,22 +261,26 @@
             if (collectionsData) {
                 loadCategories();
                 
-                // **NEW:** Load a random leaderboard on startup
-                const categories = Object.keys(collectionsData);
-                if (categories.length > 0) {
-                    // Select a random category
-                    const randomCategoryName = categories[Math.floor(Math.random() * categories.length)];
-                    const collectionsInCategory = collectionsData[randomCategoryName];
-                    
-                    if (collectionsInCategory.length > 0) {
-                        // Select a random collection from that category
-                        const randomCollectionIndex = Math.floor(Math.random() * collectionsInCategory.length);
+                const lastCategory = getCookie('lastCategory');
+                const lastCollectionIndex = getCookie('lastCollectionIndex');
+
+                // Check if a valid last session exists in cookies
+                if (lastCategory && lastCollectionIndex !== null && collectionsData[lastCategory] && collectionsData[lastCategory][lastCollectionIndex]) {
+                    // Load from cookies
+                    switchCategory(lastCategory);
+                    loadLeaderboard(lastCategory, parseInt(lastCollectionIndex, 10));
+                } else {
+                    // **FALLBACK:** Load a random leaderboard on startup if no valid cookie is found
+                    const categories = Object.keys(collectionsData);
+                    if (categories.length > 0) {
+                        const randomCategoryName = categories[Math.floor(Math.random() * categories.length)];
+                        const collectionsInCategory = collectionsData[randomCategoryName];
                         
-                        // Activate the correct category tab
-                        switchCategory(randomCategoryName);
-                        
-                        // Load the random leaderboard
-                        loadLeaderboard(randomCategoryName, randomCollectionIndex);
+                        if (collectionsInCategory.length > 0) {
+                            const randomCollectionIndex = Math.floor(Math.random() * collectionsInCategory.length);
+                            switchCategory(randomCategoryName);
+                            loadLeaderboard(randomCategoryName, randomCollectionIndex);
+                        }
                     }
                 }
             }
