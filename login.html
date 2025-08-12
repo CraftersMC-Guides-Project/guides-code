@@ -6,261 +6,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="css/essential.css">
+    <link rel="stylesheet" href="themes/minecraft/style.css">
     <script src="../js/script.js"></script>
     <title>Login - CraftersMC Guides</title>
-    <style>
-        body {
-            color: white;
-            font-family: "Segoe UI", sans-serif;
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            height: 100%;
-            margin: 0;
-            flex-direction: column;
-        }
-
-        .background {
-            background: url("../Backgrounds/IMG_4500.webp");
-            background-color: #847474;
-            background-blend-mode: multiply;
-            background-size: cover;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-
-        .container {
-            width: 90%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 10rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            background: #11111196;
-            border: 2px solid #111;
-            transition: 0.3s;
-            color: rgba(255, 255, 255, 0.813) !important;
-            border: 2px solid #c6c6c6;
-            max-width: 600px;
-            padding-bottom: 20px;
-        }
-
-        h3 {
-            color: #242424;
-            margin-bottom: 5px;
-            text-align: center;
-            font-family: 'MyFont';
-            background: #c6c6c6;
-            padding: 10px;
-            box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 3px #777 inset !important;
-            width: 100%;
-        }
-
-        h4 {
-            margin-bottom: 5px;
-            text-align: center;
-            font-family: 'MyFont';
-            padding: 10px;
-            width: 100%;
-            font-size: 1.2rem;
-        }
-
-
-        .button-container {
-            display: flex;
-            flex-direction: column;
-            width: 80%;
-        }
-
-        .discord-login-button,
-        #cookie-allow-btn,
-        #proceed-login {
-            padding: 15px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-align: center;
-            text-decoration: none;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #c6c6c6;
-            color: #3c3c3c;
-            transition: all 0.1s;
-            cursor: pointer;
-            box-shadow: 2px 2px 0 0 #ffffff inset,
-                -1px -1px 0px 3px #777 inset;
-            border: 2px solid #2a2a2a;
-        }
-
-        #cookie-allow-btn {
-            display: unset !important;
-            padding: 10px !important;
-        }
-
-        .discord-login-button:hover,
-        #cookie-allow-btn:hover,
-        .discord-login-button:hover path,
-        #proceed-login:hover {
-            fill: #fff;
-            border: 2px solid #fff;
-            box-shadow: 2px 2px 0 0 #2ccb1d inset,
-                -1px -1px 0px 3px #1d681a inset;
-            background: #218306;
-            color: #fff !important;
-        }
-
-        .discord-login-button path {
-            fill: #3c3c3c;
-            transition: all 0.1s;
-        }
-
-        .discord-login-button svg {
-            height: 24px;
-            margin-right: 10px;
-        }
-
-        .message {
-            margin-top: 10px;
-            text-align: center;
-            font-size: 14px;
-            color: #bbb;
-        }
-
-        hr {
-            border: 0;
-            height: 1px;
-            background: #333;
-            margin: 20px 0;
-            width: 80%;
-        }
-
-        .other-options {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #bbb;
-        }
-
-        .other-options a {
-            color: #007bff;
-        }
-
-        #login-status {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #66bb6a;
-            display: none;
-        }
-
-        #username-display {
-            margin-top: 10px;
-            font-size: 16px;
-            color: white;
-            display: none;
-        }
-
-        .logout-button {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 15px;
-            text-align: center;
-            text-decoration: none;
-            display: block;
-            width: 80%;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .logout-button:hover {
-            background-color: #c82333;
-        }
-
-        .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin: 10px auto;
-            display: none;
-        }
-
-        /* Modal styles */
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 999;
-        }
-
-        .modal-content {
-            background: #1c1c1c;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            position: relative;
-            z-index: 1000;
-            max-width: 500px;
-            margin: 100px auto;
-            border: 2px solid #c6c6c6;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .modal-content ol {
-            padding-left: 20px;
-            margin: 20px;
-        }
-
-        .modal-content button {
-            width: 90%;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        #close-modal {
-            background: #333;
-            color: #fff;
-        }
-
-        /* #proceed-login {
-            background-color: #5865f2;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-            text-align: center;
-            text-decoration: none;
-            display: block;
-        } */
-
-        #login-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1000;
-            overflow-y: auto;
-        }
-    </style>
 </head>
 
 <body>
@@ -269,7 +17,7 @@
         <div></div>
         <div></div>
     </div>
-    <div class="background"></div>
+    <div class="login-background"></div>
     <div class="top"></div>
     <div class="sidebar" id="sidebar"></div>
     <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
@@ -282,17 +30,17 @@
     </button>
     <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
         crossorigin="anonymous"></script>
-    <ins class="adsbygoogle" style="display:block;width:90%;height:100px;z-index: 9999999;"
+    <ins class="login-adsbygoogle" style="display:block;width:90%;height:100px;z-index: 9999999;"
         data-ad-client="ca-pub-3105845866547691" data-ad-slot="9849702725"></ins>
     <script>
         (adsbygoogle = window.adsbygoogle || []).push({});
     </script> -->
-    <div class="container">
-        <h3>Login</h3>
+    <div class="login-container">
+        <h3 class="login-h3">Login</h3>
         <div id="xbox-danger-msg-container"></div>
-        <img id="user-avatar" class="avatar" src="" alt="User Avatar">
-        <div class="button-container">
-            <a id="discord-login-button" class="discord-login-button">
+        <img id="user-avatar" class="login-avatar" src="" alt="User Avatar">
+        <div class="login-button-container">
+            <a id="discord-login-button" class="login-discord-login-button">
                 <svg width="24px" height="24px" viewBox="0 -28.5 256 256" version="1.1"
                     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                     preserveAspectRatio="xMidYMid" fill="#000000">
@@ -310,23 +58,23 @@
             </a>
         </div>
 
-        <hr />
+        <hr class="login-hr" />
 
-        <div class="other-options">
+        <div class="login-other-options">
             <span>Don't have a Discord account? <a href="https://discord.com/register" target="_blank">Sign up on
                     Discord</a></span>
         </div>
-        <div class="message" id="message"></div>
+        <div class="login-message" id="message"></div>
         <div id="login-status" style="display: none;"></div>
         <div id="username-display" style="display: none;"></div>
-        <button id="logout-button" class="logout-button" style="display: none;">Logout</button>
+        <button id="logout-button" class="login-logout-button" style="display: none;">Logout</button>
     </div>
 
     <!-- Modal for login instructions -->
     <div id="login-modal" style="display:none;">
-        <div class="modal-backdrop"></div>
-        <div class="modal-content">
-            <h3>How to Login</h3>
+        <div class="login-modal-backdrop"></div>
+        <div class="login-modal-content">
+            <h3 class="login-h3">How to Login</h3>
             <ol>
                 <li>
                     <b>Have a Discord account:</b>
@@ -344,10 +92,10 @@
                 </li>
             </ol>
 
-            <h4>Details How we collect your Data</h4>
+            <h4 class="login-h4">Details How we collect your Data</h4>
             <img src="assets/proof.png" alt="Discord Data Collection"
                 style="width:90%;border-radius:8px;margin:10px 20px;">
-            <button id="proceed-login" class="discord-login-button" style="margin:10px 20px;">Proceed to Discord
+            <button id="proceed-login" class="login-discord-login-button" style="margin:10px 20px;">Proceed to Discord
                 Login</button>
             <button id="close-modal"
                 style="margin:10px 20px;background:#333;color:#fff;border:none;padding:8px 18px;cursor:pointer;">Cancel</button>
@@ -421,7 +169,7 @@
                 }
                 loginStatus.style.display = 'none';
                 // Optionally, hide login button or disable it
-                document.querySelector('.button-container').style.display = 'none';
+                document.querySelector('.login-button-container').style.display = 'none';
             } else {
                 if (messageDiv) {
                     messageDiv.textContent = 'Please log in to continue.';
@@ -458,7 +206,7 @@
                                     };
                                 }
                                 loginStatus.style.display = 'none';
-                                document.querySelector('.button-container').style.display = 'none';
+                                document.querySelector('.login-button-container').style.display = 'none';
                                 return;
                             }
 
@@ -540,8 +288,8 @@
                     document.querySelector('#xbox-danger-msg-container').prepend(dangerMsg);
 
                     // Hide login success UI, buttons, etc.
-                    document.querySelector('.button-container').style.display = 'none';
-                    document.querySelector('.other-options').style.display = 'none';
+                    document.querySelector('.login-button-container').style.display = 'none';
+                    document.querySelector('.login-other-options').style.display = 'none';
                     document.querySelector('hr').style.display = 'none';
                     if (logoutButton) logoutButton.style.display = 'none';
                     if (usernameDisplay) usernameDisplay.style.display = 'none';
@@ -580,8 +328,8 @@
                     xboxElem.style.display = 'none';
                 }
 
-                document.querySelector('.button-container').style.display = 'none';
-                document.querySelector('.other-options').style.display = 'none';
+                document.querySelector('.login-button-container').style.display = 'none';
+                document.querySelector('.login-other-options').style.display = 'none';
                 document.querySelector('hr').style.display = 'none';
                 logoutButton.style.display = 'block';
 
@@ -624,8 +372,8 @@
                 loginStatus.style.display = 'none';
                 usernameDisplay.style.display = 'none';
                 userAvatar.style.display = 'none';
-                document.querySelector('.button-container').style.display = 'flex';
-                document.querySelector('.other-options').style.display = 'block';
+                document.querySelector('.login-button-container').style.display = 'flex';
+                document.querySelector('.login-other-options').style.display = 'block';
                 document.querySelector('hr').style.display = 'block';
                 logoutButton.style.display = 'none';
 
