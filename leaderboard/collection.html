@@ -9,7 +9,7 @@
     <meta property="og:description"
         content="Find out who is at what position with how much collection by our friendly-ui tool.">
     <meta property="og:image"
-        content="https://cdn.discordapp.com/attachments/1320310626232569887/1346040574616010752/collclb384.png?ex=67c6bd79&is=67c56bf9&hm=555f9d6bea96134f32f623e63b67fdbf2b9641ebfe5ee6ab265cc20ae3534ea7&">
+        content="https://cdn.discordapp.com/attachments/1320310626232569887/1346040574616010752/collclb384.png">
     <meta property="og:url" content="https://craftersmc-guides.pages.dev/leaderboards.html">
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#007bff">
@@ -27,6 +27,7 @@
     </div>
     <div class="col-lb-background"></div>
     <div id="sidebar-overlay" onclick="overlay()"></div>
+
     <!-- Navbar -->
     <div class="custom-navbar">
         <div class="left">
@@ -40,25 +41,14 @@
             <a href="index.html"><img src="assets/cmc-guides.png"></a>
         </div>
     </div>
+
     <div id="sidelid" class="sidelid">
         <h2 class="lb-h2">Select Category</h2>
-        <div class="lb-tabs">
-            <a class="lb-tab active" href="javascript:void(0)" onclick="switchCategory('Mining')">
-                <img src="assets/mining/pickaxe.png" width="30" alt="Pickaxe">
-            </a>
-            <a class="lb-tab" href="javascript:void(0)" onclick="switchCategory('Farming')">
-                <img src="assets/farming/hoe.png" width="30" alt="Hoe">
-            </a>
-            <a class="lb-tab" href="javascript:void(0)" onclick="switchCategory('Combat')">
-                <img src="assets/combat/sword.png" width="30" alt="Sword">
-            </a>
-            <a class="lb-tab" href="javascript:void(0)" onclick="switchCategory('Foraging')">
-                <img src="assets/foraging/axe.png" width="30" alt="Axe">
-            </a>
-        </div>
+        <div class="lb-tabs"></div>
         <h2 class="lb-h2">Select Item</h2>
         <div class="lb-collections" id="collectionGrid"></div>
     </div>
+
     <div class="lb-content">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar"></div>
@@ -69,17 +59,10 @@
             <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
             <span class="material-icons" id="scrollToTopBtn">north</span>
         </button>
+
         <div>
-            <!-- <script async
-                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
-                crossorigin="anonymous"></script>
-            <ins class="lb-adsbygoogle" style="display:block;width:90%;height:100px;z-index: 9999999;"
-                data-ad-client="ca-pub-3105845866547691" data-ad-slot="9849702725"></ins>
-            <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            </script> -->
             <div class="lb-container">
-                <h3 class="lb-h3" class="lb-h3">CraftersMC Collections Leaderboards</h3>
+                <h3 class="lb-h3">CraftersMC Collections Leaderboards</h3>
                 <p>Find out who is at what ranking and how much collection they have using our easy to use tool.</p><br>
                 <p id="mobileGuide">Click on the icon with 3 different length lines at the top left of the screen to
                     select any collection and see the top 10 highest ranked players in the collection on the table.</p>
@@ -102,51 +85,6 @@
                                 <td>???</td>
                                 <td>???</td>
                             </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>???</td>
-                                <td>???</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>???</td>
-                                <td>???</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>???</td>
-                                <td>???</td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>???</td>
-                                <td>???</td>
-                            </tr>
-                            <tr>
-                                <td>6</td>
-                                <td>???</td>
-                                <td>???</td>
-                            </tr>
-                            <tr>
-                                <td>7</td>
-                                <td>???</td>
-                                <td>???</td>
-                            </tr>
-                            <tr>
-                                <td>8</td>
-                                <td>???</td>
-                                <td>???</td>
-                            </tr>
-                            <tr>
-                                <td>9</td>
-                                <td>???</td>
-                                <td>???</td>
-                            </tr>
-                            <tr>
-                                <td>10</td>
-                                <td>???</td>
-                                <td>???</td>
-                            </tr>
                         </tbody>
                     </table>
                     <br>
@@ -166,21 +104,24 @@
                 </div>
             </div>
         </div>
+
         <div id="footer"></div>
     </div>
+
+    <!-- Updated script to fetch JSON instead of using updated_collections.js -->
     <script>
-        let leaderboardData = {};
-document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        const response = await fetch("../data/collection.json");
-        leaderboardData = await response.json();
-    } catch (error) {
-        console.error("Error loading JSON data:", error);
-        return;
-    }
+        document.addEventListener("DOMContentLoaded", async () => {
+            let leaderboardData = {};
+            try {
+                const response = await fetch("../data/collection.json");
+                leaderboardData = await response.json();
+            } catch (error) {
+                console.error("Error loading JSON data:", error);
+                document.getElementById("collectionTitle").innerText = "Error loading data";
+                return;
+            }
 
             let defaultCategory = Object.keys(leaderboardData)[0];
-
             loadCategories();
             loadCollections(defaultCategory);
 
@@ -203,7 +144,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     tab.onclick = () => switchCategory(category);
 
                     let img = document.createElement("img");
-                    img.src = categoryIcons[category] || "default-icon.png"; // Use default if missing
+                    img.src = categoryIcons[category] || "default-icon.png";
                     img.width = 30;
                     img.alt = category;
 
@@ -234,10 +175,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 leaderboardData[category].forEach((collection, index) => {
                     let item = document.createElement("div");
                     item.classList.add("lb-collection-item");
-                    item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`; //<p>${collection.name}</p>
+                    item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`;
                     item.onclick = () => loadLeaderboard(category, index);
                     collectionGrid.appendChild(item);
-
                 });
             }
 
@@ -245,8 +185,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const collection = leaderboardData[category][index];
                 document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
 
-                const leaderboardData = document.getElementById("leaderboardData");
-                leaderboardData.innerHTML = collection.players.length
+                const leaderboardBody = document.getElementById("leaderboardData");
+                leaderboardBody.innerHTML = collection.players.length
                     ? collection.players.map(player => `<tr><td>${player.rank}</td><td>${player.name}</td><td>${player.score}</td></tr>`).join("")
                     : "<tr><td>1</td><td>???</td><td>???</td></tr>".repeat(10);
                 document.getElementById('collectionTitle').scrollIntoView({ behavior: 'smooth' });
@@ -254,5 +194,4 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     </script>
 </body>
-
 </html>
