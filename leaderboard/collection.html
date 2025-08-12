@@ -168,97 +168,91 @@
         </div>
         <div id="footer"></div>
     </div>
-    
-<script>
-    let leaderboardData = {};
-
-    async function loadLeaderboardData() {
-        try {
-            const response = await fetch('../data/collection.json');
-            leaderboardData = await response.json();
-            const defaultCategory = Object.keys(leaderboardData)[0];
-            renderCategories();
-            renderCollections(defaultCategory);
-        } catch (error) {
-            console.error("Error loading leaderboard data:", error);
-        }
+    <script>
+        let leaderboardData = {};
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const response = await fetch("../data/collection.json");
+        leaderboardData = await response.json();
+    } catch (error) {
+        console.error("Error loading JSON data:", error);
+        return;
     }
 
-    function renderCategories() {
-        const tabsContainer = document.querySelector(".lb-tabs");
-        tabsContainer.innerHTML = "";
-        const categoryIcons = {
-            "Mining": "assets/mining/pickaxe.png",
-            "Farming": "assets/farming/hoe.png",
-            "Combat": "assets/combat/sword.png",
-            "Foraging": "assets/foraging/axe.png"
-        };
+            let defaultCategory = Object.keys(leaderboardData)[0];
 
-        Object.keys(leaderboardData).forEach((category, index) => {
-            let tab = document.createElement("a");
-            tab.classList.add("lb-tab");
-            if (index === 0) tab.classList.add("active");
-            tab.href = "javascript:void(0)";
-            tab.onclick = () => switchCategory(category);
+            loadCategories();
+            loadCollections(defaultCategory);
 
-            let img = document.createElement("img");
-            img.src = categoryIcons[category] || "default-icon.png";
-            img.width = 30;
-            img.alt = category;
+            function loadCategories() {
+                const tabsContainer = document.querySelector(".lb-tabs");
+                tabsContainer.innerHTML = "";
 
-            tab.appendChild(img);
-            tabsContainer.appendChild(tab);
+                const categoryIcons = {
+                    "Mining": "assets/mining/pickaxe.png",
+                    "Farming": "assets/farming/hoe.png",
+                    "Combat": "assets/combat/sword.png",
+                    "Foraging": "assets/foraging/axe.png"
+                };
+
+                Object.keys(leaderboardData).forEach((category, index) => {
+                    let tab = document.createElement("a");
+                    tab.classList.add("lb-tab");
+                    if (index === 0) tab.classList.add("active");
+                    tab.href = "javascript:void(0)";
+                    tab.onclick = () => switchCategory(category);
+
+                    let img = document.createElement("img");
+                    img.src = categoryIcons[category] || "default-icon.png"; // Use default if missing
+                    img.width = 30;
+                    img.alt = category;
+
+                    tab.appendChild(img);
+                    tabsContainer.appendChild(tab);
+                });
+            }
+
+            function switchCategory(category) {
+                document.querySelectorAll(".lb-tab").forEach(tab => tab.classList.remove("active"));
+
+                const tabs = document.querySelectorAll(".lb-tab");
+                const categoryIndex = Object.keys(leaderboardData).indexOf(category);
+
+                if (categoryIndex !== -1) {
+                    tabs[categoryIndex].classList.add("active");
+                }
+
+                loadCollections(category);
+            }
+
+            function loadCollections(category) {
+                const collectionGrid = document.getElementById("collectionGrid");
+                collectionGrid.innerHTML = "";
+
+                if (!leaderboardData[category]) return;
+
+                leaderboardData[category].forEach((collection, index) => {
+                    let item = document.createElement("div");
+                    item.classList.add("lb-collection-item");
+                    item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`; //<p>${collection.name}</p>
+                    item.onclick = () => loadLeaderboard(category, index);
+                    collectionGrid.appendChild(item);
+
+                });
+            }
+
+            function loadLeaderboard(category, index) {
+                const collection = leaderboardData[category][index];
+                document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
+
+                const leaderboardData = document.getElementById("leaderboardData");
+                leaderboardData.innerHTML = collection.players.length
+                    ? collection.players.map(player => `<tr><td>${player.rank}</td><td>${player.name}</td><td>${player.score}</td></tr>`).join("")
+                    : "<tr><td>1</td><td>???</td><td>???</td></tr>".repeat(10);
+                document.getElementById('collectionTitle').scrollIntoView({ behavior: 'smooth' });
+            }
         });
-    }
-
-    function switchCategory(category) {
-        document.querySelectorAll(".lb-tab").forEach(tab => tab.classList.remove("active"));
-
-        const tabs = document.querySelectorAll(".lb-tab");
-        const categoryIndex = Object.keys(leaderboardData).indexOf(category);
-
-        if (categoryIndex !== -1) {
-            tabs[categoryIndex].classList.add("active");
-        }
-
-        renderCollections(category);
-    }
-
-    function renderCollections(category) {
-        const collectionGrid = document.getElementById("collectionGrid");
-        collectionGrid.innerHTML = "";
-
-        if (!leaderboardData[category]) return;
-
-        leaderboardData[category].forEach((collection, index) => {
-            let item = document.createElement("div");
-            item.classList.add("lb-collection-item");
-            item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`;
-            item.onclick = () => renderLeaderboard(category, index);
-            collectionGrid.appendChild(item);
-        });
-    }
-
-    function renderLeaderboard(category, index) {
-        const collection = leaderboardData[category][index];
-        document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
-
-        const leaderboardBody = document.getElementById("leaderboardData");
-        const sortedPlayers = [...collection.players].sort((a, b) => {
-            if (a.score === "N/A") return 1;
-            if (b.score === "N/A") return -1;
-            return a.rank - b.rank;
-        });
-
-        leaderboardBody.innerHTML = sortedPlayers.length
-            ? sortedPlayers.map(player => `<tr><td>${player.rank}</td><td>${player.name}</td><td>${player.score}</td></tr>`).join("")
-            : "<tr><td>1</td><td>???</td><td>???</td></tr>".repeat(10);
-        document.getElementById('collectionTitle').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    document.addEventListener("DOMContentLoaded", loadLeaderboardData);
-</script>
-
+    </script>
 </body>
 
 </html>
