@@ -15,7 +15,6 @@
     <meta name="theme-color" content="#007bff">
     <title>Collection Leaderboard</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Note: Make sure the path to your CSS and JS files are correct based on the new folder structure -->
     <link rel="stylesheet" href="../themes/minecraft/style.css">
     <script src="../js/script.js"></script>
 </head>
@@ -71,7 +70,10 @@
                 <p>Select a category and collection to view the top 10 players.</p>
 
                 <div class="lb-leaderboard">
-                    <h2 class="lb-h2" id="collectionTitle">Select a Collection</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 class="lb-h2" id="collectionTitle">Select a Collection</h2>
+                        <p id="lastUpdated" style="font-size: 0.8em; color: #ccc;"></p>
+                    </div>
                     <table class="lb-table">
                         <thead>
                             <tr>
@@ -81,17 +83,7 @@
                             </tr>
                         </thead>
                         <tbody id="leaderboardData">
-                            <!-- Placeholder rows -->
-                            <tr><td>1</td><td>???</td><td>???</td></tr>
-                            <tr><td>2</td><td>???</td><td>???</td></tr>
-                            <tr><td>3</td><td>???</td><td>???</td></tr>
-                            <tr><td>4</td><td>???</td><td>???</td></tr>
-                            <tr><td>5</td><td>???</td><td>???</td></tr>
-                            <tr><td>6</td><td>???</td><td>???</td></tr>
-                            <tr><td>7</td><td>???</td><td>???</td></tr>
-                            <tr><td>8</td><td>???</td><td>???</td></tr>
-                            <tr><td>9</td><td>???</td><td>???</td></tr>
-                            <tr><td>10</td><td>???</td><td>???</td></tr>
+                            <!-- Data is now loaded dynamically on page load -->
                         </tbody>
                     </table>
                     <br>
@@ -114,37 +106,37 @@
         <div id="footer"></div>
     </div>
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            // This is the new, improved way to get your data.
-            // We fetch it from the JSON file.
-            fetch('../data/collection.json')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok ' + response.statusText);
-                    }
-                    return response.json();
-                })
-                .then(collectionsData => {
-                    // All the code that depends on the data now runs
-                    // after the data has been successfully loaded.
-                    
-                    // Store the fetched data in a global scope for access by functions
-                    window.collectionsData = collectionsData;
+        // Using an Immediately Invoked Function Expression (IIFE) to encapsulate code
+        // and avoid polluting the global scope.
+        (async () => {
+            // Store references to key DOM elements to avoid repeated lookups
+            const collectionTitle = document.getElementById("collectionTitle");
+            const leaderboardData = document.getElementById("leaderboardData");
+            const collectionGrid = document.getElementById("collectionGrid");
+            const tabsContainer = document.querySelector(".lb-tabs");
+            const lastUpdatedP = document.getElementById("lastUpdated");
 
-                    let defaultCategory = Object.keys(collectionsData)[0];
-                    loadCategories();
-                    switchCategory(defaultCategory); // This will also load the collections for the default category
-                })
-                .catch(error => {
-                    console.error('There has been a problem with your fetch operation:', error);
-                    // You could display an error message to the user here
-                    document.getElementById("collectionTitle").innerText = "Error loading data!";
-                });
+            let collectionsData = {};
+
+            // Modern async function to fetch data
+            async function fetchData() {
+                try {
+                    // Added a cache-busting query parameter to ensure fresh data
+                    const response = await fetch(`../data/collection.json?v=${new Date().getTime()}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.error('Failed to fetch leaderboard data:', error);
+                    // Display a user-friendly error message on the page
+                    collectionTitle.textContent = 'Error: Could not load data.';
+                    return null; // Return null to indicate failure
+                }
+            }
 
             function loadCategories() {
-                const tabsContainer = document.querySelector(".lb-tabs");
                 tabsContainer.innerHTML = "";
-
                 const categoryIcons = {
                     "Mining": "../assets/mining/pickaxe.png",
                     "Farming": "../assets/farming/hoe.png",
@@ -152,75 +144,116 @@
                     "Foraging": "../assets/foraging/axe.png"
                 };
 
-                Object.keys(window.collectionsData).forEach(category => {
-                    let tab = document.createElement("a");
-                    tab.classList.add("lb-tab");
+                Object.keys(collectionsData).forEach(category => {
+                    const tab = document.createElement("a");
+                    tab.className = "lb-tab";
                     tab.href = "javascript:void(0)";
-                    // Use an arrow function to ensure `switchCategory` is called correctly on click
                     tab.onclick = () => switchCategory(category);
 
-                    let img = document.createElement("img");
+                    const img = document.createElement("img");
                     img.src = categoryIcons[category] || "default-icon.png";
                     img.width = 30;
                     img.alt = category;
+                    img.onerror = () => img.src = 'default-icon.png'; // Fallback for broken images
 
                     tab.appendChild(img);
                     tabsContainer.appendChild(tab);
                 });
             }
-
-            // Make switchCategory globally accessible or pass it around as needed
-            window.switchCategory = function(category) {
+            
+            // Make this function globally available for the inline onclick attribute
+            window.switchCategory = (category) => {
+                // Deactivate all tabs
                 document.querySelectorAll(".lb-tab").forEach(tab => tab.classList.remove("active"));
-
-                // Find the correct tab to activate
-                const tabs = document.querySelectorAll(".lb-tab");
-                const categoryIndex = Object.keys(window.collectionsData).indexOf(category);
+                
+                // Activate the clicked tab
+                const categoryIndex = Object.keys(collectionsData).indexOf(category);
                 if (categoryIndex !== -1) {
-                    tabs[categoryIndex].classList.add("active");
+                    tabsContainer.children[categoryIndex].classList.add("active");
                 }
-
+                
                 loadCollections(category);
-            }
+            };
+
 
             function loadCollections(category) {
-                const collectionGrid = document.getElementById("collectionGrid");
                 collectionGrid.innerHTML = "";
-
-                const collections = window.collectionsData[category];
+                const collections = collectionsData[category];
                 if (!collections) return;
 
                 collections.forEach((collection, index) => {
-                    let item = document.createElement("div");
-                    item.classList.add("lb-collection-item");
-                    item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`;
+                    const item = document.createElement("div");
+                    item.className = "lb-collection-item";
+                    
+                    const img = document.createElement("img");
+                    img.src = collection.image;
+                    img.alt = collection.name;
+                    img.onerror = () => img.src = 'https://placehold.co/32x32/222/fff?text=?'; // Placeholder for missing images
+                    
+                    item.appendChild(img);
                     item.onclick = () => loadLeaderboard(category, index);
                     collectionGrid.appendChild(item);
                 });
             }
 
             function loadLeaderboard(category, index) {
-                const collection = window.collectionsData[category][index];
-                document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
+                const collection = collectionsData[category][index];
+                collectionTitle.textContent = `${collection.name} Leaderboard`;
 
-                const leaderboardData = document.getElementById("leaderboardData");
-                leaderboardData.innerHTML = ""; // Clear previous data
-
-                if (collection.players && collection.players.length > 0) {
-                    leaderboardData.innerHTML = collection.players
-                        .map(player => `<tr><td>${player.rank}</td><td>${player.name}</td><td>${player.score}</td></tr>`)
-                        .join("");
+                // Display last updated time
+                if (collection.lastUpdated) {
+                    const date = new Date(collection.lastUpdated);
+                    lastUpdatedP.textContent = `Last Updated: ${date.toLocaleDateString()}`;
                 } else {
-                    // Display placeholder if no players
-                    let placeholderRows = "";
-                    for (let i = 1; i <= 10; i++) {
-                        placeholderRows += `<tr><td>${i}</td><td>???</td><td>???</td></tr>`;
-                    }
-                    leaderboardData.innerHTML = placeholderRows;
+                    lastUpdatedP.textContent = '';
                 }
-                document.getElementById('collectionTitle').scrollIntoView({ behavior: 'smooth' });
+
+                // Use a document fragment for performance when creating many rows
+                const fragment = document.createDocumentFragment();
+                if (collection.players && collection.players.length > 0) {
+                    collection.players.forEach(player => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${player.rank}</td><td>${player.name}</td><td>${player.score}</td>`;
+                        fragment.appendChild(tr);
+                    });
+                } else {
+                    for (let i = 1; i <= 10; i++) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${i}</td><td>???</td><td>???</td>`;
+                        fragment.appendChild(tr);
+                    }
+                }
+                leaderboardData.innerHTML = ""; // Clear existing data
+                leaderboardData.appendChild(fragment);
+                
+                collectionTitle.scrollIntoView({ behavior: 'smooth' });
             }
-        });
+
+            // --- Initialization ---
+            collectionsData = await fetchData();
+            if (collectionsData) {
+                loadCategories();
+                
+                // **NEW:** Load a random leaderboard on startup
+                const categories = Object.keys(collectionsData);
+                if (categories.length > 0) {
+                    // Select a random category
+                    const randomCategoryName = categories[Math.floor(Math.random() * categories.length)];
+                    const collectionsInCategory = collectionsData[randomCategoryName];
+                    
+                    if (collectionsInCategory.length > 0) {
+                        // Select a random collection from that category
+                        const randomCollectionIndex = Math.floor(Math.random() * collectionsInCategory.length);
+                        
+                        // Activate the correct category tab
+                        switchCategory(randomCategoryName);
+                        
+                        // Load the random leaderboard
+                        loadLeaderboard(randomCategoryName, randomCollectionIndex);
+                    }
+                }
+            }
+        })();
     </script>
 </body>
 
