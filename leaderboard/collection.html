@@ -9,7 +9,7 @@
     <meta property="og:description"
         content="Find out who is at what position with how much collection by our friendly-ui tool.">
     <meta property="og:image"
-        content="https://cdn.discordapp.com/attachments/1320310626232569887/1346040574616010752/collclb384.png">
+        content="https://cdn.discordapp.com/attachments/1320310626232569887/1346040574616010752/collclb384.png?ex=67c6bd79&is=67c56bf9&hm=555f9d6bea96134f32f623e63b67fdbf2b9641ebfe5ee6ab265cc20ae3534ea7&">
     <meta property="og:url" content="https://craftersmc-guides.pages.dev/leaderboards.html">
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#007bff">
@@ -17,6 +17,87 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="themes/minecraft/style.css">
     <script src="js/script.js"></script>
+
+    <!-- REPLACED SCRIPT: loads JSON into `collectionsData` (tries multiple paths, sync-first) -->
+    <script>
+        (function () {
+            // This loader tries to synchronously load your JSON (so existing DOMContentLoaded code that
+            // expects `collectionsData` will find it). If sync attempts fail, it falls back to async tries.
+            function setCollections(json) {
+                window.collectionsData = json;
+                console.log('collectionsData set, keys:', Object.keys(json || {}));
+            }
+
+            function tryLoadSync(path) {
+                try {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', path, false); // synchronous request
+                    try { xhr.send(null); } catch (e) { /* send might throw on file:// or blocked contexts */ }
+                    // status 200 ok; status 0 can be returned for file://
+                    if (xhr.status === 200 || (xhr.status === 0 && xhr.responseText)) {
+                        try {
+                            var parsed = JSON.parse(xhr.responseText);
+                            setCollections(parsed);
+                            console.log('Loaded collection JSON synchronously from', path);
+                            return true;
+                        } catch (e) {
+                            console.error('collection.json parse error at', path, e);
+                        }
+                    } else {
+                        console.warn('Sync XHR returned status', xhr.status, 'for', path);
+                    }
+                } catch (err) {
+                    console.warn('Sync XHR failed for', path, err);
+                }
+                return false;
+            }
+
+            function tryLoadAsyncSequence(paths) {
+                // Try each path until one resolves
+                var i = 0;
+                function next() {
+                    if (i >= paths.length) {
+                        console.error('Failed to load collection.json from any fallback path.');
+                        return;
+                    }
+                    var p = paths[i++];
+                    fetch(p).then(function (r) {
+                        if (!r.ok) throw new Error('HTTP ' + r.status);
+                        return r.json();
+                    }).then(function (json) {
+                        setCollections(json);
+                        console.log('Loaded collection JSON async from', p);
+                    }).catch(function (err) {
+                        console.warn('Async fetch failed for', p, err);
+                        next();
+                    });
+                }
+                next();
+            }
+
+            // Candidate paths to try (covers different placements of the HTML file).
+            var candidatePaths = [
+                'data/collection.json',      // if HTML is in root and data in /data/
+                '../data/collection.json',   // if HTML is inside leaderboard/ and data is in /data/
+                '/data/collection.json',     // absolute path from site root
+                './data/collection.json',    // data relative to current dir
+                'leaderboard/data/collection.json' // other possible location
+            ];
+
+            var loaded = false;
+            for (var i = 0; i < candidatePaths.length; i++) {
+                if (tryLoadSync(candidatePaths[i])) {
+                    loaded = true;
+                    break;
+                }
+            }
+
+            if (!loaded) {
+                // If synchronous attempts didn't succeed, try async sequence (non-blocking).
+                tryLoadAsyncSequence(candidatePaths);
+            }
+        })();
+    </script>
 </head>
 
 <body>
@@ -27,7 +108,6 @@
     </div>
     <div class="col-lb-background"></div>
     <div id="sidebar-overlay" onclick="overlay()"></div>
-
     <!-- Navbar -->
     <div class="custom-navbar">
         <div class="left">
@@ -41,14 +121,25 @@
             <a href="index.html"><img src="assets/cmc-guides.png"></a>
         </div>
     </div>
-
     <div id="sidelid" class="sidelid">
         <h2 class="lb-h2">Select Category</h2>
-        <div class="lb-tabs"></div>
+        <div class="lb-tabs">
+            <a class="lb-tab active" href="javascript:void(0)" onclick="switchCategory('Mining')">
+                <img src="assets/mining/pickaxe.png" width="30" alt="Pickaxe">
+            </a>
+            <a class="lb-tab" href="javascript:void(0)" onclick="switchCategory('Farming')">
+                <img src="assets/farming/hoe.png" width="30" alt="Hoe">
+            </a>
+            <a class="lb-tab" href="javascript:void(0)" onclick="switchCategory('Combat')">
+                <img src="assets/combat/sword.png" width="30" alt="Sword">
+            </a>
+            <a class="lb-tab" href="javascript:void(0)" onclick="switchCategory('Foraging')">
+                <img src="assets/foraging/axe.png" width="30" alt="Axe">
+            </a>
+        </div>
         <h2 class="lb-h2">Select Item</h2>
         <div class="lb-collections" id="collectionGrid"></div>
     </div>
-
     <div class="lb-content">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar"></div>
@@ -59,10 +150,17 @@
             <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
             <span class="material-icons" id="scrollToTopBtn">north</span>
         </button>
-
         <div>
+            <!-- <script async
+                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
+                crossorigin="anonymous"></script>
+            <ins class="lb-adsbygoogle" style="display:block;width:90%;height:100px;z-index: 9999999;"
+                data-ad-client="ca-pub-3105845866547691" data-ad-slot="9849702725"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script> -->
             <div class="lb-container">
-                <h3 class="lb-h3">CraftersMC Collections Leaderboards</h3>
+                <h3 class="lb-h3" class="lb-h3">CraftersMC Collections Leaderboards</h3>
                 <p>Find out who is at what ranking and how much collection they have using our easy to use tool.</p><br>
                 <p id="mobileGuide">Click on the icon with 3 different length lines at the top left of the screen to
                     select any collection and see the top 10 highest ranked players in the collection on the table.</p>
@@ -85,6 +183,51 @@
                                 <td>???</td>
                                 <td>???</td>
                             </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>???</td>
+                                <td>???</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>???</td>
+                                <td>???</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>???</td>
+                                <td>???</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>???</td>
+                                <td>???</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>???</td>
+                                <td>???</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>???</td>
+                                <td>???</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>???</td>
+                                <td>???</td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>???</td>
+                                <td>???</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>???</td>
+                                <td>???</td>
+                            </tr>
                         </tbody>
                     </table>
                     <br>
@@ -104,24 +247,12 @@
                 </div>
             </div>
         </div>
-
         <div id="footer"></div>
     </div>
-
-    <!-- Updated script to fetch JSON instead of using updated_collections.js -->
     <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            let leaderboardData = {};
-            try {
-                const response = await fetch("../data/collection.json");
-                leaderboardData = await response.json();
-            } catch (error) {
-                console.error("Error loading JSON data:", error);
-                document.getElementById("collectionTitle").innerText = "Error loading data";
-                return;
-            }
+        document.addEventListener("DOMContentLoaded", () => {
+            let defaultCategory = Object.keys(collectionsData)[0];
 
-            let defaultCategory = Object.keys(leaderboardData)[0];
             loadCategories();
             loadCollections(defaultCategory);
 
@@ -136,7 +267,7 @@
                     "Foraging": "assets/foraging/axe.png"
                 };
 
-                Object.keys(leaderboardData).forEach((category, index) => {
+                Object.keys(collectionsData).forEach((category, index) => {
                     let tab = document.createElement("a");
                     tab.classList.add("lb-tab");
                     if (index === 0) tab.classList.add("active");
@@ -144,7 +275,7 @@
                     tab.onclick = () => switchCategory(category);
 
                     let img = document.createElement("img");
-                    img.src = categoryIcons[category] || "default-icon.png";
+                    img.src = categoryIcons[category] || "default-icon.png"; // Use default if missing
                     img.width = 30;
                     img.alt = category;
 
@@ -157,7 +288,7 @@
                 document.querySelectorAll(".lb-tab").forEach(tab => tab.classList.remove("active"));
 
                 const tabs = document.querySelectorAll(".lb-tab");
-                const categoryIndex = Object.keys(leaderboardData).indexOf(category);
+                const categoryIndex = Object.keys(collectionsData).indexOf(category);
 
                 if (categoryIndex !== -1) {
                     tabs[categoryIndex].classList.add("active");
@@ -170,23 +301,24 @@
                 const collectionGrid = document.getElementById("collectionGrid");
                 collectionGrid.innerHTML = "";
 
-                if (!leaderboardData[category]) return;
+                if (!collectionsData[category]) return;
 
-                leaderboardData[category].forEach((collection, index) => {
+                collectionsData[category].forEach((collection, index) => {
                     let item = document.createElement("div");
                     item.classList.add("lb-collection-item");
-                    item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`;
+                    item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`; //<p>${collection.name}</p>
                     item.onclick = () => loadLeaderboard(category, index);
                     collectionGrid.appendChild(item);
+
                 });
             }
 
             function loadLeaderboard(category, index) {
-                const collection = leaderboardData[category][index];
+                const collection = collectionsData[category][index];
                 document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
 
-                const leaderboardBody = document.getElementById("leaderboardData");
-                leaderboardBody.innerHTML = collection.players.length
+                const leaderboardData = document.getElementById("leaderboardData");
+                leaderboardData.innerHTML = collection.players.length
                     ? collection.players.map(player => `<tr><td>${player.rank}</td><td>${player.name}</td><td>${player.score}</td></tr>`).join("")
                     : "<tr><td>1</td><td>???</td><td>???</td></tr>".repeat(10);
                 document.getElementById('collectionTitle').scrollIntoView({ behavior: 'smooth' });
@@ -194,4 +326,5 @@
         });
     </script>
 </body>
+
 </html>
