@@ -25,102 +25,115 @@
         <div></div>
     </div>
 
-    <div class="leaderboard-unified-background"></div>
-    <div id="sidebar-overlay" onclick="overlay()"></div>
-    <!-- Navbar -->
-    <div class="custom-navbar">
-        <div class="left">
-            <div class="button-wrapper">
-                <div class="button-tip" id="tooltip">Click to proceed!</div>
-                <span class="openbtn menu-icon material-icons" onclick="toggleLid()" id="continue-btn">sort</span>
-            </div>
-            <span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
-        </div>
-        <div class="right">
-            <a href="index.html"><img src="assets/cmc-guides.png"></a>
-        </div>
-    </div>
-    <div id="sidelid" class="sidelid">
-        <div id="selection-panel">
-            <!-- Content changes based on leaderboard type -->
-        </div>
-    </div>
-    <div class="lb-content">
-        <!-- Sidebar -->
-        <div class="sidebar" id="leaderboard-sidebar"></div>
-        <button id="float">
-            <span class="material-icons" id="homeBtn" onclick="goHome()">home</span>
-            <span class="material-icons" id="sweepBtn"
-                style="background: #222; border-radius: 50px;">chevron_right</span>
-            <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
-            <span class="material-icons" id="scrollToTopBtn">north</span>
-        </button>
-
-        <!-- Main container for everything -->
-        <div>
-            <!-- Top Selection Cards -->
-            <div class="event-log-card-container" id="top-selection-cards">
-                 <div class="event-log-card" onclick="setLeaderboardType('collections')">
-                    <img src="Backgrounds/IMG_4504.webp" alt="Collections Leaderboards"
-                        onerror="this.onerror=null;this.src='https://placehold.co/600x400/222/fff?text=Collections';">
-                    <div class="event-log-card-content">
-                        <h3>Collections Leaderboards</h3>
-                        <p>Find out who is at what ranking and how much collection they have.</p>
-                    </div>
-                </div>
-                <div class="event-log-card" onclick="setLeaderboardType('slayers')">
-                    <img src="Backgrounds/image9489.webp" alt="Slayers Leaderboards"
-                        onerror="this.onerror=null;this.src='https://placehold.co/600x400/222/fff?text=Slayers';">
-                    <div class="event-log-card-content">
-                        <h3>Slayers Leaderboards</h3>
-                        <p>Find out who is at what position and how much experience they have.</p>
-                    </div>
+    <!-- This is the main selection view, shown on first visit -->
+    <div id="main-selection-view">
+        <div class="leaderboard-interface-background"></div>
+        <div class="top"></div>
+        <div class="sidebar" id="main-sidebar"></div>
+        <div id="main-sidebar-overlay" onclick="toggleSidebar()"></div>
+        <span class="material-icons" id="main-scrollToTopBtn">north</span>
+        <div class="event-log-card-container">
+            <div class="event-log-card">
+                <img src="Backgrounds/IMG_4504.webp" alt="Collections Leaderboards"
+                    onerror="this.onerror=null;this.src='https://placehold.co/600x400/222/fff?text=Collections';">
+                <div class="event-log-card-content">
+                    <h3>Collections Leaderboards</h3>
+                    <p>Find out who is at what ranking and how much collection they have.</p>
+                    <button onclick="showLeaderboardView('collections')">View Leaderboards</button>
                 </div>
             </div>
+            <div class="event-log-card">
+                <img src="Backgrounds/image9489.webp" alt="Slayers Leaderboards"
+                    onerror="this.onerror=null;this.src='https://placehold.co/600x400/222/fff?text=Slayers';">
+                <div class="event-log-card-content">
+                    <h3>Slayers Leaderboards</h3>
+                    <p>Find out who is at what position and how much experience they have.</p>
+                    <button onclick="showLeaderboardView('slayers')">View Leaderboards</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            <!-- Leaderboard Display Area -->
-            <div class="lb-container" id="leaderboard-display-area" style="display: none;">
-                <h3 class="lb-h3" id="mainTitle">CraftersMC Leaderboards</h3>
-                <p>Find out who is at what ranking and how much collection they have using our easy to use tool.</p>
-                <br>
-                <p id="mobileGuide">Click on the icon with 3 different length lines at the top left of the screen to
-                    select any collection and see the top 10 highest ranked players in the collection on the table.
-                </p>
-                <br id="mobileGuide">
-                <p>Select a category and collection to view the top 10 players.</p>
-                <div class="lb-leaderboard">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2 class="lb-h2" id="collectionTitle">Select a Collection</h2>
-                        <p id="lastUpdated" style="font-size: 0.8em; color: #ccc;"></p>
+    <!-- This is the dynamic leaderboard view, hidden by default -->
+    <div id="leaderboard-view" style="display: none;">
+        <div class="leaderboard-unified-background"></div>
+        <div id="sidebar-overlay" onclick="overlay()"></div>
+        <!-- Navbar -->
+        <div class="custom-navbar">
+            <div class="left">
+                <div class="button-wrapper">
+                    <div class="button-tip" id="tooltip">Click to proceed!</div>
+                    <span class="openbtn menu-icon material-icons" onclick="toggleLid()" id="continue-btn">sort</span>
+                </div>
+                <span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
+            </div>
+            <div class="right">
+                <a href="index.html"><img src="assets/cmc-guides.png"></a>
+            </div>
+        </div>
+        <div id="sidelid" class="sidelid">
+            <div id="selection-panel">
+                <!-- Content changes based on leaderboard type -->
+            </div>
+        </div>
+        <div class="lb-content">
+            <!-- Sidebar -->
+            <div class="sidebar" id="leaderboard-sidebar"></div>
+            <button id="float">
+                <span class="material-icons" id="homeBtn" onclick="goHome()">home</span>
+                <span class="material-icons" id="sweepBtn"
+                    style="background: #222; border-radius: 50px;">chevron_right</span>
+                <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
+                <span class="material-icons" id="scrollToTopBtn">north</span>
+            </button>
+            <div>
+                <div class="lb-container">
+                    <div class="leaderboard-type-selector">
+                        <button id="collectionsBtn">Collections</button>
+                        <button id="slayersBtn">Slayers</button>
                     </div>
-                    <table class="lb-table">
-                        <thead>
-                            <tr id="leaderboard-header">
-                                <th>Rank</th>
-                                <th>Player</th>
-                                <th>Score</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leaderboardData"></tbody>
-                    </table>
+                    <h3 class="lb-h3" id="mainTitle">CraftersMC Leaderboards</h3>
+                    <p>Find out who is at what ranking and how much collection they have using our easy to use tool.</p>
                     <br>
-                    <details>
-                        <summary>What Once Was: A Legacy Remembered</summary>
-                        <hr>
-                        <div class="lb-message">
-                            The first leaderboard website was made by NumberOne230564 and David_R06 using Google
-                            Docs,
-                            which was pretty basic. Later, CraftersMC Guides made it better by designing a new,
-                            nicer
-                            website and got information from the original Google Docs site. This message gives a
-                            shoutout to their work, and we want to make it clear that we didn't gather all the early
-                            data ourselves. Right now, NumberOne230564 and his team run a different website that is
-                            new
-                            and was created after their Google Docs site, while we take care of this other website
-                            and
-                            collect our own data.
+                    <p id="mobileGuide">Click on the icon with 3 different length lines at the top left of the screen to
+                        select any collection and see the top 10 highest ranked players in the collection on the table.
+                    </p>
+                    <br id="mobileGuide">
+                    <p>Select a category and collection to view the top 10 players.</p>
+                    <div class="lb-leaderboard">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h2 class="lb-h2" id="collectionTitle">Select a Collection</h2>
+                            <p id="lastUpdated" style="font-size: 0.8em; color: #ccc;"></p>
                         </div>
-                    </details>
+                        <table class="lb-table">
+                            <thead>
+                                <tr id="leaderboard-header">
+                                    <th>Rank</th>
+                                    <th>Player</th>
+                                    <th>Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboardData"></tbody>
+                        </table>
+                        <br>
+                        <details>
+                            <summary>What Once Was: A Legacy Remembered</summary>
+                            <hr>
+                            <div class="lb-message">
+                                The first leaderboard website was made by NumberOne230564 and David_R06 using Google
+                                Docs,
+                                which was pretty basic. Later, CraftersMC Guides made it better by designing a new,
+                                nicer
+                                website and got information from the original Google Docs site. This message gives a
+                                shoutout to their work, and we want to make it clear that we didn't gather all the early
+                                data ourselves. Right now, NumberOne230564 and his team run a different website that is
+                                new
+                                and was created after their Google Docs site, while we take care of this other website
+                                and
+                                collect our own data.
+                            </div>
+                        </details>
+                    </div>
                 </div>
             </div>
         </div>
@@ -128,16 +141,32 @@
     <div id="footer"></div>
 
     <script>
-        (async () => {
-            const leaderboardDisplayArea = document.getElementById('leaderboard-display-area');
+        const mainSelectionView = document.getElementById('main-selection-view');
+        const leaderboardView = document.getElementById('leaderboard-view');
+
+        function goHome() {
+            leaderboardView.style.display = 'none';
+            mainSelectionView.style.display = 'block';
+        }
+
+        function showLeaderboardView(type) {
+            mainSelectionView.style.display = 'none';
+            leaderboardView.style.display = 'block';
+            initializeLeaderboard(type);
+        }
+
+        const initializeLeaderboard = (function () {
+            let hasInitialized = false;
+            let activeLeaderboardType = 'collections';
+            const dataCache = {};
+
             const collectionTitle = document.getElementById("collectionTitle");
             const leaderboardData = document.getElementById("leaderboardData");
             const selectionPanel = document.getElementById("selection-panel");
             const lastUpdatedP = document.getElementById("lastUpdated");
             const leaderboardHeader = document.getElementById("leaderboard-header");
-
-            let activeLeaderboardType = 'collections';
-            const dataCache = {};
+            const collectionsBtn = document.getElementById("collectionsBtn");
+            const slayersBtn = document.getElementById("slayersBtn");
 
             const config = {
                 collections: {
@@ -210,7 +239,7 @@
                         <div class="lb-collections" id="itemGrid"></div>
                     `;
                 } else { // Slayers
-                     selectionPanel.innerHTML = `
+                    selectionPanel.innerHTML = `
                         <h2 class="lb-h2">Select Slayer</h2>
                         <div class="lb-collections" id="itemGrid"></div>
                     `;
@@ -273,58 +302,81 @@
                     leaderboardData.appendChild(fragment);
                 }
             };
-            
-            window.setLeaderboardType = async (type) => {
-                leaderboardDisplayArea.style.display = 'block';
+
+            async function setLeaderboardType(type, loadDefault = true) {
                 activeLeaderboardType = type;
+                collectionsBtn.classList.toggle('active', type === 'collections');
+                slayersBtn.classList.toggle('active', type === 'slayers');
 
                 renderSelectionPanel();
 
+                if (loadDefault) {
+                    if (type === 'slayers') {
+                        const itemGrid = document.getElementById("itemGrid");
+                        const currentConfig = config.slayers;
+                        itemGrid.innerHTML = Object.keys(currentConfig.categories).map(catName => {
+                            const category = currentConfig.categories[catName];
+                            // Assuming each slayer file has one entry
+                            return `<div class="lb-collection-item" onclick="loadLeaderboard('${catName}', 0)">
+                                        <img src="${category.icon}" alt="${catName}" onerror="this.src='https://placehold.co/32x32/222/fff?text=?';">
+                                    </div>`;
+                        }).join('');
+                    } else {
+                        const firstCategory = Object.keys(config[type].categories)[0];
+                        if (firstCategory) {
+                            await window.switchDisplayCategory(firstCategory);
+                        }
+                    }
+                }
+            }
+
+            collectionsBtn.onclick = () => setLeaderboardType('collections');
+            slayersBtn.onclick = () => setLeaderboardType('slayers');
+
+            return async function (type) {
+                if (hasInitialized && activeLeaderboardType === type) return;
+
+                await setLeaderboardType(type, false);
+
+                const currentConfig = config[type];
+                const lastCategory = getCookie('lastCategory');
+                const lastItemIndex = getCookie('lastItemIndex');
+
+                let categoryToLoad = lastCategory && currentConfig.categories[lastCategory] ? lastCategory : Object.keys(currentConfig.categories)[0];
+
                 if (type === 'slayers') {
                     const itemGrid = document.getElementById("itemGrid");
-                    const currentConfig = config.slayers;
                     itemGrid.innerHTML = Object.keys(currentConfig.categories).map(catName => {
                         const category = currentConfig.categories[catName];
                         return `<div class="lb-collection-item" onclick="loadLeaderboard('${catName}', 0)">
                                     <img src="${category.icon}" alt="${catName}" onerror="this.src='https://placehold.co/32x32/222/fff?text=?';">
                                 </div>`;
                     }).join('');
-                    loadLeaderboard(Object.keys(currentConfig.categories)[0], 0);
-                } else {
-                    const firstCategory = Object.keys(config[type].categories)[0];
-                    if (firstCategory) {
-                        await window.switchDisplayCategory(firstCategory);
-                        const data = await fetchData(config[type].categories[firstCategory].path);
-                        if (data && data.length > 0) {
-                            window.loadLeaderboard(firstCategory, 0);
-                        }
-                    }
-                }
-            }
-
-            // --- Initialization ---
-            async function initialize() {
-                const lastType = getCookie('lastLeaderboardType');
-                if (lastType) {
-                    leaderboardDisplayArea.style.display = 'block';
-                    await setLeaderboardType(lastType);
-                    
-                    const lastCategory = getCookie('lastCategory');
-                    const lastItemIndex = getCookie('lastItemIndex');
-                    const currentConfig = config[lastType];
-
                     if (lastCategory && currentConfig.categories[lastCategory]) {
-                        if (lastType === 'collections') {
-                            await switchDisplayCategory(lastCategory);
-                        }
-                        loadLeaderboard(lastCategory, lastItemIndex ? parseInt(lastItemIndex, 10) : 0);
+                        loadLeaderboard(lastCategory, 0);
+                    } else {
+                        loadLeaderboard(Object.keys(currentConfig.categories)[0], 0);
+                    }
+                } else {
+                    await window.switchDisplayCategory(categoryToLoad);
+                    const data = await fetchData(currentConfig.categories[categoryToLoad].path);
+                    if (data) {
+                        let indexToLoad = lastItemIndex && data[lastItemIndex] ? parseInt(lastItemIndex, 10) : 0;
+                        window.loadLeaderboard(categoryToLoad, indexToLoad);
                     }
                 }
-            }
-
-            initialize();
+                hasInitialized = true;
+            };
         })();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const lastType = getCookie('lastLeaderboardType');
+            if (lastType) {
+                showLeaderboardView(lastType);
+            }
+        });
     </script>
 </body>
 
 </html>
+
