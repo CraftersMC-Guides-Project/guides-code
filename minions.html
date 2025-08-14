@@ -7,9 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Minion Details - CraftersMC Guides</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="css/essential.css">
-  <link rel="stylesheet" href="css/item.css">
-  <link rel="stylesheet" href="css/minion.css">
+  <link rel="stylesheet" href="themes/minecraft/style.css">
 </head>
 
 <body>
@@ -29,14 +27,14 @@
   </button>
   <!--  -->
 
-  <div class="minion-filter-buttons" style="display:flex;gap:10px;justify-content:center;margin:5rem 0;">
-    <button class="btn minion-filter-btn" data-nature="reset">Reset Filter</button>
+  <div class="minion-minion-filter-buttons" style="display:flex;gap:10px;justify-content:center;margin:5rem 0;">
+    <button class="btn item-filter-btn" data-nature="reset">Reset Filter</button>
   </div>
 
-  <div class="item-container" id="minionDetails">
+  <div class="minion-item-container" id="minionDetails">
     <p>Loading minion details...</p>
   </div>
-  <div class="minion-nav-buttons">
+  <div class="minion-minion-nav-buttons">
     <button id="prevMinionBtn" class="btn" type="button">&larr; Previous</button>
     <button id="nextMinionBtn" class="btn" type="button">Next &rarr;</button>
   </div>
@@ -182,34 +180,34 @@
         const sellingPrice = Math.floor(makingCost * (sellPercent / 100));
 
         document.getElementById('minionDetails').innerHTML = `
-          <div class="item-card">
+          <div class="minion-item-card">
             <h1>${name}</h1>
-            <img src="${picture}" alt="${name}" class="item-image">
-            <div class="rarity-dropdown" style="display:flex;align-items:center;justify-content:center;gap:8px;margin:20px 0;">
-              <button class="rarity-arrow left" onclick="MinionManager.changeTier(-1)">
+            <img src="${picture}" alt="${name}" class="minion-item-image">
+            <div class="minion-rarity-dropdown" style="display:flex;align-items:center;justify-content:center;gap:8px;margin:20px 0;">
+              <button class="minion-rarity-arrow left" onclick="MinionManager.changeTier(-1)">
                 <span class="material-icons">chevron_left</span>
               </button>
-              <div class="selected" id="selectedTier" style="min-width:120px;display:inline-flex;align-items:center;justify-content:center;">
+              <div class="minion-selected" id="selectedTier" style="min-width:120px;display:inline-flex;align-items:center;justify-content:center;">
                 <span style="font-size:1.08em;letter-spacing:0.5px;">${selectedTier.toUpperCase()}</span>
               </div>
-              <button class="rarity-arrow right" onclick="MinionManager.changeTier(1)">
+              <button class="minion-rarity-arrow minion-right" onclick="MinionManager.changeTier(1)">
                 <span class="material-icons">chevron_right</span>
               </button>
             </div>
-            <div class="price-container">
-              <div class="price-section">
-                <span class="priceText">Making Cost:</span>
-                <span class="making-price">${makingCost ? makingCost.toLocaleString() + ' coins' : 'Not available'}</span>
+            <div class="minion-price-container">
+              <div class="minion-price-section">
+                <span class="minion-priceText">Making Cost:</span>
+                <span class="minion-making-price">${makingCost ? makingCost.toLocaleString() + ' coins' : 'Not available'}</span>
               </div>
-              <div class="price-section">
-                <span class="priceText">Selling Price:</span>
-                <span class="selling-price">${sellingPrice !== undefined ? sellingPrice.toLocaleString() + ' coins' : 'Not available'}</span>
+              <div class="minion-price-section">
+                <span class="minion-priceText">Selling Price:</span>
+                <span class="minion-selling-price">${sellingPrice !== undefined ? sellingPrice.toLocaleString() + ' coins' : 'Not available'}</span>
               </div>
             </div>
             <p><strong>Category:</strong> ${category}</p>
             <p><strong>ID:</strong> ${id}</p>
             ${description ? `<p><strong>Description:</strong> ${description}</p>` : ''}
-            <div class="stability">
+            <div class="minion-stability">
               ${this.generateNatureBox(nature)}
               ${this.generateDemandBox(demand)}
             </div>
@@ -287,7 +285,7 @@
         }
 
         return `
-          <div class="nature-pill ${natureText}">
+          <div class="minion-nature-pill ${natureText}">
             ${icon} Market Nature: ${natureText}
           </div>
         `;
@@ -301,8 +299,8 @@
         let color = score >= 7 ? 'limegreen' : score >= 4 ? 'orange' : 'red';
 
         return `
-          <div class="demand-box">
-          <div class="demand-score">
+          <div class="minion-demand-box">
+          <div class="minion-demand-score">
             <strong>Demand:</strong> ${demand}</div>
             <div>
               <div style="width: ${barWidth}%; background-color: ${color};"></div>
@@ -313,7 +311,7 @@
 
       showError(message) {
         document.getElementById('minionDetails').innerHTML = `
-          <div class="error-message">
+          <div class="minion-error-message">
             <p>${message}</p>
             <a href="index.html">Back to Home</a>
           </div>
@@ -328,13 +326,13 @@
       const urlParams = new URLSearchParams(window.location.search);
       const selectedNature = urlParams.get('nature') || 'all';
       const selectedCategory = urlParams.get('cat');
-      document.querySelectorAll('.minion-filter-btn').forEach(btn => {
+      document.querySelectorAll('.item-filter-btn').forEach(btn => {
         if (btn.getAttribute('data-nature') === selectedNature) {
           btn.classList.add('active');
         } else if (selectedNature === null && btn.getAttribute('data-nature') === 'all') {
-          btn.classList.add('active');
+          btn.classList.add('minion-active');
         } else {
-          btn.classList.remove('active');
+          btn.classList.remove('minion-active');
         }
         btn.onclick = function () {
           let base = window.location.pathname + '?minion=' + urlParams.get('minion');
