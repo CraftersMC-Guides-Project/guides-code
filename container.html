@@ -1,77 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <style>
-      body {
-        background: #000;
-        justify-content: center;
-        align-items: center;
-        display: flex;
-      }
-      .container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 50vh;
-        background-color: #c6c6c6;
-        width: 42vh;
-        flex-direction: column;
-        border-top: 5px solid white;
-        border-left: 5px solid white;
-        border-bottom: 5px solid #8d8d8d;
-        border-right: 5px solid #8d8d8d;
-        border-radius: 8px;
-      }
-      .inner-container {
-        width: 90%;
-        height: 75%;
-        background-color: #8b8b8b;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(3, 1fr);
 
-        /* border-right: 4px solid #fff;
-            border-bottom: 4px solid #fff;
-            border-left: 4px solid #363636;
-            border-top: 4px solid #363636; */
-      }
-      .upper {
-        width: 100%;
-        height: 25px;
-        background-color: #c6c6c6;
-      }
-      .slot {
-        background-color: #8b8b8b;
-        border-right: 4px solid #fff;
-        border-bottom: 4px solid #fff;
-        border-left: 4px solid #363636;
-        border-top: 4px solid #363636;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 24px;
-        color: #000;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="upper"></div>
-      <div class="inner-container">
-        <div class="slot"></div>
-        <div class="slot"></div>
-        <div class="slot"></div>
-        <div class="slot"></div>
-        <div class="slot"></div>
-        <div class="slot"></div>
-        <div class="slot"></div>
-        <div class="slot"></div>
-        <div class="slot"></div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minecraft Inventory</title>
+  <style>
+    /* Variables replaced with values */
+    body,
+    html {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Inventory border setup */
+    .mc-gui {
+      display: grid;
+      grid-template-columns: 2px 2px auto 2px 2px;
+      grid-template-rows: 2px 2px auto 2px 2px;
+      grid-template-areas:
+        "tl-tl tr-tl t tl-tr tr-tr"
+        "bl-tl br-tl t bl-tr br-tr"
+        "l l inv r r"
+        "tl-bl tr-bl b tl-br tr-br"
+        "bl-bl br-bl b bl-br br-br";
+    }
+
+    /* Border effects */
+    .s-br {
+      box-shadow: 2px 0 0 black, 0 2px 0 black;
+    }
+
+    .s-bl {
+      box-shadow: -2px 0 0 black, 0 2px 0 black;
+    }
+
+    .s-tr {
+      box-shadow: 0 -2px 0 black, 2px 0 0 black;
+    }
+
+    .s-tl {
+      box-shadow: 0 -2px 0 black, -2px 0 0 black;
+    }
+
+    /* Sides */
+    .top {
+      grid-area: t;
+      box-shadow: 0 -2px 0 black;
+      background-color: #ffffff;
+    }
+
+    .left {
+      grid-area: l;
+      box-shadow: -2px 0 0 black;
+      background-color: #ffffff;
+    }
+
+    .right {
+      grid-area: r;
+      box-shadow: 2px 0 0 black;
+      background-color: #555555;
+    }
+
+    .bottom {
+      grid-area: b;
+      box-shadow: 0 2px 0 black;
+      background-color: #555555;
+    }
+
+    .middle {
+      background-color: #c6c6c6;
+      grid-area: inv;
+    }
+
+    /* Extra corners */
+    .tl-tl {
+      grid-area: tl-tl;
+      background-color: #ffffff;
+      position: relative;
+      bottom: -4px;
+      right: -4px;
+    }
+
+    .br-br {
+      grid-area: br-br;
+      background-color: #555555;
+      position: relative;
+      top: -4px;
+      left: -4px;
+    }
+
+    /* Top left corner */
+    .bl-tl,
+    .tr-tl,
+    .br-tl {
+      background-color: #ffffff;
+    }
+
+    .bl-tl {
+      grid-area: bl-tl;
+    }
+
+    .tr-tl {
+      grid-area: tr-tl;
+    }
+
+    .br-tl {
+      grid-area: br-tl;
+    }
+
+    /* Top right */
+    .bl-tr {
+      grid-area: bl-tr;
+      background-color: #c6c6c6;
+    }
+
+    /* Bottom left */
+    .tr-bl {
+      grid-area: tr-bl;
+      background-color: #c6c6c6;
+    }
+
+    /* Bottom right */
+    .tr-br,
+    .tl-br,
+    .bl-br {
+      background-color: #555555;
+    }
+
+    .tr-br {
+      grid-area: tr-br;
+    }
+
+    .tl-br {
+      grid-area: tl-br;
+    }
+
+    .bl-br {
+      grid-area: bl-br;
+    }
+
+    /* Inventory layout */
+    .inventory {
+      padding: 0.4rem;
+      display: grid;
+    }
+
+    /* Middle inventory cells */
+    .inventory .middle {
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+    }
+
+    /* Grid cells */
+    .cell {
+      box-shadow: inset 2px 2px 0 0 #373737,
+        inset -2px -2px 0 0 #ffffff;
+      background-color: #8b8b8b;
+      height: 2rem;
+      width: 2rem;
+      position: relative;
+    }
+
+    .cell:hover {
+      background-color: #a1a1a1;
+    }
+
+    .cell::before,
+    .cell::after {
+      content: "";
+      height: 2px;
+      width: 2px;
+      background-color: #8b8b8b;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+    .cell::after {
+      top: auto;
+      right: auto;
+      left: 0;
+      bottom: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="mc-gui">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="bottom"></div>
+    <div class="top"></div>
+
+    <div class="tl-tl"></div>
+    <div class="tr-tl s-tl"></div>
+    <div class="bl-tl s-tl"></div>
+    <div class="br-tl"></div>
+
+    <div class="tr-bl s-bl"></div>
+
+    <div class="bl-tr s-tr"></div>
+
+    <div class="tl-br"></div>
+    <div class="tr-br s-br"></div>
+    <div class="bl-br s-br"></div>
+    <div class="br-br"></div>
+    <div class="inventory middle">
+
+      <div class="middle">
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
       </div>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>
