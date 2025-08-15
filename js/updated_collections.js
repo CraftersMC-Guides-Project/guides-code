@@ -51,8 +51,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 10,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Moerderfisch",
+                    "score": "59.5M+"
                 }
             ]
         },
@@ -681,22 +681,22 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "Ashish0809",
-                    "score": "305M+"
+                    "score": "413M+"
                 },
                 {
                     "rank": 2,
+                    "name": "Swagmire2329",
+                    "score": "255M+"
+                },
+                {
+                    "rank": 3,
                     "name": "TXLEGEND111",
                     "score": "210M+"
                 },
                 {
-                    "rank": 3,
+                    "rank": 4,
                     "name": "Gamer_legend746",
                     "score": "169M+"
-                },
-                {
-                    "rank": 4,
-                    "name": "Unknown",
-                    "score": "N/A"
                 },
                 {
                     "rank": 5,
@@ -1302,7 +1302,7 @@ const collectionsData = {
                 {
                     "rank": 2,
                     "name": "sboi146433",
-                    "score": "24.6M+"
+                    "score": "47.1M+"
                 },
                 {
                     "rank": 3,
@@ -1469,12 +1469,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 2,
-                    "name": "Meetgamer76",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
                     "rank": 3,
-                    "name": "Unknown",
+                    "name": "Meetgamer76",
                     "score": "N/A"
                 },
                 {
@@ -1705,7 +1705,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "MythicalPanda30",
+                    "name": "MythicRen13",
                     "score": "N/A"
                 },
                 {
@@ -1980,8 +1980,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "TGJASSIYT (Second Profile)",
+                    "score": "67M+"
                 },
                 {
                     "rank": 4,

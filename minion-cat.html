@@ -7,8 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CraftersMC Minions</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="css/essential.css">
-    <link rel="stylesheet" href="css/categories.css">
+    <link rel="stylesheet" href="themes/minecraft/style.css">
     <script src="js/script.js"></script>
 </head>
 
@@ -68,21 +67,21 @@
                 const itemsHTML = filtered.map(item => {
                     // Add nature to the minion link
                     return `
-                        <div class="item-card" onclick="window.location.href='minions.html?minion=${String(item.id).padStart(2, '0')}&nature=${encodeURIComponent(currentNature)}'">
+                        <div class="category-item-card" onclick="window.location.href='minions.html?minion=${String(item.id).padStart(2, '0')}&nature=${encodeURIComponent(currentNature)}'">
                             <h2>${item.name}</h2>
-                            <div class="main-data">
+                            <div class="category-main-data">
                                 ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
-                                <div class="main-data-val">
+                                <div class="category-main-data-val">
                                     <p><strong>Category:</strong> ${item.category}</p>
                                     <p><strong>ID:</strong> ${item.id}</p>
-                                    ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
+                                    ${item.nature ? `<p class="category-nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
                                 </div>
                             </div>
                             ${item.description ? `<p>${item.description}</p>` : ''}
                         </div>
                     `;
                 }).join('');
-                document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
+                document.getElementById('categoryItems').innerHTML = `<div class="category-item-list">${itemsHTML}</div>`;
             } else {
                 document.getElementById('categoryItems').innerHTML = '<p>No minions found.</p>';
             }

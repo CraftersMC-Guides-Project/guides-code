@@ -15,8 +15,7 @@
     <meta name="theme-color" content="#007bff">
     <title>Collections Leaderboards</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="css/essential.css">
-    <link rel="stylesheet" href="css/collections-leaderboards.css">
+    <link rel="stylesheet" href="themes/minecraft/style.css">
     <script src="js/script.js"></script>
     <script src="js/updated_collections.js"></script>
 </head>
@@ -27,7 +26,7 @@
         <div></div>
         <div></div>
     </div>
-    <div class="background"></div>
+    <div class="col-lb-background"></div>
     <div id="sidebar-overlay" onclick="overlay()"></div>
     <!-- Navbar -->
     <div class="custom-navbar">
@@ -43,25 +42,25 @@
         </div>
     </div>
     <div id="sidelid" class="sidelid">
-        <h2>Select Category</h2>
-        <div class="tabs">
-            <a class="tab active" href="javascript:void(0)" onclick="switchCategory('Mining')">
+        <h2 class="lb-h2">Select Category</h2>
+        <div class="lb-tabs">
+            <a class="lb-tab active" href="javascript:void(0)" onclick="switchCategory('Mining')">
                 <img src="assets/mining/pickaxe.png" width="30" alt="Pickaxe">
             </a>
-            <a class="tab" href="javascript:void(0)" onclick="switchCategory('Farming')">
+            <a class="lb-tab" href="javascript:void(0)" onclick="switchCategory('Farming')">
                 <img src="assets/farming/hoe.png" width="30" alt="Hoe">
             </a>
-            <a class="tab" href="javascript:void(0)" onclick="switchCategory('Combat')">
+            <a class="lb-tab" href="javascript:void(0)" onclick="switchCategory('Combat')">
                 <img src="assets/combat/sword.png" width="30" alt="Sword">
             </a>
-            <a class="tab" href="javascript:void(0)" onclick="switchCategory('Foraging')">
+            <a class="lb-tab" href="javascript:void(0)" onclick="switchCategory('Foraging')">
                 <img src="assets/foraging/axe.png" width="30" alt="Axe">
             </a>
         </div>
-        <h2>Select Item</h2>
-        <div class="collections" id="collectionGrid"></div>
+        <h2 class="lb-h2">Select Item</h2>
+        <div class="lb-collections" id="collectionGrid"></div>
     </div>
-    <div class="content">
+    <div class="lb-content">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar"></div>
         <button id="float">
@@ -75,22 +74,22 @@
             <!-- <script async
                 src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
                 crossorigin="anonymous"></script>
-            <ins class="adsbygoogle" style="display:block;width:90%;height:100px;z-index: 9999999;"
+            <ins class="lb-adsbygoogle" style="display:block;width:90%;height:100px;z-index: 9999999;"
                 data-ad-client="ca-pub-3105845866547691" data-ad-slot="9849702725"></ins>
             <script>
                 (adsbygoogle = window.adsbygoogle || []).push({});
             </script> -->
-            <div class="container">
-                <h3>CraftersMC Collections Leaderboards</h3>
+            <div class="lb-container">
+                <h3 class="lb-h3" class="lb-h3">CraftersMC Collections Leaderboards</h3>
                 <p>Find out who is at what ranking and how much collection they have using our easy to use tool.</p><br>
                 <p id="mobileGuide">Click on the icon with 3 different length lines at the top left of the screen to
                     select any collection and see the top 10 highest ranked players in the collection on the table.</p>
                 <br id="mobileGuide">
                 <p>Select a category and collection to view the top 10 players.</p>
 
-                <div class="leaderboard">
-                    <h2 id="collectionTitle">Select a Collection</h2>
-                    <table>
+                <div class="lb-leaderboard">
+                    <h2 class="lb-h2" id="collectionTitle">Select a Collection</h2>
+                    <table class="lb-table">
                         <thead>
                             <tr>
                                 <th>Rank</th>
@@ -155,7 +154,7 @@
                     <details>
                         <summary>What Once Was: A Legacy Remembered</summary>
                         <hr>
-                        <div class="message">
+                        <div class="lb-message">
                             The first leaderboard website was made by NumberOne230564 and David_R06 using Google Docs,
                             which was pretty basic. Later, CraftersMC Guides made it better by designing a new, nicer
                             website and got information from the original Google Docs site. This message gives a
@@ -178,7 +177,7 @@
             loadCollections(defaultCategory);
 
             function loadCategories() {
-                const tabsContainer = document.querySelector(".tabs");
+                const tabsContainer = document.querySelector(".lb-tabs");
                 tabsContainer.innerHTML = "";
 
                 const categoryIcons = {
@@ -190,7 +189,7 @@
 
                 Object.keys(collectionsData).forEach((category, index) => {
                     let tab = document.createElement("a");
-                    tab.classList.add("tab");
+                    tab.classList.add("lb-tab");
                     if (index === 0) tab.classList.add("active");
                     tab.href = "javascript:void(0)";
                     tab.onclick = () => switchCategory(category);
@@ -206,9 +205,9 @@
             }
 
             function switchCategory(category) {
-                document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+                document.querySelectorAll(".lb-tab").forEach(tab => tab.classList.remove("active"));
 
-                const tabs = document.querySelectorAll(".tab");
+                const tabs = document.querySelectorAll(".lb-tab");
                 const categoryIndex = Object.keys(collectionsData).indexOf(category);
 
                 if (categoryIndex !== -1) {
@@ -226,7 +225,7 @@
 
                 collectionsData[category].forEach((collection, index) => {
                     let item = document.createElement("div");
-                    item.classList.add("collection-item");
+                    item.classList.add("lb-collection-item");
                     item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`; //<p>${collection.name}</p>
                     item.onclick = () => loadLeaderboard(category, index);
                     collectionGrid.appendChild(item);

@@ -5,357 +5,8 @@
   <title>Giveaway Details</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="css/essential.css">
+  <link rel="stylesheet" href="themes/minecraft/style.css">
   <script src="js/script.js"></script>
-  <style>
-    :root {
-      --main-bg: #f5f7fa;
-      --main-text: #1c1c1c;
-      --primary: #007bff;
-      --card-bg: rgba(255, 255, 255, 0.30);
-      --card-border: rgba(255, 255, 255, 0.56);
-      --glass-blur: blur(8.1px);
-      --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-      --card-radius: 16px;
-      --status-active: #37fd12;
-      --status-scheduled: #ffd700;
-      --status-ended: #dc3545;
-      --reward: #ffd700;
-    }
-
-    .darkmode {
-      --main-bg: #252525;
-      --main-text: #f5f5f5;
-      --primary: #66b2ff;
-      --card-bg: rgba(40, 40, 40, 0.69);
-      --card-border: rgba(48, 39, 39, 0.41);
-      --glass-blur: blur(9.7px);
-      --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-      --card-radius: 16px;
-    }
-
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      margin: 0 auto;
-      padding: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .background {
-      background: url("../Backgrounds/IMG_4498.webp");
-      background-color: #847474;
-      background-blend-mode: multiply;
-      background-size: cover;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-    }
-
-    .status-active {
-      color: var(--status-active);
-    }
-
-    .status-scheduled {
-      color: var(--status-scheduled);
-    }
-
-    .status-ended {
-      color: var(--status-ended);
-    }
-
-    .giveaway-details-container {
-      max-width: 1100px;
-      width: 100%;
-      margin: 10rem auto 0 auto;
-    }
-
-    .giveaway-details-card {
-      position: relative;
-      background: #00000070;
-      border: 2px solid #c6c6c6;
-      transition: background 0.3s, color 0.3s, transform 0.2s;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      overflow: hidden;
-      width: 100%;
-      max-width: 500px;
-      margin: 0 auto;
-      animation: fadeIn 0.7s;
-    }
-
-    .giveaway-details-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
-      border-radius: var(--card-radius);
-      z-index: -1;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .giveaway-title {
-      font-size: 1.3rem;
-      color: #242424;
-      margin-bottom: 5px;
-      text-align: center;
-      font-family: 'MyFont';
-      background: #c6c6c6;
-      padding: 10px;
-      box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 3px #777 inset !important;
-    }
-
-    .giveaway-reward {
-      text-align: center;
-      font-weight: 600;
-      color: var(--reward);
-      margin-bottom: 0.5em;
-      font-size: 1.1rem;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    }
-
-    .giveaway-sponsor {
-      text-align: center;
-      font-size: 1em;
-      color: var(--reward);
-      margin-bottom: 8px;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    }
-
-    .active-sponsor {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      color: #ffd700;
-      font-weight: bold;
-      padding: 5px 10px;
-      border-radius: 20px;
-      background: rgba(255, 215, 0, 0.1);
-      border: 1px solid rgba(255, 215, 0, 0.3);
-    }
-
-    .active-sponsor::before {
-      content: '👑';
-      font-size: 1.1em;
-    }
-
-    .giveaway-banner {
-      width: 100%;
-      border-radius: 10px 10px 0 0;
-      max-height: 180px;
-      object-fit: cover;
-      margin-bottom: 10px;
-    }
-
-    .giveaway-description {
-      margin-bottom: 0.5em;
-      opacity: 0.95;
-      text-align: center;
-    }
-
-    .giveaway-meta {
-      font-size: 0.98em;
-      opacity: 0.8;
-      display: flex;
-      flex-direction: column;
-      gap: 0.2em;
-      margin: 1rem 0;
-      padding-left: 2rem;
-    }
-
-    .giveaway-meta span {
-      font-weight: 600;
-    }
-
-    .giveaway-slots {
-      text-align: center;
-      margin-bottom: 0.5em;
-    }
-
-    .alert,
-    .alert-success,
-    .alert-info {
-      padding: 12px 18px;
-      border-radius: 8px;
-      margin: 18px 0 10px 0;
-      font-size: 1.05em;
-      box-shadow: 0 2px 8px 0 var(--glass-shadow);
-      border-left: 5px solid var(--primary);
-      background: #e3f2fd;
-      color: #1565c0;
-      transition: background 0.3s, color 0.3s;
-      margin-left: 2rem;
-      margin-right: 2rem;
-    }
-
-    .alert-success {
-      background: linear-gradient(90deg, #e6ffed 60%, #b2f7cc 100%);
-      color: #137333;
-      border-left: 5px solid #4caf50;
-    }
-
-    .alert-info {
-      background: #e3f2fd;
-      color: #1565c0;
-      border-left: 5px solid var(--primary);
-    }
-
-    .participants-list {
-      margin-top: 2.2em;
-      border-top: 1px solid var(--card-border);
-      padding-top: 1.2em;
-      background: transparent;
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
-
-    .participants-list h3 {
-      margin: 0 0 0.7em 0;
-      font-size: 1.1em;
-      letter-spacing: 1px;
-    }
-
-    .participants-list ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5em;
-    }
-
-    .participants-list li {
-      border: 1px solid var(--card-border);
-      padding: 5px 12px;
-      font-size: 0.98em;
-      margin-bottom: 0.3em;
-      transition: background 0.3s, color 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .special-section {
-      margin-top: 1.5em;
-      padding: 10px;
-      background: rgba(100, 100, 100, 0.1);
-      border-radius: 10px;
-      border-top: 1px dashed var(--card-border);
-    }
-
-    .special-section h3 {
-      color: #aaa;
-      font-style: italic;
-    }
-
-    .role-tag {
-      font-size: 0.7em;
-      color: white;
-      padding: 2px 5px;
-      border-radius: 3px;
-      margin-left: 5px;
-    }
-
-    .dev-tag {
-      background: linear-gradient(90deg, #ff3333, #cc0000);
-    }
-
-    .sp-tag {
-      background: linear-gradient(90deg, #ff9900, #ff6600);
-    }
-
-    .form-group {
-      margin: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 0.7em;
-    }
-
-    .form-group label {
-      font-weight: 500;
-      color: var(--primary);
-      margin-bottom: 0.2em;
-    }
-
-    .form-input {
-      padding: 10px;
-      width: 100%;
-      border: 1.5px solid var(--card-border);
-      border-radius: 6px;
-      background: var(--main-bg);
-      color: var(--main-text);
-      font-size: 1em;
-      transition: border 0.2s, background 0.3s;
-      outline: none;
-    }
-
-    .form-input:focus {
-      border-color: var(--primary);
-      background: #fff;
-    }
-
-    .btn-submit {
-      padding: 10px;
-      cursor: pointer;
-      font-size: 1.08em;
-      font-weight: 600;
-      margin-top: 0.5em;
-      background: #c6c6c6;
-      color: #3c3c3c;
-      box-shadow: 2px 2px 0 0 #ffffff inset,
-        -1px -1px 0px 3px #777 inset;
-      justify-content: space-between;
-      border: 2px solid #2a2a2a;
-      transition: background 0.2s;
-      margin-left: 2rem;
-      margin-right: 2rem;
-    }
-
-    .btn-submit:hover {
-      border: 2px solid #fff;
-      box-shadow: 2px 2px 0 0 #2ccb1d inset,
-        -1px -1px 0px 3px #1d681a inset;
-      background: #218306;
-      color: #fff !important;
-    }
-
-    a {
-      color: var(--primary);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    a:hover {
-      text-decoration: underline;
-      color: #1765c1;
-    }
-
-    @media (max-width: 768px) {
-      .giveaway-details-card {
-        padding: 1.2rem;
-      }
-    }
-  </style>
 </head>
 
 <body>
@@ -364,7 +15,7 @@
     <div></div>
     <div></div>
   </div>
-  <div class="background"></div>
+  <div class="gw-detail-background"></div>
   <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
@@ -374,7 +25,7 @@
     <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
     <span class="material-icons" id="scrollToTopBtn">north</span>
   </button>
-  <div class="giveaway-details-container">
+  <div class="gw-detail-giveaway-details-container">
     <div id="giveaway-content">Loading giveaway details...</div>
   </div>
   <div id="footer"></div>
@@ -444,10 +95,10 @@
       
       let tags = '';
       if (isDev) {
-        tags += '<span class="role-tag dev-tag">[DEV]</span>';
+        tags += '<span class="gw-detail-role-tag gw-detail-dev-tag">[DEV]</span>';
       }
       if (isSponsor) {
-        tags += '<span class="role-tag sp-tag">[SP]</span>';
+        tags += '<span class="gw-detail-role-tag gw-detail-sp-tag">[SP]</span>';
       }
       return tags;
     }
@@ -555,31 +206,31 @@
         let sponsorDisplay = '';
         if (giveaway.sponsor) {
           if (statusClass === 'active') {
-            sponsorDisplay = `<div class="giveaway-sponsor">Sponsored by: <span class="active-sponsor">${giveaway.sponsor}</span></div>`;
+            sponsorDisplay = `<div class="gw-detail-giveaway-sponsor">Sponsored by: <span class="gw-detail-active-sponsor">${giveaway.sponsor}</span></div>`;
           } else {
-            sponsorDisplay = `<div class="giveaway-sponsor">Sponsored by: <b>${giveaway.sponsor}</b></div>`;
+            sponsorDisplay = `<div class="gw-detail-giveaway-sponsor">Sponsored by: <b>${giveaway.sponsor}</b></div>`;
           }
         }
 
         let html = `
-          <div class="giveaway-details-card${statusClass ? ' ' + statusClass : ''}">
-            <div class="giveaway-title">${giveaway.title}</div>
-            <div class="giveaway-reward">🎁 <b>${giveaway.reward}</b></div>
+          <div class="gw-detail-giveaway-details-card${statusClass ? ' ' + statusClass : ''}">
+            <div class="gw-detail-giveaway-title">${giveaway.title}</div>
+            <div class="gw-detail-giveaway-reward">🎁 <b>${giveaway.reward}</b></div>
             ${sponsorDisplay}
-            <div class="giveaway-description">${giveaway.description}</div>
-            <div class="giveaway-meta">
+            <div class="gw-detail-giveaway-description">${giveaway.description}</div>
+            <div class="gw-detail-giveaway-meta">
               <div><span style="color:#37fd12;">Start:</span> ${startFormatted}</div>
               <div><span style="color:#37fd12;">Ends:</span> ${endFormatted}</div>
               <div><span style="color:#37fd12;">Status:</span> 
-                <span class="status-${statusClass}">${statusLabel}</span>
+                <span class="gw-detail-status-${statusClass}">${statusLabel}</span>
               </div>
               <div><span style="color:#37fd12;">Winners: </span><span><b>${giveaway.maxParticipants}</b></span></div>
             </div>
         `;
 
-        if (statusClass === 'ended' && winnerEntries.length > 0) {
+        if (statusLabel === 'Ended' && winnerEntries.length > 0) {
           html += `
-            <div class="alert alert-success" style="background: #ffd22070; color: var(--main-text-color);">
+            <div class="gw-detail-alert alert-success" style="background: #ffd22070; color: var(--main-text-color);">
               🎉 <b>Winner${winnerEntries.length > 1 ? 's' : ''}:</b>
               <ul style="margin: 0.5em 0 0 1.2em; padding: 0;">
                 ${winnerEntries.map(w => {
@@ -593,43 +244,43 @@
 
         if (!hasXbox) {
           html += `
-            <div class="alert alert-info">
+            <div class="gw-detail-alert alert-info">
               You must connect your Xbox account to Discord to participate.
             </div>
-            <button class="btn-submit" onclick="logoutAndRedirect()">Login & Connect Xbox</button>
+            <button class="gw-detail-btn-submit" onclick="logoutAndRedirect()">Login & Connect Xbox</button>
           `;
-        } else if (statusClass === 'ended') {
+        } else if (statusLabel === 'Ended') {
           html += `
-            <div class="alert alert-info">
+            <div class="gw-detail-alert alert-info">
               This giveaway has ended.
             </div>
           `;
-        } else if (statusClass === 'scheduled') {
+        } else if (statusLabel === 'Scheduled') {
           html += `
-            <div class="alert alert-info">
+            <div class="gw-detail-alert alert-info">
               This giveaway is scheduled and has not started yet.
             </div>
           `;
         } else if (userParticipation) {
           const roleTag = getRoleTag(userParticipation.minecraftName, currentSponsor);
           html += `
-            <div class="alert alert-success">
+            <div class="gw-detail-alert alert-success">
               You're participating as: ${userParticipation.minecraftName}${roleTag}
             </div>
           `;
-        } else if (canParticipate && statusClass === 'active') {
+        } else if (canParticipate && statusLabel === 'Active') {
           html += `
-            <form id="participate-form" class="form-group">
+            <form id="participate-form" class="gw-detail-form-group">
               <label for="xbox-username">Minecraft Username:</label>
-              <input type="text" id="xbox-username" class="form-input" value="${user.xbox.name}" readonly>
-              <button type="submit" class="btn-submit">Participate</button>
+              <input type="text" id="xbox-username" class="gw-detail-form-input" value="${user.xbox.name}" readonly>
+              <button type="submit" class="gw-detail-btn-submit">Participate</button>
             </form>
           `;
         }
 
         // Show regular participants
         html += `
-          <div class="participants-list">
+          <div class="gw-detail-participants-list">
             <h3>Participants (${regularParticipants.length})</h3>
             <ul>
               ${regularParticipants.length > 0 ?
@@ -643,7 +294,7 @@
         // Show special members section (devs and current sponsor if they participate)
         if (specialParticipants.length > 0) {
           html += `
-            <div class="special-section">
+            <div class="gw-detail-special-section">
               <h3>Special Members</h3>
               <ul>
                 ${specialParticipants.map(p => {
@@ -659,7 +310,7 @@
         document.getElementById("giveaway-content").innerHTML = html;
 
         const participateForm = document.getElementById("participate-form");
-        if (participateForm && !userParticipation && statusClass === 'active' && hasXbox) {
+        if (participateForm && !userParticipation && statusLabel === 'Active' && hasXbox) {
           participateForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const minecraftUsername = user.xbox && user.xbox.name ? user.xbox.name : null;
@@ -738,8 +389,8 @@
             <p style="font-size:1.08em;margin-bottom:1.2em;">
               It will take <b>10-15 seconds</b> to update your presence.<br>
               In the meantime, check out our 
-              <a href="journey-guides.html" style="color:#007bff;">Guides</a>, 
-              <a href="event-log.html" style="color:#007bff;">Event Log</a>, or other pages!
+              <a class="gw-detail-a" href="journey-guides.html" style="color:#007bff;">Guides</a>, 
+              <a class="gw-detail-a" href="event-log.html" style="color:#007bff;">Event Log</a>, or other pages!
             </p>
             <button onclick="document.getElementById('participation-modal').remove();window.location.reload();" style="background:#007bff;color:#fff;border:none;padding:10px 22px;border-radius:6px;font-size:1em;cursor:pointer;">Close</button>
           </div>

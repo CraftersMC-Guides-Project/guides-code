@@ -171,9 +171,9 @@ function displayEvents() {
 }
 
 function toggleEventContainer() {
-    const content = document.querySelector(".content");
+    const content = document.querySelector(".timer-content");
     content.classList.toggle("show");
-    const collapsible = document.querySelector(".collapsible");
+    const collapsible = document.querySelector(".timer-collapsible");
     displayEvents()
     displayNextEvent();
     if (content.classList.contains("show")) {

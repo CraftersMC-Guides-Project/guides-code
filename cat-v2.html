@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Items</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="css/essential.css">
+    <link rel="stylesheet" href="css/categories.css">
+    <style>
+        /* Special style for Sky Canvas image only */
+        img[alt="Sky Canvas"] {
+            filter: brightness(90%) saturate(95%);
+        }
+    </style>
+    <script src="js/script.js"></script>
+</head>
+
+<body>
+    <div id="loader">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div class="top"></div>
+    <div class="sidebar" id="sidebar"></div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <span class="material-icons" id="scrollToTopBtn">north</span>
+
+    <div id="categoryFilter" style="display: flex; gap: 10px; justify-content: center; margin: 5rem 0;">
+        <button class="btn cat-filter-btn active" data-nature="all" style="padding: 8px;">All</button>
+        <button class="btn cat-filter-btn" data-nature="stable" style="padding: 8px;">Stable</button>
+        <button class="btn cat-filter-btn" data-nature="overpaid" style="padding: 8px;">Overpaid</button>
+        <button class="btn cat-filter-btn" data-nature="underpaid" style="padding: 8px;">Underpaid</button>
+    </div>
+    <div id="categoryItems">
+        <p>Loading items...</p>
+    </div>
+
+    <div id="footer"></div>
+    <script>
+        // Helper to fetch JSON and show clear error messages in console
+        async function fetchAndParseJSON(url) {
+            try {
+                const response = await fetch(url);
+                const text = await response.text();
+
+                try {
+                    return JSON.parse(text);
+                } catch (parseError) {
+                    let lineInfo = "";
+                    let errorMessage = parseError.message;
+                    let match = errorMessage.match(/at position (\d+)/);
+
+                    if (match) {
+                        const position = parseInt(match[1], 10);
+                        const lines = text.substring(0, position).split("\n");
+                        const lineNumber = lines.length;
+                        const columnNumber = lines[lines.length - 1].length + 1;
+
+                        const snippetStart = Math.max(0, lineNumber - 3);
+                        const snippetEnd = Math.min(text.split("\n").length, lineNumber + 2);
+                        const snippet = text.split("\n")
+                            .slice(snippetStart, snippetEnd)
+                            .map((l, i) => `${snippetStart + i + 1}: ${l}`)
+                            .join("\n");
+
+                        lineInfo = `\nFile: ${url}\nLine: ${lineNumber}, Column: ${columnNumber}\n\nContext:\n${snippet}`;
+                    }
+
+                    console.error(
+                        `%c❌ JSON Syntax Error`,
+                        "color: red; font-weight: bold;",
+                        `\nMessage: ${errorMessage}${lineInfo}`
+                    );
+
+                    throw parseError;
+                }
+            } catch (networkError) {
+                console.error(`❌ Failed to load file: ${url}`, networkError);
+                throw networkError;
+            }
+        }
+
+        async function loadCategoryItems() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('cat');
+
+            if (!category) {
+                document.getElementById('categoryItems').innerHTML = '<p>No category specified.</p>';
+                return;
+            }
+
+            try {
+                const marketData = await fetchAndParseJSON('market/market.txt');
+
+                const pricesRes = await fetch('market/mprices.txt');
+                const pricesData = await pricesRes.text();
+
+                const pricesMap = new Map();
+                pricesData.split('\n').forEach((line, idx) => {
+                    const [id, arrayStr] = line.split(':').map(part => part.trim());
+                    if (id && arrayStr) {
+                        try {
+                            const parsedArray = JSON.parse(arrayStr);
+                            if (Array.isArray(parsedArray) && parsedArray.length === 2) {
+                                pricesMap.set(id, parsedArray[1]);
+                            }
+                        } catch (e) {
+                            console.warn(
+                                `Invalid JSON in mprices.txt at line ${idx + 1} for ID "${id}"\nFile: market/mprices.txt\nError: ${e.message}\nLine Content: ${line}`
+                            );
+                        }
+                    }
+                });
+
+                window._allCategoryItems = marketData.filter(item =>
+                    item.category && item.category.toLowerCase() === category.toLowerCase()
+                );
+                renderCategoryItems('all');
+            } catch (error) {
+                console.error('Error loading category items:', error);
+                document.getElementById('categoryItems').innerHTML = '<p>Failed to load items.</p>';
+            }
+        }
+
+        function renderCategoryItems(natureFilter) {
+            const items = window._allCategoryItems || [];
+            let filtered = items;
+            if (natureFilter && natureFilter !== 'all') {
+                filtered = items.filter(item => {
+                    if (!item.nature) return false;
+                    if (natureFilter === 'stable') return item.nature.toUpperCase().includes('STABLE');
+                    if (natureFilter === 'overpaid') return item.nature.toUpperCase().includes('OVERPAID');
+                    if (natureFilter === 'underpaid') return item.nature.toUpperCase().includes('UNDERPAID');
+                    return false;
+                });
+            }
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentCategory = urlParams.get('cat');
+            const currentNature = natureFilter || 'all';
+            if (filtered.length > 0) {
+                const itemsHTML = filtered.map(item => {
+                    const price = 'Unknown';
+                    const isSkyCanvas = item.name === "Sky Canvas";
+                    return `
+                        <div class="item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
+                            <h2>${item.name}</h2>
+                            ${item.picture ? `<div class="main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="sky-canvas-img"' : ''}>` : ''}
+                            <div class="main-data-val"><p><strong>ID:</strong> ${item.id}</p>
+                            ${item.description ? `<p class="description">${item.description}</p>` : ''}
+                            ${item.rarity ? `<p class="rarity-display" id="rarityDisplay"><img class="rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
+                            ${item.nature ? `<p class="nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
+                            ${item.demand ? `<p class="demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
+                            </div></div>
+                        </div>
+                    `;
+                }).join('');
+                document.getElementById('categoryItems').innerHTML = `<div class="item-list">${itemsHTML}</div>`;
+            } else {
+                document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
+            }
+        }
+
+        function formatNature(nature) {
+            let natureText = nature.replace('[', ' ').toLowerCase();
+            natureText = natureText.replace(']', '').replace(/_/g, ' ').trim();
+            return natureText;
+        }
+
+        function formatDemand(demand) {
+            let demandText = demand.replace('[', ' ').toLowerCase();
+            demandText = demandText.replace(']', '').replace(/_/g, ' ').trim();
+            return demandText;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadCategoryItems();
+            document.getElementById('categoryFilter').addEventListener('click', function (e) {
+                if (e.target.classList.contains('cat-filter-btn')) {
+                    document.querySelectorAll('.cat-filter-btn').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    renderCategoryItems(e.target.getAttribute('data-nature'));
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

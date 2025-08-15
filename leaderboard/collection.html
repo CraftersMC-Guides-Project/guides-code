@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" href="../assets/cmc-icon.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Collection Leaderboard">
+    <meta property="og:description"
+        content="Find out who is at what position with how much collection by our friendly-ui tool.">
+    <meta property="og:image"
+        content="https://cdn.discordapp.com/attachments/1320310626232569887/1346040574616010752/collclb384.png?ex=67c6bd79&is=67c56bf9&hm=555f9d6bea96134f32f623e63b67fdbf2b9641ebfe5ee6ab265cc20ae3534ea7&">
+    <meta property="og:url" content="https://craftersmc-guides.pages.dev/leaderboards.html">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#007bff">
+    <title>Collection Leaderboard</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../themes/minecraft/style.css">
+    <script src="../js/script.js"></script>
+</head>
+
+<body>
+    <div id="loader">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div class="col-lb-background"></div>
+    <div id="sidebar-overlay" onclick="overlay()"></div>
+    <!-- Navbar -->
+    <div class="custom-navbar">
+        <div class="left">
+            <div class="button-wrapper">
+                <div class="button-tip" id="tooltip">Click to proceed!</div>
+                <span class="openbtn menu-icon material-icons" onclick="toggleLid()" id="continue-btn">sort</span>
+            </div>
+            <span class="menu-icon material-icons" onclick="toggleSidebar()">menu</span>
+        </div>
+        <div class="right">
+            <a href="../index.html"><img src="../assets/cmc-guides.png"></a>
+        </div>
+    </div>
+    <div id="sidelid" class="sidelid">
+        <h2 class="lb-h2">Select Category</h2>
+        <div class="lb-tabs">
+            <!-- Categories will be loaded here by JavaScript -->
+        </div>
+        <h2 class="lb-h2">Select Item</h2>
+        <div class="lb-collections" id="collectionGrid">
+             <!-- Collections will be loaded here by JavaScript -->
+        </div>
+    </div>
+    <div class="lb-content">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar"></div>
+        <button id="float">
+            <span class="material-icons" id="sweepBtn"
+                style="background: #222; border-radius: 50px;">chevron_right</span>
+            <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
+            <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
+            <span class="material-icons" id="scrollToTopBtn">north</span>
+        </button>
+        <div>
+            <div class="lb-container">
+                <h3 class="lb-h3">CraftersMC Collections Leaderboards</h3>
+                <p>Find out who is at what ranking and how much collection they have using our easy to use tool.</p><br>
+                <p id="mobileGuide">Click on the icon with 3 different length lines at the top left of the screen to
+                    select any collection and see the top 10 highest ranked players in the collection on the table.</p>
+                <br id="mobileGuide">
+                <p>Select a category and collection to view the top 10 players.</p>
+
+                <div class="lb-leaderboard">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 class="lb-h2" id="collectionTitle">Select a Collection</h2>
+                        <p id="lastUpdated" style="font-size: 0.8em; color: #ccc;"></p>
+                    </div>
+                    <table class="lb-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Player</th>
+                                <th>Collection</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardData">
+                            <!-- Data is now loaded dynamically on page load -->
+                        </tbody>
+                    </table>
+                    <br>
+                    <details>
+                        <summary>What Once Was: A Legacy Remembered</summary>
+                        <hr>
+                        <div class="lb-message">
+                            The first leaderboard website was made by NumberOne230564 and David_R06 using Google Docs,
+                            which was pretty basic. Later, CraftersMC Guides made it better by designing a new, nicer
+                            website and got information from the original Google Docs site. This message gives a
+                            shoutout to their work, and we want to make it clear that we didn't gather all the early
+                            data ourselves. Right now, NumberOne230564 and his team run a different website that is new
+                            and was created after their Google Docs site, while we take care of this other website and
+                            collect our own data.
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>
+        <div id="footer"></div>
+    </div>
+    <script>
+        // Using an Immediately Invoked Function Expression (IIFE) to encapsulate code
+        // and avoid polluting the global scope.
+        (async () => {
+            // Store references to key DOM elements to avoid repeated lookups
+            const collectionTitle = document.getElementById("collectionTitle");
+            const leaderboardData = document.getElementById("leaderboardData");
+            const collectionGrid = document.getElementById("collectionGrid");
+            const tabsContainer = document.querySelector(".lb-tabs");
+            const lastUpdatedP = document.getElementById("lastUpdated");
+
+            // Data will be cached here after being fetched
+            const collectionsData = {};
+
+            // Define categories and their data files
+            const categories = {
+                "Mining": { path: '../data/collection/mining.json', icon: '../assets/mining/pickaxe.png' },
+                "Farming": { path: '../data/collection/farming.json', icon: '../assets/farming/hoe.png' },
+                "Combat": { path: '../data/collection/combat.json', icon: '../assets/combat/sword.png' },
+                "Foraging": { path: '../data/collection/foraging.json', icon: '../assets/foraging/axe.png' }
+            };
+
+            // --- Cookie Helper Functions ---
+            function setCookie(name, value, days) {
+                let expires = "";
+                if (days) {
+                    const date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + (value || "") + expires + "; path=/";
+            }
+
+            function getCookie(name) {
+                const nameEQ = name + "=";
+                const ca = document.cookie.split(';');
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+                }
+                return null;
+            }
+
+            // Fetches data for a specific category, using cache if available
+            async function fetchCategoryData(categoryName) {
+                if (collectionsData[categoryName]) {
+                    return collectionsData[categoryName]; // Return from cache
+                }
+                try {
+                    const path = categories[categoryName].path;
+                    const response = await fetch(`${path}?v=${new Date().getTime()}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    collectionsData[categoryName] = data; // Cache the fetched data
+                    return data;
+                } catch (error) {
+                    console.error(`Failed to fetch leaderboard data for ${categoryName}:`, error);
+                    collectionTitle.textContent = `Error: Could not load ${categoryName} data.`;
+                    return null;
+                }
+            }
+
+            // This function now builds the category tabs from our predefined `categories` object
+            function loadCategoryTabs() {
+                tabsContainer.innerHTML = "";
+                Object.keys(categories).forEach(categoryName => {
+                    const tab = document.createElement("a");
+                    tab.className = "lb-tab";
+                    tab.href = "javascript:void(0)";
+                    tab.onclick = () => switchCategory(categoryName);
+
+                    const img = document.createElement("img");
+                    img.src = categories[categoryName].icon;
+                    img.width = 30;
+                    img.alt = categoryName;
+                    img.onerror = () => img.src = 'default-icon.png';
+
+                    tab.appendChild(img);
+                    tabsContainer.appendChild(tab);
+                });
+            }
+            
+            // This function is now async as it waits for data to be fetched
+            window.switchCategory = async (categoryName) => {
+                document.querySelectorAll(".lb-tab").forEach(tab => tab.classList.remove("active"));
+                
+                const categoryIndex = Object.keys(categories).indexOf(categoryName);
+                if (categoryIndex !== -1) {
+                    tabsContainer.children[categoryIndex].classList.add("active");
+                }
+                
+                // Show loading state
+                collectionGrid.innerHTML = "<p>Loading collections...</p>";
+                const categoryData = await fetchCategoryData(categoryName);
+                if (categoryData) {
+                    loadCollections(categoryName);
+                } else {
+                    collectionGrid.innerHTML = `<p>Error loading collections for ${categoryName}.</p>`;
+                }
+            };
+
+            function loadCollections(categoryName) {
+                collectionGrid.innerHTML = "";
+                const collections = collectionsData[categoryName];
+                if (!collections) return;
+
+                collections.forEach((collection, index) => {
+                    const item = document.createElement("div");
+                    item.className = "lb-collection-item";
+                    
+                    const img = document.createElement("img");
+                    img.src = collection.image;
+                    img.alt = collection.name;
+                    img.onerror = () => img.src = 'https://placehold.co/32x32/222/fff?text=?';
+                    
+                    item.appendChild(img);
+                    item.onclick = () => loadLeaderboard(categoryName, index);
+                    collectionGrid.appendChild(item);
+                });
+            }
+
+            function loadLeaderboard(categoryName, index) {
+                setCookie('lastCategory', categoryName, 7);
+                setCookie('lastCollectionIndex', index, 7);
+
+                const collection = collectionsData[categoryName][index];
+                collectionTitle.textContent = `${collection.name} Leaderboard`;
+
+                if (collection.lastUpdated) {
+                    const date = new Date(collection.lastUpdated);
+                    lastUpdatedP.textContent = `Last Updated: ${date.toLocaleDateString()}`;
+                } else {
+                    lastUpdatedP.textContent = '';
+                }
+
+                const fragment = document.createDocumentFragment();
+                if (collection.players && collection.players.length > 0) {
+                    collection.players.forEach(player => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${player.rank}</td><td>${player.name}</td><td>${player.score}</td>`;
+                        fragment.appendChild(tr);
+                    });
+                } else {
+                    for (let i = 1; i <= 10; i++) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${i}</td><td>???</td><td>???</td>`;
+                        fragment.appendChild(tr);
+                    }
+                }
+                leaderboardData.innerHTML = "";
+                leaderboardData.appendChild(fragment);
+                
+                collectionTitle.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            // --- Initialization ---
+            async function initialize() {
+                loadCategoryTabs();
+                
+                const lastCategory = getCookie('lastCategory');
+                const lastCollectionIndex = getCookie('lastCollectionIndex');
+
+                let initialCategory;
+                let initialIndex;
+
+                if (lastCategory && categories[lastCategory] && lastCollectionIndex !== null) {
+                    initialCategory = lastCategory;
+                    initialIndex = parseInt(lastCollectionIndex, 10);
+                } else {
+                    const categoryNames = Object.keys(categories);
+                    initialCategory = categoryNames[Math.floor(Math.random() * categoryNames.length)];
+                    initialIndex = null; // Will pick a random index after fetching
+                }
+
+                // Activate the tab first
+                const categoryIndex = Object.keys(categories).indexOf(initialCategory);
+                if (categoryIndex !== -1) {
+                    tabsContainer.children[categoryIndex].classList.add("active");
+                }
+
+                const initialData = await fetchCategoryData(initialCategory);
+
+                if (initialData) {
+                    loadCollections(initialCategory);
+                    if (initialIndex === null || !initialData[initialIndex]) {
+                        initialIndex = Math.floor(Math.random() * initialData.length);
+                    }
+                    if (initialData[initialIndex]) {
+                       loadLeaderboard(initialCategory, initialIndex);
+                    }
+                }
+            }
+
+            initialize();
+        })();
+    </script>
+</body>
+
+</html>
