@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bingo — 5x5 Expandable Flex Grid</title>
+  <style>
+    :root{
+      --gap: 10px;
+      --card-bg: #0f1724;
+      --card-front-overlay: rgba(0,0,0,0.45);
+      --accent: #7dd3fc;
+      --text: #e6eef8;
+      --base-font: 1.05vw;
+      --min-font: 13px;
+      --max-font: 18px;
+    }
+
+    html,body {
+      height:100%;
+      margin:0;
+      background:#071024;
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      box-sizing: border-box;
+      font-size: clamp(var(--min-font), var(--base-font), var(--max-font));
+    }
+    .page {
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      box-sizing:border-box;
+      gap:20px;
+      flex-direction:column;
+    }
+
+    h1{margin:0 0 6px;font-size:1.6rem;color:var(--accent)}
+    p.lead{margin:0 0 18px;color:#9fb7cc;font-size:0.95rem}
+
+    .bingo-wrap {
+      width: 100%;
+      max-width: 600px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      align-items:center;
+    }
+
+    /* Bingo grid: always 5x5, always fits container, no overflow */
+    .bingo-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0;
+      width: 100%;
+      max-width: 98vw;
+      background: #0a1628;
+      border-radius: 12px;
+      box-sizing: border-box;
+      overflow-x: hidden;
+      position: relative;
+      /* Remove aspect-ratio so grid can grow vertically */
+    }
+
+    /* Card: always square, fills grid cell */
+    .card {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: var(--card-bg);
+      border-radius:10px;
+      overflow:hidden;
+      position:relative;
+      box-shadow: 0 4px 12px rgba(2,6,23,0.3), 0 1px 0 rgba(255,255,255,0.02) inset;
+      transition: box-shadow 300ms cubic-bezier(.2,.9,.2,1), transform 300ms cubic-bezier(.2,.9,.2,1), font-size 0.2s;
+      cursor:pointer;
+      display:flex;
+      flex-direction:column;
+      min-width: 0;
+      min-height: 0;
+      border: 2px solid transparent;
+      outline: none;
+      font-size: clamp(var(--min-font), 1.2vw, var(--max-font));
+      grid-column: auto;
+      grid-row: auto;
+      z-index: 1;
+      height: auto; /* Let aspect-ratio control height */
+    }
+
+    .card:focus {
+      border-color: var(--accent);
+      z-index: 2;
+    }
+
+    /* Card front: image and title */
+    .card .front {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-start;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      padding: 0;
+      font-size: inherit;
+    }
+    .card .front::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.05) 60%, rgba(0,0,0,0.45) 100%);
+      pointer-events: none;
+    }
+    .card .front .title {
+      position: relative;
+      z-index: 1;
+      background: var(--card-front-overlay);
+      padding:6px 10px;
+      border-radius:6px 6px 0 0;
+      font-weight:600;
+      font-size: clamp(0.9rem, 1.2vw, 1.2rem);
+      margin: 0 0 8px 0;
+      color: var(--accent);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    /* Details area: expands below card when expanded */
+    .card .details {
+      display: none;
+      position: static;
+      background: linear-gradient(180deg, rgba(10,20,34,0.96), rgba(5,10,18,0.98));
+      color:#d7eefc;
+      padding: 18px 14px 14px 14px;
+      font-size: clamp(0.95rem, 1.1vw, 1.15rem);
+      line-height:1.5;
+      border-radius: 10px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(2,6,23,0.12);
+      margin-top: 0;
+      margin-bottom: 0;
+      animation: fadeIn 0.3s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98);}
+      to { opacity: 1; transform: scale(1);}
+    }
+
+    /* Expanded card: grows in place, pushes others down, but remains square */
+    .card.expanded {
+      grid-column: 1 / -1;
+      grid-row: auto;
+      aspect-ratio: auto;
+      z-index: 2;
+      box-shadow: 0 8px 32px rgba(2,6,23,0.18);
+      font-size: clamp(var(--min-font), 1.5vw, 1.25rem);
+      transition: box-shadow 0.3s, font-size 0.2s;
+      min-height: 420px;
+      max-height: 600px;
+      height: auto;
+      /* Remove fixed height so content can grow vertically */
+    }
+    .card.expanded .details {
+      display: block;
+      margin-top: 0;
+      margin-bottom: 0;
+      max-height: none;
+      overflow-y: auto;
+    }
+
+    /* Responsive: grid always fits, cards always square */
+    @media (max-width: 700px) {
+      .bingo-wrap {max-width: 98vw;}
+      .bingo-grid {max-width: 98vw;}
+      html,body {font-size: clamp(12px, 2vw, 16px);}
+      .card.expanded {
+        min-height: 320px;
+        max-height: 420px;
+      }
+    }
+    @media (max-width: 480px) {
+      .bingo-wrap {max-width: 100vw;}
+      .bingo-grid {max-width: 100vw; gap: 5px;}
+      .card .details {padding: 10px 6px;}
+      .card .front .title {font-size:clamp(0.85rem, 2vw, 1rem);}
+      html,body {font-size: clamp(11px, 3vw, 15px);}
+      .card.expanded {
+        min-height: 160px;
+        max-height: 320px;
+      }
+    }
+
+    .legend {display:flex;gap:12px;align-items:center;font-size:0.9rem;color:#9fb7cc}
+    .legend .dot{width:12px;height:12px;border-radius:999px;background:linear-gradient(90deg,#10b981,#059669);box-shadow:0 0 8px rgba(5,150,105,0.3)}
+
+    .card.row-claimed,
+    .card.col-claimed {
+      border: 2px solid #ff4444 !important;
+      box-shadow: 0 0 0 4px #ff444433;
+      background: linear-gradient(180deg, #2c0a0a 0%, #0f1724 100%);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>Bingo Card — 5 × 5 Challenges</h1>
+    <p class="lead">Click any square to expand and read the challenge. Mark it complete when done.</p>
+
+    <div class="bingo-wrap">
+      <div class="legend"><span class="dot"></span><span>Completed</span></div>
+
+      <div class="bingo-grid" id="bingoGrid" role="grid" aria-label="Bingo card">
+        <!-- cards added by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const grid = document.getElementById('bingoGrid');
+
+    fetch('bingo.txt')
+      .then(res => res.text())
+      .then(txt => {
+        let challenges;
+        try {
+          challenges = JSON.parse(txt);
+        } catch(e) {
+          challenges = [];
+        }
+        challenges.sort((a, b) => a.id - b.id);
+
+        // Render cards
+        challenges.forEach((obj, i) => {
+          const card = document.createElement('button');
+          card.className = 'card';
+          card.type = 'button';
+          card.setAttribute('role','gridcell');
+          card.setAttribute('aria-expanded','false');
+          card.setAttribute('data-index', String(obj.id));
+          card.tabIndex = 0;
+
+          const imgUrl = obj.image;
+
+          // Teams HTML
+          let teamsHtml = '';
+          if (Array.isArray(obj.teams) && obj.teams.length > 0) {
+            teamsHtml = `<div style="margin:10px 0 8px 0;">
+              <strong>Teams completed:</strong>
+              <ul style="margin:6px 0 0 16px; padding:0; color:#bfe9ff; font-size:0.98em;">
+                ${obj.teams.map(team => `<li>${team}</li>`).join('')}
+              </ul>
+            </div>`;
+          } else {
+            teamsHtml = `<div style="margin:10px 0 8px 0; color:#93bfd1;">
+              <strong>Teams completed:</strong> <span>No teams have completed this yet.</span>
+            </div>`;
+          }
+
+          card.innerHTML = `
+            <div class="front" style="background-image:url('${imgUrl}');">
+              <div class="title">Challenge ${obj.id}</div>
+            </div>
+            <div class="details" aria-hidden="true">
+              <div class="meta">
+                <div class="badge">#${obj.id}</div>
+                <div style="flex:1;font-weight:700;color:#dff8ff">${obj.challenge}</div>
+              </div>
+              <p>${describeChallenge(obj.challenge)}</p>
+              ${teamsHtml}
+              <small>Tip: click "Mark Complete" when you finish this challenge.</small>
+              <div style="display:flex;justify-content:flex-end;">
+                <button class="complete-btn" type="button" aria-pressed="false">Mark Complete</button>
+              </div>
+            </div>
+          `;
+
+          // Only one expanded at a time
+          card.addEventListener('click', (e) => {
+            if (e.target.closest('.complete-btn')) return;
+            const expanded = card.classList.contains('expanded');
+            document.querySelectorAll('.card.expanded').forEach(c => {
+              if (c !== card) {
+                c.classList.remove('expanded');
+                c.setAttribute('aria-expanded','false');
+                c.querySelector('.details').setAttribute('aria-hidden','true');
+              }
+            });
+            if (expanded) {
+              card.classList.remove('expanded');
+              card.setAttribute('aria-expanded','false');
+              card.querySelector('.details').setAttribute('aria-hidden','true');
+            } else {
+              card.classList.add('expanded');
+              card.setAttribute('aria-expanded','true');
+              card.querySelector('.details').setAttribute('aria-hidden','false');
+              // No scrollIntoView needed, expanded card pushes others down
+            }
+          });
+
+          card.addEventListener('keydown', (ev) => {
+            if (ev.key === 'Enter' || ev.key === ' ') {
+              ev.preventDefault();
+              card.click();
+            } else if (ev.key === 'Escape') {
+              card.classList.remove('expanded');
+              card.setAttribute('aria-expanded','false');
+              card.querySelector('.details').setAttribute('aria-hidden','true');
+            }
+          });
+
+          card.addEventListener('click', (ev) => {
+            const btn = ev.target.closest('.complete-btn');
+            if (!btn) return;
+            ev.stopPropagation();
+            const completed = card.classList.toggle('completed');
+            btn.setAttribute('aria-pressed', String(completed));
+            btn.textContent = completed ? 'Completed' : 'Mark Complete';
+          });
+
+          grid.appendChild(card);
+        });
+
+        // --- ROW CLAIM LOGIC ---
+        // After rendering, check each row for a full claim by one team
+        const cards = Array.from(grid.children);
+        // Rows
+        for (let row = 0; row < 5; row++) {
+          const start = row * 5;
+          const end = start + 5;
+          const rowChallenges = challenges.slice(start, end);
+          const teamsPerChallenge = rowChallenges.map(ch => ch.teams);
+          let uniqueTeams = teamsPerChallenge.reduce((acc, arr) => {
+            arr.forEach(team => acc.add(team));
+            return acc;
+          }, new Set());
+          if (uniqueTeams.size === 1 && teamsPerChallenge.every(arr => arr.length === 1 && arr[0] === [...uniqueTeams][0])) {
+            const teamName = [...uniqueTeams][0];
+            for (let i = start; i < end; i++) {
+              cards[i].classList.add('row-claimed');
+              const details = cards[i].querySelector('.details');
+              const msg = `<div style="margin:12px 0 0 0; color:#ff4444; font-weight:bold;">
+                Row claimed by ${teamName}. No other teams can claim this row.
+              </div>`;
+              details.insertAdjacentHTML('beforeend', msg);
+            }
+          }
+        }
+        // --- COLUMN CLAIM LOGIC ---
+        for (let col = 0; col < 5; col++) {
+          // Get indices for this column
+          const colChallenges = [];
+          for (let r = 0; r < 5; r++) {
+            colChallenges.push(challenges[r * 5 + col]);
+          }
+          const teamsPerChallenge = colChallenges.map(ch => ch.teams);
+          let uniqueTeams = teamsPerChallenge.reduce((acc, arr) => {
+            arr.forEach(team => acc.add(team));
+            return acc;
+          }, new Set());
+          if (uniqueTeams.size === 1 && teamsPerChallenge.every(arr => arr.length === 1 && arr[0] === [...uniqueTeams][0])) {
+            const teamName = [...uniqueTeams][0];
+            for (let r = 0; r < 5; r++) {
+              const idx = r * 5 + col;
+              cards[idx].classList.add('col-claimed');
+              const details = cards[idx].querySelector('.details');
+              const msg = `<div style="margin:12px 0 0 0; color:#ff4444; font-weight:bold;">
+                Column claimed by ${teamName}. No other teams can claim this column.
+              </div>`;
+              details.insertAdjacentHTML('beforeend', msg);
+            }
+          }
+        }
+        // --- END CLAIM LOGIC ---
+      });
+
+    function describeChallenge(text){
+      return text + " — Complete the task described. Make sure to follow event rules and be respectful to other players.";
+    }
+
+    document.addEventListener('click', (e) => {
+      const inside = e.target.closest('.bingo-grid');
+      if (!inside) {
+        document.querySelectorAll('.card.expanded').forEach(c => {
+          c.classList.remove('expanded');
+          c.setAttribute('aria-expanded','false');
+          c.querySelector('.details').setAttribute('aria-hidden','true');
+        });
+      }
+    });
+  </script>
+</body>
