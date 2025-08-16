@@ -28,6 +28,11 @@
   <div class="gw-detail-giveaway-details-container">
     <div id="giveaway-content">Loading giveaway details...</div>
   </div>
+
+  <div id="top-right-ui-container"><div id="profile-card-container"></div></div>
+<style>#top-right-ui-container{position:fixed;top:80px;right:20px;z-index:1001;display:flex;flex-direction:column;align-items:flex-end;gap:10px}.profile-card{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.5);padding:8px 12px;border-radius:50px;color:#fff;text-decoration:none}.profile-card:hover{background:rgba(0,0,0,.8)}.profile-card-avatar{width:32px;height:32px;border-radius:50%}.profile-card-name{font-weight:500;font-size:14px}.dev-label{color:#ff4d4d;font-weight:700;margin-left:5px}@media(max-width:768px){#top-right-ui-container{top:65px;right:10px;gap:8px}.profile-card{padding:4px 8px}.profile-card-avatar{width:28px;height:28px}.profile-card-name{font-size:12px}}</style>
+<script>function gC(n){return document.cookie.split("; ").reduce((r,v)=>{let p=v.split("=");return p[0]===n?decodeURIComponent(p[1]):r},"")}async function lPC(){let u=gC("discordUser"),c=document.getElementById("profile-card-container"),d=[];try{let r=await fetch("/devs.txt");if(r.ok){let t=await r.text();d=t.split("\n").map(i=>i.trim()).filter(i=>i)}}catch{}if(u){let j=JSON.parse(u),n=j.global_name||j.username,e=d.includes(j.id),a=`https://cdn.discordapp.com/avatars/${j.id}/${j.avatar}.png`;c.innerHTML=`<a href="/profile" class="profile-card"><img src="${a}" class="profile-card-avatar"><span class="profile-card-name">${n}${e?" <span class='dev-label'>[DEV]</span>":""}</span></a>`}else c.innerHTML=""}document.addEventListener("DOMContentLoaded",lPC);</script>
+
   <div id="footer"></div>
   <script>
     // The hardcoded developer list is now removed.
