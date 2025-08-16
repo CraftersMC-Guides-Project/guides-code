@@ -65,6 +65,13 @@
           });
 
           if (item) {
+            if (!item.public) {
+              document.getElementById('itemDetails').innerHTML = `
+                <h2 style="color:red;">Error: This item doesn't exist.</h2>
+              `;
+              return;
+            }
+
             const itemDetailsDiv = document.getElementById('itemDetails');
             const marketPrice = pricesMap.get(item.id) || item.price || "N/A";
             const npcPrice = npcPricesMap.get(item.id) || "N/A";
@@ -79,9 +86,16 @@
                 <p class="item-price"><strong class="item-strong">NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>
               </div>
             `;
+          } else {
+            document.getElementById('itemDetails').innerHTML = `
+              <h2 style="color:red;">Error: This item doesn't exist.</h2>
+            `;
           }
         } catch (error) {
           console.error('Error loading item details:', error);
+          document.getElementById('itemDetails').innerHTML = `
+            <h2 style="color:red;">Error: Could not load item details.</h2>
+          `;
         }
       }
     }
@@ -93,7 +107,6 @@
       return `<span class="item-price-img">${Number(price).toLocaleString()} <img src="img/coin.png" alt="Coin"></span>`;
     }
 
-    // Simple Prev/Next Navigation by Incrementing/Decrementing ID
     document.getElementById("prevItemBtn").addEventListener("click", () => {
       const urlParams = new URLSearchParams(window.location.search);
       let id = parseInt(urlParams.get("item"), 10);
