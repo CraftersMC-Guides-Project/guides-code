@@ -20,6 +20,11 @@
       color: white;
       border-radius: 4px;
     }
+    .dev-label {
+      color: #ff4d4d;
+      font-weight: bold;
+      margin-left: 5px;
+    }
   </style>
 </head>
 
@@ -93,9 +98,21 @@
 
 
     // --- Profile Display Functions ---
-    function loadProfile() {
+    async function loadProfile() {
       const storedUser = getCookie("discordUser");
       const profileElement = document.getElementById("profile");
+
+      // Fetch the list of developer IDs from devs.txt
+      let devIds = [];
+      try {
+          const response = await fetch('/devs.txt'); // Assuming the file is in the root directory
+          if (response.ok) {
+              const text = await response.text();
+              devIds = text.split('\n').map(id => id.trim()).filter(id => id); // Create an array of dev IDs
+          }
+      } catch (error) {
+          console.error('Could not load or parse devs.txt:', error);
+      }
 
       if (!storedUser) {
         profileElement.innerHTML = `
@@ -120,7 +137,9 @@
       const displayName = user.global_name || user.username;
       const firstLogin = user.first_login ? new Date(user.first_login).toLocaleString() : 'Unknown';
       const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Unknown';
-      const isDev = user.id === '783972385882767400';
+      
+      // Check if the current user's ID is in the dev list
+      const isDev = devIds.includes(user.id);
 
       // --- Developer Settings Card (only shown if isDev is true) ---
       let devSettingsCard = '';
@@ -141,7 +160,7 @@
       profileElement.innerHTML = `
       <div class="profile-header">
         <img class="profile-avatar" src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="User Avatar" id="avatar" crossorigin="anonymous">
-        <h2 class="profile-name">${displayName} ${isDev ? '<span style="color:red;">[DEV]</span>' : ''}</h2>
+        <h2 class="profile-name">${displayName} ${isDev ? '<span class="dev-label">[DEV]</span>' : ''}</h2>
       </div>
       <div class="profile-details">
         <div class="profile-detail-card">
@@ -190,9 +209,9 @@
     }
 
     // --- Page Load Logic ---
-    window.onload = () => {
+    window.onload = async () => {
       // First, create the profile HTML. This is essential because it adds the theme buttons to the page.
-      loadProfile();
+      await loadProfile();
 
       // Now that the buttons exist, get the saved theme from the cookie.
       const savedTheme = getCookie('theme');
