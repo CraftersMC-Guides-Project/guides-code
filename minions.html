@@ -8,6 +8,118 @@
   <title>Minion Details - CraftersMC Guides</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="themes/minecraft/style.css">
+  <script src="js/script.js"></script>
+  <style>
+    /* Profile Card and Dev Button Styles */
+    #top-right-ui-container {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        z-index: 1001;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+    }
+
+    .profile-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 8px 12px;
+      border-radius: 50px;
+      color: white;
+      text-decoration: none;
+      transition: background-color: 0.3s;
+    }
+
+    .profile-card:hover {
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .profile-card-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+
+    .profile-card-name {
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .dev-label {
+      color: #ff4d4d;
+      font-weight: bold;
+      margin-left: 5px;
+    }
+
+    .dev-btn {
+        background-color: #313131;
+        color: #FFFFFF;
+        padding: 10px 15px;
+        border: 2px solid #555;
+        border-radius: 4px;
+        font-weight: normal;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background-color 0.2s;
+    }
+
+    .dev-btn:hover {
+        background-color: #424242;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 9998;
+    }
+    .modal-content {
+        background: #2a2a2a; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px;
+        border: 1px solid #444;
+        max-height: 80vh; /* Allow modal to scroll on small screens */
+        overflow-y: auto; /* Allow modal to scroll on small screens */
+    }
+    .modal-content h3 { margin-top: 0; }
+    .modal-content label { display: block; margin-bottom: 5px; font-weight: bold; }
+    .modal-content input { width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 15px; background: #1a1a1a; border: 1px solid #555; color: white; border-radius: 5px;}
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+    .modal-btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+    .modal-btn-save { background-color: #28a745; color: white; }
+    .modal-btn-cancel { background-color: #6c757d; color: white; }
+    
+    /* Toast Notification */
+    .toast-notification {
+        position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+        padding: 15px 25px; border-radius: 8px; color: white; font-weight: 500;
+        transition: bottom 0.5s ease-in-out; z-index: 10001;
+    }
+    .toast-notification.show { bottom: 30px; }
+    .toast-notification.success { background-color: #2d8831; }
+    .toast-notification.error { background-color: #c62828; }
+
+    @media (max-width: 768px) {
+        #top-right-ui-container {
+            top: 65px;
+            right: 10px;
+            gap: 8px;
+        }
+        .profile-card {
+            padding: 4px 8px;
+        }
+        .profile-card-avatar {
+            width: 28px;
+            height: 28px;
+        }
+        .profile-card-name {
+            font-size: 12px;
+        }
+    }
+  </style>
 </head>
 
 <body>
@@ -16,6 +128,13 @@
     <div></div>
     <div></div>
   </div>
+  <div class="market-background"></div>
+
+  <div id="top-right-ui-container">
+    <div id="profile-card-container"></div>
+    <div id="dev-actions-container"></div>
+  </div>
+
   <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
@@ -41,8 +160,69 @@
 
   <div id="footer"></div>
 
+  <!-- Minion Price Update Modal -->
+  <div id="minion-price-modal" class="modal-overlay">
+      <div class="modal-content">
+          <h3>Update Minion Prices</h3>
+          <div id="minion-price-inputs"></div>
+          <div class="modal-actions">
+              <button id="cancel-minion-price-update" class="modal-btn modal-btn-cancel">Cancel</button>
+              <button id="save-minion-price-update" class="modal-btn modal-btn-save">Save</button>
+          </div>
+      </div>
+  </div>
+
   <script>
-    // Minion data manager
+    const GITHUB_REPO = "CraftersMC-Guides-Project/guides-code";
+    const MINIONS_FILE_PATH = "market/minions.txt";
+    const MINION_PRICES_FILE_PATH = "market/minion-prices.json";
+    const GITHUB_BRANCH = "main";
+    let isDevUser = false;
+
+    // --- Helper Function to Get Cookie ---
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+      return '';
+    }
+
+    // --- Profile Card Logic ---
+    async function loadProfileCard() {
+        const storedUser = getCookie("discordUser");
+        const profileContainer = document.getElementById("profile-card-container");
+        
+        let devIds = [];
+        try {
+            const response = await fetch('/devs.txt');
+            if (response.ok) {
+                const text = await response.text();
+                devIds = text.split('\n').map(id => id.trim()).filter(id => id);
+            }
+        } catch (error) {
+            console.error('Could not load or parse devs.txt:', error);
+        }
+
+        if (storedUser) {
+            const user = JSON.parse(storedUser);
+            const displayName = user.global_name || user.username;
+            isDevUser = devIds.includes(user.id);
+
+            profileContainer.innerHTML = `
+                <a href="/profile" class="profile-card">
+                    <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="Avatar" class="profile-card-avatar">
+                    <span class="profile-card-name">
+                        ${displayName}
+                        ${isDevUser ? '<span class="dev-label">[DEV]</span>' : ''}
+                    </span>
+                </a>
+            `;
+        } else {
+            profileContainer.innerHTML = '';
+        }
+    }
+
+    // --- Main Minion Details Logic ---
     const MinionManager = {
       currentMinion: null,
       minionPrices: null,
@@ -52,35 +232,27 @@
       async loadMinionDetails() {
         try {
           const minionId = new URLSearchParams(window.location.search).get('minion');
-          const selectedNature = new URLSearchParams(window.location.search).get('nature');
-          const selectedCategory = new URLSearchParams(window.location.search).get('cat');
           if (!minionId) throw new Error('No minion ID specified');
 
-          const [minions, prices] = await Promise.all([
-            this.fetchData('market/minions.txt'),
-            this.fetchData('market/minion-prices.json')
+          const [minions, prices, mpricesText] = await Promise.all([
+            fetch('market/minions.txt').then(res => res.json()),
+            fetch('market/minion-prices.json').then(res => res.json()),
+            fetch('market/mprices.txt').then(res => res.text())
           ]);
 
-          // Add this in your loadMinionDetails() after fetching mprices.txt
-          const mpricesText = await fetch('market/mprices.txt').then(r => r.text());
           this.minionPrices = mpricesText.split('\n');
-
-          // Filter minions by selected category and nature if present
-          let filteredMinions = minions;
-          if (selectedCategory) {
-            filteredMinions = filteredMinions.filter(m => m.category && m.category.toLowerCase() === selectedCategory.toLowerCase());
-          }
-          if (selectedNature && selectedNature !== 'all') {
-            filteredMinions = filteredMinions.filter(m => {
-              if (!m.nature) return false;
-              if (selectedNature === 'stable') return m.nature.toUpperCase().includes('STABLE');
-              if (selectedNature === 'overpaid') return m.nature.toUpperCase().includes('OVERPAID');
-              if (selectedNature === 'underpaid') return m.nature.toUpperCase().includes('UNDERPAID');
-              return false;
-            });
-          }
-          const minion = filteredMinions.find(m => m.id === parseInt(minionId));
+          
+          const minion = minions.find(m => m.id === parseInt(minionId));
           if (!minion) throw new Error('Minion not found');
+
+          if (isDevUser) {
+              document.getElementById('dev-actions-container').innerHTML = `
+                  <button class="dev-btn" onclick="openMinionPriceModal()">
+                      <span class="material-icons">edit</span>
+                      Edit Details
+                  </button>
+              `;
+          }
 
           const minionPrice = prices.find(p => p.minionId === parseInt(minionId));
           if (!minionPrice) throw new Error('Price data not found');
@@ -90,61 +262,16 @@
           this.currentTierIndex = 0;
           this.renderMinionDetails('tier1');
 
-          // Navigation button logic (enable/disable based on valid IDs)
-          const prevBtn = document.getElementById('prevMinionBtn');
-          const nextBtn = document.getElementById('nextMinionBtn');
-          let prevId = null, nextId = null;
-          for (let i = 0; i < filteredMinions.length; i++) {
-            if (filteredMinions[i].id === parseInt(minionId)) {
-              if (i > 0) prevId = filteredMinions[i - 1].id;
-              if (i < filteredMinions.length - 1) nextId = filteredMinions[i + 1].id;
-              break;
-            }
-          }
-          if (prevId !== null && prevId !== undefined) {
-            prevBtn.disabled = false;
-            prevBtn.onclick = function () {
-              let url = '?minion=' + prevId;
-              if (selectedCategory) url += '&cat=' + encodeURIComponent(selectedCategory);
-              if (selectedNature) url += '&nature=' + selectedNature;
-              window.location.search = url;
-            };
-          } else {
-            prevBtn.disabled = true;
-          }
-          if (nextId !== null && nextId !== undefined) {
-            nextBtn.disabled = false;
-            nextBtn.onclick = function () {
-              let url = '?minion=' + nextId;
-              if (selectedCategory) url += '&cat=' + encodeURIComponent(selectedCategory);
-              if (selectedNature) url += '&nature=' + selectedNature;
-              window.location.search = url;
-            };
-          } else {
-            nextBtn.disabled = true;
-          }
         } catch (error) {
           this.showError(error.message);
-          // Disable both buttons if error
-          const prevBtn = document.getElementById('prevMinionBtn');
-          const nextBtn = document.getElementById('nextMinionBtn');
-          prevBtn.disabled = true;
-          nextBtn.disabled = true;
         }
-      },
-
-      async fetchData(url) {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`Failed to load ${url}`);
-        return await response.json();
       },
 
       renderMinionDetails(selectedTier) {
         const { name, picture, category, id, description, prices, nature, demand } = this.currentMinion;
         const tierKeys = Object.keys(prices);
         const currentTierIndex = tierKeys.indexOf(selectedTier);
-
-        // Calculate making cost as: previous tier's making cost + current tier's price
+        
         let makingCost = 0;
         for (let i = 0; i <= currentTierIndex; i++) {
           const tierPrice = prices[tierKeys[i]];
@@ -156,16 +283,10 @@
               const itemId = parseInt(itemIdStr);
               const amount = parseInt(amountStr);
               if (this.minionPrices && Array.isArray(this.minionPrices)) {
-                const line = this.minionPrices.find(line => {
-                  const match = line.match(/^(\d+):/);
-                  return match && parseInt(match[1]) === itemId;
-                });
+                const line = this.minionPrices.find(line => line.startsWith(itemId + ':'));
                 if (line) {
                   const match = line.match(/: \["[^"]+",\s*([\d.]+)/);
-                  if (match) {
-                    const itemPrice = parseFloat(match[1]);
-                    addCost = itemPrice * amount;
-                  }
+                  if (match) addCost = parseFloat(match[1]) * amount;
                 }
               }
             } else if (typeof priceVal === 'number') {
@@ -175,7 +296,6 @@
           }
         }
 
-        // Selling price is 80% of making cost
         const sellPercent = this.currentMinion.sellPercent !== undefined ? this.currentMinion.sellPercent : 80;
         const sellingPrice = Math.floor(makingCost * (sellPercent / 100));
 
@@ -184,170 +304,151 @@
             <h1>${name}</h1>
             <img src="${picture}" alt="${name}" class="minion-item-image">
             <div class="minion-rarity-dropdown" style="display:flex;align-items:center;justify-content:center;gap:8px;margin:20px 0;">
-              <button class="minion-rarity-arrow left" onclick="MinionManager.changeTier(-1)">
-                <span class="material-icons">chevron_left</span>
-              </button>
+              <button class="minion-rarity-arrow left" onclick="MinionManager.changeTier(-1)"><span class="material-icons">chevron_left</span></button>
               <div class="minion-selected" id="selectedTier" style="min-width:120px;display:inline-flex;align-items:center;justify-content:center;">
                 <span style="font-size:1.08em;letter-spacing:0.5px;">${selectedTier.toUpperCase()}</span>
               </div>
-              <button class="minion-rarity-arrow minion-right" onclick="MinionManager.changeTier(1)">
-                <span class="material-icons">chevron_right</span>
-              </button>
+              <button class="minion-rarity-arrow minion-right" onclick="MinionManager.changeTier(1)"><span class="material-icons">chevron_right</span></button>
             </div>
             <div class="minion-price-container">
-              <div class="minion-price-section">
-                <span class="minion-priceText">Making Cost:</span>
-                <span class="minion-making-price">${makingCost ? makingCost.toLocaleString() + ' coins' : 'Not available'}</span>
-              </div>
-              <div class="minion-price-section">
-                <span class="minion-priceText">Selling Price:</span>
-                <span class="minion-selling-price">${sellingPrice !== undefined ? sellingPrice.toLocaleString() + ' coins' : 'Not available'}</span>
-              </div>
+              <div class="minion-price-section"><span class="minion-priceText">Making Cost:</span><span class="minion-making-price">${makingCost ? makingCost.toLocaleString() + ' coins' : 'N/A'}</span></div>
+              <div class="minion-price-section"><span class="minion-priceText">Selling Price:</span><span class="minion-selling-price">${sellingPrice !== undefined ? sellingPrice.toLocaleString() + ' coins' : 'N/A'}</span></div>
             </div>
             <p><strong>Category:</strong> ${category}</p>
             <p><strong>ID:</strong> ${id}</p>
             ${description ? `<p><strong>Description:</strong> ${description}</p>` : ''}
-            <div class="minion-stability">
-              ${this.generateNatureBox(nature)}
-              ${this.generateDemandBox(demand)}
-            </div>
-          </div>
-        `;
-
+            <div class="minion-stability">${this.generateNatureBox(nature)}${this.generateDemandBox(demand)}</div>
+          </div>`;
         this.currentTierIndex = this.tierList.indexOf(selectedTier);
       },
 
       changeTier(direction) {
         if (!this.tierList.length) return;
         this.currentTierIndex = (this.currentTierIndex + direction + this.tierList.length) % this.tierList.length;
-        const tier = this.tierList[this.currentTierIndex];
-        this.renderMinionDetails(tier);
+        this.renderMinionDetails(this.tierList[this.currentTierIndex]);
       },
 
-      formatPrice(price) {
-        // If price is a string like "157*80"
-        if (typeof price === 'string' && price.includes('*')) {
-          const [itemIdStr, amountStr] = price.split('*');
-          const itemId = parseInt(itemIdStr);
-          const amount = parseInt(amountStr);
-
-          // Assume MinionManager.minionPrices is loaded with mprices.txt data as an array
-          // Find the item in mprices.txt (should be loaded and available)
-          if (this.minionPrices && Array.isArray(this.minionPrices)) {
-            // mprices.txt format: id: ["name", making, selling]
-            const line = this.minionPrices.find(line => {
-              // Each line is like: '1: ["Enchanted rotten flesh", 849, 320]'
-              const match = line.match(/^(\d+):/);
-              return match && parseInt(match[1]) === itemId;
-            });
-            if (line) {
-              // Extract the making price
-              const match = line.match(/: \["[^"]+",\s*([\d.]+)/);
-              if (match) {
-                const itemPrice = parseFloat(match[1]);
-                const total = itemPrice * amount;
-                return `${total.toLocaleString()} coins`;
-              }
-            }
-          }
-          return 'Not available';
-        }
-        // If price is a number
-        if (typeof price === 'number') {
-          return `${price.toLocaleString()} coins`;
-        }
-        return 'Not available';
-      },
-
-      generateNatureBox(nature) {
-        if (!nature) return '';
-        let icon = '';
-
-        if (nature.includes("STABLE")) {
-          icon = '';
-        } else if (nature.includes("UNDERPAID")) {
-          icon = '';
-        } else if (nature.includes("OVERPAID")) {
-          icon = '';
-        }
-
-        let natureText = nature.replace('[', ' ').toLowerCase();
-        natureText = natureText.replace(']', '').replace(/_/g, ' ').trim();
-        // Overriding the natureText
-        if (nature.includes("UNDERPAID")) {
-          natureText = "UNDERPAID";
-        }
-        else if (nature.includes("OVERPAID")) {
-          natureText = "OVERPAID";
-        }
-        else {
-          natureText = "STABLE";
-        }
-
-        return `
-          <div class="minion-nature-pill ${natureText}">
-            ${icon} Market Nature: ${natureText}
-          </div>
-        `;
-      },
-
-      generateDemandBox(demand) {
-        if (!demand) return '';
-        const match = demand.match(/\[(\d+)\/10\]/);
-        const score = match ? parseInt(match[1]) : 0;
-        const barWidth = Math.min(score * 10, 100);
-        let color = score >= 7 ? 'limegreen' : score >= 4 ? 'orange' : 'red';
-
-        return `
-          <div class="minion-demand-box">
-          <div class="minion-demand-score">
-            <strong>Demand:</strong> ${demand}</div>
-            <div>
-              <div style="width: ${barWidth}%; background-color: ${color};"></div>
-            </div>
-          </div>
-        `;
-      },
-
-      showError(message) {
-        document.getElementById('minionDetails').innerHTML = `
-          <div class="minion-error-message">
-            <p>${message}</p>
-            <a href="index.html">Back to Home</a>
-          </div>
-        `;
-      }
+      generateNatureBox(nature) { return nature ? `<div class="minion-nature-pill ${nature.toLowerCase()}">Market Nature: ${nature}</div>` : ''; },
+      generateDemandBox(demand) { return demand ? `<div class="minion-demand-box"><strong>Demand:</strong> ${demand}</div>` : ''; },
+      showError(message) { document.getElementById('minionDetails').innerHTML = `<p>${message}</p>`; }
     };
 
-    // Initialize when DOM is loaded
-    document.addEventListener('DOMContentLoaded', () => {
-      MinionManager.loadMinionDetails();
-      // Highlight active filter
-      const urlParams = new URLSearchParams(window.location.search);
-      const selectedNature = urlParams.get('nature') || 'all';
-      const selectedCategory = urlParams.get('cat');
-      document.querySelectorAll('.item-filter-btn').forEach(btn => {
-        if (btn.getAttribute('data-nature') === selectedNature) {
-          btn.classList.add('active');
-        } else if (selectedNature === null && btn.getAttribute('data-nature') === 'all') {
-          btn.classList.add('minion-active');
-        } else {
-          btn.classList.remove('minion-active');
-        }
-        btn.onclick = function () {
-          let base = window.location.pathname + '?minion=' + urlParams.get('minion');
-          if (selectedCategory) base += '&cat=' + encodeURIComponent(selectedCategory);
-          if (btn.getAttribute('data-nature') === 'reset' || btn.getAttribute('data-nature') === 'all') {
-            window.location.href = base;
-          } else {
-            window.location.href = base + '&nature=' + btn.getAttribute('data-nature');
-          }
-        };
-      });
-    });
-  </script>
+    // --- Minion Price Modal and Update Logic ---
+    async function openMinionPriceModal() {
+        document.body.style.overflow = 'hidden';
+        const minionId = new URLSearchParams(window.location.search).get('minion');
+        const inputsContainer = document.getElementById('minion-price-inputs');
+        inputsContainer.innerHTML = '';
 
-  <script src="js/script.js"></script>
+        try {
+            const prices = await fetch(MINION_PRICES_FILE_PATH, { cache: 'no-cache' }).then(res => res.json());
+            const minionPriceData = prices.find(p => p.minionId === parseInt(minionId));
+
+            if (minionPriceData && minionPriceData.tiers) {
+                Object.keys(minionPriceData.tiers).forEach(tier => {
+                    const price = minionPriceData.tiers[tier][0] || '';
+                    const inputGroup = document.createElement('div');
+                    inputGroup.innerHTML = `
+                        <label>Tier ${tier.replace('tier', '')} Making Cost:</label>
+                        <input type="text" data-tier="${tier}" value="${price}">
+                    `;
+                    inputsContainer.appendChild(inputGroup);
+                });
+            }
+        } catch (e) {
+            showToast('Could not load current minion data.', 'error');
+        }
+        document.getElementById('minion-price-modal').style.display = 'flex';
+    }
+
+    function closeMinionModal() {
+        document.getElementById('minion-price-modal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('cancel-minion-price-update').addEventListener('click', closeMinionModal);
+
+    document.getElementById('save-minion-price-update').addEventListener('click', async () => {
+        const token = getCookie('githubToken');
+        if (!token) {
+            showToast('GitHub token not found.', 'error');
+            return;
+        }
+
+        const minionId = parseInt(new URLSearchParams(window.location.search).get('minion'));
+        showToast('Saving minion prices...', 'info');
+
+        try {
+            const metaUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${MINION_PRICES_FILE_PATH}?ref=${GITHUB_BRANCH}`;
+            const metaRes = await fetch(metaUrl, { headers: { Authorization: `token ${token}` }, cache: 'no-cache' });
+            if (!metaRes.ok) throw new Error('Failed to fetch minion prices metadata.');
+            const fileData = await metaRes.json();
+            const prices = JSON.parse(atob(fileData.content));
+            const fileSha = fileData.sha;
+
+            const priceIndex = prices.findIndex(p => p.minionId === minionId);
+            if (priceIndex === -1) throw new Error('Minion not found in price file.');
+
+            const inputs = document.querySelectorAll('#minion-price-inputs input');
+            inputs.forEach(input => {
+                const tier = input.dataset.tier;
+                let value = input.value;
+                // Convert to number if it's a plain number, otherwise keep as string (for "itemId*amount")
+                if (!isNaN(value) && !isNaN(parseFloat(value))) {
+                    value = parseInt(value, 10);
+                }
+                prices[priceIndex].tiers[tier] = [value];
+            });
+
+            const updatedContent = JSON.stringify(prices, null, 4);
+
+            const updateUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${MINION_PRICES_FILE_PATH}`;
+            const updateRes = await fetch(updateUrl, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: `Update prices for minion ${minionId}`,
+                    content: btoa(unescape(encodeURIComponent(updatedContent))),
+                    sha: fileSha,
+                    branch: GITHUB_BRANCH
+                })
+            });
+
+            if (!updateRes.ok) {
+                const errorData = await updateRes.json();
+                throw new Error(`GitHub API Error: ${errorData.message}`);
+            }
+
+            showToast('Minion prices updated successfully!', 'success');
+            closeMinionModal();
+            setTimeout(() => location.reload(), 1500);
+
+        } catch (error) {
+            console.error('Error updating minion prices:', error);
+            showToast(`Error: ${error.message}`, 'error');
+        }
+    });
+
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    }
+
+    async function initializePage() {
+        await loadProfileCard();
+        await MinionManager.loadMinionDetails();
+    }
+
+    document.addEventListener('DOMContentLoaded', initializePage);
+  </script>
 
 </body>
 
