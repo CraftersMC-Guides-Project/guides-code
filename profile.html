@@ -1,4 +1,4 @@
-e<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -8,6 +8,19 @@ e<!DOCTYPE html>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="themes/minecraft/style.css">
   <script src="js/script.js"></script>
+  <style>
+    /* Added styles for the developer token input */
+    .profile-input {
+      width: calc(100% - 16px);
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+      background-color: #2a2a2a;
+      border: 1px solid #444;
+      color: white;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 
 <body>
@@ -67,6 +80,18 @@ e<!DOCTYPE html>
       window.location.reload();
     }
 
+    // --- Developer Function ---
+    function saveGitHubToken() {
+        const tokenInput = document.getElementById('githubTokenInput');
+        if (tokenInput && tokenInput.value) {
+            setCookie('githubToken', tokenInput.value, 365);
+            alert('GitHub token saved!'); // You can replace this with a nicer notification
+        } else {
+            alert('Please enter a token to save.');
+        }
+    }
+
+
     // --- Profile Display Functions ---
     function loadProfile() {
       const storedUser = getCookie("discordUser");
@@ -95,11 +120,28 @@ e<!DOCTYPE html>
       const displayName = user.global_name || user.username;
       const firstLogin = user.first_login ? new Date(user.first_login).toLocaleString() : 'Unknown';
       const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Unknown';
+      const isDev = user.id === '783972385882767400';
+
+      // --- Developer Settings Card (only shown if isDev is true) ---
+      let devSettingsCard = '';
+      if (isDev) {
+          const savedToken = getCookie('githubToken');
+          devSettingsCard = `
+            <div class="profile-detail-card">
+                <div class="profile-detail-title">Developer Settings</div>
+                <div class="profile-detail-value">
+                    <span class="profile-detail-value-head">GitHub Auth Token:</span>
+                    <input type="password" id="githubTokenInput" class="profile-input" value="${savedToken || ''}" placeholder="Enter GitHub token...">
+                </div>
+                <button class="profile-save-btn" onclick="saveGitHubToken()">Save Token</button>
+            </div>
+          `;
+      }
 
       profileElement.innerHTML = `
       <div class="profile-header">
         <img class="profile-avatar" src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="User Avatar" id="avatar" crossorigin="anonymous">
-        <h2 class="profile-name">${displayName}</h2>
+        <h2 class="profile-name">${displayName} ${isDev ? '<span style="color:red;">[DEV]</span>' : ''}</h2>
       </div>
       <div class="profile-details">
         <div class="profile-detail-card">
@@ -115,7 +157,6 @@ e<!DOCTYPE html>
           <div class="profile-detail-value"><span class="profile-detail-value-head">Last Login:</span> <span class="profile-detail-value-data">${lastLogin}</span></div>
           <div class="profile-detail-value"><span class="profile-detail-value-head">Login Count:</span> <span class="profile-detail-value-data">${user.login_count || 1}</span></div>
         </div>
-        <!-- Added Theme Settings Card -->
         <div class="profile-detail-card">
             <div class="profile-detail-title">Theme Settings</div>
             <div class="profile-theme-buttons">
@@ -124,6 +165,8 @@ e<!DOCTYPE html>
             </div>
             <button class="profile-save-btn" onclick="saveTheme()">Save Changes</button>
         </div>
+        <!-- Inject the dev settings card here -->
+        ${devSettingsCard}
       </div>
       <div class="profile-actions">
         <button class="btn" onclick="window.location.href='/'">
@@ -141,6 +184,8 @@ e<!DOCTYPE html>
     function logout() {
       // Remove the user cookie
       document.cookie = "discordUser=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+      // Also remove the dev token on logout
+      document.cookie = "githubToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
       window.location.reload();
     }
 
