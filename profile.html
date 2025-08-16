@@ -23,6 +23,26 @@
     .toast-notification.success { background-color: #2d8831; }
     .toast-notification.error { background-color: #c62828; }
     .toast-notification.info { background-color: #1976d2; }
+    .token-display {
+        background-color: #1a1a1a;
+        padding: 8px 12px;
+        border-radius: 5px;
+        border: 1px solid #444;
+        color: #e0e0e0;
+        font-family: monospace;
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .reset-btn {
+        background: #c62828;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
   </style>
 </head>
 
@@ -94,7 +114,7 @@
       window.location.reload();
     }
 
-    // --- Developer Function ---
+    // --- Developer Functions ---
     async function fetchGitHubToken() {
         const storedUser = getCookie("discordUser");
         if (!storedUser) {
@@ -104,7 +124,6 @@
         const user = JSON.parse(storedUser);
         const userId = user.id;
 
-        // !!! IMPORTANT: Replace this with your actual Cloudflare Worker URL !!!
         const WORKER_URL = 'https://token-fetcher.roumakdatta.workers.dev/';
 
         showToast("Fetching token...", "info");
@@ -112,20 +131,16 @@
         try {
             const response = await fetch(WORKER_URL, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: userId })
             });
 
             const result = await response.json();
 
             if (response.ok) {
-                // For testing: show the token in an alert
-                alert(`SUCCESS! Token: ${result.token}`);
-                
-                setCookie('githubToken', result.token, 365); // Save token to cookie
-                showToast("GitHub token fetched and saved successfully!", "success");
+                setCookie('githubToken', result.token, 365);
+                showToast("GitHub token fetched and saved!", "success");
+                loadProfile(); // Reload the profile section to show the new token
             } else {
                 throw new Error(result.error || 'An unknown error occurred.');
             }
@@ -133,6 +148,12 @@
             console.error("Token fetch error:", error);
             showToast(`Error: ${error.message}`, "error");
         }
+    }
+    
+    function resetGitHubToken() {
+        document.cookie = "githubToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+        showToast("Token has been reset.", "info");
+        loadProfile(); // Reload the profile section
     }
 
 
@@ -179,11 +200,27 @@
 
       let devSettingsCard = '';
       if (isDev) {
+          const existingToken = getCookie('githubToken');
+          let tokenContent = '';
+          if (existingToken) {
+              const maskedToken = existingToken.slice(0, 4) + '...';
+              tokenContent = `
+                <div class="token-display">
+                    <span>${maskedToken}</span>
+                    <button class="reset-btn" onclick="resetGitHubToken()">Reset</button>
+                </div>
+              `;
+          } else {
+              tokenContent = `
+                <button class="profile-save-btn" onclick="fetchGitHubToken()">Fetch GitHub Token</button>
+                <p style="font-size: 12px; color: var(--text-secondary-color); margin-top: 10px;">This will securely fetch and save your GitHub token to your browser's cookies.</p>
+              `;
+          }
+
           devSettingsCard = `
             <div class="profile-detail-card">
                 <div class="profile-detail-title">Developer Settings</div>
-                <button class="profile-save-btn" onclick="fetchGitHubToken()">Fetch GitHub Token</button>
-                <p style="font-size: 12px; color: var(--text-secondary-color); margin-top: 10px;">This will securely fetch and save your GitHub token to your browser's cookies.</p>
+                ${tokenContent}
             </div>
           `;
       }
