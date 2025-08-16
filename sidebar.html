@@ -38,8 +38,9 @@
     </div>
 
     <script>
-        // NEW FUNCTION that can be called from other pages
-        async function updateSidebar() {
+        // This is now a self-executing async function.
+        // It runs as soon as the sidebar is loaded into any page.
+        (async () => {
             // Helper to get cookie value by name
             function getCookie(name) {
                 return document.cookie.split('; ').reduce((r, v) => {
@@ -51,6 +52,7 @@
             // Fetch dev IDs
             let devIds = [];
             try {
+                // The path needs to be absolute from the root of the site
                 const response = await fetch('/devs.txt');
                 if (response.ok) {
                     const text = await response.text();
@@ -152,22 +154,6 @@
             } catch (error) {
                 console.error("Error processing user data:", error);
             }
-        }
-
-        // We run this once on its own, but other pages will call it again.
-        document.addEventListener("DOMContentLoaded", updateSidebar);
+        })();
     </script>
 </div>
-```
-Now, you will need to **update your other pages** (like `item-v2.html`, `market.html`, etc.) to call this new function after they have loaded their main content. For example, in your `item-v2.html` file, you would add this line inside the `initializePage` function:
-
-```javascript
-async function initializePage() {
-    await loadProfileCard(); 
-    await loadItemDetails();
-    if (typeof updateSidebar === 'function') {
-        updateSidebar(); // This will refresh the sidebar with the correct info
-    }
-}
-```
-You'll need to add that `if (typeof updateSidebar === 'function') { updateSidebar(); }` check to the main loading function of every page that uses the sidebar. This will ensure the dev tag and other user info always appear correct
