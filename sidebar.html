@@ -68,6 +68,7 @@
             const sidebarAvatarElement = document.getElementById("sidebarAvatar");
             const sidebarAvatarImgElement = document.getElementById("sidebarAvatarImg");
             const sidebarTopTop = document.querySelector(".sidebar-top-bottom-top");
+            const sidebarBottom = document.querySelector(".sidebar-bottom");
 
             try {
                 const storedUser = getCookie("discordUser");
@@ -94,6 +95,19 @@
                         devTag.style.marginLeft = "6px";
                         devTag.style.fontSize = "10px";
                         sidebarNameElement.appendChild(devTag);
+
+                        // --- ADD EDITOR BUTTON FOR DEVS ---
+                        const editorLink = document.createElement('a');
+                        editorLink.className = 'sidebar-link';
+                        editorLink.href = '/editor.html';
+                        editorLink.textContent = 'Editor';
+                        // Insert it after the 'Giveaways' link
+                        const giveawaysLink = sidebarBottom.querySelector('a[href="/giveaway.html"]');
+                        if (giveawaysLink) {
+                            giveawaysLink.insertAdjacentElement('afterend', editorLink);
+                        } else {
+                            sidebarBottom.prepend(editorLink); // Fallback if giveaway link isn't found
+                        }
                     }
 
                     if (userData.rank) {
