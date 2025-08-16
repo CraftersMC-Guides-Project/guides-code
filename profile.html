@@ -198,6 +198,13 @@
       const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Unknown';
       const isDev = devIds.includes(user.id);
 
+      // --- NEW SECURITY CHECK ---
+      // If the user is NOT a dev but has a token, reset it.
+      if (!isDev && getCookie('githubToken')) {
+          resetGitHubToken();
+          showToast("Your developer token has been cleared for security.", "info");
+      }
+
       let devSettingsCard = '';
       if (isDev) {
           const existingToken = getCookie('githubToken');
