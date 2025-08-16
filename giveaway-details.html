@@ -30,8 +30,7 @@
   </div>
   <div id="footer"></div>
   <script>
-    // Developer list (hardcoded)
-    const DEVELOPERS = ["TRIPLE RRT", "NETWORKPG", "iedu00", "Dipanshu_FF" , "Samadgod269", "Kg lcky 01"];
+    // The hardcoded developer list is now removed.
 
     function formatDateTime(dateStr) {
       if (!dateStr) return '';
@@ -89,9 +88,10 @@
       }, '');
     }
 
-    function getRoleTag(username, currentSponsor) {
-      const isDev = DEVELOPERS.some(dev => username.toUpperCase() === dev.toUpperCase());
-      const isSponsor = currentSponsor && username.toUpperCase() === currentSponsor.toUpperCase();
+    function getRoleTags(participant, currentSponsor, devIds) {
+      // The dev check is now based on the participant's Discord ID (dId)
+      const isDev = devIds.includes(participant.dId);
+      const isSponsor = currentSponsor && participant.minecraftName.toUpperCase() === currentSponsor.toUpperCase();
       
       let tags = '';
       if (isDev) {
@@ -116,6 +116,19 @@
         window.location.href = 'giveaway.html';
         return;
       }
+
+      // Fetch the list of developer IDs from devs.txt
+      let devIds = [];
+      try {
+          const response = await fetch('/devs.txt');
+          if (response.ok) {
+              const text = await response.text();
+              devIds = text.split('\n').map(id => id.trim()).filter(id => id);
+          }
+      } catch (error) {
+          console.error('Could not load or parse devs.txt:', error);
+      }
+
       try {
         const response = await fetch('gw/active_giveaways.txt');
         const data = await response.text();
@@ -161,19 +174,18 @@
           p.gId === giveaway.id && p.dId === user.id
         );
         
-        // Sort participants alphabetically
         const participants = participations
           .filter(p => p.gId === giveaway.id)
           .sort((a, b) => a.minecraftName.localeCompare(b.minecraftName, undefined, { sensitivity: 'base' }));
 
-        // Separate special members and regular participants
+        // Separate special members and regular participants using the new devIds list
         const specialParticipants = participants.filter(p => 
-          DEVELOPERS.some(dev => p.minecraftName.toUpperCase() === dev.toUpperCase()) ||
+          devIds.includes(p.dId) ||
           (currentSponsor && p.minecraftName.toUpperCase() === currentSponsor.toUpperCase())
         );
         
         const regularParticipants = participants.filter(p => 
-          !DEVELOPERS.some(dev => p.minecraftName.toUpperCase() === dev.toUpperCase()) &&
+          !devIds.includes(p.dId) &&
           (!currentSponsor || p.minecraftName.toUpperCase() !== currentSponsor.toUpperCase())
         );
 
@@ -234,7 +246,9 @@
               🎉 <b>Winner${winnerEntries.length > 1 ? 's' : ''}:</b>
               <ul style="margin: 0.5em 0 0 1.2em; padding: 0;">
                 ${winnerEntries.map(w => {
-                  const roleTag = getRoleTag(w.winnerName, currentSponsor);
+                  // Note: Dev tag for winners may not show if their Discord ID isn't available in winners.txt
+                  const winnerParticipant = participants.find(p => p.minecraftName === w.winnerName);
+                  const roleTag = winnerParticipant ? getRoleTags(winnerParticipant, currentSponsor, devIds) : '';
                   return `<li>${w.winnerName}${roleTag}</li>`;
                 }).join('')}
               </ul>
@@ -262,7 +276,7 @@
             </div>
           `;
         } else if (userParticipation) {
-          const roleTag = getRoleTag(userParticipation.minecraftName, currentSponsor);
+          const roleTag = getRoleTags(userParticipation, currentSponsor, devIds);
           html += `
             <div class="gw-detail-alert alert-success">
               You're participating as: ${userParticipation.minecraftName}${roleTag}
@@ -278,7 +292,6 @@
           `;
         }
 
-        // Show regular participants
         html += `
           <div class="gw-detail-participants-list">
             <h3>Participants (${regularParticipants.length})</h3>
@@ -291,14 +304,13 @@
           </div>
         `;
 
-        // Show special members section (devs and current sponsor if they participate)
         if (specialParticipants.length > 0) {
           html += `
             <div class="gw-detail-special-section">
               <h3>Special Members</h3>
               <ul>
                 ${specialParticipants.map(p => {
-                  const roleTag = getRoleTag(p.minecraftName, currentSponsor);
+                  const roleTag = getRoleTags(p, currentSponsor, devIds);
                   return `<li>${p.minecraftName}${roleTag}</li>`;
                 }).join('')}
               </ul>
