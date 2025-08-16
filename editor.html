@@ -69,7 +69,10 @@
     const path = "market/market.txt";
     const branch = "main";
 
-    // Load from localStorage if remembered
+    // Load saved token auto
+    let savedToken = localStorage.getItem(TOKEN_KEY) || null;
+
+    // Load remembered data first
     window.addEventListener("DOMContentLoaded", async () => {
       const rememberedData = localStorage.getItem(DATA_KEY);
       if (rememberedData) {
@@ -97,7 +100,7 @@
       }
     });
 
-    // Drag + click upload
+    // Upload handlers
     document.getElementById("fileInput").addEventListener("change", e => processFile(e.target.files[0]));
     const uploadArea = document.getElementById("upload-area");
     uploadArea.addEventListener("click", () => document.getElementById("fileInput").click());
@@ -137,6 +140,112 @@
       reader.readAsText(file);
     }
 
+    // ============ GitHub Save ============
+    document.getElementById("saveGitHubBtn").onclick = saveToGitHub;
+
+    async function saveToGitHub() {
+      let token = savedToken;
+
+      // If no saved token, ask
+      if (!token) {
+        token = prompt("Enter your GitHub Token:");
+        if (!token) return;
+        if (document.getElementById("rememberToken").checked) {
+          localStorage.setItem(TOKEN_KEY, token);
+          savedToken = token;
+        }
+      }
+
+      const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
+      try {
+        const meta = await fetch(apiUrl, {
+          headers: {
+            Authorization: `token ${token}`,
+            "Accept": "application/vnd.github+json"
+          }
+        });
+
+        if (meta.status === 401 || meta.status === 403) {
+          alert("❌ Invalid or unauthorized token. Please enter again.");
+          localStorage.removeItem(TOKEN_KEY);
+          savedToken = null;
+          return;
+        }
+
+        if (!meta.ok) throw new Error("Metadata fetch failed: " + meta.status);
+
+        const file = await meta.json();
+        const updated = JSON.stringify(items, null, 4);
+
+        const res = await fetch(apiUrl, {
+          method: "PUT",
+          headers: {
+            Authorization: `token ${token}`,
+            "Accept": "application/vnd.github+json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: "Update market.txt via editor.html",
+            content: btoa(unescape(encodeURIComponent(updated))),
+            sha: file.sha,
+            branch
+          })
+        });
+
+        if (!res.ok) throw new Error(await res.text());
+        alert("✅ File updated on GitHub!");
+      } catch (err) {
+        alert("❌ GitHub update failed: " + err.message);
+      }
+    }
+
+    // Remember changes
+    document.getElementById("rememberChangesBtn").onclick=()=>{
+      localStorage.setItem(DATA_KEY, JSON.stringify(items));
+      alert("✅ Changes saved locally. They will reload next time.");
+    };
+
+    // Reset
+    document.getElementById("removeFileBtn").onclick=()=>{
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(DATA_KEY);
+      localStorage.removeItem(TOKEN_KEY);
+      savedToken = null;
+      location.reload();
+    };
+
+    // Show/hide
+    function showControls(){
+      ["downloadBtn","addItemBtn","removeFileBtn","searchInput","saveGitHubBtn","rememberChangesBtn","rememberTokenLabel"].forEach(id=>document.getElementById(id).style.display="inline-block");
+    }
+    function hideUploadUI(){
+      document.getElementById("upload-area").style.display="none";
+      document.getElementById("fetchFileBtn").style.display="none";
+    }
+
+    // Download
+    document.getElementById("downloadBtn").onclick=()=>{
+      const blob=new Blob([JSON.stringify(items,null,4)],{type:"application/json"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;a.download="market_updated.txt";a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    // Add item
+    document.getElementById("addItemBtn").onclick=()=>{
+      const id=prompt("Enter new item ID:");
+      if(!id) return;
+      if(items.find(i=>i.id===id)) return alert("ID exists!");
+      items.push({id,name:"New Item",picture:"",rarity:"common",price:"0",description:"",nature:"STABLE",demand:"[1/10]",category:"Combat",craftable:false,enchantable:false,tradable:false,auctionable:false,bazaarable:false,reforgable:false,public:true});
+      items.sort((a,b)=>Number(a.id)-Number(b.id));
+      renderTable();
+    };
+
+    // Search
+    document.getElementById("searchInput").oninput=()=>renderTable();
+
+    // Table rendering (same as before)...
     function renderTable() {
       const container = document.getElementById("editor");
       container.innerHTML = "";
@@ -192,65 +301,6 @@
     }
     function capitalize(v){ return v? v.charAt(0).toUpperCase()+v.slice(1).toLowerCase():""; }
     function sortTable(k){ if(currentSort.key===k) currentSort.asc=!currentSort.asc; else {currentSort.key=k; currentSort.asc=true;} items.sort((a,b)=>{let v1=a[k],v2=b[k];if(typeof v1==="string")v1=v1.toLowerCase();if(typeof v2==="string")v2=v2.toLowerCase();return v1<v2?(currentSort.asc?-1:1):v1>v2?(currentSort.asc?1:-1):0;}); renderTable(); }
-
-    // Remember changes
-    document.getElementById("rememberChangesBtn").onclick=()=>{
-      localStorage.setItem(DATA_KEY, JSON.stringify(items));
-      alert("✅ Changes saved locally. They will reload next time.");
-    };
-
-    // Reset clears all
-    document.getElementById("removeFileBtn").onclick=()=>{
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(DATA_KEY);
-      location.reload();
-    };
-
-    function showControls(){
-      ["downloadBtn","addItemBtn","removeFileBtn","searchInput","saveGitHubBtn","rememberChangesBtn","rememberTokenLabel"].forEach(id=>document.getElementById(id).style.display="inline-block");
-    }
-    function hideUploadUI(){
-      document.getElementById("upload-area").style.display="none";
-      document.getElementById("fetchFileBtn").style.display="none";
-    }
-
-    // Download
-    document.getElementById("downloadBtn").onclick=()=>{
-      const blob=new Blob([JSON.stringify(items,null,4)],{type:"application/json"});
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement("a");
-      a.href=url;a.download="market_updated.txt";a.click();
-      URL.revokeObjectURL(url);
-    };
-
-    // Add item
-    document.getElementById("addItemBtn").onclick=()=>{
-      const id=prompt("Enter new item ID:");
-      if(!id) return;
-      if(items.find(i=>i.id===id)) return alert("ID exists!");
-      items.push({id,name:"New Item",picture:"",rarity:"common",price:"0",description:"",nature:"STABLE",demand:"[1/10]",category:"Combat",craftable:false,enchantable:false,tradable:false,auctionable:false,bazaarable:false,reforgable:false,public:true});
-      items.sort((a,b)=>Number(a.id)-Number(b.id));
-      renderTable();
-    };
-
-    document.getElementById("searchInput").oninput=()=>renderTable();
-
-    // Save to GitHub
-    document.getElementById("saveGitHubBtn").onclick=saveToGitHub;
-    async function saveToGitHub(){
-      let token = localStorage.getItem(TOKEN_KEY);
-      if(!token){ token = prompt("Enter your GitHub Token:"); if(!token) return; if(document.getElementById("rememberToken").checked) localStorage.setItem(TOKEN_KEY, token); }
-      const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
-      try{
-        const meta = await fetch(apiUrl,{headers:{Authorization:`token ${token}`,"Accept":"application/vnd.github+json"}});
-        if(!meta.ok) throw new Error("Metadata fetch failed");
-        const file = await meta.json();
-        const updated = JSON.stringify(items,null,4);
-        const res = await fetch(apiUrl,{method:"PUT",headers:{Authorization:`token ${token}`,"Accept":"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify({message:"Update market.txt via editor.html",content:btoa(unescape(encodeURIComponent(updated))),sha:file.sha,branch})});
-        if(!res.ok) throw new Error(await res.text());
-        alert("✅ File updated on GitHub!");
-      }catch(err){ alert("❌ GitHub update failed: "+err.message); }
-    }
   </script>
 </body>
 </html>
