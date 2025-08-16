@@ -1,283 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <link rel="icon" href="assets/cmc-icon.png" type="image/png">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bug Report - CraftersMC Guides</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="css/essential.css">
-    <link rel="stylesheet" href="css/item.css">
-    <style>
-        body {
-            color: #ffffff;
-            font-family: MyFont, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        .background {
-            background: url("../Backgrounds/IMG_4502.webp");
-            background-blend-mode: multiply;
-            background-size: cover;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: -1;
-        }
-        .report-container {
-            max-width: 800px;
-            margin: 10rem auto;
-            border: 2px solid #c6c6c6;
-            background-color: rgba(0, 0, 0, 0.8);
-            text-align: center;
-        }
-        h3 {
-            font-size: 1.3rem;
-            background: #c6c6c6;
-            padding: 10px;
-            margin-bottom: 3rem;
-            box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 3px #777 inset !important;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-            text-align: left;
-        }
-        #reportForm {
-            margin: 0 2rem 2rem;
-        }
-        input, textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #888;
-            background-color: #333;
-            color: white;
-        }
-        textarea { resize: vertical; }
-        #drop-area {
-            border: 2px dashed #007bff;
-            padding: 1rem;
-            text-align: center;
-            color: #888;
-            margin-top: 1rem;
-            background-color: #282828;
-        }
-        #drop-area.highlight { border-color: #ff4444; }
-        #submitBtn, #fileBtn {
-            margin-top: 1rem;
-            background: #c6c6c6;
-            color: #3c3c3c;
-            box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 3px #777 inset;
-            border: 2px solid #2a2a2a;
-            cursor: pointer;
-            width: 100%;
-            padding: 15px 0;
-        }
-        #submitBtn:hover, #fileBtn:hover {
-            border: 2px solid #fff;
-            box-shadow: 2px 2px 0 0 #2ccb1d inset, -1px -1px 0px 3px #1d681a inset;
-            background: #218306;
-            color: #fff !important;
-        }
-        #preview { margin-top: 1rem; max-width: 100%; text-align: left; }
-        label {
-            display: block;
-            font-size: 1.2rem;
-            color: #ccc;
-            margin-bottom: 8px;
-            text-align: left;
-        }
-        .panel {
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(0.8);
-            background: rgba(0, 0, 0, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            z-index: 9999999;
-            width: 300px;
-            display: none;
-            color: lime;
-            border: 1px solid lime;
-        }
-        .panel.show { display: block; transform: scale(1); opacity: 1; }
-        .success-message {
-            text-align: center;
-            padding: 2rem;
-            max-width: 800px;
-            margin: 10vh auto;
-            border-radius: 10px;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: none;
-        }
-        .video-preview {
-            max-width: 100%;
-            max-height: 200px;
-            margin-top: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="themes/minecraft/style.css">
+    <script src="js/script.js"></script>
 </head>
 
 <body>
-<div class="background"></div>
-<div class="report-container" id="reportContainer">
-    <h3>Report a Bug</h3>
-    <div class="panel" id="panel">✔ Report Submitted, Thank you!</div>
-    <form id="reportForm">
-        <div class="form-group">
-            <label for="username">Your In-Game Name:</label>
-            <input type="text" id="username" required>
-        </div>
-        <div class="form-group">
-            <label for="bug">Describe the Bug:</label>
-            <textarea id="bug" rows="5" required></textarea>
-        </div>
-        <div class="form-group">
-            <label>Upload Image/Video (optional, max 8MB):</label>
-            <div id="drop-area">
-                <p>Drag & drop a file here, or click below to select</p>
-                <input type="file" id="fileElem" accept="image/*,video/*" style="display:none">
-                <button type="button" id="fileBtn" onclick="document.getElementById('fileElem').click()">Choose File</button>
-                <div id="preview"></div>
+    <div class="top"></div>
+    <div class="sidebar" id="sidebar"></div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div class="report-background"></div>
+    <div class="report-container" id="reportContainer">
+        <h3 class="report-h3">Report a Bug</h3>
+        <div class="report-panel" id="panel">✔ Report Submitted, Thank you!</div>
+        <form id="reportForm">
+            <div class="report-form-group">
+                <label class="report-label" for="username">Your In-Game Name:</label>
+                <input class="report-input" type="text" id="username" required>
             </div>
-        </div>
-        <button type="submit" id="submitBtn">Submit Report</button>
-    </form>
-</div>
+            <div class="report-form-group">
+                <label class="report-label" for="bug">Describe the Bug:</label>
+                <textarea class="report-textarea" id="bug" rows="5" required></textarea>
+            </div>
+            <div class="report-form-group">
+                <label class="report-label">Upload Image/Video (optional, max 8MB):</label>
+                <div id="drop-area">
+                    <p>Drag & drop a file here, or click below to select</p>
+                    <input class="report-input" type="file" id="fileElem" accept="image/*,video/*" style="display:none">
+                    <button type="button" id="fileBtn" onclick="document.getElementById('fileElem').click()">Choose
+                        File</button>
+                    <div id="preview"></div>
+                </div>
+            </div>
+            <button type="submit" id="submitBtn">Submit Report</button>
+        </form>
+    </div>
 
-<div class="success-message" id="successMessage">
-    <h1>Thank You!</h1>
-    <p>Your bug report has been submitted successfully.</p>
-</div>
+    <div class="report-success-message" id="successMessage">
+        <h1>Thank You!</h1>
+        <p>Your bug report has been submitted successfully.</p>
+    </div>
+    <div id="footer"></div>
+    <script>
+        const reportForm = document.getElementById("reportForm");
+        const dropArea = document.getElementById("drop-area");
+        const fileElem = document.getElementById("fileElem");
+        const preview = document.getElementById("preview");
+        const panel = document.getElementById("panel");
+        const successMessage = document.getElementById("successMessage");
+        let uploadedFile = null;
 
-<script>
-const reportForm = document.getElementById("reportForm");
-const dropArea = document.getElementById("drop-area");
-const fileElem = document.getElementById("fileElem");
-const preview = document.getElementById("preview");
-const panel = document.getElementById("panel");
-const successMessage = document.getElementById("successMessage");
-let uploadedFile = null;
+        function handleFile(file) {
+            if (file.size > 8 * 1024 * 1024) {
+                preview.innerHTML = `<p style="color: red;">File too large (max 8MB)</p>`;
+                uploadedFile = null;
+                return;
+            }
 
-function handleFile(file) {
-    if (file.size > 8 * 1024 * 1024) {
-        preview.innerHTML = `<p style="color: red;">File too large (max 8MB)</p>`;
-        uploadedFile = null;
-        return;
-    }
-
-    uploadedFile = file;
-    if (file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onload = e => preview.innerHTML = `<img src="${e.target.result}" style="max-width:100%; max-height:200px;">`;
-        reader.readAsDataURL(file);
-    } else if (file.type.startsWith("video/")) {
-        const reader = new FileReader();
-        reader.onload = e => preview.innerHTML = `
-            <video controls class="video-preview">
+            uploadedFile = file;
+            if (file.type.startsWith("image/")) {
+                const reader = new FileReader();
+                reader.onload = e => preview.innerHTML = `<img src="${e.target.result}" style="max-width:100%; max-height:200px;">`;
+                reader.readAsDataURL(file);
+            } else if (file.type.startsWith("video/")) {
+                const reader = new FileReader();
+                reader.onload = e => preview.innerHTML = `
+            <video controls class="report-video-preview">
                 <source src="${e.target.result}" type="${file.type}">
                 Your browser does not support video.
             </video>`;
-        reader.readAsDataURL(file);
-    } else {
-        preview.innerHTML = `<p style="color: orange;">Preview not available</p>`;
-    }
-}
-
-fileElem.addEventListener("change", () => {
-    if (fileElem.files.length) handleFile(fileElem.files[0]);
-});
-
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, e => {
-        e.preventDefault();
-        e.stopPropagation();
-    });
-});
-
-['dragenter', 'dragover'].forEach(eventName => {
-    dropArea.addEventListener(eventName, () => dropArea.classList.add('highlight'));
-});
-['dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, () => dropArea.classList.remove('highlight'));
-});
-dropArea.addEventListener('drop', e => {
-    const files = e.dataTransfer.files;
-    if (files.length) handleFile(files[0]);
-});
-
-let loggedInUsername = null;
-let loggedInUserId = null;
-
-function getCookie(name) {
-    return document.cookie.split('; ').reduce((r, v) => {
-        const parts = v.split('=');
-        return parts[0] === name ? decodeURIComponent(parts[1]) : r
-    }, '');
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    const storedUserCookie = getCookie("discordUser");
-    if (storedUserCookie) {
-        try {
-            const userData = JSON.parse(storedUserCookie);
-            loggedInUsername = userData.username;
-            loggedInUserId = userData.id;
-        } catch (err) {
-            console.warn("Invalid user cookie format");
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = `<p style="color: orange;">Preview not available</p>`;
+            }
         }
-    }
-});
 
-reportForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const inGameName = document.getElementById("username").value.trim();
-    const bug = document.getElementById("bug").value.trim();
-
-    const payload = {
-        type: "bug_report",
-        username: "Bug Reporter",
-        content: {
-            type: "bug_report",  // Added type here as well
-            reporter: {
-                discord_id: loggedInUserId || "anonymous",
-                discord_username: loggedInUsername || "anonymous",
-                in_game_name: inGameName
-            },
-            description: bug,
-            timestamp: new Date().toISOString(),
-            attachment: uploadedFile ? {
-                name: uploadedFile.name,
-                type: uploadedFile.type,
-                size: uploadedFile.size
-            } : null
-        }
-    };
-
-    try {
-        const res = await fetch("https://webhook-manager.roumakdatta.workers.dev/report", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+        fileElem.addEventListener("change", () => {
+            if (fileElem.files.length) handleFile(fileElem.files[0]);
         });
 
-        if (res.ok) {
-            panel.classList.add("show");
-            setTimeout(() => {
-                panel.classList.remove("show");
-                successMessage.style.display = "block";
-                reportForm.reset();
-                preview.innerHTML = "";
-            }, 2000);
-        } else {
-            alert("Error submitting report. Server responded with: " + res.status);
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.add('report-highlight'));
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.remove('report-highlight'));
+        });
+        dropArea.addEventListener('drop', e => {
+            const files = e.dataTransfer.files;
+            if (files.length) handleFile(files[0]);
+        });
+
+        let loggedInUsername = null;
+        let loggedInUserId = null;
+
+        function getCookie(name) {
+            return document.cookie.split('; ').reduce((r, v) => {
+                const parts = v.split('=');
+                return parts[0] === name ? decodeURIComponent(parts[1]) : r
+            }, '');
         }
-    } catch (err) {
-        console.error("Error:", err);
-        alert("An error occurred. Check console.");
-    }
-});
-</script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const storedUserCookie = getCookie("discordUser");
+            if (storedUserCookie) {
+                try {
+                    const userData = JSON.parse(storedUserCookie);
+                    loggedInUsername = userData.username;
+                    loggedInUserId = userData.id;
+                } catch (err) {
+                    console.warn("Invalid user cookie format");
+                }
+            }
+        });
+
+        reportForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const inGameName = document.getElementById("username").value.trim();
+            const bug = document.getElementById("bug").value.trim();
+
+            const payload = {
+                type: "bug_report",
+                username: "Bug Reporter",
+                content: {
+                    type: "bug_report",  // Added type here as well
+                    reporter: {
+                        discord_id: loggedInUserId || "anonymous",
+                        discord_username: loggedInUsername || "anonymous",
+                        in_game_name: inGameName
+                    },
+                    description: bug,
+                    timestamp: new Date().toISOString(),
+                    attachment: uploadedFile ? {
+                        name: uploadedFile.name,
+                        type: uploadedFile.type,
+                        size: uploadedFile.size
+                    } : null
+                }
+            };
+
+            try {
+                const res = await fetch("https://webhook-manager.roumakdatta.workers.dev/report", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    panel.classList.add("report-show");
+                    setTimeout(() => {
+                        panel.classList.remove("report-show");
+                        successMessage.style.display = "block";
+                        reportForm.reset();
+                        preview.innerHTML = "";
+                    }, 2000);
+                } else {
+                    alert("Error submitting report. Server responded with: " + res.status);
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                alert("An error occurred. Check console.");
+            }
+        });
+    </script>
 </body>
+
 </html>
