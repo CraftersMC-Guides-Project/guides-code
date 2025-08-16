@@ -9,22 +9,20 @@
   <link rel="stylesheet" href="themes/minecraft/style.css">
   <script src="js/script.js"></script>
   <style>
-    /* Added styles for the developer token input */
-    .profile-input {
-      width: calc(100% - 16px);
-      padding: 8px;
-      margin-top: 5px;
-      box-sizing: border-box;
-      background-color: #2a2a2a;
-      border: 1px solid #444;
-      color: white;
-      border-radius: 4px;
-    }
     .dev-label {
       color: #ff4d4d;
       font-weight: bold;
       margin-left: 5px;
     }
+    .toast-notification {
+        position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+        padding: 15px 25px; border-radius: 8px; color: white; font-weight: 500;
+        transition: bottom 0.5s ease-in-out; z-index: 10001;
+    }
+    .toast-notification.show { bottom: 30px; }
+    .toast-notification.success { background-color: #2d8831; }
+    .toast-notification.error { background-color: #c62828; }
+    .toast-notification.info { background-color: #1976d2; }
   </style>
 </head>
 
@@ -63,21 +61,32 @@
       const expires = new Date(Date.now() + days * 864e5).toUTCString();
       document.cookie = `${name}=${value}; expires=${expires}; path=/`;
     }
+    
+    function showToast(message, type = 'info') {
+        let toast = document.querySelector('.toast-notification');
+        if (!toast) {
+            toast = document.createElement('div');
+            document.body.appendChild(toast);
+        }
+        toast.className = `toast-notification ${type}`;
+        toast.textContent = message;
+        
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 4000);
+    }
 
     // --- Theme Changer Functions ---
     const validThemes = ['essential', 'minecraft'];
-    let selectedThemeForSaving = 'minecraft'; // This holds the theme choice before it's saved.
+    let selectedThemeForSaving = 'minecraft';
 
     function selectTheme(theme) {
       if (!validThemes.includes(theme)) return;
-      selectedThemeForSaving = theme; // Update the temporary variable
-      
-      // Update the button visuals
+      selectedThemeForSaving = theme;
       document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('selected'));
       const btn = document.getElementById(theme + 'Btn');
-      if (btn) {
-        btn.classList.add('selected');
-      }
+      if (btn) btn.classList.add('selected');
     }
 
     function saveTheme() {
@@ -86,13 +95,43 @@
     }
 
     // --- Developer Function ---
-    function saveGitHubToken() {
-        const tokenInput = document.getElementById('githubTokenInput');
-        if (tokenInput && tokenInput.value) {
-            setCookie('githubToken', tokenInput.value, 365);
-            alert('GitHub token saved!'); // You can replace this with a nicer notification
-        } else {
-            alert('Please enter a token to save.');
+    async function fetchGitHubToken() {
+        const storedUser = getCookie("discordUser");
+        if (!storedUser) {
+            showToast("You must be logged in.", "error");
+            return;
+        }
+        const user = JSON.parse(storedUser);
+        const userId = user.id;
+
+        // !!! IMPORTANT: Replace this with your actual Cloudflare Worker URL !!!
+        const WORKER_URL = 'https://token-fetcher.roumakdatta.workers.dev/';
+
+        showToast("Fetching token...", "info");
+
+        try {
+            const response = await fetch(WORKER_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: userId })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // For testing: show the token in an alert
+                alert(`SUCCESS! Token: ${result.token}`);
+                
+                setCookie('githubToken', result.token, 365); // Save token to cookie
+                showToast("GitHub token fetched and saved successfully!", "success");
+            } else {
+                throw new Error(result.error || 'An unknown error occurred.');
+            }
+        } catch (error) {
+            console.error("Token fetch error:", error);
+            showToast(`Error: ${error.message}`, "error");
         }
     }
 
@@ -102,16 +141,15 @@
       const storedUser = getCookie("discordUser");
       const profileElement = document.getElementById("profile");
 
-      // Fetch the list of developer IDs from devs.txt
       let devIds = [];
       try {
-          const response = await fetch('/devs.txt'); // Assuming the file is in the root directory
+          const response = await fetch('/devs.txt');
           if (response.ok) {
               const text = await response.text();
-              devIds = text.split('\n').map(id => id.trim()).filter(id => id); // Create an array of dev IDs
+              devIds = text.split('\n').map(id => id.trim()).filter(id => id);
           }
       } catch (error) {
-          console.error('Could not load or parse devs.txt:', error);
+          console.error('Could not load devs.txt:', error);
       }
 
       if (!storedUser) {
@@ -137,22 +175,15 @@
       const displayName = user.global_name || user.username;
       const firstLogin = user.first_login ? new Date(user.first_login).toLocaleString() : 'Unknown';
       const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Unknown';
-      
-      // Check if the current user's ID is in the dev list
       const isDev = devIds.includes(user.id);
 
-      // --- Developer Settings Card (only shown if isDev is true) ---
       let devSettingsCard = '';
       if (isDev) {
-          const savedToken = getCookie('githubToken');
           devSettingsCard = `
             <div class="profile-detail-card">
                 <div class="profile-detail-title">Developer Settings</div>
-                <div class="profile-detail-value">
-                    <span class="profile-detail-value-head">GitHub Auth Token:</span>
-                    <input type="password" id="githubTokenInput" class="profile-input" value="${savedToken || ''}" placeholder="Enter GitHub token...">
-                </div>
-                <button class="profile-save-btn" onclick="saveGitHubToken()">Save Token</button>
+                <button class="profile-save-btn" onclick="fetchGitHubToken()">Fetch GitHub Token</button>
+                <p style="font-size: 12px; color: var(--text-secondary-color); margin-top: 10px;">This will securely fetch and save your GitHub token to your browser's cookies.</p>
             </div>
           `;
       }
@@ -184,7 +215,6 @@
             </div>
             <button class="profile-save-btn" onclick="saveTheme()">Save Changes</button>
         </div>
-        <!-- Inject the dev settings card here -->
         ${devSettingsCard}
       </div>
       <div class="profile-actions">
@@ -201,22 +231,15 @@
     }
 
     function logout() {
-      // Remove the user cookie
       document.cookie = "discordUser=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-      // Also remove the dev token on logout
       document.cookie = "githubToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
       window.location.reload();
     }
 
     // --- Page Load Logic ---
     window.onload = async () => {
-      // First, create the profile HTML. This is essential because it adds the theme buttons to the page.
       await loadProfile();
-
-      // Now that the buttons exist, get the saved theme from the cookie.
       const savedTheme = getCookie('theme');
-
-      // Check if the saved theme is valid. If not, default to 'minecraft'.
       if (validThemes.includes(savedTheme)) {
         selectTheme(savedTheme);
       } else {
