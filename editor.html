@@ -2,309 +2,138 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Market TXT Editor Pro</title>
+  <title>Editor</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f6f8; color: #333; }
-    h1 { text-align: center; padding: 20px; background: #4CAF50; color: white; margin: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-    #toolbar { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 15px; background: #fff; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-    #toolbar button, #toolbar input, #toolbar label { padding: 10px 14px; font-size: 14px; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; }
-    #toolbar button { background: #4CAF50; color: white; border: none; font-weight: bold; transition: 0.3s; }
-    #toolbar button:hover { background: #45a049; }
-    #toolbar input[type="text"] { width: 200px; }
-    #upload-area { border: 2px dashed #aaa; border-radius: 10px; padding: 40px; text-align: center; margin: 20px auto; width: 80%; background: white; transition: 0.3s; }
-    #upload-area.dragover { border-color: #4CAF50; background: #eaffea; }
-    #editor { padding: 20px; overflow-x: auto; }
-    table { border-collapse: collapse; width: 100%; margin-top: 20px; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    th { background: #4CAF50; color: white; position: sticky; top: 50px; z-index: 5; cursor: pointer; user-select: none; }
-    th:hover { background: #45a049; }
-    tr:nth-child(even) { background: #fafafa; }
-    tr:hover { background: #f1f1f1; }
-    input, select, textarea { padding: 5px; border: 1px solid #ccc; border-radius: 5px; }
-    td input.small, td select.small { width: 60px; text-align: center; }
-    td input.medium, td select.medium { width: 80px; text-align: center; }
-    td input.full, td select.full, td textarea { width: 100%; }
-    td textarea { min-height: 40px; resize: vertical; }
-    .deleteBtn { background: #f44336; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer; }
-    .deleteBtn:hover { background: #d32f2f; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+    header { background: #333; color: #fff; padding: 10px 20px; }
+    .container { padding: 20px; }
+    button { padding: 10px 16px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
+    button.primary { background: #4CAF50; color: #fff; }
+    button.danger { background: #e74c3c; color: #fff; }
+    .fixed-bottom { position: fixed; bottom: 10px; right: 10px; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+    .modal-content { background: #fff; padding: 20px; border-radius: 8px; width: 300px; text-align: center; }
+    .modal-content input { width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+    .modal-content label { display: flex; align-items: center; gap: 5px; font-size: 14px; }
   </style>
 </head>
 <body>
-  <h1>Market TXT Editor Pro</h1>
+<header>
+  <h1>Editor</h1>
+</header>
 
-  <div id="toolbar">
-    <button id="fetchFileBtn">Fetch File</button>
-    <button id="addItemBtn" style="display:none;">+ Add Item</button>
-    <button id="downloadBtn" style="display:none;">Download File</button>
-    <button id="saveGitHubBtn" style="display:none;">Save to GitHub</button>
-    <button id="rememberChangesBtn" style="display:none;">Remember Changes</button>
-    <label id="rememberTokenLabel" style="display:none;">
-      <input type="checkbox" id="rememberToken"> Remember Token
-    </label>
-    <button id="removeFileBtn" style="display:none;">Reset File</button>
-    <input type="text" id="searchInput" placeholder="Search by name or ID..." style="display:none;">
+<div class="container">
+  <button class="primary" onclick="loadFromGitHub()">Fetch File from GitHub</button>
+  <button class="primary fixed-bottom" onclick="saveToGitHub()">💾 Save to GitHub</button>
+</div>
+
+<!-- Token Modal -->
+<div id="tokenModal" class="modal">
+  <div class="modal-content">
+    <h3>Enter GitHub Token</h3>
+    <input type="password" id="githubTokenInput" placeholder="Your token here">
+    <label><input type="checkbox" id="rememberToken"> Remember this token</label>
+    <button class="primary" onclick="setToken()">Save Token</button>
   </div>
+</div>
 
-  <div id="upload-area">
-    <p>Drag & Drop your <strong>market.txt</strong> here or click to upload</p>
-    <input type="file" id="fileInput" accept=".txt,.json" style="display:none;">
-  </div>
+<script>
+const repo = "CraftersMC-Guides-Project/guides-code";
+const branch = "main";
+const path = "market/market.txt";
 
-  <div id="editor"></div>
+const TOKEN_KEY = "github_token";
+let savedToken = localStorage.getItem(TOKEN_KEY) || null;
 
-  <script>
-    let items = [];
-    let currentSort = { key: null, asc: true };
+function showTokenModal() {
+  document.getElementById("githubTokenInput").value = savedToken || "";
+  document.getElementById("rememberToken").checked = !!savedToken;
+  document.getElementById("tokenModal").style.display = "flex";
+}
 
-    const STORAGE_KEY = "marketFileLoaded";
-    const DATA_KEY = "marketData";
-    const TOKEN_KEY = "githubToken";
+function hideTokenModal() {
+  document.getElementById("tokenModal").style.display = "none";
+}
 
-    const rarityOptions = ["common", "uncommon", "rare", "epic", "legendary", "special"];
-    const natureOptions = ["STABLE", "UNDERPAID", "OVERPAID"];
-    const demandOptions = Array.from({length:10}, (_,i) => String(i+1));
-    const categoryOptions = ["Combat", "Farming", "Foraging", "Mining", "Slayer", "Special", "Test"];
+function setToken() {
+  const token = document.getElementById("githubTokenInput").value.trim();
+  const remember = document.getElementById("rememberToken").checked;
+  if (!token) return alert("Please enter a token");
+  if (remember) {
+    localStorage.setItem(TOKEN_KEY, token);
+    savedToken = token;
+  } else {
+    localStorage.removeItem(TOKEN_KEY);
+    savedToken = token;
+  }
+  hideTokenModal();
+  saveToGitHub();
+}
 
-    const repo = "CraftersMC-Guides-Project/guides-code";
-    const path = "market/market.txt";
-    const branch = "main";
+async function loadFromGitHub() {
+  if (!savedToken) return showTokenModal();
 
-    let savedToken = localStorage.getItem(TOKEN_KEY) || null;
-
-    // Load remembered
-    window.addEventListener("DOMContentLoaded", async () => {
-      const rememberedData = localStorage.getItem(DATA_KEY);
-      if (rememberedData) {
-        try {
-          items = JSON.parse(rememberedData);
-          renderTable();
-          showControls();
-          hideUploadUI();
-          return;
-        } catch { localStorage.removeItem(DATA_KEY); }
-      }
-
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved === "true") {
-        try {
-          const res = await fetch("./market/market.txt");
-          if (!res.ok) throw new Error("File not found");
-          const text = await res.text();
-          items = JSON.parse(text);
-          ensurePublic();
-          renderTable();
-          showControls();
-          hideUploadUI();
-        } catch { localStorage.removeItem(STORAGE_KEY); }
+  const url = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
+  try {
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `token ${savedToken}`,
+        Accept: "application/vnd.github+json"
       }
     });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to fetch file");
+    const content = atob(data.content);
+    alert("✅ File fetched successfully\n\n" + content.substring(0,200) + "...");
+  } catch (err) {
+    alert("❌ GitHub fetch failed: " + err.message);
+  }
+}
 
-    // Upload handlers
-    document.getElementById("fileInput").addEventListener("change", e => processFile(e.target.files[0]));
-    const uploadArea = document.getElementById("upload-area");
-    uploadArea.addEventListener("click", () => document.getElementById("fileInput").click());
-    uploadArea.addEventListener("dragover", e => { e.preventDefault(); uploadArea.classList.add("dragover"); });
-    uploadArea.addEventListener("dragleave", () => uploadArea.classList.remove("dragover"));
-    uploadArea.addEventListener("drop", e => { e.preventDefault(); uploadArea.classList.remove("dragover"); processFile(e.dataTransfer.files[0]); });
+async function saveToGitHub() {
+  if (!savedToken) return showTokenModal();
 
-    document.getElementById("fetchFileBtn").addEventListener("click", async () => {
-      try {
-        const res = await fetch("./market/market.txt");
-        if (!res.ok) throw new Error("File not found");
-        const text = await res.text();
-        items = JSON.parse(text);
-        ensurePublic();
-        renderTable();
-        showControls();
-        hideUploadUI();
-        localStorage.setItem(STORAGE_KEY, "true");
-      } catch { alert("Failed to load ./market/market.txt"); }
+  const metaUrl = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
+
+  try {
+    // Always fetch latest sha
+    const meta = await fetch(metaUrl, {
+      headers: {
+        Authorization: `token ${savedToken}`,
+        Accept: "application/vnd.github+json"
+      }
+    });
+    if (!meta.ok) throw new Error("Metadata fetch failed");
+    const file = await meta.json();
+    const latestSha = file.sha;
+
+    const updated = JSON.stringify({ example: "your file content here" }, null, 2);
+
+    const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `token ${savedToken}`,
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: "Update market.txt via editor.html",
+        content: btoa(unescape(encodeURIComponent(updated))),
+        sha: latestSha,
+        branch
+      })
     });
 
-    function ensurePublic() { items.forEach(i => { if (!i.hasOwnProperty("public")) i.public = true; }); }
-
-    function processFile(file) {
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        try {
-          items = JSON.parse(e.target.result);
-          ensurePublic();
-          renderTable();
-          showControls();
-          hideUploadUI();
-          localStorage.setItem(STORAGE_KEY, "true");
-        } catch { alert("Invalid file format."); }
-      };
-      reader.readAsText(file);
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error("Update failed: " + errText);
     }
 
-    // ================= GitHub Save =================
-    document.getElementById("saveGitHubBtn").onclick = saveToGitHub;
-
-    async function saveToGitHub() {
-      let token = savedToken;
-
-      if (!token) {
-        token = prompt("Enter your GitHub Token:");
-        if (!token) return;
-        if (document.getElementById("rememberToken").checked) {
-          localStorage.setItem(TOKEN_KEY, token);
-          savedToken = token;
-        }
-      }
-
-      const metaUrl = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
-      try {
-        // Step 1: get metadata
-        const meta = await fetch(metaUrl, {
-          headers: {
-            Authorization: `token ${token}`,
-            "Accept": "application/vnd.github+json"
-          }
-        });
-
-        if (meta.status === 401 || meta.status === 403) {
-          alert("❌ Invalid or unauthorized token. Please enter again.");
-          localStorage.removeItem(TOKEN_KEY);
-          savedToken = null;
-          return;
-        }
-
-        if (!meta.ok) throw new Error(`Metadata fetch failed: ${meta.status} ${meta.statusText}`);
-
-        const file = await meta.json();
-        const updated = JSON.stringify(items, null, 4);
-
-        // Step 2: PUT updated file
-        const putUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
-        const res = await fetch(putUrl, {
-          method: "PUT",
-          headers: {
-            Authorization: `token ${token}`,
-            "Accept": "application/vnd.github+json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            message: "Update market.txt via editor.html",
-            content: btoa(unescape(encodeURIComponent(updated))),
-            sha: file.sha,
-            branch
-          })
-        });
-
-        if (!res.ok) {
-          const errText = await res.text();
-          throw new Error(`Update failed: ${res.status} ${errText}`);
-        }
-
-        alert("✅ File updated on GitHub!");
-      } catch (err) {
-        alert("❌ GitHub update failed: " + err.message);
-      }
-    }
-
-    // Remember changes
-    document.getElementById("rememberChangesBtn").onclick=()=>{
-      localStorage.setItem(DATA_KEY, JSON.stringify(items));
-      alert("✅ Changes saved locally. They will reload next time.");
-    };
-
-    // Reset
-    document.getElementById("removeFileBtn").onclick=()=>{
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(DATA_KEY);
-      localStorage.removeItem(TOKEN_KEY);
-      savedToken = null;
-      location.reload();
-    };
-
-    function showControls(){
-      ["downloadBtn","addItemBtn","removeFileBtn","searchInput","saveGitHubBtn","rememberChangesBtn","rememberTokenLabel"].forEach(id=>document.getElementById(id).style.display="inline-block");
-    }
-    function hideUploadUI(){
-      document.getElementById("upload-area").style.display="none";
-      document.getElementById("fetchFileBtn").style.display="none";
-    }
-
-    // Download
-    document.getElementById("downloadBtn").onclick=()=>{
-      const blob=new Blob([JSON.stringify(items,null,4)],{type:"application/json"});
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement("a");
-      a.href=url;a.download="market_updated.txt";a.click();
-      URL.revokeObjectURL(url);
-    };
-
-    // Add item
-    document.getElementById("addItemBtn").onclick=()=>{
-      const id=prompt("Enter new item ID:");
-      if(!id) return;
-      if(items.find(i=>i.id===id)) return alert("ID exists!");
-      items.push({id,name:"New Item",picture:"",rarity:"common",price:"0",description:"",nature:"STABLE",demand:"[1/10]",category:"Combat",craftable:false,enchantable:false,tradable:false,auctionable:false,bazaarable:false,reforgable:false,public:true});
-      items.sort((a,b)=>Number(a.id)-Number(b.id));
-      renderTable();
-    };
-
-    // Search
-    document.getElementById("searchInput").oninput=()=>renderTable();
-
-    // Table rendering
-    function renderTable() {
-      const container = document.getElementById("editor");
-      container.innerHTML = "";
-      if (!items.length) return;
-      const table = document.createElement("table");
-
-      const headers = Object.keys(items[0]);
-      const headerRow = document.createElement("tr");
-      headers.forEach(h => {
-        const th = document.createElement("th");
-        th.textContent = h;
-        th.onclick = () => sortTable(h);
-        headerRow.appendChild(th);
-      });
-      const thDel = document.createElement("th");
-      thDel.textContent = "Actions";
-      headerRow.appendChild(thDel);
-      table.appendChild(headerRow);
-
-      let searchVal = document.getElementById("searchInput").value.toLowerCase();
-      items.forEach((item, index) => {
-        if (searchVal && !item.name.toLowerCase().includes(searchVal) && !String(item.id).includes(searchVal)) return;
-        const tr = document.createElement("tr");
-        headers.forEach(key => {
-          const td = document.createElement("td");
-          let input;
-          if (key === "rarity") input = createSelect(rarityOptions, item[key], "full");
-          else if (key === "nature") input = createSelect(natureOptions, item[key].toUpperCase(), "full");
-          else if (key === "demand") input = createSelect(demandOptions, item[key].replace(/\D/g,""), "small");
-          else if (key === "category") input = createSelect(categoryOptions, capitalize(item[key]), "full");
-          else if (typeof item[key] === "boolean") input = createSelect(["true","false"], String(item[key]), "small");
-          else if (key === "description") { input = document.createElement("textarea"); input.value = item[key]; }
-          else { input = document.createElement("input"); input.value = item[key]; input.classList.add(key==="id"?"small":key==="price"?"medium":"full"); }
-          input.onchange = e => {
-            if (key === "demand") item[key] = `[${e.target.value}/10]`;
-            else if (typeof item[key] === "boolean") item[key] = e.target.value==="true";
-            else item[key] = e.target.value;
-          };
-          td.appendChild(input); tr.appendChild(td);
-        });
-        const tdDel = document.createElement("td");
-        const btn = document.createElement("button"); btn.textContent="Delete"; btn.className="deleteBtn";
-        btn.onclick=()=>{ items.splice(index,1); renderTable(); };
-        tdDel.appendChild(btn); tr.appendChild(tdDel); table.appendChild(tr);
-      });
-      container.appendChild(table);
-    }
-
-    function createSelect(options, current, cls="full") {
-      const s = document.createElement("select"); s.classList.add(cls);
-      options.forEach(v => { const o=document.createElement("option"); o.value=v; o.textContent=v; if(String(current)===v) o.selected=true; s.appendChild(o); });
-      return s;
-    }
-    function capitalize(v){ return v? v.charAt(0).toUpperCase()+v.slice(1).toLowerCase():""; }
-    function sortTable(k){ if(currentSort.key===k) currentSort.asc=!currentSort.asc; else {currentSort.key=k; currentSort.asc=true;} items.sort((a,b)=>{let v1=a[k],v2=b[k];if(typeof v1==="string")v1=v1.toLowerCase();if(typeof v2==="string")v2=v2.toLowerCase();return v1<v2?(currentSort.asc?-1:1):v1>v2?(currentSort.asc?1:-1):0;}); renderTable(); }
-  </script>
+    alert("✅ File updated on GitHub!");
+  } catch (err) {
+    alert("❌ GitHub update failed: " + err.message);
+  }
+}
+</script>
 </body>
 </html>
