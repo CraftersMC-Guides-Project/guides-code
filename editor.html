@@ -2,46 +2,361 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Market TXT Editor Pro</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f6f8; color: #333; }
-    h1 { text-align: center; padding: 20px; background: #4CAF50; color: white; margin: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-    #toolbar { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 15px; background: #fff; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-    #toolbar button, #toolbar input, #toolbar label { padding: 10px 14px; font-size: 14px; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; }
-    #toolbar button { background: #4CAF50; color: white; border: none; font-weight: bold; transition: 0.3s; }
-    #toolbar button:hover { background: #45a049; }
-    #toolbar input[type="text"] { width: 200px; }
-    #upload-area { border: 2px dashed #aaa; border-radius: 10px; padding: 40px; text-align: center; margin: 20px auto; width: 80%; background: white; transition: 0.3s; }
-    #upload-area.dragover { border-color: #4CAF50; background: #eaffea; }
-    #editor { padding: 20px; overflow-x: auto; }
-    table { border-collapse: collapse; width: 100%; margin-top: 20px; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    th { background: #4CAF50; color: white; position: sticky; top: 50px; z-index: 5; cursor: pointer; user-select: none; }
-    th:hover { background: #45a049; }
-    tr:nth-child(even) { background: #fafafa; }
-    tr:hover { background: #f1f1f1; }
-    input, select, textarea { padding: 5px; border: 1px solid #ccc; border-radius: 5px; }
-    td input.small, td select.small { width: 60px; text-align: center; }
-    td input.medium, td select.medium { width: 80px; text-align: center; }
-    td input.full, td select.full, td textarea { width: 100%; }
-    td textarea { min-height: 40px; resize: vertical; }
-    .deleteBtn { background: #f44336; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer; }
-    .deleteBtn:hover { background: #d32f2f; }
+    /* CSS Variables for theming */
+    :root {
+      --bg-color-light: #f4f6f8;
+      --bg-secondary-color-light: #ffffff;
+      --text-color-light: #333333;
+      --border-color-light: #dddddd;
+      --input-bg-color-light: #ffffff;
+      --input-border-color-light: #cccccc;
+      --shadow-color-light: rgba(0, 0, 0, 0.1);
+      
+      --bg-color: #1a1c20;
+      --bg-secondary-color: #25282e;
+      --text-color: #e0e0e0;
+      --text-secondary-color: #b0b0b0;
+      --border-color: #3a3f4b;
+      --header-bg-color: #2d8831;
+      --header-text-color: #ffffff;
+      --button-bg-color: #2d8831;
+      --button-hover-bg-color: #36a43b;
+      --button-text-color: #ffffff;
+      --danger-bg-color: #c62828;
+      --danger-hover-bg-color: #e53935;
+      --input-bg-color: #1a1c20;
+      --input-border-color: #3a3f4b;
+      --shadow-color: rgba(0, 0, 0, 0.3);
+      --table-row-even-bg: #2a2d33;
+      --table-row-hover-bg: #3a3f4b;
+    }
+
+    /* General Styles */
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--bg-color);
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    h1 {
+      text-align: center;
+      padding: 20px;
+      background: var(--header-bg-color);
+      color: var(--header-text-color);
+      margin: 0;
+      box-shadow: 0 2px 8px var(--shadow-color);
+      font-weight: 600;
+    }
+
+    /* Toolbar */
+    #toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 15px;
+      background: var(--bg-secondary-color);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 6px var(--shadow-color);
+      transition: background 0.3s, border-bottom 0.3s;
+    }
+
+    #toolbar button, #toolbar input, #toolbar label {
+      padding: 10px 14px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      background: var(--bg-secondary-color);
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #toolbar button {
+      background: var(--button-bg-color);
+      color: var(--button-text-color);
+      border: none;
+      font-weight: 500;
+      transition: background-color 0.3s, transform 0.1s;
+    }
+
+    #toolbar button:hover {
+      background: var(--button-hover-bg-color);
+    }
+    #toolbar button:active {
+      transform: scale(0.98);
+    }
+
+    #toolbar input[type="text"] {
+      width: 250px;
+      background: var(--input-bg-color);
+    }
+
+    /* Upload Area */
+    #upload-area {
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      margin: 20px auto;
+      width: 80%;
+      max-width: 800px;
+      background: var(--bg-secondary-color);
+      transition: 0.3s;
+      color: var(--text-secondary-color);
+    }
+
+    #upload-area.dragover {
+      border-color: var(--button-bg-color);
+      background: var(--bg-color);
+    }
+
+    /* Editor and Table */
+    #editor {
+      padding: 20px;
+      overflow-x: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+      background: var(--bg-secondary-color);
+      box-shadow: 0 2px 6px var(--shadow-color);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background: var(--header-bg-color);
+      color: var(--header-text-color);
+      position: sticky;
+      top: 74px; /* Height of toolbar */
+      z-index: 5;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 600;
+    }
+
+    th:hover {
+      background: var(--button-hover-bg-color);
+    }
+
+    tr:nth-child(even) {
+      background: var(--table-row-even-bg);
+    }
+
+    tr:hover {
+      background: var(--table-row-hover-bg);
+    }
+
+    input, select, textarea {
+      padding: 8px;
+      border: 1px solid var(--input-border-color);
+      border-radius: 6px;
+      background-color: var(--input-bg-color);
+      color: var(--text-color);
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    td input, td select {
+        min-width: 80px;
+    }
+
+    td textarea {
+      min-height: 40px;
+      resize: vertical;
+    }
+
+    .deleteBtn {
+      background: var(--danger-bg-color);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: background-color 0.2s;
+    }
+
+    .deleteBtn:hover {
+      background: var(--danger-hover-bg-color);
+    }
+
+    /* Pagination */
+    #pagination-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        gap: 8px;
+    }
+    #pagination-controls button {
+        background-color: var(--bg-secondary-color);
+        color: var(--text-color);
+        border: 1px solid var(--border-color);
+        padding: 8px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+    #pagination-controls button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+    #pagination-controls button.active {
+        background-color: var(--button-bg-color);
+        color: var(--button-text-color);
+        border-color: var(--button-bg-color);
+    }
+    
+    /* Toast Notifications */
+    #toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .toast {
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        opacity: 0;
+        transform: translateY(20px);
+        animation: toast-in 0.5s forwards;
+    }
+    .toast.success { background-color: #2d8831; }
+    .toast.error { background-color: #c62828; }
+    .toast.info { background-color: #1976d2; }
+    @keyframes toast-in {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Modal */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0.3s;
+    }
+    .modal-overlay.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+    .modal-content {
+        background: var(--bg-secondary-color);
+        padding: 25px;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 450px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        transform: scale(0.9);
+        transition: transform 0.3s;
+    }
+    .modal-overlay.visible .modal-content {
+        transform: scale(1);
+    }
+    .modal-header {
+        font-size: 1.2em;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    .modal-body {
+        margin-bottom: 20px;
+    }
+    .modal-body input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+    .modal-footer button {
+        padding: 10px 18px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+    }
+    .modal-btn-primary {
+        background-color: var(--button-bg-color);
+        color: var(--button-text-color);
+    }
+     .modal-btn-secondary {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        border: 1px solid var(--border-color);
+    }
+
   </style>
 </head>
 <body>
+
   <h1>Market TXT Editor Pro</h1>
 
   <div id="toolbar">
-    <button id="fetchFileBtn">Fetch File</button>
-    <button id="addItemBtn" style="display:none;">+ Add Item</button>
-    <button id="downloadBtn" style="display:none;">Download File</button>
-    <button id="saveGitHubBtn" style="display:none;">Save to GitHub</button>
-    <button id="rememberChangesBtn" style="display:none;">Remember Changes</button>
-    <label id="rememberTokenLabel" style="display:none;">
-      <input type="checkbox" id="rememberToken"> Remember Token
-    </label>
-    <button id="removeFileBtn" style="display:none;">Reset File</button>
+    <button id="fetchFileBtn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+      Fetch File
+    </button>
+    <button id="addItemBtn" style="display:none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+      Add Item
+    </button>
+    <button id="downloadBtn" style="display:none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+      Download
+    </button>
+    <button id="saveGitHubBtn" style="display:none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+      Save to GitHub
+    </button>
+    <button id="rememberChangesBtn" style="display:none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11 2a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3h6zM5 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H5z"/></svg>
+        Remember Changes
+    </button>
+    <button id="removeFileBtn" style="display:none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+      Reset
+    </button>
     <input type="text" id="searchInput" placeholder="Search by name or ID..." style="display:none;">
   </div>
 
@@ -51,10 +366,26 @@
   </div>
 
   <div id="editor"></div>
+  <div id="pagination-controls"></div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modal-container">
+    <div class="modal-content">
+      <div class="modal-header" id="modal-title">Modal Title</div>
+      <div class="modal-body" id="modal-body">Modal Body</div>
+      <div class="modal-footer" id="modal-footer"></div>
+    </div>
+  </div>
+
 
   <script>
     let items = [];
     let currentSort = { key: null, asc: true };
+    let currentPage = 1;
+    const itemsPerPage = 25;
 
     const STORAGE_KEY = "marketFileLoaded";
     const DATA_KEY = "marketData";
@@ -71,15 +402,16 @@
 
     let savedToken = localStorage.getItem(TOKEN_KEY) || null;
 
-    // Load remembered
+    // ================= Initial Load =================
     window.addEventListener("DOMContentLoaded", async () => {
       const rememberedData = localStorage.getItem(DATA_KEY);
       if (rememberedData) {
         try {
           items = JSON.parse(rememberedData);
-          renderTable();
+          render();
           showControls();
           hideUploadUI();
+          showToast("Loaded saved changes from last session.", "info");
           return;
         } catch { localStorage.removeItem(DATA_KEY); }
       }
@@ -92,14 +424,23 @@
           const text = await res.text();
           items = JSON.parse(text);
           ensurePublic();
-          renderTable();
+          render();
           showControls();
           hideUploadUI();
         } catch { localStorage.removeItem(STORAGE_KEY); }
       }
     });
 
-    // Upload handlers
+    // ================= UI Controls =================
+    function showControls(){
+      ["downloadBtn","addItemBtn","removeFileBtn","searchInput","saveGitHubBtn","rememberChangesBtn"].forEach(id=>document.getElementById(id).style.display="inline-flex");
+    }
+    function hideUploadUI(){
+      document.getElementById("upload-area").style.display="none";
+      document.getElementById("fetchFileBtn").style.display="none";
+    }
+
+    // ================= Event Listeners =================
     document.getElementById("fileInput").addEventListener("change", e => processFile(e.target.files[0]));
     const uploadArea = document.getElementById("upload-area");
     uploadArea.addEventListener("click", () => document.getElementById("fileInput").click());
@@ -114,13 +455,67 @@
         const text = await res.text();
         items = JSON.parse(text);
         ensurePublic();
-        renderTable();
+        render();
         showControls();
         hideUploadUI();
         localStorage.setItem(STORAGE_KEY, "true");
-      } catch { alert("Failed to load ./market/market.txt"); }
+        showToast("File fetched successfully!", "success");
+      } catch { showToast("Failed to load ./market/market.txt", "error"); }
     });
+    
+    document.getElementById("downloadBtn").onclick=()=>{
+      const blob=new Blob([JSON.stringify(items,null,4)],{type:"application/json"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;a.download="market_updated.txt";a.click();
+      URL.revokeObjectURL(url);
+      showToast("File download started.", "info");
+    };
 
+    document.getElementById("addItemBtn").onclick=()=>{
+      showModal(
+        "Add New Item",
+        `<p>Enter the ID for the new item:</p><input type="text" id="newItemIdInput" placeholder="e.g., 12345">`,
+        (modal) => {
+          const id = modal.querySelector('#newItemIdInput').value;
+          if(!id) return;
+          if(items.find(i=>i.id===id)) {
+            showToast("An item with that ID already exists!", "error");
+            return;
+          }
+          items.push({id,name:"New Item",picture:"",rarity:"common",price:"0",description:"",nature:"STABLE",demand:"[1/10]",category:"Combat",craftable:false,enchantable:false,tradable:false,auctionable:false,bazaarable:false,reforgable:false,public:true});
+          items.sort((a,b)=>Number(a.id)-Number(b.id));
+          render();
+          showToast(`Item with ID ${id} added.`, "success");
+        }
+      );
+    };
+    
+    document.getElementById("rememberChangesBtn").onclick=()=>{
+      localStorage.setItem(DATA_KEY, JSON.stringify(items));
+      showToast("Changes saved locally. They will reload next time.", "success");
+    };
+
+    document.getElementById("removeFileBtn").onclick=()=>{
+        showConfirmationModal(
+            "Reset File?",
+            "Are you sure you want to reset? This will clear the current file and any locally saved changes and tokens.",
+            () => {
+                localStorage.removeItem(STORAGE_KEY);
+                localStorage.removeItem(DATA_KEY);
+                localStorage.removeItem(TOKEN_KEY);
+                savedToken = null;
+                location.reload();
+            }
+        );
+    };
+
+    document.getElementById("searchInput").oninput=()=> {
+        currentPage = 1;
+        render();
+    };
+    
+    // ================= File Processing =================
     function ensurePublic() { items.forEach(i => { if (!i.hasOwnProperty("public")) i.public = true; }); }
 
     function processFile(file) {
@@ -130,11 +525,12 @@
         try {
           items = JSON.parse(e.target.result);
           ensurePublic();
-          renderTable();
+          render();
           showControls();
           hideUploadUI();
           localStorage.setItem(STORAGE_KEY, "true");
-        } catch { alert("Invalid file format."); }
+          showToast("File loaded successfully!", "success");
+        } catch { showToast("Invalid file format. Please upload a valid JSON file.", "error"); }
       };
       reader.readAsText(file);
     }
@@ -146,116 +542,91 @@
       let token = savedToken;
 
       if (!token) {
-        token = prompt("Enter your GitHub Token:");
-        if (!token) return;
-        if (document.getElementById("rememberToken").checked) {
-          localStorage.setItem(TOKEN_KEY, token);
-          savedToken = token;
-        }
-      }
-
-      const metaUrl = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
-      try {
-        // Step 1: get metadata
-        const meta = await fetch(metaUrl, {
-          headers: {
-            Authorization: `token ${token}`,
-            "Accept": "application/vnd.github+json"
+        showModal(
+          "GitHub Personal Access Token",
+          `<p>Enter your GitHub Token to save the file. This token needs repository write access.</p>
+           <input type="password" id="githubTokenInput" placeholder="ghp_..."><br><br>
+           <label><input type="checkbox" id="rememberTokenCheckbox"> Remember Token</label>`,
+          (modal) => {
+            const inputToken = modal.querySelector('#githubTokenInput').value;
+            const remember = modal.querySelector('#rememberTokenCheckbox').checked;
+            if (inputToken) {
+              if (remember) {
+                localStorage.setItem(TOKEN_KEY, inputToken);
+                savedToken = inputToken;
+              }
+              performGitHubUpdate(inputToken);
+            }
           }
-        });
-
-        if (meta.status === 401 || meta.status === 403) {
-          alert("❌ Invalid or unauthorized token. Please enter again.");
-          localStorage.removeItem(TOKEN_KEY);
-          savedToken = null;
-          return;
-        }
-
-        if (!meta.ok) throw new Error(`Metadata fetch failed: ${meta.status} ${meta.statusText}`);
-
-        const file = await meta.json();
-        const updated = JSON.stringify(items, null, 4);
-
-        // Step 2: PUT updated file
-        const putUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
-        const res = await fetch(putUrl, {
-          method: "PUT",
-          headers: {
-            Authorization: `token ${token}`,
-            "Accept": "application/vnd.github+json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            message: "Update market.txt via editor.html",
-            content: btoa(unescape(encodeURIComponent(updated))),
-            sha: file.sha,
-            branch
-          })
-        });
-
-        if (!res.ok) {
-          const errText = await res.text();
-          throw new Error(`Update failed: ${res.status} ${errText}`);
-        }
-
-        alert("✅ File updated on GitHub!");
-      } catch (err) {
-        alert("❌ GitHub update failed: " + err.message);
+        );
+      } else {
+        performGitHubUpdate(token);
       }
     }
 
-    // Remember changes
-    document.getElementById("rememberChangesBtn").onclick=()=>{
-      localStorage.setItem(DATA_KEY, JSON.stringify(items));
-      alert("✅ Changes saved locally. They will reload next time.");
-    };
+    async function performGitHubUpdate(token) {
+        showToast("Saving to GitHub...", "info");
+        const metaUrl = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
+        try {
+            // Step 1: get metadata
+            const meta = await fetch(metaUrl, {
+                headers: {
+                    Authorization: `token ${token}`,
+                    "Accept": "application/vnd.github+json"
+                }
+            });
 
-    // Reset
-    document.getElementById("removeFileBtn").onclick=()=>{
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(DATA_KEY);
-      localStorage.removeItem(TOKEN_KEY);
-      savedToken = null;
-      location.reload();
-    };
+            if (meta.status === 401 || meta.status === 403) {
+                showToast("Invalid or unauthorized token. Please enter again.", "error");
+                localStorage.removeItem(TOKEN_KEY);
+                savedToken = null;
+                return;
+            }
+            if (!meta.ok) throw new Error(`Metadata fetch failed: ${meta.status} ${meta.statusText}`);
 
-    function showControls(){
-      ["downloadBtn","addItemBtn","removeFileBtn","searchInput","saveGitHubBtn","rememberChangesBtn","rememberTokenLabel"].forEach(id=>document.getElementById(id).style.display="inline-block");
+            const file = await meta.json();
+            const updated = JSON.stringify(items, null, 4);
+
+            // Step 2: PUT updated file
+            const putUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
+            const res = await fetch(putUrl, {
+                method: "PUT",
+                headers: {
+                    Authorization: `token ${token}`,
+                    "Accept": "application/vnd.github+json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: "Update market.txt via editor",
+                    content: btoa(unescape(encodeURIComponent(updated))),
+                    sha: file.sha,
+                    branch
+                })
+            });
+
+            if (!res.ok) {
+                const errText = await res.text();
+                throw new Error(`Update failed: ${res.status} ${errText}`);
+            }
+
+            showToast("File updated on GitHub!", "success");
+        } catch (err) {
+            showToast("GitHub update failed: " + err.message, "error");
+        }
     }
-    function hideUploadUI(){
-      document.getElementById("upload-area").style.display="none";
-      document.getElementById("fetchFileBtn").style.display="none";
+
+    // ================= Table Rendering & Logic =================
+    function render() {
+        renderTable();
+        renderPagination();
     }
 
-    // Download
-    document.getElementById("downloadBtn").onclick=()=>{
-      const blob=new Blob([JSON.stringify(items,null,4)],{type:"application/json"});
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement("a");
-      a.href=url;a.download="market_updated.txt";a.click();
-      URL.revokeObjectURL(url);
-    };
-
-    // Add item
-    document.getElementById("addItemBtn").onclick=()=>{
-      const id=prompt("Enter new item ID:");
-      if(!id) return;
-      if(items.find(i=>i.id===id)) return alert("ID exists!");
-      items.push({id,name:"New Item",picture:"",rarity:"common",price:"0",description:"",nature:"STABLE",demand:"[1/10]",category:"Combat",craftable:false,enchantable:false,tradable:false,auctionable:false,bazaarable:false,reforgable:false,public:true});
-      items.sort((a,b)=>Number(a.id)-Number(b.id));
-      renderTable();
-    };
-
-    // Search
-    document.getElementById("searchInput").oninput=()=>renderTable();
-
-    // Table rendering
     function renderTable() {
       const container = document.getElementById("editor");
       container.innerHTML = "";
       if (!items.length) return;
+      
       const table = document.createElement("table");
-
       const headers = Object.keys(items[0]);
       const headerRow = document.createElement("tr");
       headers.forEach(h => {
@@ -270,41 +641,151 @@
       table.appendChild(headerRow);
 
       let searchVal = document.getElementById("searchInput").value.toLowerCase();
-      items.forEach((item, index) => {
-        if (searchVal && !item.name.toLowerCase().includes(searchVal) && !String(item.id).includes(searchVal)) return;
+      const filteredItems = searchVal 
+        ? items.filter(item => item.name.toLowerCase().includes(searchVal) || String(item.id).includes(searchVal))
+        : [...items];
+
+      const paginatedItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+      paginatedItems.forEach(item => {
+        const originalIndex = items.findIndex(i => i.id === item.id);
         const tr = document.createElement("tr");
         headers.forEach(key => {
           const td = document.createElement("td");
           let input;
-          if (key === "rarity") input = createSelect(rarityOptions, item[key], "full");
-          else if (key === "nature") input = createSelect(natureOptions, item[key].toUpperCase(), "full");
-          else if (key === "demand") input = createSelect(demandOptions, item[key].replace(/\D/g,""), "small");
-          else if (key === "category") input = createSelect(categoryOptions, capitalize(item[key]), "full");
-          else if (typeof item[key] === "boolean") input = createSelect(["true","false"], String(item[key]), "small");
+          if (key === "rarity") input = createSelect(rarityOptions, item[key]);
+          else if (key === "nature") input = createSelect(natureOptions, item[key].toUpperCase());
+          else if (key === "demand") input = createSelect(demandOptions, item[key].replace(/\D/g,""));
+          else if (key === "category") input = createSelect(categoryOptions, capitalize(item[key]));
+          else if (typeof item[key] === "boolean") input = createSelect(["true","false"], String(item[key]));
           else if (key === "description") { input = document.createElement("textarea"); input.value = item[key]; }
-          else { input = document.createElement("input"); input.value = item[key]; input.classList.add(key==="id"?"small":key==="price"?"medium":"full"); }
+          else { input = document.createElement("input"); input.value = item[key]; }
+          
           input.onchange = e => {
-            if (key === "demand") item[key] = `[${e.target.value}/10]`;
-            else if (typeof item[key] === "boolean") item[key] = e.target.value==="true";
-            else item[key] = e.target.value;
+            const value = e.target.value;
+            if (key === "demand") items[originalIndex][key] = `[${value}/10]`;
+            else if (typeof items[originalIndex][key] === "boolean") items[originalIndex][key] = value === "true";
+            else items[originalIndex][key] = value;
           };
           td.appendChild(input); tr.appendChild(td);
         });
         const tdDel = document.createElement("td");
-        const btn = document.createElement("button"); btn.textContent="Delete"; btn.className="deleteBtn";
-        btn.onclick=()=>{ items.splice(index,1); renderTable(); };
+        const btn = document.createElement("button"); 
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg> Delete`;
+        btn.className="deleteBtn";
+        btn.onclick=()=>{ 
+            showConfirmationModal(
+                `Delete item ${item.name}?`,
+                "Are you sure you want to delete this item? This action cannot be undone.",
+                () => {
+                    items.splice(originalIndex,1); 
+                    render();
+                    showToast(`Item "${item.name}" deleted.`, "info");
+                }
+            );
+        };
         tdDel.appendChild(btn); tr.appendChild(tdDel); table.appendChild(tr);
       });
       container.appendChild(table);
     }
 
-    function createSelect(options, current, cls="full") {
-      const s = document.createElement("select"); s.classList.add(cls);
+    function renderPagination() {
+        const container = document.getElementById("pagination-controls");
+        container.innerHTML = "";
+        let searchVal = document.getElementById("searchInput").value.toLowerCase();
+        const filteredItems = searchVal 
+            ? items.filter(item => item.name.toLowerCase().includes(searchVal) || String(item.id).includes(searchVal))
+            : items;
+
+        const pageCount = Math.ceil(filteredItems.length / itemsPerPage);
+        if (pageCount <= 1) return;
+
+        for (let i = 1; i <= pageCount; i++) {
+            const btn = document.createElement("button");
+            btn.textContent = i;
+            if (i === currentPage) btn.classList.add("active");
+            btn.onclick = () => {
+                currentPage = i;
+                renderTable();
+                renderPagination();
+            };
+            container.appendChild(btn);
+        }
+    }
+
+    // ================= Helpers =================
+    function createSelect(options, current) {
+      const s = document.createElement("select");
       options.forEach(v => { const o=document.createElement("option"); o.value=v; o.textContent=v; if(String(current)===v) o.selected=true; s.appendChild(o); });
       return s;
     }
+
     function capitalize(v){ return v? v.charAt(0).toUpperCase()+v.slice(1).toLowerCase():""; }
-    function sortTable(k){ if(currentSort.key===k) currentSort.asc=!currentSort.asc; else {currentSort.key=k; currentSort.asc=true;} items.sort((a,b)=>{let v1=a[k],v2=b[k];if(typeof v1==="string")v1=v1.toLowerCase();if(typeof v2==="string")v2=v2.toLowerCase();return v1<v2?(currentSort.asc?-1:1):v1>v2?(currentSort.asc?1:-1):0;}); renderTable(); }
+
+    function sortTable(k){ 
+      if(currentSort.key===k) currentSort.asc=!currentSort.asc; 
+      else {currentSort.key=k; currentSort.asc=true;} 
+      items.sort((a,b)=>{
+        let v1=a[k],v2=b[k];
+        if(typeof v1==="string")v1=v1.toLowerCase();
+        if(typeof v2==="string")v2=v2.toLowerCase();
+        if (typeof v1 === 'boolean') {
+            return (v1 === v2) ? 0 : v1 ? (currentSort.asc ? -1 : 1) : (currentSort.asc ? 1 : -1);
+        }
+        if (!isNaN(v1) && !isNaN(v2)) {
+            return currentSort.asc ? v1 - v2 : v2 - v1;
+        }
+        return v1<v2?(currentSort.asc?-1:1):v1>v2?(currentSort.asc?1:-1):0;
+      }); 
+      render(); 
+    }
+
+    function showToast(message, type = 'info') { // types: success, error, info
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    }
+
+    function showModal(title, bodyHtml, onConfirm) {
+        const modal = document.getElementById('modal-container');
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-body').innerHTML = bodyHtml;
+        const footer = document.getElementById('modal-footer');
+        footer.innerHTML = '';
+        
+        const confirmBtn = document.createElement('button');
+        confirmBtn.textContent = 'Confirm';
+        confirmBtn.className = 'modal-btn-primary';
+        confirmBtn.onclick = () => {
+            onConfirm(modal);
+            closeModal();
+        };
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.className = 'modal-btn-secondary';
+        cancelBtn.onclick = closeModal;
+
+        footer.appendChild(cancelBtn);
+        footer.appendChild(confirmBtn);
+        modal.classList.add('visible');
+    }
+
+    function showConfirmationModal(title, message, onConfirm) {
+        showModal(title, `<p>${message}</p>`, onConfirm);
+    }
+
+    function closeModal() {
+        document.getElementById('modal-container').classList.remove('visible');
+    }
+
   </script>
 </body>
 </html>
