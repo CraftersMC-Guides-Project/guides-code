@@ -107,6 +107,15 @@
     .modal-btn-save { background-color: #28a745; color: white; }
     .modal-btn-cancel { background-color: #6c757d; color: white; }
 
+    /* Toggle Switch Styles */
+    .toggle-switch-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 28px; }
+    .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #28a745; }
+    input:checked + .slider:before { transform: translateX(22px); }
+
     /* Toast Notification */
     .toast-notification {
         position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
@@ -148,14 +157,21 @@
   <!-- Update Price Modal -->
   <div id="price-modal" class="modal-overlay">
     <div class="modal-content">
-        <h3>Update Item Prices</h3>
+        <h3>Update Item Details</h3>
         <label for="marketPriceInput">Market Price:</label>
         <input type="number" id="marketPriceInput" placeholder="Enter new market price">
         <label for="npcPriceInput">NPC Trade Price:</label>
         <input type="number" id="npcPriceInput" placeholder="Enter new NPC price">
+        <div class="toggle-switch-container">
+            <span>Public Status:</span>
+            <label class="switch">
+                <input type="checkbox" id="publicStatusToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
         <div class="modal-actions">
             <button id="cancel-price-update" class="modal-btn modal-btn-cancel">Cancel</button>
-            <button id="save-price-update" class="modal-btn modal-btn-save">Save</button>
+            <button id="save-price-update" class="modal-btn modal-btn-save">Save Changes</button>
         </div>
     </div>
   </div>
@@ -228,29 +244,19 @@
           const item = items.find(item => item.id === itemId);
 
           if (item) {
-            // Check for public mode
             const isPublic = item.hasOwnProperty("public") ? item.public : true;
             if (!isPublic && !isDevUser) {
               document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`;
-              // Clear dev actions if a non-dev tries to view a private item
               document.getElementById("dev-actions-container").innerHTML = "";
               return;
             }
 
-            // If we are here, the user is allowed to see the item.
-            // Now, set up the dev actions if the user is a dev.
             if (isDevUser) {
                 const devActionsContainer = document.getElementById("dev-actions-container");
-                const publicButtonText = isPublic ? "Make Private" : "Make Public";
-                const publicButtonIcon = isPublic ? "visibility_off" : "visibility";
                 devActionsContainer.innerHTML = `
-                    <button class="dev-btn" onclick="openUpdatePriceModal()">
+                    <button class="dev-btn" onclick="openUpdateModal()">
                         <span class="material-icons">edit</span>
-                        Update Price
-                    </button>
-                    <button class="dev-btn" onclick="togglePublicMode(${isPublic})">
-                        <span class="material-icons">${publicButtonIcon}</span>
-                        ${publicButtonText}
+                        Edit Details
                     </button>
                 `;
             }
@@ -297,14 +303,25 @@
       }
     }
 
-    // --- Price Update Logic ---
-    async function openUpdatePriceModal() {
+    // --- Update Modal Logic ---
+    async function openUpdateModal() {
         const urlParams = new URLSearchParams(window.location.search);
         const itemId = urlParams.get('item');
         
         try {
-            const pricesRes = await fetch('market/mprices.txt', { cache: 'no-cache' });
+            const [pricesRes, marketRes] = await Promise.all([
+                fetch('market/mprices.txt', { cache: 'no-cache' }),
+                fetch('market/market.txt', { cache: 'no-cache' })
+            ]);
+
             const pricesData = await pricesRes.text();
+            const marketData = await marketRes.json();
+
+            const item = marketData.find(i => i.id === itemId);
+            if(item) {
+                document.getElementById('publicStatusToggle').checked = item.public;
+            }
+
             const lines = pricesData.split('\n');
             const line = lines.find(l => l.startsWith(itemId + ':'));
             if (line) {
@@ -314,7 +331,7 @@
                 document.getElementById('npcPriceInput').value = parsedArray[2] || '';
             }
         } catch (e) {
-            showToast('Could not load current prices.', 'error');
+            showToast('Could not load current item data.', 'error');
         }
 
         document.getElementById('price-modal').style.display = 'flex';
@@ -331,6 +348,21 @@
             return;
         }
 
+        showToast('Saving changes to GitHub...', 'info');
+        
+        // Call the two update functions sequentially
+        const pricesUpdated = await updatePrices(token);
+        if (pricesUpdated) {
+            const statusUpdated = await updatePublicStatus(token);
+            if (statusUpdated) {
+                showToast('All changes saved successfully!', 'success');
+                document.getElementById('price-modal').style.display = 'none';
+                setTimeout(() => location.reload(), 1500);
+            }
+        }
+    });
+
+    async function updatePrices(token) {
         const urlParams = new URLSearchParams(window.location.search);
         const itemId = urlParams.get('item');
         const newMarketPrice = document.getElementById('marketPriceInput').value;
@@ -338,32 +370,23 @@
 
         if (newMarketPrice === '' || newNpcPrice === '') {
             showToast('Both price fields are required.', 'error');
-            return;
+            return false;
         }
-
-        showToast('Saving prices to GitHub...', 'info');
 
         try {
             const metaUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${PRICES_FILE_PATH}?ref=${GITHUB_BRANCH}`;
-            const metaRes = await fetch(metaUrl, {
-                headers: { Authorization: `token ${token}` },
-                cache: 'no-cache'
-            });
-            if (!metaRes.ok) throw new Error('Failed to fetch file metadata from GitHub.');
+            const metaRes = await fetch(metaUrl, { headers: { Authorization: `token ${token}` }, cache: 'no-cache' });
+            if (!metaRes.ok) throw new Error('Failed to fetch price file metadata.');
             const fileData = await metaRes.json();
             const currentContent = atob(fileData.content);
             const fileSha = fileData.sha;
 
             const lines = currentContent.split('\n');
-            let found = false;
             const updatedLines = lines.map(line => {
                 if (line.startsWith(itemId + ':')) {
                     const parts = line.split(':');
-                    const arrayStr = parts[1].trim();
-                    const parsedArray = JSON.parse(arrayStr);
-                    const updatedArray = [parsedArray[0], parseInt(newMarketPrice), parseInt(newNpcPrice)];
-                    found = true;
-                    return `${itemId}: ${JSON.stringify(updatedArray)}`;
+                    const parsedArray = JSON.parse(parts[1].trim());
+                    return `${itemId}: ${JSON.stringify([parsedArray[0], parseInt(newMarketPrice), parseInt(newNpcPrice)])}`;
                 }
                 return line;
             });
@@ -373,10 +396,7 @@
             const updateUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${PRICES_FILE_PATH}`;
             const updateRes = await fetch(updateUrl, {
                 method: 'PUT',
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     message: `Update price for item ${itemId}`,
                     content: btoa(unescape(encodeURIComponent(updatedContent))),
@@ -387,39 +407,24 @@
 
             if (!updateRes.ok) {
                  const errorData = await updateRes.json();
-                 throw new Error(`GitHub API Error: ${errorData.message}`);
+                 throw new Error(`Price Update Error: ${errorData.message}`);
             }
-            
-            showToast('Prices updated successfully!', 'success');
-            document.getElementById('price-modal').style.display = 'none';
-            setTimeout(() => location.reload(), 1500);
-
+            return true; // Success
         } catch (error) {
             console.error('Error updating prices:', error);
             showToast(`Error: ${error.message}`, 'error');
+            return false; // Failure
         }
-    });
+    }
 
-    // --- Public Mode Toggle Logic ---
-    async function togglePublicMode(currentStatus) {
-        const token = getCookie('githubToken');
-        if (!token) {
-            showToast('GitHub token not found. Please add it in your profile.', 'error');
-            return;
-        }
-
+    async function updatePublicStatus(token) {
         const urlParams = new URLSearchParams(window.location.search);
         const itemId = urlParams.get('item');
-        const newStatus = !currentStatus;
-
-        showToast('Updating public status...', 'info');
+        const newStatus = document.getElementById('publicStatusToggle').checked;
 
         try {
             const metaUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${MARKET_FILE_PATH}?ref=${GITHUB_BRANCH}`;
-            const metaRes = await fetch(metaUrl, {
-                headers: { Authorization: `token ${token}` },
-                cache: 'no-cache'
-            });
+            const metaRes = await fetch(metaUrl, { headers: { Authorization: `token ${token}` }, cache: 'no-cache' });
             if (!metaRes.ok) throw new Error('Failed to fetch market file metadata.');
             const fileData = await metaRes.json();
             const currentContent = atob(fileData.content);
@@ -427,9 +432,8 @@
 
             const items = JSON.parse(currentContent);
             const itemIndex = items.findIndex(i => i.id === itemId);
-            if (itemIndex === -1) {
-                throw new Error('Item not found in market.txt');
-            }
+            if (itemIndex === -1) throw new Error('Item not found in market.txt');
+            
             items[itemIndex].public = newStatus;
 
             const updatedContent = JSON.stringify(items, null, 4);
@@ -437,10 +441,7 @@
             const updateUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${MARKET_FILE_PATH}`;
             const updateRes = await fetch(updateUrl, {
                 method: 'PUT',
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     message: `Set item ${itemId} public status to ${newStatus}`,
                     content: btoa(unescape(encodeURIComponent(updatedContent))),
@@ -451,15 +452,13 @@
 
             if (!updateRes.ok) {
                  const errorData = await updateRes.json();
-                 throw new Error(`GitHub API Error: ${errorData.message}`);
+                 throw new Error(`Public Status Update Error: ${errorData.message}`);
             }
-
-            showToast('Public status updated successfully!', 'success');
-            setTimeout(() => location.reload(), 1500);
-
+            return true; // Success
         } catch (error) {
             console.error('Error toggling public mode:', error);
             showToast(`Error: ${error.message}`, 'error');
+            return false; // Failure
         }
     }
 
