@@ -4,87 +4,20 @@
   <meta charset="UTF-8">
   <title>Market TXT Editor</title>
   <style>
-    body { 
-      font-family: Arial, sans-serif; 
-      margin: 0; 
-      padding: 0; 
-      background: #f7f7f7;
-      color: #333;
-    }
-    h1 { 
-      text-align: center; 
-      padding: 20px;
-      background: #4CAF50; 
-      color: white; 
-      margin: 0;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-    #upload-area {
-      border: 2px dashed #aaa;
-      border-radius: 10px;
-      padding: 40px;
-      text-align: center;
-      margin: 20px auto;
-      width: 80%;
-      background: white;
-      transition: 0.3s;
-    }
-    #upload-area.dragover {
-      border-color: #4CAF50;
-      background: #eaffea;
-    }
-    #editor {
-      padding: 20px;
-      overflow-x: auto;
-    }
-    table {
-      border-collapse: collapse; 
-      width: 100%; 
-      margin-top: 20px; 
-      background: white;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    th, td {
-      border: 1px solid #ddd; 
-      padding: 10px; 
-      text-align: left; 
-    }
-    th {
-      background: #4CAF50; 
-      color: white;
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
-    input, select {
-      width: 100%;
-      padding: 6px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    input:focus, select:focus {
-      outline: none;
-      border-color: #4CAF50;
-      box-shadow: 0 0 4px rgba(76, 175, 80, 0.6);
-    }
-    #downloadBtn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 14px 22px;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      transition: background 0.3s;
-    }
-    #downloadBtn:hover {
-      background: #45a049;
-    }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f7f7f7; color: #333; }
+    h1 { text-align: center; padding: 20px; background: #4CAF50; color: white; margin: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+    #upload-area { border: 2px dashed #aaa; border-radius: 10px; padding: 40px; text-align: center; margin: 20px auto; width: 80%; background: white; transition: 0.3s; }
+    #upload-area.dragover { border-color: #4CAF50; background: #eaffea; }
+    #editor { padding: 20px; overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    th { background: #4CAF50; color: white; position: sticky; top: 0; z-index: 2; }
+    input, select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 5px; }
+    input:focus, select:focus { outline: none; border-color: #4CAF50; box-shadow: 0 0 4px rgba(76, 175, 80, 0.6); }
+    #downloadBtn, #addItemBtn { position: fixed; bottom: 20px; padding: 14px 22px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: background 0.3s; }
+    #downloadBtn:hover, #addItemBtn:hover { background: #45a049; }
+    #downloadBtn { right: 20px; }
+    #addItemBtn { left: 20px; }
   </style>
 </head>
 <body>
@@ -97,6 +30,7 @@
 
   <div id="editor"></div>
 
+  <button id="addItemBtn" style="display:none;">+ Add Item</button>
   <button id="downloadBtn" style="display:none;">Download Updated File</button>
 
   <script>
@@ -106,24 +40,44 @@
     const fileInput = document.getElementById("fileInput");
 
     uploadArea.addEventListener("click", () => fileInput.click());
-
     fileInput.addEventListener("change", handleFile);
 
     uploadArea.addEventListener("dragover", (e) => {
       e.preventDefault();
       uploadArea.classList.add("dragover");
     });
-
     uploadArea.addEventListener("dragleave", () => {
       uploadArea.classList.remove("dragover");
     });
-
     uploadArea.addEventListener("drop", (e) => {
       e.preventDefault();
       uploadArea.classList.remove("dragover");
       const file = e.dataTransfer.files[0];
       if (file) processFile(file);
     });
+
+    // Auto-load market.txt on page load
+    window.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const res = await fetch("./market/market.txt");
+        if (!res.ok) throw new Error("File not found");
+        const text = await res.text();
+        items = JSON.parse(text);
+        ensurePublic();
+        renderTable();
+        showControls();
+      } catch (err) {
+        console.warn("Auto-load failed:", err.message);
+      }
+    });
+
+    function ensurePublic() {
+      items.forEach(item => {
+        if (!item.hasOwnProperty("public")) {
+          item.public = true;
+        }
+      });
+    }
 
     function handleFile(event) {
       const file = event.target.files[0];
@@ -135,16 +89,9 @@
       reader.onload = function(e) {
         try {
           items = JSON.parse(e.target.result);
-
-          // Ensure "public" is set to true if missing
-          items.forEach(item => {
-            if (!item.hasOwnProperty("public")) {
-              item.public = true;
-            }
-          });
-
+          ensurePublic();
           renderTable();
-          document.getElementById("downloadBtn").style.display = "block";
+          showControls();
         } catch (err) {
           alert("Error parsing file. Make sure it's valid JSON.");
         }
@@ -189,8 +136,6 @@
           input.onchange = (e) => {
             if (typeof item[key] === "boolean") {
               item[key] = e.target.value === "true";
-            } else if (!isNaN(item[key]) && item[key] !== "") {
-              item[key] = e.target.value;
             } else {
               item[key] = e.target.value;
             }
@@ -204,6 +149,11 @@
       container.appendChild(table);
     }
 
+    function showControls() {
+      document.getElementById("downloadBtn").style.display = "block";
+      document.getElementById("addItemBtn").style.display = "block";
+    }
+
     document.getElementById("downloadBtn").addEventListener("click", () => {
       const blob = new Blob([JSON.stringify(items, null, 4)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -212,6 +162,40 @@
       a.download = "market_updated.txt";
       a.click();
       URL.revokeObjectURL(url);
+    });
+
+    document.getElementById("addItemBtn").addEventListener("click", () => {
+      const newId = prompt("Enter new item ID:");
+      if (!newId) return;
+      if (items.find(it => it.id === newId)) {
+        alert("Item with this ID already exists!");
+        return;
+      }
+
+      // Default new item structure
+      const newItem = {
+        id: newId,
+        name: "New Item",
+        picture: "",
+        rarity: "common",
+        price: "0",
+        description: "",
+        nature: "",
+        demand: "",
+        category: "",
+        craftable: false,
+        enchantable: false,
+        tradable: false,
+        auctionable: false,
+        bazaarable: false,
+        reforgable: false,
+        public: true
+      };
+
+      items.push(newItem);
+      // Keep items sorted by numeric id
+      items.sort((a, b) => Number(a.id) - Number(b.id));
+      renderTable();
     });
   </script>
 </body>
