@@ -2,18 +2,95 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>test</title>
+  <title>CraftersMC Guides</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    background: #f9fafb;
+    color: black;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    color: black;
+    text-align: center;
+  }
+
+  #search {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+
+  #links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  a {
+    display: block;
+    text-decoration: none;
+    background: #007bff;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 1.1rem;
+    transition: background 0.2s ease;
+  }
+
+  a:hover {
+    background: #006bff;
+  }
+  </style>
 </head>
 <body>
   <h2>All HTML CraftersMC Guides Pages</h2>
+  <input type="text" id="search" placeholder="Search files here...">
   <div id="links"></div>
 
   <script>
     const base = "https://craftersmc-guides.pages.dev/";
-    const words = ["cake", "test2", "example", "hello world"];
+    const words = ["about", "bank-interest/bank-interest", "bank-interest", "bug-hunters", "cake", "calc", "cat-v2", "categories", "chart-mc-theme", "chart", "collections-leaderboards", "container", "create", "discord-invite", "editor", "event-log", "footer", "form", "giveaway-details", "giveaway-rules", "giveaway", "google7ec9ad12ea455027", "graphs", "guide/accessories-guide", "guide/advanced-guide", "guide/bazaar-guide", "guide/intermidiate-guide", "guide/intermidiate-guide2", "guide/queries", "guide/starter-guide", "index", "item", "jak-bingo", "journey-guides", "leaderboards", "loading", "login", "market/test404", "market-v2", "market", "minion-cat", "minions", "multi-theme", "navbar", "navbarv2", "news", "no-internet", "pets-cat", "pets", "posts/1", "post", "privacypolicy", "profile", "rank-sellers", "rank-sellersv2", "report", "sellers/backup", "sellers/herejefferson", "sellers/hollowspooky", "sellers/john9678", "sellers/le2_frenzy", "sellers/madstar118yt", "sellers/mythicalpanda30", "sellers/snoop_todd3924", "sellers/tekkxz", "sellers/template", "sellers/user-config", "sellers/zarvayn", "sellers/zazah2025", "searchbar", "seller-edit", "seller", "sidebar", "slayers-leaderboards", "terms-conditions", "texture-packs", "tools/minion-inv", "tools/minion-production", "tools/pet-exp-calculator", "tools/skill-calculator", "tools", "TradeCalculator", "traveling-zoo-pet", "traveling-zoo", "unicode", "1", "404"];
 
-    document.getElementById("links").innerHTML =
-      words.map(w => `<a href="${base + encodeURIComponent(w)}" target="_blank">${w}</a>`).join("<br>");
+    const linksDiv = document.getElementById("links");
+    const searchInput = document.getElementById("search");
+
+    function renderLinks(filter = "") {
+      linksDiv.innerHTML = words
+        .map(w => w || "(empty)")
+        .filter(label => label.toLowerCase().includes(filter.toLowerCase()))
+        .map(label => {
+          const url = label === "(empty)" ? "" : label;
+          return `<a href="${base + encodeURIComponent(url)}" target="_blank">${label}</a>`;
+        })
+        .join("");
+    }
+
+    renderLinks();
+
+    searchInput.addEventListener("input", e => {
+      renderLinks(e.target.value);
+    });
   </script>
 </body>
 </html>
