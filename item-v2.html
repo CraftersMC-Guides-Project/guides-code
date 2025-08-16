@@ -69,17 +69,60 @@
         align-items: center;
         gap: 8px;
     }
+
+    /* Styles for Update Price Button and Modal */
+    #dev-actions-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .update-price-btn {
+        background-color: #ffc107;
+        color: #111;
+        padding: 12px 18px;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 9998;
+    }
+    .modal-content {
+        background: #2a2a2a; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px;
+        border: 1px solid #444;
+    }
+    .modal-content h3 { margin-top: 0; }
+    .modal-content input { width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 15px; background: #1a1a1a; border: 1px solid #555; color: white; border-radius: 5px;}
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+    .modal-btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+    .modal-btn-save { background-color: #28a745; color: white; }
+    .modal-btn-cancel { background-color: #6c757d; color: white; }
+
+    /* Toast Notification */
+    .toast-notification {
+        position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+        padding: 15px 25px; border-radius: 8px; color: white; font-weight: 500;
+        transition: bottom 0.5s ease-in-out; z-index: 10001;
+    }
+    .toast-notification.show { bottom: 30px; }
+    .toast-notification.success { background-color: #2d8831; }
+    .toast-notification.error { background-color: #c62828; }
   </style>
 </head>
 
 <body>
   <div id="loader"><div></div><div></div><div></div></div>
   <div class="market-background"></div>
-  <!-- The profile card container is now outside the header for better positioning control -->
   <div id="profile-card-container"></div>
-  <div class="top">
-    <!-- Header content goes here -->
-  </div>
+  <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
   <span class="item-material-icons" id="scrollToTopBtn">north</span>
@@ -95,7 +138,29 @@
   </div>
   <div id="footer"></div>
 
+  <!-- Developer action button container -->
+  <div id="dev-actions-container"></div>
+
+  <!-- Update Price Modal -->
+  <div id="price-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Update Item Prices</h3>
+        <label for="marketPriceInput">Market Price:</label>
+        <input type="number" id="marketPriceInput" placeholder="Enter new market price">
+        <label for="npcPriceInput">NPC Trade Price:</label>
+        <input type="number" id="npcPriceInput" placeholder="Enter new NPC price">
+        <div class="modal-actions">
+            <button id="cancel-price-update" class="modal-btn modal-btn-cancel">Cancel</button>
+            <button id="save-price-update" class="modal-btn modal-btn-save">Save</button>
+        </div>
+    </div>
+  </div>
+
   <script>
+    const GITHUB_REPO = "CraftersMC-Guides-Project/guides-code";
+    const PRICES_FILE_PATH = "market/mprices.txt";
+    const GITHUB_BRANCH = "main";
+
     // --- Helper Function to Get Cookie ---
     function getCookie(name) {
       const value = `; ${document.cookie}`;
@@ -108,8 +173,8 @@
     async function loadProfileCard() {
         const storedUser = getCookie("discordUser");
         const container = document.getElementById("profile-card-container");
+        const devActionsContainer = document.getElementById("dev-actions-container");
 
-        // Fetch the list of developer IDs from devs.txt
         let devIds = [];
         try {
             const response = await fetch('/devs.txt');
@@ -124,7 +189,6 @@
         if (storedUser) {
             const user = JSON.parse(storedUser);
             const displayName = user.global_name || user.username;
-            // Check if the current user's ID is in the dev list
             const isDev = devIds.includes(user.id);
 
             container.innerHTML = `
@@ -136,12 +200,20 @@
                     </span>
                 </a>
             `;
+
+            if (isDev) {
+                devActionsContainer.innerHTML = `
+                    <button class="update-price-btn" onclick="openUpdatePriceModal()">
+                        <span class="material-icons">edit</span>
+                        Update Price
+                    </button>
+                `;
+            }
+
         } else {
-            // If not logged in, do nothing, so the container remains empty.
             container.innerHTML = '';
         }
     }
-
 
     async function loadItemDetails() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -181,14 +253,12 @@
           if (item) {
             const isPublic = item.hasOwnProperty("public") ? item.public : true;
             if (!isPublic) {
-              document.getElementById('itemDetails').innerHTML = `
-                <h2 style="color:red;">Error: This item doesn't exist.</h2>
-              `;
+              document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`;
               return;
             }
 
             const itemDetailsDiv = document.getElementById('itemDetails');
-            const marketPrice = pricesMap.get(item.id) || item.price || "NA";
+            const marketPrice = pricesMap.get(item.id) || item.price || "N/A";
             const npcPrice = npcPricesMap.get(item.id) || "N/A";
 
             itemDetailsDiv.innerHTML = `
@@ -202,19 +272,137 @@
               </div>
             `;
           } else {
-            document.getElementById('itemDetails').innerHTML = `
-              <h2 style="color:red;">Error: This item doesn't exist.</h2>
-            `;
+            document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`;
           }
         } catch (error) {
           console.error('Error loading item details:', error);
-          document.getElementById('itemDetails').innerHTML = `
-            <h2 style="color:red;">Error: Could not load item details.</h2>
-          `;
+          document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: Could not load item details.</h2>`;
         }
       }
     }
 
+    // --- Price Update Logic ---
+    async function openUpdatePriceModal() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const itemId = urlParams.get('item');
+        
+        try {
+            const pricesRes = await fetch('market/mprices.txt');
+            const pricesData = await pricesRes.text();
+            const lines = pricesData.split('\n');
+            const line = lines.find(l => l.startsWith(itemId + ':'));
+            if (line) {
+                const arrayStr = line.split(':')[1].trim();
+                const parsedArray = JSON.parse(arrayStr);
+                document.getElementById('marketPriceInput').value = parsedArray[1] || '';
+                document.getElementById('npcPriceInput').value = parsedArray[2] || '';
+            }
+        } catch (e) {
+            showToast('Could not load current prices.', 'error');
+        }
+
+        document.getElementById('price-modal').style.display = 'flex';
+    }
+
+    document.getElementById('cancel-price-update').addEventListener('click', () => {
+        document.getElementById('price-modal').style.display = 'none';
+    });
+
+    document.getElementById('save-price-update').addEventListener('click', async () => {
+        const token = getCookie('githubToken');
+        if (!token) {
+            showToast('GitHub token not found. Please add it in your profile.', 'error');
+            return;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const itemId = urlParams.get('item');
+        const newMarketPrice = document.getElementById('marketPriceInput').value;
+        const newNpcPrice = document.getElementById('npcPriceInput').value;
+
+        if (newMarketPrice === '' || newNpcPrice === '') {
+            showToast('Both price fields are required.', 'error');
+            return;
+        }
+
+        showToast('Saving prices to GitHub...', 'info');
+
+        try {
+            // 1. Get current file content and SHA
+            const metaUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${PRICES_FILE_PATH}?ref=${GITHUB_BRANCH}`;
+            const metaRes = await fetch(metaUrl, {
+                headers: { Authorization: `token ${token}` }
+            });
+            if (!metaRes.ok) throw new Error('Failed to fetch file metadata from GitHub.');
+            const fileData = await metaRes.json();
+            const currentContent = atob(fileData.content);
+            const fileSha = fileData.sha;
+
+            // 2. Update the content in memory
+            const lines = currentContent.split('\n');
+            let found = false;
+            const updatedLines = lines.map(line => {
+                if (line.startsWith(itemId + ':')) {
+                    const parts = line.split(':');
+                    const arrayStr = parts[1].trim();
+                    const parsedArray = JSON.parse(arrayStr);
+                    const updatedArray = [parsedArray[0], parseInt(newMarketPrice), parseInt(newNpcPrice)];
+                    found = true;
+                    return `${itemId}: ${JSON.stringify(updatedArray)}`;
+                }
+                return line;
+            });
+            
+            const updatedContent = updatedLines.join('\n');
+
+            // 3. Push the updated content to GitHub
+            const updateUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${PRICES_FILE_PATH}`;
+            const updateRes = await fetch(updateUrl, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Update price for item ${itemId}`,
+                    content: btoa(unescape(encodeURIComponent(updatedContent))),
+                    sha: fileSha,
+                    branch: GITHUB_BRANCH
+                })
+            });
+
+            if (!updateRes.ok) {
+                 const errorData = await updateRes.json();
+                 throw new Error(`GitHub API Error: ${errorData.message}`);
+            }
+            
+            showToast('Prices updated successfully!', 'success');
+            document.getElementById('price-modal').style.display = 'none';
+            setTimeout(() => location.reload(), 1500); // Reload to show new price
+
+        } catch (error) {
+            console.error('Error updating prices:', error);
+            showToast(`Error: ${error.message}`, 'error');
+        }
+    });
+
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    }
+
+    // --- Other Functions ---
     function formatPrice(price) {
       if (price === "N/A" || price === "NAN") {
         return `<span class="item-price-img">N/A</span>`;
