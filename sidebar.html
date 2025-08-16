@@ -171,3 +171,176 @@
         })();
     </script>
 </div>
+<div class="sidebar-top">
+    <div class="sidebar-top-top">
+        <img id="sidebarProfilePic" src="/assets/cmc-guides.png" alt="CMC Guides Logo">
+    </div>
+    <div class="sidebar-top-bottom">
+        <div class="sidebar-top-bottom-top">
+            <div class="nasty">
+                <div id="sidebarAvatar" style="border-radius: 50%; overflow: hidden; margin-right: 5px;">
+                    <img id="sidebarAvatarImg" src="" alt="Discord Avatar"
+                        style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <p id="sidebarName" style="text-align: initial; font-size: 1rem; width: 126px; margin-left: 5px; display: flex; align-items: center; flex-wrap: wrap;"></p>
+            </div>
+            <div id="settings"
+                style="padding: 0; margin: 0; text-align: unset; height: 39px; width: 50px; display: inline-flex; align-items: center; justify-content: center;">
+                <span class="menu-icon material-icons" style="font-size: 38px;" onclick="profile()">settings</span>
+            </div>
+        </div>
+        <p id="sidebarUsername" style="text-align: initial; font-size: 14px; margin: 8px 10px 12px;"></p>
+    </div>
+    <hr>
+    <div class="sidebar-bottom">
+        <div id="customConsole"
+            style="background-color: #111; color: #0f0; font-size: 12px; padding: 10px; margin: 10px; height: 150px; overflow-y: auto; display: none;">
+            <b>Console Output:</b><br>
+        </div>
+
+        <a class="sidebar-link" href="/giveaway.html">Giveaways</a>
+        <a class="sidebar-link" href="/rank-sellers.html">Rank Sellers</a>
+        <a class="sidebar-link" href="/market.html">Market</a>
+        <a class="sidebar-link" href="/unicode.html">Unicode</a>
+        <a class="sidebar-link" href="/journey-guides.html">Guides</a>
+        <a class="sidebar-link" href="/tools.html">Tools</a>
+        <a class="sidebar-link" href="/event-log.html">Events</a>
+        <a class="sidebar-link" href="/leaderboards.html">Leaderboards</a>
+        <a class="sidebar-link" href="https://craftersmc.wiki.gg/wiki/">CraftersMC Wiki</a>
+        <a class="sidebar-link" href="https://craftersmc.net/">CraftersMC Website</a>
+    </div>
+
+    <script>
+        // This is now a self-executing async function.
+        // It runs as soon as the sidebar is loaded into any page.
+        (async () => {
+            // Helper to get cookie value by name
+            function getCookie(name) {
+                return document.cookie.split('; ').reduce((r, v) => {
+                    const parts = v.split('=');
+                    return parts[0] === name ? decodeURIComponent(parts[1]) : r
+                }, '');
+            }
+
+            // Fetch dev IDs
+            let devIds = [];
+            try {
+                // The path needs to be absolute from the root of the site
+                const response = await fetch('/devs.txt');
+                if (response.ok) {
+                    const text = await response.text();
+                    devIds = text.split('\n').map(id => id.trim()).filter(id => id);
+                }
+            } catch (error) {
+                console.error("Could not load devs.txt", error);
+            }
+
+            const profileImg = document.getElementById("sidebarProfilePic");
+            const usernameText = document.getElementById("sidebarUsername");
+            const sidebarNameElement = document.getElementById("sidebarName");
+            const sidebarAvatarElement = document.getElementById("sidebarAvatar");
+            const sidebarAvatarImgElement = document.getElementById("sidebarAvatarImg");
+            const sidebarTopTop = document.querySelector(".sidebar-top-bottom-top");
+            const sidebarBottom = document.querySelector(".sidebar-bottom");
+
+            try {
+                const storedUser = getCookie("discordUser");
+                if (storedUser) {
+                    const userData = JSON.parse(storedUser);
+                    
+                    profileImg.src = "/assets/cmc-guides.png";
+
+                    usernameText.textContent = userData.discriminator
+                        ? `${userData.username}#${userData.discriminator}`
+                        : userData.username;
+                    
+                    sidebarNameElement.innerHTML = '';
+                    const nameSpan = document.createElement('span');
+                    nameSpan.textContent = userData.username;
+                    sidebarNameElement.appendChild(nameSpan);
+
+                    const isDev = devIds.includes(userData.id);
+                    if (isDev) {
+                        const devTag = document.createElement("span");
+                        devTag.textContent = "[DEV]";
+                        devTag.style.color = "#ff4d4d";
+                        devTag.style.fontWeight = "bold";
+                        devTag.style.marginLeft = "6px";
+                        devTag.style.fontSize = "10px";
+                        sidebarNameElement.appendChild(devTag);
+
+                        // --- ADD EDITOR BUTTON FOR DEVS ---
+                        const editorLink = document.createElement('a');
+                        editorLink.className = 'sidebar-link';
+                        editorLink.href = '/editor.html';
+                        editorLink.textContent = 'Editor';
+                        // Insert it after the 'Giveaways' link
+                        const giveawaysLink = sidebarBottom.querySelector('a[href="/giveaway.html"]');
+                        if (giveawaysLink) {
+                            giveawaysLink.insertAdjacentElement('afterend', editorLink);
+                        } else {
+                            sidebarBottom.prepend(editorLink); // Fallback if giveaway link isn't found
+                        }
+                    }
+
+                    if (userData.rank) {
+                        const tag = document.createElement("span");
+                        tag.textContent = userData.rank.toUpperCase();
+                        const lowerCaseRank = userData.rank.toLowerCase();
+
+                        if (lowerCaseRank === "coder") {
+                            tag.style.backgroundColor = "#4caf50";
+                        } else if (lowerCaseRank === "data skimmer") {
+                            tag.style.backgroundColor = "#2196f3";
+                        } else if (lowerCaseRank === "member") {
+                            tag.style.backgroundColor = "#9e9e9e";
+                        } else {
+                            tag.style.backgroundColor = "#555";
+                        }
+
+                        tag.style.color = "white";
+                        tag.style.fontSize = "10px";
+                        tag.style.padding = "2px 6px";
+                        tag.style.borderRadius = "8px";
+                        tag.style.marginLeft = "6px";
+                        tag.style.textTransform = "uppercase";
+                        tag.style.fontWeight = "bold";
+                        sidebarNameElement.appendChild(tag);
+                    }
+
+                    if (userData.avatar) {
+                        const avatarUrl = `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`;
+                        sidebarAvatarElement.style.display = 'block';
+                        sidebarAvatarImgElement.src = avatarUrl;
+                    } else {
+                        sidebarAvatarElement.style.display = 'none';
+                    }
+
+                } else {
+                    profileImg.src = "/assets/cmc-guides.png";
+                    usernameText.textContent = "";
+                    sidebarNameElement.textContent = "Name";
+                    sidebarAvatarElement.style.display = 'none';
+
+                    const settingsDiv = document.getElementById("settings");
+                    if (settingsDiv) settingsDiv.style.display = "none";
+
+                    const oldBtn = sidebarTopTop.querySelector('.sidebar-login-btn');
+                    if (oldBtn) oldBtn.remove();
+
+                    const loginBtn = document.createElement("button");
+                    loginBtn.className = "sidebar-login-btn";
+                    loginBtn.textContent = "Login with Discord";
+                    loginBtn.style.cssText = `
+                        background: #5865f2; color: #fff; border: none; border-radius: 6px;
+                        padding: 8px 18px; font-size: 1rem; cursor: pointer; margin: 0 auto 10px auto; display: block;
+                    `;
+                    loginBtn.onclick = () => window.location.href = '/login.html';
+                    sidebarTopTop.appendChild(loginBtn);
+                }
+            } catch (error) {
+                console.error("Error processing user data:", error);
+            }
+        })();
+    </script>
+</div>
