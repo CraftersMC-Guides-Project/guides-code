@@ -7,25 +7,25 @@
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f7f7f7; color: #333; }
     h1 { text-align: center; padding: 20px; background: #4CAF50; color: white; margin: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
     #upload-area { border: 2px dashed #aaa; border-radius: 10px; padding: 40px; text-align: center; margin: 20px auto; width: 80%; background: white; transition: 0.3s; }
-    #upload-area.dragover { border-color: #4CAF50; background: #eaffea; }
     #editor { padding: 20px; overflow-x: auto; }
     table { border-collapse: collapse; width: 100%; margin-top: 20px; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
     th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
     th { background: #4CAF50; color: white; position: sticky; top: 0; z-index: 2; }
     input, select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 5px; }
     input:focus, select:focus { outline: none; border-color: #4CAF50; box-shadow: 0 0 4px rgba(76, 175, 80, 0.6); }
-    #downloadBtn, #addItemBtn, #loadFileBtn { position: fixed; bottom: 20px; padding: 14px 22px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: background 0.3s; }
-    #downloadBtn:hover, #addItemBtn:hover, #loadFileBtn:hover { background: #45a049; }
+    #downloadBtn, #addItemBtn, #removeFileBtn { position: fixed; bottom: 20px; padding: 14px 22px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: background 0.3s; }
+    #downloadBtn:hover, #addItemBtn:hover, #removeFileBtn:hover { background: #45a049; }
     #downloadBtn { right: 20px; display:none; }
     #addItemBtn { left: 20px; display:none; }
-    #loadFileBtn { left: 50%; transform: translateX(-50%); }
+    #removeFileBtn { left: 50%; transform: translateX(-50%); display:none; background:#f44336; }
+    #removeFileBtn:hover { background:#d32f2f; }
   </style>
 </head>
 <body>
   <h1>Market TXT Editor</h1>
 
   <div id="upload-area">
-    <p>Drag & Drop your <strong>market.txt</strong> here or click to upload</p>
+    <p>Click to load <strong>market.txt</strong></p>
     <input type="file" id="fileInput" accept=".txt,.json" style="display:none;">
   </div>
 
@@ -33,44 +33,37 @@
 
   <button id="addItemBtn">+ Add Item</button>
   <button id="downloadBtn">Download Updated File</button>
-  <button id="loadFileBtn">Load Market File</button>
+  <button id="removeFileBtn">Remove File</button>
 
   <script>
     let items = [];
-
-    const uploadArea = document.getElementById("upload-area");
     const fileInput = document.getElementById("fileInput");
+    const uploadArea = document.getElementById("upload-area");
+    const STORAGE_KEY = "marketFile";
 
-    uploadArea.addEventListener("click", () => fileInput.click());
-    fileInput.addEventListener("change", handleFile);
-
-    uploadArea.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      uploadArea.classList.add("dragover");
-    });
-    uploadArea.addEventListener("dragleave", () => {
-      uploadArea.classList.remove("dragover");
-    });
-    uploadArea.addEventListener("drop", (e) => {
-      e.preventDefault();
-      uploadArea.classList.remove("dragover");
-      const file = e.dataTransfer.files[0];
-      if (file) processFile(file);
-    });
-
-    document.getElementById("loadFileBtn").addEventListener("click", async () => {
-      try {
-        const res = await fetch("./market/market.txt");
-        if (!res.ok) throw new Error("File not found");
-        const text = await res.text();
-        items = JSON.parse(text);
-        ensurePublic();
-        renderTable();
-        showControls();
-      } catch (err) {
-        alert("Failed to load ./market/market.txt");
+    // Check if we already saved a file in localStorage
+    window.addEventListener("DOMContentLoaded", async () => {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved === "default") {
+        try {
+          const res = await fetch("./market/market.txt");
+          if (!res.ok) throw new Error("File not found");
+          const text = await res.text();
+          items = JSON.parse(text);
+          ensurePublic();
+          renderTable();
+          showControls();
+          uploadArea.style.display = "none";
+        } catch (err) {
+          console.warn("Failed to fetch ./market/market.txt");
+          localStorage.removeItem(STORAGE_KEY);
+        }
       }
     });
+
+    // Clicking upload area triggers file select
+    uploadArea.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", handleFile);
 
     function ensurePublic() {
       items.forEach(item => {
@@ -93,6 +86,8 @@
           ensurePublic();
           renderTable();
           showControls();
+          uploadArea.style.display = "none";
+          localStorage.setItem(STORAGE_KEY, "default"); // mark file loaded
         } catch (err) {
           alert("Error parsing file. Make sure it's valid JSON.");
         }
@@ -116,7 +111,7 @@
       });
       table.appendChild(headerRow);
 
-      items.forEach((item, rowIndex) => {
+      items.forEach((item) => {
         const tr = document.createElement("tr");
         headers.forEach(key => {
           const td = document.createElement("td");
@@ -153,6 +148,7 @@
     function showControls() {
       document.getElementById("downloadBtn").style.display = "block";
       document.getElementById("addItemBtn").style.display = "block";
+      document.getElementById("removeFileBtn").style.display = "block";
     }
 
     document.getElementById("downloadBtn").addEventListener("click", () => {
@@ -195,6 +191,11 @@
       items.push(newItem);
       items.sort((a, b) => Number(a.id) - Number(b.id));
       renderTable();
+    });
+
+    document.getElementById("removeFileBtn").addEventListener("click", () => {
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
     });
   </script>
 </body>
