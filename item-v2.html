@@ -74,6 +74,7 @@
 
 <body>
   <div id="loader"><div></div><div></div><div></div></div>
+  <div class="market-background"></div>
   <!-- The profile card container is now outside the header for better positioning control -->
   <div id="profile-card-container"></div>
   <div class="top">
@@ -123,12 +124,8 @@
                 </a>
             `;
         } else {
-            container.innerHTML = `
-                <a href="/login" class="login-btn">
-                    <span class="material-icons">login</span>
-                    Login
-                </a>
-            `;
+            // If not logged in, do nothing, so the container remains empty.
+            container.innerHTML = '';
         }
     }
 
@@ -178,7 +175,7 @@
             }
 
             const itemDetailsDiv = document.getElementById('itemDetails');
-            const marketPrice = pricesMap.get(item.id) || item.price || "N/A";
+            const marketPrice = pricesMap.get(item.id) || item.price || "NA";
             const npcPrice = npcPricesMap.get(item.id) || "N/A";
 
             itemDetailsDiv.innerHTML = `
