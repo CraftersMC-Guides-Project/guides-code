@@ -7,217 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pet Details - CraftersMC Guides</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="css/essential.css">
-  <link rel="stylesheet" href="css/item.css">
-  <style>
-    :root {
-      --drop-bg-color-option: #ffffff;
-    }
-
-    .dark-mode {
-      --drop-bg-color-option: #333333;
-    }
-
-    body {
-      justify-content: center;
-      align-items: center;
-      display: flex;
-    }
-
-    .rarity-dropdown {
-      position: relative;
-      margin: 20px 0;
-      display: inline-block;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      justify-content: center;
-    }
-
-    .rarity-dropdown .selected {
-      padding: 6px;
-      border-radius: 5px;
-      cursor: pointer;
-      user-select: none;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      font-weight: bold;
-      font-size: 1.1em;
-      background: var(--arrow-bg);
-      color: var(--arrow-color);
-      box-shadow: 0 1px 4px #0002;
-    }
-
-    .rarity-dropdown .selected img {
-      height: 24px;
-    }
-
-    .rarity-arrow {
-      background: #c6c6c6;
-      border: 2px solid #111;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background 0.2s;
-      font-size: 1.5em;
-      box-shadow: 2px 2px 0 0 #ffffff inset, -1px -1px 0px 2px #777 inset !important;
-    }
-
-    .rarity-dropdown .options {
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 150px;
-      border-radius: 5px;
-      display: none;
-      z-index: 10;
-      white-space: nowrap;
-      background-color: var(--glass-bg);
-      padding: 18px;
-    }
-
-    .rarity-dropdown .options div {
-      padding: 5px;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: transform .2s;
-      z-index: 999999999999999999999999999999999999999;
-    }
-
-    .rarity-dropdown .options div:hover {
-      transform: scale(1.1);
-    }
-
-    .rarity-dropdown .options img {
-      height: 20px;
-    }
-
-    .item-container {
-      margin-bottom: 35px;
-    }
-
-    /* Nature and Demand styles from item.html */
-    .nature-pill {
-      display: inline-block;
-      padding: 9px 12px;
-      margin: 10px 0;
-      font-weight: bold;
-    }
-
-    .nature-pill.STABLE {
-      border: 1px solid #2ecc71;
-      background-color: #2ecc7138;
-      color: #2ecc71;
-    }
-
-    .nature-pill.UNDERPAID {
-      border: 1px solid #f39c12;
-      background-color: #f39c1238;
-      color: #ffb237;
-    }
-
-    .nature-pill.OVERPAID {
-      background-color: #eb1d0e38;
-      border: 1px solid #eb1d0e;
-      color: #eb1d0e;
-    }
-
-    .demand-box {
-      width: 30%;
-      margin: 15px 0;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .demand-box strong {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .demand-bar {
-      justify-content: center;
-      align-items: center;
-      background-color: #222;
-      height: 18px;
-      overflow: hidden;
-      margin-top: 6px;
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
-    }
-
-    .demand-progress {
-      height: 100%;
-      transition: width 0.3s ease;
-    }
-
-    .attribute-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .attribute-box {
-      width: 156px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      background-color: #333;
-      color: white;
-      font-weight: bold;
-      text-align: center;
-      gap: 6px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-      padding: 0 5px;
-      font-family: revert;
-    }
-
-    .attribute-box img {
-      width: 20px;
-      height: 20px;
-    }
-
-    .attribute-box.yes {
-      background-color: #2ecc71;
-      color: #fff;
-    }
-
-    .attribute-box.no {
-      background-color: #e74c3c;
-      color: #fff;
-    }
-
-    .price-img {
-      display: flex;
-      width: max-content;
-      align-items: center;
-      width: 20%;
-    }
-    .npcprice-img{
-      display: flex;
-      width: max-content;
-      align-items: center;
-      width: 16%;
-    }
-
-    .pet-nav-buttons {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 600px;
-      width: 100%;
-      margin: 10px auto;
-  }
-  </style>
+  <link rel="stylesheet" href="themes/minecraft/style.css">
 </head>
 
 <body>
@@ -241,7 +31,7 @@
     <button class="btn pet-filter-btn" data-nature="reset">Reset Filter</button>
   </div>
 
-  <div class="item-container" id="petDetails">
+  <div class="pet-item-container" id="petDetails">
     <p>Loading pet details...</p>
   </div>
   <div class="pet-nav-buttons">
@@ -279,29 +69,29 @@
             const initialRarity = pet.rarity[0];
 
             petDetailsDiv.innerHTML = `
-              <div class="item-card">
+              <div class="item-container">
                 <h1>${pet.name}</h1>
-                <img src="${pet.picture}" alt="${pet.name}" class="item-image">
-                <div class="rarity-dropdown" id="rarityDropdown">
-                  <button class="rarity-arrow left" onclick="changeRarity(-1, '${pet.id}')">
+                <img src="${pet.picture}" alt="${pet.name}" class="pet-item-image">
+                <div class="pet-rarity-dropdown" id="rarityDropdown">
+                  <button class="pet-rarity-arrow left" onclick="changeRarity(-1, '${pet.id}')">
                     <span class="material-icons">chevron_left</span>
                   </button>
-                  <div class="selected" id="selectedRarity" style="min-width:120px;display:inline-flex;align-items:center;justify-content:center;">
+                  <div class="pet-selected" id="selectedRarity" style="min-width:120px;display:inline-flex;align-items:center;justify-content:center;">
                     <img src="/img/rarity/${initialRarity}.webp" alt="${initialRarity}" style="height:24px; margin:0;">
                   </div>
-                  <button class="rarity-arrow right" onclick="changeRarity(1, '${pet.id}')">
+                  <button class="pet-rarity-arrow right" onclick="changeRarity(1, '${pet.id}')">
                     <span class="material-icons">chevron_right</span>
                   </button>
                 </div>
-                <div id="petPrice" class="pet-price-container"></div>
+                <div id="petPrice" class="item-pet-price-container"></div>
                 <p><strong>ID:</strong> ${pet.id}</p>
                 <p><strong>Category:</strong> ${pet.category}</p>
                 <p><strong>Description:</strong> ${pet.description || 'No description available'}</p>
-                <div class="stability">
+                <div class="pet-stability">
                 ${generateNatureBox(pet.nature)}
                 ${generateDemandBox(pet.demand)}
                 </div>
-                <div class="attribute-container">
+                <div class="pet-attribute-container">
                   ${generateAttributeBox('Tradable', pet.tradable)}
                   ${generateAttributeBox('Auctionable', pet.auctionable)}
                 </div>
@@ -394,15 +184,15 @@
     }
 
     function toggleDropdown() {
-      const dropdown = document.querySelector('.rarity-dropdown .options');
+      const dropdown = document.querySelector('.pet-rarity-dropdown .pet-options');
       dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
     }
 
     function selectRarity(rarity, petId) {
-      const selected = document.querySelector('.rarity-dropdown .selected img');
+      const selected = document.querySelector('.pet-rarity-dropdown .pet-selected img');
       selected.src = `/img/rarity/${rarity}.webp`;
       selected.alt = rarity;
-      document.querySelector('.rarity-dropdown .options').style.display = 'none';
+      document.querySelector('.pet-rarity-dropdown .pet-options').style.display = 'none';
       updatePrice(petId, rarity);
     }
 
@@ -416,11 +206,11 @@
       const npcPrice = price[npcRarityKey] ?? 'Not sold by NPC';
 
       document.getElementById('petPrice').innerHTML = `
-    <div class="price-row">
-      <strong>Market Price:</strong> <div class="price-img">${formatPrice(marketPrice)}</div>
+    <div class="item-price-row">
+      <strong>Market Price:</strong> <div class="item-price-img">${formatPrice(marketPrice)}</div>
     </div><hr width="150px" style="color:var(--border-color);">
-    <div class="price-row">
-      <strong>NPC Price:</strong> <div class="npcprice-img">${formatPrice(npcPrice)}</div>
+    <div class="item-price-row">
+      <strong>NPC Price:</strong> <div class="item-price-img">${formatPrice(npcPrice)}</div>
     </div>
   `;
     }
@@ -452,7 +242,7 @@
          natureText = "STABLE";}
 
       return `
-        <div class="nature-pill ${natureText}">
+        <div class="pet-nature-pill ${natureText}">
           ${icon} Market Nature: ${natureText}
         </div>
       `;
@@ -466,10 +256,10 @@
       let color = score >= 7 ? 'limegreen' : score >= 4 ? 'orange' : 'red';
 
       return `
-        <div class="demand-box">
-          <div class="demand-main"><strong>Demand:</strong> ${demand}</div>
-          <div class="demand-bar">
-            <div class="demand-progress" style="width: ${barWidth}%; background-color: ${color};"></div>
+        <div class="item-demand-box">
+          <div class="item-demand-main"><strong>Demand:</strong> ${demand}</div>
+          <div class="pet-demand-bar">
+            <div class="pet-demand-progress" style="width: ${barWidth}%; background-color: ${color};"></div>
           </div>
         </div>
       `;
@@ -478,7 +268,7 @@
     function generateAttributeBox(label, value) {
       if (value === undefined) return '';
       return `
-        <div class="attribute-box ${value ? 'yes' : 'no'}">
+        <div class="pet-attribute-box ${value ? 'yes' : 'no'}">
           <img src="${value ? 'img/check.png' : 'img/cross.png'}" alt="${value ? 'Yes' : 'No'}">
           ${label}
         </div>
@@ -504,11 +294,11 @@
       const selectedCategory = urlParams.get('cat');
       document.querySelectorAll('.pet-filter-btn').forEach(btn => {
         if (btn.getAttribute('data-nature') === selectedNature) {
-          btn.classList.add('active');
+          btn.classList.add('pet-active');
         } else if (selectedNature === null && btn.getAttribute('data-nature') === 'all') {
-          btn.classList.add('active');
+          btn.classList.add('pet-active');
         } else {
-          btn.classList.remove('active');
+          btn.classList.remove('pet-active');
         }
         btn.onclick = function() {
           let base = window.location.pathname + '?pet=' + urlParams.get('pet');
