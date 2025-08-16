@@ -98,7 +98,7 @@
         <div id="profile-card-container"></div>
     </div>
 
-    <!-- This is the main selection view, shown on first visit -->
+    <!-- This is the main selection view -->
     <div id="main-selection-view">
         <div class="leaderboard-interface-background"></div>
         <div class="top"></div>
@@ -127,10 +127,11 @@
         </div>
     </div>
 
-    <!-- This is the dynamic leaderboard view, hidden by default -->
+    <!-- Leaderboard view -->
     <div id="leaderboard-view" style="display: none;">
         <div class="leaderboard-unified-background"></div>
         <div id="sidebar-overlay" onclick="overlay()"></div>
+
         <!-- Navbar -->
         <div class="custom-navbar">
             <div class="left">
@@ -144,13 +145,12 @@
                 <a href="index.html"><img src="assets/cmc-guides.png"></a>
             </div>
         </div>
+
         <div id="sidelid" class="sidelid">
-            <div id="selection-panel">
-                <!-- Content changes based on leaderboard type -->
-            </div>
+            <div id="selection-panel"></div>
         </div>
+
         <div class="lb-content">
-            <!-- Sidebar -->
             <div class="sidebar" id="leaderboard-sidebar"></div>
             <button id="float">
                 <span class="material-icons" id="homeBtn" onclick="goHome()">home</span>
@@ -159,6 +159,7 @@
                 <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
                 <span class="material-icons" id="scrollToTopBtn">north</span>
             </button>
+
             <div>
                 <div class="lb-container">
                     <div class="leaderboard-type-selector">
@@ -168,11 +169,11 @@
                     <h3 class="lb-h3" id="mainTitle">CraftersMC Leaderboards</h3>
                     <p>Find out who is at what ranking and how much collection they have using our easy to use tool.</p>
                     <br>
-                    <p id="mobileGuide">Click on the icon with 3 different length lines at the top left of the screen to
-                        select any collection and see the top 10 highest ranked players in the collection on the table.
-                    </p>
-                    <br id="mobileGuide">
+                    <p id="mobileGuide">Click the three-line menu icon (top left) to select a collection and see the top
+                        10 ranked players.</p>
+                    <br>
                     <p>Select a category and collection to view the top 10 players.</p>
+
                     <div class="lb-leaderboard">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <h2 class="lb-h2" id="collectionTitle">Select a Collection</h2>
@@ -194,16 +195,11 @@
                             <hr>
                             <div class="lb-message">
                                 The first leaderboard website was made by NumberOne230564 and David_R06 using Google
-                                Docs,
-                                which was pretty basic. Later, CraftersMC Guides made it better by designing a new,
-                                nicer
-                                website and got information from the original Google Docs site. This message gives a
-                                shoutout to their work, and we want to make it clear that we didn't gather all the early
-                                data ourselves. Right now, NumberOne230564 and his team run a different website that is
-                                new
-                                and was created after their Google Docs site, while we take care of this other website
-                                and
-                                collect our own data.
+                                Docs.
+                                Later, CraftersMC Guides redesigned a new, better version and pulled info from the
+                                original
+                                site. This message is a shoutout to their work. We didn’t gather the early data — now
+                                NumberOne230564 runs a separate new site, while we maintain this one with our own data.
                             </div>
                         </details>
                     </div>
@@ -211,6 +207,7 @@
             </div>
         </div>
     </div>
+
     <div id="footer"></div>
 
     <script>
@@ -258,11 +255,20 @@
 
         document.addEventListener("DOMContentLoaded", loadProfileCard);
 
-        // Existing leaderboard logic
+        // Leaderboard logic
         const mainSelectionView = document.getElementById('main-selection-view');
         const leaderboardView = document.getElementById('leaderboard-view');
-        function goHome() { leaderboardView.style.display = 'none'; mainSelectionView.style.display = 'block'; }
-        function showLeaderboardView(type) { mainSelectionView.style.display = 'none'; leaderboardView.style.display = 'block'; initializeLeaderboard(type); }
+
+        function goHome() {
+            leaderboardView.style.display = 'none';
+            mainSelectionView.style.display = 'block';
+        }
+
+        function showLeaderboardView(type) {
+            mainSelectionView.style.display = 'none';
+            leaderboardView.style.display = 'block';
+            initializeLeaderboard(type);
+        }
         // (rest of leaderboard script unchanged…)
     </script>
 </body>
