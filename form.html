@@ -9,6 +9,63 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="themes/minecraft/style.css">
     <script src="js/script.js"></script>
+    <style>
+        /* It's best practice to add these styles to your 'style.css' file.
+          This keeps your HTML clean and makes styling easier to manage.
+        */
+        .profile-card {
+            padding: 15px;
+            color: white;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .profile-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+        #profile-username {
+            margin: 0;
+            font-size: 1.1em;
+        }
+        .profile-header small {
+            color: #aaa;
+        }
+        .profile-links {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .profile-links a {
+            color: #eee;
+            text-decoration: none;
+            padding: 8px 0;
+            border-bottom: 1px solid #444;
+        }
+        .profile-links a:last-child {
+            border-bottom: none;
+        }
+        .profile-links a.active-link {
+            color: #fff;
+            font-weight: bold;
+        }
+        .profile-footer {
+            margin-top: 20px;
+        }
+        #auth-link {
+            display: block;
+            background-color: #5865F2;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -23,8 +80,27 @@
     <div class="form-background"></div>
     <div class="top"></div>
 
-    <!-- This is the placeholder where the sidebar/profile card will be loaded -->
-    <div class="sidebar" id="sidebar"></div>
+    <!-- The profile card HTML is now directly inside the sidebar container -->
+    <div class="sidebar" id="sidebar">
+        <div class="profile-card">
+            <div class="profile-header">
+                <img src="assets/cmc-icon.png" alt="User Avatar" class="profile-avatar">
+                <div>
+                    <h4 id="profile-username">Guest</h4>
+                    <small>Welcome!</small>
+                </div>
+            </div>
+            <div class="profile-links">
+                <a href="index.html">Home</a>
+                <a href="market.html">Market</a>
+                <a href="#">Guides</a>
+                <a href="form.html" class="active-link">Apply for Skimmer</a>
+            </div>
+            <div class="profile-footer">
+                <a href="#" id="auth-link">Login with Discord</a>
+            </div>
+        </div>
+    </div>
 
     <!-- Overlay for the sidebar on smaller screens -->
     <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
@@ -172,7 +248,7 @@
         <!-- End FAQ Dropdowns -->
     </div>
     
-    <!-- This is the placeholder for the footer, which can also be loaded dynamically -->
+    <!-- This is the placeholder for the footer -->
     <div id="footer"></div>
 
     <script>
@@ -191,34 +267,8 @@
         // --- SCRIPT TO RUN AFTER PAGE LOADS ---
         document.addEventListener("DOMContentLoaded", () => {
             
-            // 1. INJECT THE PROFILE CARD INTO THE SIDEBAR
-            const sidebarContainer = document.getElementById('sidebar');
-            if (sidebarContainer) {
-                // Note: It's better to move these inline styles to your style.css file
-                const sidebarHTML = `
-                    <div class="profile-card" style="padding: 15px; color: white;">
-                        <div class="profile-header" style="display: flex; align-items: center; margin-bottom: 15px;">
-                            <img src="assets/cmc-icon.png" alt="User Avatar" class="profile-avatar" style="width: 50px; height: 50px; border-radius: 8px; margin-right: 10px;">
-                            <div>
-                                <h4 id="profile-username" style="margin: 0; font-size: 1.1em;">Guest</h4>
-                                <small style="color: #aaa;">Welcome!</small>
-                            </div>
-                        </div>
-                        <div class="profile-links" style="display: flex; flex-direction: column; gap: 5px;">
-                            <a href="index.html" style="color: #eee; text-decoration: none; padding: 8px 0; border-bottom: 1px solid #444;">Home</a>
-                            <a href="market.html" style="color: #eee; text-decoration: none; padding: 8px 0; border-bottom: 1px solid #444;">Market</a>
-                            <a href="#" style="color: #eee; text-decoration: none; padding: 8px 0; border-bottom: 1px solid #444;">Guides</a>
-                            <a href="form.html" style="color: #fff; font-weight: bold; text-decoration: none; padding: 8px 0;">Apply for Skimmer</a>
-                        </div>
-                        <div class="profile-footer" style="margin-top: 20px;">
-                            <a href="#" id="auth-link" style="display: block; background-color: #5865F2; color: white; text-align: center; padding: 10px; border-radius: 5px; text-decoration: none;">Login with Discord</a>
-                        </div>
-                    </div>
-                `;
-                sidebarContainer.innerHTML = sidebarHTML;
-            }
-
-            // 2. CHECK FOR USER COOKIE AND UPDATE PROFILE CARD
+            // 1. CHECK FOR USER COOKIE AND UPDATE PROFILE CARD
+            // The profile card HTML is already on the page, so we just need to find the element and update it.
             const storedUserCookie = getCookie("discordUser");
             if (storedUserCookie) {
                 try {
@@ -226,7 +276,6 @@
                     loggedInUsername = userData.username;
                     loggedInUserId = userData.id;
                     
-                    // Update the username in the newly created profile card
                     const profileUsernameElem = document.getElementById('profile-username');
                     if (profileUsernameElem) {
                         profileUsernameElem.textContent = loggedInUsername;
@@ -236,7 +285,7 @@
                 }
             }
 
-            // 3. SETUP FAQ DROPDOWN FUNCTIONALITY
+            // 2. SETUP FAQ DROPDOWN FUNCTIONALITY
             const faqQuestions = document.querySelectorAll('.form-faq-question');
             faqQuestions.forEach(btn => {
                 btn.addEventListener('click', function () {
