@@ -69,10 +69,9 @@
     const path = "market/market.txt";
     const branch = "main";
 
-    // Load saved token auto
     let savedToken = localStorage.getItem(TOKEN_KEY) || null;
 
-    // Load remembered data first
+    // Load remembered
     window.addEventListener("DOMContentLoaded", async () => {
       const rememberedData = localStorage.getItem(DATA_KEY);
       if (rememberedData) {
@@ -140,13 +139,12 @@
       reader.readAsText(file);
     }
 
-    // ============ GitHub Save ============
+    // ================= GitHub Save =================
     document.getElementById("saveGitHubBtn").onclick = saveToGitHub;
 
     async function saveToGitHub() {
       let token = savedToken;
 
-      // If no saved token, ask
       if (!token) {
         token = prompt("Enter your GitHub Token:");
         if (!token) return;
@@ -156,9 +154,10 @@
         }
       }
 
-      const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
+      const metaUrl = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
       try {
-        const meta = await fetch(apiUrl, {
+        // Step 1: get metadata
+        const meta = await fetch(metaUrl, {
           headers: {
             Authorization: `token ${token}`,
             "Accept": "application/vnd.github+json"
@@ -172,12 +171,14 @@
           return;
         }
 
-        if (!meta.ok) throw new Error("Metadata fetch failed: " + meta.status);
+        if (!meta.ok) throw new Error(`Metadata fetch failed: ${meta.status} ${meta.statusText}`);
 
         const file = await meta.json();
         const updated = JSON.stringify(items, null, 4);
 
-        const res = await fetch(apiUrl, {
+        // Step 2: PUT updated file
+        const putUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
+        const res = await fetch(putUrl, {
           method: "PUT",
           headers: {
             Authorization: `token ${token}`,
@@ -192,7 +193,11 @@
           })
         });
 
-        if (!res.ok) throw new Error(await res.text());
+        if (!res.ok) {
+          const errText = await res.text();
+          throw new Error(`Update failed: ${res.status} ${errText}`);
+        }
+
         alert("✅ File updated on GitHub!");
       } catch (err) {
         alert("❌ GitHub update failed: " + err.message);
@@ -214,7 +219,6 @@
       location.reload();
     };
 
-    // Show/hide
     function showControls(){
       ["downloadBtn","addItemBtn","removeFileBtn","searchInput","saveGitHubBtn","rememberChangesBtn","rememberTokenLabel"].forEach(id=>document.getElementById(id).style.display="inline-block");
     }
@@ -245,7 +249,7 @@
     // Search
     document.getElementById("searchInput").oninput=()=>renderTable();
 
-    // Table rendering (same as before)...
+    // Table rendering
     function renderTable() {
       const container = document.getElementById("editor");
       container.innerHTML = "";
