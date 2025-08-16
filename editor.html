@@ -4,26 +4,86 @@
   <meta charset="UTF-8">
   <title>Editor</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
-    header { background: #333; color: #fff; padding: 10px 20px; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #1e1e1e;
+      color: #e0e0e0;
+    }
+    header {
+      background: #2c2c2c;
+      color: #fff;
+      padding: 10px 20px;
+      border-bottom: 1px solid #444;
+    }
     .container { padding: 20px; }
-    button { padding: 10px 16px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
-    button.primary { background: #4CAF50; color: #fff; }
+    button {
+      padding: 10px 16px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button.primary { background: #3a7bd5; color: #fff; }
     button.danger { background: #e74c3c; color: #fff; }
+    button.secondary { background: #555; color: #eee; }
     .fixed-bottom { position: fixed; bottom: 10px; right: 10px; }
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
-    .modal-content { background: #fff; padding: 20px; border-radius: 8px; width: 300px; text-align: center; }
-    .modal-content input { width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
-    .modal-content label { display: flex; align-items: center; gap: 5px; font-size: 14px; }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0 15px 0;
+      background: #2a2a2a;
+      color: #eee;
+      border: 1px solid #444;
+      border-radius: 5px;
+    }
+    .item-card {
+      background: #2b2b2b;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+    .modal {
+      display: none; position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center; align-items: center;
+    }
+    .modal-content {
+      background: #2c2c2c;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
+      color: #fff;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.7);
+    }
+    .modal-content input {
+      width: 100%; padding: 8px;
+      margin: 10px 0;
+      border: 1px solid #555;
+      border-radius: 5px;
+      background: #1e1e1e;
+      color: #eee;
+    }
+    .modal-content label {
+      display: flex; align-items: center;
+      gap: 5px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
 <header>
-  <h1>Editor</h1>
+  <h1>Dark Theme Editor</h1>
 </header>
 
 <div class="container">
   <button class="primary" onclick="loadFromGitHub()">Fetch File from GitHub</button>
+  <button class="secondary" onclick="resetFile()">Reset File</button>
+  <div id="itemsContainer"></div>
   <button class="primary fixed-bottom" onclick="saveToGitHub()">💾 Save to GitHub</button>
 </div>
 
@@ -44,95 +104,100 @@ const path = "market/market.txt";
 
 const TOKEN_KEY = "github_token";
 let savedToken = localStorage.getItem(TOKEN_KEY) || null;
+let items = [];
 
 function showTokenModal() {
   document.getElementById("githubTokenInput").value = savedToken || "";
   document.getElementById("rememberToken").checked = !!savedToken;
   document.getElementById("tokenModal").style.display = "flex";
 }
-
-function hideTokenModal() {
-  document.getElementById("tokenModal").style.display = "none";
-}
+function hideTokenModal() { document.getElementById("tokenModal").style.display = "none"; }
 
 function setToken() {
   const token = document.getElementById("githubTokenInput").value.trim();
   const remember = document.getElementById("rememberToken").checked;
   if (!token) return alert("Please enter a token");
-  if (remember) {
-    localStorage.setItem(TOKEN_KEY, token);
-    savedToken = token;
-  } else {
-    localStorage.removeItem(TOKEN_KEY);
-    savedToken = token;
-  }
+  if (remember) { localStorage.setItem(TOKEN_KEY, token); savedToken = token; }
+  else { localStorage.removeItem(TOKEN_KEY); savedToken = token; }
   hideTokenModal();
-  saveToGitHub();
 }
 
 async function loadFromGitHub() {
   if (!savedToken) return showTokenModal();
-
   const url = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
   try {
     const res = await fetch(url, {
-      headers: {
-        Authorization: `token ${savedToken}`,
-        Accept: "application/vnd.github+json"
-      }
+      headers: { Authorization: `token ${savedToken}`, Accept: "application/vnd.github+json" }
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Failed to fetch file");
     const content = atob(data.content);
-    alert("✅ File fetched successfully\n\n" + content.substring(0,200) + "...");
-  } catch (err) {
-    alert("❌ GitHub fetch failed: " + err.message);
-  }
+    items = JSON.parse(content);
+    renderItems();
+  } catch (err) { alert("❌ GitHub fetch failed: " + err.message); }
 }
+
+function renderItems() {
+  const container = document.getElementById("itemsContainer");
+  container.innerHTML = "";
+  items.forEach((item, index) => {
+    const card = document.createElement("div");
+    card.className = "item-card";
+    card.innerHTML = `
+      <label>ID <input type="text" value="${item.id}" onchange="updateItem(${index}, 'id', this.value)"></label>
+      <label>Name <input type="text" value="${item.name}" onchange="updateItem(${index}, 'name', this.value)"></label>
+      <label>Rarity 
+        <select onchange="updateItem(${index}, 'rarity', this.value)">
+          ${['common','uncommon','rare','epic','legendary','special'].map(r => `<option value="${r}" ${item.rarity===r?'selected':''}>${r}</option>`).join('')}
+        </select>
+      </label>
+      <label>Category
+        <select onchange="updateItem(${index}, 'category', this.value)">
+          ${['combat','farming','foraging','mining','slayer','special','test'].map(c => `<option value="${c}" ${item.category===c?'selected':''}>${c.charAt(0).toUpperCase()+c.slice(1)}</option>`).join('')}
+        </select>
+      </label>
+      <label>Demand 
+        <select onchange="updateItem(${index}, 'demand', this.value)">
+          ${[...Array(10).keys()].map(n => `<option value="[${n+1}/10]" ${item.demand===`[${n+1}/10]`?'selected':''}>${n+1}</option>`).join('')}
+        </select>
+      </label>
+      <label>Nature
+        <select onchange="updateItem(${index}, 'nature', this.value)">
+          ${['[STABLE]','[UNDERPAID]','[OVERPAID]'].map(n => `<option value="${n}" ${item.nature===n?'selected':''}>${n}</option>`).join('')}
+        </select>
+      </label>
+      <label>Price <input type="text" value="${item.price}" onchange="updateItem(${index}, 'price', this.value)"></label>
+      <label>Description <textarea onchange="updateItem(${index}, 'description', this.value)">${item.description}</textarea></label>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function updateItem(index, key, value) { items[index][key] = value; }
 
 async function saveToGitHub() {
   if (!savedToken) return showTokenModal();
-
   const metaUrl = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
-
   try {
-    // Always fetch latest sha
-    const meta = await fetch(metaUrl, {
-      headers: {
-        Authorization: `token ${savedToken}`,
-        Accept: "application/vnd.github+json"
-      }
-    });
+    const meta = await fetch(metaUrl, { headers: { Authorization: `token ${savedToken}`, Accept: "application/vnd.github+json" } });
     if (!meta.ok) throw new Error("Metadata fetch failed");
     const file = await meta.json();
     const latestSha = file.sha;
-
-    const updated = JSON.stringify({ example: "your file content here" }, null, 2);
-
+    const updated = JSON.stringify(items, null, 4);
     const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
       method: "PUT",
-      headers: {
-        Authorization: `token ${savedToken}`,
-        Accept: "application/vnd.github+json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: "Update market.txt via editor.html",
-        content: btoa(unescape(encodeURIComponent(updated))),
-        sha: latestSha,
-        branch
-      })
+      headers: { Authorization: `token ${savedToken}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "Update market.txt via editor.html", content: btoa(unescape(encodeURIComponent(updated))), sha: latestSha, branch })
     });
-
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error("Update failed: " + errText);
-    }
-
+    if (!res.ok) { const errText = await res.text(); throw new Error("Update failed: " + errText); }
     alert("✅ File updated on GitHub!");
-  } catch (err) {
-    alert("❌ GitHub update failed: " + err.message);
-  }
+  } catch (err) { alert("❌ GitHub update failed: " + err.message); }
+}
+
+function resetFile() {
+  items = [];
+  document.getElementById("itemsContainer").innerHTML = "";
+  alert("File reset, load again to fetch.");
 }
 </script>
 </body>
