@@ -17,12 +17,16 @@
       padding: 0 20px; /* Add some padding */
     }
 
-    /* Profile Card Styles */
-    #profile-card-container {
-      position: fixed; /* Use fixed positioning */
-      top: 80px;      /* Position it lower from the top */
-      right: 20px;     /* Position it on the right */
-      z-index: 1001;
+    /* New container for all top-right UI elements */
+    #top-right-ui-container {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        z-index: 1001;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end; /* Aligns items to the right */
+        gap: 10px; /* Creates space between the card and the button */
     }
 
     .profile-card {
@@ -70,25 +74,22 @@
         gap: 8px;
     }
 
-    /* Styles for Update Price Button and Modal */
-    #dev-actions-container {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
-    }
-
     .update-price-btn {
-        background-color: #ffc107;
-        color: #111;
-        padding: 12px 18px;
-        border: none;
-        border-radius: 8px;
-        font-weight: bold;
+        background-color: #313131;
+        color: #FFFFFF;
+        padding: 10px 15px;
+        border: 2px solid #555;
+        border-radius: 4px;
+        font-weight: normal;
         cursor: pointer;
         display: flex;
         align-items: center;
         gap: 8px;
+        transition: background-color 0.2s;
+    }
+
+    .update-price-btn:hover {
+        background-color: #424242;
     }
 
     .modal-overlay {
@@ -121,7 +122,13 @@
 <body>
   <div id="loader"><div></div><div></div><div></div></div>
   <div class="market-background"></div>
-  <div id="profile-card-container"></div>
+  
+  <!-- New container for top-right elements -->
+  <div id="top-right-ui-container">
+    <div id="profile-card-container"></div>
+    <div id="dev-actions-container"></div>
+  </div>
+
   <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
@@ -137,9 +144,6 @@
     <button id="nextItemBtn" class="btn" type="button">Next &rarr;</button>
   </div>
   <div id="footer"></div>
-
-  <!-- Developer action button container -->
-  <div id="dev-actions-container"></div>
 
   <!-- Update Price Modal -->
   <div id="price-modal" class="modal-overlay">
@@ -172,7 +176,7 @@
     // --- Function to load the profile card ---
     async function loadProfileCard() {
         const storedUser = getCookie("discordUser");
-        const container = document.getElementById("profile-card-container");
+        const profileContainer = document.getElementById("profile-card-container");
         const devActionsContainer = document.getElementById("dev-actions-container");
 
         let devIds = [];
@@ -191,7 +195,7 @@
             const displayName = user.global_name || user.username;
             const isDev = devIds.includes(user.id);
 
-            container.innerHTML = `
+            profileContainer.innerHTML = `
                 <a href="/profile" class="profile-card">
                     <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="Avatar" class="profile-card-avatar">
                     <span class="profile-card-name">
@@ -211,7 +215,7 @@
             }
 
         } else {
-            container.innerHTML = '';
+            profileContainer.innerHTML = '';
         }
     }
 
