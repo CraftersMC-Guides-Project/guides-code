@@ -7,25 +7,27 @@
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f7f7f7; color: #333; }
     h1 { text-align: center; padding: 20px; background: #4CAF50; color: white; margin: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
     #upload-area { border: 2px dashed #aaa; border-radius: 10px; padding: 40px; text-align: center; margin: 20px auto; width: 80%; background: white; transition: 0.3s; }
+    #upload-area.dragover { border-color: #4CAF50; background: #eaffea; }
     #editor { padding: 20px; overflow-x: auto; }
     table { border-collapse: collapse; width: 100%; margin-top: 20px; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
     th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
     th { background: #4CAF50; color: white; position: sticky; top: 0; z-index: 2; }
     input, select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 5px; }
     input:focus, select:focus { outline: none; border-color: #4CAF50; box-shadow: 0 0 4px rgba(76, 175, 80, 0.6); }
-    #downloadBtn, #addItemBtn, #removeFileBtn { position: fixed; bottom: 20px; padding: 14px 22px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: background 0.3s; }
-    #downloadBtn:hover, #addItemBtn:hover, #removeFileBtn:hover { background: #45a049; }
+    #downloadBtn, #addItemBtn, #removeFileBtn, #fetchFileBtn { position: fixed; bottom: 20px; padding: 14px 22px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: background 0.3s; }
+    #downloadBtn:hover, #addItemBtn:hover, #removeFileBtn:hover, #fetchFileBtn:hover { background: #45a049; }
     #downloadBtn { right: 20px; display:none; }
     #addItemBtn { left: 20px; display:none; }
     #removeFileBtn { left: 50%; transform: translateX(-50%); display:none; background:#f44336; }
     #removeFileBtn:hover { background:#d32f2f; }
+    #fetchFileBtn { left: 50%; transform: translateX(-50%); bottom: 80px; }
   </style>
 </head>
 <body>
   <h1>Market TXT Editor</h1>
 
   <div id="upload-area">
-    <p>Click to load <strong>market.txt</strong></p>
+    <p>Drag & Drop your <strong>market.txt</strong> here or click to upload</p>
     <input type="file" id="fileInput" accept=".txt,.json" style="display:none;">
   </div>
 
@@ -33,18 +35,24 @@
 
   <button id="addItemBtn">+ Add Item</button>
   <button id="downloadBtn">Download Updated File</button>
-  <button id="removeFileBtn">Remove File</button>
+  <button id="removeFileBtn">Reset File</button>
+  <button id="fetchFileBtn">Fetch ./market/market.txt</button>
 
   <script>
     let items = [];
     const fileInput = document.getElementById("fileInput");
     const uploadArea = document.getElementById("upload-area");
-    const STORAGE_KEY = "marketFile";
+    const STORAGE_KEY = "marketFileLoaded";
 
-    // Check if we already saved a file in localStorage
+    const rarityOptions = ["common", "uncommon", "rare", "epic", "legendary", "special"];
+    const natureOptions = ["STABLE", "UNDERPAID", "OVERPAID"];
+    const demandOptions = Array.from({length:10}, (_,i) => String(i+1));
+    const categoryOptions = ["Combat", "Farming", "Foraging", "Mining", "Slayer", "Special", "Test"];
+
+    // On page load, check if we already saved state
     window.addEventListener("DOMContentLoaded", async () => {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved === "default") {
+      if (saved === "true") {
         try {
           const res = await fetch("./market/market.txt");
           if (!res.ok) throw new Error("File not found");
@@ -53,7 +61,7 @@
           ensurePublic();
           renderTable();
           showControls();
-          uploadArea.style.display = "none";
+          hideUploadUI();
         } catch (err) {
           console.warn("Failed to fetch ./market/market.txt");
           localStorage.removeItem(STORAGE_KEY);
@@ -61,9 +69,39 @@
       }
     });
 
-    // Clicking upload area triggers file select
+    // Upload area handlers
     uploadArea.addEventListener("click", () => fileInput.click());
     fileInput.addEventListener("change", handleFile);
+
+    uploadArea.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      uploadArea.classList.add("dragover");
+    });
+    uploadArea.addEventListener("dragleave", () => {
+      uploadArea.classList.remove("dragover");
+    });
+    uploadArea.addEventListener("drop", (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove("dragover");
+      const file = e.dataTransfer.files[0];
+      if (file) processFile(file);
+    });
+
+    document.getElementById("fetchFileBtn").addEventListener("click", async () => {
+      try {
+        const res = await fetch("./market/market.txt");
+        if (!res.ok) throw new Error("File not found");
+        const text = await res.text();
+        items = JSON.parse(text);
+        ensurePublic();
+        renderTable();
+        showControls();
+        hideUploadUI();
+        localStorage.setItem(STORAGE_KEY, "true");
+      } catch (err) {
+        alert("Failed to load ./market/market.txt");
+      }
+    });
 
     function ensurePublic() {
       items.forEach(item => {
@@ -86,8 +124,8 @@
           ensurePublic();
           renderTable();
           showControls();
-          uploadArea.style.display = "none";
-          localStorage.setItem(STORAGE_KEY, "default"); // mark file loaded
+          hideUploadUI();
+          localStorage.setItem(STORAGE_KEY, "true");
         } catch (err) {
           alert("Error parsing file. Make sure it's valid JSON.");
         }
@@ -116,26 +154,40 @@
         headers.forEach(key => {
           const td = document.createElement("td");
           let input;
-          if (typeof item[key] === "boolean") {
-            input = document.createElement("select");
-            ["true", "false"].forEach(optVal => {
-              const opt = document.createElement("option");
-              opt.value = optVal;
-              opt.textContent = optVal;
-              if (String(item[key]) === optVal) opt.selected = true;
-              input.appendChild(opt);
-            });
+
+          if (key === "rarity") {
+            input = createSelect(rarityOptions, item[key]);
+          } else if (key === "nature") {
+            input = createSelect(natureOptions, item[key].toUpperCase());
+          } else if (key === "demand") {
+            input = createSelect(demandOptions, item[key].replace(/\D/g,"")); 
+          } else if (key === "category") {
+            // Fix category formatting: Capitalize first letter
+            const fixedVal = capitalizeCategory(item[key]);
+            input = createSelect(categoryOptions, fixedVal);
+          } else if (typeof item[key] === "boolean") {
+            input = createSelect(["true", "false"], String(item[key]));
           } else {
             input = document.createElement("input");
             input.value = item[key];
           }
+
           input.onchange = (e) => {
-            if (typeof item[key] === "boolean") {
+            if (key === "rarity") {
+              item[key] = e.target.value;
+            } else if (key === "nature") {
+              item[key] = e.target.value;
+            } else if (key === "demand") {
+              item[key] = `[${e.target.value}/10]`;
+            } else if (key === "category") {
+              item[key] = capitalizeCategory(e.target.value);
+            } else if (typeof item[key] === "boolean") {
               item[key] = e.target.value === "true";
             } else {
               item[key] = e.target.value;
             }
           };
+
           td.appendChild(input);
           tr.appendChild(td);
         });
@@ -145,10 +197,32 @@
       container.appendChild(table);
     }
 
+    function createSelect(options, currentVal) {
+      const select = document.createElement("select");
+      options.forEach(optVal => {
+        const opt = document.createElement("option");
+        opt.value = optVal;
+        opt.textContent = optVal;
+        if (String(currentVal) === optVal) opt.selected = true;
+        select.appendChild(opt);
+      });
+      return select;
+    }
+
+    function capitalizeCategory(val) {
+      if (!val) return "";
+      return val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+    }
+
     function showControls() {
       document.getElementById("downloadBtn").style.display = "block";
       document.getElementById("addItemBtn").style.display = "block";
       document.getElementById("removeFileBtn").style.display = "block";
+    }
+
+    function hideUploadUI() {
+      uploadArea.style.display = "none";
+      document.getElementById("fetchFileBtn").style.display = "none";
     }
 
     document.getElementById("downloadBtn").addEventListener("click", () => {
@@ -176,9 +250,9 @@
         rarity: "common",
         price: "0",
         description: "",
-        nature: "",
-        demand: "",
-        category: "",
+        nature: "STABLE",
+        demand: "[1/10]",
+        category: "Combat",
         craftable: false,
         enchantable: false,
         tradable: false,
