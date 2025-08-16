@@ -6,11 +6,11 @@
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f6f8; color: #333; }
     h1 { text-align: center; padding: 20px; background: #4CAF50; color: white; margin: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-    #toolbar { display: flex; justify-content: center; gap: 15px; padding: 15px; background: #fff; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-    #toolbar button, #toolbar input { padding: 10px 16px; font-size: 14px; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; }
+    #toolbar { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 15px; background: #fff; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+    #toolbar button, #toolbar input, #toolbar label { padding: 10px 14px; font-size: 14px; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; }
     #toolbar button { background: #4CAF50; color: white; border: none; font-weight: bold; transition: 0.3s; }
     #toolbar button:hover { background: #45a049; }
-    #toolbar input { width: 200px; }
+    #toolbar input[type="text"] { width: 200px; }
     #upload-area { border: 2px dashed #aaa; border-radius: 10px; padding: 40px; text-align: center; margin: 20px auto; width: 80%; background: white; transition: 0.3s; }
     #upload-area.dragover { border-color: #4CAF50; background: #eaffea; }
     #editor { padding: 20px; overflow-x: auto; }
@@ -21,7 +21,6 @@
     tr:nth-child(even) { background: #fafafa; }
     tr:hover { background: #f1f1f1; }
     input, select, textarea { padding: 5px; border: 1px solid #ccc; border-radius: 5px; }
-    input:focus, select:focus, textarea:focus { outline: none; border-color: #4CAF50; box-shadow: 0 0 4px rgba(76, 175, 80, 0.6); }
     td input.small, td select.small { width: 60px; text-align: center; }
     td input.medium, td select.medium { width: 80px; text-align: center; }
     td input.full, td select.full, td textarea { width: 100%; }
@@ -38,6 +37,9 @@
     <button id="addItemBtn" style="display:none;">+ Add Item</button>
     <button id="downloadBtn" style="display:none;">Download File</button>
     <button id="saveGitHubBtn" style="display:none;">Save to GitHub</button>
+    <label id="rememberTokenLabel" style="display:none;">
+      <input type="checkbox" id="rememberToken"> Remember Token
+    </label>
     <button id="removeFileBtn" style="display:none;">Reset File</button>
     <input type="text" id="searchInput" placeholder="Search by name or ID..." style="display:none;">
   </div>
@@ -52,15 +54,20 @@
   <script>
     let items = [];
     let currentSort = { key: null, asc: true };
-    const fileInput = document.getElementById("fileInput");
-    const uploadArea = document.getElementById("upload-area");
     const STORAGE_KEY = "marketFileLoaded";
+    const TOKEN_KEY = "githubToken";
 
     const rarityOptions = ["common", "uncommon", "rare", "epic", "legendary", "special"];
     const natureOptions = ["STABLE", "UNDERPAID", "OVERPAID"];
     const demandOptions = Array.from({length:10}, (_,i) => String(i+1));
     const categoryOptions = ["Combat", "Farming", "Foraging", "Mining", "Slayer", "Special", "Test"];
 
+    // GitHub config
+    const repo = "CraftersMC-Guides-Project/guides-code";
+    const path = "market/market.txt";
+    const branch = "main";
+
+    // Auto-load if file stored
     window.addEventListener("DOMContentLoaded", async () => {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved === "true") {
@@ -73,23 +80,19 @@
           renderTable();
           showControls();
           hideUploadUI();
-        } catch (err) {
-          console.warn("Failed to fetch ./market/market.txt");
+        } catch {
           localStorage.removeItem(STORAGE_KEY);
         }
       }
     });
 
-    uploadArea.addEventListener("click", () => fileInput.click());
-    fileInput.addEventListener("change", handleFile);
-
-    uploadArea.addEventListener("dragover", (e) => { e.preventDefault(); uploadArea.classList.add("dragover"); });
+    // File input + dragdrop
+    document.getElementById("fileInput").addEventListener("change", e => processFile(e.target.files[0]));
+    const uploadArea = document.getElementById("upload-area");
+    uploadArea.addEventListener("click", () => document.getElementById("fileInput").click());
+    uploadArea.addEventListener("dragover", e => { e.preventDefault(); uploadArea.classList.add("dragover"); });
     uploadArea.addEventListener("dragleave", () => uploadArea.classList.remove("dragover"));
-    uploadArea.addEventListener("drop", (e) => {
-      e.preventDefault(); uploadArea.classList.remove("dragover");
-      const file = e.dataTransfer.files[0];
-      if (file) processFile(file);
-    });
+    uploadArea.addEventListener("drop", e => { e.preventDefault(); uploadArea.classList.remove("dragover"); processFile(e.dataTransfer.files[0]); });
 
     document.getElementById("fetchFileBtn").addEventListener("click", async () => {
       try {
@@ -102,23 +105,17 @@
         showControls();
         hideUploadUI();
         localStorage.setItem(STORAGE_KEY, "true");
-      } catch (err) {
+      } catch {
         alert("Failed to load ./market/market.txt");
       }
     });
 
-    function ensurePublic() {
-      items.forEach(item => { if (!item.hasOwnProperty("public")) item.public = true; });
-    }
-
-    function handleFile(event) {
-      const file = event.target.files[0];
-      if (file) processFile(file);
-    }
+    function ensurePublic() { items.forEach(i => { if (!i.hasOwnProperty("public")) i.public = true; }); }
 
     function processFile(file) {
+      if (!file) return;
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = e => {
         try {
           items = JSON.parse(e.target.result);
           ensurePublic();
@@ -126,8 +123,8 @@
           showControls();
           hideUploadUI();
           localStorage.setItem(STORAGE_KEY, "true");
-        } catch (err) {
-          alert("Error parsing file. Make sure it's valid JSON.");
+        } catch {
+          alert("Invalid file format.");
         }
       };
       reader.readAsText(file);
@@ -136,9 +133,9 @@
     function renderTable() {
       const container = document.getElementById("editor");
       container.innerHTML = "";
-      if (items.length === 0) return;
-
+      if (!items.length) return;
       const table = document.createElement("table");
+
       const headers = Object.keys(items[0]);
       const headerRow = document.createElement("tr");
       headers.forEach(h => {
@@ -153,174 +150,67 @@
       table.appendChild(headerRow);
 
       let searchVal = document.getElementById("searchInput").value.toLowerCase();
-
       items.forEach((item, index) => {
         if (searchVal && !item.name.toLowerCase().includes(searchVal) && !String(item.id).includes(searchVal)) return;
         const tr = document.createElement("tr");
         headers.forEach(key => {
           const td = document.createElement("td");
           let input;
-
           if (key === "rarity") input = createSelect(rarityOptions, item[key], "full");
           else if (key === "nature") input = createSelect(natureOptions, item[key].toUpperCase(), "full");
           else if (key === "demand") input = createSelect(demandOptions, item[key].replace(/\D/g,""), "small");
-          else if (key === "category") input = createSelect(categoryOptions, capitalizeCategory(item[key]), "full");
-          else if (typeof item[key] === "boolean") input = createSelect(["true", "false"], String(item[key]), "small");
+          else if (key === "category") input = createSelect(categoryOptions, capitalize(item[key]), "full");
+          else if (typeof item[key] === "boolean") input = createSelect(["true","false"], String(item[key]), "small");
           else if (key === "description") { input = document.createElement("textarea"); input.value = item[key]; }
-          else { input = document.createElement("input"); input.value = item[key];
-            if (key === "id") input.classList.add("small");
-            else if (key === "price") input.classList.add("medium");
-            else input.classList.add("full");
-          }
-
-          input.onchange = (e) => {
-            if (key === "rarity" || key === "nature") item[key] = e.target.value;
-            else if (key === "demand") item[key] = `[${e.target.value}/10]`;
-            else if (key === "category") item[key] = capitalizeCategory(e.target.value);
-            else if (typeof item[key] === "boolean") item[key] = e.target.value === "true";
+          else { input = document.createElement("input"); input.value = item[key]; input.classList.add(key==="id"?"small":key==="price"?"medium":"full"); }
+          input.onchange = e => {
+            if (key === "demand") item[key] = `[${e.target.value}/10]`;
+            else if (typeof item[key] === "boolean") item[key] = e.target.value==="true";
             else item[key] = e.target.value;
           };
-
-          td.appendChild(input);
-          tr.appendChild(td);
+          td.appendChild(input); tr.appendChild(td);
         });
-
         const tdDel = document.createElement("td");
-        const delBtn = document.createElement("button");
-        delBtn.textContent = "Delete";
-        delBtn.className = "deleteBtn";
-        delBtn.onclick = () => { items.splice(index,1); renderTable(); };
-        tdDel.appendChild(delBtn);
-        tr.appendChild(tdDel);
-
-        table.appendChild(tr);
+        const btn = document.createElement("button"); btn.textContent="Delete"; btn.className="deleteBtn";
+        btn.onclick=()=>{ items.splice(index,1); renderTable(); };
+        tdDel.appendChild(btn); tr.appendChild(tdDel); table.appendChild(tr);
       });
-
       container.appendChild(table);
     }
 
-    function createSelect(options, currentVal, sizeClass="full") {
-      const select = document.createElement("select");
-      select.classList.add(sizeClass);
-      options.forEach(optVal => {
-        const opt = document.createElement("option");
-        opt.value = optVal;
-        opt.textContent = optVal;
-        if (String(currentVal) === optVal) opt.selected = true;
-        select.appendChild(opt);
-      });
-      return select;
+    function createSelect(options, current, cls="full") {
+      const s = document.createElement("select"); s.classList.add(cls);
+      options.forEach(v => { const o=document.createElement("option"); o.value=v; o.textContent=v; if(String(current)===v) o.selected=true; s.appendChild(o); });
+      return s;
     }
+    function capitalize(v){ return v? v.charAt(0).toUpperCase()+v.slice(1).toLowerCase():""; }
+    function sortTable(k){ if(currentSort.key===k) currentSort.asc=!currentSort.asc; else {currentSort.key=k; currentSort.asc=true;} items.sort((a,b)=>{let v1=a[k],v2=b[k];if(typeof v1==="string")v1=v1.toLowerCase();if(typeof v2==="string")v2=v2.toLowerCase();return v1<v2?(currentSort.asc?-1:1):v1>v2?(currentSort.asc?1:-1):0;}); renderTable(); }
 
-    function capitalizeCategory(val) {
-      if (!val) return "";
-      return val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
-    }
+    function showControls(){ ["downloadBtn","addItemBtn","removeFileBtn","searchInput","saveGitHubBtn","rememberTokenLabel"].forEach(id=>document.getElementById(id).style.display="inline-block"); }
+    function hideUploadUI(){ document.getElementById("upload-area").style.display="none"; document.getElementById("fetchFileBtn").style.display="none"; }
 
-    function sortTable(key) {
-      if (currentSort.key === key) currentSort.asc = !currentSort.asc;
-      else { currentSort.key = key; currentSort.asc = true; }
-      items.sort((a,b) => {
-        let v1 = a[key], v2 = b[key];
-        if (typeof v1 === "string") v1 = v1.toLowerCase();
-        if (typeof v2 === "string") v2 = v2.toLowerCase();
-        if (v1 < v2) return currentSort.asc ? -1 : 1;
-        if (v1 > v2) return currentSort.asc ? 1 : -1;
-        return 0;
-      });
-      renderTable();
-    }
+    document.getElementById("downloadBtn").onclick=()=>{ const blob=new Blob([JSON.stringify(items,null,4)],{type:"application/json"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url;a.download="market_updated.txt";a.click();URL.revokeObjectURL(url); };
 
-    function showControls() {
-      document.getElementById("downloadBtn").style.display = "inline-block";
-      document.getElementById("addItemBtn").style.display = "inline-block";
-      document.getElementById("removeFileBtn").style.display = "inline-block";
-      document.getElementById("searchInput").style.display = "inline-block";
-      document.getElementById("saveGitHubBtn").style.display = "inline-block"; // show save option
-    }
+    document.getElementById("addItemBtn").onclick=()=>{ const id=prompt("Enter new item ID:"); if(!id) return; if(items.find(i=>i.id===id)) return alert("ID exists!"); items.push({id,name:"New Item",picture:"",rarity:"common",price:"0",description:"",nature:"STABLE",demand:"[1/10]",category:"Combat",craftable:false,enchantable:false,tradable:false,auctionable:false,bazaarable:false,reforgable:false,public:true}); items.sort((a,b)=>Number(a.id)-Number(b.id)); renderTable(); };
 
-    function hideUploadUI() {
-      uploadArea.style.display = "none";
-      document.getElementById("fetchFileBtn").style.display = "none";
-    }
+    document.getElementById("removeFileBtn").onclick=()=>{ localStorage.removeItem(STORAGE_KEY); location.reload(); };
+    document.getElementById("searchInput").oninput=()=>renderTable();
 
-    document.getElementById("downloadBtn").addEventListener("click", () => {
-      const blob = new Blob([JSON.stringify(items, null, 4)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "market_updated.txt";
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-
-    document.getElementById("addItemBtn").addEventListener("click", () => {
-      const newId = prompt("Enter new item ID:");
-      if (!newId) return;
-      if (items.find(it => it.id === newId)) { alert("Item with this ID already exists!"); return; }
-
-      const newItem = {
-        id: newId, name: "New Item", picture: "", rarity: "common", price: "0", description: "",
-        nature: "STABLE", demand: "[1/10]", category: "Combat",
-        craftable: false, enchantable: false, tradable: false,
-        auctionable: false, bazaarable: false, reforgable: false,
-        public: true
-      };
-
-      items.push(newItem);
-      items.sort((a,b) => Number(a.id)-Number(b.id));
-      renderTable();
-    });
-
-    document.getElementById("removeFileBtn").addEventListener("click", () => {
-      localStorage.removeItem(STORAGE_KEY);
-      location.reload();
-    });
-
-    document.getElementById("searchInput").addEventListener("input", () => renderTable());
-
-    // 🔥 Save to GitHub function
-    document.getElementById("saveGitHubBtn").addEventListener("click", saveToGitHub);
-
-    async function saveToGitHub() {
-      const token = prompt("Enter your GitHub Personal Access Token (with repo scope):");
-      if (!token) return;
-
-      const repo = "CraftersMC-Guides-Project/guides-code";
-      const path = "market/market.txt";
-      const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
-
-      try {
-        const res = await fetch(apiUrl, {
-          headers: { Authorization: `token ${token}` }
-        });
-        if (!res.ok) throw new Error("Failed to fetch file metadata");
-        const fileData = await res.json();
-
-        const updatedContent = JSON.stringify(items, null, 4);
-        const commitMessage = "Update market.txt via editor.html";
-
-        const updateRes = await fetch(apiUrl, {
-          method: "PUT",
-          headers: {
-            Authorization: `token ${token}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            message: commitMessage,
-            content: btoa(unescape(encodeURIComponent(updatedContent))),
-            sha: fileData.sha
-          })
-        });
-
-        if (updateRes.ok) {
-          alert("✅ File successfully updated on GitHub!");
-        } else {
-          throw new Error(await updateRes.text());
-        }
-      } catch (err) {
-        alert("❌ GitHub update failed: " + err.message);
-      }
+    // 🔥 Save to GitHub
+    document.getElementById("saveGitHubBtn").onclick=saveToGitHub;
+    async function saveToGitHub(){
+      let token = localStorage.getItem(TOKEN_KEY);
+      if(!token){ token = prompt("Enter your GitHub Token:"); if(!token) return; if(document.getElementById("rememberToken").checked) localStorage.setItem(TOKEN_KEY, token); }
+      const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
+      try{
+        const meta = await fetch(apiUrl,{headers:{Authorization:`token ${token}`,"Accept":"application/vnd.github+json"}});
+        if(!meta.ok) throw new Error("Metadata fetch failed");
+        const file = await meta.json();
+        const updated = JSON.stringify(items,null,4);
+        const res = await fetch(apiUrl,{method:"PUT",headers:{Authorization:`token ${token}`,"Accept":"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify({message:"Update market.txt via editor.html",content:btoa(unescape(encodeURIComponent(updated))),sha:file.sha,branch})});
+        if(!res.ok) throw new Error(await res.text());
+        alert("✅ File updated on GitHub!");
+      }catch(err){ alert("❌ GitHub update failed: "+err.message); }
     }
   </script>
 </body>
