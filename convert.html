@@ -14,10 +14,11 @@
     th { background: #4CAF50; color: white; position: sticky; top: 0; z-index: 2; }
     input, select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 5px; }
     input:focus, select:focus { outline: none; border-color: #4CAF50; box-shadow: 0 0 4px rgba(76, 175, 80, 0.6); }
-    #downloadBtn, #addItemBtn { position: fixed; bottom: 20px; padding: 14px 22px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: background 0.3s; }
-    #downloadBtn:hover, #addItemBtn:hover { background: #45a049; }
-    #downloadBtn { right: 20px; }
-    #addItemBtn { left: 20px; }
+    #downloadBtn, #addItemBtn, #loadFileBtn { position: fixed; bottom: 20px; padding: 14px 22px; background: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: background 0.3s; }
+    #downloadBtn:hover, #addItemBtn:hover, #loadFileBtn:hover { background: #45a049; }
+    #downloadBtn { right: 20px; display:none; }
+    #addItemBtn { left: 20px; display:none; }
+    #loadFileBtn { left: 50%; transform: translateX(-50%); }
   </style>
 </head>
 <body>
@@ -30,8 +31,9 @@
 
   <div id="editor"></div>
 
-  <button id="addItemBtn" style="display:none;">+ Add Item</button>
-  <button id="downloadBtn" style="display:none;">Download Updated File</button>
+  <button id="addItemBtn">+ Add Item</button>
+  <button id="downloadBtn">Download Updated File</button>
+  <button id="loadFileBtn">Load Market File</button>
 
   <script>
     let items = [];
@@ -56,8 +58,7 @@
       if (file) processFile(file);
     });
 
-    // Auto-load market.txt on page load
-    window.addEventListener("DOMContentLoaded", async () => {
+    document.getElementById("loadFileBtn").addEventListener("click", async () => {
       try {
         const res = await fetch("./market/market.txt");
         if (!res.ok) throw new Error("File not found");
@@ -67,7 +68,7 @@
         renderTable();
         showControls();
       } catch (err) {
-        console.warn("Auto-load failed:", err.message);
+        alert("Failed to load ./market/market.txt");
       }
     });
 
@@ -172,7 +173,6 @@
         return;
       }
 
-      // Default new item structure
       const newItem = {
         id: newId,
         name: "New Item",
@@ -193,7 +193,6 @@
       };
 
       items.push(newItem);
-      // Keep items sorted by numeric id
       items.sort((a, b) => Number(a.id) - Number(b.id));
       renderTable();
     });
