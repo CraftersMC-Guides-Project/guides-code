@@ -105,14 +105,27 @@
     }
 
     // --- Function to load the profile card ---
-    function loadProfileCard() {
+    async function loadProfileCard() {
         const storedUser = getCookie("discordUser");
         const container = document.getElementById("profile-card-container");
+
+        // Fetch the list of developer IDs from devs.txt
+        let devIds = [];
+        try {
+            const response = await fetch('/devs.txt');
+            if (response.ok) {
+                const text = await response.text();
+                devIds = text.split('\n').map(id => id.trim()).filter(id => id);
+            }
+        } catch (error) {
+            console.error('Could not load or parse devs.txt:', error);
+        }
 
         if (storedUser) {
             const user = JSON.parse(storedUser);
             const displayName = user.global_name || user.username;
-            const isDev = user.id === '783972385882767400';
+            // Check if the current user's ID is in the dev list
+            const isDev = devIds.includes(user.id);
 
             container.innerHTML = `
                 <a href="/profile" class="profile-card">
