@@ -81,6 +81,8 @@
     .modal-content {
         background: #2a2a2a; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px;
         border: 1px solid #444;
+        max-height: 80vh; /* Allow modal to scroll on small screens */
+        overflow-y: auto; /* Allow modal to scroll on small screens */
     }
     .modal-content h3 { margin-top: 0; }
     .modal-content label { display: block; margin-bottom: 5px; font-weight: bold; }
@@ -301,6 +303,7 @@
     
     // --- Pet Price Modal and Update Logic ---
     async function openPetPriceModal() {
+        document.body.style.overflow = 'hidden'; // Prevent background scroll
         const urlParams = new URLSearchParams(window.location.search);
         const petId = urlParams.get('pet');
         const inputsContainer = document.getElementById('pet-price-inputs');
@@ -338,9 +341,12 @@
         document.getElementById('pet-price-modal').style.display = 'flex';
     }
 
-    document.getElementById('cancel-pet-price-update').addEventListener('click', () => {
+    function closeModal() {
         document.getElementById('pet-price-modal').style.display = 'none';
-    });
+        document.body.style.overflow = ''; // Re-enable background scroll
+    }
+
+    document.getElementById('cancel-pet-price-update').addEventListener('click', closeModal);
 
     document.getElementById('save-pet-price-update').addEventListener('click', async () => {
         const token = getCookie('githubToken');
@@ -399,7 +405,7 @@
             }
 
             showToast('Pet prices updated successfully!', 'success');
-            document.getElementById('pet-price-modal').style.display = 'none';
+            closeModal();
             setTimeout(() => location.reload(), 1500);
 
         } catch (error) {
