@@ -296,7 +296,6 @@
               card.classList.add('expanded');
               card.setAttribute('aria-expanded','true');
               card.querySelector('.details').setAttribute('aria-hidden','false');
-              // No scrollIntoView needed, expanded card pushes others down
             }
           });
 
@@ -322,11 +321,7 @@
 
           grid.appendChild(card);
         });
-
-        // --- ROW CLAIM LOGIC ---
-        // After rendering, check each row for a full claim by one team
         const cards = Array.from(grid.children);
-        // Rows
         for (let row = 0; row < 5; row++) {
           const start = row * 5;
           const end = start + 5;
@@ -348,9 +343,7 @@
             }
           }
         }
-        // --- COLUMN CLAIM LOGIC ---
         for (let col = 0; col < 5; col++) {
-          // Get indices for this column
           const colChallenges = [];
           for (let r = 0; r < 5; r++) {
             colChallenges.push(challenges[r * 5 + col]);
@@ -373,7 +366,6 @@
             }
           }
         }
-        // --- END CLAIM LOGIC ---
       });
 
     function describeChallenge(text){
