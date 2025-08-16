@@ -74,7 +74,7 @@
         gap: 8px;
     }
 
-    .update-price-btn {
+    .dev-btn {
         background-color: #313131;
         color: #FFFFFF;
         padding: 10px 15px;
@@ -88,7 +88,7 @@
         transition: background-color 0.2s;
     }
 
-    .update-price-btn:hover {
+    .dev-btn:hover {
         background-color: #424242;
     }
 
@@ -162,8 +162,10 @@
 
   <script>
     const GITHUB_REPO = "CraftersMC-Guides-Project/guides-code";
+    const MARKET_FILE_PATH = "market/market.txt";
     const PRICES_FILE_PATH = "market/mprices.txt";
     const GITHUB_BRANCH = "main";
+    let isDevUser = false; // Global flag for dev status
 
     // --- Helper Function to Get Cookie ---
     function getCookie(name) {
@@ -177,8 +179,7 @@
     async function loadProfileCard() {
         const storedUser = getCookie("discordUser");
         const profileContainer = document.getElementById("profile-card-container");
-        const devActionsContainer = document.getElementById("dev-actions-container");
-
+        
         let devIds = [];
         try {
             const response = await fetch('/devs.txt');
@@ -193,27 +194,17 @@
         if (storedUser) {
             const user = JSON.parse(storedUser);
             const displayName = user.global_name || user.username;
-            const isDev = devIds.includes(user.id);
+            isDevUser = devIds.includes(user.id);
 
             profileContainer.innerHTML = `
                 <a href="/profile" class="profile-card">
                     <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="Avatar" class="profile-card-avatar">
                     <span class="profile-card-name">
                         ${displayName}
-                        ${isDev ? '<span class="dev-label">[DEV]</span>' : ''}
+                        ${isDevUser ? '<span class="dev-label">[DEV]</span>' : ''}
                     </span>
                 </a>
             `;
-
-            if (isDev) {
-                devActionsContainer.innerHTML = `
-                    <button class="update-price-btn" onclick="openUpdatePriceModal()">
-                        <span class="material-icons">edit</span>
-                        Update Price
-                    </button>
-                `;
-            }
-
         } else {
             profileContainer.innerHTML = '';
         }
@@ -236,30 +227,51 @@
           const items = JSON.parse(marketData);
           const item = items.find(item => item.id === itemId);
 
-          const pricesMap = new Map();
-          const npcPricesMap = new Map();
-
-          pricesData.split('\n').forEach(line => {
-            const [id, arrayStr] = line.split(':').map(part => part.trim());
-            if (id && arrayStr) {
-              try {
-                const parsedArray = JSON.parse(arrayStr);
-                if (Array.isArray(parsedArray) && parsedArray.length >= 2) {
-                  pricesMap.set(id, parsedArray[1]);
-                  if (parsedArray.length >= 3) {
-                    npcPricesMap.set(id, parsedArray[2]);
-                  }
-                }
-              } catch (e) {}
-            }
-          });
-
           if (item) {
+            // Check for public mode
             const isPublic = item.hasOwnProperty("public") ? item.public : true;
-            if (!isPublic) {
+            if (!isPublic && !isDevUser) {
               document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`;
+              // Clear dev actions if a non-dev tries to view a private item
+              document.getElementById("dev-actions-container").innerHTML = "";
               return;
             }
+
+            // If we are here, the user is allowed to see the item.
+            // Now, set up the dev actions if the user is a dev.
+            if (isDevUser) {
+                const devActionsContainer = document.getElementById("dev-actions-container");
+                const publicButtonText = isPublic ? "Make Private" : "Make Public";
+                const publicButtonIcon = isPublic ? "visibility_off" : "visibility";
+                devActionsContainer.innerHTML = `
+                    <button class="dev-btn" onclick="openUpdatePriceModal()">
+                        <span class="material-icons">edit</span>
+                        Update Price
+                    </button>
+                    <button class="dev-btn" onclick="togglePublicMode(${isPublic})">
+                        <span class="material-icons">${publicButtonIcon}</span>
+                        ${publicButtonText}
+                    </button>
+                `;
+            }
+
+            const pricesMap = new Map();
+            const npcPricesMap = new Map();
+
+            pricesData.split('\n').forEach(line => {
+                const [id, arrayStr] = line.split(':').map(part => part.trim());
+                if (id && arrayStr) {
+                    try {
+                        const parsedArray = JSON.parse(arrayStr);
+                        if (Array.isArray(parsedArray) && parsedArray.length >= 2) {
+                            pricesMap.set(id, parsedArray[1]);
+                            if (parsedArray.length >= 3) {
+                                npcPricesMap.set(id, parsedArray[2]);
+                            }
+                        }
+                    } catch (e) {}
+                }
+            });
 
             const itemDetailsDiv = document.getElementById('itemDetails');
             const marketPrice = pricesMap.get(item.id) || item.price || "N/A";
@@ -291,7 +303,7 @@
         const itemId = urlParams.get('item');
         
         try {
-            const pricesRes = await fetch('market/mprices.txt');
+            const pricesRes = await fetch('market/mprices.txt', { cache: 'no-cache' });
             const pricesData = await pricesRes.text();
             const lines = pricesData.split('\n');
             const line = lines.find(l => l.startsWith(itemId + ':'));
@@ -332,17 +344,16 @@
         showToast('Saving prices to GitHub...', 'info');
 
         try {
-            // 1. Get current file content and SHA
             const metaUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${PRICES_FILE_PATH}?ref=${GITHUB_BRANCH}`;
             const metaRes = await fetch(metaUrl, {
-                headers: { Authorization: `token ${token}` }
+                headers: { Authorization: `token ${token}` },
+                cache: 'no-cache'
             });
             if (!metaRes.ok) throw new Error('Failed to fetch file metadata from GitHub.');
             const fileData = await metaRes.json();
             const currentContent = atob(fileData.content);
             const fileSha = fileData.sha;
 
-            // 2. Update the content in memory
             const lines = currentContent.split('\n');
             let found = false;
             const updatedLines = lines.map(line => {
@@ -359,7 +370,6 @@
             
             const updatedContent = updatedLines.join('\n');
 
-            // 3. Push the updated content to GitHub
             const updateUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${PRICES_FILE_PATH}`;
             const updateRes = await fetch(updateUrl, {
                 method: 'PUT',
@@ -382,13 +392,76 @@
             
             showToast('Prices updated successfully!', 'success');
             document.getElementById('price-modal').style.display = 'none';
-            setTimeout(() => location.reload(), 1500); // Reload to show new price
+            setTimeout(() => location.reload(), 1500);
 
         } catch (error) {
             console.error('Error updating prices:', error);
             showToast(`Error: ${error.message}`, 'error');
         }
     });
+
+    // --- Public Mode Toggle Logic ---
+    async function togglePublicMode(currentStatus) {
+        const token = getCookie('githubToken');
+        if (!token) {
+            showToast('GitHub token not found. Please add it in your profile.', 'error');
+            return;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const itemId = urlParams.get('item');
+        const newStatus = !currentStatus;
+
+        showToast('Updating public status...', 'info');
+
+        try {
+            const metaUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${MARKET_FILE_PATH}?ref=${GITHUB_BRANCH}`;
+            const metaRes = await fetch(metaUrl, {
+                headers: { Authorization: `token ${token}` },
+                cache: 'no-cache'
+            });
+            if (!metaRes.ok) throw new Error('Failed to fetch market file metadata.');
+            const fileData = await metaRes.json();
+            const currentContent = atob(fileData.content);
+            const fileSha = fileData.sha;
+
+            const items = JSON.parse(currentContent);
+            const itemIndex = items.findIndex(i => i.id === itemId);
+            if (itemIndex === -1) {
+                throw new Error('Item not found in market.txt');
+            }
+            items[itemIndex].public = newStatus;
+
+            const updatedContent = JSON.stringify(items, null, 4);
+
+            const updateUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${MARKET_FILE_PATH}`;
+            const updateRes = await fetch(updateUrl, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Set item ${itemId} public status to ${newStatus}`,
+                    content: btoa(unescape(encodeURIComponent(updatedContent))),
+                    sha: fileSha,
+                    branch: GITHUB_BRANCH
+                })
+            });
+
+            if (!updateRes.ok) {
+                 const errorData = await updateRes.json();
+                 throw new Error(`GitHub API Error: ${errorData.message}`);
+            }
+
+            showToast('Public status updated successfully!', 'success');
+            setTimeout(() => location.reload(), 1500);
+
+        } catch (error) {
+            console.error('Error toggling public mode:', error);
+            showToast(`Error: ${error.message}`, 'error');
+        }
+    }
 
     function showToast(message, type = 'info') {
         const toast = document.createElement('div');
@@ -431,8 +504,12 @@
     });
 
     // --- Load page content ---
-    loadItemDetails();
-    loadProfileCard();
+    async function initializePage() {
+        await loadProfileCard(); // Load profile first to set the isDevUser flag
+        await loadItemDetails(); // Then load item details which depends on the flag
+    }
+
+    initializePage();
   </script>
 </body>
 </html>
