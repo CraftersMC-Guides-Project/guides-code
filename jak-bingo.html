@@ -74,8 +74,8 @@
       box-shadow: 0 4px 12px rgba(2,6,23,0.3), 0 1px 0 rgba(255,255,255,0.02) inset;
       transition: box-shadow 300ms cubic-bezier(.2,.9,.2,1), transform 300ms cubic-bezier(.2,.9,.2,1), font-size 0.2s;
       cursor:pointer;
-      display:flex;
-      flex-direction:column;
+      display: flex;
+      flex-direction: column;
       min-width: 0;
       min-height: 0;
       border: 2px solid transparent;
@@ -158,62 +158,132 @@
 
     /* Expanded card: grows in place, pushes others down, but remains square */
     .card.expanded {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      grid-template-rows: 1fr;
       grid-column: 1 / -1;
-      grid-row: auto;
-      aspect-ratio: auto;
+      align-items: center;
       z-index: 2;
       box-shadow: 0 8px 32px rgba(2,6,23,0.18);
       font-size: clamp(var(--min-font), 1.5vw, 1.25rem);
       transition: box-shadow 0.3s, font-size 0.2s;
+      min-height: 100px;
+      max-height: 260px;
       height: auto;
-      /* Remove fixed height so content can grow vertically */
+      aspect-ratio: unset; /* Remove forced square aspect */
+      justify-content: center;
+    }
+    .card.expanded .front {
+      grid-column: 1 / 2;
+      grid-row: 1;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      border-radius: 10px 0 0 10px;
+      margin: 0;
+      padding: 0;
+      /* Keep original size/aspect */
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-start;
+      background-size: cover;
+      background-position: center;
     }
     .card.expanded .details {
+      grid-column: 2 / 3;
+      grid-row: 1;
       display: block;
-      margin-top: 0;
-      margin-bottom: 0;
-      max-height: none;
-      overflow-y: auto;
-      padding: 18px 14px 14px 14px;
-    }
-    .details-flex {
-      display: flex;
-      flex-direction: row;
-      gap: 18px;
-      align-items: flex-start;
+      margin: 0;
+      padding: 12px 10px 10px 10px;
+      height: 100%;
       width: 100%;
-      flex-wrap: wrap;
+      min-height: 0;
+      box-sizing: border-box;
+      border-radius: 0 10px 10px 0;
+      overflow-y: auto;
+      background: linear-gradient(180deg, rgba(10,20,34,0.96), rgba(5,10,18,0.98));
     }
-    .details-img {
-      flex: 0 0 100px;
-      max-width: 100px;
+    .card.expanded .details-flex {
+      display: block;
+      padding: 0;
+      gap: 0;
+    }
+    .card.expanded .details-img {
+      display: block;
+      margin-bottom: 0;
       margin-right: 0;
-      display: flex;
-      align-items: flex-start;
-      justify-content: flex-start;
+      text-align: left;
     }
-    .details-content {
-      flex: 1 1 0;
+    .card.expanded .details-img img {
+      width: 90px;
+      max-width: 100%;
+      border-radius: 8px;
+      display: block;
+      margin: 0 0 0 0;
+    }
+    .card.expanded .details-content {
       min-width: 0;
+      width: 100%;
     }
 
-    /* Responsive: grid always fits, cards always square */
+    .card.expanded {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto;
+      min-height: 80px;
+      max-height: 320px;
+      aspect-ratio: unset;
+    }
+    .card.expanded .front {
+      grid-column: 1 / 2;
+      grid-row: 1;
+      border-radius: 10px 10px 0 0;
+    }
+    .card.expanded .details {
+      grid-column: 1 / 2;
+      grid-row: 2;
+      border-radius: 0 0 10px 10px;
+      min-height: 60px;
+      padding: 10px 6px;
+    }
+    .card.expanded .details-img {
+      display: block;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .card.expanded .details-img img {
+      margin: 0 auto;
+    }
     @media (max-width: 700px) {
       .bingo-wrap {max-width: 98vw;}
       .bingo-grid {max-width: 98vw;}
       html,body {font-size: clamp(12px, 2vw, 16px);}
       .card.expanded {
-        min-height: 320px;
-        max-height: 420px;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        min-height: 80px;
+        max-height: 320px;
+        aspect-ratio: unset;
       }
-      .details-flex {
-        flex-direction: column;
-        gap: 10px;
+      .card.expanded .front {
+        grid-column: 1 / 2;
+        grid-row: 1;
+        border-radius: 10px 10px 0 0;
       }
-      .details-img {
+      .card.expanded .details {
+        grid-column: 1 / 2;
+        grid-row: 2;
+        border-radius: 0 0 10px 10px;
+        min-height: 60px;
+        padding: 10px 6px;
+      }
+      .card.expanded .details-img {
+        display: block;
         margin-bottom: 8px;
-        max-width: 100%;
-        justify-content: center;
+        text-align: center;
+      }
+      .card.expanded .details-img img {
+        margin: 0 auto;
       }
     }
     @media (max-width: 480px) {
@@ -223,8 +293,9 @@
       .card .front .title {font-size:clamp(0.85rem, 2vw, 1rem);}
       html,body {font-size: clamp(11px, 3vw, 15px);}
       .card.expanded {
-        min-height: 160px;
-        max-height: 320px;
+        min-height: 60px;
+        max-height: 220px;
+        aspect-ratio: unset;
       }
     }
 
@@ -237,15 +308,19 @@
       box-shadow: 0 0 0 4px #ff444433;
       background: linear-gradient(180deg, #2c0a0a 0%, #0f1724 100%);
     }
+
+    .card.expanded .front {
+      display: none;
+    }
   </style>
 </head>
 <body>
   <div class="page">
     <h1>Bingo Card — 5 × 5 Challenges</h1>
-    <p class="lead">Click any square to expand and read the challenge. Mark it complete when done.</p>
+    <p class="lead">Click any square to expand and read the challenge.</p>
 
     <div class="bingo-wrap">
-      <div class="legend"><span class="dot"></span><span>Completed</span></div>
+      <div class="legend"><span class="dot"></span><span>Event Open</span></div>
 
       <div class="bingo-grid" id="bingoGrid" role="grid" aria-label="Bingo card">
         <!-- cards added by JS -->
@@ -301,7 +376,7 @@
             <div class="details" aria-hidden="true">
               <div class="details-flex">
                 <div class="details-img">
-                  <img src="${imgUrl}" alt="Challenge image" style="width:100px;max-width:100%;border-radius:8px;display:block;">
+                  <img src="${imgUrl}" alt="Challenge image">
                 </div>
                 <div class="details-content">
                   <div class="meta">
@@ -413,3 +488,4 @@
     });
   </script>
 </body>
+</html>
