@@ -55,6 +55,7 @@
   <script>
     let items = [];
     let currentSort = { key: null, asc: true };
+
     const STORAGE_KEY = "marketFileLoaded";
     const DATA_KEY = "marketData";
     const TOKEN_KEY = "githubToken";
@@ -77,7 +78,7 @@
           renderTable();
           showControls();
           hideUploadUI();
-          return; // skip file fetch
+          return;
         } catch { localStorage.removeItem(DATA_KEY); }
       }
 
@@ -94,6 +95,28 @@
           hideUploadUI();
         } catch { localStorage.removeItem(STORAGE_KEY); }
       }
+    });
+
+    // Drag + click upload
+    document.getElementById("fileInput").addEventListener("change", e => processFile(e.target.files[0]));
+    const uploadArea = document.getElementById("upload-area");
+    uploadArea.addEventListener("click", () => document.getElementById("fileInput").click());
+    uploadArea.addEventListener("dragover", e => { e.preventDefault(); uploadArea.classList.add("dragover"); });
+    uploadArea.addEventListener("dragleave", () => uploadArea.classList.remove("dragover"));
+    uploadArea.addEventListener("drop", e => { e.preventDefault(); uploadArea.classList.remove("dragover"); processFile(e.dataTransfer.files[0]); });
+
+    document.getElementById("fetchFileBtn").addEventListener("click", async () => {
+      try {
+        const res = await fetch("./market/market.txt");
+        if (!res.ok) throw new Error("File not found");
+        const text = await res.text();
+        items = JSON.parse(text);
+        ensurePublic();
+        renderTable();
+        showControls();
+        hideUploadUI();
+        localStorage.setItem(STORAGE_KEY, "true");
+      } catch { alert("Failed to load ./market/market.txt"); }
     });
 
     function ensurePublic() { items.forEach(i => { if (!i.hasOwnProperty("public")) i.public = true; }); }
@@ -114,24 +137,105 @@
       reader.readAsText(file);
     }
 
-    // ========== UI Buttons ==========
-    function showControls(){ 
-      ["downloadBtn","addItemBtn","removeFileBtn","searchInput","saveGitHubBtn","rememberChangesBtn","rememberTokenLabel"].forEach(id=>document.getElementById(id).style.display="inline-block"); 
-    }
-    function hideUploadUI(){ document.getElementById("upload-area").style.display="none"; document.getElementById("fetchFileBtn").style.display="none"; }
+    function renderTable() {
+      const container = document.getElementById("editor");
+      container.innerHTML = "";
+      if (!items.length) return;
+      const table = document.createElement("table");
 
+      const headers = Object.keys(items[0]);
+      const headerRow = document.createElement("tr");
+      headers.forEach(h => {
+        const th = document.createElement("th");
+        th.textContent = h;
+        th.onclick = () => sortTable(h);
+        headerRow.appendChild(th);
+      });
+      const thDel = document.createElement("th");
+      thDel.textContent = "Actions";
+      headerRow.appendChild(thDel);
+      table.appendChild(headerRow);
+
+      let searchVal = document.getElementById("searchInput").value.toLowerCase();
+      items.forEach((item, index) => {
+        if (searchVal && !item.name.toLowerCase().includes(searchVal) && !String(item.id).includes(searchVal)) return;
+        const tr = document.createElement("tr");
+        headers.forEach(key => {
+          const td = document.createElement("td");
+          let input;
+          if (key === "rarity") input = createSelect(rarityOptions, item[key], "full");
+          else if (key === "nature") input = createSelect(natureOptions, item[key].toUpperCase(), "full");
+          else if (key === "demand") input = createSelect(demandOptions, item[key].replace(/\D/g,""), "small");
+          else if (key === "category") input = createSelect(categoryOptions, capitalize(item[key]), "full");
+          else if (typeof item[key] === "boolean") input = createSelect(["true","false"], String(item[key]), "small");
+          else if (key === "description") { input = document.createElement("textarea"); input.value = item[key]; }
+          else { input = document.createElement("input"); input.value = item[key]; input.classList.add(key==="id"?"small":key==="price"?"medium":"full"); }
+          input.onchange = e => {
+            if (key === "demand") item[key] = `[${e.target.value}/10]`;
+            else if (typeof item[key] === "boolean") item[key] = e.target.value==="true";
+            else item[key] = e.target.value;
+          };
+          td.appendChild(input); tr.appendChild(td);
+        });
+        const tdDel = document.createElement("td");
+        const btn = document.createElement("button"); btn.textContent="Delete"; btn.className="deleteBtn";
+        btn.onclick=()=>{ items.splice(index,1); renderTable(); };
+        tdDel.appendChild(btn); tr.appendChild(tdDel); table.appendChild(tr);
+      });
+      container.appendChild(table);
+    }
+
+    function createSelect(options, current, cls="full") {
+      const s = document.createElement("select"); s.classList.add(cls);
+      options.forEach(v => { const o=document.createElement("option"); o.value=v; o.textContent=v; if(String(current)===v) o.selected=true; s.appendChild(o); });
+      return s;
+    }
+    function capitalize(v){ return v? v.charAt(0).toUpperCase()+v.slice(1).toLowerCase():""; }
+    function sortTable(k){ if(currentSort.key===k) currentSort.asc=!currentSort.asc; else {currentSort.key=k; currentSort.asc=true;} items.sort((a,b)=>{let v1=a[k],v2=b[k];if(typeof v1==="string")v1=v1.toLowerCase();if(typeof v2==="string")v2=v2.toLowerCase();return v1<v2?(currentSort.asc?-1:1):v1>v2?(currentSort.asc?1:-1):0;}); renderTable(); }
+
+    // Remember changes
     document.getElementById("rememberChangesBtn").onclick=()=>{
       localStorage.setItem(DATA_KEY, JSON.stringify(items));
       alert("✅ Changes saved locally. They will reload next time.");
     };
 
+    // Reset clears all
     document.getElementById("removeFileBtn").onclick=()=>{
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(DATA_KEY);
       location.reload();
     };
 
-    // ========== GitHub Save ==========
+    function showControls(){
+      ["downloadBtn","addItemBtn","removeFileBtn","searchInput","saveGitHubBtn","rememberChangesBtn","rememberTokenLabel"].forEach(id=>document.getElementById(id).style.display="inline-block");
+    }
+    function hideUploadUI(){
+      document.getElementById("upload-area").style.display="none";
+      document.getElementById("fetchFileBtn").style.display="none";
+    }
+
+    // Download
+    document.getElementById("downloadBtn").onclick=()=>{
+      const blob=new Blob([JSON.stringify(items,null,4)],{type:"application/json"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;a.download="market_updated.txt";a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    // Add item
+    document.getElementById("addItemBtn").onclick=()=>{
+      const id=prompt("Enter new item ID:");
+      if(!id) return;
+      if(items.find(i=>i.id===id)) return alert("ID exists!");
+      items.push({id,name:"New Item",picture:"",rarity:"common",price:"0",description:"",nature:"STABLE",demand:"[1/10]",category:"Combat",craftable:false,enchantable:false,tradable:false,auctionable:false,bazaarable:false,reforgable:false,public:true});
+      items.sort((a,b)=>Number(a.id)-Number(b.id));
+      renderTable();
+    };
+
+    document.getElementById("searchInput").oninput=()=>renderTable();
+
+    // Save to GitHub
     document.getElementById("saveGitHubBtn").onclick=saveToGitHub;
     async function saveToGitHub(){
       let token = localStorage.getItem(TOKEN_KEY);
@@ -147,8 +251,6 @@
         alert("✅ File updated on GitHub!");
       }catch(err){ alert("❌ GitHub update failed: "+err.message); }
     }
-
-    // (other unchanged code for rendering, sorting, editing, etc. would remain here, same as previous version)
   </script>
 </body>
 </html>
