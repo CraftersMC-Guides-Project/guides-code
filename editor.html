@@ -25,12 +25,19 @@
       --table-row-hover-bg: #3a3f4b;
     }
 
+    html, body {
+      height: 100%;
+      overflow: hidden; /* Prevent double scrollbars */
+    }
+
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       margin: 0;
       padding: 0;
       background: var(--bg-color);
       color: var(--text-color);
+      display: flex;
+      flex-direction: column;
     }
 
     h1 {
@@ -41,6 +48,7 @@
       margin: 0;
       box-shadow: 0 2px 8px var(--shadow-color);
       font-weight: 600;
+      flex-shrink: 0;
     }
 
     #toolbar {
@@ -52,10 +60,8 @@
       padding: 15px;
       background: var(--bg-secondary-color);
       border-bottom: 1px solid var(--border-color);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
       box-shadow: 0 2px 6px var(--shadow-color);
+      flex-shrink: 0;
     }
 
     #toolbar button, #toolbar input {
@@ -83,13 +89,19 @@
       width: 250px;
       background: var(--input-bg-color);
     }
+    
+    #content-area {
+      flex-grow: 1;
+      overflow-y: auto; /* This is now the main scrolling area */
+      padding: 20px;
+    }
 
     #upload-area {
       border: 2px dashed var(--border-color);
       border-radius: 12px;
       padding: 40px;
       text-align: center;
-      margin: 20px auto;
+      margin: 0 auto 20px auto;
       width: 80%;
       max-width: 800px;
       background: var(--bg-secondary-color);
@@ -101,13 +113,12 @@
       background: var(--bg-color);
     }
 
-    #editor { padding: 20px; overflow-x: auto; }
+    #editor { overflow-x: auto; }
 
     table {
       border-collapse: separate;
       border-spacing: 0;
       width: 100%;
-      margin-top: 20px;
       background: var(--bg-secondary-color);
       box-shadow: 0 2px 6px var(--shadow-color);
       table-layout: fixed; /* FIX: Prevents layout breaking from content */
@@ -122,7 +133,7 @@
       background: var(--header-bg-color);
       color: var(--header-text-color);
       position: sticky;
-      top: 74px; /* Height of toolbar */
+      top: 0; /* Stick to the top of the new scrolling container */
       z-index: 5;
       cursor: pointer;
       user-select: none;
@@ -137,22 +148,7 @@
     .deleteBtn { background: var(--danger-bg-color); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
     .deleteBtn:hover { background: var(--danger-hover-bg-color); }
 
-    /* Modal & Toast Styles */
-    .modal-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 9998;
-    }
-    .modal-content {
-        background: #2a2a2a; padding: 25px; border-radius: 12px; width: 90%; max-width: 450px;
-        border: 1px solid #444;
-    }
-    .modal-content h3 { margin-top: 0; }
-    .modal-content input[type="password"], .modal-content input[type="text"] { width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 15px; background: #1a1a1a; border: 1px solid #555; color: white; border-radius: 5px;}
-    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
-    .modal-btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
-    .modal-btn-save { background-color: #28a745; color: white; }
-    .modal-btn-cancel { background-color: #6c757d; color: white; }
-    
+    /* Toast Styles */
     .toast-notification {
         position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
         padding: 15px 25px; border-radius: 8px; color: white; font-weight: 500;
@@ -177,26 +173,14 @@
     <button id="removeFileBtn" style="display:none;">Reset File</button>
     <input type="text" id="searchInput" placeholder="Search by name or ID..." style="display:none;">
   </div>
-
-  <div id="upload-area">
-    <p>Drag & Drop your <strong>market.txt</strong> here or click to upload</p>
-    <input type="file" id="fileInput" accept=".txt,.json" style="display:none;">
-  </div>
-
-  <div id="editor"></div>
   
-  <!-- GitHub Token Modal -->
-  <div id="github-modal" class="modal-overlay">
-      <div class="modal-content">
-          <h3>GitHub Personal Access Token</h3>
-          <p>Enter your GitHub Token to save the file. This token needs repository write access.</p>
-          <input type="password" id="githubTokenInput" placeholder="ghp_...">
-          <label><input type="checkbox" id="rememberTokenCheckbox"> Remember Token</label>
-          <div class="modal-actions">
-              <button id="cancel-token-save" class="modal-btn modal-btn-cancel">Cancel</button>
-              <button id="confirm-token-save" class="modal-btn modal-btn-save">Confirm</button>
-          </div>
-      </div>
+  <div id="content-area">
+    <div id="upload-area">
+      <p>Drag & Drop your <strong>market.txt</strong> here or click to upload</p>
+      <input type="file" id="fileInput" accept=".txt,.json" style="display:none;">
+    </div>
+
+    <div id="editor"></div>
   </div>
 
   <script>
@@ -204,13 +188,11 @@
     let currentSort = { key: null, asc: true };
 
     const DATA_KEY = "marketData";
-    const TOKEN_KEY = "githubToken";
+    const TOKEN_KEY = "githubToken"; // This is the key for localStorage
 
     const repo = "CraftersMC-Guides-Project/guides-code";
     const path = "market/market.txt";
     const branch = "main";
-
-    let savedToken = localStorage.getItem(TOKEN_KEY) || null;
 
     function getCookie(name) {
       const value = `; ${document.cookie}`;
@@ -252,7 +234,6 @@
         if (rememberedData) {
             try {
                 items = JSON.parse(rememberedData);
-                // UPDATE: Auto-sort on load from local storage
                 items.sort((a, b) => Number(a.id) - Number(b.id));
                 renderTable();
                 showControls();
@@ -284,7 +265,6 @@
         if (!res.ok) throw new Error("market.txt not found");
         const text = await res.text();
         items = JSON.parse(text);
-        // UPDATE: Auto-sort after fetching file
         items.sort((a, b) => Number(a.id) - Number(b.id));
         renderTable();
         showControls();
@@ -297,7 +277,6 @@
     });
     
     document.getElementById("downloadBtn").onclick=()=>{
-      // FIX: Ensure items are sorted by ID before downloading
       items.sort((a, b) => Number(a.id) - Number(b.id));
       const blob=new Blob([JSON.stringify(items,null,4)],{type:"application/json"});
       const url=URL.createObjectURL(blob);
@@ -316,7 +295,6 @@
     };
 
     document.getElementById("rememberChangesBtn").onclick=()=>{
-      // FIX: Ensure items are sorted by ID before saving to local storage
       items.sort((a, b) => Number(a.id) - Number(b.id));
       localStorage.setItem(DATA_KEY, JSON.stringify(items));
       showToast("Changes saved locally.", "success");
@@ -325,7 +303,6 @@
     document.getElementById("removeFileBtn").onclick=()=>{
       localStorage.removeItem(DATA_KEY);
       localStorage.removeItem(TOKEN_KEY);
-      savedToken = null;
       location.reload();
     };
 
@@ -338,7 +315,6 @@
       reader.onload = e => {
         try {
           items = JSON.parse(e.target.result);
-          // UPDATE: Auto-sort after processing file
           items.sort((a, b) => Number(a.id) - Number(b.id));
           renderTable();
           showControls();
@@ -350,32 +326,15 @@
 
     // --- GitHub Save Logic ---
     document.getElementById("saveGitHubBtn").onclick = () => {
-        if (savedToken) {
-            performGitHubUpdate(savedToken);
+        // UPDATE: Directly get the token from localStorage
+        const token = localStorage.getItem(TOKEN_KEY);
+        if (token) {
+            performGitHubUpdate(token);
         } else {
-            document.getElementById('github-modal').style.display = 'flex';
+            // If no token, inform the user. No modal.
+            showToast('GitHub token not found. Please add it via your profile page.', 'error');
         }
     };
-
-    document.getElementById('cancel-token-save').addEventListener('click', () => {
-        document.getElementById('github-modal').style.display = 'none';
-    });
-
-    document.getElementById('confirm-token-save').addEventListener('click', () => {
-        const tokenInput = document.getElementById('githubTokenInput');
-        const token = tokenInput.value;
-        if (!token) {
-            showToast('Please enter a token.', 'error');
-            return;
-        }
-        if (document.getElementById('rememberTokenCheckbox').checked) {
-            localStorage.setItem(TOKEN_KEY, token);
-            savedToken = token;
-        }
-        document.getElementById('github-modal').style.display = 'none';
-        tokenInput.value = '';
-        performGitHubUpdate(token);
-    });
 
     async function performGitHubUpdate(token) {
         showToast("Saving to GitHub...", "info");
@@ -384,14 +343,12 @@
             const metaRes = await fetch(metaUrl, { headers: { Authorization: `token ${token}` }, cache: 'no-cache' });
             if (metaRes.status === 401 || metaRes.status === 403) {
                 localStorage.removeItem(TOKEN_KEY);
-                savedToken = null;
-                throw new Error("Invalid or unauthorized token. Please enter again.");
+                throw new Error("Invalid or unauthorized token. Please add it again via your profile.");
             }
             if (!metaRes.ok) throw new Error(`Metadata fetch failed: ${metaRes.statusText}`);
             
             const fileData = await metaRes.json();
             
-            // FIX: Ensure items are sorted by ID before creating the file content
             items.sort((a, b) => Number(a.id) - Number(b.id));
             const updatedContent = JSON.stringify(items, null, 4);
 
@@ -491,7 +448,6 @@
         if (typeof v1 === 'boolean') {
             return (v1 === v2) ? 0 : v1 ? (currentSort.asc ? -1 : 1) : (currentSort.asc ? 1 : -1);
         }
-        // Use Number() to handle numeric comparison correctly for string numbers
         if (!isNaN(Number(v1)) && !isNaN(Number(v2)) && v1 !== '' && v2 !== '') {
             return currentSort.asc ? Number(v1) - Number(v2) : Number(v2) - Number(v1);
         }
