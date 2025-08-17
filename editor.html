@@ -317,7 +317,8 @@
 
     document.getElementById("removeFileBtn").onclick=()=>{
       localStorage.removeItem(DATA_KEY);
-      localStorage.removeItem(TOKEN_KEY);
+      // FIX: Remove the cookie instead of a localStorage item
+      document.cookie = TOKEN_KEY + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
       location.reload();
     };
 
@@ -339,7 +340,8 @@
     }
 
     document.getElementById("saveGitHubBtn").onclick = () => {
-        const token = localStorage.getItem(TOKEN_KEY);
+        // FIX: Get the token from the cookie, not localStorage
+        const token = getCookie(TOKEN_KEY);
         if (token) {
             performGitHubUpdate(token);
         } else {
@@ -353,7 +355,8 @@
             const metaUrl = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
             const metaRes = await fetch(metaUrl, { headers: { Authorization: `token ${token}` }, cache: 'no-cache' });
             if (metaRes.status === 401 || metaRes.status === 403) {
-                localStorage.removeItem(TOKEN_KEY);
+                // If token is bad, remove the cookie
+                document.cookie = TOKEN_KEY + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
                 throw new Error("Invalid or unauthorized token. Please add it again via your profile.");
             }
             if (!metaRes.ok) throw new Error(`Metadata fetch failed: ${metaRes.statusText}`);
