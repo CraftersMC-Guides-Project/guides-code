@@ -75,16 +75,56 @@
     }
 
     .result {
-      background: rgba(0,0,0,0.6);
-      padding: 15px;
-      border-radius: 10px;
+      background: rgba(30,30,30,0.85);
+      padding: 12px;
+      border-radius: 8px;
       width: 100%;
       max-width: 350px;
       cursor: pointer;
       transition: transform 0.2s;
+      color: white;
     }
     .result:hover { transform: scale(1.02); }
-    .market-coin { width: 18px; height: 18px; vertical-align: middle; margin-left: 4px; }
+
+    .market-info-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    .market-info-head img {
+      width: 40px;
+      height: 40px;
+      image-rendering: pixelated;
+    }
+
+    .market-result-div-info {
+      font-size: 14px;
+      margin: 2px 0;
+    }
+
+    .market-coin { width: 16px; height: 16px; vertical-align: middle; margin-left: 4px; }
+
+    .market-description {
+      font-size: 13px;
+      margin-top: 6px;
+      color: #ccc;
+    }
+
+    .rarity-tag {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .rarity-legendary { background-color: #ff9800; color: black; }
+    .rarity-epic { background-color: #9c27b0; color: white; }
+    .rarity-rare { background-color: #2196f3; color: white; }
+    .rarity-uncommon { background-color: #4caf50; color: white; }
+    .rarity-common { background-color: #9e9e9e; color: white; }
 
     @media (max-width: 768px) {
         #top-right-ui-container {
@@ -273,6 +313,17 @@
       }
     }
 
+    function getRarityTag(rarity) {
+      if (!rarity) return '';
+      const r = rarity.toLowerCase();
+      if (r === 'legendary') return '<span class="rarity-tag rarity-legendary">LEGENDARY</span>';
+      if (r === 'epic') return '<span class="rarity-tag rarity-epic">EPIC</span>';
+      if (r === 'rare') return '<span class="rarity-tag rarity-rare">RARE</span>';
+      if (r === 'uncommon') return '<span class="rarity-tag rarity-uncommon">UNCOMMON</span>';
+      if (r === 'common') return '<span class="rarity-tag rarity-common">COMMON</span>';
+      return '';
+    }
+
     function searchItems() {
       const query = document.getElementById('searchBox').value.toLowerCase();
       const resultsDiv = document.getElementById('results');
@@ -310,9 +361,10 @@
           ${privateHighlight}
           <div class="market-info">
             <div class="market-info-head">
-              <b>${item.name}</b>
+              <span>${item.name}</span>
               <img src="${item.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : item.picture}" alt="${item.name}">
             </div>
+            ${getRarityTag(item.rarity)}
             <div class="market-result-div-info">ID: ${item.id}</div>
             <div class="market-result-div-info">Market price: ${price} <img class="market-coin" src="img/coin.png" alt="Coin"></div>
             ${item.description ? `<div class="market-description">${item.description}</div>` : ''}
@@ -330,9 +382,10 @@
         div.innerHTML = `
           <div class="market-info">
             <div class="market-info-head">
-              <b>${pet.name}</b>
+              <span>${pet.name}</span>
               <img src="${pet.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : pet.picture}" alt="${pet.name}">
             </div>
+            ${getRarityTag(pet.rarity)}
             <div class="market-result-div-info">ID: ${pet.id}</div>
             <div class="market-result-div-info">Market price: Varies by rarity</div>
             ${pet.description ? `<div class="market-description">${pet.description}</div>` : ''}
@@ -350,31 +403,25 @@
         div.innerHTML = `
           <div class="market-info">
             <div class="market-info-head">
-              <b>${minion.name}</b>
+              <span>${minion.name}</span>
               <img src="${minion.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : minion.picture}" alt="${minion.name}">
             </div>
+            ${getRarityTag(minion.rarity)}
             <div class="market-result-div-info">ID: ${String(minion.id).padStart(2, '0')}</div>
             <div class="market-result-div-info">Market price: Varies by tier</div>
             ${minion.description ? `<div class="market-description">${minion.description}</div>` : ''}
           </div>`;
         div.onclick = () => {
-          window.location.href = `minions.html?minion=${String(minion.id).padStart(2, '0')}`;
+          window.location.href = `minions.html?minion=${minion.id}`;
         };
         resultsDiv.appendChild(div);
       });
     }
 
-    function goToCategory(category) {
-      window.location.href = `categories.html?cat=${category}`;
-    }
-
-    async function initializePage() {
-        await loadProfileCard();
-        await loadItems();
-    }
-
-    initializePage();
+    window.onload = () => {
+      loadProfileCard();
+      loadItems();
+    };
   </script>
-
 </body>
 </html>
