@@ -55,6 +55,37 @@
       margin-left: 5px;
     }
 
+    .private-item-highlight {
+      border: 2px dashed #ff9800;
+      background-color: rgba(255, 152, 0, 0.1);
+      padding: 5px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      text-align: center;
+      font-weight: bold;
+      color: #ff9800;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      justify-items: center;
+      margin: 20px;
+    }
+
+    .result {
+      background: rgba(0,0,0,0.6);
+      padding: 15px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 350px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .result:hover { transform: scale(1.02); }
+    .market-coin { width: 18px; height: 18px; vertical-align: middle; margin-left: 4px; }
+
     @media (max-width: 768px) {
         #top-right-ui-container {
             top: 65px;
@@ -91,11 +122,11 @@
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 <span class="material-icons" id="scrollToTopBtn">north</span>
-    <!--  -->
+
   <h1 class="market-title">CraftersMC Market Prices</h1>
   <input type="text" id="searchBox" placeholder="Search Items..." oninput="searchItems()" />
   <div class="market-boxy-box">
-    <div id="results"></div>
+    <div id="results" class="results-grid"></div>
   </div>
   <div class="market-categories">Discover the prices</div>
   <div class="market-divider"></div>
@@ -138,12 +169,6 @@
           <p>Slayer</p>
         </div>
       </div>
-      <!-- <div class="market-category-item" onclick="window.location.href='minion-cat.html'">
-        <img src="img/slime-minion/Slime_Minion.png" alt="minion">
-        <div class="market-category-name">
-          <p>Minion</p>
-        </div>
-      </div> -->
       <div class="market-category-item" onclick="window.location.href='pets-cat.html'">
         <img src="img/pets/Phoenix_Pet.webp" alt="Pets">
         <div class="market-category-name">
@@ -278,7 +303,11 @@
         const price = prices[item.id] || 'N/A';
         const div = document.createElement('div');
         div.className = 'result';
+        const isPublic = item.hasOwnProperty("public") ? item.public : true;
+        let privateHighlight = (!isPublic && isDevUser) ? `<div class='private-item-highlight'>PRIVATE ITEM</div>` : '';
+
         div.innerHTML = `
+          ${privateHighlight}
           <div class="market-info">
             <div class="market-info-head">
               <b>${item.name}</b>
