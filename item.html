@@ -159,7 +159,7 @@
     document.getElementById('save-price-update').addEventListener('click', async () => {
         const token = getCookie('githubToken');
         if (!token) {
-            showToast('GitHub token not found. Please add it in your profile.', 'error');
+            showToast('Token not found. Please add it via your profile.', 'error');
             return;
         }
         const storedUser = getCookie("discordUser");
@@ -169,17 +169,16 @@
         }
         const user = JSON.parse(storedUser);
         const userName = user.global_name || user.username;
-        showToast('Saving changes to GitHub...', 'info');
+        // UPDATE: Changed toast message
+        showToast('Saving changes...', 'info');
         await saveAllChanges(token, userName);
     });
 
-    // --- FIX: New single-commit save logic ---
     async function saveAllChanges(token, userName) {
         const urlParams = new URLSearchParams(window.location.search);
         const itemId = urlParams.get('item');
 
         try {
-            // 1. Get the current branch's latest commit and tree
             const refRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH}`, { headers: { Authorization: `token ${token}` } });
             if (!refRes.ok) throw new Error("Could not get branch reference.");
             const refData = await refRes.json();
@@ -190,7 +189,6 @@
             const commitData = await commitRes.json();
             const baseTreeSha = commitData.tree.sha;
 
-            // 2. Get current file contents
             const [marketFileRes, pricesFileRes] = await Promise.all([
                 fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${MARKET_FILE_PATH}?ref=${GITHUB_BRANCH}`, { headers: { Authorization: `token ${token}` } }),
                 fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${PRICES_FILE_PATH}?ref=${GITHUB_BRANCH}`, { headers: { Authorization: `token ${token}` } })
@@ -201,14 +199,12 @@
             const marketItems = JSON.parse(atob(marketFileData.content));
             const pricesLines = atob(pricesFileData.content).split('\n');
 
-            // 3. Prepare updated market.txt content
             const newStatus = document.getElementById('publicStatusToggle').checked;
             const itemIndex = marketItems.findIndex(i => i.id === itemId);
             if (itemIndex === -1) throw new Error('Item not found in market.txt');
             marketItems[itemIndex].public = newStatus;
             const updatedMarketContent = JSON.stringify(marketItems, null, 4);
 
-            // 4. Prepare updated mprices.txt content
             const newMarketPrice = document.getElementById('marketPriceInput').value;
             const newNpcPrice = document.getElementById('npcPriceInput').value;
             if (newMarketPrice === '') { showToast('Market Price is required.', 'error'); return; }
@@ -223,7 +219,6 @@
             }
             const updatedPricesContent = pricesLines.join('\n');
 
-            // 5. Create blobs for the new file contents
             const newTree = [];
             const marketBlobRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/blobs`, {
                 method: 'POST', headers: { 'Authorization': `token ${token}` },
@@ -239,7 +234,6 @@
             const pricesBlobData = await pricesBlobRes.json();
             newTree.push({ path: PRICES_FILE_PATH, mode: '100644', type: 'blob', sha: pricesBlobData.sha });
 
-            // 6. Create a new tree with the new blobs
             const treeRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/trees`, {
                 method: 'POST', headers: { 'Authorization': `token ${token}` },
                 body: JSON.stringify({ base_tree: baseTreeSha, tree: newTree })
@@ -247,7 +241,6 @@
             const treeData = await treeRes.json();
             const newTreeSha = treeData.sha;
 
-            // 7. Create the new commit
             const commitMessage = `Update item ${itemId} by ${userName}`;
             const newCommitRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/commits`, {
                 method: 'POST', headers: { 'Authorization': `token ${token}` },
@@ -256,19 +249,20 @@
             const newCommitData = await newCommitRes.json();
             const newCommitSha = newCommitData.sha;
 
-            // 8. Update the branch reference to point to the new commit
             await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH}`, {
                 method: 'PATCH', headers: { 'Authorization': `token ${token}` },
                 body: JSON.stringify({ sha: newCommitSha })
             });
 
-            showToast('All changes saved successfully!', 'success');
+            // UPDATE: Changed toast message
+            showToast('Changes saved!', 'success');
             document.getElementById('price-modal').style.display = 'none';
             setTimeout(() => location.reload(), 1500);
 
         } catch (error) {
             console.error('Error updating details:', error);
-            showToast(`Error: ${error.message}`, 'error');
+            // UPDATE: Changed toast message
+            showToast(`Error saving changes: ${error.message}`, 'error');
         }
     }
 
