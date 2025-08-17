@@ -6,23 +6,24 @@
   <title>Market TXT Editor Pro Max</title>
   <style>
     :root {
-      --bg-color: #1a1c20;
-      --bg-secondary-color: #25282e;
+      /* UPDATE: New black and dark blue theme */
+      --bg-color: #0a0c10;
+      --bg-secondary-color: #111827;
       --text-color: #e0e0e0;
       --text-secondary-color: #b0b0b0;
-      --border-color: #3a3f4b;
-      --header-bg-color: #2d8831;
+      --border-color: #1f2937;
+      --header-bg-color: #1d4ed8;
       --header-text-color: #ffffff;
-      --button-bg-color: #2d8831;
-      --button-hover-bg-color: #36a43b;
+      --button-bg-color: #1d4ed8;
+      --button-hover-bg-color: #2563eb;
       --button-text-color: #ffffff;
       --danger-bg-color: #c62828;
       --danger-hover-bg-color: #e53935;
-      --input-bg-color: #1a1c20;
-      --input-border-color: #3a3f4b;
-      --shadow-color: rgba(0, 0, 0, 0.3);
-      --table-row-even-bg: #2a2d33;
-      --table-row-hover-bg: #3a3f4b;
+      --input-bg-color: #0a0c10;
+      --input-border-color: #1f2937;
+      --shadow-color: rgba(0, 0, 0, 0.5);
+      --table-row-even-bg: #141c2f;
+      --table-row-hover-bg: #1f2937;
     }
 
     html, body {
@@ -90,10 +91,17 @@
       background: var(--input-bg-color);
     }
     
+    #table-header-container {
+      padding: 0 20px;
+      background: var(--bg-color);
+      overflow-x: hidden; /* Hide horizontal scrollbar, will be synced with JS */
+      flex-shrink: 0;
+    }
+    
     #content-area {
       flex-grow: 1;
       overflow-y: auto; /* This is now the main scrolling area */
-      padding: 20px;
+      padding: 0 20px 20px 20px; /* Adjust padding */
     }
 
     #upload-area {
@@ -101,7 +109,7 @@
       border-radius: 12px;
       padding: 40px;
       text-align: center;
-      margin: 0 auto 20px auto;
+      margin: 20px auto;
       width: 80%;
       max-width: 800px;
       background: var(--bg-secondary-color);
@@ -120,25 +128,30 @@
       border-spacing: 0;
       width: 100%;
       background: var(--bg-secondary-color);
-      box-shadow: 0 2px 6px var(--shadow-color);
-      table-layout: fixed; /* FIX: Prevents layout breaking from content */
+      table-layout: fixed; /* Crucial for syncing column widths */
     }
     th, td { 
         border: 1px solid var(--border-color); 
         padding: 12px; 
         text-align: left;
-        word-wrap: break-word; /* FIX: Prevents long text from overflowing */
+        word-wrap: break-word; /* Prevents long text from overflowing */
     }
-    th {
+    #table-header-container th {
       background: var(--header-bg-color);
       color: var(--header-text-color);
-      position: sticky;
-      top: 0; /* Stick to the top of the new scrolling container */
-      z-index: 5;
       cursor: pointer;
       user-select: none;
       box-shadow: 0 2px 3px var(--shadow-color);
     }
+    #table-header-container table {
+        box-shadow: none;
+        background: transparent;
+    }
+    #editor table {
+        margin-top: 0;
+        border-top: none; /* Avoid double border */
+    }
+
     tr:nth-child(even) { background: var(--table-row-even-bg); }
     tr:hover { background: var(--table-row-hover-bg); }
     input, select, textarea {
@@ -175,6 +188,8 @@
     <input type="text" id="searchInput" placeholder="Search by name or ID..." style="display:none;">
   </div>
   
+  <div id="table-header-container"></div>
+
   <div id="content-area">
     <div id="upload-area">
       <p>Drag & Drop your <strong>market.txt</strong> here or click to upload</p>
@@ -188,7 +203,6 @@
     let items = [];
     let currentSort = { key: null, asc: true };
 
-    // UPDATE: Added predefined lists for dropdowns
     const rarities = ["common", "uncommon", "rare", "epic", "legendary", "special"];
     const categories = ["combat", "farming", "foraging", "mining", "slayer", "special", "test"];
 
@@ -206,7 +220,6 @@
       return '';
     }
 
-    // --- Page Load & Dev Check ---
     window.addEventListener("DOMContentLoaded", async () => {
         const storedUser = getCookie("discordUser");
         if (!storedUser) {
@@ -246,7 +259,6 @@
         }
     });
     
-    // --- UI Controls ---
     function showControls(){
       ["downloadBtn","addItemBtn","removeFileBtn","searchInput","saveGitHubBtn","rememberChangesBtn"].forEach(id=>document.getElementById(id).style.display="inline-block");
     }
@@ -255,7 +267,6 @@
       document.getElementById("fetchFileBtn").style.display="none";
     }
 
-    // --- Event Listeners ---
     document.getElementById("fileInput").addEventListener("change", e => processFile(e.target.files[0]));
     const uploadArea = document.getElementById("upload-area");
     uploadArea.addEventListener("click", () => document.getElementById("fileInput").click());
@@ -312,7 +323,6 @@
 
     document.getElementById("searchInput").oninput=()=>renderTable();
 
-    // --- File Processing ---
     function processFile(file) {
       if (!file) return;
       const reader = new FileReader();
@@ -328,7 +338,6 @@
       reader.readAsText(file);
     }
 
-    // --- GitHub Save Logic ---
     document.getElementById("saveGitHubBtn").onclick = () => {
         const token = localStorage.getItem(TOKEN_KEY);
         if (token) {
@@ -376,12 +385,19 @@
         }
     }
 
-    // --- Table Rendering ---
     function renderTable() {
-      const container = document.getElementById("editor");
-      container.innerHTML = "";
+      const headerContainer = document.getElementById("table-header-container");
+      const bodyContainer = document.getElementById("editor");
+      headerContainer.innerHTML = "";
+      bodyContainer.innerHTML = "";
+
       if (!items.length) return;
-      const table = document.createElement("table");
+
+      const headerTable = document.createElement("table");
+      const bodyTable = document.createElement("table");
+      const thead = document.createElement("thead");
+      const tbody = document.createElement("tbody");
+
       const headers = Object.keys(items[0]);
       const headerRow = document.createElement("tr");
       headers.forEach(h => {
@@ -393,8 +409,9 @@
       const thDel = document.createElement("th");
       thDel.textContent = "Actions";
       headerRow.appendChild(thDel);
-      table.appendChild(headerRow);
-
+      thead.appendChild(headerRow);
+      headerTable.appendChild(thead);
+      
       let searchVal = document.getElementById("searchInput").value.toLowerCase();
       items.forEach((item, index) => {
         if (searchVal && !item.name.toLowerCase().includes(searchVal) && !String(item.id).includes(searchVal)) return;
@@ -403,7 +420,6 @@
           const td = document.createElement("td");
           let input;
 
-          // UPDATE: Create dropdowns for 'rarity' and 'category'
           if (key === "rarity") {
               input = document.createElement("select");
               rarities.forEach(val => {
@@ -456,10 +472,37 @@
         btn.onclick=()=>{ items.splice(index,1); renderTable(); };
         tdDel.appendChild(btn);
         tr.appendChild(tdDel);
-        table.appendChild(tr);
+        tbody.appendChild(tr);
       });
-      container.appendChild(table);
+      
+      bodyTable.appendChild(tbody);
+      headerContainer.appendChild(headerTable);
+      bodyContainer.appendChild(bodyTable);
+
+      setTimeout(syncHeaderWidths, 0);
     }
+
+    function syncHeaderWidths() {
+        const headerCells = document.querySelectorAll("#table-header-container th");
+        const firstBodyRow = document.querySelector("#editor tr:first-child");
+        if (!headerCells.length || !firstBodyRow) return;
+
+        const bodyCells = firstBodyRow.querySelectorAll("td");
+        if (headerCells.length !== bodyCells.length) return;
+
+        for (let i = 0; i < bodyCells.length; i++) {
+            const bodyCellWidth = bodyCells[i].getBoundingClientRect().width;
+            headerCells[i].style.width = `${bodyCellWidth}px`;
+        }
+    }
+    
+    window.addEventListener('resize', syncHeaderWidths);
+    document.getElementById('editor').addEventListener('scroll', () => {
+        const headerContainer = document.getElementById('table-header-container');
+        const bodyContainer = document.getElementById('editor');
+        headerContainer.scrollLeft = bodyContainer.scrollLeft;
+    });
+
 
     function sortTable(k){ 
       if(currentSort.key===k) currentSort.asc=!currentSort.asc; 
