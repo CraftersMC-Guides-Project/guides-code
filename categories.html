@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <link rel="icon" href="assets/cmc-icon.png" type="image/png">
     <meta charset="UTF-8">
@@ -9,25 +8,23 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="themes/minecraft/style.css">
     <style>
-        /* Special style for Sky Canvas image only */
-        img[alt="Sky Canvas"] {
-            filter: brightness(90%) saturate(95%);
+        img[alt="Sky Canvas"] { filter: brightness(90%) saturate(95%); }
+        .private-item-highlight {
+            border: 2px dashed #ff9800;
+            background-color: rgba(255, 152, 0, 0.1);
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 10px;
         }
     </style>
     <script src="js/script.js"></script>
 </head>
-
 <body>
-    <div id="loader">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
+    <div id="loader"><div></div><div></div><div></div></div>
     <div class="top"></div>
     <div class="sidebar" id="sidebar"></div>
     <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-  <span class="material-icons" id="scrollToTopBtn">north</span>
-    <!--  -->
+    <span class="material-icons" id="scrollToTopBtn">north</span>
 
     <div id="categoryFilter" style="display: flex; gap: 10px; justify-content: center; margin: 5rem 0;">
       <button class="btn cat-filter-btn active" data-nature="all" style="padding: 8px;">All</button>
@@ -35,46 +32,50 @@
       <button class="btn cat-filter-btn" data-nature="overpaid" style="padding: 8px;">Overpaid</button>
       <button class="btn cat-filter-btn" data-nature="underpaid" style="padding: 8px;">Underpaid</button>
     </div>
-    <div id="categoryItems">
-        <p>Loading items...</p>
-    </div>
-
+    <div id="categoryItems"><p>Loading items...</p></div>
     <div id="footer"></div>
+
     <script>
+        let isDevUser = false;
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+            return '';
+        }
+
+        async function checkDevStatus() {
+            const storedUser = getCookie("discordUser");
+            if (!storedUser) return;
+            let devIds = [];
+            try {
+                const response = await fetch('/devs.txt');
+                if (response.ok) {
+                    const text = await response.text();
+                    devIds = text.split('\n').map(id => id.trim()).filter(id => id);
+                }
+            } catch (err) { console.error('Could not load devs.txt:', err); }
+            try {
+                const user = JSON.parse(storedUser);
+                isDevUser = devIds.includes(user.id);
+            } catch (e) {}
+        }
+
         async function loadCategoryItems() {
+            await checkDevStatus();
             const urlParams = new URLSearchParams(window.location.search);
             const category = urlParams.get('cat');
-
             if (!category) {
                 document.getElementById('categoryItems').innerHTML = '<p>No category specified.</p>';
                 return;
             }
-
             try {
                 const [marketRes, pricesRes] = await Promise.all([
-                    fetch('market/market.txt'),
-                    fetch('market/mprices.txt')
+                    fetch('market/market.txt'), fetch('market/mprices.txt')
                 ]);
-
                 const marketData = await marketRes.json();
-                const pricesData = await pricesRes.text();
-
-                const pricesMap = new Map();
-                pricesData.split('\n').forEach(line => {
-                    const [id, arrayStr] = line.split(':').map(part => part.trim());
-                    if (id && arrayStr) {
-                        try {
-                            const parsedArray = JSON.parse(arrayStr);
-                            if (Array.isArray(parsedArray) && parsedArray.length === 2) {
-                                pricesMap.set(id, parsedArray[1]);
-                            }
-                        } catch (e) {
-                            console.warn(`Invalid price format for ID ${id}`, e);
-                        }
-                    }
-                });
-
-                // Store all items for filtering
+                // Filter items by category
                 window._allCategoryItems = marketData.filter(item =>
                     item.category && item.category.toLowerCase() === category.toLowerCase()
                 );
@@ -97,23 +98,29 @@
                     return false;
                 });
             }
-            // Get current category from URL
             const urlParams = new URLSearchParams(window.location.search);
             const currentCategory = urlParams.get('cat');
-            // Use the current nature filter for links
             const currentNature = natureFilter || 'all';
-            if (filtered.length > 0) {
-                const itemsHTML = filtered.map(item => {
-                    const price = 'Unknown'; // price not shown
+
+            const visibleItems = filtered.filter(item => {
+                const isPublic = item.hasOwnProperty('public') ? item.public : true;
+                if (!isPublic && !isDevUser) return false; // hide for normal users
+                return true;
+            });
+
+            if (visibleItems.length > 0) {
+                const itemsHTML = visibleItems.map(item => {
+                    const isPublic = item.hasOwnProperty('public') ? item.public : true;
                     const isSkyCanvas = item.name === "Sky Canvas";
-                    // Add cat and nature to the item link
+                    let privateHighlight = (!isPublic && isDevUser) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
                     return `
                         <div class="category-item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
+                            ${privateHighlight}
                             <h2>${item.name}</h2>
                             ${item.picture ? `<div class="category-main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="category-sky-canvas-img"' : ''}>` : ''}
                             <div class="category-main-data-val"><p><strong>ID:</strong> ${item.id}</p>
                             ${item.description ? `<p class="category-description">${item.description}</p>` : ''}
-                            ${item.rarity ? `<p class="category-rarity-display" id="rarityDisplay"><img class="category-rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
+                            ${item.rarity ? `<p class="category-rarity-display"><img class="category-rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
                             ${item.nature ? `<p class="category-nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
                             ${item.demand ? `<p class="category-demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
                             </div></div>
@@ -124,10 +131,6 @@
             } else {
                 document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
             }
-        }
-
-        function formatPrice(price) {
-            return `${Number(price).toLocaleString()} <img class="category-coin" src="img/coin.png" alt="Coin">`;
         }
 
         function formatNature(nature) {
@@ -144,7 +147,6 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             loadCategoryItems();
-            // Filter button logic
             document.getElementById('categoryFilter').addEventListener('click', function(e) {
                 if (e.target.classList.contains('cat-filter-btn')) {
                     document.querySelectorAll('.cat-filter-btn').forEach(btn => btn.classList.remove('active'));
@@ -154,6 +156,5 @@
             });
         });
     </script>
-  
 </body>
 </html>
