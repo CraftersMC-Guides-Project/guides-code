@@ -6,7 +6,6 @@
   <title>Market TXT Editor Pro Max</title>
   <style>
     :root {
-      /* UPDATE: New black and dark blue theme */
       --bg-color: #0a0c10;
       --bg-secondary-color: #111827;
       --text-color: #e0e0e0;
@@ -28,7 +27,7 @@
 
     html, body {
       height: 100%;
-      overflow: hidden; /* Prevent double scrollbars */
+      overflow: hidden; /* desktop default */
     }
 
     body {
@@ -94,14 +93,14 @@
     #table-header-container {
       padding: 0 20px;
       background: var(--bg-color);
-      overflow-x: hidden; /* Hide horizontal scrollbar, will be synced with JS */
+      overflow-x: hidden;
       flex-shrink: 0;
     }
     
     #content-area {
       flex-grow: 1;
-      overflow-y: auto; /* This is now the main scrolling area */
-      padding: 0 20px 20px 20px; /* Adjust padding */
+      overflow-y: auto;
+      padding: 0 20px 20px 20px;
     }
 
     #upload-area {
@@ -128,13 +127,13 @@
       border-spacing: 0;
       width: 100%;
       background: var(--bg-secondary-color);
-      table-layout: fixed; /* Crucial for syncing column widths */
+      table-layout: fixed;
     }
     th, td { 
         border: 1px solid var(--border-color); 
         padding: 12px; 
         text-align: left;
-        word-wrap: break-word; /* Prevents long text from overflowing */
+        word-wrap: break-word;
     }
     #table-header-container th {
       background: var(--header-bg-color);
@@ -149,7 +148,7 @@
     }
     #editor table {
         margin-top: 0;
-        border-top: none; /* Avoid double border */
+        border-top: none;
     }
 
     tr:nth-child(even) { background: var(--table-row-even-bg); }
@@ -172,6 +171,62 @@
     .toast-notification.success { background-color: #2d8831; }
     .toast-notification.error { background-color: #c62828; }
     .toast-notification.info { background-color: #1976d2; }
+
+    /* --- Mobile Friendly Fixes --- */
+    @media (max-width: 768px) {
+      html, body {
+        overflow: auto; /* allow natural scroll */
+      }
+
+      h1 {
+        font-size: 1.2rem;
+        padding: 12px;
+      }
+
+      #toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 10px;
+      }
+
+      #toolbar button, 
+      #toolbar input {
+        width: 100%;
+        font-size: 16px;
+        padding: 12px;
+      }
+
+      #upload-area {
+        width: 95%;
+        padding: 20px;
+        margin: 10px auto;
+      }
+
+      #editor {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      table {
+        font-size: 13px;
+        min-width: 600px; /* prevent squishing columns */
+      }
+
+      th, td {
+        padding: 8px;
+      }
+
+      textarea, input, select {
+        font-size: 14px;
+        padding: 6px;
+      }
+
+      .deleteBtn {
+        padding: 8px 10px;
+        font-size: 14px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -199,6 +254,7 @@
     <div id="editor"></div>
   </div>
 
+  <!-- Full JS logic (unchanged, just included here for completeness) -->
   <script>
     let items = [];
     let currentSort = { key: null, asc: true };
@@ -213,7 +269,6 @@
     const path = "market/market.txt";
     const branch = "main";
 
-    // --- Cookie helpers + token resolver (with migration from storage) ---
     function getCookie(name) {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
@@ -225,15 +280,12 @@
       document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; Expires=${expires}; Path=${path}; SameSite=Lax`;
     }
     function getGithubToken() {
-      // 1) Prefer cookie (what item.html uses)
       let t = getCookie(TOKEN_KEY);
       if (t) return t;
-
-      // 2) Fallback to local/session storage (legacy) and migrate to cookie
       try {
         t = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || "";
         if (t) {
-          setCookie(TOKEN_KEY, t, 365, "/"); // make it available site-wide
+          setCookie(TOKEN_KEY, t, 365, "/");
           try {
             localStorage.removeItem(TOKEN_KEY);
             sessionStorage.removeItem(TOKEN_KEY);
@@ -241,7 +293,6 @@
           return t;
         }
       } catch {}
-
       return "";
     }
 
@@ -301,7 +352,6 @@
 
     document.getElementById("fetchFileBtn").addEventListener("click", async () => {
       try {
-        // keep original path usage here as requested
         const res = await fetch("./market/market.txt");
         if (!res.ok) throw new Error("market.txt not found");
         const text = await res.text();
@@ -342,7 +392,6 @@
     };
 
     document.getElementById("removeFileBtn").onclick=()=>{
-      // Only reset local market data; DO NOT touch the GitHub token cookie
       localStorage.removeItem(DATA_KEY);
       location.reload();
     };
@@ -379,7 +428,6 @@
             const metaUrl = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
             const metaRes = await fetch(metaUrl, { headers: { Authorization: `token ${token}` }, cache: 'no-cache' });
             if (metaRes.status === 401 || metaRes.status === 403) {
-                // If token is bad, clear the cookie so the user can re-add it
                 setCookie(TOKEN_KEY, "", -1, "/");
                 throw new Error("Invalid or unauthorized token. Please add it again via your profile.");
             }
@@ -529,7 +577,6 @@
         const bodyContainer = document.getElementById('editor');
         headerContainer.scrollLeft = bodyContainer.scrollLeft;
     });
-
 
     function sortTable(k){ 
       if(currentSort.key===k) currentSort.asc=!currentSort.asc; 
