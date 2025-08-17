@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Market TXT Editor Pro</title>
+  <title>Market TXT Editor Pro Max</title>
   <style>
     :root {
       --bg-color: #1a1c20;
@@ -166,7 +166,7 @@
 </head>
 <body>
 
-  <h1>Market TXT Editor Pro</h1>
+  <h1>Market TXT Editor Pro Max</h1>
 
   <div id="toolbar">
     <button id="fetchFileBtn">Fetch File</button>
@@ -252,6 +252,8 @@
         if (rememberedData) {
             try {
                 items = JSON.parse(rememberedData);
+                // UPDATE: Auto-sort on load from local storage
+                items.sort((a, b) => Number(a.id) - Number(b.id));
                 renderTable();
                 showControls();
                 hideUploadUI();
@@ -282,6 +284,8 @@
         if (!res.ok) throw new Error("market.txt not found");
         const text = await res.text();
         items = JSON.parse(text);
+        // UPDATE: Auto-sort after fetching file
+        items.sort((a, b) => Number(a.id) - Number(b.id));
         renderTable();
         showControls();
         hideUploadUI();
@@ -293,6 +297,8 @@
     });
     
     document.getElementById("downloadBtn").onclick=()=>{
+      // FIX: Ensure items are sorted by ID before downloading
+      items.sort((a, b) => Number(a.id) - Number(b.id));
       const blob=new Blob([JSON.stringify(items,null,4)],{type:"application/json"});
       const url=URL.createObjectURL(blob);
       const a=document.createElement("a");
@@ -310,6 +316,8 @@
     };
 
     document.getElementById("rememberChangesBtn").onclick=()=>{
+      // FIX: Ensure items are sorted by ID before saving to local storage
+      items.sort((a, b) => Number(a.id) - Number(b.id));
       localStorage.setItem(DATA_KEY, JSON.stringify(items));
       showToast("Changes saved locally.", "success");
     };
@@ -330,6 +338,8 @@
       reader.onload = e => {
         try {
           items = JSON.parse(e.target.result);
+          // UPDATE: Auto-sort after processing file
+          items.sort((a, b) => Number(a.id) - Number(b.id));
           renderTable();
           showControls();
           hideUploadUI();
@@ -380,6 +390,9 @@
             if (!metaRes.ok) throw new Error(`Metadata fetch failed: ${metaRes.statusText}`);
             
             const fileData = await metaRes.json();
+            
+            // FIX: Ensure items are sorted by ID before creating the file content
+            items.sort((a, b) => Number(a.id) - Number(b.id));
             const updatedContent = JSON.stringify(items, null, 4);
 
             const updateUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
@@ -478,8 +491,9 @@
         if (typeof v1 === 'boolean') {
             return (v1 === v2) ? 0 : v1 ? (currentSort.asc ? -1 : 1) : (currentSort.asc ? 1 : -1);
         }
-        if (!isNaN(v1) && !isNaN(v2)) {
-            return currentSort.asc ? v1 - v2 : v2 - v1;
+        // Use Number() to handle numeric comparison correctly for string numbers
+        if (!isNaN(Number(v1)) && !isNaN(Number(v2)) && v1 !== '' && v2 !== '') {
+            return currentSort.asc ? Number(v1) - Number(v2) : Number(v2) - Number(v1);
         }
         return v1<v2?(currentSort.asc?-1:1):v1>v2?(currentSort.asc?1:-1):0;
       }); 
