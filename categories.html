@@ -1,160 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="assets/cmc-icon.png" type="image/png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Category Items</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="themes/minecraft/style.css">
-    <style>
-        img[alt="Sky Canvas"] { filter: brightness(90%) saturate(95%); }
-        .private-item-highlight {
-            border: 2px dashed #ff9800;
-            background-color: rgba(255, 152, 0, 0.1);
-            padding: 8px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-    </style>
-    <script src="js/script.js"></script>
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Categories - CraftersMC Guides</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="themes/minecraft/style.css">
+  <script src="js/script.js"></script>
+  <style>
+    .top { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+    #top-right-ui-container { position: fixed; top: 80px; right: 20px; z-index: 1001; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+    .profile-card { display: flex; align-items: center; gap: 10px; background-color: rgba(0, 0, 0, 0.5); padding: 8px 12px; border-radius: 50px; color: white; text-decoration: none; transition: background-color 0.3s; }
+    .profile-card:hover { background-color: rgba(0, 0, 0, 0.8); }
+    .profile-card-avatar { width: 32px; height: 32px; border-radius: 50%; }
+    .profile-card-name { font-weight: 500; font-size: 14px; }
+    .dev-label { color: #ff4d4d; font-weight: bold; margin-left: 5px; }
+    .login-btn { background-color: #5865F2; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+    .private-item-highlight { border: 2px dashed #ff9800; background-color: rgba(255, 152, 0, 0.1); padding: 10px; border-radius: 10px; margin-bottom: 10px; }
+    @media (max-width: 768px) { #top-right-ui-container { top: 65px; right: 10px; gap: 8px; } .profile-card { padding: 4px 8px; } .profile-card-avatar { width: 28px; height: 28px; } .profile-card-name { font-size: 12px; } }
+  </style>
 </head>
 <body>
-    <div id="loader"><div></div><div></div><div></div></div>
-    <div class="top"></div>
-    <div class="sidebar" id="sidebar"></div>
-    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-    <span class="material-icons" id="scrollToTopBtn">north</span>
+  <div id="loader"><div></div><div></div><div></div></div>
+  <div class="market-background"></div>
+  <div id="top-right-ui-container"><div id="profile-card-container"></div></div>
+  <div class="top"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <span class="item-material-icons" id="scrollToTopBtn">north</span>
 
-    <div id="categoryFilter" style="display: flex; gap: 10px; justify-content: center; margin: 5rem 0;">
-      <button class="btn cat-filter-btn active" data-nature="all" style="padding: 8px;">All</button>
-      <button class="btn cat-filter-btn" data-nature="stable" style="padding: 8px;">Stable</button>
-      <button class="btn cat-filter-btn" data-nature="overpaid" style="padding: 8px;">Overpaid</button>
-      <button class="btn cat-filter-btn" data-nature="underpaid" style="padding: 8px;">Underpaid</button>
-    </div>
-    <div id="categoryItems"><p>Loading items...</p></div>
-    <div id="footer"></div>
+  <div class="category-container" id="categoriesList">
+    <p>Loading categories...</p>
+  </div>
 
-    <script>
-        let isDevUser = false;
+  <div id="footer"></div>
 
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
-            return '';
-        }
+  <script>
+    let isDevUser = false;
 
-        async function checkDevStatus() {
-            const storedUser = getCookie("discordUser");
-            if (!storedUser) return;
-            let devIds = [];
-            try {
-                const response = await fetch('/devs.txt');
-                if (response.ok) {
-                    const text = await response.text();
-                    devIds = text.split('\n').map(id => id.trim()).filter(id => id);
-                }
-            } catch (err) { console.error('Could not load devs.txt:', err); }
-            try {
-                const user = JSON.parse(storedUser);
-                isDevUser = devIds.includes(user.id);
-            } catch (e) {}
-        }
+    function getCookie(name) { const value = `; ${document.cookie}`; const parts = value.split(`; ${name}=`); if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift()); return ''; }
 
-        async function loadCategoryItems() {
-            await checkDevStatus();
-            const urlParams = new URLSearchParams(window.location.search);
-            const category = urlParams.get('cat');
-            if (!category) {
-                document.getElementById('categoryItems').innerHTML = '<p>No category specified.</p>';
-                return;
-            }
-            try {
-                const [marketRes, pricesRes] = await Promise.all([
-                    fetch('market/market.txt'), fetch('market/mprices.txt')
-                ]);
-                const marketData = await marketRes.json();
-                // Filter items by category
-                window._allCategoryItems = marketData.filter(item =>
-                    item.category && item.category.toLowerCase() === category.toLowerCase()
-                );
-                renderCategoryItems('all');
-            } catch (error) {
-                console.error('Error loading category items:', error);
-                document.getElementById('categoryItems').innerHTML = '<p>Failed to load items.</p>';
-            }
-        }
+    async function loadProfileCard() {
+        const storedUser = getCookie("discordUser");
+        const profileContainer = document.getElementById("profile-card-container");
+        let devIds = [];
+        try { const response = await fetch('/devs.txt'); if (response.ok) { const text = await response.text(); devIds = text.split('\n').map(id => id.trim()).filter(id => id); } } catch (error) {}
+        if (storedUser) { const user = JSON.parse(storedUser); const displayName = user.global_name || user.username; isDevUser = devIds.includes(user.id);
+            profileContainer.innerHTML = `<a href="/profile" class="profile-card"><img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" class="profile-card-avatar"><span class="profile-card-name">${displayName}${isDevUser ? '<span class="dev-label">[DEV]</span>' : ''}</span></a>`; } else { profileContainer.innerHTML = ''; }
+    }
 
-        function renderCategoryItems(natureFilter) {
-            const items = window._allCategoryItems || [];
-            let filtered = items;
-            if (natureFilter && natureFilter !== 'all') {
-                filtered = items.filter(item => {
-                    if (!item.nature) return false;
-                    if (natureFilter === 'stable') return item.nature.toUpperCase().includes('STABLE');
-                    if (natureFilter === 'overpaid') return item.nature.toUpperCase().includes('OVERPAID');
-                    if (natureFilter === 'underpaid') return item.nature.toUpperCase().includes('UNDERPAID');
-                    return false;
-                });
-            }
-            const urlParams = new URLSearchParams(window.location.search);
-            const currentCategory = urlParams.get('cat');
-            const currentNature = natureFilter || 'all';
+    async function loadCategories() {
+      try {
+        const res = await fetch("market/market.txt");
+        const items = await res.json();
+        const categoriesContainer = document.getElementById("categoriesList");
+        categoriesContainer.innerHTML = "";
 
-            const visibleItems = filtered.filter(item => {
-                const isPublic = item.hasOwnProperty('public') ? item.public : true;
-                if (!isPublic && !isDevUser) return false; // hide for normal users
-                return true;
-            });
+        items.forEach(item => {
+          const isPublic = item.hasOwnProperty("public") ? item.public : true;
+          if (!isPublic && !isDevUser) return;
 
-            if (visibleItems.length > 0) {
-                const itemsHTML = visibleItems.map(item => {
-                    const isPublic = item.hasOwnProperty('public') ? item.public : true;
-                    const isSkyCanvas = item.name === "Sky Canvas";
-                    let privateHighlight = (!isPublic && isDevUser) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
-                    return `
-                        <div class="category-item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
-                            ${privateHighlight}
-                            <h2>${item.name}</h2>
-                            ${item.picture ? `<div class="category-main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="category-sky-canvas-img"' : ''}>` : ''}
-                            <div class="category-main-data-val"><p><strong>ID:</strong> ${item.id}</p>
-                            ${item.description ? `<p class="category-description">${item.description}</p>` : ''}
-                            ${item.rarity ? `<p class="category-rarity-display"><img class="category-rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
-                            ${item.nature ? `<p class="category-nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
-                            ${item.demand ? `<p class="category-demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
-                            </div></div>
-                        </div>
-                    `;
-                }).join('');
-                document.getElementById('categoryItems').innerHTML = `<div class="category-item-list">${itemsHTML}</div>`;
-            } else {
-                document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
-            }
-        }
+          let highlight = (!isPublic && isDevUser) ? "private-item-highlight" : "";
 
-        function formatNature(nature) {
-            let natureText = nature.replace('[', ' ').toLowerCase();
-            natureText = natureText.replace(']', '').replace(/_/g, ' ').trim();
-            return natureText;
-        }
-
-        function formatDemand(demand) {
-            let demandText = demand.replace('[', ' ').toLowerCase();
-            demandText = demandText.replace(']', '').replace(/_/g, ' ').trim();
-            return demandText;
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            loadCategoryItems();
-            document.getElementById('categoryFilter').addEventListener('click', function(e) {
-                if (e.target.classList.contains('cat-filter-btn')) {
-                    document.querySelectorAll('.cat-filter-btn').forEach(btn => btn.classList.remove('active'));
-                    e.target.classList.add('active');
-                    renderCategoryItems(e.target.getAttribute('data-nature'));
-                }
-            });
+          const div = document.createElement("div");
+          div.className = `category-item ${highlight}`;
+          div.innerHTML = `
+            <h3><a href="item.html?item=${item.id}">${item.name}</a></h3>
+            ${!isPublic && isDevUser ? '<p style="color:#ff9800;font-weight:bold;">PRIVATE ITEM</p>' : ''}
+          `;
+          categoriesContainer.appendChild(div);
         });
-    </script>
+      } catch (e) {
+        console.error("Could not load categories", e);
+      }
+    }
+
+    async function initializePage() { await loadProfileCard(); await loadCategories(); }
+    initializePage();
+  </script>
 </body>
 </html>
