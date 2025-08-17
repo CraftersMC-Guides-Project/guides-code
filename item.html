@@ -60,7 +60,6 @@
   </div>
   <div id="footer"></div>
 
-  <!-- REVERT: Back to the original price and status modal -->
   <div id="price-modal" class="modal-overlay">
     <div class="modal-content">
         <h3>Update Item Details</h3>
@@ -125,25 +124,20 @@
       }
     }
 
-    // --- REVERT: Back to original, simpler modal logic ---
     async function openUpdateModal() {
         const urlParams = new URLSearchParams(window.location.search);
         const itemId = urlParams.get('item');
-        
         try {
             const [pricesRes, marketRes] = await Promise.all([
                 fetch('market/mprices.txt', { cache: 'no-cache' }),
                 fetch('market/market.txt', { cache: 'no-cache' })
             ]);
-
             const pricesData = await pricesRes.text();
             const marketData = await marketRes.json();
-
             const item = marketData.find(i => i.id === itemId);
             if(item) {
                 document.getElementById('publicStatusToggle').checked = item.public;
             }
-
             const lines = pricesData.split('\n');
             const line = lines.find(l => l.startsWith(itemId + ':'));
             if (line) {
@@ -155,122 +149,103 @@
         } catch (e) {
             showToast('Could not load current item data.', 'error');
         }
-
         document.getElementById('price-modal').style.display = 'flex';
     }
 
     document.getElementById('cancel-price-update').addEventListener('click', () => {
         document.getElementById('price-modal').style.display = 'none';
     });
-
-    // --- REVERT: Back to sequential save logic ---
+    
+    // --- UPDATE: Combined save logic into a single function ---
     document.getElementById('save-price-update').addEventListener('click', async () => {
         const token = getCookie('githubToken');
         if (!token) {
             showToast('GitHub token not found. Please add it in your profile.', 'error');
             return;
         }
-        showToast('Saving changes to GitHub...', 'info');
-        
-        const pricesUpdated = await updatePrices(token);
-        if (pricesUpdated) {
-            const statusUpdated = await updatePublicStatus(token);
-            if (statusUpdated) {
-                showToast('All changes saved successfully!', 'success');
-                document.getElementById('price-modal').style.display = 'none';
-                setTimeout(() => location.reload(), 1500);
-            }
+
+        const storedUser = getCookie("discordUser");
+        if (!storedUser) {
+            showToast('Could not identify user. Please log in again.', 'error');
+            return;
         }
+        const user = JSON.parse(storedUser);
+        const userName = user.global_name || user.username;
+
+        showToast('Saving changes to GitHub...', 'info');
+        await saveAllChanges(token, userName);
     });
 
-    async function updatePrices(token) {
+    async function saveAllChanges(token, userName) {
         const urlParams = new URLSearchParams(window.location.search);
         const itemId = urlParams.get('item');
-        const newMarketPrice = document.getElementById('marketPriceInput').value;
-        const newNpcPrice = document.getElementById('npcPriceInput').value;
-
-        if (newMarketPrice === '' || newNpcPrice === '') {
-            showToast('Both price fields are required.', 'error');
-            return false;
-        }
 
         try {
-            const metaUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${PRICES_FILE_PATH}?ref=${GITHUB_BRANCH}`;
-            const metaRes = await fetch(metaUrl, { headers: { Authorization: `token ${token}` }, cache: 'no-cache' });
-            if (!metaRes.ok) throw new Error('Failed to fetch price file metadata.');
-            const fileData = await metaRes.json();
-            const currentContent = atob(fileData.content);
-            const fileSha = fileData.sha;
+            // 1. Fetch metadata for both files simultaneously
+            const [marketMetaRes, pricesMetaRes] = await Promise.all([
+                fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${MARKET_FILE_PATH}?ref=${GITHUB_BRANCH}`, { headers: { Authorization: `token ${token}` }, cache: 'no-cache' }),
+                fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${PRICES_FILE_PATH}?ref=${GITHUB_BRANCH}`, { headers: { Authorization: `token ${token}` }, cache: 'no-cache' })
+            ]);
 
-            const lines = currentContent.split('\n');
-            const priceLineIndex = lines.findIndex(line => line.startsWith(itemId + ':'));
+            if (!marketMetaRes.ok || !pricesMetaRes.ok) throw new Error('Failed to fetch file metadata.');
+            
+            const marketFileData = await marketMetaRes.json();
+            const pricesFileData = await pricesMetaRes.json();
+            
+            const marketItems = JSON.parse(atob(marketFileData.content));
+            const pricesLines = atob(pricesFileData.content).split('\n');
+
+            // 2. Prepare updated content for market.txt
+            const newStatus = document.getElementById('publicStatusToggle').checked;
+            const itemIndex = marketItems.findIndex(i => i.id === itemId);
+            if (itemIndex === -1) throw new Error('Item not found in market.txt');
+            marketItems[itemIndex].public = newStatus;
+            const updatedMarketContent = JSON.stringify(marketItems, null, 4);
+
+            // 3. Prepare updated content for mprices.txt
+            const newMarketPrice = document.getElementById('marketPriceInput').value;
+            const newNpcPrice = document.getElementById('npcPriceInput').value;
+            if (newMarketPrice === '' || newNpcPrice === '') {
+                showToast('Both price fields are required.', 'error');
+                return;
+            }
+            const priceLineIndex = pricesLines.findIndex(l => l.startsWith(itemId + ':'));
             const priceArray = [itemId, parseInt(newMarketPrice) || 0, parseInt(newNpcPrice) || 0];
             const newLine = `${itemId}: ${JSON.stringify(priceArray)}`;
-
-            if(priceLineIndex > -1) {
-                lines[priceLineIndex] = newLine;
+            if (priceLineIndex > -1) {
+                pricesLines[priceLineIndex] = newLine;
             } else {
-                lines.push(newLine);
+                pricesLines.push(newLine);
             }
-            
-            const updatedContent = lines.join('\n');
+            const updatedPricesContent = pricesLines.join('\n');
 
-            const updateUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${PRICES_FILE_PATH}`;
-            const updateRes = await fetch(updateUrl, {
-                method: 'PUT',
-                headers: { 'Authorization': `token ${token}` },
-                body: JSON.stringify({ message: `Update price for item ${itemId}`, content: btoa(unescape(encodeURIComponent(updatedContent))), sha: fileSha, branch: GITHUB_BRANCH })
+            // 4. Create a single, dynamic commit message
+            const commitMessage = `Update item ${itemId} by ${userName}`;
+
+            // 5. Push both file updates. Although these are two API calls, they appear as a single operation to the user with the same commit message.
+            const marketUpdatePromise = fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${MARKET_FILE_PATH}`, {
+                method: 'PUT', headers: { 'Authorization': `token ${token}` },
+                body: JSON.stringify({ message: commitMessage, content: btoa(unescape(encodeURIComponent(updatedMarketContent))), sha: marketFileData.sha, branch: GITHUB_BRANCH })
             });
 
-            if (!updateRes.ok) {
-                 const errorData = await updateRes.json();
-                 throw new Error(`Price Update Error: ${errorData.message}`);
-            }
-            return true;
-        } catch (error) {
-            console.error('Error updating prices:', error);
-            showToast(`Error: ${error.message}`, 'error');
-            return false;
-        }
-    }
-
-    async function updatePublicStatus(token) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const itemId = urlParams.get('item');
-        const newStatus = document.getElementById('publicStatusToggle').checked;
-
-        try {
-            const metaUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${MARKET_FILE_PATH}?ref=${GITHUB_BRANCH}`;
-            const metaRes = await fetch(metaUrl, { headers: { Authorization: `token ${token}` }, cache: 'no-cache' });
-            if (!metaRes.ok) throw new Error('Failed to fetch market file metadata.');
-            const fileData = await metaRes.json();
-            const currentContent = atob(fileData.content);
-            const fileSha = fileData.sha;
-
-            const items = JSON.parse(currentContent);
-            const itemIndex = items.findIndex(i => i.id === itemId);
-            if (itemIndex === -1) throw new Error('Item not found in market.txt');
-            
-            items[itemIndex].public = newStatus;
-
-            const updatedContent = JSON.stringify(items, null, 4);
-
-            const updateUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${MARKET_FILE_PATH}`;
-            const updateRes = await fetch(updateUrl, {
-                method: 'PUT',
-                headers: { 'Authorization': `token ${token}` },
-                body: JSON.stringify({ message: `Set item ${itemId} public status to ${newStatus}`, content: btoa(unescape(encodeURIComponent(updatedContent))), sha: fileSha, branch: GITHUB_BRANCH })
+            const pricesUpdatePromise = fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${PRICES_FILE_PATH}`, {
+                method: 'PUT', headers: { 'Authorization': `token ${token}` },
+                body: JSON.stringify({ message: commitMessage, content: btoa(unescape(encodeURIComponent(updatedPricesContent))), sha: pricesFileData.sha, branch: GITHUB_BRANCH })
             });
 
-            if (!updateRes.ok) {
-                 const errorData = await updateRes.json();
-                 throw new Error(`Public Status Update Error: ${errorData.message}`);
+            const [marketUpdateRes, pricesUpdateRes] = await Promise.all([marketUpdatePromise, pricesUpdatePromise]);
+
+            if (!marketUpdateRes.ok || !pricesUpdateRes.ok) {
+                throw new Error('One or more GitHub updates failed.');
             }
-            return true;
+
+            showToast('All changes saved successfully!', 'success');
+            document.getElementById('price-modal').style.display = 'none';
+            setTimeout(() => location.reload(), 1500);
+
         } catch (error) {
-            console.error('Error toggling public mode:', error);
+            console.error('Error updating details:', error);
             showToast(`Error: ${error.message}`, 'error');
-            return false;
         }
     }
 
