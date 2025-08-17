@@ -66,7 +66,7 @@
         <label for="marketPriceInput">Market Price:</label>
         <input type="number" id="marketPriceInput" placeholder="Enter new market price">
         <label for="npcPriceInput">NPC Trade Price:</label>
-        <input type="number" id="npcPriceInput" placeholder="Enter new NPC price">
+        <input type="number" id="npcPriceInput" placeholder="Leave blank if not applicable">
         <div class="toggle-switch-container">
             <span>Public Status:</span>
             <label class="switch"><input type="checkbox" id="publicStatusToggle"><span class="slider"></span></label>
@@ -116,9 +116,9 @@
             const pricesMap = new Map(); const npcPricesMap = new Map();
             pricesData.split('\n').forEach(line => { const [id, arrayStr] = line.split(':').map(part => part.trim()); if (id && arrayStr) { try { const parsedArray = JSON.parse(arrayStr); if (Array.isArray(parsedArray) && parsedArray.length >= 2) { pricesMap.set(id, parsedArray[1]); if (parsedArray.length >= 3) { npcPricesMap.set(id, parsedArray[2]); } } } catch (e) {} } });
             const marketPrice = pricesMap.get(item.id) ?? item.price ?? "N/A";
-            const npcPrice = npcPricesMap.has(item.id) ? npcPricesMap.get(item.id) : null;
+            const npcPrice = npcPricesMap.get(item.id);
             let privateHighlight = (isDevUser && !isPublic) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
-            document.getElementById('itemDetails').innerHTML = `${privateHighlight}<h1>${item.name}</h1>${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}${item.rarity ? `<div class="item-rarity-display"><img class="item-rarity" src="img/rarity/${item.rarity}.webp"></div>` : ''}<p><strong class="item-strong">ID:</strong> ${item.id}</p><div class="item-price-container"><p class="item-price"><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p><hr width="150px">${npcPrice !== null ? `<p class="item-price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>` : ''}</div>`;
+            document.getElementById('itemDetails').innerHTML = `${privateHighlight}<h1>${item.name}</h1>${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}${item.rarity ? `<div class="item-rarity-display"><img class="item-rarity" src="img/rarity/${item.rarity}.webp"></div>` : ''}<p><strong class="item-strong">ID:</strong> ${item.id}</p><div class="item-price-container"><p class="item-price"><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p><hr width="150px">${npcPrice !== null && npcPrice !== undefined ? `<p class="item-price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>` : ''}</div>`;
           } else { document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`; }
         } catch (error) { console.error('Error loading item details:', error); document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: Could not load item details.</h2>`; }
       }
@@ -156,14 +156,12 @@
         document.getElementById('price-modal').style.display = 'none';
     });
     
-    // --- UPDATE: Combined save logic into a single function ---
     document.getElementById('save-price-update').addEventListener('click', async () => {
         const token = getCookie('githubToken');
         if (!token) {
             showToast('GitHub token not found. Please add it in your profile.', 'error');
             return;
         }
-
         const storedUser = getCookie("discordUser");
         if (!storedUser) {
             showToast('Could not identify user. Please log in again.', 'error');
@@ -171,46 +169,52 @@
         }
         const user = JSON.parse(storedUser);
         const userName = user.global_name || user.username;
-
         showToast('Saving changes to GitHub...', 'info');
         await saveAllChanges(token, userName);
     });
 
+    // --- FIX: New single-commit save logic ---
     async function saveAllChanges(token, userName) {
         const urlParams = new URLSearchParams(window.location.search);
         const itemId = urlParams.get('item');
 
         try {
-            // 1. Fetch metadata for both files simultaneously
-            const [marketMetaRes, pricesMetaRes] = await Promise.all([
-                fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${MARKET_FILE_PATH}?ref=${GITHUB_BRANCH}`, { headers: { Authorization: `token ${token}` }, cache: 'no-cache' }),
-                fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${PRICES_FILE_PATH}?ref=${GITHUB_BRANCH}`, { headers: { Authorization: `token ${token}` }, cache: 'no-cache' })
-            ]);
+            // 1. Get the current branch's latest commit and tree
+            const refRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH}`, { headers: { Authorization: `token ${token}` } });
+            if (!refRes.ok) throw new Error("Could not get branch reference.");
+            const refData = await refRes.json();
+            const latestCommitSha = refData.object.sha;
 
-            if (!marketMetaRes.ok || !pricesMetaRes.ok) throw new Error('Failed to fetch file metadata.');
-            
-            const marketFileData = await marketMetaRes.json();
-            const pricesFileData = await pricesMetaRes.json();
-            
+            const commitRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/commits/${latestCommitSha}`, { headers: { Authorization: `token ${token}` } });
+            if (!commitRes.ok) throw new Error("Could not get latest commit.");
+            const commitData = await commitRes.json();
+            const baseTreeSha = commitData.tree.sha;
+
+            // 2. Get current file contents
+            const [marketFileRes, pricesFileRes] = await Promise.all([
+                fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${MARKET_FILE_PATH}?ref=${GITHUB_BRANCH}`, { headers: { Authorization: `token ${token}` } }),
+                fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${PRICES_FILE_PATH}?ref=${GITHUB_BRANCH}`, { headers: { Authorization: `token ${token}` } })
+            ]);
+            if (!marketFileRes.ok || !pricesFileRes.ok) throw new Error("Could not get file contents.");
+            const marketFileData = await marketFileRes.json();
+            const pricesFileData = await pricesFileRes.json();
             const marketItems = JSON.parse(atob(marketFileData.content));
             const pricesLines = atob(pricesFileData.content).split('\n');
 
-            // 2. Prepare updated content for market.txt
+            // 3. Prepare updated market.txt content
             const newStatus = document.getElementById('publicStatusToggle').checked;
             const itemIndex = marketItems.findIndex(i => i.id === itemId);
             if (itemIndex === -1) throw new Error('Item not found in market.txt');
             marketItems[itemIndex].public = newStatus;
             const updatedMarketContent = JSON.stringify(marketItems, null, 4);
 
-            // 3. Prepare updated content for mprices.txt
+            // 4. Prepare updated mprices.txt content
             const newMarketPrice = document.getElementById('marketPriceInput').value;
             const newNpcPrice = document.getElementById('npcPriceInput').value;
-            if (newMarketPrice === '' || newNpcPrice === '') {
-                showToast('Both price fields are required.', 'error');
-                return;
-            }
+            if (newMarketPrice === '') { showToast('Market Price is required.', 'error'); return; }
+            
             const priceLineIndex = pricesLines.findIndex(l => l.startsWith(itemId + ':'));
-            const priceArray = [itemId, parseInt(newMarketPrice) || 0, parseInt(newNpcPrice) || 0];
+            const priceArray = [itemId, parseInt(newMarketPrice), newNpcPrice === '' ? null : parseInt(newNpcPrice)];
             const newLine = `${itemId}: ${JSON.stringify(priceArray)}`;
             if (priceLineIndex > -1) {
                 pricesLines[priceLineIndex] = newLine;
@@ -219,25 +223,44 @@
             }
             const updatedPricesContent = pricesLines.join('\n');
 
-            // 4. Create a single, dynamic commit message
+            // 5. Create blobs for the new file contents
+            const newTree = [];
+            const marketBlobRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/blobs`, {
+                method: 'POST', headers: { 'Authorization': `token ${token}` },
+                body: JSON.stringify({ content: updatedMarketContent, encoding: 'utf-8' })
+            });
+            const marketBlobData = await marketBlobRes.json();
+            newTree.push({ path: MARKET_FILE_PATH, mode: '100644', type: 'blob', sha: marketBlobData.sha });
+
+            const pricesBlobRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/blobs`, {
+                method: 'POST', headers: { 'Authorization': `token ${token}` },
+                body: JSON.stringify({ content: updatedPricesContent, encoding: 'utf-8' })
+            });
+            const pricesBlobData = await pricesBlobRes.json();
+            newTree.push({ path: PRICES_FILE_PATH, mode: '100644', type: 'blob', sha: pricesBlobData.sha });
+
+            // 6. Create a new tree with the new blobs
+            const treeRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/trees`, {
+                method: 'POST', headers: { 'Authorization': `token ${token}` },
+                body: JSON.stringify({ base_tree: baseTreeSha, tree: newTree })
+            });
+            const treeData = await treeRes.json();
+            const newTreeSha = treeData.sha;
+
+            // 7. Create the new commit
             const commitMessage = `Update item ${itemId} by ${userName}`;
-
-            // 5. Push both file updates. Although these are two API calls, they appear as a single operation to the user with the same commit message.
-            const marketUpdatePromise = fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${MARKET_FILE_PATH}`, {
-                method: 'PUT', headers: { 'Authorization': `token ${token}` },
-                body: JSON.stringify({ message: commitMessage, content: btoa(unescape(encodeURIComponent(updatedMarketContent))), sha: marketFileData.sha, branch: GITHUB_BRANCH })
+            const newCommitRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/commits`, {
+                method: 'POST', headers: { 'Authorization': `token ${token}` },
+                body: JSON.stringify({ message: commitMessage, tree: newTreeSha, parents: [latestCommitSha] })
             });
+            const newCommitData = await newCommitRes.json();
+            const newCommitSha = newCommitData.sha;
 
-            const pricesUpdatePromise = fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${PRICES_FILE_PATH}`, {
-                method: 'PUT', headers: { 'Authorization': `token ${token}` },
-                body: JSON.stringify({ message: commitMessage, content: btoa(unescape(encodeURIComponent(updatedPricesContent))), sha: pricesFileData.sha, branch: GITHUB_BRANCH })
+            // 8. Update the branch reference to point to the new commit
+            await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH}`, {
+                method: 'PATCH', headers: { 'Authorization': `token ${token}` },
+                body: JSON.stringify({ sha: newCommitSha })
             });
-
-            const [marketUpdateRes, pricesUpdateRes] = await Promise.all([marketUpdatePromise, pricesUpdatePromise]);
-
-            if (!marketUpdateRes.ok || !pricesUpdateRes.ok) {
-                throw new Error('One or more GitHub updates failed.');
-            }
 
             showToast('All changes saved successfully!', 'success');
             document.getElementById('price-modal').style.display = 'none';
