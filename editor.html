@@ -137,6 +137,7 @@
       z-index: 5;
       cursor: pointer;
       user-select: none;
+      box-shadow: 0 2px 3px var(--shadow-color);
     }
     tr:nth-child(even) { background: var(--table-row-even-bg); }
     tr:hover { background: var(--table-row-hover-bg); }
@@ -187,8 +188,12 @@
     let items = [];
     let currentSort = { key: null, asc: true };
 
+    // UPDATE: Added predefined lists for dropdowns
+    const rarities = ["common", "uncommon", "rare", "epic", "legendary", "special"];
+    const categories = ["combat", "farming", "foraging", "mining", "slayer", "special", "test"];
+
     const DATA_KEY = "marketData";
-    const TOKEN_KEY = "githubToken"; // This is the key for localStorage
+    const TOKEN_KEY = "githubToken";
 
     const repo = "CraftersMC-Guides-Project/guides-code";
     const path = "market/market.txt";
@@ -217,7 +222,7 @@
             devIds = text.split('\n').map(id => id.trim()).filter(id => id);
         } catch (error) {
             console.error('Critical error loading dev list:', error);
-            window.location.href = '/index.html'; // Redirect on any failure
+            window.location.href = '/index.html';
             return;
         }
 
@@ -229,7 +234,6 @@
             return;
         }
 
-        // If dev, proceed to load the editor
         const rememberedData = localStorage.getItem(DATA_KEY);
         if (rememberedData) {
             try {
@@ -326,12 +330,10 @@
 
     // --- GitHub Save Logic ---
     document.getElementById("saveGitHubBtn").onclick = () => {
-        // UPDATE: Directly get the token from localStorage
         const token = localStorage.getItem(TOKEN_KEY);
         if (token) {
             performGitHubUpdate(token);
         } else {
-            // If no token, inform the user. No modal.
             showToast('GitHub token not found. Please add it via your profile page.', 'error');
         }
     };
@@ -400,7 +402,27 @@
         headers.forEach(key => {
           const td = document.createElement("td");
           let input;
-          if (typeof item[key] === "boolean") {
+
+          // UPDATE: Create dropdowns for 'rarity' and 'category'
+          if (key === "rarity") {
+              input = document.createElement("select");
+              rarities.forEach(val => {
+                  const opt = document.createElement("option");
+                  opt.value = val;
+                  opt.textContent = val.charAt(0).toUpperCase() + val.slice(1);
+                  if (item[key].toLowerCase() === val) opt.selected = true;
+                  input.appendChild(opt);
+              });
+          } else if (key === "category") {
+              input = document.createElement("select");
+              categories.forEach(val => {
+                  const opt = document.createElement("option");
+                  opt.value = val;
+                  opt.textContent = val.charAt(0).toUpperCase() + val.slice(1);
+                  if (item[key].toLowerCase() === val) opt.selected = true;
+                  input.appendChild(opt);
+              });
+          } else if (typeof item[key] === "boolean") {
             input = document.createElement("select");
             ["true", "false"].forEach(val => {
                 const opt = document.createElement("option");
@@ -416,6 +438,7 @@
             input = document.createElement("input");
             input.value = item[key];
           }
+
           input.onchange = e => {
             if (typeof item[key] === "boolean") {
                 item[key] = e.target.value === "true";
