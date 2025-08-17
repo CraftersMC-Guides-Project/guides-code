@@ -213,11 +213,36 @@
     const path = "market/market.txt";
     const branch = "main";
 
+    // --- Cookie helpers + token resolver (with migration from storage) ---
     function getCookie(name) {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
       if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
       return '';
+    }
+    function setCookie(name, value, days = 365, path = "/") {
+      const expires = new Date(Date.now() + days * 864e5).toUTCString();
+      document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; Expires=${expires}; Path=${path}; SameSite=Lax`;
+    }
+    function getGithubToken() {
+      // 1) Prefer cookie (what item.html uses)
+      let t = getCookie(TOKEN_KEY);
+      if (t) return t;
+
+      // 2) Fallback to local/session storage (legacy) and migrate to cookie
+      try {
+        t = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || "";
+        if (t) {
+          setCookie(TOKEN_KEY, t, 365, "/"); // make it available site-wide
+          try {
+            localStorage.removeItem(TOKEN_KEY);
+            sessionStorage.removeItem(TOKEN_KEY);
+          } catch {}
+          return t;
+        }
+      } catch {}
+
+      return "";
     }
 
     window.addEventListener("DOMContentLoaded", async () => {
@@ -276,6 +301,7 @@
 
     document.getElementById("fetchFileBtn").addEventListener("click", async () => {
       try {
+        // keep original path usage here as requested
         const res = await fetch("./market/market.txt");
         if (!res.ok) throw new Error("market.txt not found");
         const text = await res.text();
@@ -316,9 +342,8 @@
     };
 
     document.getElementById("removeFileBtn").onclick=()=>{
+      // Only reset local market data; DO NOT touch the GitHub token cookie
       localStorage.removeItem(DATA_KEY);
-      // FIX: Remove the cookie instead of a localStorage item
-      document.cookie = TOKEN_KEY + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
       location.reload();
     };
 
@@ -340,8 +365,7 @@
     }
 
     document.getElementById("saveGitHubBtn").onclick = () => {
-        // FIX: Get the token from the cookie, not localStorage
-        const token = getCookie(TOKEN_KEY);
+        const token = getGithubToken();
         if (token) {
             performGitHubUpdate(token);
         } else {
@@ -355,8 +379,8 @@
             const metaUrl = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
             const metaRes = await fetch(metaUrl, { headers: { Authorization: `token ${token}` }, cache: 'no-cache' });
             if (metaRes.status === 401 || metaRes.status === 403) {
-                // If token is bad, remove the cookie
-                document.cookie = TOKEN_KEY + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                // If token is bad, clear the cookie so the user can re-add it
+                setCookie(TOKEN_KEY, "", -1, "/");
                 throw new Error("Invalid or unauthorized token. Please add it again via your profile.");
             }
             if (!metaRes.ok) throw new Error(`Metadata fetch failed: ${metaRes.statusText}`);
@@ -429,7 +453,7 @@
                   const opt = document.createElement("option");
                   opt.value = val;
                   opt.textContent = val.charAt(0).toUpperCase() + val.slice(1);
-                  if (item[key].toLowerCase() === val) opt.selected = true;
+                  if (String(item[key]).toLowerCase() === val) opt.selected = true;
                   input.appendChild(opt);
               });
           } else if (key === "category") {
@@ -438,7 +462,7 @@
                   const opt = document.createElement("option");
                   opt.value = val;
                   opt.textContent = val.charAt(0).toUpperCase() + val.slice(1);
-                  if (item[key].toLowerCase() === val) opt.selected = true;
+                  if (String(item[key]).toLowerCase() === val) opt.selected = true;
                   input.appendChild(opt);
               });
           } else if (typeof item[key] === "boolean") {
