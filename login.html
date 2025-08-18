@@ -1,109 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - CraftersMC Guides</title>
-    <link rel="stylesheet" href="themes/minecraft/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - CraftersMC Guides</title>
+  <link rel="stylesheet" href="themes/minecraft/style.css">
 </head>
 <body>
-    <div class="login-container">
-        <h3 class="login-h3">Login</h3>
-        <img id="user-avatar" class="login-avatar" src="" alt="User Avatar">
-        <div class="login-button-container">
-            <a id="discord-login-button" class="login-discord-login-button">
-                Login with Discord
-            </a>
-        </div>
-        <div id="login-status" style="display: none;"></div>
-        <div id="username-display" style="display: none;"></div>
-        <button id="logout-button" class="login-logout-button" style="display: none;">Logout</button>
+  <div class="login-container">
+    <h3 class="login-h3">Login</h3>
+    <img id="user-avatar" class="login-avatar" src="" alt="User Avatar" style="display:none;">
+    <div class="login-button-container">
+      <a id="discord-login-button" class="login-discord-login-button">
+        Login with Discord
+      </a>
     </div>
+    <div id="login-status" style="display:none;"></div>
+    <div id="username-display" style="display:none;"></div>
+    <button id="logout-button" class="login-logout-button" style="display:none;">Logout</button>
+  </div>
 
-    <script>
-        function setCookie(name, value, days = 7) {
-            const expires = new Date(Date.now() + days * 864e5).toUTCString();
-            document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
-        }
-        function getCookie(name) {
-            return document.cookie.split('; ').reduce((r, v) => {
-                const parts = v.split('=');
-                return parts[0] === name ? decodeURIComponent(parts[1]) : r
-            }, '');
-        }
-        function deleteCookie(name) {
-            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-        }
+  <script>
+    function setCookie(name, value, days = 7) {
+      const expires = new Date(Date.now() + days * 864e5).toUTCString();
+      document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+    }
+    function getCookie(name) {
+      return document.cookie.split('; ').reduce((r, v) => {
+        const parts = v.split('=');
+        return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+      }, '');
+    }
+    function deleteCookie(name) {
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+    }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-            const loginStatus = document.getElementById('login-status');
-            const usernameDisplay = document.getElementById('username-display');
-            const logoutButton = document.getElementById('logout-button');
-            const discordLoginBtn = document.getElementById('discord-login-button');
+    document.addEventListener('DOMContentLoaded', function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const loginStatus = document.getElementById('login-status');
+      const usernameDisplay = document.getElementById('username-display');
+      const logoutButton = document.getElementById('logout-button');
+      const discordLoginBtn = document.getElementById('discord-login-button');
 
-            const storedUser = getCookie('discordUser');
-            if (storedUser) {
-                try {
-                    const userObj = JSON.parse(storedUser);
-                    if (userObj && userObj.id) {
-                        showLoggedInState(userObj);
-                    }
-                } catch {}
+      const storedUser = getCookie('discordUser');
+      if (storedUser) {
+        try {
+          const userObj = JSON.parse(storedUser);
+          if (userObj && userObj.id) {
+            showLoggedInState(userObj);
+          }
+        } catch {}
+      }
+
+      if (code) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+
+        fetch(`https://discord-auth.roumakdatta.workers.dev/?code=${encodeURIComponent(code)}`)
+          .then(res => res.json())
+          .then(data => {
+            if (!data || !data.id) {
+              loginStatus.textContent = 'Login failed.';
+              loginStatus.style.display = 'block';
+              return;
             }
+            const userData = { id: data.id, xbox: data.xbox || null };
+            setCookie('discordUser', JSON.stringify(userData), 7);
+            showLoggedInState(userData);
+          })
+          .catch(() => {
+            loginStatus.textContent = 'Login failed.';
+            loginStatus.style.display = 'block';
+          });
+      }
 
-            if (code) {
-                window.history.replaceState({}, document.title, window.location.pathname);
-                const workerUrl = 'https://discord-auth.roumakdatta.workers.dev/';
+      discordLoginBtn.addEventListener('click', e => {
+        e.preventDefault();
+        window.location.href =
+          "https://discord.com/oauth2/authorize?client_id=1359486772366672022&response_type=code&redirect_uri=https%3A%2F%2Fcraftersmc-guides.pages.dev%2Flogin&scope=identify+connections";
+      });
 
-                fetch(`${workerUrl}?code=${encodeURIComponent(code)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (!data || !data.user || !data.user.id) {
-                            loginStatus.textContent = 'Login failed.';
-                            return;
-                        }
+      logoutButton.addEventListener('click', logout);
 
-                        const userData = {
-                            id: data.user.id,
-                            xbox: data.user.xbox?.name || null
-                        };
+      function showLoggedInState(user) {
+        loginStatus.textContent = 'Logged in Successfully!';
+        loginStatus.style.display = 'block';
 
-                        setCookie('discordUser', JSON.stringify(userData), 7);
-                        showLoggedInState(userData);
-                    })
-                    .catch(() => {
-                        loginStatus.textContent = 'Login failed.';
-                    });
-            }
+        usernameDisplay.textContent = `ID: ${user.id}${user.xbox ? ` | Xbox: ${user.xbox}` : ''}`;
+        usernameDisplay.style.display = 'block';
 
-            discordLoginBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-                window.location.href = "https://discord.com/oauth2/authorize?client_id=1359486772366672022&response_type=code&redirect_uri=https%3A%2F%2Fcraftersmc-guides.pages.dev%2Flogin&scope=identify+connections";
-            });
+        document.querySelector('.login-button-container').style.display = 'none';
+        logoutButton.style.display = 'block';
+      }
 
-            logoutButton.addEventListener('click', logout);
-
-            function showLoggedInState(userData) {
-                loginStatus.textContent = 'Logged in Successfully!';
-                loginStatus.style.display = 'block';
-
-                usernameDisplay.textContent = `ID: ${userData.id}${userData.xbox ? ` | Xbox: ${userData.xbox}` : ''}`;
-                usernameDisplay.style.display = 'block';
-
-                document.querySelector('.login-button-container').style.display = 'none';
-                logoutButton.style.display = 'block';
-            }
-
-            function logout() {
-                deleteCookie('discordUser');
-                loginStatus.style.display = 'none';
-                usernameDisplay.style.display = 'none';
-                document.querySelector('.login-button-container').style.display = 'flex';
-                logoutButton.style.display = 'none';
-            }
-        });
-    </script>
+      function logout() {
+        deleteCookie('discordUser');
+        loginStatus.style.display = 'none';
+        usernameDisplay.style.display = 'none';
+        document.querySelector('.login-button-container').style.display = 'flex';
+        logoutButton.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>
