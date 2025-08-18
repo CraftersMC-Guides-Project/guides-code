@@ -5,19 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Developer Management</title>
   <style>
-    :root {
-      --bg: #0a0c10;
-      --bg-panel: #111827;
-      --bg-item: #1f2937;
-      --text: #f9fafb;
-      --muted: #9ca3af;
-      --primary: #2563eb;
-      --danger: #dc2626;
-      --success: #10b981;
-    }
     body {
-      background: var(--bg);
-      color: var(--text);
+      background: #0a0c10;
+      color: #f9fafb;
       font-family: Inter, sans-serif;
       display: flex;
       justify-content: center;
@@ -27,7 +17,7 @@
       padding: 20px;
     }
     .container {
-      background: var(--bg-panel);
+      background: #111827;
       padding: 24px;
       border-radius: 12px;
       width: 100%;
@@ -37,7 +27,7 @@
     h1 { margin: 0 0 16px; text-align: center; }
     ul { list-style: none; padding: 0; margin: 0; max-height: 350px; overflow-y: auto; }
     li {
-      background: var(--bg-item);
+      background: #1f2937;
       margin-bottom: 12px;
       padding: 12px;
       border-radius: 10px;
@@ -49,7 +39,7 @@
     .profile img { width: 48px; height: 48px; border-radius: 50%; }
     .profile-info { display: flex; flex-direction: column; }
     .profile-info strong { font-size: 15px; }
-    .profile-info small { font-size: 12px; color: var(--muted); }
+    .profile-info small { font-size: 12px; color: #9ca3af; }
     button {
       border: none;
       padding: 8px 14px;
@@ -57,19 +47,15 @@
       cursor: pointer;
       font-weight: 500;
     }
-    .remove-btn { background: var(--danger); color: white; }
+    .remove-btn { background: #dc2626; color: white; }
     .remove-btn:hover { background: #b91c1c; }
     .add-section { display: flex; gap: 10px; margin-top: 16px; }
     input { flex: 1; padding: 10px; border-radius: 6px; border: none; }
-    .add-btn { background: var(--primary); color: white; }
+    .add-btn { background: #2563eb; color: white; }
     .add-btn:hover { background: #1d4ed8; }
-    .save-btn { background: var(--success); color: white; width: 100%; margin-top: 16px; padding: 14px; font-size: 16px; }
+    .save-btn { background: #10b981; color: white; width: 100%; margin-top: 16px; padding: 14px; font-size: 16px; }
     .toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: #374151; padding: 12px 18px; border-radius: 8px; transition: bottom .3s; color: white; }
     .toast.show { bottom: 20px; }
-    .preview { background: var(--bg-item); border-radius: 10px; padding: 16px; margin-top: 16px; }
-    .preview-actions { margin-top: 12px; display: flex; gap: 10px; }
-    .cancel-btn { background: var(--danger); color: white; flex: 1; }
-    .confirm-btn { background: var(--success); color: white; flex: 1; }
   </style>
 </head>
 <body>
@@ -82,8 +68,6 @@
       <button class="add-btn" id="addIdBtn">Add</button>
     </div>
 
-    <div id="previewArea"></div>
-
     <button class="save-btn" id="saveChangesBtn">Save Changes</button>
   </div>
 
@@ -94,6 +78,7 @@
     const GITHUB_REPO = "CraftersMC-Guides-Project/guides-code";
     const DEVS_FILE_PATH = "devs.txt";
     const GITHUB_BRANCH = "main";
+
     let devIds = [];
     let allUsers = [];
 
@@ -137,54 +122,27 @@
             </div>
           </div>
           <button class="remove-btn" onclick="removeId('${id}')">Remove</button>
-        ` : `${id} (not in DB)`;
+        ` : `
+          <span>${id} (not in DB)</span>
+          <button class="remove-btn" onclick="removeId('${id}')">Remove</button>
+        `;
         list.appendChild(li);
       });
     }
 
-    async function removeId(id) {
+    function removeId(id) {
       devIds = devIds.filter(x=>x!==id);
       renderList();
-      showToast("Marked for removal","info");
     }
 
-    document.getElementById("addIdBtn").addEventListener("click", async ()=>{
+    document.getElementById("addIdBtn").addEventListener("click", ()=>{
       const id = document.getElementById("newIdInput").value.trim();
-      if (!id) return;
-      const u = allUsers.find(x=>x.id===id);
-      const area = document.getElementById("previewArea");
-      area.innerHTML = "";
-      if (!u) {
-        area.innerHTML = `<div class="preview">❌ User not found in DB</div>`;
-        return;
-      }
-      area.innerHTML = `
-        <div class="preview">
-          <div class="profile">
-            <img src="${u.avatar}" alt="">
-            <div class="profile-info">
-              <strong>${u.global_name || u.username}</strong>
-              <small>ID: ${u.id}</small>
-              <small>Role: ${u.role} ${u.xbox ? `| Xbox: ${u.xbox.name}`:""}</small>
-            </div>
-          </div>
-          <div class="preview-actions">
-            <button class="cancel-btn" onclick="cancelPreview()">Cancel</button>
-            <button class="confirm-btn" onclick="confirmAdd('${id}')">Confirm Add</button>
-          </div>
-        </div>
-      `;
-    });
-
-    function cancelPreview() { document.getElementById("previewArea").innerHTML=""; }
-    function confirmAdd(id) {
-      if (!devIds.includes(id)) {
+      if (id && !devIds.includes(id)) {
         devIds.push(id);
         renderList();
-        showToast("User added","success");
       }
-      cancelPreview();
-    }
+      document.getElementById("newIdInput").value="";
+    });
 
     document.getElementById("saveChangesBtn").addEventListener("click", async ()=>{
       try {
