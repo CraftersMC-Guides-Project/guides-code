@@ -1,136 +1,543 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Developer Management</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
-    /* ... (your same CSS as before) ... */
-    .confirm-modal {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
-      display: flex; justify-content: center; align-items: center;
-      z-index: 10000;
+    :root{
+      --bg: #0a0c10;
+      --panel: #111827;
+      --item: #1f2937;
+      --text: #e6edf3;
+      --muted: #9ca3af;
+      --primary: #2563eb;
+      --danger: #dc2626;
+      --success: #10b981;
+      --glass: rgba(255,255,255,0.03);
     }
-    .confirm-box {
-      background: var(--bg-secondary-color);
-      padding: 20px;
-      border-radius: 10px;
-      width: 350px;
-      text-align: center;
+
+    html,body{height:100%;margin:0;}
+    body{
+      background:var(--bg);
+      color:var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
     }
-    .confirm-box img {
-      width: 80px; height: 80px;
-      border-radius: 50%; margin-bottom: 10px;
+
+    .container{
+      width:100%;
+      max-width:920px;
+      background:var(--panel);
+      border-radius:12px;
+      padding:24px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.5);
     }
-    .confirm-buttons {
-      margin-top: 15px; display: flex; justify-content: space-around;
+
+    h1{margin:0 0 12px 0; text-align:center; font-size:20px}
+
+    .grid { display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-top:14px; }
+
+    .box {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:14px;
+      border-radius:10px;
+      min-height: 220px;
     }
-    .confirm-buttons button {
-      padding: 8px 16px; border: none; border-radius: 6px;
-      cursor: pointer; font-weight: bold;
+
+    .box h2 { margin:0 0 10px 0; font-size:15px; }
+    .dev-list{ list-style:none; margin:0; padding:0; max-height:360px; overflow:auto; }
+    .dev-list li{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px;
+      border-radius:8px;
+      background:var(--glass);
+      margin-bottom:10px;
     }
-    .confirm-buttons .confirm {
-      background: var(--button-bg-color); color: white;
+
+    .profile { display:flex; gap:12px; align-items:center; }
+    .profile img{ width:44px; height:44px; border-radius:50%; object-fit:cover; }
+    .profile-info { display:flex; flex-direction:column; }
+    .profile-info .name{ font-weight:600; }
+    .profile-info .meta{ font-size:12px; color:var(--muted); margin-top:4px; }
+
+    .actions { display:flex; gap:10px; align-items:center; }
+    .remove-btn{
+      background:var(--danger);
+      color:white;
+      border:0;
+      padding:8px 12px;
+      border-radius:8px;
+      cursor:pointer;
     }
-    .confirm-buttons .abort {
-      background: var(--danger-bg-color); color: white;
+    .remove-btn:hover{ opacity:0.95; }
+
+    .add-row{ display:flex; gap:10px; margin-top:12px; align-items:center; }
+    #newIdInput{
+      flex:1;
+      padding:10px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,0.04);
+      background:transparent;
+      color:var(--text);
+    }
+    .select-target {
+      padding:10px;
+      border-radius:8px;
+      background: rgba(255,255,255,0.02);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,0.03);
+    }
+
+    .add-btn{
+      background:var(--primary);
+      color:white;
+      border:0;
+      padding:10px 16px;
+      border-radius:8px;
+      cursor:pointer;
+    }
+    .add-btn:hover{ filter:brightness(.95); }
+
+    .save-btn{
+      margin-top:16px;
+      width:100%;
+      background:var(--success);
+      color:white;
+      border:0;
+      padding:12px;
+      border-radius:10px;
+      font-weight:600;
+      cursor:pointer;
+    }
+
+    /* toast */
+    .toast{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom: -80px;
+      background: #111;
+      color:white;
+      padding:10px 16px;
+      border-radius:8px;
+      transition: bottom .3s ease;
+      z-index:9999;
+    }
+    .toast.show{ bottom:24px; }
+
+    /* confirm modal */
+    .modal-backdrop{
+      position:fixed; inset:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:10000;
+    }
+    .confirm-box{
+      width:100%;
+      max-width:420px;
+      background:var(--panel);
+      padding:18px;
+      border-radius:10px;
+      text-align:center;
+      box-shadow:0 8px 30px rgba(0,0,0,0.6);
+    }
+    .confirm-avatar{ width:96px; height:96px; border-radius:50%; object-fit:cover; margin:0 auto 8px; display:block; }
+    .confirm-title{ font-weight:700; margin:6px 0; }
+    .confirm-sub{ color:var(--muted); font-size:13px; margin-bottom:12px; }
+    .confirm-row{ display:flex; gap:10px; }
+    .confirm-btn{ flex:1; padding:10px; border-radius:8px; border:0; cursor:pointer; font-weight:600; }
+    .confirm-yes{ background:var(--primary); color:white; }
+    .confirm-no{ background:var(--danger); color:white; }
+    .not-found{ color:var(--danger); font-weight:600; padding:12px 0; }
+
+    @media (max-width:880px){
+      .grid{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Developer Management</h1>
-    <ul id="devList" class="dev-list">
-      <li>Loading...</li>
-    </ul>
-    <div class="add-section">
-      <input type="text" id="newIdInput" placeholder="Enter new Developer ID">
+    <h1>Developer & Data Manager Management</h1>
+
+    <div class="grid">
+      <div class="box">
+        <h2>Developers (devs.txt)</h2>
+        <ul id="devsList" class="dev-list"><li>Loading…</li></ul>
+      </div>
+
+      <div class="box">
+        <h2>Data Managers (data-manager.txt)</h2>
+        <ul id="dmList" class="dev-list"><li>Loading…</li></ul>
+      </div>
+    </div>
+
+    <div class="add-row">
+      <input id="newIdInput" placeholder="Enter Discord User ID" />
+      <select id="targetSelect" class="select-target" title="Choose destination file">
+        <option value="devs">Add to devs.txt</option>
+        <option value="dm">Add to data-manager.txt</option>
+      </select>
       <button id="addIdBtn" class="add-btn">Add</button>
     </div>
+
     <button id="saveChangesBtn" class="save-btn">Save Changes</button>
   </div>
 
-  <div id="confirmModal" class="confirm-modal" style="display:none;">
-    <div class="confirm-box">
-      <div id="confirmContent"></div>
-      <div class="confirm-buttons">
-        <button class="confirm" id="confirmBtn">Confirm</button>
-        <button class="abort" id="abortBtn">Abort</button>
+  <div id="toast" class="toast" style="display:none"></div>
+
+  <!-- confirmation modal -->
+  <div id="confirmModal" style="display:none" aria-hidden="true">
+    <div class="modal-backdrop">
+      <div class="confirm-box" role="dialog" aria-modal="true">
+        <img id="confirmAvatar" class="confirm-avatar" src="" alt="avatar" />
+        <div id="confirmName" class="confirm-title"></div>
+        <div id="confirmMeta" class="confirm-sub"></div>
+        <div id="confirmExtra" style="margin-bottom:12px;color:var(--muted);"></div>
+        <div id="notFoundMsg" class="not-found" style="display:none">User not found in database</div>
+        <div class="confirm-row" id="confirmButtons" style="display:none">
+          <button id="confirmYes" class="confirm-btn confirm-yes">Confirm</button>
+          <button id="confirmNo" class="confirm-btn confirm-no">Abort</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <script>
-    /* === your existing variables, cookies, and save logic unchanged === */
+<script>
+/* ---------------------------
+   KEEP BACKEND/COMMIT FLOW UNTOUCHED
+   Added:
+     - Two lists: devs and data managers
+     - Add target selection + confirmation modal
+     - Save writes both files (two blobs in one tree)
+     - Ensure no user exists in both lists locally (adding to one removes from other)
+   --------------------------- */
 
-    // keep devIds as before
-    let devIds = [];
+const GITHUB_REPO = "CraftersMC-Guides-Project/guides-code";
+const DEVS_FILE_PATH = "devs.txt";
+const DM_FILE_PATH = "data-manager.txt";
+const GITHUB_BRANCH = "main";
+const ADMIN_USER_ID = "783972385882767400";
 
-    // override Add button with confirmation logic
-    document.getElementById('addIdBtn').addEventListener('click', async () => {
-      const input = document.getElementById('newIdInput');
-      const newId = input.value.trim();
-      if (!newId) return;
+let devIds = [];      // devs.txt entries
+let dmIds  = [];      // data-manager.txt entries
+let cachedUsers = null;
 
-      if (devIds.includes(newId)) {
-        showToast('This ID is already in the list.', 'error');
-        return;
-      }
+/* helper: read cookie */
+function getCookie(name){
+  const v = `; ${document.cookie}`;
+  const parts = v.split(`; ${name}=`);
+  if(parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+  return '';
+}
 
-      try {
-        const res = await fetch(`https://discord-auth.roumakdatta.workers.dev/users/${newId}`);
-        if (!res.ok) throw new Error("Not found");
-        const user = await res.json();
+/* toast UI */
+function showToast(msg, type='info'){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = type === 'error' ? '#b91c1c' : type === 'success' ? '#065f46' : '#111827';
+  t.style.display = 'block';
+  t.classList.add('show');
+  setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=> t.style.display='none',300); }, 3500);
+}
 
-        // build confirmation content
-        const xboxName = user.xbox && user.xbox.name ? user.xbox.name : "Not linked";
-        document.getElementById('confirmContent').innerHTML = `
-          <img src="${user.avatar}" alt="avatar">
-          <h3>${user.global_name || user.username}</h3>
-          <p>ID: ${user.id}</p>
-          <p>Xbox: ${xboxName}</p>
-        `;
-        document.getElementById('confirmModal').style.display = 'flex';
+/* load initial lists and cached users (unchanged backend usage) */
+window.addEventListener('DOMContentLoaded', async ()=>{
+  const storedUser = getCookie('discordUser');
+  if(!storedUser){ window.location.href = '/index.html'; return; }
+  const u = JSON.parse(storedUser);
+  if(u.id !== ADMIN_USER_ID){ window.location.href = '/index.html'; return; }
 
-        // confirm button
-        document.getElementById('confirmBtn').onclick = () => {
-          devIds.push(newId);
-          renderDevList();
-          input.value = '';
-          document.getElementById('confirmModal').style.display = 'none';
-        };
-        // abort button
-        document.getElementById('abortBtn').onclick = () => {
-          document.getElementById('confirmModal').style.display = 'none';
-        };
+  await loadAll();
+});
 
-      } catch (e) {
-        showToast("User not found in database.", "error");
-      }
-    });
+async function loadAll(){
+  try {
+    // load dev list
+    const devResp = await fetch(`/${DEVS_FILE_PATH}`, { cache: 'no-cache' });
+    devIds = devResp.ok ? (await devResp.text()).split('\n').map(s=>s.trim()).filter(Boolean) : [];
 
-    // hook sync after any save
-    async function triggerSync() {
-      try {
-        await fetch("https://discord-auth.roumakdatta.workers.dev/sync-devs");
-      } catch (e) {
-        console.error("Sync failed:", e);
-      }
+    // load data-manager list (may not exist)
+    const dmResp = await fetch(`/${DM_FILE_PATH}`, { cache: 'no-cache' });
+    if (dmResp.ok) {
+      dmIds = (await dmResp.text()).split('\n').map(s=>s.trim()).filter(Boolean);
+    } else {
+      dmIds = [];
     }
 
-    // wrap your existing Save Changes button
-    const oldSaveBtn = document.getElementById('saveChangesBtn');
-    oldSaveBtn.addEventListener('click', async () => {
-      // your full existing save logic is here unchanged...
-      // inside the success block after "Changes saved successfully!"
-      await triggerSync();
-    });
+    // preload users for rendering
+    try {
+      const usersResp = await fetch('https://discord-auth.roumakdatta.workers.dev/users/');
+      cachedUsers = await usersResp.json();
+    } catch(e){
+      cachedUsers = [];
+      console.warn('Could not fetch users list', e);
+    }
 
-    /* === rest of your original code unchanged (renderDevList, removeId, showToast, GitHub commit logic) === */
-  </script>
+    renderAll();
+  } catch(e){
+    showToast(e.message || 'Failed to load data', 'error');
+  }
+}
+
+/* render both lists */
+function renderAll(){
+  renderListFor(devIds, 'devsList');
+  renderListFor(dmIds, 'dmList');
+}
+
+/* render helper */
+function renderListFor(listIds, ulId){
+  const ul = document.getElementById(ulId);
+  ul.innerHTML = '';
+  if(listIds.length === 0){
+    const li = document.createElement('li');
+    li.textContent = 'No entries.';
+    ul.appendChild(li);
+    return;
+  }
+
+  listIds.forEach(id=>{
+    const li = document.createElement('li');
+    const u = (cachedUsers || []).find(x => x.id === id);
+
+    if(u){
+      li.innerHTML = `
+        <div class="profile">
+          <img src="${escapeHtml(u.avatar)}" alt="avatar" loading="lazy" />
+          <div class="profile-info">
+            <div class="name">${escapeHtml(u.global_name || u.username || 'Unknown')}</div>
+            <div class="meta">ID: ${escapeHtml(u.id)} ${u.xbox ? `| Xbox: ${escapeHtml(u.xbox.name)}` : ''}</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="remove-btn" onclick="handleRemove('${escapeJs(id)}')">Remove</button>
+        </div>
+      `;
+    } else {
+      li.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:44px;height:44px;border-radius:8px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;color:var(--muted)">ID</div>
+          <div style="display:flex;flex-direction:column">
+            <div style="font-weight:600">${escapeHtml(id)}</div>
+            <div style="font-size:12px;color:var(--muted)">Not found in DB</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="remove-btn" onclick="handleRemove('${escapeJs(id)}')">Remove</button>
+        </div>
+      `;
+    }
+    ul.appendChild(li);
+  });
+}
+
+/* remove from whichever list contains it (local only) */
+function handleRemove(id){
+  devIds = devIds.filter(x=>x !== id);
+  dmIds = dmIds.filter(x=>x !== id);
+  renderAll();
+  showToast('Marked for removal', 'info');
+}
+
+/* Add flow: confirmation modal; target chosen by dropdown */
+const confirmModal = document.getElementById('confirmModal');
+const confirmAvatar = document.getElementById('confirmAvatar');
+const confirmName = document.getElementById('confirmName');
+const confirmMeta = document.getElementById('confirmMeta');
+const confirmExtra = document.getElementById('confirmExtra');
+const notFoundMsg = document.getElementById('notFoundMsg');
+const confirmButtons = document.getElementById('confirmButtons');
+const confirmYes = document.getElementById('confirmYes');
+const confirmNo = document.getElementById('confirmNo');
+
+document.getElementById('addIdBtn').addEventListener('click', async ()=>{
+  const input = document.getElementById('newIdInput');
+  const newId = input.value.trim();
+  if(!newId) return;
+
+  // already present in either list? show warning
+  if(devIds.includes(newId) || dmIds.includes(newId)){
+    showToast('This ID already exists in one of the lists.', 'error');
+    return;
+  }
+
+  // fetch single user from backend
+  try {
+    const resp = await fetch(`https://discord-auth.roumakdatta.workers.dev/users/${newId}`);
+    if(!resp.ok){
+      // show not found in modal
+      notFoundMsg.style.display = 'block';
+      confirmAvatar.style.display = 'none';
+      confirmName.textContent = '';
+      confirmMeta.textContent = '';
+      confirmExtra.textContent = '';
+      confirmButtons.style.display = 'none';
+      confirmModal.style.display = 'block';
+      return;
+    }
+    const user = await resp.json();
+
+    // populate modal with data
+    notFoundMsg.style.display = 'none';
+    confirmAvatar.style.display = 'block';
+    confirmAvatar.src = user.avatar || '';
+    confirmName.textContent = user.global_name || user.username || 'Unknown';
+    confirmMeta.textContent = `ID: ${user.id}`;
+    confirmExtra.innerHTML = `<div>${user.xbox ? `Xbox: ${escapeHtml(user.xbox.name)}` : 'Xbox: Not linked'}</div>
+                              <div style="margin-top:6px;color:var(--muted)">Add to: <strong>${document.getElementById('targetSelect').value === 'devs' ? 'devs.txt' : 'data-manager.txt'}</strong></div>`;
+    confirmButtons.style.display = 'flex';
+    confirmModal.style.display = 'block';
+
+    // Confirm action
+    confirmYes.onclick = () => {
+      const target = document.getElementById('targetSelect').value;
+      if(target === 'devs'){
+        // add to devs, remove from dm if exists
+        if(!devIds.includes(user.id)) devIds.push(user.id);
+        dmIds = dmIds.filter(x=>x !== user.id);
+      } else {
+        // add to data-managers, remove from devs if exists
+        if(!dmIds.includes(user.id)) dmIds.push(user.id);
+        devIds = devIds.filter(x=>x !== user.id);
+      }
+      // update cache
+      if(cachedUsers && !cachedUsers.find(x=>x.id === user.id)) cachedUsers.push(user);
+      renderAll();
+      confirmModal.style.display = 'none';
+      document.getElementById('newIdInput').value = '';
+      showToast('Added to list (not saved yet).', 'success');
+    };
+
+    // Abort action
+    confirmNo.onclick = () => { confirmModal.style.display = 'none'; };
+  } catch (err){
+    showToast('Error fetching user', 'error');
+  }
+});
+
+/* close modal if clicked outside the inner box */
+confirmModal.addEventListener('click', (ev)=>{
+  if(ev.target === confirmModal){ confirmModal.style.display = 'none'; }
+});
+
+/* Save Changes — write both files using same low-level commit flow you used */
+document.getElementById('saveChangesBtn').addEventListener('click', async ()=>{
+  const token = getCookie('githubToken');
+  if(!token){
+    showToast('Token not found. Please add it via your profile.', 'error');
+    return;
+  }
+
+  const storedUser = getCookie('discordUser');
+  let userName = 'admin';
+  if(storedUser){
+    try { userName = JSON.parse(storedUser).global_name || JSON.parse(storedUser).username; } catch(e){}
+  }
+
+  showToast('Saving changes...', 'info');
+
+  try {
+    // 1) get branch ref
+    const refRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH}`, {
+      headers: { Authorization: `token ${token}` }
+    });
+    if(!refRes.ok) throw new Error("Could not get branch reference.");
+    const refData = await refRes.json();
+    const latestCommitSha = refData.object.sha;
+
+    // 2) get latest commit -> base tree
+    const commitRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/commits/${latestCommitSha}`, {
+      headers: { Authorization: `token ${token}` }
+    });
+    if(!commitRes.ok) throw new Error("Could not get latest commit.");
+    const commitData = await commitRes.json();
+    const baseTreeSha = commitData.tree.sha;
+
+    // 3) create blob for devs file
+    const devContent = devIds.join('\n');
+    const blobDevRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/blobs`, {
+      method: 'POST',
+      headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: devContent, encoding: 'utf-8' })
+    });
+    if(!blobDevRes.ok) throw new Error("Failed creating devs blob.");
+    const blobDevData = await blobDevRes.json();
+
+    // 4) create blob for dm file
+    const dmContent = dmIds.join('\n');
+    const blobDmRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/blobs`, {
+      method: 'POST',
+      headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: dmContent, encoding: 'utf-8' })
+    });
+    if(!blobDmRes.ok) throw new Error("Failed creating data-manager blob.");
+    const blobDmData = await blobDmRes.json();
+
+    // 5) create new tree including both files
+    const newTree = [
+      { path: DEVS_FILE_PATH, mode: '100644', type: 'blob', sha: blobDevData.sha },
+      { path: DM_FILE_PATH,  mode: '100644', type: 'blob', sha: blobDmData.sha }
+    ];
+
+    const treeRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/trees`, {
+      method: 'POST',
+      headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ base_tree: baseTreeSha, tree: newTree })
+    });
+    if(!treeRes.ok) throw new Error("Failed creating tree.");
+    const treeData = await treeRes.json();
+    const newTreeSha = treeData.sha;
+
+    // 6) create commit
+    const commitMessage = `Update devs & data-manager by ${userName}`;
+    const newCommitRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/commits`, {
+      method: 'POST',
+      headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: commitMessage, tree: newTreeSha, parents: [latestCommitSha] })
+    });
+    if(!newCommitRes.ok) throw new Error("Failed creating commit.");
+    const newCommitData = await newCommitRes.json();
+    const newCommitSha = newCommitData.sha;
+
+    // 7) update branch ref
+    const patchRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH}`, {
+      method: 'PATCH',
+      headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sha: newCommitSha })
+    });
+    if(!patchRes.ok) throw new Error("Failed updating branch ref.");
+
+    showToast('Changes saved successfully!', 'success');
+
+    // After successful save, trigger backend sync
+    try {
+      await fetch('https://discord-auth.roumakdatta.workers.dev/sync-devs');
+    } catch(e){
+      console.warn('Failed to trigger sync:', e);
+    }
+
+  } catch(err){
+    showToast('Error saving changes: ' + (err.message || err), 'error');
+  }
+});
+
+/* small helpers */
+function escapeHtml(s){
+  if(!s) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+function escapeJs(s){
+  return String(s).replace(/'/g,"\\'");
+}
+</script>
 </body>
 </html>
