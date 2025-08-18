@@ -1,52 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Developer Management</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #111827; color: #fff; margin: 0; padding: 20px; }
-    h1 { color: #f9fafb; }
-    ul { list-style: none; padding: 0; }
-    li { background: #1f2937; margin: 10px 0; padding: 12px; border-radius: 10px; display:flex; align-items:center; justify-content:space-between; }
-    .profile { display:flex; align-items:center; gap:12px; }
-    .profile img { width:48px; height:48px; border-radius:50%; }
-    .profile-info { display:flex; flex-direction:column; }
-    .profile-info strong { font-size: 15px; color:#f9fafb; }
-    .profile-info small { font-size: 12px; color:#9ca3af; }
-    .remove-btn { background:#dc2626; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; }
-    .remove-btn:hover { background:#b91c1c; }
-    .add-container { margin-top:20px; display:flex; gap:10px; }
-    input { padding:8px; border-radius:6px; border:none; width:200px; }
-    button { cursor:pointer; border:none; border-radius:6px; padding:8px 16px; }
-    #addIdBtn { background:#2563eb; color:white; }
-    #saveChangesBtn { background:#10b981; color:white; margin-top:20px; }
-    .toast { position: fixed; bottom: 20px; right: 20px; background: #374151; padding: 12px 18px; border-radius: 8px; display:none; }
-    .toast.show { display:block; }
+    :root {
+      --bg: #0a0c10;
+      --bg-panel: #111827;
+      --bg-item: #1f2937;
+      --text: #f9fafb;
+      --muted: #9ca3af;
+      --primary: #2563eb;
+      --danger: #dc2626;
+      --success: #10b981;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      background: var(--bg-panel);
+      padding: 24px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 650px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    h1 { margin: 0 0 16px; text-align: center; }
+    ul { list-style: none; padding: 0; margin: 0; max-height: 350px; overflow-y: auto; }
+    li {
+      background: var(--bg-item);
+      margin-bottom: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .profile { display: flex; gap: 12px; align-items: center; }
+    .profile img { width: 48px; height: 48px; border-radius: 50%; }
+    .profile-info { display: flex; flex-direction: column; }
+    .profile-info strong { font-size: 15px; }
+    .profile-info small { font-size: 12px; color: var(--muted); }
+    button {
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .remove-btn { background: var(--danger); color: white; }
+    .remove-btn:hover { background: #b91c1c; }
+    .add-section { display: flex; gap: 10px; margin-top: 16px; }
+    input { flex: 1; padding: 10px; border-radius: 6px; border: none; }
+    .add-btn { background: var(--primary); color: white; }
+    .add-btn:hover { background: #1d4ed8; }
+    .save-btn { background: var(--success); color: white; width: 100%; margin-top: 16px; padding: 14px; font-size: 16px; }
+    .toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: #374151; padding: 12px 18px; border-radius: 8px; transition: bottom .3s; color: white; }
+    .toast.show { bottom: 20px; }
+    .preview { background: var(--bg-item); border-radius: 10px; padding: 16px; margin-top: 16px; }
+    .preview-actions { margin-top: 12px; display: flex; gap: 10px; }
+    .cancel-btn { background: var(--danger); color: white; flex: 1; }
+    .confirm-btn { background: var(--success); color: white; flex: 1; }
   </style>
 </head>
 <body>
-  <h1>Developer Management</h1>
-  <ul id="devList"></ul>
+  <div class="container">
+    <h1>Developer Management</h1>
+    <ul id="devList"><li>Loading...</li></ul>
 
-  <div class="add-container">
-    <input type="text" id="newIdInput" placeholder="Enter Discord User ID" />
-    <button id="addIdBtn">Add</button>
+    <div class="add-section">
+      <input type="text" id="newIdInput" placeholder="Enter Discord User ID">
+      <button class="add-btn" id="addIdBtn">Add</button>
+    </div>
+
+    <div id="previewArea"></div>
+
+    <button class="save-btn" id="saveChangesBtn">Save Changes</button>
   </div>
-  <button id="saveChangesBtn">Save Changes</button>
 
   <div id="toast" class="toast"></div>
 
   <script>
+    const ADMIN_USER_ID = "783972385882767400";
     const GITHUB_REPO = "CraftersMC-Guides-Project/guides-code";
     const DEVS_FILE_PATH = "devs.txt";
     const GITHUB_BRANCH = "main";
-    const ADMIN_USER_ID = "783972385882767400";
-
     let devIds = [];
     let allUsers = [];
-    let added = [];
-    let removed = [];
 
     function getCookie(name) {
       const value = `; ${document.cookie}`;
@@ -64,123 +113,106 @@
     });
 
     async function loadData() {
-      try {
-        const usersResponse = await fetch("https://discord-auth.roumakdatta.workers.dev/users/", { cache: "no-cache" });
-        if (!usersResponse.ok) throw new Error("Could not fetch users list");
-        allUsers = await usersResponse.json();
-
-        const response = await fetch(`/${DEVS_FILE_PATH}`, { cache: 'no-cache' });
-        if (!response.ok) throw new Error('Could not fetch devs.txt');
-        const text = await response.text();
-        devIds = text.split('\n').map(id => id.trim()).filter(id => id);
-
-        renderDevList();
-      } catch (error) {
-        showToast(error.message, 'error');
-      }
+      const usersResp = await fetch("https://discord-auth.roumakdatta.workers.dev/users/");
+      allUsers = await usersResp.json();
+      const devResp = await fetch(`/${DEVS_FILE_PATH}`);
+      const text = await devResp.text();
+      devIds = text.split("\n").map(id=>id.trim()).filter(Boolean);
+      renderList();
     }
 
-    function renderDevList() {
-      const list = document.getElementById('devList');
-      list.innerHTML = '';
-
+    function renderList() {
+      const list = document.getElementById("devList");
+      list.innerHTML = "";
       devIds.forEach(id => {
-        const user = allUsers.find(u => u.id === id);
-        const li = document.createElement('li');
-        li.innerHTML = user ? `
+        const u = allUsers.find(x=>x.id===id);
+        const li = document.createElement("li");
+        li.innerHTML = u ? `
           <div class="profile">
-            <img src="${user.avatar}" alt="avatar">
+            <img src="${u.avatar}" alt="">
             <div class="profile-info">
-              <strong>${user.global_name || user.username}</strong> (${user.username})
-              <small>ID: ${user.id}</small>
-              <small>Role: ${user.role}</small>
+              <strong>${u.global_name || u.username}</strong>
+              <small>ID: ${u.id}</small>
+              <small>Role: ${u.role} ${u.xbox ? `| Xbox: ${u.xbox.name}`:""}</small>
             </div>
           </div>
-          <button class="remove-btn" onclick="confirmRemove('${id}')">Remove</button>
-        ` : `
-          <span>${id} (not found in DB)</span>
-          <button class="remove-btn" onclick="confirmRemove('${id}')">Remove</button>
-        `;
+          <button class="remove-btn" onclick="removeId('${id}')">Remove</button>
+        ` : `${id} (not in DB)`;
         list.appendChild(li);
       });
     }
 
-    async function confirmRemove(id) {
-      const user = allUsers.find(u => u.id === id);
-      if (confirm(`Remove this dev?\n\n${user ? `${user.username} (${user.id})` : id}`)) {
-        removed.push(id);
-        devIds = devIds.filter(x => x !== id);
-        renderDevList();
-      }
+    async function removeId(id) {
+      devIds = devIds.filter(x=>x!==id);
+      renderList();
+      showToast("Marked for removal","info");
     }
 
-    document.getElementById("addIdBtn").addEventListener("click", async () => {
-      const newId = document.getElementById("newIdInput").value.trim();
-      if (!newId) return;
-
-      const user = allUsers.find(u => u.id === newId);
-      if (!user) {
-        showToast("User not found in DB, cannot add.", "error");
+    document.getElementById("addIdBtn").addEventListener("click", async ()=>{
+      const id = document.getElementById("newIdInput").value.trim();
+      if (!id) return;
+      const u = allUsers.find(x=>x.id===id);
+      const area = document.getElementById("previewArea");
+      area.innerHTML = "";
+      if (!u) {
+        area.innerHTML = `<div class="preview">❌ User not found in DB</div>`;
         return;
       }
-
-      if (confirm(`Add this user as dev?\n\n${user.username} (${user.id})`)) {
-        if (!devIds.includes(newId)) {
-          devIds.push(newId);
-          added.push(newId);
-          renderDevList();
-        } else {
-          showToast("User already exists in list.", "error");
-        }
-      }
-      document.getElementById("newIdInput").value = "";
+      area.innerHTML = `
+        <div class="preview">
+          <div class="profile">
+            <img src="${u.avatar}" alt="">
+            <div class="profile-info">
+              <strong>${u.global_name || u.username}</strong>
+              <small>ID: ${u.id}</small>
+              <small>Role: ${u.role} ${u.xbox ? `| Xbox: ${u.xbox.name}`:""}</small>
+            </div>
+          </div>
+          <div class="preview-actions">
+            <button class="cancel-btn" onclick="cancelPreview()">Cancel</button>
+            <button class="confirm-btn" onclick="confirmAdd('${id}')">Confirm Add</button>
+          </div>
+        </div>
+      `;
     });
 
-    document.getElementById("saveChangesBtn").addEventListener("click", async () => {
+    function cancelPreview() { document.getElementById("previewArea").innerHTML=""; }
+    function confirmAdd(id) {
+      if (!devIds.includes(id)) {
+        devIds.push(id);
+        renderList();
+        showToast("User added","success");
+      }
+      cancelPreview();
+    }
+
+    document.getElementById("saveChangesBtn").addEventListener("click", async ()=>{
       try {
-        const token = prompt("Enter GitHub token to commit changes:");
-        if (!token) return;
-
+        const token = getCookie("githubToken");
+        if (!token) { showToast("Missing GitHub token","error"); return; }
         const newContent = devIds.join("\n");
-        const shaResponse = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${DEVS_FILE_PATH}?ref=${GITHUB_BRANCH}`);
-        const shaData = await shaResponse.json();
-        const sha = shaData.sha;
-
-        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${DEVS_FILE_PATH}`, {
-          method: "PUT",
-          headers: {
-            "Authorization": `token ${token}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            message: "Update dev list via admin panel",
-            content: btoa(newContent),
-            sha,
-            branch: GITHUB_BRANCH
-          })
+        const shaResp = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${DEVS_FILE_PATH}?ref=${GITHUB_BRANCH}`);
+        const shaData = await shaResp.json();
+        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${DEVS_FILE_PATH}`,{
+          method:"PUT",
+          headers:{Authorization:`token ${token}`,"Content-Type":"application/json"},
+          body: JSON.stringify({message:"Update dev list",content:btoa(newContent),sha:shaData.sha,branch:GITHUB_BRANCH})
         });
-
         if (res.ok) {
-          showToast("Dev list updated successfully!", "success");
-          // Trigger backend sync
+          showToast("Dev list updated!","success");
           await fetch("https://discord-auth.roumakdatta.workers.dev/sync-devs");
-          added = [];
-          removed = [];
         } else {
-          const errorData = await res.json();
-          showToast("Failed to update: " + (errorData.message || ""), "error");
+          showToast("Update failed","error");
         }
-      } catch (e) {
-        showToast("Error: " + e.message, "error");
-      }
+      } catch(e) { showToast("Error: "+e.message,"error"); }
     });
 
-    function showToast(message, type) {
-      const toast = document.getElementById("toast");
-      toast.innerText = message;
-      toast.style.background = type === "error" ? "#dc2626" : "#16a34a";
-      toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 3000);
+    function showToast(msg,type) {
+      const t=document.getElementById("toast");
+      t.innerText=msg;
+      t.style.background= type==="success"? "#16a34a" : type==="error"? "#dc2626" : "#2563eb";
+      t.classList.add("show");
+      setTimeout(()=>t.classList.remove("show"),3000);
     }
   </script>
 </body>
