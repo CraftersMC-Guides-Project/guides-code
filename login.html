@@ -1,26 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - CraftersMC Guides</title>
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="themes/minecraft/style.css">
+  <script src="../js/script.js"></script>
+  <title>Login - CraftersMC Guides</title>
 </head>
+
 <body>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-container">
+      <div class="line-wobble"></div>
+      <p>Loading...</p>
+    </div>
+  </div>
+
+  <!-- Cookie consent -->
+  <div class="cookie-consent" id="cookie-consent" style="display: none;">
+    <div class="cookie-consent-content">
+      <p>We use cookies to enhance your experience. By clicking “Allow cookies”, you agree to the storing of cookies on your device.</p>
+      <button id="cookie-allow">Allow cookies</button>
+      <button id="cookie-deny">Deny</button>
+    </div>
+  </div>
+
+  <!-- Floating menu -->
+  <button id="floating-menu">
+    <span class="material-icons" id="arrowBtn" style="background:#222;border-radius:50px;">chevron_right</span>
+    <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
+    <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
+    <span class="material-icons" id="scrollToTopBtn">north</span>
+  </button>
+
+  <!-- Ad placeholder (commented) -->
+  <!--
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691" crossorigin="anonymous"></script>
+  <ins class="login-adsbygoogle" style="display:block;width:90%;height:100px;z-index:9999999;" data-ad-client="ca-pub-3105845866547691" data-ad-slot="9849702725"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  -->
+
+  <!-- Login container -->
   <div class="login-container">
     <h3 class="login-h3">Login</h3>
-    <img id="user-avatar" class="login-avatar" src="" alt="User Avatar" style="display:none;">
+    <div id="xbox-danger-msg-container"></div>
+    <img id="user-avatar" class="login-avatar" src="" alt="User Avatar">
     <div class="login-button-container">
       <a id="discord-login-button" class="login-discord-login-button">
+        <svg width="24px" height="24px" viewBox="0 -28.5 256 256" xmlns="http://www.w3.org/2000/svg">
+          <g fill="#ffffff">
+            <path d="M216.8 16.6C200.2 8.6..."></path>
+          </g>
+        </svg>
         Login with Discord
       </a>
     </div>
+    <hr class="login-hr" />
+    <div class="login-other-options">
+      <span>Don't have a Discord account? <a href="https://discord.com/register" target="_blank">Sign up on Discord</a></span>
+    </div>
+    <div class="login-message" id="message"></div>
     <div id="login-status" style="display:none;"></div>
     <div id="username-display" style="display:none;"></div>
     <button id="logout-button" class="login-logout-button" style="display:none;">Logout</button>
   </div>
 
+  <!-- Modal -->
+  <div id="login-modal" style="display:none;">
+    <div class="login-modal-backdrop"></div>
+    <div class="login-modal-content">
+      <h3 class="login-h3">How to Login</h3>
+      <ol>
+        <li>
+          <b>Have a Discord account:</b><br>
+          If you don't have one, <a href="https://discord.com/register" target="_blank" style="color:#7289da;">sign up here</a>.
+        </li>
+        <li style="margin-top:1em;">
+          <b>Connect your Xbox account to Discord:</b><br>
+          Go to <a href="https://discord.com/channels/@me" target="_blank" style="color:#7289da;">Discord Connections</a> and connect your Xbox account.
+        </li>
+        <li style="margin-top:1em;">
+          <b>Click “Login with Discord”</b> and authorize.
+        </li>
+      </ol>
+      <button id="login-modal-close" class="login-logout-button" style="margin-top:12px;">Close</button>
+    </div>
+  </div>
+
+  <!-- JS -->
   <script>
+    // --- Cookie helpers ---
     function setCookie(name, value, days = 7) {
       const expires = new Date(Date.now() + days * 864e5).toUTCString();
       document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
@@ -38,67 +111,121 @@
     document.addEventListener('DOMContentLoaded', function () {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
+
+      const messageDiv = document.getElementById('message');
       const loginStatus = document.getElementById('login-status');
       const usernameDisplay = document.getElementById('username-display');
       const logoutButton = document.getElementById('logout-button');
       const discordLoginBtn = document.getElementById('discord-login-button');
+      const userAvatar = document.getElementById('user-avatar');
 
+      // Cookie consent banner
+      const cookieConsentBar = document.getElementById('cookie-consent');
+      const cookieAllowBtn = document.getElementById('cookie-allow');
+      const cookieDenyBtn = document.getElementById('cookie-deny');
+      const savedConsent = localStorage.getItem('cookieConsent');
+      if (!savedConsent) cookieConsentBar.style.display = 'block';
+      cookieAllowBtn.onclick = () => { localStorage.setItem('cookieConsent','allowed'); cookieConsentBar.style.display='none'; };
+      cookieDenyBtn.onclick = () => { localStorage.setItem('cookieConsent','denied'); cookieConsentBar.style.display='none'; };
+
+      // If already logged in (cookie)
       const storedUser = getCookie('discordUser');
       if (storedUser) {
         try {
           const userObj = JSON.parse(storedUser);
           if (userObj && userObj.id) {
-            showLoggedInState(userObj);
+            showLoggedInState(userObj, null);
           }
         } catch {}
       }
 
+      // OAuth code present → exchange
       if (code) {
         window.history.replaceState({}, document.title, window.location.pathname);
+        const workerUrl = 'https://discord-auth.roumakdatta.workers.dev/';
 
-        fetch(`https://discord-auth.roumakdatta.workers.dev/?code=${encodeURIComponent(code)}`)
-          .then(res => res.json())
-          .then(data => {
-            if (!data || !data.id) {
-              loginStatus.textContent = 'Login failed.';
-              loginStatus.style.display = 'block';
-              return;
-            }
-            const userData = { id: data.id, xbox: data.xbox || null };
-            setCookie('discordUser', JSON.stringify(userData), 7);
-            showLoggedInState(userData);
+        fetch(`${workerUrl}?code=${encodeURIComponent(code)}`)
+          .then(async (response) => {
+            const text = await response.text();
+            let payload;
+            try { payload = JSON.parse(text); } catch { throw new Error(text); }
+            if (!response.ok || payload.error) throw new Error(payload.error || payload.details || "Login failed");
+            return payload;
           })
-          .catch(() => {
-            loginStatus.textContent = 'Login failed.';
-            loginStatus.style.display = 'block';
+          .then(async (data) => {
+            const userId = data.user?.id || data.id;
+            const xboxName = data.user?.xbox?.name || data.xbox || null;
+            setCookie('discordUser', JSON.stringify({ id: userId, xbox: xboxName }), 7);
+
+            // Fetch record from DB
+            let dbData = null;
+            try {
+              const dbRes = await fetch(workerUrl + "users/" + encodeURIComponent(userId));
+              dbData = await dbRes.json();
+            } catch {}
+
+            showLoggedInState({ id: userId, xbox: xboxName }, dbData);
+          })
+          .catch((err) => {
+            showError("Login failed", err.message);
           });
       }
 
-      discordLoginBtn.addEventListener('click', e => {
+      // Buttons
+      discordLoginBtn.addEventListener('click', (e) => {
         e.preventDefault();
         window.location.href =
           "https://discord.com/oauth2/authorize?client_id=1359486772366672022&response_type=code&redirect_uri=https%3A%2F%2Fcraftersmc-guides.pages.dev%2Flogin&scope=identify+connections";
       });
-
       logoutButton.addEventListener('click', logout);
 
-      function showLoggedInState(user) {
+      // Helpers
+      function showError(title, details) {
+        messageDiv.innerHTML = `<span style="color:#ff6b6b;"><b>${title}</b>${details ? ": " + details : ""}</span>`;
+      }
+      function showLoggedInState(cookieUser, dbData) {
+        const hasXbox = !!cookieUser.xbox;
+        // Warning if Xbox missing
+        const dangerContainer = document.getElementById('xbox-danger-msg-container');
+        dangerContainer.innerHTML = "";
+        if (!hasXbox) {
+          const msg = document.createElement('div');
+          msg.style.background = '#dc354599';
+          msg.style.color = '#fff';
+          msg.style.padding = '10px';
+          msg.style.borderRadius = '6px';
+          msg.style.margin = '10px 0';
+          msg.style.textAlign = 'center';
+          msg.innerHTML = `No Xbox account detected. Connect it in <a href="https://discord.com/channels/@me" target="_blank" style="color:#fff;">Discord Connections</a>`;
+          dangerContainer.appendChild(msg);
+        }
+        document.querySelector('.login-button-container').style.display = 'none';
         loginStatus.textContent = 'Logged in Successfully!';
         loginStatus.style.display = 'block';
-
-        usernameDisplay.textContent = `ID: ${user.id}${user.xbox ? ` | Xbox: ${user.xbox}` : ''}`;
+        if (dbData && dbData.avatar) {
+          userAvatar.src = `https://cdn.discordapp.com/avatars/${dbData.id}/${dbData.avatar}.webp`;
+          userAvatar.style.display = 'block';
+        }
+        usernameDisplay.textContent = `ID: ${cookieUser.id}${cookieUser.xbox ? " | Xbox: " + cookieUser.xbox : ""}`;
         usernameDisplay.style.display = 'block';
-
-        document.querySelector('.login-button-container').style.display = 'none';
+        if (dbData) {
+          const extra = document.createElement('div');
+          extra.style.marginTop = '8px';
+          extra.style.color = '#fff';
+          extra.style.textAlign = 'center';
+          extra.textContent = `${dbData.username || ""} ${dbData.global_name || ""} | Role: ${dbData.role || "user"}`;
+          usernameDisplay.parentNode.insertBefore(extra, usernameDisplay.nextSibling);
+        }
         logoutButton.style.display = 'block';
       }
-
       function logout() {
         deleteCookie('discordUser');
-        loginStatus.style.display = 'none';
         usernameDisplay.style.display = 'none';
+        userAvatar.style.display = 'none';
+        loginStatus.style.display = 'none';
         document.querySelector('.login-button-container').style.display = 'flex';
         logoutButton.style.display = 'none';
+        messageDiv.textContent = 'Please log in to continue.';
       }
     });
   </script>
