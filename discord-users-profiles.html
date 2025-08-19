@@ -1,158 +1,415 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Discord User Profiles</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Discord — Users Profiles</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    #profiles {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-    .card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      padding: 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.2s;
-      border: 3px solid grey;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-    }
-    .avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      margin-bottom: 10px;
-      object-fit: cover;
-    }
-    .username {
-      font-weight: bold;
-      font-size: 18px;
-    }
-    .role {
-      margin-top: 5px;
-      font-size: 14px;
-      color: #555;
-    }
-    /* Role colors */
-    .role-rank-seller { border-color: green; }
-    .role-dev { border-color: red; }
-    .role-manager { border-color: goldenrod; }
-    .role-data-manager { border-color: blue; }
-    .role-normal-user { border-color: grey; }
+    /* --- Theme & tokens --- */
+    :root{
+      --bg-1: #071226;     /* page background */
+      --bg-2: #0b1624;     /* card background */
+      --muted: #9fb0c8;
+      --glass: rgba(255,255,255,0.03);
+      --card-radius: 14px;
 
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
+      --role-green: #22c55e;   /* rank seller */
+      --role-red: #ef4444;     /* dev */
+      --role-gold: #f59e0b;    /* manager */
+      --role-blue: #3b82f6;    /* data manager */
+      --role-grey: #9ca3af;    /* normal user */
+
+      --accent: #7c5cff;
+      --glass-2: rgba(255,255,255,0.02);
+      --text: #e6f0fb;
     }
-    .modal-content {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      max-width: 400px;
-      width: 90%;
-      position: relative;
+
+    /* --- Reset / base --- */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 400px at 10% 10%, rgba(124,92,255,0.10), transparent), linear-gradient(180deg,var(--bg-1),#051026 100%);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:28px;
     }
-    .close {
-      position: absolute;
-      top: 10px; right: 15px;
-      font-size: 20px;
-      cursor: pointer;
+
+    /* --- Layout --- */
+    .app {
+      max-width:1200px;
+      margin:0 auto;
+    }
+    header{
+      display:flex;align-items:center;gap:16px;margin-bottom:18px
+    }
+    .logo{
+      display:flex;gap:12px;align-items:center
+    }
+    .brand {
+      width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#4fb6ff);display:grid;place-items:center;font-weight:700;color:white;font-size:18px
+    }
+    h1{margin:0;font-size:18px}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    .controls{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;align-items:center}
+    .controls .left{display:flex;gap:8px;align-items:center;flex:1;min-width:280px}
+    .controls input[type=search]{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:var(--glass-2);color:var(--text)}
+    select, button{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);cursor:pointer}
+
+    .toolbar{margin-left:auto;display:flex;gap:8px}
+    .btn{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:10px 12px;border-radius:10px;color:var(--text);font-weight:600}
+
+    /* --- Grid / Cards --- */
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:20px}
+
+    .card{
+      display:flex;gap:12px;align-items:center;padding:14px;border-radius:var(--card-radius);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03);
+      transition:transform .15s ease, box-shadow .15s ease;
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+      border-left:6px solid transparent;
+    }
+    .card:hover{transform:translateY(-6px);box-shadow:0 14px 30px rgba(2,6,23,0.6)}
+
+    .avatar{width:64px;height:64px;border-radius:12px;flex:0 0 64px;overflow:hidden;display:grid;place-items:center;background:linear-gradient(135deg,rgba(255,255,255,0.02),transparent)}
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+    .initials{width:100%;height:100%;display:grid;place-items:center;font-weight:700;font-size:18px;color:var(--text)}
+
+    .meta{flex:1}
+    .meta .title{display:flex;gap:8px;align-items:center}
+    .meta .name{font-weight:700}
+    .meta .username{color:var(--muted);font-size:13px}
+    .meta .info{margin-top:8px;display:flex;gap:10px;color:var(--muted);font-size:13px;flex-wrap:wrap}
+
+    .badge{padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px;display:inline-flex;align-items:center;gap:8px}
+    .badge.seller{background:var(--role-green);color:#052014}
+    .badge.dev{background:var(--role-red);color:white}
+    .badge.manager{background:var(--role-gold);color:#1b1200}
+    .badge.data-manager{background:var(--role-blue);color:white}
+    .badge.normal{background:var(--role-grey);color:#081018}
+
+    /* card role accent via class on card */
+    .role-rank-seller{border-left-color:var(--role-green)}
+    .role-dev{border-left-color:var(--role-red)}
+    .role-manager{border-left-color:var(--role-gold)}
+    .role-data-manager{border-left-color:var(--role-blue)}
+    .role-normal-user{border-left-color:var(--role-grey)}
+
+    /* --- Modal --- */
+    .overlay{position:fixed;inset:0;background:linear-gradient(rgba(0,0,0,0.45),rgba(0,0,0,0.6));display:none;align-items:center;justify-content:center;padding:20px}
+    .overlay.show{display:flex}
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:18px;max-width:820px;width:100%;display:grid;grid-template-columns:160px 1fr;gap:16px;border:1px solid rgba(255,255,255,0.04)}
+    .panel .avatar{width:160px;height:160px;border-radius:12px}
+    .panel h2{margin:0}
+    .details{display:flex;flex-direction:column;gap:8px}
+    .field{background:transparent;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);color:var(--muted)}
+
+    footer{margin-top:20px;color:var(--muted);font-size:13px;text-align:center}
+
+    @media (max-width:640px){
+      .panel{grid-template-columns:1fr}
+      .controls{flex-direction:column}
     }
   </style>
 </head>
 <body>
-  <h1>Discord User Profiles</h1>
-  <div id="profiles"></div>
+  <div class="app">
+    <header>
+      <div class="logo">
+        <div class="brand">DA</div>
+        <div>
+          <h1>Discord — Users</h1>
+          <p class="lead">Fetches user profiles from your endpoint and displays them as profile cards.</p>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button id="refreshBtn" class="btn">Refresh</button>
+        <button id="downloadBtn" class="btn">Download JSON</button>
+      </div>
+    </header>
 
-  <div class="modal" id="modal">
-    <div class="modal-content">
-      <span class="close" id="closeBtn">&times;</span>
-      <div id="modalBody"></div>
+    <div class="controls">
+      <div class="left">
+        <input id="search" type="search" placeholder="Search username, global name, xbox or id" />
+        <select id="roleFilter">
+          <option value="">All roles</option>
+          <option value="normal user">Normal user</option>
+          <option value="rank seller">Rank seller</option>
+          <option value="dev">Dev</option>
+          <option value="manager">Manager</option>
+          <option value="data manager">Data manager</option>
+        </select>
+      </div>
+
+      <select id="sortBy">
+        <option value="last_login_desc">Last login — newest</option>
+        <option value="last_login_asc">Last login — oldest</option>
+        <option value="login_count_desc">Login count — high</option>
+      </select>
+    </div>
+
+    <main>
+      <div id="grid" class="grid"></div>
+    </main>
+
+    <footer>Click a card to view full profile • Avatars from Discord CDN where available • Defaults to “normal user” when role is missing.</footer>
+  </div>
+
+  <!-- Modal -->
+  <div id="overlay" class="overlay" aria-hidden="true">
+    <div class="panel" role="dialog" aria-modal="true">
+      <div class="avatar" id="modalAvatar"></div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:start">
+          <div>
+            <h2 id="modalName">Name</h2>
+            <div id="modalHandle" style="color:var(--muted)">@username</div>
+          </div>
+          <div>
+            <button id="closeBtn" class="btn">Close</button>
+          </div>
+        </div>
+
+        <div class="details" style="margin-top:12px">
+          <div><strong>Role</strong><div id="modalRole" class="field" style="display:inline-block;margin-top:6px"></div></div>
+          <div><strong>Verified</strong><div id="modalVerified" class="field" style="display:inline-block;margin-top:6px"></div></div>
+          <div><strong>Xbox</strong><div id="modalXbox" class="field" style="display:inline-block;margin-top:6px"></div></div>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <div style="flex:1"><strong>First login</strong><div id="modalFirst" class="field"></div></div>
+            <div style="flex:1"><strong>Last login</strong><div id="modalLast" class="field"></div></div>
+          </div>
+          <div><strong>Login count</strong><div id="modalCount" class="field" style="display:inline-block;margin-top:6px"></div></div>
+          <div><strong>Raw ID</strong><div id="modalId" class="field" style="font-family:monospace;margin-top:6px"></div></div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
-    async function fetchUsers() {
-      const res = await fetch("https://discord-auth.roumakdatta.workers.dev/users/");
-      const data = await res.json();
-      return data;
+    // Configuration
+    const DATA_URL = 'https://discord-auth.roumakdatta.workers.dev/users/';
+
+    // Elements
+    const grid = document.getElementById('grid');
+    const searchInput = document.getElementById('search');
+    const roleFilter = document.getElementById('roleFilter');
+    const sortBy = document.getElementById('sortBy');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    const overlay = document.getElementById('overlay');
+    const closeBtn = document.getElementById('closeBtn');
+
+    // Modal fields
+    const modalAvatar = document.getElementById('modalAvatar');
+    const modalName = document.getElementById('modalName');
+    const modalHandle = document.getElementById('modalHandle');
+    const modalRole = document.getElementById('modalRole');
+    const modalVerified = document.getElementById('modalVerified');
+    const modalXbox = document.getElementById('modalXbox');
+    const modalFirst = document.getElementById('modalFirst');
+    const modalLast = document.getElementById('modalLast');
+    const modalCount = document.getElementById('modalCount');
+    const modalId = document.getElementById('modalId');
+
+    // In-memory data
+    let rawData = [];
+
+    // Helpers
+    function normalizeRole(role){
+      if(!role || typeof role !== 'string' || role.trim()==='') return 'normal user';
+      const r = role.toLowerCase().trim();
+      if(r.includes('rank seller') || r.includes('seller')) return 'rank seller';
+      if(r === 'dev' || r.includes('dev') || r.includes('developer')) return 'dev';
+      if(r.includes('data manager')) return 'data manager';
+      if(r.includes('manager')) return 'manager';
+      return 'normal user';
     }
 
-    function getRoleClass(role) {
-      role = role ? role.toLowerCase() : "normal user";
-      if (role.includes("rank seller")) return "role-rank-seller";
-      if (role.includes("dev")) return "role-dev";
-      if (role.includes("manager") && !role.includes("data")) return "role-manager";
-      if (role.includes("data manager")) return "role-data-manager";
-      return "role-normal-user";
+    function roleClass(role){
+      const k = normalizeRole(role);
+      switch(k){
+        case 'rank seller': return 'role-rank-seller badge seller';
+        case 'dev': return 'role-dev badge dev';
+        case 'manager': return 'role-manager badge manager';
+        case 'data manager': return 'role-data-manager badge data-manager';
+        default: return 'role-normal-user badge normal';
+      }
     }
 
-    function createCard(user) {
-      const role = user.role || "normal user";
-      const card = document.createElement("div");
-      card.className = `card ${getRoleClass(role)}`;
-      card.innerHTML = `
-        <img class="avatar" src="${user.avatar ? (user.avatar.startsWith("http") ? user.avatar : `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`) : 'https://via.placeholder.com/80'}" alt="${user.username}">
-        <div class="username">${user.global_name || user.username}</div>
-        <div class="role">${role}</div>
-      `;
-      card.addEventListener("click", () => showModal(user));
+    function roleCardClass(role){
+      const k = normalizeRole(role);
+      switch(k){
+        case 'rank seller': return 'role-rank-seller';
+        case 'dev': return 'role-dev';
+        case 'manager': return 'role-manager';
+        case 'data manager': return 'role-data-manager';
+        default: return 'role-normal-user';
+      }
+    }
+
+    function avatarUrl(u){
+      if(!u) return null;
+      if(u.avatar && typeof u.avatar === 'string'){
+        if(u.avatar.startsWith('http')) return u.avatar;
+        return `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
+      }
+      return null;
+    }
+
+    function initials(name, fallback){
+      const s = (name || fallback || '').trim();
+      if(!s) return 'U';
+      const parts = s.split(/\s+/).filter(Boolean);
+      if(parts.length === 1) return parts[0][0].toUpperCase();
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+
+    function formatDate(iso){
+      if(!iso) return '-';
+      try{
+        const d = new Date(iso);
+        return new Intl.DateTimeFormat('en-IN', {dateStyle:'medium', timeStyle:'short', timeZone:'Asia/Kolkata'}).format(d);
+      }catch(e){return iso}
+    }
+
+    // Fetch and render
+    async function fetchData(){
+      grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;color:var(--muted)">Loading…</div>`;
+      try{
+        const res = await fetch(DATA_URL, {cache: 'no-store'});
+        if(!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        rawData = Array.isArray(data) ? data : (data ? [data] : []);
+        // ensure each user has role default
+        rawData = rawData.map(u => ({...u, role: normalizeRole(u.role)}));
+        renderGrid();
+      }catch(err){
+        console.error(err);
+        grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;color:tomato">Failed to fetch users: ${err.message}</div>`;
+      }
+    }
+
+    function createCard(user){
+      const card = document.createElement('div');
+      card.className = `card ${roleCardClass(user.role)}`;
+      card.tabIndex = 0;
+
+      // Avatar
+      const avatar = document.createElement('div'); avatar.className = 'avatar';
+      const url = avatarUrl(user);
+      if(url){
+        const img = document.createElement('img'); img.src = url; img.alt = user.username || 'avatar';
+        avatar.appendChild(img);
+      }else{
+        const inic = document.createElement('div'); inic.className = 'initials'; inic.textContent = initials(user.global_name, user.username);
+        avatar.appendChild(inic);
+      }
+
+      // Meta
+      const meta = document.createElement('div'); meta.className = 'meta';
+      const title = document.createElement('div'); title.className = 'title';
+      const name = document.createElement('div'); name.className = 'name'; name.textContent = user.global_name || user.username || 'Unknown';
+      const uname = document.createElement('div'); uname.className = 'username'; uname.textContent = '@' + (user.username || '');
+      title.appendChild(name); title.appendChild(uname);
+
+      const info = document.createElement('div'); info.className = 'info';
+      const roleBadge = document.createElement('span'); roleBadge.className = roleClass(user.role); roleBadge.textContent = (user.role || 'normal user').toUpperCase();
+
+      const details = document.createElement('div'); details.className = 'info';
+      details.innerHTML = `<div style="display:flex;gap:8px;align-items:center"><small style="color:var(--muted)">Last:</small><small>${formatDate(user.last_login)}</small></div>`;
+
+      meta.appendChild(title);
+      meta.appendChild(roleBadge);
+      meta.appendChild(details);
+
+      card.appendChild(avatar);
+      card.appendChild(meta);
+
+      card.addEventListener('click', () => openModal(user));
+      card.addEventListener('keypress', (e)=> { if(e.key === 'Enter') openModal(user); });
+
       return card;
     }
 
-    function showModal(user) {
-      const modal = document.getElementById("modal");
-      const body = document.getElementById("modalBody");
-      const role = user.role || "normal user";
-      body.innerHTML = `
-        <h2>${user.global_name || user.username}</h2>
-        <p><strong>Username:</strong> ${user.username}</p>
-        <p><strong>Role:</strong> ${role}</p>
-        <p><strong>Verified:</strong> ${user.verified}</p>
-        <p><strong>First Login:</strong> ${user.first_login}</p>
-        <p><strong>Last Login:</strong> ${user.last_login}</p>
-        <p><strong>Login Count:</strong> ${user.login_count}</p>
-        ${user.xbox ? `<p><strong>Xbox:</strong> ${user.xbox.name} (${user.xbox.verified ? "Verified" : "Not Verified"})</p>` : ""}
-      `;
-      modal.style.display = "flex";
+    function renderGrid(){
+      const q = (searchInput.value || '').trim().toLowerCase();
+      const role = (roleFilter.value || '').toLowerCase();
+      const sort = sortBy.value;
+
+      let list = rawData.slice();
+      if(role){
+        list = list.filter(u => (u.role || 'normal user').toLowerCase() === role);
+      }
+      if(q){
+        list = list.filter(u => {
+          return (u.username || '').toLowerCase().includes(q) || (u.global_name || '').toLowerCase().includes(q) || (u.id || '').includes(q) || (u.xbox && (u.xbox.name || '').toLowerCase().includes(q));
+        });
+      }
+
+      list.sort((a,b)=>{
+        if(sort === 'last_login_desc') return (new Date(b.last_login || 0)) - (new Date(a.last_login || 0));
+        if(sort === 'last_login_asc') return (new Date(a.last_login || 0)) - (new Date(b.last_login || 0));
+        if(sort === 'login_count_desc') return (b.login_count || 0) - (a.login_count || 0);
+        return 0;
+      });
+
+      grid.innerHTML = '';
+      if(list.length === 0){
+        grid.innerHTML = `<div style="grid-column:1/-1;padding:18px;color:var(--muted)">No users match your criteria.</div>`;
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      list.forEach(u => fragment.appendChild(createCard(u)));
+      grid.appendChild(fragment);
     }
 
-    document.getElementById("closeBtn").onclick = () => {
-      document.getElementById("modal").style.display = "none";
-    };
-    window.onclick = (e) => {
-      if (e.target == document.getElementById("modal")) {
-        document.getElementById("modal").style.display = "none";
-      }
-    };
+    // Modal
+    function openModal(user){
+      modalAvatar.innerHTML = '';
+      const url = avatarUrl(user);
+      if(url){ const img = document.createElement('img'); img.src = url; img.alt = user.username; modalAvatar.appendChild(img);} else { modalAvatar.innerHTML = `<div class="initials" style="font-size:48px">${initials(user.global_name, user.username)}</div>`; }
 
-    (async () => {
-      const users = await fetchUsers();
-      const container = document.getElementById("profiles");
-      users.forEach(user => container.appendChild(createCard(user)));
-    })();
+      modalName.textContent = user.global_name || user.username;
+      modalHandle.textContent = '@' + (user.username || '');
+
+      // role
+      modalRole.textContent = (user.role || 'normal user').toUpperCase();
+      modalRole.className = 'field ' + (roleClass(user.role).split(' ')[1] || 'normal');
+
+      modalVerified.textContent = String(!!user.verified);
+      modalXbox.textContent = user.xbox ? `${user.xbox.name} (${user.xbox.verified ? 'Verified' : 'Not verified'})` : '-';
+      modalFirst.textContent = formatDate(user.first_login);
+      modalLast.textContent = formatDate(user.last_login);
+      modalCount.textContent = user.login_count ?? 0;
+      modalId.textContent = user.id || '';
+
+      overlay.classList.add('show');
+      overlay.setAttribute('aria-hidden','false');
+    }
+
+    closeBtn.addEventListener('click', ()=> { overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); });
+    overlay.addEventListener('click', (e)=>{ if(e.target === overlay) { overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); } });
+
+    // Controls
+    searchInput.addEventListener('input', renderGrid);
+    roleFilter.addEventListener('change', renderGrid);
+    sortBy.addEventListener('change', renderGrid);
+    refreshBtn.addEventListener('click', fetchData);
+
+    downloadBtn.addEventListener('click', ()=>{
+      const blob = new Blob([JSON.stringify(rawData, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'users.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    // initial load
+    fetchData();
   </script>
 </body>
 </html>
