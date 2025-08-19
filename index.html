@@ -119,7 +119,7 @@
       }
     }
 
-    /* Updated Profile Card Styles for Top-Right Corner */
+    /* Enhanced Profile Card Styles for Top-Right Corner */
     .profile-card {
       position: fixed;
       top: 80px;
@@ -128,39 +128,61 @@
       
       display: none; /* Hide by default, JS will change to 'flex' */
       align-items: center;
-      gap: 10px;
+      gap: 12px; /* Increased gap */
       
-      background-color: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(5px);
-      padding: 8px 12px;
+      background-color: rgba(20, 20, 20, 0.7); /* Slightly darker */
+      backdrop-filter: blur(8px);
+      padding: 10px 16px; /* Increased padding */
       border-radius: 50px;
       color: white;
       text-decoration: none;
-      transition: background-color 0.3s;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transition: background-color 0.3s, transform 0.3s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: fade-in-down 0.5s ease-out forwards;
     }
     
     .profile-card:hover {
         background-color: rgba(0, 0, 0, 0.8);
+        transform: translateY(-2px);
     }
 
     #user-avatar {
-      width: 32px;
-      height: 32px;
+      width: 40px; /* Increased size */
+      height: 40px; /* Increased size */
       border-radius: 50%;
       object-fit: cover;
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    
+    #user-details {
+        text-align: left;
     }
 
     #user-name {
-      font-size: 14px;
-      font-weight: 500;
+      font-size: 16px; /* Increased size */
+      font-weight: 600; /* Bolder */
+      line-height: 1.2;
     }
 
     #user-tag {
-      font-size: 10px;
+      font-size: 11px; /* Increased size */
       font-weight: 700;
       text-transform: uppercase;
+      opacity: 0.9;
+      margin-top: 2px;
+      display: block; /* Ensures it takes its own line */
+    }
+
+    @keyframes fade-in-down {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     @media (max-width: 768px) {
@@ -213,7 +235,7 @@
   <!-- New Profile Card HTML -->
   <a href="/profile.html" class="profile-card" id="profile-card">
     <img id="user-avatar" src="https://placehold.co/110x110/dddddd/333333?text=...&font=inter" alt="User Avatar" />
-    <div>
+    <div id="user-details">
         <div id="user-name">Loading...</div>
         <div id="user-tag"></div>
     </div>
