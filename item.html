@@ -11,25 +11,7 @@
   <style>
     /* --- Existing Styles for item.html --- */
     .top { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
-    #dev-actions-container { position: fixed; top: 150px; right: 20px; z-index: 1001; } /* Adjusted top position */
     .login-btn { background-color: #5865F2; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 8px; }
-    .dev-btn { background-color: #313131; color: #FFFFFF; padding: 10px 15px; border: 2px solid #555; border-radius: 4px; font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s; }
-    .dev-btn:hover { background-color: #424242; }
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 9998; }
-    .modal-content { background: #2a2a2a; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; border: 1px solid #444; }
-    .modal-content h3 { margin-top: 0; }
-    .modal-content input { width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 15px; background: #1a1a1a; border: 1px solid #555; color: white; border-radius: 5px;}
-    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
-    .modal-btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
-    .modal-btn-save { background-color: #28a745; color: white; }
-    .modal-btn-cancel { background-color: #6c757d; color: white; }
-    .toggle-switch-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-    .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 28px; }
-    .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-    input:checked + .slider { background-color: #28a745; }
-    input:checked + .slider:before { transform: translateX(22px); }
     .toast-notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 8px; color: white; font-weight: 500; transition: bottom 0.5s ease-in-out; z-index: 10001; }
     .toast-notification.show { bottom: 30px; }
     .toast-notification.success { background-color: #2d8831; }
@@ -80,12 +62,10 @@
     @keyframes fade-in-down { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     
     @media (max-width: 768px) { 
-      #dev-actions-container { top: 130px; }
       .profile-card { top: 65px; right: 10px; padding: 8px 14px; gap: 12px; min-width: 0; }
       #user-avatar { width: 40px; height: 40px; }
       #user-name { font-size: 16px; }
       #user-tag { font-size: 10px; }
-      .dev-btn { padding: 6px 10px; font-size: 12px; } .dev-btn .material-icons { font-size: 16px; } 
     }
   </style>
 </head>
@@ -101,45 +81,20 @@
         <div id="user-tag"></div>
     </div>
   </a>
-  <div id="dev-actions-container"></div>
 
   <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
   <span class="item-material-icons" id="scrollToTopBtn">north</span>
-  <div class="item-filter-buttons" style="display:flex;gap:10px;justify-content:center;margin:5rem 0;">
-    <button class="btn item-filter-btn" data-nature="reset">Reset Filter</button>
-  </div>
-  <div class="item-container" id="itemDetails"><p>Loading item details...</p></div>
+  
+  <div class="item-container" id="itemDetails" style="margin-top: 5rem;"><p>Loading item details...</p></div>
   <div class="item-nav-buttons">
     <button id="prevItemBtn" class="btn" type="button">&larr; Previous</button>
     <button id="nextItemBtn" class="btn" type="button">Next &rarr;</button>
   </div>
   <div id="footer"></div>
 
-  <div id="price-modal" class="modal-overlay">
-    <div class="modal-content">
-        <h3>Update Item Details</h3>
-        <label for="marketPriceInput">Market Price:</label>
-        <input type="number" id="marketPriceInput" placeholder="Enter new market price">
-        <label for="npcPriceInput">NPC Trade Price:</label>
-        <input type="number" id="npcPriceInput" placeholder="Leave blank if not applicable">
-        <div class="toggle-switch-container">
-            <span>Public Status:</span>
-            <label class="switch"><input type="checkbox" id="publicStatusToggle"><span class="slider"></span></label>
-        </div>
-        <div class="modal-actions">
-            <button id="cancel-price-update" class="modal-btn modal-btn-cancel">Cancel</button>
-            <button id="save-price-update" class="modal-btn modal-btn-save">Save Changes</button>
-        </div>
-    </div>
-  </div>
-
   <script>
-    const GITHUB_REPO = "CraftersMC-Guides-Project/guides-code";
-    const MARKET_FILE_PATH = "market/market.txt";
-    const PRICES_FILE_PATH = "market/mprices.txt";
-    const GITHUB_BRANCH = "main";
     let isDevUser = false;
     let allItems = [];
 
@@ -219,8 +174,10 @@
           const item = items.find(item => item.id === itemId);
           if (item) {
             const isPublic = item.hasOwnProperty("public") ? item.public : true;
-            if (!isPublic && !isDevUser) { document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`; document.getElementById("dev-actions-container").innerHTML = ""; return; }
-            if (isDevUser) { document.getElementById("dev-actions-container").innerHTML = `<button class="dev-btn" onclick="openUpdateModal()"><span class="material-icons">edit</span>Edit Details</button>`; }
+            if (!isPublic && !isDevUser) { 
+                document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`; 
+                return; 
+            }
             const pricesMap = new Map(); const npcPricesMap = new Map();
             pricesData.split('\n').forEach(line => { const [id, arrayStr] = line.split(':').map(part => part.trim()); if (id && arrayStr) { try { const parsedArray = JSON.parse(arrayStr); if (Array.isArray(parsedArray) && parsedArray.length >= 2) { pricesMap.set(id, parsedArray[1]); if (parsedArray.length >= 3) { npcPricesMap.set(id, parsedArray[2]); } } } catch (e) {} } });
             const marketPrice = pricesMap.get(item.id) ?? item.price ?? "N/A";
@@ -230,113 +187,6 @@
           } else { document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`; }
         } catch (error) { console.error('Error loading item details:', error); document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: Could not load item details.</h2>`; }
       }
-    }
-
-    async function openUpdateModal() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const itemId = urlParams.get('item');
-        try {
-            const [pricesRes, marketRes] = await Promise.all([
-                fetch('market/mprices.txt', { cache: 'no-cache' }),
-                fetch('market/market.txt', { cache: 'no-cache' })
-            ]);
-            const pricesData = await pricesRes.text();
-            const marketData = await marketRes.json();
-            const item = marketData.find(i => i.id === itemId);
-            if(item) {
-                document.getElementById('publicStatusToggle').checked = item.public;
-            }
-            const lines = pricesData.split('\n');
-            const line = lines.find(l => l.startsWith(itemId + ':'));
-            if (line) {
-                const arrayStr = line.split(':')[1].trim();
-                const parsedArray = JSON.parse(arrayStr);
-                document.getElementById('marketPriceInput').value = parsedArray[1] || '';
-                document.getElementById('npcPriceInput').value = parsedArray[2] || '';
-            }
-        } catch (e) {
-            showToast('Could not load current item data.', 'error');
-        }
-        document.getElementById('price-modal').style.display = 'flex';
-    }
-
-    document.getElementById('cancel-price-update').addEventListener('click', () => {
-        document.getElementById('price-modal').style.display = 'none';
-    });
-    
-    document.getElementById('save-price-update').addEventListener('click', async () => {
-        const token = getCookie('githubToken');
-        if (!token) {
-            showToast('Token not found. Please add it via your profile.', 'error');
-            return;
-        }
-        const storedUser = getCookie("discordUser");
-        if (!storedUser) {
-            showToast('Could not identify user. Please log in again.', 'error');
-            return;
-        }
-        const user = JSON.parse(storedUser);
-        const userName = user.global_name || user.username;
-        showToast('Saving changes...', 'info');
-        await saveAllChanges(token, userName);
-    });
-
-    async function saveAllChanges(token, userName) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const itemId = urlParams.get('item');
-        try {
-            const refRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH}`, { headers: { Authorization: `token ${token}` } });
-            if (!refRes.ok) throw new Error("Could not get branch reference.");
-            const refData = await refRes.json();
-            const latestCommitSha = refData.object.sha;
-            const commitRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/commits/${latestCommitSha}`, { headers: { Authorization: `token ${token}` } });
-            if (!commitRes.ok) throw new Error("Could not get latest commit.");
-            const commitData = await commitRes.json();
-            const baseTreeSha = commitData.tree.sha;
-            const [marketFileRes, pricesFileRes] = await Promise.all([
-                fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${MARKET_FILE_PATH}?ref=${GITHUB_BRANCH}`, { headers: { Authorization: `token ${token}` } }),
-                fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${PRICES_FILE_PATH}?ref=${GITHUB_BRANCH}`, { headers: { Authorization: `token ${token}` } })
-            ]);
-            if (!marketFileRes.ok || !pricesFileRes.ok) throw new Error("Could not get file contents.");
-            const marketFileData = await marketFileRes.json();
-            const pricesFileData = await pricesFileRes.json();
-            const marketItems = JSON.parse(atob(marketFileData.content));
-            const pricesLines = atob(pricesFileData.content).split('\n');
-            const newStatus = document.getElementById('publicStatusToggle').checked;
-            const itemIndex = marketItems.findIndex(i => i.id === itemId);
-            if (itemIndex === -1) throw new Error('Item not found in market.txt');
-            marketItems[itemIndex].public = newStatus;
-            const updatedMarketContent = JSON.stringify(marketItems, null, 4);
-            const newMarketPrice = document.getElementById('marketPriceInput').value;
-            const newNpcPrice = document.getElementById('npcPriceInput').value;
-            if (newMarketPrice === '') { showToast('Market Price is required.', 'error'); return; }
-            const priceLineIndex = pricesLines.findIndex(l => l.startsWith(itemId + ':'));
-            const priceArray = [itemId, parseInt(newMarketPrice), newNpcPrice === '' ? null : parseInt(newNpcPrice)];
-            const newLine = `${itemId}: ${JSON.stringify(priceArray)}`;
-            if (priceLineIndex > -1) { pricesLines[priceLineIndex] = newLine; } else { pricesLines.push(newLine); }
-            const updatedPricesContent = pricesLines.join('\n');
-            const newTree = [];
-            const marketBlobRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/blobs`, { method: 'POST', headers: { 'Authorization': `token ${token}` }, body: JSON.stringify({ content: updatedMarketContent, encoding: 'utf-8' }) });
-            const marketBlobData = await marketBlobRes.json();
-            newTree.push({ path: MARKET_FILE_PATH, mode: '100644', type: 'blob', sha: marketBlobData.sha });
-            const pricesBlobRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/blobs`, { method: 'POST', headers: { 'Authorization': `token ${token}` }, body: JSON.stringify({ content: updatedPricesContent, encoding: 'utf-8' }) });
-            const pricesBlobData = await pricesBlobRes.json();
-            newTree.push({ path: PRICES_FILE_PATH, mode: '100644', type: 'blob', sha: pricesBlobData.sha });
-            const treeRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/trees`, { method: 'POST', headers: { 'Authorization': `token ${token}` }, body: JSON.stringify({ base_tree: baseTreeSha, tree: newTree }) });
-            const treeData = await treeRes.json();
-            const newTreeSha = treeData.sha;
-            const commitMessage = `Update item ${itemId} by ${userName}`;
-            const newCommitRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/commits`, { method: 'POST', headers: { 'Authorization': `token ${token}` }, body: JSON.stringify({ message: commitMessage, tree: newTreeSha, parents: [latestCommitSha] }) });
-            const newCommitData = await newCommitRes.json();
-            const newCommitSha = newCommitData.sha;
-            await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH}`, { method: 'PATCH', headers: { 'Authorization': `token ${token}` }, body: JSON.stringify({ sha: newCommitSha }) });
-            showToast('Changes saved!', 'success');
-            document.getElementById('price-modal').style.display = 'none';
-            setTimeout(() => location.reload(), 1500);
-        } catch (error) {
-            console.error('Error updating details:', error);
-            showToast(`Error saving changes: ${error.message}`, 'error');
-        }
     }
 
     function showToast(message, type = 'info') {
