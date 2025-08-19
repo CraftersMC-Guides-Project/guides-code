@@ -8,6 +8,11 @@
     :root{
       --bg:#0f1724; --card:#0b1220; --muted:#96a0b3; --accent:#7c5cff; --glass: rgba(255,255,255,0.03);
       --glass-2: rgba(255,255,255,0.02);
+      --role-green: #22c55e;
+      --role-red: #ef4444;
+      --role-gold: #facc15;
+      --role-blue: #3b82f6;
+      --role-grey: #9ca3af;
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,'Helvetica Neue',Arial;color:#e6eef8;background:linear-gradient(180deg,#071025 0%, #071b2b 100%);min-height:100vh}
@@ -33,7 +38,7 @@
     .username{font-weight:700}
     .global{color:var(--muted);font-size:13px}
     .meta{margin-top:6px;color:var(--muted);font-size:13px;display:flex;gap:10px;flex-wrap:wrap}
-    .badge-role{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:999px;font-size:12px}
+    .badge-role{padding:6px 8px;border-radius:999px;font-size:12px;font-weight:700;color:#0f1724}
     .verified{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-weight:700;background:linear-gradient(90deg,#1b7cff,#6effc6);color:#021024;font-size:12px}
     /* modal */
     .overlay{position:fixed;inset:0;background:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.6));display:none;align-items:center;justify-content:center;padding:20px}
@@ -73,6 +78,9 @@
         <option value="">All roles</option>
         <option value="normal user">Normal user</option>
         <option value="rank seller">Rank seller</option>
+        <option value="dev">Dev</option>
+        <option value="manager">Manager</option>
+        <option value="data manager">Data manager</option>
       </select>
     </div>
     <div>
@@ -151,7 +159,6 @@
     function avatarUrl(user){
       if(!user.avatar) return null;
       if(user.avatar.startsWith('http')) return user.avatar;
-      // discord CDN — prefer png
       return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`;
     }
 
@@ -169,6 +176,16 @@
         const d = new Date(iso);
         return new Intl.DateTimeFormat('en-IN', {dateStyle:'medium', timeStyle:'short', timeZone:'Asia/Kolkata'}).format(d);
       }catch(e){return iso}
+    }
+
+    function roleColor(role){
+      switch((role||'').toLowerCase()){
+        case 'rank seller': return 'var(--role-green)';
+        case 'dev': return 'var(--role-red)';
+        case 'manager': return 'var(--role-gold)';
+        case 'data manager': return 'var(--role-blue)';
+        default: return 'var(--role-grey)';
+      }
     }
 
     function makeCard(user){
@@ -198,9 +215,11 @@
       const g = document.createElement('div'); g.className='global'; g.textContent = '@' + (user.username || 'unknown');
       const meta = document.createElement('div'); meta.className='meta';
       const role = document.createElement('div'); role.className='badge-role'; role.textContent = user.role || 'user';
+      role.style.background = roleColor(user.role);
+      meta.appendChild(role);
       const last = document.createElement('div'); last.textContent = 'Last: ' + (user.last_login ? formatDate(user.last_login) : '-');
       const count = document.createElement('div'); count.textContent = 'Logins: ' + (user.login_count ?? 0);
-      meta.appendChild(role); meta.appendChild(last); meta.appendChild(count);
+      meta.appendChild(last); meta.appendChild(count);
 
       info.appendChild(nameRow); info.appendChild(g); info.appendChild(meta);
 
@@ -241,40 +260,6 @@
       document.getElementById('modalName').textContent = user.global_name || user.username || 'Unknown';
       document.getElementById('modalUsername').textContent = '@' + (user.username||'');
       document.getElementById('modalRole').textContent = user.role || '-';
+      document.getElementById('modalRole').style.background = roleColor(user.role);
       document.getElementById('modalVerified').textContent = user.verified ? 'Yes' : 'No';
-      document.getElementById('modalXbox').textContent = user.xbox ? (user.xbox.name + (user.xbox.verified ? ' (verified)' : '')) : '-';
-      document.getElementById('modalFirst').textContent = formatDate(user.first_login);
-      document.getElementById('modalLast').textContent = formatDate(user.last_login);
-      document.getElementById('modalCount').textContent = (user.login_count ?? 0);
-      document.getElementById('modalId').textContent = user.id || '';
-
-      const avatarWrap = document.getElementById('modalAvatar'); avatarWrap.innerHTML='';
-      const url = avatarUrl(user);
-      if(url){ const img = document.createElement('img'); img.src=url; img.alt = user.username; avatarWrap.appendChild(img);} 
-      else{
-        avatarWrap.innerHTML = `<div style="width:100%;height:100%;display:grid;place-items:center;background:linear-gradient(90deg,#2b3948,#163147);color:white;font-weight:700;font-size:36px">${initials(user.global_name||user.username,user.username)}</div>`;
-      }
-
-      overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false');
-    }
-
-    closeModal.addEventListener('click',()=>{overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true');});
-    overlay.addEventListener('click',(e)=>{ if(e.target===overlay){ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); }});
-
-    // interactions
-    q.addEventListener('input', ()=> renderGrid());
-    roleFilter.addEventListener('change', ()=> renderGrid());
-    sortBy.addEventListener('change', ()=> renderGrid());
-    refreshBtn.addEventListener('click', ()=> fetchData());
-
-    downloadBtn.addEventListener('click', ()=>{
-      const blob = new Blob([JSON.stringify(rawData, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'users.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-    });
-
-    // initial fetch
-    fetchData();
-  </script>
-</body>
-</html>
+      document.getElementById('modalXbox').textContent = user.xbox ? (user.xbox
