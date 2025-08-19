@@ -232,26 +232,11 @@
       }
 
       profileElement.innerHTML = `
-  <div class="profile-header">
-    <img class="profile-avatar" 
-         src="${getAvatarUrl(user)}" 
-         alt="${displayName}'s Avatar"
-         onerror="this.src='https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png'">
-    <h2 class="profile-name">${displayName} ${isDev ? '<span class="dev-label">[DEV]</span>' : ''}</h2>
-  </div>
+      <div class="profile-header">
+        <img class="profile-avatar" src="${user.avatar}" alt="User Avatar" id="avatar" crossorigin="anonymous">
+        <h2 class="profile-name">${displayName} ${isDev ? '<span class="dev-label">[DEV]</span>' : ''}</h2>
+      </div>
 `;
-
-function getAvatarUrl(user) {
-  if (!user.avatar) {
-    return `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`;
-  }
-  
-  if (user.avatar.startsWith('http')) {
-    return user.avatar;
-  }
-  
-  return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}?size=256`;
-}
       <div class="profile-details">
         <div class="profile-detail-card">
           <div class="profile-detail-title">Account Information</div>
