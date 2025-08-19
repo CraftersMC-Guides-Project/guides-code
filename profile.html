@@ -175,45 +175,102 @@
 
       if (!storedUser) {
         profileElement.innerHTML = `
-  <div class="profile-header">
-    <img class="profile-avatar" src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="User Avatar" id="avatar" crossorigin="anonymous">
-    <h2 class="profile-name">${displayName} ${isDev ? '<span class="dev-label">[DEV]</span>' : ''}</h2>
-  </div>
-  <div class="profile-details">
-    <div class="profile-detail-card">
-      <div class="profile-detail-title">Account Information</div>
-      <div class="profile-detail-value"><span class="profile-detail-value-head">Discord Username:</span> <span class="profile-detail-value-data">${user.username}</span></div>
-      ${user.xbox && user.xbox.name ? `<div class="profile-detail-value"><span class="profile-detail-value-head">Minecraft Username:</span> <span class="profile-detail-value-data">${user.xbox.name}</span></div>` : ''}
-      <div class="profile-detail-value"><span class="profile-detail-value-head">ID:</span> <span class="profile-detail-value-data">${user.id}</span></div>
-      ${user.email ? `<div class="profile-detail-value"><span class="profile-detail-value-head">Email:</span> <span class="profile-detail-value-data">${user.email}</span></div>` : ''}
-    </div>
-    <div class="profile-detail-card">
-      <div class="profile-detail-title">Activity</div>
-      <div class="profile-detail-value"><span class="profile-detail-value-head">First Login:</span> <span class="profile-detail-value-data">${firstLogin}</span></div>
-      <div class="profile-detail-value"><span class="profile-detail-value-head">Last Login:</span> <span class="profile-detail-value-data">${lastLogin}</span></div>
-      <div class="profile-detail-value"><span class="profile-detail-value-head">Login Count:</span> <span class="profile-detail-value-data">${user.login_count || 1}</span></div>
-    </div>
-    <div class="profile-detail-card">
-        <div class="profile-detail-title">Theme Settings</div>
-        <div class="profile-theme-buttons">
-            <button class="profile-theme-btn" onclick="selectTheme('essential')" id="essentialBtn">Essential</button>
-            <button class="profile-theme-btn" onclick="selectTheme('minecraft')" id="minecraftBtn">Minecraft</button>
+        <div class="profile-login-prompt">
+          <h3>Login to view your profile</h3>
+        <div class="profile-actions">
+          <button class="profile-btn btn-logout" onclick="window.location.href='/login'">
+            <span class="material-icons">login</span>
+            Login with Discord
+          </button>
+          <button class="profile-btn" onclick="window.location.href='/'">
+            <span class="material-icons">home</span>
+            Return Home
+          </button>
         </div>
-        <button class="profile-save-btn" onclick="saveTheme()">Save Changes</button>
-    </div>
-    ${devSettingsCard}
-  </div>
-  <div class="profile-actions">
-    <button class="btn" onclick="window.location.href='/'">
-      <span class="material-icons">home</span>
-      Return Home
-    </button>
-    <button class="btn btn-logout" onclick="logout()">
-      <span class="material-icons">logout</span>
-      Logout
-    </button>
-  </div>
-`;
+        </div>
+      `;
+        return;
+      }
+
+      const user = JSON.parse(storedUser);
+      const displayName = user.global_name || user.username;
+      const firstLogin = user.first_login ? new Date(user.first_login).toLocaleString() : 'Unknown';
+      const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Unknown';
+      const isDev = devIds.includes(user.id);
+
+      if (!isDev && getCookie('githubToken')) {
+          resetDevToken();
+          showToast("Your developer token has been cleared for security.", "info");
+      }
+
+      let devSettingsCard = '';
+      if (isDev) {
+          const existingToken = getCookie('githubToken');
+          let tokenContent = '';
+          // UPDATE: Changed how token is displayed
+          if (existingToken) {
+              tokenContent = `
+                <div class="token-display">
+                    <span>Token available and ready to use.</span>
+                    <button class="reset-btn" onclick="resetDevToken()">Reset</button>
+                </div>
+              `;
+          } else {
+              // UPDATE: Changed button text and description
+              tokenContent = `
+                <button class="profile-save-btn" onclick="fetchDevToken()">Fetch Developer Token</button>
+                <p style="font-size: 12px; color: var(--text-secondary-color); margin-top: 10px;">This will securely fetch and save your developer access token to your browser's cookies.</p>
+              `;
+          }
+
+          devSettingsCard = `
+            <div class="profile-detail-card">
+                <div class="profile-detail-title">Developer Settings</div>
+                ${tokenContent}
+            </div>
+          `;
+      }
+
+      profileElement.innerHTML = `
+      <div class="profile-header">
+        <img class="profile-avatar" src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="User Avatar" id="avatar" crossorigin="anonymous">
+        <h2 class="profile-name">${displayName} ${isDev ? '<span class="dev-label">[DEV]</span>' : ''}</h2>
+      </div>
+      <div class="profile-details">
+        <div class="profile-detail-card">
+          <div class="profile-detail-title">Account Information</div>
+          <div class="profile-detail-value"><span class="profile-detail-value-head">Discord Username:</span> <span class="profile-detail-value-data">${user.username}</span></div>
+          ${user.xbox && user.xbox.name ? `<div class="profile-detail-value"><span class="profile-detail-value-head">Minecraft Username:</span> <span class="profile-detail-value-data">${user.xbox.name}</span></div>` : ''}
+          <div class="profile-detail-value"><span class="profile-detail-value-head">ID:</span> <span class="profile-detail-value-data">${user.id}</span></div>
+          ${user.email ? `<div class="profile-detail-value"><span class="profile-detail-value-head">Email:</span> <span class="profile-detail-value-data">${user.email}</span></div>` : ''}
+        </div>
+        <div class="profile-detail-card">
+          <div class="profile-detail-title">Activity</div>
+          <div class="profile-detail-value"><span class="profile-detail-value-head">First Login:</span> <span class="profile-detail-value-data">${firstLogin}</span></div>
+          <div class="profile-detail-value"><span class="profile-detail-value-head">Last Login:</span> <span class="profile-detail-value-data">${lastLogin}</span></div>
+          <div class="profile-detail-value"><span class="profile-detail-value-head">Login Count:</span> <span class="profile-detail-value-data">${user.login_count || 1}</span></div>
+        </div>
+        <div class="profile-detail-card">
+            <div class="profile-detail-title">Theme Settings</div>
+            <div class="profile-theme-buttons">
+                <button class="profile-theme-btn" onclick="selectTheme('essential')" id="essentialBtn">Essential</button>
+                <button class="profile-theme-btn" onclick="selectTheme('minecraft')" id="minecraftBtn">Minecraft</button>
+            </div>
+            <button class="profile-save-btn" onclick="saveTheme()">Save Changes</button>
+        </div>
+        ${devSettingsCard}
+      </div>
+      <div class="profile-actions">
+        <button class="btn" onclick="window.location.href='/'">
+          <span class="material-icons">home</span>
+          Return Home
+        </button>
+        <button class="btn btn-logout" onclick="logout()">
+          <span class="material-icons">logout</span>
+          Logout
+        </button>
+      </div>
+    `;
     }
 
     function logout() {
@@ -232,7 +289,7 @@
         selectTheme('minecraft');
       }
     };
-  </script>
+</script>
 
 </body>
 
