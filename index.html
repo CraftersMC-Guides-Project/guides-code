@@ -194,14 +194,6 @@
     </div>
   </div>
   
-  <!-- Debugging Login Form -->
-  <div style="text-align: center; margin: 1rem auto; background: #f0f0f0; padding: 1rem; border-radius: 8px; max-width: 300px;">
-    <h3 style="margin: 0 0 0.5rem 0; color: #333;">Test Login</h3>
-    <p style="font-size: 0.8rem; color: #666; margin: 0 0 1rem 0;">Enter a Discord User ID to test the profile card. (e.g., 783972385882767400)</p>
-    <input type="text" id="userIdInput" placeholder="Enter Discord User ID" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc; width: calc(100% - 1.2rem); margin-bottom: 0.5rem;">
-    <button id="loginBtn" style="padding: 0.5rem 1rem; border-radius: 4px; border: none; background-color: #007bff; color: white; cursor: pointer;">Set User ID & Load</button>
-  </div>
-
   <!-- New Profile Card HTML -->
   <div class="profile-card" id="profile-card">
     <img id="user-avatar" src="https://placehold.co/110x110/dddddd/333333?text=...&font=inter" alt="User Avatar" />
@@ -308,17 +300,27 @@
       const tagEl = document.getElementById('user-tag');
       
       try {
-        // 1. Fetch user ID from localStorage. Change 'userId' if your key is different.
-        const userId = localStorage.getItem('userId');
+        // 1. Get user data from the 'discordUser' cookie
+        const storedUserCookie = getCookie('discordUser');
         
-        // If there's no userId, do nothing. The card remains hidden.
-        if (!userId) {
+        // If there's no cookie, the user is not logged in.
+        if (!storedUserCookie) {
           console.log("User not logged in. Profile card will not be shown.");
           profileCard.style.display = 'none'; // Ensure card is hidden
           return;
         }
 
-        // 2. Fetch user info from your API using the user's ID
+        // Parse the user data from the cookie to get the ID
+        const loggedInUser = JSON.parse(storedUserCookie);
+        const userId = loggedInUser.id;
+
+        if (!userId) {
+            console.error("User ID not found in cookie data.");
+            profileCard.style.display = 'none';
+            return;
+        }
+
+        // 2. Fetch fresh user info from your API using the user's ID
         console.log(`Found userId: ${userId}. Fetching data...`);
         const response = await fetch(`https://discord-auth.roumakdatta.workers.dev/users/${userId}`);
         
@@ -372,30 +374,6 @@
         profileCard.style.display = 'none';
       }
     }
-
-    // --- New code for debugging ---
-    document.getElementById('loginBtn').addEventListener('click', () => {
-      const userIdInput = document.getElementById('userIdInput');
-      const userId = userIdInput.value.trim();
-      if (userId) {
-        // Save the user ID to localStorage
-        localStorage.setItem('userId', userId);
-        console.log(`Set userId in localStorage to: ${userId}`);
-        
-        // Set card to loading state and try loading the user info again
-        const profileCard = document.getElementById('profile-card');
-        profileCard.style.display = 'block';
-        document.getElementById('user-name').textContent = 'Loading...';
-        document.getElementById('user-tag').textContent = '';
-        document.getElementById('user-avatar').src = "https://placehold.co/110x110/dddddd/333333?text=...&font=inter";
-
-        loadUserInfo();
-      } else {
-        // A simple message if the input is empty
-        const nameEl = document.getElementById('user-name');
-        nameEl.textContent = "Please enter an ID";
-      }
-    });
 
     // Run the function after the DOM is fully loaded
     window.addEventListener('DOMContentLoaded', loadUserInfo);
