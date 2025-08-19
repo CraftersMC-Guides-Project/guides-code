@@ -185,6 +185,9 @@
     .profile-card.role-manager #user-avatar {
         box-shadow: 0 0 15px rgba(255, 193, 7, 0.8);
     }
+    .profile-card.role-data-manager #user-avatar {
+        box-shadow: 0 0 15px rgba(41, 98, 255, 0.8); /* Blue glow */
+    }
     .profile-card.role-rank-seller #user-avatar {
         box-shadow: 0 0 15px rgba(0, 200, 83, 0.8);
     }
@@ -421,16 +424,17 @@
         const roleColors = {
           dev: '#d50000', // red
           manager: '#ffc107', // gold
+          "data manager": '#2962ff', // blue
           "rank seller": '#00c853' // green
         };
         
         const userRole = user.role ? user.role.toLowerCase() : '';
 
         // Remove previous role classes to prevent conflicts
-        profileCard.classList.remove('role-dev', 'role-manager', 'role-rank-seller');
+        profileCard.classList.remove('role-dev', 'role-manager', 'role-data-manager', 'role-rank-seller');
 
         // Add new role class for styling hooks (like the avatar glow)
-        if (userRole) {
+        if (userRole && userRole !== 'normal user') {
             const roleClass = userRole.replace(' ', '-'); // e.g., "rank seller" -> "rank-seller"
             profileCard.classList.add(`role-${roleClass}`);
         }
@@ -440,7 +444,7 @@
           tagEl.textContent = user.role.toUpperCase();
           tagEl.style.color = roleColors[userRole];
         } else {
-          // Clear tag area if role is 'user' or not in our map
+          // Clear tag area if role is 'user', 'normal user', or not in our map
           tagEl.textContent = '';
           tagEl.style.color = '';
         }
