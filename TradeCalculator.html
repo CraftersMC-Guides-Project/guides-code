@@ -17,7 +17,25 @@
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      padding: 80px 20px 20px; /* top padding for fixed navbar */
+      padding: 100px 20px 20px; /* padding-top = navbar height */
+    }
+
+    /* Dummy navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      background: #333;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+      z-index: 200;
+      border-bottom: 2px solid #555;
     }
 
     .trade-container {
@@ -96,7 +114,7 @@
       display: none;
       justify-content: center;
       align-items: center;
-      z-index: 100;
+      z-index: 300;
     }
 
     .overlay-content {
@@ -177,6 +195,10 @@
 </head>
 
 <body>
+  <!-- Fixed Navbar -->
+  <div class="navbar">CRAFTERSMC GUIDES</div>
+
+  <!-- Loader + Background -->
   <div id="loader">
     <div></div>
     <div></div>
@@ -185,10 +207,12 @@
   <div class="form-background"></div>
   <div class="top"></div>
 
+  <!-- Sidebar -->
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
   <span class="material-icons" id="scrollToTopBtn">north</span>
 
+  <!-- Trade UI -->
   <div class="trade-container">
     <div class="trade-box" id="you-box">
       <h2>You</h2>
@@ -200,15 +224,18 @@
     </div>
   </div>
 
+  <!-- Result -->
   <div class="result-box">
     <button class="btn" onclick="calculateResult()">Result</button>
     <div id="result"></div>
   </div>
 
+  <!-- Overlay -->
   <div class="overlay" id="overlay">
     <div class="overlay-content" id="overlay-content"></div>
   </div>
 
+  <!-- Footer -->
   <div id="footer" id="important"></div>
 
   <script>
@@ -220,8 +247,8 @@
     async function loadData() {
       try {
         const [marketRes, priceRes] = await Promise.all([
-          fetch("market/market.txt"),
-          fetch("market/mprices.txt")
+          fetch("market.txt"),
+          fetch("mprice.txt")
         ]);
 
         const marketLines = (await marketRes.text()).trim().split("\n");
@@ -304,4 +331,4 @@
   </script>
 </body>
 
-</html>
+      </html>
