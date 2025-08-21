@@ -10,49 +10,53 @@
   <link rel="stylesheet" href="themes/minecraft/style.css" />
   <script src="js/script.js"></script>
   <style>
-    /* Profile Card Styles */
-    #top-right-ui-container {
-        position: fixed;
-        top: 80px;
-        right: 20px;
-        z-index: 1001;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        gap: 10px;
-    }
-
+    /* Profile Card Styles cloned from index.html */
     .profile-card {
-      display: flex;
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 1001;
+      display: none;
       align-items: center;
-      gap: 10px;
-      background-color: rgba(0, 0, 0, 0.5);
-      padding: 8px 12px;
+      gap: 15px;
+      background: linear-gradient(135deg, rgba(40, 40, 40, 0.7), rgba(25, 25, 25, 0.8));
+      backdrop-filter: blur(10px);
+      padding: 12px 20px;
       border-radius: 50px;
       color: white;
       text-decoration: none;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      animation: fade-in-down 0.5s ease-out forwards;
+      min-width: 200px;
     }
-
     .profile-card:hover {
-      background-color: rgba(0, 0, 0, 0.8);
+        background-color: rgba(0, 0, 0, 0.8);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
     }
-
-    .profile-card-avatar {
-      width: 32px;
-      height: 32px;
+    #user-avatar {
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,0.2);
+      transition: box-shadow 0.3s;
     }
-
-    .profile-card-name {
-      font-weight: 500;
-      font-size: 14px;
-    }
-
-    .dev-label {
-      color: #ff4d4d;
-      font-weight: bold;
-      margin-left: 5px;
+    #user-details { text-align: left; }
+    #user-name { font-size: 18px; font-weight: 700; line-height: 1.2; }
+    #user-tag { font-size: 12px; font-weight: 700; text-transform: uppercase; opacity: 0.9; margin-top: 3px; display: block; letter-spacing: 0.5px; }
+    .profile-card.role-dev #user-avatar { box-shadow: 0 0 15px rgba(213, 0, 0, 0.8); }
+    .profile-card.role-manager #user-avatar { box-shadow: 0 0 15px rgba(255, 193, 7, 0.8); }
+    .profile-card.role-data-manager #user-avatar { box-shadow: 0 0 15px rgba(41, 98, 255, 0.8); }
+    .profile-card.role-rank-seller #user-avatar { box-shadow: 0 0 15px rgba(0, 200, 83, 0.8); }
+    @keyframes fade-in-down { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 768px) { 
+      .profile-card { top: 65px; right: 10px; padding: 8px 14px; gap: 12px; min-width: 0; }
+      #user-avatar { width: 40px; height: 40px; }
+      #user-name { font-size: 16px; }
+      #user-tag { font-size: 10px; }
     }
 
     .private-item-highlight {
@@ -73,95 +77,39 @@
       justify-items: center;
       margin: 20px;
     }
-
-    .result {
-      background: rgba(30,30,30,0.85);
-      padding: 12px;
-      border-radius: 8px;
-      width: 100%;
-      max-width: 350px;
-      cursor: pointer;
-      transition: transform 0.2s;
-      color: white;
-    }
+    .result { background: rgba(30,30,30,0.85); padding: 12px; border-radius: 8px; width: 100%; max-width: 350px; cursor: pointer; transition: transform 0.2s; color: white; }
     .result:hover { transform: scale(1.02); }
-
-    .market-info-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
-    .market-info-head img {
-      width: 40px;
-      height: 40px;
-      image-rendering: pixelated;
-    }
-
-    .market-result-div-info {
-      font-size: 14px;
-      margin: 2px 0;
-    }
-
+    .market-info-head { display: flex; justify-content: space-between; align-items: center; font-weight: bold; margin-bottom: 6px; }
+    .market-info-head img { width: 40px; height: 40px; image-rendering: pixelated; }
+    .market-result-div-info { font-size: 14px; margin: 2px 0; }
     .market-coin { width: 16px; height: 16px; vertical-align: middle; margin-left: 4px; }
-
-    .market-description {
-      font-size: 13px;
-      margin-top: 6px;
-      color: #ccc;
-    }
-
-    .rarity-tag {
-      display: inline-block;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
+    .market-description { font-size: 13px; margin-top: 6px; color: #ccc; }
+    .rarity-tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
     .rarity-legendary { background-color: #ff9800; color: black; }
     .rarity-epic { background-color: #9c27b0; color: white; }
     .rarity-rare { background-color: #2196f3; color: white; }
     .rarity-uncommon { background-color: #4caf50; color: white; }
     .rarity-common { background-color: #9e9e9e; color: white; }
-
-    @media (max-width: 768px) {
-        #top-right-ui-container {
-            top: 65px;
-            right: 10px;
-            gap: 8px;
-        }
-        .profile-card {
-            padding: 4px 8px;
-        }
-        .profile-card-avatar {
-            width: 28px;
-            height: 28px;
-        }
-        .profile-card-name {
-            font-size: 12px;
-        }
-    }
   </style>
 </head>
 
 <body>
-  <div id="loader">
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
+  <div id="loader"><div></div><div></div><div></div></div>
   <div class="market-background"></div>
-  
-  <div id="top-right-ui-container">
-    <div id="profile-card-container"></div>
-  </div>
+
+  <!-- Profile Card cloned from index.html -->
+  <a href="/profile.html" class="profile-card" id="profile-card">
+    <img id="user-avatar" src="https://placehold.co/110x110/dddddd/333333?text=...&font=inter" alt="User Avatar" />
+    <div id="user-details">
+        <div id="user-name">Loading...</div>
+        <div id="user-tag"></div>
+    </div>
+  </a>
 
   <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-<span class="material-icons" id="scrollToTopBtn">north</span>
+  <span class="material-icons" id="scrollToTopBtn">north</span>
 
   <h1 class="market-title">CraftersMC Market Prices</h1>
   <input type="text" id="searchBox" placeholder="Search Items..." oninput="searchItems()" />
@@ -175,45 +123,31 @@
     <div class="market-category-grid">
       <div class="market-category-item" onclick="goToCategory('farming')">
         <img src="assets/ui-icons/ui_bazaar_category_farming_active.png" alt="farming" class="market-bz">
-        <div class="market-category-name">
-          <p>Farming</p>
-        </div>
+        <div class="market-category-name"><p>Farming</p></div>
       </div>
       <div class="market-category-item" onclick="goToCategory('mining')">
         <img src="assets/ui-icons/ui_bazaar_category_mining_active.png" alt="mining" class="market-bz">
-        <div class="market-category-name">
-          <p>Mining</p>
-        </div>
+        <div class="market-category-name"><p>Mining</p></div>
       </div>
       <div class="market-category-item" onclick="goToCategory('combat')">
         <img src="assets/ui-icons/ui_bazaar_category_combat_active.png" alt="Combat" class="market-bz">
-        <div class="market-category-name">
-          <p>Combat</p>
-        </div>
+        <div class="market-category-name"><p>Combat</p></div>
       </div>
       <div class="market-category-item" onclick="goToCategory('foraging')">
         <img src="assets/ui-icons/ui_bazaar_category_foraging_active.png" alt="foraging" class="market-bz">
-        <div class="market-category-name">
-          <p>Foraging</p>
-        </div>
+        <div class="market-category-name"><p>Foraging</p></div>
       </div>
       <div class="market-category-item" onclick="goToCategory('special')">
         <img src="assets/ui-icons/ui_star_active.png" alt="special" class="market-bz">
-        <div class="market-category-name">
-          <p>Special</p>
-        </div>
+        <div class="market-category-name"><p>Special</p></div>
       </div>
       <div class="market-category-item" onclick="goToCategory('slayer')">
         <img src="img/Atoned_Heart.webp" alt="special" class="market-bz">
-        <div class="market-category-name">
-          <p>Slayer</p>
-        </div>
+        <div class="market-category-name"><p>Slayer</p></div>
       </div>
       <div class="market-category-item" onclick="window.location.href='pets-cat.html'">
         <img src="img/pets/Phoenix_Pet.webp" alt="Pets">
-        <div class="market-category-name">
-          <p>Pets</p>
-        </div>
+        <div class="market-category-name"><p>Pets</p></div>
       </div>
     </div>
   </div>
@@ -229,7 +163,6 @@
     let isDataLoaded = false;
     let isDevUser = false;
 
-    // --- FIX: Added the missing function ---
     function goToCategory(categoryName) {
       window.location.href = `categories?cat=${categoryName}`;
     }
@@ -241,38 +174,55 @@
       return '';
     }
 
-    async function loadProfileCard() {
-        const storedUser = getCookie("discordUser");
-        const profileContainer = document.getElementById("profile-card-container");
-        
-        let devIds = [];
-        try {
-            const response = await fetch('/devs.txt');
-            if (response.ok) {
-                const text = await response.text();
-                devIds = text.split('\n').map(id => id.trim()).filter(id => id);
-            }
-        } catch (error) {
-            console.error('Could not load or parse devs.txt:', error);
+    // --- Profile Card Loading Logic cloned from index.html ---
+    async function loadUserInfo() {
+      const profileCard = document.getElementById('profile-card');
+      const defaultAvatar = "https://placehold.co/110x110/dddddd/333333?text=...&font=inter";
+      const avatarEl = document.getElementById('user-avatar');
+      const nameEl = document.getElementById('user-name');
+      const tagEl = document.getElementById('user-tag');
+      
+      try {
+        const storedUserCookie = getCookie('discordUser');
+        if (!storedUserCookie) {
+          profileCard.style.display = 'none';
+          return;
         }
-
-        if (storedUser) {
-            const user = JSON.parse(storedUser);
-            const displayName = user.global_name || user.username;
-            isDevUser = devIds.includes(user.id);
-
-            profileContainer.innerHTML = `
-                <a href="/profile" class="profile-card">
-                    <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="Avatar" class="profile-card-avatar">
-                    <span class="profile-card-name">
-                        ${displayName}
-                        ${isDevUser ? '<span class="dev-label">[DEV]</span>' : ''}
-                    </span>
-                </a>
-            `;
+        const loggedInUser = JSON.parse(storedUserCookie);
+        const userId = loggedInUser.id;
+        if (!userId) {
+            profileCard.style.display = 'none';
+            return;
+        }
+        const response = await fetch(`https://discord-auth.roumakdatta.workers.dev/users/${userId}`);
+        if (!response.ok) {
+            profileCard.style.display = 'none';
+            return;
+        }
+        const user = await response.json();
+        profileCard.style.display = 'flex';
+        const avatarUrl = user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : defaultAvatar;
+        avatarEl.src = avatarUrl;
+        avatarEl.onerror = () => { avatarEl.src = defaultAvatar; };
+        nameEl.textContent = user.global_name || user.username || 'Unknown User';
+        const roleColors = { dev: '#d50000', manager: '#ffc107', "data manager": '#2962ff', "rank seller": '#00c853' };
+        const userRole = user.role ? user.role.toLowerCase() : '';
+        profileCard.classList.remove('role-dev', 'role-manager', 'role-data-manager', 'role-rank-seller');
+        if (userRole && userRole !== 'normal user') {
+            const roleClass = userRole.replace(' ', '-');
+            profileCard.classList.add(`role-${roleClass}`);
+        }
+        if (roleColors[userRole]) {
+          tagEl.textContent = user.role.toUpperCase();
+          tagEl.style.color = roleColors[userRole];
         } else {
-            profileContainer.innerHTML = '';
+          tagEl.textContent = '';
+          tagEl.style.color = '';
         }
+      } catch (err) {
+        console.error('Error in loadUserInfo function:', err);
+        profileCard.style.display = 'none';
+      }
     }
 
     function parsePrices(text) {
@@ -365,68 +315,4 @@
         div.innerHTML = `
           ${privateHighlight}
           <div class="market-info">
-            <div class="market-info-head">
-              <span>${item.name}</span>
-              <img src="${item.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : item.picture}" alt="${item.name}">
-            </div>
-            ${getRarityTag(item.rarity)}
-            <div class="market-result-div-info">ID: ${item.id}</div>
-            <div class="market-result-div-info">Market price: ${price} <img class="market-coin" src="img/coin.png" alt="Coin"></div>
-            ${item.description ? `<div class="market-description">${item.description}</div>` : ''}
-          </div>`;
-        div.onclick = () => {
-          window.location.href = `item.html?item=${item.id}`;
-        };
-        resultsDiv.appendChild(div);
-      });
-
-      // Pets
-      filteredPets.slice(0, 10).forEach(pet => {
-        const div = document.createElement('div');
-        div.className = 'market-result';
-        div.innerHTML = `
-          <div class="market-info">
-            <div class="market-info-head">
-              <span>${pet.name}</span>
-              <img src="${pet.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : pet.picture}" alt="${pet.name}">
-            </div>
-            ${getRarityTag(pet.rarity)}
-            <div class="market-result-div-info">ID: ${pet.id}</div>
-            <div class="market-result-div-info">Market price: Varies by rarity</div>
-            ${pet.description ? `<div class="market-description">${pet.description}</div>` : ''}
-          </div>`;
-        div.onclick = () => {
-          window.location.href = `pets.html?pet=${pet.id}`;
-        };
-        resultsDiv.appendChild(div);
-      });
-
-      // Minions
-      filteredMinions.slice(0, 10).forEach(minion => {
-        const div = document.createElement('div');
-        div.className = 'market-result';
-        div.innerHTML = `
-          <div class="market-info">
-            <div class="market-info-head">
-              <span>${minion.name}</span>
-              <img src="${minion.picture === '-' ? 'assets/ui-icons/ui_star_active.png' : minion.picture}" alt="${minion.name}">
-            </div>
-            ${getRarityTag(minion.rarity)}
-            <div class="market-result-div-info">ID: ${String(minion.id).padStart(2, '0')}</div>
-            <div class="market-result-div-info">Market price: Varies by tier</div>
-            ${minion.description ? `<div class="market-description">${minion.description}</div>` : ''}
-          </div>`;
-        div.onclick = () => {
-          window.location.href = `minions.html?minion=${minion.id}`;
-        };
-        resultsDiv.appendChild(div);
-      });
-    }
-
-    window.onload = () => {
-      loadProfileCard();
-      loadItems();
-    };
-  </script>
-</body>
-</html>
+            <div class
