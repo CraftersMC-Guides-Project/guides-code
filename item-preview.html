@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="themes/minecraft/style.css">
   <script src="js/script.js"></script>
   <style>
+    /* --- Existing styles from item.html remain --- */
     .change-price-btn {
       background-color: #d50000;
       color: white;
@@ -33,16 +34,36 @@
     .modal button {
       padding: 8px 12px; border-radius: 6px; border: none; cursor: pointer; margin-top: 10px;
     }
-    .toast-notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 8px; color: white; font-weight: 500; transition: bottom 0.5s ease-in-out; z-index: 10001; }
-    .toast-notification.show { bottom: 30px; }
-    .toast-notification.success { background-color: #2d8831; }
-    .toast-notification.error { background-color: #c62828; }
   </style>
 </head>
 <body>
+  <div id="loader"><div></div><div></div><div></div></div>
   <div class="market-background"></div>
 
+  <!-- Profile card, sidebar, etc remain -->
+  <a href="/profile.html" class="profile-card" id="profile-card">
+    <img id="user-avatar" src="https://placehold.co/110x110/dddddd/333333?text=...&font=inter" alt="User Avatar" />
+    <div id="user-details">
+        <div id="user-name">Loading...</div>
+        <div id="user-tag"></div>
+    </div>
+  </a>
+
+  <div class="top"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <span class="item-material-icons" id="scrollToTopBtn">north</span>
+
+  <div class="item-filter-buttons" style="display:flex;gap:10px;justify-content:center;margin:5rem 0;">
+    <button class="btn item-filter-btn" data-nature="reset">Reset Filter</button>
+  </div>
+
   <div class="item-container" id="itemDetails"><p>Loading item details...</p></div>
+  <div class="item-nav-buttons">
+    <button id="prevItemBtn" class="btn" type="button">&larr; Previous</button>
+    <button id="nextItemBtn" class="btn" type="button">Next &rarr;</button>
+  </div>
+  <div id="footer"></div>
 
   <!-- Modal for editing price -->
   <div class="modal-overlay" id="priceModal">
@@ -57,6 +78,7 @@
 
   <script>
     let isDevUser = false;
+    let allItems = [];
     let discordId = null;
     let currentItemId = null;
 
@@ -76,12 +98,10 @@
       setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 4000);
     }
 
-    function openModal() {
-      document.getElementById("priceModal").style.display = "flex";
-    }
-    function closeModal() {
-      document.getElementById("priceModal").style.display = "none";
-    }
+    function openModal() { document.getElementById("priceModal").style.display = "flex"; }
+    function closeModal() { document.getElementById("priceModal").style.display = "none"; }
+
+    // --- Existing loadUserInfo, fetchAllItems, goToPrevItem, goToNextItem stay same ---
 
     async function loadItemDetails() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -90,57 +110,88 @@
 
       if (itemId) {
         try {
+          // existing logic to detect dev user
           const storedUser = getCookie("discordUser");
-          if (storedUser) {
-            let devIds = [];
-            try {
-              const response = await fetch('/devs.txt');
-              if (response.ok) {
-                const text = await response.text();
-                devIds = text.split('\n').map(id => id.trim()).filter(id => id);
+          if(storedUser) {
+              let devIds = [];
+              try { 
+                const response = await fetch('/devs.txt'); 
+                if (response.ok) { 
+                  const text = await response.text(); 
+                  devIds = text.split('\n').map(id => id.trim()).filter(id => id); 
+                } 
+              } catch (error) {
+                console.error('Error TwT:', error);
               }
-            } catch (error) { console.error('Error loading devs:', error); }
-            const user = JSON.parse(storedUser);
-            discordId = user.id;
-            isDevUser = devIds.includes(user.id);
+              const user = JSON.parse(storedUser);
+              discordId = user.id;
+              isDevUser = devIds.includes(user.id);
           }
 
-          const [marketRes, pricesRes] = await Promise.all([
-            fetch('market/market.txt'),
-            fetch('market/mprices.txt')
-          ]);
-          const items = await marketRes.json();
+          const [marketRes, pricesRes] = await Promise.all([fetch('market/market.txt'), fetch('market/mprices.txt')]);
+          const marketData = await marketRes.text();
           const pricesData = await pricesRes.text();
-
-          const item = items.find(i => i.id === itemId);
+          const items = JSON.parse(marketData);
+          const item = items.find(item => item.id === itemId);
           if (item) {
-            document.getElementById("itemDetails").innerHTML = \`
+            const isPublic = item.hasOwnProperty("public") ? item.public : true;
+            if (!isPublic && !isDevUser) { 
+                document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`; 
+                return; 
+            }
+
+            // parse price info
+            const pricesMap = new Map(); const npcPricesMap = new Map();
+            pricesData.split('\n').forEach(line => { 
+              const [id, arrayStr] = line.split(':').map(part => part.trim()); 
+              if (id && arrayStr) { 
+                try { 
+                  const parsedArray = JSON.parse(arrayStr); 
+                  if (Array.isArray(parsedArray) && parsedArray.length >= 2) { 
+                    pricesMap.set(id, parsedArray[1]); 
+                    if (parsedArray.length >= 3) { npcPricesMap.set(id, parsedArray[2]); } 
+                  } 
+                } catch (e) {console.error(e)} 
+              } 
+            });
+            const marketPrice = pricesMap.get(item.id) ?? item.price ?? "N/A";
+            const npcPrice = npcPricesMap.get(item.id);
+
+            let devButton = (isDevUser) ? `<button class="change-price-btn" onclick="openModal()">Change Price</button>` : '';
+            document.getElementById('itemDetails').innerHTML = \`
               <h1>\${item.name}</h1>
+              \${item.picture ? `<img src="\${item.picture}" alt="\${item.name}">` : ''}
               <p><strong>ID:</strong> \${item.id}</p>
-              \${isDevUser ? '<button class="change-price-btn" onclick="openModal()">Change Price</button>' : ''}
+              <p><strong>Market Price:</strong> \${marketPrice}</p>
+              \${npcPrice ? \`<p><strong>NPC Price:</strong> \${npcPrice}</p>\` : ""}
+              \${devButton}
             \`;
+          } else { 
+            document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`; 
           }
-        } catch (e) {
-          console.error("Error loading item", e);
+        } catch (error) { 
+          console.error('Error loading item details:', error); 
+          document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: Could not load item details.</h2>`; 
         }
       }
     }
 
     document.getElementById("submitPriceBtn").addEventListener("click", async () => {
       const marketPrice = document.getElementById("marketPriceInput").value;
-      const npcPrice = document.getElementById("npcPriceInput").value;
+      const npcPrice = document.getElementById("npcPriceInput").value || 0;
 
       if (!discordId || !currentItemId || !marketPrice) {
         showToast("Invalid data", "error");
         return;
       }
 
-      const url = \`https://data-manager.roumakdatta.workers.dev/\${discordId}/\${currentItemId}/\${marketPrice}/\${npcPrice || 0}\`;
+      const url = \`https://data-manager.roumakdatta.workers.dev/\${discordId}/\${currentItemId}/\${marketPrice}/\${npcPrice}\`;
       try {
         const res = await fetch(url);
         if (res.ok) {
           showToast("Price updated successfully!", "success");
           closeModal();
+          await loadItemDetails(); // reload with new prices
         } else {
           showToast("Failed to update price", "error");
         }
@@ -150,7 +201,13 @@
       }
     });
 
-    loadItemDetails();
+    // keep existing initialization
+    async function initializePage() { 
+      await loadUserInfo(); 
+      await fetchAllItems(); 
+      await loadItemDetails(); 
+    }
+    initializePage();
   </script>
 </body>
 </html>
