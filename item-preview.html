@@ -9,16 +9,13 @@
   <link rel="stylesheet" href="themes/minecraft/style.css">
   <script src="js/script.js"></script>
   <style>
-    /* --- Existing Styles for item.html --- */
-    .top { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
-    .login-btn { background-color: #5865F2; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+    /* --- your original styles here --- */
     .toast-notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 8px; color: white; font-weight: 500; transition: bottom 0.5s ease-in-out; z-index: 10001; }
     .toast-notification.show { bottom: 30px; }
     .toast-notification.success { background-color: #2d8831; }
     .toast-notification.error { background-color: #c62828; }
-    .private-item-highlight { border: 2px dashed #ff9800; background-color: rgba(255, 152, 0, 0.1); padding: 10px; border-radius: 10px; margin-bottom: 15px; }
-    
-    /* --- New Styles for Change Price --- */
+
+    /* --- new styles for Change Price --- */
     .change-price-btn {
       background-color: #d50000;
       color: white;
@@ -46,27 +43,8 @@
   </style>
 </head>
 <body>
-  <div id="loader"><div></div><div></div><div></div></div>
-  <div class="market-background"></div>
-  
-  <!-- Profile Card -->
-  <a href="/profile.html" class="profile-card" id="profile-card">
-    <img id="user-avatar" src="https://placehold.co/110x110/dddddd/333333?text=...&font=inter" alt="User Avatar" />
-    <div id="user-details">
-        <div id="user-name">Loading...</div>
-        <div id="user-tag"></div>
-    </div>
-  </a>
+  <!-- all your original HTML (loader, profile card, item details, nav, etc.) -->
 
-  <div class="top"></div>
-  <div class="sidebar" id="sidebar"></div>
-  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-  <span class="item-material-icons" id="scrollToTopBtn">north</span>
-  
-  <div class="item-filter-buttons" style="display:flex;gap:10px;justify-content:center;margin:5rem 0;">
-    <button class="btn item-filter-btn" data-nature="reset">Reset Filter</button>
-  </div>
-  
   <div class="item-container" id="itemDetails"><p>Loading item details...</p></div>
   <div class="item-nav-buttons">
     <button id="prevItemBtn" class="btn" type="button">&larr; Previous</button>
@@ -74,7 +52,7 @@
   </div>
   <div id="footer"></div>
 
-  <!-- Modal for editing price -->
+  <!-- new modal -->
   <div class="modal-overlay" id="priceModal">
     <div class="modal">
       <h2>Update Price</h2>
@@ -86,101 +64,28 @@
   </div>
 
   <script>
-    let isDevUser = false;
-    let allItems = [];
+    // keep all your original script code here (loadUserInfo, fetchAllItems, loadItemDetails, goToPrevItem, goToNextItem, etc.)
+
+    // --- additions for Change Price ---
     let discordId = null;
     let currentItemId = null;
-
-    function getCookie(name) { const value = `; ${document.cookie}`; const parts = value.split(\`; ${name}=\`); if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift()); return ''; }
 
     function openModal() { document.getElementById("priceModal").style.display = "flex"; }
     function closeModal() { document.getElementById("priceModal").style.display = "none"; }
 
-    // --- loadUserInfo (unchanged) ---
-    async function loadUserInfo() { /* same as your item.html */ }
-
-    async function fetchAllItems() { try { const res = await fetch("market/market.txt"); allItems = await res.json(); } catch (e) { console.error("Could not fetch market.txt", e); } }
-
-    async function loadItemDetails() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const itemId = urlParams.get('item');
-      currentItemId = itemId;
-
-      if (itemId) {
-        try {
-          // Dev check
-          const storedUser = getCookie("discordUser");
-          if(storedUser) {
-              let devIds = [];
-              try { const response = await fetch('/devs.txt'); if (response.ok) { const text = await response.text(); devIds = text.split('\n').map(id => id.trim()).filter(id => id); } } catch (error) { console.error('Error TwT:', error); }
-              const user = JSON.parse(storedUser);
-              discordId = user.id;
-              isDevUser = devIds.includes(user.id);
-          }
-
-          const [marketRes, pricesRes] = await Promise.all([fetch('market/market.txt'), fetch('market/mprices.txt')]);
-          const marketData = await marketRes.text();
-          const pricesData = await pricesRes.text();
-          const items = JSON.parse(marketData);
-          const item = items.find(item => item.id === itemId);
-          if (item) {
-            const isPublic = item.hasOwnProperty("public") ? item.public : true;
-            if (!isPublic && !isDevUser) { 
-                document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`; 
-                return; 
-            }
-            const pricesMap = new Map(); const npcPricesMap = new Map();
-            pricesData.split('\n').forEach(line => { 
-              const [id, arrayStr] = line.split(':').map(part => part.trim()); 
-              if (id && arrayStr) { 
-                try { 
-                  const parsedArray = JSON.parse(arrayStr); 
-                  if (Array.isArray(parsedArray) && parsedArray.length >= 2) { 
-                    pricesMap.set(id, parsedArray[1]); 
-                    if (parsedArray.length >= 3) { npcPricesMap.set(id, parsedArray[2]); } 
-                  } 
-                } catch (e) {console.error(e)} 
-              } 
-            });
-            const marketPrice = pricesMap.get(item.id) ?? item.price ?? "N/A";
-            const npcPrice = npcPricesMap.get(item.id);
-
-            let privateHighlight = (isDevUser && !isPublic) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
-            let devButton = (isDevUser) ? `<button class="change-price-btn" onclick="openModal()">Change Price</button>` : '';
-
-            document.getElementById('itemDetails').innerHTML = \`
-              \${privateHighlight}<h1>\${item.name}</h1>
-              \${item.picture ? `<img src="\${item.picture}" alt="\${item.name}">` : ''}
-              \${item.rarity ? `<div class="item-rarity-display"><img class="item-rarity" src="img/rarity/\${item.rarity}.webp"></div>` : ''}
-              <p><strong class="item-strong">ID:</strong> \${item.id}</p>
-              <div class="item-price-container">
-                <p class="item-price"><strong>Market Price:</strong> \${formatPrice(marketPrice)}</p>
-                <hr width="150px">
-                \${npcPrice !== null && npcPrice !== undefined ? `<p class="item-price"><strong>NPC Trade Price:</strong> \${formatPrice(npcPrice)}</p>` : ''}
-              </div>
-              \${devButton}
-            \`;
-          } else { 
-            document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`; 
-          }
-        } catch (error) { 
-          console.error('Error loading item details:', error); 
-          document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: Could not load item details.</h2>`; 
-        }
-      }
+    // patch into loadItemDetails (AFTER rendering item HTML)
+    // find the line in your code where item details are set:
+    //   document.getElementById('itemDetails').innerHTML = `...`;
+    // just after that line, add:
+    if (isDevUser) {
+      document.getElementById('itemDetails').innerHTML += `<button class="change-price-btn" onclick="openModal()">Change Price</button>`;
     }
+    // also remember to assign discordId & currentItemId:
+    const storedUser = getCookie("discordUser");
+    if (storedUser) { const user = JSON.parse(storedUser); discordId = user.id; }
+    currentItemId = itemId;
 
-    function formatPrice(price) { 
-      if (price === "N/A" || price === "NAN" || price === null || price === undefined) { return `<span class="item-price-img">N/A</span>`; }
-      return `<span class="item-price-img">\${Number(price).toLocaleString()} <img src="img/coin.png"></span>`; 
-    }
-
-    // Prev/Next buttons are same as item.html
-    function goToPrevItem() { /* unchanged from item.html */ }
-    function goToNextItem() { /* unchanged from item.html */ }
-    document.getElementById("prevItemBtn").addEventListener("click", goToPrevItem);
-    document.getElementById("nextItemBtn").addEventListener("click", goToNextItem);
-
+    // submit handler
     document.getElementById("submitPriceBtn").addEventListener("click", async () => {
       const marketPrice = document.getElementById("marketPriceInput").value;
       const npcPrice = document.getElementById("npcPriceInput").value || 0;
@@ -190,7 +95,7 @@
         return;
       }
 
-      const url = \`https://data-manager.roumakdatta.workers.dev/\${discordId}/\${currentItemId}/\${marketPrice}/\${npcPrice}\`;
+      const url = `https://data-manager.roumakdatta.workers.dev/${discordId}/${currentItemId}/${marketPrice}/${npcPrice}`;
       try {
         const res = await fetch(url);
         if (res.ok) {
@@ -205,9 +110,6 @@
         showToast("Error updating price", "error");
       }
     });
-
-    async function initializePage() { await loadUserInfo(); await fetchAllItems(); await loadItemDetails(); }
-    initializePage();
   </script>
 </body>
 </html>
