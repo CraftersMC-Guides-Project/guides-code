@@ -6,63 +6,67 @@
   <title>Team Management</title>
   <style>
     :root{
-      --bg: #0a0c10;
-      --panel: #111827;
-      --text: #e6edf3;
-      --muted: #9ca3af;
-      --primary: #2563eb;
-      --danger: #dc2626;
-      --success: #10b981;
-      --glass: rgba(255,255,255,0.05);
+      --bg:#0a0c10; --panel:#111827; --text:#e6edf3; --muted:#9ca3af;
+      --primary:#2563eb; --danger:#dc2626; --success:#10b981; --glass:rgba(255,255,255,.05);
     }
+    *{box-sizing:border-box}
     body{
-      margin:0;
-      height:100%;
-      background:var(--bg);
-      color:var(--text);
-      font-family:Inter,system-ui,sans-serif;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:20px;
+      margin:0; min-height:100vh; background:var(--bg); color:var(--text);
+      font-family:Inter,system-ui,sans-serif; display:flex; align-items:center; justify-content:center; padding:20px;
     }
-    .container{
-      width:100%;max-width:1080px;
-      background:var(--panel);
-      border-radius:16px;
-      padding:28px;
-      box-shadow:0 8px 32px rgba(0,0,0,.6);
+    .container{ width:100%; max-width:1080px; background:var(--panel); border-radius:16px; padding:28px; box-shadow:0 8px 32px rgba(0,0,0,.6) }
+    h1{ margin:0 0 16px; text-align:center; font-size:22px }
+    .grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px }
+    .box{ background:var(--glass); padding:16px; border-radius:12px; min-height:220px }
+    .box h2{ margin:0 0 10px; font-size:15px }
+    .dev-list{ list-style:none; padding:0; margin:0; max-height:360px; overflow:auto }
+    .dev-list li{
+      background:rgba(255,255,255,.04); padding:10px; margin-bottom:8px; border-radius:8px;
+      display:flex; justify-content:space-between; align-items:center
     }
-    h1{text-align:center;margin:0 0 16px;font-size:22px}
-    .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
-    .box{background:var(--glass);padding:16px;border-radius:12px;min-height:220px}
-    .box h2{margin:0 0 10px;font-size:15px}
-    .dev-list{list-style:none;padding:0;margin:0;max-height:360px;overflow:auto}
-    .dev-list li{background:rgba(255,255,255,.04);padding:10px;margin-bottom:8px;border-radius:8px;display:flex;justify-content:space-between;align-items:center}
-    .profile{display:flex;align-items:center;gap:12px}
-    .profile img{width:44px;height:44px;border-radius:50%;object-fit:cover}
-    .profile-info{display:flex;flex-direction:column}
-    .profile-info .name{font-weight:600}
-    .profile-info .meta{font-size:12px;color:var(--muted)}
-    .remove-btn{background:var(--danger);border:0;color:white;padding:6px 10px;border-radius:6px;cursor:pointer}
-    .add-row{display:flex;gap:10px;margin-top:16px}
-    #newIdInput{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--text)}
-    .select-target{padding:10px;border-radius:8px;background:rgba(255,255,255,.05);color:var(--text)}
-    .add-btn{background:var(--primary);color:white;border:0;padding:10px 16px;border-radius:8px;cursor:pointer}
-    .save-btn{margin-top:20px;width:100%;background:var(--success);color:white;border:0;padding:14px;border-radius:12px;font-weight:600;cursor:pointer}
-    .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:-80px;background:#111;color:white;padding:10px 16px;border-radius:8px;transition:bottom .3s ease;z-index:9999}
-    .toast.show{bottom:24px}
-    @media(max-width:1000px){.grid{grid-template-columns:1fr}}
+    .profile{ display:flex; align-items:center; gap:12px }
+    .profile img{ width:44px; height:44px; border-radius:50%; object-fit:cover }
+    .profile-info{ display:flex; flex-direction:column }
+    .profile-info .name{ font-weight:600 }
+    .profile-info .meta{ font-size:12px; color:var(--muted) }
+    .remove-btn{ background:var(--danger); border:0; color:#fff; padding:6px 10px; border-radius:6px; cursor:pointer }
+    .add-row{ display:flex; gap:10px; margin-top:16px }
+    #newIdInput{
+      flex:1; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,.1); background:transparent; color:var(--text)
+    }
+    .select-target{ padding:10px; border-radius:8px; background:rgba(255,255,255,.05); color:var(--text) }
+    .add-btn{ background:var(--primary); color:#fff; border:0; padding:10px 16px; border-radius:8px; cursor:pointer }
+    .save-btn{
+      margin-top:20px; width:100%; background:var(--success); color:#fff; border:0; padding:14px; border-radius:12px; font-weight:600; cursor:pointer
+    }
+    .save-btn[disabled]{ opacity:.7; cursor:not-allowed }
+    .toast{
+      position:fixed; left:50%; transform:translateX(-50%); bottom:-80px; background:#111; color:#fff;
+      padding:10px 16px; border-radius:8px; transition:bottom .3s ease; z-index:9999
+    }
+    .toast.show{ bottom:24px }
+    @media (max-width:1000px){ .grid{ grid-template-columns:1fr } }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Developer, Data Manager & Manager Management</h1>
+
     <div class="grid">
-      <div class="box"><h2>Developers (devs.txt)</h2><ul id="devsList" class="dev-list"><li>Loading…</li></ul></div>
-      <div class="box"><h2>Data Managers (data-manager.txt)</h2><ul id="dmList" class="dev-list"><li>Loading…</li></ul></div>
-      <div class="box"><h2>Managers (manager.txt)</h2><ul id="mgrList" class="dev-list"><li>Loading…</li></ul></div>
+      <div class="box">
+        <h2>Developers (devs.txt)</h2>
+        <ul id="devsList" class="dev-list"><li>Loading…</li></ul>
+      </div>
+      <div class="box">
+        <h2>Data Managers (data-manager.txt)</h2>
+        <ul id="dmList" class="dev-list"><li>Loading…</li></ul>
+      </div>
+      <div class="box">
+        <h2>Managers (manager.txt)</h2>
+        <ul id="mgrList" class="dev-list"><li>Loading…</li></ul>
+      </div>
     </div>
+
     <div class="add-row">
       <input id="newIdInput" placeholder="Enter Discord User ID" />
       <select id="targetSelect" class="select-target">
@@ -72,191 +76,264 @@
       </select>
       <button id="addIdBtn" class="add-btn">Add</button>
     </div>
+
     <button id="saveChangesBtn" class="save-btn">Save Changes</button>
   </div>
-  <div id="toast" class="toast"></div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
 <script>
-const REPO = "CraftersMC-Guides-Project/guides-code";
-const PATHS = {devs:"data/team/devs.txt", dm:"data/team/data-manager.txt", mgr:"data/team/manager.txt"};
+/* -------------------- CONFIG -------------------- */
+const REPO   = "CraftersMC-Guides-Project/guides-code";
 const BRANCH = "main";
+const PATHS  = {
+  devs: "data/team/devs.txt",
+  mgr:  "data/team/manager.txt",
+  dm:   "data/team/data-manager.txt",
+};
+const READ_SOURCES = {
+  devs: [
+    "https://craftersmc-guides.pages.dev/data/team/devs.txt",
+    "https://raw.githubusercontent.com/CraftersMC-Guides-Project/guides-code/main/data/team/devs.txt"
+  ],
+  mgr: [
+    "https://craftersmc-guides.pages.dev/data/team/manager.txt",
+    "https://raw.githubusercontent.com/CraftersMC-Guides-Project/guides-code/main/data/team/manager.txt"
+  ],
+  dm: [
+    "https://craftersmc-guides.pages.dev/data/team/data-manager.txt",
+    "https://raw.githubusercontent.com/CraftersMC-Guides-Project/guides-code/main/data/team/data-manager.txt"
+  ]
+};
 
-let devIds=[], dmIds=[], mgrIds=[];
-let cache={};
+/* -------------------- STATE -------------------- */
+let devIds = [], dmIds = [], mgrIds = [];
+let userCache = {};
+let draftDirty = false;
 
-function showToast(msg,type="info"){
-  const t=document.getElementById("toast");
-  t.textContent=msg;
-  t.style.background= type==="error"?"#b91c1c": type==="success"?"#065f46":"#111";
+/* -------------------- UI HELPERS -------------------- */
+function toast(msg, type="info"){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.style.background = type==="error" ? "#b91c1c" : type==="success" ? "#065f46" : "#111";
   t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"),3000);
+  setTimeout(()=>t.classList.remove("show"), 3200);
+}
+function setSaving(isSaving){
+  const btn = document.getElementById("saveChangesBtn");
+  btn.disabled = isSaving;
+  btn.textContent = isSaving ? "Saving…" : "Save Changes";
 }
 
-function getAvatar(user){
-  if(user.avatar){
-    return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
-  }
-  const num=BigInt(user.id)%5n;
-  return `https://cdn.discordapp.com/embed/avatars/${num}.png`;
+/* -------------------- TOKEN (localStorage) -------------------- */
+function getToken(){
+  const v = localStorage.getItem("githubToken");
+  return v ? v.trim() : "";
 }
 
-async function fetchUser(id){
-  if(cache[id]) return cache[id];
+/* -------------------- DISCORD USER FETCH -------------------- */
+function avatarUrl(u){
+  if (u && u.avatar) return `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png`;
+  const n = u && u.id ? (Number(BigInt(u.id) % 5n)) : 0;
+  return `https://cdn.discordapp.com/embed/avatars/${n}.png`;
+}
+async function getUser(id){
+  if (userCache[id]) return userCache[id];
   try{
-    const r=await fetch(`https://discord-auth.roumakdatta.workers.dev/users/${id}`);
-    if(r.ok){
-      const j=await r.json();
-      cache[id]=j;
-      return j;
+    const r = await fetch(`https://discord-auth.roumakdatta.workers.dev/users/${id}`);
+    if (r.ok){
+      const data = await r.json();
+      userCache[id] = data;
+      return data;
     }
-  }catch(e){console.warn("fetch failed",id,e)}
+  }catch(e){ /* ignore; render a placeholder */ }
   return null;
 }
 
-async function render(list,ulId){
-  const ul=document.getElementById(ulId);
-  ul.innerHTML="";
-  if(list.length===0){ul.innerHTML="<li>No entries.</li>";return;}
-  for(const id of list){
-    const li=document.createElement("li");
-    const u=await fetchUser(id);
-    if(u){
-      li.innerHTML=`<div class="profile"><img src="${getAvatar(u)}"><div class="profile-info"><div class="name">${u.global_name||u.username}</div><div class="meta">ID:${u.id} ${u.xbox?"| Xbox:"+u.xbox.name:""}</div><div class="meta">Role:${u.role||"N/A"} | Logins:${u.login_count||0}</div></div></div><button class="remove-btn" onclick="removeId('${id}')">Remove</button>`;
+/* -------------------- LOAD TEXT (with robust fallbacks) -------------------- */
+async function fetchFirstOk(urls){
+  for (const url of urls){
+    try{
+      const r = await fetch(url, { cache:"no-cache", mode:"cors" });
+      if (r.ok) return await r.text();
+    }catch(e){ /* try next */ }
+  }
+  return "";
+}
+function parseLines(txt){
+  return txt.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+}
+async function loadFromRemote(){
+  const [devTxt, dmTxt, mgrTxt] = await Promise.all([
+    fetchFirstOk(READ_SOURCES.devs),
+    fetchFirstOk(READ_SOURCES.dm),
+    fetchFirstOk(READ_SOURCES.mgr),
+  ]);
+  devIds = parseLines(devTxt);
+  dmIds  = parseLines(dmTxt);
+  mgrIds = parseLines(mgrTxt);
+}
+
+/* -------------------- RENDERING -------------------- */
+async function renderList(list, ulId){
+  const ul = document.getElementById(ulId);
+  ul.innerHTML = "";
+  if (!list.length){
+    ul.innerHTML = "<li>No entries.</li>";
+    return;
+  }
+  for (const id of list){
+    const li = document.createElement("li");
+    const u = await getUser(id);
+    if (u){
+      li.innerHTML = `
+        <div class="profile">
+          <img alt="avatar" src="${avatarUrl(u)}">
+          <div class="profile-info">
+            <div class="name">${u.global_name || u.username}</div>
+            <div class="meta">ID: ${u.id} ${u.xbox ? `| Xbox: ${u.xbox.name}` : ""}</div>
+            <div class="meta">Role: ${u.role || "N/A"} | Logins: ${u.login_count || 0}</div>
+          </div>
+        </div>
+        <button class="remove-btn" onclick="removeId('${id}')">Remove</button>`;
     }else{
-      li.innerHTML=`<div class="profile"><div style="width:44px;height:44px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center">?</div><div class="profile-info"><div class="name">${id}</div><div class="meta">Not found</div></div></div><button class="remove-btn" onclick="removeId('${id}')">Remove</button>`;
+      li.innerHTML = `
+        <div class="profile">
+          <div style="width:44px;height:44px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center">?</div>
+          <div class="profile-info">
+            <div class="name">${id}</div>
+            <div class="meta">User not found / CORS</div>
+          </div>
+        </div>
+        <button class="remove-btn" onclick="removeId('${id}')">Remove</button>`;
     }
     ul.appendChild(li);
   }
 }
-
 async function renderAll(){
-  await render(devIds,"devsList");
-  await render(dmIds,"dmList");
-  await render(mgrIds,"mgrList");
-  localStorage.setItem("draft",JSON.stringify({devIds,dmIds,mgrIds}));
-}
-
-function removeId(id){
-  devIds=devIds.filter(x=>x!==id);
-  dmIds=dmIds.filter(x=>x!==id);
-  mgrIds=mgrIds.filter(x=>x!==id);
-  renderAll();
-}
-
-document.getElementById("addIdBtn").onclick=()=>{
-  const id=document.getElementById("newIdInput").value.trim();
-  if(!id) return;
-  if([...devIds,...dmIds,...mgrIds].includes(id)){showToast("Already exists","error");return;}
-  const target=document.getElementById("targetSelect").value;
-  if(target==="devs") devIds.push(id);
-  if(target==="dm") dmIds.push(id);
-  if(target==="mgr") mgrIds.push(id);
-  document.getElementById("newIdInput").value="";
-  renderAll();
-  showToast("Added locally","success");
-};
-
-// GitHub save
-document.getElementById("saveChangesBtn").onclick = async () => {
-  const token = getCookie("githubToken");
-  if (!token) {
-    showToast("No GitHub token found in cookies", "error");
-    return;
+  await renderList(devIds,"devsList");
+  await renderList(dmIds,"dmList");
+  await renderList(mgrIds,"mgrList");
+  // Save draft only if dirty (so an old empty draft doesn't override server data)
+  if (draftDirty){
+    localStorage.setItem("teamDraft", JSON.stringify({devIds, dmIds, mgrIds, dirty:true, ts:Date.now()}));
   }
+}
 
-  showToast("Saving changes…");
+/* -------------------- ADD/REMOVE -------------------- */
+function removeId(id){
+  devIds = devIds.filter(x=>x!==id);
+  dmIds  = dmIds.filter(x=>x!==id);
+  mgrIds = mgrIds.filter(x=>x!==id);
+  draftDirty = true;
+  renderAll();
+  toast("Removed from draft");
+}
+document.getElementById("addIdBtn").addEventListener("click", ()=>{
+  const input = document.getElementById("newIdInput");
+  const id = input.value.trim();
+  if (!id) return;
+  if ([...devIds,...dmIds,...mgrIds].includes(id)){ toast("ID already exists","error"); return; }
+  const target = document.getElementById("targetSelect").value;
+  if (target==="devs") devIds.push(id);
+  if (target==="dm")   dmIds.push(id);
+  if (target==="mgr")  mgrIds.push(id);
+  input.value = "";
+  draftDirty = true;
+  renderAll();
+  toast("Added locally","success");
+});
 
-  try {
-    const refRes = await fetch(`https://api.github.com/repos/${REPO}/git/refs/heads/${BRANCH}`, {
-      headers: { Authorization: `token ${token}` }
-    });
-    if (!refRes.ok) throw new Error("Failed to get branch ref");
-    const refData = await refRes.json();
-    const latestCommitSha = refData.object.sha;
+/* -------------------- SAVE (GitHub Contents API) -------------------- */
+function apiHeaders(token){
+  return {
+    "Authorization": `token ${token}`,
+    "Accept": "application/vnd.github+json",
+    "Content-Type": "application/json",
+    "X-GitHub-Api-Version": "2022-11-28"
+  };
+}
+function toBase64(str){ return btoa(unescape(encodeURIComponent(str))); }
+async function getSha(token, path){
+  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(BRANCH)}`, {
+    headers: apiHeaders(token)
+  });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Failed to read ${path}`);
+  const json = await res.json();
+  return json.sha || null;
+}
+async function putFile(token, path, content, sha){
+  const body = {
+    message: `chore(team): update ${path} via dashboard`,
+    content: toBase64(content.endsWith("\n")?content:(content+"\n")),
+    branch: BRANCH
+  };
+  if (sha) body.sha = sha;
+  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(path)}`, {
+    method: "PUT", headers: apiHeaders(token), body: JSON.stringify(body)
+  });
+  if (!res.ok){
+    const e = await res.json().catch(()=>({message:"Unknown error"}));
+    throw new Error(`${path}: ${e.message || res.statusText}`);
+  }
+  return res.json();
+}
+async function saveAll(){
+  const token = getToken();
+  if (!token){ toast("GitHub token missing in localStorage as 'githubToken'","error"); return; }
+  setSaving(true);
+  try{
+    const devContent = devIds.join("\n");
+    const dmContent  = dmIds.join("\n");
+    const mgrContent = mgrIds.join("\n");
 
-    const commitRes = await fetch(`https://api.github.com/repos/${REPO}/git/commits/${latestCommitSha}`, {
-      headers: { Authorization: `token ${token}` }
-    });
-    if (!commitRes.ok) throw new Error("Failed to get commit");
-    const commitData = await commitRes.json();
-    const baseTreeSha = commitData.tree.sha;
-
-    async function makeBlob(content) {
-      const res = await fetch(`https://api.github.com/repos/${REPO}/git/blobs`, {
-        method: "POST",
-        headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ content, encoding: "utf-8" })
-      });
-      if (!res.ok) throw new Error("Blob creation failed");
-      return res.json();
-    }
-    const [devBlob, dmBlob, mgrBlob] = await Promise.all([
-      makeBlob(devIds.join("\\n")),
-      makeBlob(dmIds.join("\\n")),
-      makeBlob(mgrIds.join("\\n"))
+    const [devSha, dmSha, mgrSha] = await Promise.all([
+      getSha(token, PATHS.devs),
+      getSha(token, PATHS.dm),
+      getSha(token, PATHS.mgr),
     ]);
 
-    const treeRes = await fetch(`https://api.github.com/repos/${REPO}/git/trees`, {
-      method: "POST",
-      headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        base_tree: baseTreeSha,
-        tree: [
-          { path: PATHS.devs, mode: "100644", type: "blob", sha: devBlob.sha },
-          { path: PATHS.dm,   mode: "100644", type: "blob", sha: dmBlob.sha },
-          { path: PATHS.mgr,  mode: "100644", type: "blob", sha: mgrBlob.sha }
-        ]
-      })
-    });
-    if (!treeRes.ok) throw new Error("Failed to create tree");
-    const treeData = await treeRes.json();
+    await Promise.all([
+      putFile(token, PATHS.devs, devContent, devSha),
+      putFile(token, PATHS.dm,   dmContent,  dmSha),
+      putFile(token, PATHS.mgr,  mgrContent, mgrSha),
+    ]);
 
-    const commitMessage = "Update team lists via dashboard";
-    const newCommitRes = await fetch(`https://api.github.com/repos/${REPO}/git/commits`, {
-      method: "POST",
-      headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: commitMessage,
-        tree: treeData.sha,
-        parents: [latestCommitSha]
-      })
-    });
-    if (!newCommitRes.ok) throw new Error("Failed to create commit");
-    const newCommitData = await newCommitRes.json();
-
-    const updateRes = await fetch(`https://api.github.com/repos/${REPO}/git/refs/heads/${BRANCH}`, {
-      method: "PATCH",
-      headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ sha: newCommitData.sha })
-    });
-    if (!updateRes.ok) throw new Error("Failed to update ref");
-
-    localStorage.removeItem("draft");
-    showToast("Changes saved successfully!", "success");
-
-  } catch (err) {
+    localStorage.removeItem("teamDraft");
+    draftDirty = false;
+    toast("Saved to GitHub successfully!","success");
+  }catch(err){
     console.error(err);
-    showToast("Save failed: " + err.message, "error");
+    toast("Save failed: " + err.message,"error");
+  }finally{
+    setSaving(false);
   }
-};
-
-// utils
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
 }
+document.getElementById("saveChangesBtn").addEventListener("click", saveAll);
 
-// load draft
-(function init(){
-  const d=localStorage.getItem("draft");
-  if(d){
-    const o=JSON.parse(d);
-    devIds=o.devIds||[];dmIds=o.dmIds||[];mgrIds=o.mgrIds||[];
-    renderAll();
-    showToast("Loaded draft");
-  }else{
-    renderAll();
-  }
+/* -------------------- INIT -------------------- */
+(async function init(){
+  // Always load server snapshot first (prevents stale empty drafts from hiding data)
+  await loadFromRemote();
+
+  // If there is a *real* draft with changes, prefer it
+  try{
+    const d = localStorage.getItem("teamDraft");
+    if (d){
+      const o = JSON.parse(d);
+      const hasData = (o.devIds?.length||0)+(o.dmIds?.length||0)+(o.mgrIds?.length||0) > 0;
+      if (o.dirty || hasData){
+        devIds = o.devIds || devIds;
+        dmIds  = o.dmIds  || dmIds;
+        mgrIds = o.mgrIds || mgrIds;
+        draftDirty = !!o.dirty;
+        toast("Loaded local draft");
+      }
+    }
+  }catch{}
+
+  await renderAll();
 })();
 </script>
 </body>
