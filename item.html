@@ -166,7 +166,15 @@
           const storedUser = getCookie("discordUser");
           if(storedUser) {
               let devIds = [];
-              try { const response = await fetch('/devs.txt'); if (response.ok) { const text = await response.text(); devIds = text.split('\n').map(id => id.trim()).filter(id => id); } } catch (error) {}
+              try { 
+                const response = await fetch('/devs.txt'); 
+                if (response.ok) { 
+                  const text = await response.text(); 
+                  devIds = text.split('\n').map(id => id.trim()).filter(id => id); 
+                } 
+              } catch (error) {
+                console.error('Error TwT:', error);
+              }
               const user = JSON.parse(storedUser);
               isDevUser = devIds.includes(user.id);
           }
@@ -183,13 +191,36 @@
                 return; 
             }
             const pricesMap = new Map(); const npcPricesMap = new Map();
-            pricesData.split('\n').forEach(line => { const [id, arrayStr] = line.split(':').map(part => part.trim()); if (id && arrayStr) { try { const parsedArray = JSON.parse(arrayStr); if (Array.isArray(parsedArray) && parsedArray.length >= 2) { pricesMap.set(id, parsedArray[1]); if (parsedArray.length >= 3) { npcPricesMap.set(id, parsedArray[2]); } } } catch (e) {} } });
+            pricesData.split('\n').forEach(line => { 
+              const [id, arrayStr] = line.split(':').map(part => part.trim()); 
+              if (id && arrayStr) { 
+                try { 
+                  const parsedArray = JSON.parse(arrayStr); 
+                  if (Array.isArray(parsedArray) && parsedArray.length >= 2) { 
+                    pricesMap.set(id, parsedArray[1]); 
+                    if (parsedArray.length >= 3) { 
+                      npcPricesMap.set(id, parsedArray[2]); 
+                    } 
+                  } 
+                } catch (e) {console.error(e)
+
+                } 
+              } 
+            });
             const marketPrice = pricesMap.get(item.id) ?? item.price ?? "N/A";
             const npcPrice = npcPricesMap.get(item.id);
             let privateHighlight = (isDevUser && !isPublic) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
-            document.getElementById('itemDetails').innerHTML = `${privateHighlight}<h1>${item.name}</h1>${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}${item.rarity ? `<div class="item-rarity-display"><img class="item-rarity" src="img/rarity/${item.rarity}.webp"></div>` : ''}<p><strong class="item-strong">ID:</strong> ${item.id}</p><div class="item-price-container"><p class="item-price"><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p><hr width="150px">${npcPrice !== null && npcPrice !== undefined ? `<p class="item-price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>` : ''}</div>`;
-          } else { document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`; }
-        } catch (error) { console.error('Error loading item details:', error); document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: Could not load item details.</h2>`; }
+            document.getElementById('itemDetails').innerHTML = `${privateHighlight}<h1>${item.name}</h1>
+            ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
+            ${item.rarity ? `<div class="item-rarity-display"><img class="item-rarity" src="img/rarity/${item.rarity}.webp"></div>` : ''}
+            <p><strong class="item-strong">ID:</strong> ${item.id}</p><div class="item-price-container"><p class="item-price"><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p><hr width="150px">${npcPrice !== null && npcPrice !== undefined ? `<p class="item-price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>` : ''}</div>`;
+          } else { 
+            document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`; 
+          }
+        } catch (error) { 
+          console.error('Error loading item details:', error); 
+          document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: Could not load item details.</h2>`; 
+        }
       }
     }
 
@@ -202,9 +233,47 @@
         setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 4000);
     }
 
-    function formatPrice(price) { if (price === "N/A" || price === "NAN" || price === null || price === undefined) { return `<span class="item-price-img">N/A</span>`; } return `<span class="item-price-img">${Number(price).toLocaleString()} <img src="img/coin.png"></span>`; }
-    function goToPrevItem() { const urlParams = new URLSearchParams(window.location.search); let id = parseInt(urlParams.get("item"), 10); if (isNaN(id) || id <= 1) return; if (isDevUser) { window.location.href = `item.html?item=${id - 1}`; } else { let prevId = id - 1; while (prevId > 0) { const prevItem = allItems.find(i => i.id == prevId); if (prevItem && (prevItem.public === undefined || prevItem.public)) { window.location.href = `item.html?item=${prevId}`; return; } prevId--; } } }
-    function goToNextItem() { const urlParams = new URLSearchParams(window.location.search); let id = parseInt(urlParams.get("item"), 10); if (isNaN(id)) return; if (isDevUser) { window.location.href = `item.html?item=${id + 1}`; } else { let nextId = id + 1; while (nextId <= allItems.length + 1000) { const nextItem = allItems.find(i => i.id == nextId); if (nextItem && (nextItem.public === undefined || nextItem.public)) { window.location.href = `item.html?item=${nextId}`; return; } nextId++; } } }
+    function formatPrice(price) { 
+      if (price === "N/A" || price === "NAN" || price === null || price === undefined) { 
+        return `<span class="item-price-img">N/A</span>`; 
+      }
+        return `<span class="item-price-img">${Number(price).toLocaleString()} <img src="img/coin.png"></span>`; 
+      }
+    function goToPrevItem() { const urlParams = new URLSearchParams(window.location.search); 
+    let id = parseInt(urlParams.get("item"), 10); 
+
+    if (isNaN(id) || id <= 1) return; 
+
+    if (isDevUser) { 
+      window.location.href = `item.html?item=${id - 1}`;
+    } else {
+      let prevId = id - 1; 
+
+      while (prevId > 0) { 
+        const prevItem = allItems.find(i => i.id == prevId); 
+        if (prevItem && (prevItem.public === undefined || prevItem.public)) { window.location.href = `item.html?item=${prevId}`; return; } prevId--; 
+      } 
+    } 
+  }
+    function goToNextItem() { 
+      const urlParams = new URLSearchParams(window.location.search); 
+      let id = parseInt(urlParams.get("item"), 10); 
+
+      if (isNaN(id)) return; 
+
+      if (isDevUser) { 
+        window.location.href = `item.html?item=${id + 1}`; 
+      } else { 
+        let nextId = id + 1;
+
+         while (nextId <= allItems.length + 1000) { 
+          const nextItem = allItems.find(i => i.id == nextId); 
+
+          if (nextItem && (nextItem.public === undefined || nextItem.public)) { 
+            window.location.href = `item.html?item=${nextId}`; return; } nextId++; 
+          } 
+        } 
+      }
     document.getElementById("prevItemBtn").addEventListener("click", goToPrevItem);
     document.getElementById("nextItemBtn").addEventListener("click", goToNextItem);
     
