@@ -236,7 +236,7 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   if(!loadDraft()){
     await loadAll();
   } else {
-    renderAll();
+    await renderAll();
     showToast('Loaded unsaved local draft','info');
   }
 });
@@ -252,14 +252,14 @@ async function loadAll(){
     const mgrResp = await fetch(`/${MGR_FILE_PATH}`, { cache: 'no-cache' });
     mgrIds = mgrResp.ok ? (await mgrResp.text()).split('\n').map(s=>s.trim()).filter(Boolean) : [];
 
-    renderAll();
+    await renderAll();
   } catch(e){ showToast(e.message || 'Failed to load data','error'); }
 }
 
-function renderAll(){
-  renderListFor(devIds, 'devsList');
-  renderListFor(dmIds, 'dmList');
-  renderListFor(mgrIds, 'mgrList');
+async function renderAll(){
+  await renderListFor(devIds, 'devsList');
+  await renderListFor(dmIds, 'dmList');
+  await renderListFor(mgrIds, 'mgrList');
   saveDraft();
 }
 
@@ -302,15 +302,15 @@ async function renderListFor(listIds, ulId){
   }
 }
 
-function handleRemove(id){
+async function handleRemove(id){
   devIds = devIds.filter(x=>x !== id);
   dmIds = dmIds.filter(x=>x !== id);
   mgrIds = mgrIds.filter(x=>x !== id);
-  renderAll();
+  await renderAll();
   showToast('Marked for removal','info');
 }
 
-document.getElementById('addIdBtn').addEventListener('click', ()=>{
+document.getElementById('addIdBtn').addEventListener('click', async ()=>{
   const input = document.getElementById('newIdInput');
   const newId = input.value.trim();
   if(!newId) return;
@@ -322,7 +322,7 @@ document.getElementById('addIdBtn').addEventListener('click', ()=>{
   if(target==='dm') dmIds.push(newId);
   if(target==='mgr') mgrIds.push(newId);
   input.value = '';
-  renderAll();
+  await renderAll();
   showToast('Added locally (not saved yet).','success');
 });
 
@@ -375,5 +375,3 @@ document.getElementById('saveChangesBtn').addEventListener('click', async ()=>{
     showToast('Changes saved successfully!','success');
   } catch(err){ showToast('Error: '+err.message,'error'); }
 });
-
-async function makeBlob(content, token
