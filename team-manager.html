@@ -155,7 +155,98 @@ document.getElementById("addIdBtn").onclick=()=>{
   showToast("Added locally","success");
 };
 
-// load from localStorage
+// GitHub save
+document.getElementById("saveChangesBtn").onclick = async () => {
+  const token = getCookie("githubToken");
+  if (!token) {
+    showToast("No GitHub token found in cookies", "error");
+    return;
+  }
+
+  showToast("Saving changes…");
+
+  try {
+    const refRes = await fetch(`https://api.github.com/repos/${REPO}/git/refs/heads/${BRANCH}`, {
+      headers: { Authorization: `token ${token}` }
+    });
+    if (!refRes.ok) throw new Error("Failed to get branch ref");
+    const refData = await refRes.json();
+    const latestCommitSha = refData.object.sha;
+
+    const commitRes = await fetch(`https://api.github.com/repos/${REPO}/git/commits/${latestCommitSha}`, {
+      headers: { Authorization: `token ${token}` }
+    });
+    if (!commitRes.ok) throw new Error("Failed to get commit");
+    const commitData = await commitRes.json();
+    const baseTreeSha = commitData.tree.sha;
+
+    async function makeBlob(content) {
+      const res = await fetch(`https://api.github.com/repos/${REPO}/git/blobs`, {
+        method: "POST",
+        headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ content, encoding: "utf-8" })
+      });
+      if (!res.ok) throw new Error("Blob creation failed");
+      return res.json();
+    }
+    const [devBlob, dmBlob, mgrBlob] = await Promise.all([
+      makeBlob(devIds.join("\\n")),
+      makeBlob(dmIds.join("\\n")),
+      makeBlob(mgrIds.join("\\n"))
+    ]);
+
+    const treeRes = await fetch(`https://api.github.com/repos/${REPO}/git/trees`, {
+      method: "POST",
+      headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        base_tree: baseTreeSha,
+        tree: [
+          { path: PATHS.devs, mode: "100644", type: "blob", sha: devBlob.sha },
+          { path: PATHS.dm,   mode: "100644", type: "blob", sha: dmBlob.sha },
+          { path: PATHS.mgr,  mode: "100644", type: "blob", sha: mgrBlob.sha }
+        ]
+      })
+    });
+    if (!treeRes.ok) throw new Error("Failed to create tree");
+    const treeData = await treeRes.json();
+
+    const commitMessage = "Update team lists via dashboard";
+    const newCommitRes = await fetch(`https://api.github.com/repos/${REPO}/git/commits`, {
+      method: "POST",
+      headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: commitMessage,
+        tree: treeData.sha,
+        parents: [latestCommitSha]
+      })
+    });
+    if (!newCommitRes.ok) throw new Error("Failed to create commit");
+    const newCommitData = await newCommitRes.json();
+
+    const updateRes = await fetch(`https://api.github.com/repos/${REPO}/git/refs/heads/${BRANCH}`, {
+      method: "PATCH",
+      headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ sha: newCommitData.sha })
+    });
+    if (!updateRes.ok) throw new Error("Failed to update ref");
+
+    localStorage.removeItem("draft");
+    showToast("Changes saved successfully!", "success");
+
+  } catch (err) {
+    console.error(err);
+    showToast("Save failed: " + err.message, "error");
+  }
+};
+
+// utils
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// load draft
 (function init(){
   const d=localStorage.getItem("draft");
   if(d){
