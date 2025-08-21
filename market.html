@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="themes/minecraft/style.css" />
   <script src="js/script.js"></script>
   <style>
-    /* --- Profile Card Styles cloned directly from index.html --- */
+    /* === Profile Card Styles (cloned directly from index.html) === */
     .profile-card {
       position: fixed;
       top: 80px;
@@ -30,19 +30,8 @@
       animation: fade-in-down 0.5s ease-out forwards;
       min-width: 200px;
     }
-    .profile-card:hover {
-      background-color: rgba(0, 0, 0, 0.8);
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    }
-    #user-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid rgba(255,255,255,0.2);
-      transition: box-shadow 0.3s;
-    }
+    .profile-card:hover { background-color: rgba(0, 0, 0, 0.8); transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+    #user-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); transition: box-shadow 0.3s; }
     #user-details { text-align: left; }
     #user-name { font-size: 18px; font-weight: 700; line-height: 1.2; }
     #user-tag { font-size: 12px; font-weight: 700; text-transform: uppercase; opacity: 0.9; margin-top: 3px; display: block; letter-spacing: 0.5px; }
@@ -51,14 +40,9 @@
     .profile-card.role-data-manager #user-avatar { box-shadow: 0 0 15px rgba(41, 98, 255, 0.8); }
     .profile-card.role-rank-seller #user-avatar { box-shadow: 0 0 15px rgba(0, 200, 83, 0.8); }
     @keyframes fade-in-down { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 768px) { 
-      .profile-card { top: 65px; right: 10px; padding: 8px 14px; gap: 12px; min-width: 0; }
-      #user-avatar { width: 40px; height: 40px; }
-      #user-name { font-size: 16px; }
-      #user-tag { font-size: 10px; }
-    }
+    @media (max-width: 768px) { .profile-card { top: 65px; right: 10px; padding: 8px 14px; gap: 12px; min-width: 0; } #user-avatar { width: 40px; height: 40px; } #user-name { font-size: 16px; } #user-tag { font-size: 10px; } }
 
-    /* Market specific styles */
+    /* === Market Styles === */
     .private-item-highlight { border: 2px dashed #ff9800; background-color: rgba(255, 152, 0, 0.1); padding: 5px; border-radius: 8px; margin-bottom: 8px; text-align: center; font-weight: bold; color: #ff9800; }
     .results-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; justify-items: center; margin: 20px; }
     .result { background: rgba(30,30,30,0.85); padding: 12px; border-radius: 8px; width: 100%; max-width: 350px; cursor: pointer; transition: transform 0.2s; color: white; }
@@ -80,7 +64,7 @@
   <div id="loader"><div></div><div></div><div></div></div>
   <div class="market-background"></div>
 
-  <!-- Profile Card cloned directly from index.html -->
+  <!-- === Profile Card (cloned from index.html) === -->
   <a href="/profile.html" class="profile-card" id="profile-card">
     <img id="user-avatar" src="https://placehold.co/110x110/dddddd/333333?text=...&font=inter" alt="User Avatar" />
     <div id="user-details">
@@ -100,7 +84,38 @@
   <div class="market-categories">Discover the prices</div>
   <div class="market-divider"></div>
 
-  <!-- category section skipped for brevity -->
+  <div class="market-category-section">
+    <div class="market-category-grid">
+      <div class="market-category-item" onclick="goToCategory('farming')">
+        <img src="assets/ui-icons/ui_bazaar_category_farming_active.png" alt="farming" class="market-bz">
+        <div class="market-category-name"><p>Farming</p></div>
+      </div>
+      <div class="market-category-item" onclick="goToCategory('mining')">
+        <img src="assets/ui-icons/ui_bazaar_category_mining_active.png" alt="mining" class="market-bz">
+        <div class="market-category-name"><p>Mining</p></div>
+      </div>
+      <div class="market-category-item" onclick="goToCategory('combat')">
+        <img src="assets/ui-icons/ui_bazaar_category_combat_active.png" alt="Combat" class="market-bz">
+        <div class="market-category-name"><p>Combat</p></div>
+      </div>
+      <div class="market-category-item" onclick="goToCategory('foraging')">
+        <img src="assets/ui-icons/ui_bazaar_category_foraging_active.png" alt="foraging" class="market-bz">
+        <div class="market-category-name"><p>Foraging</p></div>
+      </div>
+      <div class="market-category-item" onclick="goToCategory('special')">
+        <img src="assets/ui-icons/ui_star_active.png" alt="special" class="market-bz">
+        <div class="market-category-name"><p>Special</p></div>
+      </div>
+      <div class="market-category-item" onclick="goToCategory('slayer')">
+        <img src="img/Atoned_Heart.webp" alt="special" class="market-bz">
+        <div class="market-category-name"><p>Slayer</p></div>
+      </div>
+      <div class="market-category-item" onclick="window.location.href='pets-cat.html'">
+        <img src="img/pets/Phoenix_Pet.webp" alt="Pets">
+        <div class="market-category-name"><p>Pets</p></div>
+      </div>
+    </div>
+  </div>
   <div id="footer"></div>
 
   <script>
@@ -111,7 +126,6 @@
       return '';
     }
 
-    // Profile card JS cloned directly from index.html
     async function loadUserInfo() {
       const profileCard = document.getElementById('profile-card');
       const defaultAvatar = "https://placehold.co/110x110/dddddd/333333?text=...&font=inter";
@@ -150,7 +164,105 @@
       } catch (err) { console.error('Error in loadUserInfo:', err); profileCard.style.display = 'none'; }
     }
 
-    document.addEventListener('DOMContentLoaded', () => { loadUserInfo(); });
+    document.addEventListener('DOMContentLoaded', () => {
+      loadUserInfo();
+      loadItems();
+    });
+
+    // --- Market Page Logic ---
+    let items = [], prices = {}, pets = [], petPrices = {}, minions = [], minionPrices = {}, isDataLoaded = false, isDevUser = false;
+
+    function goToCategory(categoryName) { window.location.href = `categories?cat=${categoryName}`; }
+
+    function parsePrices(text) {
+      const priceMap = {};
+      const lines = text.trim().split('\n');
+      for (const line of lines) {
+        const match = line.match(/^(\d+):\s*\[(.*)\]$/);
+        if (match) {
+          const id = match[1];
+          const parts = match[2].split(',');
+          const price = parseInt(parts[1].trim());
+          priceMap[id] = price;
+        }
+      }
+      return priceMap;
+    }
+
+    async function loadItems() {
+      try {
+        const [marketRes, priceRes, petRes, petPriceRes, minionRes, minionPriceRes] = await Promise.all([
+          fetch('market/market.txt'),
+          fetch('market/mprices.txt'),
+          fetch('market/pets.txt'),
+          fetch('market/pet-prices.txt'),
+          fetch('market/minions.txt'),
+          fetch('market/minion-prices.json')
+        ]);
+
+        items = await marketRes.json();
+        prices = parsePrices(await priceRes.text());
+        pets = await petRes.json();
+        petPrices = await petPriceRes.json();
+        minions = await minionRes.json();
+        minionPrices = await minionPriceRes.json();
+
+        isDataLoaded = true;
+        searchItems();
+      } catch (error) {
+        console.error("Error loading data:", error);
+        document.getElementById('results').innerHTML = '<p>Failed to load item data.</p>';
+      } finally {
+        document.getElementById('loader').style.display = 'none';
+      }
+    }
+
+    function getRarityTag(rarity) {
+      if (!rarity) return '';
+      const r = rarity.toLowerCase();
+      if (r === 'legendary') return '<span class="rarity-tag rarity-legendary">LEGENDARY</span>';
+      if (r === 'epic') return '<span class="rarity-tag rarity-epic">EPIC</span>';
+      if (r === 'rare') return '<span class="rarity-tag rarity-rare">RARE</span>';
+      if (r === 'uncommon') return '<span class="rarity-tag rarity-uncommon">UNCOMMON</span>';
+      if (r === 'common') return '<span class="rarity-tag rarity-common">COMMON</span>';
+      return '';
+    }
+
+    function searchItems() {
+      const query = document.getElementById('searchBox').value.toLowerCase();
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      if (!isDataLoaded) { resultsDiv.innerHTML = '<p>Loading items...</p>'; return; }
+
+      const filteredItems = items.filter(item => {
+        const isPublic = item.hasOwnProperty("public") ? item.public : true;
+        return (isPublic || isDevUser) && item.name.toLowerCase().includes(query);
+      });
+      
+      const filteredPets = pets.filter(pet => pet.name.toLowerCase().includes(query));
+      const filteredMinions = minions.filter(minion => minion.name.toLowerCase().includes(query));
+
+      if (filteredItems.length === 0 && query.trim() !== '' && filteredPets.length === 0 && filteredMinions.length === 0) {
+        resultsDiv.innerHTML = '<p>No results found.</p>';
+        return;
+      }
+
+      if (query.trim() === '') return;
+
+      // Regular items
+      filteredItems.slice(0, 10).forEach(item => {
+        const price = prices[item.id] || 'N/A';
+        const div = document.createElement('div');
+        div.className = 'market-result';
+        const isPublic = item.hasOwnProperty("public") ? item.public : true;
+        let privateHighlight = (!isPublic && isDevUser) ? `<div class='private-item-highlight'>PRIVATE ITEM</div>` : '';
+
+        div.innerHTML = `
+          ${privateHighlight}
+          <div class=\"market-info\">`;
+      });
+    }
   </script>
 </body>
 </html>
