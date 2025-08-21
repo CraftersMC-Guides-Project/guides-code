@@ -671,7 +671,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const themeLink = document.createElement('link');
     themeLink.rel = 'stylesheet';
-    themeLink.href = `themes/${savedTheme}/style.css`;
+    themeLink.href = `../themes/${savedTheme}/style.css`;
     document.head.appendChild(themeLink);
 });
 
