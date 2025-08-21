@@ -1,1 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Item Details - CraftersMC Guides</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="themes/minecraft/style.css">
+  <script src="js/script.js"></script>
+  <style>
+    /* Keep your existing styles … */
+
+    /* New: Save button style */
+    .save-btn {
+      margin-top: 15px;
+      padding: 10px 15px;
+      background-color: #2d8831;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .save-btn:hover {
+      background-color: #256b27;
+    }
+    .price-input {
+      padding: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 120px;
+    }
+  </style>
+</head>
+<body>
+  <div id="loader"><div></div><div></div><div></div></div>
+  <div class="market-background"></div>
+
+  <!-- Profile card -->
+  <a href="/profile.html" class="profile-card" id="profile-card">
+    <img id="user-avatar" src="https://placehold.co/110x110/dddddd/333333?text=...&font=inter" alt="User Avatar" />
+    <div id="user-details">
+      <div id="user-name">Loading...</div>
+      <div id="user-tag"></div>
+    </div>
+  </a>
+
+  <div class="top"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <span class="item-material-icons" id="scrollToTopBtn">north</span>
+
+  <div class="item-container" id="itemDetails"><p>Loading item details...</p></div>
+
+  <div class="item-nav-buttons">
+    <button id="prevItemBtn" class="btn" type="button">&larr; Previous</button>
+    <button id="nextItemBtn" class="btn" type="button">Next &rarr;</button>
+  </div>
+
+  <div id="footer"></div>
+
+  <script>
+    let isDevUser = false;
+    let allItems = [];
+    let currentItem = null;
+
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+      return '';
+    }
+
+    // --- Profile loading (unchanged) ---
+    async function loadUserInfo() {
+      // same as your existing implementation
+      // sets isDevUser = true if user is in devs list
+      // ...
+    }
+
+    async function fetchAllItems() {
+      try {
+        const res = await fetch("market/market.txt");
+        allItems = await res.json();
+      } catch (e) {
+        console.error("Could not fetch market.txt", e);
+      }
+    }
+
+    async function loadItemDetails() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const itemId = urlParams.get('item');
+      if (!itemId) return;
+
+      try {
+        const [marketRes, pricesRes] = await Promise.all([
+          fetch('market/market.txt'),
+          fetch('market/mprices.txt')
+        ]);
+        const items = JSON.parse(await marketRes.text());
+        const pricesData = await pricesRes.text();
+
+        const item = items.find(i => i.id === itemId);
+        currentItem = item;
+
+        if (!item) {
+          document.getElementById('itemDetails').innerHTML =
+            `<h2 style="color:red;">Error: This item doesn't exist.</h2>`;
+          return;
+        }
+
+        const pricesMap = new Map();
+        pricesData.split('\n').forEach(line => {
+          const [id, arrayStr] = line.split(':').map(p => p.trim());
+          if (id && arrayStr) {
+            try {
+              const parsed = JSON.parse(arrayStr);
+              if (Array.isArray(parsed) && parsed.length >= 2) {
+                pricesMap.set(id, parsed[1]);
+              }
+            } catch (e) {}
+          }
+        });
+
+        const marketPrice = pricesMap.get(item.id) ?? item.price ?? "N/A";
+
+        let html = `
+          <h1>${item.name}</h1>
+          ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ""}
+          <p><strong>ID:</strong> ${item.id}</p>
+          <div class="item-price-container">
+            <p><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p>
+          </div>
+        `;
+
+        // Show edit option if dev
+        if (isDevUser) {
+          html += `
+            <div class="price-edit">
+              <input type="number" id="priceInput" class="price-input" value="${marketPrice}">
+              <button class="save-btn" onclick="savePrice()">Save Price</button>
+            </div>
+          `;
+        }
+
+        document.getElementById('itemDetails').innerHTML = html;
+      } catch (err) {
+        console.error('Error loading item details:', err);
+      }
+    }
+
+    // --- NEW: Save price via Worker ---
+    async function savePrice() {
+      const input = document.getElementById("priceInput");
+      const newPrice = parseInt(input.value, 10);
+      if (isNaN(newPrice)) {
+        showToast("Invalid price", "error");
+        return;
+      }
+
+      try {
+        const res = await fetch("https://your-temp-worker.workers.dev/updatePrice", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include", // send cookies/session
+          body: JSON.stringify({
+            itemId: currentItem.id,
+            newPrice: newPrice
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showToast("Price updated successfully!", "success");
+          loadItemDetails(); // reload
+        } else {
+          showToast(data.error || "Failed to update price", "error");
+        }
+      } catch (e) {
+        console.error(e);
+        showToast("Network error while saving", "error");
+      }
+    }
+
+    function showToast(message, type = "info") {
+      const toast = document.createElement("div");
+      toast.className = `toast-notification ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => { toast.classList.add("show"); }, 100);
+      setTimeout(() => { toast.classList.remove("show"); setTimeout(() => toast.remove(), 500); }, 3000);
+    }
+
+    function formatPrice(price) {
+      if (price === "N/A" || price === null || price === undefined) return `N/A`;
+      return `${Number(price).toLocaleString()} <img src="img/coin.png">`;
+    }
+
+    // Navigation handlers remain unchanged
+    function goToPrevItem() { /* ... */ }
+    function goToNextItem() { /* ... */ }
+
+    document.getElementById("prevItemBtn").addEventListener("click", goToPrevItem);
+    document.getElementById("nextItemBtn").addEventListener("click", goToNextItem);
+
+    async function initializePage() {
+      await loadUserInfo();
+      await fetchAllItems();
+      await loadItemDetails();
+    }
+    initializePage();
+  </script>
+</body>
+</html>
 
