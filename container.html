@@ -1,233 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minecraft Inventory</title>
+    <!-- <link rel="stylesheet" href="themes/minecraft/style.css"> -->
+    <link rel="stylesheet" href="css/essential.css" />
+    <style>
+      /* Variables replaced with values */
+      body,
+      html {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minecraft Inventory</title>
-  <style>
-    /* Variables replaced with values */
-    body,
-    html {
-      height: 100%;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+      /* Inventory border setup */
+      .container {
+        display: grid;
+        grid-template-columns: 2px 2px auto 2px 2px;
+        grid-template-rows: 2px 2px auto 2px 2px;
+        grid-template-areas:
+          "tl-tl tr-tl t tl-tr tr-tr"
+          "bl-tl br-tl t bl-tr br-tr"
+          "l l inv r r"
+          "tl-bl tr-bl b tl-br tr-br"
+          "bl-bl br-bl b bl-br br-br";
+      }
 
-    /* Inventory border setup */
-    .container {
-      display: grid;
-      grid-template-columns: 2px 2px auto 2px 2px;
-      grid-template-rows: 2px 2px auto 2px 2px;
-      grid-template-areas:
-        "tl-tl tr-tl t tl-tr tr-tr"
-        "bl-tl br-tl t bl-tr br-tr"
-        "l l inv r r"
-        "tl-bl tr-bl b tl-br tr-br"
-        "bl-bl br-bl b bl-br br-br";
-    }
+      /* Border effects */
+      .s-br {
+        box-shadow: 2px 0 0 black, 0 2px 0 black;
+      }
 
-    /* Border effects */
-    .s-br {
-      box-shadow: 2px 0 0 black, 0 2px 0 black;
-    }
+      .s-bl {
+        box-shadow: -2px 0 0 black, 0 2px 0 black;
+      }
 
-    .s-bl {
-      box-shadow: -2px 0 0 black, 0 2px 0 black;
-    }
+      .s-tr {
+        box-shadow: 0 -2px 0 black, 2px 0 0 black;
+      }
 
-    .s-tr {
-      box-shadow: 0 -2px 0 black, 2px 0 0 black;
-    }
+      .s-tl {
+        box-shadow: 0 -2px 0 black, -2px 0 0 black;
+      }
 
-    .s-tl {
-      box-shadow: 0 -2px 0 black, -2px 0 0 black;
-    }
+      .c {
+        background-color: #c6c6c6;
+        grid-area: c;
+      }
 
-    .c {
-      background-color: #c6c6c6;
-      grid-area: c;
-    }
+      /* Sides */
+      .corner-top {
+        grid-area: t;
+        box-shadow: 0 -2px 0 black;
+        background-color: #ffffff;
+      }
 
-    /* Sides */
-    .corner-top {
-      grid-area: t;
-      box-shadow: 0 -2px 0 black;
-      background-color: #ffffff;
-    }
+      .corner-left {
+        grid-area: l;
+        box-shadow: -2px 0 0 black;
+        background-color: #ffffff;
+      }
 
-    .corner-left {
-      grid-area: l;
-      box-shadow: -2px 0 0 black;
-      background-color: #ffffff;
-    }
+      .corner-right {
+        grid-area: r;
+        box-shadow: 2px 0 0 black;
+        background-color: #555555;
+      }
 
-    .corner-right {
-      grid-area: r;
-      box-shadow: 2px 0 0 black;
-      background-color: #555555;
-    }
+      .corner-bottom {
+        grid-area: b;
+        box-shadow: 0 2px 0 black;
+        background-color: #555555;
+      }
 
-    .corner-bottom {
-      grid-area: b;
-      box-shadow: 0 2px 0 black;
-      background-color: #555555;
-    }
+      .inner-container {
+        background-color: #c6c6c6;
+        grid-area: inv;
+        grid-column: inherit;
+      }
 
-    .inner-container {
-      background-color: #c6c6c6;
-      grid-area: inv;
-    }
+      /* Extra corners */
+      .tl-tl {
+        grid-area: tl-tl;
+        background-color: #ffffff;
+        position: relative;
+        bottom: -4px;
+        right: -4px;
+      }
 
-    /* Extra corners */
-    .tl-tl {
-      grid-area: tl-tl;
-      background-color: #ffffff;
-      position: relative;
-      bottom: -4px;
-      right: -4px;
-    }
+      .br-br {
+        grid-area: br-br;
+        background-color: #555555;
+        position: relative;
+        top: -4px;
+        left: -4px;
+      }
 
-    .br-br {
-      grid-area: br-br;
-      background-color: #555555;
-      position: relative;
-      top: -4px;
-      left: -4px;
-    }
+      /* Top left corner */
+      .bl-tl,
+      .tr-tl,
+      .br-tl {
+        background-color: #ffffff;
+      }
 
-    /* Top left corner */
-    .bl-tl,
-    .tr-tl,
-    .br-tl {
-      background-color: #ffffff;
-    }
+      .bl-tl {
+        grid-area: bl-tl;
+      }
 
-    .bl-tl {
-      grid-area: bl-tl;
-    }
+      .tr-tl {
+        grid-area: tr-tl;
+      }
 
-    .tr-tl {
-      grid-area: tr-tl;
-    }
+      .br-tl {
+        grid-area: br-tl;
+      }
 
-    .br-tl {
-      grid-area: br-tl;
-    }
+      /* Top right */
+      .bl-tr {
+        grid-area: bl-tr;
+        background-color: #c6c6c6;
+      }
 
-    /* Top right */
-    .bl-tr {
-      grid-area: bl-tr;
-      background-color: #c6c6c6;
-    }
+      /* Bottom left */
+      .tr-bl {
+        grid-area: tr-bl;
+        background-color: #c6c6c6;
+      }
 
-    /* Bottom left */
-    .tr-bl {
-      grid-area: tr-bl;
-      background-color: #c6c6c6;
-    }
+      /* Bottom right */
+      .tr-br,
+      .tl-br,
+      .bl-br {
+        background-color: #555555;
+      }
 
-    /* Bottom right */
-    .tr-br,
-    .tl-br,
-    .bl-br {
-      background-color: #555555;
-    }
+      .tr-br {
+        grid-area: tr-br;
+      }
 
-    .tr-br {
-      grid-area: tr-br;
-    }
+      .tl-br {
+        grid-area: tl-br;
+      }
 
-    .tl-br {
-      grid-area: tl-br;
-    }
+      .bl-br {
+        grid-area: bl-br;
+      }
 
-    .bl-br {
-      grid-area: bl-br;
-    }
+      /* Inventory layout */
+      .inventory {
+        padding: 0.4rem;
+        display: grid;
+      }
 
-    /* Inventory layout */
-    .inventory {
-      padding: 0.4rem;
-      display: grid;
-    }
+      /* inner-container inventory cells */
+      .inventory .inner-container {
+        display: grid;
+        grid-column: inherit;
+      }
 
-    /* inner-container inventory cells */
-    .inventory .inner-container {
-      display: grid;
-      
-    }
+      /* Grid cells */
+      .cell {
+        box-shadow: inset 2px 2px 0 0 #373737, inset -2px -2px 0 0 #ffffff;
+        background-color: #8b8b8b;
+        height: 2rem;
+        width: 2rem;
+        position: relative;
+      }
 
-    /* Grid cells */
-    .cell {
-      box-shadow: inset 2px 2px 0 0 #373737,
-        inset -2px -2px 0 0 #ffffff;
-      background-color: #8b8b8b;
-      height: 2rem;
-      width: 2rem;
-      position: relative;
-    }
+      .cell:hover {
+        background-color: #a1a1a1;
+      }
 
-    .cell:hover {
-      background-color: #a1a1a1;
-    }
+      .cell::before,
+      .cell::after {
+        content: "";
+        height: 2px;
+        width: 2px;
+        background-color: #8b8b8b;
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
 
-    .cell::before,
-    .cell::after {
-      content: "";
-      height: 2px;
-      width: 2px;
-      background-color: #8b8b8b;
-      position: absolute;
-      top: 0;
-      right: 0;
-    }
+      .cell::after {
+        top: auto;
+        right: auto;
+        left: 0;
+        bottom: 0;
+      }
 
-    .cell::after {
-      top: auto;
-      right: auto;
-      left: 0;
-      bottom: 0;
-    }
-  </style>
-</head>
+      .extreme-inner-container {
+        background-color: #8b8b8b;
+        box-shadow: inset 2px 2px 0 0 #373737, inset -2px -2px 0 0 #ffffff;
+        color: #262626;
+        padding: 10px;
+      }
 
-<body>
-  <div class="container">
-    
-    <div class="corner-left"></div>
-    <div class="corner-right"></div>
-    <div class="corner-bottom"></div>
-    <div class="corner-top"></div>
+      .inner-container h3 {
+        margin: 0 auto 8px auto;
+        font-size: 1.2rem;
+        color: #333;
+      }
 
-    <div class="tl-tl"></div>
-    <div class="tr-tl s-tl"></div>
-    <div class="bl-tl s-tl"></div>
-    <div class="br-tl"></div>
+      .extreme-inner-container p {
+        margin: 0.5rem 0;
+      }
+    </style>
+  </head>
 
-    <div class="tr-bl s-bl"></div>
+  <body>
+    <div class="container">
+      <div class="corner-left"></div>
+      <div class="corner-right"></div>
+      <div class="corner-bottom"></div>
+      <div class="corner-top"></div>
+      <div class="tl-tl"></div>
+      <div class="tr-tl s-tl"></div>
+      <div class="bl-tl s-tl"></div>
+      <div class="br-tl"></div>
+      <div class="tr-bl s-bl"></div>
+      <div class="bl-tr s-tr"></div>
+      <div class="tl-br"></div>
+      <div class="tr-br s-br"></div>
+      <div class="bl-br s-br"></div>
+      <div class="br-br"></div>
 
-    <div class="bl-tr s-tr"></div>
-
-    <div class="tl-br"></div>
-    <div class="tr-br s-br"></div>
-    <div class="bl-br s-br"></div>
-    <div class="br-br"></div>
-    <div class="inventory inner-container">
-
-      <div class="inner-container">
-        <h4 style="margin: 0%;">Inner Container H4</h4>
-        <p>
-          This is a paragraph inside the inner container.
-        </p>
-        <button class="btn">Click Me</button>
+      <div class="inventory inner-container">
+        <h3>Inner Container H3</h3>
+        <div class="extreme-inner-container">
+          <p>This is a paragraph inside the inner container.</p>
+          <button class="btn">Click Me</button>
+        </div>
       </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>
