@@ -195,18 +195,15 @@ const ADMIN_USER_ID = "783972385882767400";
 let devIds = [];
 let dmIds  = [];
 let mgrIds = [];
-let cachedUsers = null;
+let cachedUsers = {};
 
-// ---- local draft support ----
-function saveDraft(){
-  localStorage.setItem("teamDraft", JSON.stringify({devIds, dmIds, mgrIds}));
-}
+function saveDraft(){ localStorage.setItem("teamDraft", JSON.stringify({devIds, dmIds, mgrIds})); }
 function loadDraft(){
   const d = localStorage.getItem("teamDraft");
   if(!d) return false;
   try{
     const obj = JSON.parse(d);
-    devIds = obj.devs || obj.devIds || [];
+    devIds = obj.devIds || [];
     dmIds  = obj.dmIds  || [];
     mgrIds = obj.mgrIds || [];
     return true;
@@ -255,11 +252,6 @@ async function loadAll(){
     const mgrResp = await fetch(`/${MGR_FILE_PATH}`, { cache: 'no-cache' });
     mgrIds = mgrResp.ok ? (await mgrResp.text()).split('\n').map(s=>s.trim()).filter(Boolean) : [];
 
-    try {
-      const usersResp = await fetch('https://discord-auth.roumakdatta.workers.dev/users/');
-      cachedUsers = await usersResp.json();
-    } catch(e){ cachedUsers = []; }
-
     renderAll();
   } catch(e){ showToast(e.message || 'Failed to load data','error'); }
 }
@@ -271,18 +263,43 @@ function renderAll(){
   saveDraft();
 }
 
-function renderListFor(listIds, ulId){
+async function renderListFor(listIds, ulId){
   const ul = document.getElementById(ulId);
   ul.innerHTML = '';
   if(listIds.length === 0){
     ul.innerHTML = '<li>No entries.</li>';
     return;
   }
-  listIds.forEach(id=>{
+
+  for(const id of listIds){
+    let user = cachedUsers[id];
+    if(!user){
+      try{
+        const resp = await fetch(`https://discord-auth.roumakdatta.workers.dev/users/${id}`);
+        if(resp.ok){
+          user = await resp.json();
+          cachedUsers[id] = user;
+        }
+      }catch(e){ }
+    }
+
     const li = document.createElement('li');
-    li.innerHTML = `<div class="profile"><div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center">👤</div><div class="profile-info"><div class="name">${id}</div><div class="meta">ID: ${id}</div></div></div><div class="actions"><button class="remove-btn" onclick="handleRemove('${id}')">Remove</button></div>`;
+    if(user){
+      li.innerHTML = `
+        <div class="profile">
+          <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="avatar"/>
+          <div class="profile-info">
+            <div class="name">${user.global_name || user.username}</div>
+            <div class="meta">ID: ${user.id} ${user.xbox ? `| Xbox: ${user.xbox.name}` : ''}</div>
+            <div class="meta">Role: ${user.role || 'N/A'} | Logins: ${user.login_count || 0}</div>
+          </div>
+        </div>
+        <div class="actions"><button class="remove-btn" onclick="handleRemove('${id}')">Remove</button></div>`;
+    } else {
+      li.innerHTML = `<div class="profile"><div style="width:44px;height:44px;border-radius:8px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:var(--muted)">?</div><div class="profile-info"><div class="name">${id}</div><div class="meta">Not found</div></div></div><div class="actions"><button class="remove-btn" onclick="handleRemove('${id}')">Remove</button></div>`;
+    }
     ul.appendChild(li);
-  });
+  }
 }
 
 function handleRemove(id){
@@ -316,15 +333,11 @@ document.getElementById('saveChangesBtn').addEventListener('click', async ()=>{
   showToast('Saving changes...','info');
 
   try {
-    const refRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH}`, {
-      headers: { Authorization: `token ${token}` }
-    });
+    const refRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH}`, { headers: { Authorization: `token ${token}` } });
     const refData = await refRes.json();
     const latestCommitSha = refData.object.sha;
 
-    const commitRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/commits/${latestCommitSha}`, {
-      headers: { Authorization: `token ${token}` }
-    });
+    const commitRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/commits/${latestCommitSha}`, { headers: { Authorization: `token ${token}` } });
     const commitData = await commitRes.json();
     const baseTreeSha = commitData.tree.sha;
 
@@ -344,12 +357,11 @@ document.getElementById('saveChangesBtn').addEventListener('click', async ()=>{
       ] })
     });
     const treeData = await treeRes.json();
-    const newTreeSha = treeData.sha;
 
     const newCommitRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/commits`, {
       method: 'POST',
       headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'Update team files', tree: newTreeSha, parents: [latestCommitSha] })
+      body: JSON.stringify({ message: 'Update team files', tree: treeData.sha, parents: [latestCommitSha] })
     });
     const newCommitData = await newCommitRes.json();
 
@@ -364,14 +376,4 @@ document.getElementById('saveChangesBtn').addEventListener('click', async ()=>{
   } catch(err){ showToast('Error: '+err.message,'error'); }
 });
 
-async function makeBlob(content, token){
-  const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/blobs`, {
-    method: 'POST',
-    headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ content, encoding: 'utf-8' })
-  });
-  return res.json();
-}
-</script>
-</body>
-</html>
+async function makeBlob(content, token
