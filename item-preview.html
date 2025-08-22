@@ -77,7 +77,7 @@
       background: #222;
       padding: 20px;
       border-radius: 12px;
-      width: 300px;
+      width: 320px;
       color: white;
       box-shadow: 0 5px 15px rgba(0,0,0,0.4);
     }
@@ -159,6 +159,8 @@
     let isDevUser = false;
     let allItems = [];
     let currentItem = null;
+    let currentMarketPrice = "";
+    let currentNpcPrice = "";
 
     function getCookie(name) { const value = `; ${document.cookie}`; const parts = value.split(`; ${name}=`); if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift()); return ''; }
 
@@ -206,18 +208,24 @@
                 } catch (e) {}
               }
             });
-            const marketPrice = pricesMap.get(currentItem.id) ?? currentItem.price ?? "";
-            const npcPrice = npcPricesMap.get(currentItem.id) ?? "";
+            currentMarketPrice = pricesMap.get(currentItem.id) ?? currentItem.price ?? "";
+            currentNpcPrice = npcPricesMap.get(currentItem.id) ?? "";
             document.getElementById('itemDetails').innerHTML = `<h1>${currentItem.name}</h1>`;
             document.getElementById('modal-item-name').textContent = currentItem.name;
-            document.getElementById('market-price').value = marketPrice;
-            document.getElementById('npc-price').value = npcPrice;
+            document.getElementById('market-price').value = currentMarketPrice;
+            document.getElementById('npc-price').value = currentNpcPrice;
           }
         } catch (error) { console.error('Error loading item details:', error); }
       }
     }
 
-    function openModal() { document.getElementById('price-modal').style.display = 'flex'; }
+    function openModal() {
+      if (!currentItem) return;
+      document.getElementById('modal-item-name').textContent = currentItem.name;
+      document.getElementById('market-price').value = currentMarketPrice;
+      document.getElementById('npc-price').value = currentNpcPrice;
+      document.getElementById('price-modal').style.display = 'flex';
+    }
     function closeModal() { document.getElementById('price-modal').style.display = 'none'; }
     function submitPriceChange() { showToast("Something should happen but after update", "success"); closeModal(); }
 
