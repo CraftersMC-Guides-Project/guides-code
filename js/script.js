@@ -675,3 +675,19 @@ document.addEventListener("DOMContentLoaded", function () {
     document.head.appendChild(themeLink);
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+  const path = window.location.pathname;
+  const isHome = path.endsWith("index.html") || path === "/" || path === "";
+  if (isHome) {
+    window.history.pushState(null, "", window.location.href);
+    window.onpopstate = function () {
+      window.history.pushState(null, "", window.location.href);
+    };
+  } else {
+    window.history.replaceState({}, "", window.location.href);
+    window.history.pushState({}, "", "index.html");
+    window.onpopstate = function () {
+      window.location.replace("index.html");
+    };
+  }
+});
