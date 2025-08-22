@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="themes/minecraft/style.css" />
   <script src="js/script.js"></script>
   <style>
-    /* === Profile Card Styles (cloned directly from index.html) === */
+    /* === Profile Card Styles === */
     .profile-card {
       position: fixed;
       top: 80px;
@@ -64,7 +64,7 @@
   <div id="loader"><div></div><div></div><div></div></div>
   <div class="market-background"></div>
 
-  <!-- === Profile Card (cloned from index.html) === -->
+  <!-- === Profile Card === -->
   <a href="/profile.html" class="profile-card" id="profile-card">
     <img id="user-avatar" src="https://placehold.co/110x110/dddddd/333333?text=...&font=inter" alt="User Avatar" />
     <div id="user-details">
@@ -169,7 +169,6 @@
       loadItems();
     });
 
-    // --- Market Page Logic ---
     let items = [], prices = {}, pets = [], petPrices = {}, minions = [], minionPrices = {}, isDataLoaded = false, isDevUser = false;
 
     function goToCategory(categoryName) { window.location.href = `categories?cat=${categoryName}`; }
@@ -233,34 +232,76 @@
       const resultsDiv = document.getElementById('results');
       resultsDiv.innerHTML = '';
 
-      if (!isDataLoaded) { resultsDiv.innerHTML = '<p>Loading items...</p>'; return; }
+      if (!isDataLoaded) {
+        resultsDiv.innerHTML = '<p>Loading items...</p>';
+        return;
+      }
 
       const filteredItems = items.filter(item => {
         const isPublic = item.hasOwnProperty("public") ? item.public : true;
         return (isPublic || isDevUser) && item.name.toLowerCase().includes(query);
       });
-      
+
       const filteredPets = pets.filter(pet => pet.name.toLowerCase().includes(query));
       const filteredMinions = minions.filter(minion => minion.name.toLowerCase().includes(query));
 
-      if (filteredItems.length === 0 && query.trim() !== '' && filteredPets.length === 0 && filteredMinions.length === 0) {
+      if (filteredItems.length === 0 && filteredPets.length === 0 && filteredMinions.length === 0 && query.trim() !== '') {
         resultsDiv.innerHTML = '<p>No results found.</p>';
         return;
       }
 
       if (query.trim() === '') return;
 
-      // Regular items
+      // --- Regular items ---
       filteredItems.slice(0, 10).forEach(item => {
         const price = prices[item.id] || 'N/A';
         const div = document.createElement('div');
-        div.className = 'market-result';
+        div.className = 'result';
         const isPublic = item.hasOwnProperty("public") ? item.public : true;
         let privateHighlight = (!isPublic && isDevUser) ? `<div class='private-item-highlight'>PRIVATE ITEM</div>` : '';
 
         div.innerHTML = `
           ${privateHighlight}
-          <div class=\"market-info\">`;
+          <div class="market-info-head">
+            <span>${item.name}</span>
+            <span>${price} <img src="assets/coin.png" class="market-coin" /></span>
+          </div>
+          <div class="market-description">${item.description || ''}</div>
+          ${getRarityTag(item.rarity)}
+        `;
+        resultsDiv.appendChild(div);
+      });
+
+      // --- Pets ---
+      filteredPets.slice(0, 10).forEach(pet => {
+        const price = petPrices[pet.id] || 'N/A';
+        const div = document.createElement('div');
+        div.className = 'result';
+        div.innerHTML = `
+          <div class="market-info-head">
+            <span>${pet.name}</span>
+            <span>${price} <img src="assets/coin.png" class="market-coin" /></span>
+          </div>
+          <div class="market-description">${pet.description || ''}</div>
+          ${getRarityTag(pet.rarity)}
+        `;
+        resultsDiv.appendChild(div);
+      });
+
+      // --- Minions ---
+      filteredMinions.slice(0, 10).forEach(minion => {
+        const price = minionPrices[minion.id] || 'N/A';
+        const div = document.createElement('div');
+        div.className = 'result';
+        div.innerHTML = `
+          <div class="market-info-head">
+            <span>${minion.name}</span>
+            <span>${price} <img src="assets/coin.png" class="market-coin" /></span>
+          </div>
+          <div class="market-description">${minion.description || ''}</div>
+          ${getRarityTag(minion.rarity)}
+        `;
+        resultsDiv.appendChild(div);
       });
     }
   </script>
