@@ -181,6 +181,10 @@
     let currentRarityIndex = 0;
     let currentPetRarities = [];
     let isDevUser = false;
+    let allPets = [];
+    let filteredPets = [];
+    let currentPetIndex = 0;
+    let petPrices = [];
 
     function getCookie(name) {
       const value = `; ${document.cookie}`;
@@ -223,81 +227,96 @@
         }
     }
 
+    // Load all pets and filter by nature from URL
+    async function loadAndFilterPets() {
+      const petDetailsResponse = await fetch('market/pets.txt');
+      allPets = await petDetailsResponse.json();
+
+      // Fetch pet prices here
+      const petPricesResponse = await fetch('market/pet-prices.txt');
+      petPrices = await petPricesResponse.json();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const nature = urlParams.get('nature') || 'all';
+
+      if (nature === 'all' || nature === 'reset') {
+        filteredPets = allPets;
+      } else {
+        filteredPets = allPets.filter(pet =>
+          pet.nature && pet.nature.toUpperCase().includes(nature.toUpperCase())
+        );
+      }
+    }
+
+    // Modified loadPetDetails to use filteredPets
     async function loadPetDetails() {
+      await loadAndFilterPets();
+
       const urlParams = new URLSearchParams(window.location.search);
       const petId = urlParams.get('pet');
-      if (petId) {
-        try {
-          const petDetailsResponse = await fetch('market/pets.txt');
-          const petPricesResponse = await fetch('market/pet-prices.txt');
+      const nature = urlParams.get('nature') || 'all';
 
-          const petDetailsData = await petDetailsResponse.text();
-          const petPricesData = await petPricesResponse.text();
+      currentPetIndex = filteredPets.findIndex(pet => pet.id === petId);
 
-          const pets = JSON.parse(petDetailsData);
-          const petPrices = JSON.parse(petPricesData);
+      let pet = filteredPets[currentPetIndex];
+      if (!pet && filteredPets.length) {
+        pet = filteredPets[0];
+        currentPetIndex = 0;
+        window.history.replaceState({}, '', `?pet=${pet.id}&nature=${nature}`);
+      }
 
-          const pet = pets.find(pet => pet.id === petId);
-
-          if (pet) {
-            if (isDevUser) {
-                document.getElementById('dev-actions-container').innerHTML = `
-                    <button class="dev-btn" onclick="openPetPriceModal()">
-                        <span class="material-icons">edit</span>
-                        Edit Details
-                    </button>
-                `;
-            }
-
-            const petPrice = petPrices.find(price => price.petId === petId);
-            const petDetailsDiv = document.getElementById('petDetails');
-            const initialRarity = pet.rarity[0];
-
-            petDetailsDiv.innerHTML = `
-              <div class="item-container">
-                <h1>${pet.name}</h1>
-                <img src="${pet.picture}" alt="${pet.name}" class="pet-item-image">
-                <div class="pet-rarity-dropdown" id="rarityDropdown">
-                  <button class="pet-rarity-arrow left" onclick="changeRarity(-1, '${pet.id}')">
-                    <span class="material-icons">chevron_left</span>
-                  </button>
-                  <div class="pet-selected" id="selectedRarity" style="min-width:120px;display:inline-flex;align-items:center;justify-content:center;">
-                    <img src="/img/rarity/${initialRarity}.webp" alt="${initialRarity}" style="height:24px; margin:0;">
-                  </div>
-                  <button class="pet-rarity-arrow right" onclick="changeRarity(1, '${pet.id}')">
-                    <span class="material-icons">chevron_right</span>
-                  </button>
-                </div>
-                <div id="petPrice" class="item-pet-price-container"></div>
-                <p><strong>ID:</strong> ${pet.id}</p>
-                <p><strong>Category:</strong> ${pet.category}</p>
-                <p><strong>Description:</strong> ${pet.description || 'No description available'}</p>
-                <div class="pet-stability">
-                ${generateNatureBox(pet.nature)}
-                ${generateDemandBox(pet.demand)}
-                </div>
-                <div class="pet-attribute-container">
-                  ${generateAttributeBox('Tradable', pet.tradable)}
-                  ${generateAttributeBox('Auctionable', pet.auctionable)}
-                </div>
-              </div>
+      if (pet) {
+        if (isDevUser) {
+            document.getElementById('dev-actions-container').innerHTML = `
+                <button class="dev-btn" onclick="openPetPriceModal()">
+                    <span class="material-icons">edit</span>
+                    Edit Details
+                </button>
             `;
-
-            window.petPrices = petPrices; // make it accessible globally
-            updatePrice(pet.id, initialRarity);
-
-            currentPetRarities = pet.rarity;
-            currentRarityIndex = 0;
-            
-          } else {
-            document.getElementById('petDetails').innerHTML = '<p>Pet not found.</p>';
-          }
-        } catch (error) {
-          console.error('Error loading pet details:', error);
-          document.getElementById('petDetails').innerHTML = '<p>Failed to load pet details.</p>';
         }
+
+        const petPrice = petPrices.find(price => price.petId === petId);
+        const petDetailsDiv = document.getElementById('petDetails');
+        const initialRarity = pet.rarity[0];
+
+        petDetailsDiv.innerHTML = `
+          <div class="item-container">
+            <h1>${pet.name}</h1>
+            <img src="${pet.picture}" alt="${pet.name}" class="pet-item-image">
+            <div class="pet-rarity-dropdown" id="rarityDropdown">
+              <button class="pet-rarity-arrow left" onclick="changeRarity(-1, '${pet.id}')">
+                <span class="material-icons">chevron_left</span>
+              </button>
+              <div class="pet-selected" id="selectedRarity" style="min-width:120px;display:inline-flex;align-items:center;justify-content:center;">
+                <img src="/img/rarity/${initialRarity}.webp" alt="${initialRarity}" style="height:24px; margin:0;">
+              </div>
+              <button class="pet-rarity-arrow right" onclick="changeRarity(1, '${pet.id}')">
+                <span class="material-icons">chevron_right</span>
+              </button>
+            </div>
+            <div id="petPrice" class="item-pet-price-container"></div>
+            <p><strong>ID:</strong> ${pet.id}</p>
+            <p><strong>Category:</strong> ${pet.category}</p>
+            <p><strong>Description:</strong> ${pet.description || 'No description available'}</p>
+            <div class="pet-stability">
+            ${generateNatureBox(pet.nature)}
+            ${generateDemandBox(pet.demand)}
+            </div>
+            <div class="pet-attribute-container">
+              ${generateAttributeBox('Tradable', pet.tradable)}
+              ${generateAttributeBox('Auctionable', pet.auctionable)}
+            </div>
+          </div>
+        `;
+
+        window.petPrices = petPrices; // make it accessible globally
+        updatePrice(pet.id, initialRarity);
+
+        currentPetRarities = pet.rarity;
+        currentRarityIndex = 0;
+        
       } else {
-        document.getElementById('petDetails').innerHTML = '<p>No pet ID specified.</p>';
+        document.getElementById('petDetails').innerHTML = '<p>Pet not found.</p>';
       }
     }
     
@@ -482,6 +501,28 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       initializePage();
+    });
+
+    // Next/Previous navigation
+    document.getElementById('prevPetBtn').addEventListener('click', () => {
+      if (filteredPets.length < 2) return;
+      currentPetIndex = (currentPetIndex - 1 + filteredPets.length) % filteredPets.length;
+      const nature = new URLSearchParams(window.location.search).get('nature') || 'all';
+      window.location.search = `?pet=${filteredPets[currentPetIndex].id}&nature=${nature}`;
+    });
+
+    document.getElementById('nextPetBtn').addEventListener('click', () => {
+      if (filteredPets.length < 2) return;
+      currentPetIndex = (currentPetIndex + 1) % filteredPets.length;
+      const nature = new URLSearchParams(window.location.search).get('nature') || 'all';
+      window.location.search = `?pet=${filteredPets[currentPetIndex].id}&nature=${nature}`;
+    });
+
+    // Reset filter button
+    document.querySelector('.pet-filter-btn[data-nature="reset"]').addEventListener('click', () => {
+      if (allPets.length) {
+        window.location.search = `?pet=${allPets[0].id}&nature=all`;
+      }
     });
   </script>
 
