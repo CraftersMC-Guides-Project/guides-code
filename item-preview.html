@@ -36,19 +36,8 @@
       animation: fade-in-down 0.5s ease-out forwards;
       min-width: 200px;
     }
-    .profile-card:hover {
-      background-color: rgba(0, 0, 0, 0.8);
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    }
-    #user-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid rgba(255,255,255,0.2);
-      transition: box-shadow 0.3s;
-    }
+    .profile-card:hover { background-color: rgba(0, 0, 0, 0.8); transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+    #user-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); transition: box-shadow 0.3s; }
     #user-details { text-align: left; }
     #user-name { font-size: 18px; font-weight: 700; line-height: 1.2; }
     #user-tag { font-size: 12px; font-weight: 700; text-transform: uppercase; opacity: 0.9; margin-top: 3px; display: block; letter-spacing: 0.5px; }
@@ -93,74 +82,49 @@
     @media (max-width: 768px) {
       #role-action-btn { top: 118px; right: 10px; padding: 8px 12px; font-size: 12px; border-radius: 8px; }
     }
-
-    /* === modal panel (added) === */
     #price-modal {
-      position: fixed;
-      inset: 0;
       display: none;
-      align-items: center;
-      justify-content: center;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.6);
       z-index: 2000;
-    }
-    #price-modal .panel {
-      width: 360px;
-      max-width: 92vw;
-      background: #1e1e1e;
-      color: #fff;
-      border-radius: 14px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      padding: 18px;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    #price-modal .panel-header {
-      display: flex;
+      justify-content: center;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
     }
-    #price-modal .panel-title { font-size: 18px; font-weight: 800; }
-    #price-modal .close-btn {
-      background: transparent;
-      border: none;
-      color: #fff;
-      font-size: 22px;
-      cursor: pointer;
-      line-height: 1;
+    #price-modal .modal-content {
+      background: #222;
+      padding: 20px;
+      border-radius: 12px;
+      width: 320px;
+      color: white;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.4);
     }
-    #price-modal .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 10px;
-    }
-    #price-modal label {
-      display: block;
-      font-size: 12px;
-      opacity: .9;
-      margin-bottom: 6px;
-    }
+    #price-modal h2 { margin-bottom: 15px; font-size: 20px; }
+    #price-modal label { display: block; margin: 10px 0 5px; }
     #price-modal input {
       width: 100%;
-      padding: 10px 12px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: #2a2a2a;
-      color: #fff;
-      outline: none;
-    }
-    #price-modal .submit-btn {
-      width: 100%;
-      margin-top: 14px;
-      padding: 11px 14px;
+      padding: 8px;
+      border-radius: 6px;
       border: none;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #5865F2, #4752C4);
-      color: #fff;
-      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    #price-modal .btn-submit {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #5865F2;
+      color: white;
+      font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,.35);
+    }
+    #price-modal .btn-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      float: right;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -181,24 +145,16 @@
     Change Price
   </button>
 
-  <!-- modal (added) -->
-  <div id="price-modal" aria-hidden="true">
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title" id="modal-item-name">Item</div>
-        <button class="close-btn" id="price-modal-close" aria-label="Close">×</button>
-      </div>
-      <div class="grid">
-        <div>
-          <label for="modal-market-price">Market Price</label>
-          <input type="number" id="modal-market-price" placeholder="e.g. 12500">
-        </div>
-        <div>
-          <label for="modal-npc-price">NPC Price</label>
-          <input type="number" id="modal-npc-price" placeholder="e.g. 9000">
-        </div>
-      </div>
-      <button class="submit-btn" id="price-modal-submit">Submit</button>
+  <!-- Modal for changing price -->
+  <div id="price-modal">
+    <div class="modal-content">
+      <button class="btn-close" onclick="closePriceModal()">×</button>
+      <h2 id="modal-item-name">Item Name</h2>
+      <label for="modal-market-price">Market Price</label>
+      <input type="number" id="modal-market-price" />
+      <label for="modal-npc-price">NPC Price</label>
+      <input type="number" id="modal-npc-price" />
+      <button class="btn-submit" onclick="submitPriceModal()">Submit</button>
     </div>
   </div>
 
@@ -221,11 +177,6 @@
   <script>
     let isDevUser = false;
     let allItems = [];
-
-    /* modal state (added) */
-    let currentItemName = "";
-    let currentMarketPriceRaw = "";
-    let currentNpcPriceRaw = "";
 
     function getCookie(name) { const value = `; ${document.cookie}`; const parts = value.split(`; ${name}=`); if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift()); return ''; }
 
@@ -314,27 +265,16 @@
             });
             const marketPrice = pricesMap.get(item.id) ?? item.price ?? "N/A";
             const npcPrice = npcPricesMap.get(item.id);
-
-            /* keep original render */
             let privateHighlight = (isDevUser && !isPublic) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
             document.getElementById('itemDetails').innerHTML = `${privateHighlight}<h1>${item.name}</h1>
             ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
             ${item.rarity ? `<div class="item-rarity-display"><img class="item-rarity" src="img/rarity/${item.rarity}.webp"></div>` : ''}
             <p><strong class="item-strong">ID:</strong> ${item.id}</p><div class="item-price-container"><p class="item-price"><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p><hr width="150px">${npcPrice !== null && npcPrice !== undefined ? `<p class="item-price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>` : ''}</div>`;
-
-            /* update modal state (added) */
-            currentItemName = item.name || "Item";
-            currentMarketPriceRaw = (marketPrice === "N/A" || marketPrice === "NAN" || marketPrice === null || marketPrice === undefined) ? "" : marketPrice;
-            currentNpcPriceRaw = (npcPrice === "N/A" || npcPrice === "NAN" || npcPrice === null || npcPrice === undefined) ? "" : npcPrice;
-
-            const nameEl = document.getElementById('modal-item-name');
-            const mpEl = document.getElementById('modal-market-price');
-            const npEl = document.getElementById('modal-npc-price');
-            if (nameEl && mpEl && npEl) {
-              nameEl.textContent = currentItemName;
-              mpEl.value = currentMarketPriceRaw;
-              npEl.value = currentNpcPriceRaw;
-            }
+            
+            // preload modal with values
+            document.getElementById('modal-item-name').textContent = item.name;
+            document.getElementById('modal-market-price').value = marketPrice !== "N/A" ? marketPrice : "";
+            document.getElementById('modal-npc-price').value = npcPrice ?? "";
           } else {
             document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`;
           }
@@ -391,6 +331,52 @@
       }
     }
 
+    // Modal handling
+    function openPriceModal() {
+      document.getElementById('price-modal').style.display = 'flex';
+    }
+    function closePriceModal() {
+      document.getElementById('price-modal').style.display = 'none';
+    }
+    document.getElementById('role-action-btn').addEventListener('click', openPriceModal);
+
+    async function submitPriceModal() {
+      try {
+        const storedUserCookie = getCookie('discordUser');
+        if (!storedUserCookie) {
+          showToast("Error: Not logged in.", "error");
+          return;
+        }
+        const user = JSON.parse(storedUserCookie);
+        const discordId = user.id;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const itemId = urlParams.get('item');
+        if (!itemId) {
+          showToast("Error: Item not found.", "error");
+          return;
+        }
+
+        const newPrice1 = document.getElementById('modal-market-price').value || 0;
+        const newPrice2 = document.getElementById('modal-npc-price').value || 0;
+
+        const endpoint = `https://data-manager.roumakdatta.workers.dev/${discordId}/${itemId}/${newPrice1}/${newPrice2}`;
+        const res = await fetch(endpoint);
+        const data = await res.json();
+
+        if (data.success) {
+          showToast(`✅ Price updated successfully for item ${data.itemId}!`, "success");
+          closePriceModal();
+        } else {
+          const reason = data.response?.message || "Unknown error";
+          showToast(`❌ Failed to update: ${reason}`, "error");
+        }
+      } catch (err) {
+        console.error("Submit error:", err);
+        showToast("Something went wrong while submitting.", "error");
+      }
+    }
+
     document.getElementById("prevItemBtn").addEventListener("click", goToPrevItem);
     document.getElementById("nextItemBtn").addEventListener("click", goToNextItem);
 
@@ -400,27 +386,6 @@
       await loadItemDetails();
     }
     initializePage();
-
-    /* modal handlers (added) */
-    const priceModal = document.getElementById('price-modal');
-    const openBtn = document.getElementById('role-action-btn');
-    const closeBtn = document.getElementById('price-modal-close');
-    const submitBtn = document.getElementById('price-modal-submit');
-
-    function openPriceModal() {
-      document.getElementById('modal-item-name').textContent = currentItemName || 'Item';
-      document.getElementById('modal-market-price').value = currentMarketPriceRaw || '';
-      document.getElementById('modal-npc-price').value = currentNpcPriceRaw || '';
-      priceModal.style.display = 'flex';
-    }
-    function closePriceModal() { priceModal.style.display = 'none'; }
-    function submitPriceModal() { showToast("Something should happen but after update", "success"); closePriceModal(); }
-
-    if (openBtn) openBtn.addEventListener('click', openPriceModal);
-    if (closeBtn) closeBtn.addEventListener('click', closePriceModal);
-    if (submitBtn) submitBtn.addEventListener('click', submitPriceModal);
-    priceModal.addEventListener('click', (e) => { if (e.target === priceModal) closePriceModal(); });
-    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePriceModal(); });
   </script>
 </body>
 </html>
