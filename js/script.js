@@ -674,21 +674,3 @@ document.addEventListener("DOMContentLoaded", function () {
     themeLink.href = `../themes/${savedTheme}/style.css`;
     document.head.appendChild(themeLink);
 });
-
-document.addEventListener("DOMContentLoaded", function () {
-  const path = window.location.pathname;
-  const isHome = path === "/" || path.endsWith("index.html") || path === "";
-
-  if (isHome) {
-    window.history.pushState(null, "", window.location.href);
-    window.onpopstate = function () {
-      window.history.pushState(null, "", window.location.href);
-    };
-  } else {
-    window.history.replaceState({}, "", window.location.href);
-    window.history.pushState({}, "", "/");
-    window.onpopstate = function () {
-      window.location.replace("/");
-    };
-  }
-});
