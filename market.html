@@ -28,13 +28,7 @@
     .market-info-head{display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:6px;gap:8px}
     .market-info-head img{width:40px;height:40px;image-rendering:pixelated}
     .market-result-div-info{font-size:14px;margin:2px 0}
-    .market-coin {
-     width: 1em;
-     height: 1em;
-     vertical-align: middle;
-     margin-left: 4px;
-}
-
+    .market-coin{width:1em;height:1em;vertical-align:middle;margin-left:4px}
     .market-description{font-size:13px;margin-top:6px;color:#ccc}
     .rarity-tag{display:inline-block;padding:2px 6px;border-radius:4px;font-size:12px;font-weight:700;margin-bottom:5px}
     .rarity-legendary{background-color:#ff9800;color:#000}
@@ -108,6 +102,7 @@
     function imgOf(o){return o.picture||o.img||o.image||o.icon||'assets/placeholder.png'}
     function coinIcon(){return 'img/coin.png'}
     function searchItems(){const query=document.getElementById('searchBox').value.toLowerCase();const resultsDiv=document.getElementById('results');resultsDiv.innerHTML='';if(!isDataLoaded){resultsDiv.innerHTML='<p>Loading items...</p>';return}const filteredItems=items.filter(item=>{const isPublic=item.hasOwnProperty("public")?item.public:true;return(isPublic||isDevUser)&&item.name.toLowerCase().includes(query)});const filteredPets=pets.filter(pet=>pet.name.toLowerCase().includes(query));const filteredMinions=minions.filter(minion=>minion.name.toLowerCase().includes(query));if(filteredItems.length===0&&filteredPets.length===0&&filteredMinions.length===0&&query.trim()!==''){resultsDiv.innerHTML='<p>No results found.</p>';return}if(query.trim()==='')return;filteredItems.slice(0,10).forEach(item=>{const price=prices[item.id]||'N/A';const div=document.createElement('div');div.className='result';const isPublic=item.hasOwnProperty("public")?item.public:true;let privateHighlight=(!isPublic&&isDevUser)?`<div class='private-item-highlight'>PRIVATE ITEM</div>`:'';div.innerHTML=`${privateHighlight}<div class="market-info-head"><img src="${imgOf(item)}" alt="${item.name}" /><span>${item.name}</span><span>${price} <img src="${coinIcon()}" class="market-coin"/></span></div><div class="market-description">${item.description||''}</div>${getRarityTag(item.rarity)}`;resultsDiv.appendChild(div)});filteredPets.slice(0,10).forEach(pet=>{const price=petPrices[pet.id]||'N/A';const div=document.createElement('div');div.className='result';div.innerHTML=`<div class="market-info-head"><img src="${imgOf(pet)}" alt="${pet.name}" /><span>${pet.name}</span><span>${price} <img src="${coinIcon()}" class="market-coin"/></span></div><div class="market-description">${pet.description||''}</div>${getRarityTag(pet.rarity)}`;resultsDiv.appendChild(div)});filteredMinions.slice(0,10).forEach(minion=>{const price=minionPrices[minion.id]||'N/A';const div=document.createElement('div');div.className='result';div.innerHTML=`<div class="market-info-head"><img src="${imgOf(minion)}" alt="${minion.name}" /><span>${minion.name}</span><span>${price} <img src="${coinIcon()}" class="market-coin"/></span></div><div class="market-description">${minion.description||''}</div>${getRarityTag(minion.rarity)}`;resultsDiv.appendChild(div)})}
+    document.addEventListener('keydown',function(e){const searchBox=document.getElementById('searchBox');if(document.activeElement!==searchBox){searchBox.focus();searchBox.value=''}});
   </script>
 </body>
 </html>
