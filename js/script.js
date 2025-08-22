@@ -677,7 +677,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 document.addEventListener("DOMContentLoaded", function () {
   const path = window.location.pathname;
-  const isHome = path.endsWith("index.html") || path === "/" || path === "";
+  const isHome = path === "/" || path.endsWith("index.html") || path === "";
+
   if (isHome) {
     window.history.pushState(null, "", window.location.href);
     window.onpopstate = function () {
@@ -685,9 +686,9 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   } else {
     window.history.replaceState({}, "", window.location.href);
-    window.history.pushState({}, "", "/index.html");
+    window.history.pushState({}, "", "/");
     window.onpopstate = function () {
-      window.location.replace("/index.html");
+      window.location.replace("/");
     };
   }
 });
