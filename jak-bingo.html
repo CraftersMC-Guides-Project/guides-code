@@ -430,49 +430,55 @@
           grid.appendChild(card);
         });
         const cards = Array.from(grid.children);
+
+        // Row claim logic
         for (let row = 0; row < 5; row++) {
           const start = row * 5;
           const end = start + 5;
           const rowChallenges = challenges.slice(start, end);
           const teamsPerChallenge = rowChallenges.map(ch => ch.teams);
-          let uniqueTeams = teamsPerChallenge.reduce((acc, arr) => {
-            arr.forEach(team => acc.add(team));
-            return acc;
-          }, new Set());
-          if (uniqueTeams.size === 1 && teamsPerChallenge.every(arr => arr.length === 1 && arr[0] === [...uniqueTeams][0])) {
-            const teamName = [...uniqueTeams][0];
-            for (let i = start; i < end; i++) {
-              cards[i].classList.add('row-claimed');
-              const details = cards[i].querySelector('.details');
-              const msg = `<div style="margin:12px 0 0 0; color:#ff4444; font-weight:bold;">
-                Row claimed by ${teamName}. No other teams can claim this row.
-              </div>`;
-              details.insertAdjacentHTML('beforeend', msg);
+          // Find all teams present in the row (including duplicates)
+          const allTeams = Array.from(new Set(teamsPerChallenge.flat()));
+          // For each team, check if it appears in every challenge in the row
+          allTeams.forEach(team => {
+            if (teamsPerChallenge.every(arr => arr.includes(team))) {
+              for (let i = start; i < end; i++) {
+                cards[i].classList.add('row-claimed');
+                const details = cards[i].querySelector('.details');
+                if (!details.innerHTML.includes(`Row claimed by ${team}`)) {
+                  const msg = `<div style="margin:12px 0 0 0; color:#ff4444; font-weight:bold;">
+                    Row claimed by ${team}. No other teams can claim this row.
+                  </div>`;
+                  details.insertAdjacentHTML('beforeend', msg);
+                }
+              }
             }
-          }
+          });
         }
+
+        // Column claim logic
         for (let col = 0; col < 5; col++) {
           const colChallenges = [];
           for (let r = 0; r < 5; r++) {
             colChallenges.push(challenges[r * 5 + col]);
           }
           const teamsPerChallenge = colChallenges.map(ch => ch.teams);
-          let uniqueTeams = teamsPerChallenge.reduce((acc, arr) => {
-            arr.forEach(team => acc.add(team));
-            return acc;
-          }, new Set());
-          if (uniqueTeams.size === 1 && teamsPerChallenge.every(arr => arr.length === 1 && arr[0] === [...uniqueTeams][0])) {
-            const teamName = [...uniqueTeams][0];
-            for (let r = 0; r < 5; r++) {
-              const idx = r * 5 + col;
-              cards[idx].classList.add('col-claimed');
-              const details = cards[idx].querySelector('.details');
-              const msg = `<div style="margin:12px 0 0 0; color:#ff4444; font-weight:bold;">
-                Column claimed by ${teamName}. No other teams can claim this column.
-              </div>`;
-              details.insertAdjacentHTML('beforeend', msg);
+          const allTeams = Array.from(new Set(teamsPerChallenge.flat()));
+          allTeams.forEach(team => {
+            if (teamsPerChallenge.every(arr => arr.includes(team))) {
+              for (let r = 0; r < 5; r++) {
+                const idx = r * 5 + col;
+                cards[idx].classList.add('col-claimed');
+                const details = cards[idx].querySelector('.details');
+                if (!details.innerHTML.includes(`Column claimed by ${team}`)) {
+                  const msg = `<div style="margin:12px 0 0 0; color:#ff4444; font-weight:bold;">
+                    Column claimed by ${team}. No other teams can claim this column.
+                  </div>`;
+                  details.insertAdjacentHTML('beforeend', msg);
+                }
+              }
             }
-          }
+          });
         }
       });
 
