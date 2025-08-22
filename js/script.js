@@ -685,9 +685,9 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   } else {
     window.history.replaceState({}, "", window.location.href);
-    window.history.pushState({}, "", "index.html");
+    window.history.pushState({}, "", "/index.html");
     window.onpopstate = function () {
-      window.location.replace("index.html");
+      window.location.replace("/index.html");
     };
   }
 });
