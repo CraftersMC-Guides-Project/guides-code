@@ -36,17 +36,36 @@
       animation: fade-in-down 0.5s ease-out forwards;
       min-width: 200px;
     }
-    #user-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); }
+    .profile-card:hover {
+      background-color: rgba(0, 0, 0, 0.8);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+    #user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,0.2);
+      transition: box-shadow 0.3s;
+    }
     #user-details { text-align: left; }
-    #user-name { font-size: 18px; font-weight: 700; }
-    #user-tag { font-size: 12px; font-weight: 700; text-transform: uppercase; margin-top: 3px; display: block; }
+    #user-name { font-size: 18px; font-weight: 700; line-height: 1.2; }
+    #user-tag { font-size: 12px; font-weight: 700; text-transform: uppercase; opacity: 0.9; margin-top: 3px; display: block; letter-spacing: 0.5px; }
     .profile-card.role-dev #user-avatar { box-shadow: 0 0 15px rgba(213, 0, 0, 0.8); }
     .profile-card.role-manager #user-avatar { box-shadow: 0 0 15px rgba(255, 193, 7, 0.8); }
     .profile-card.role-data-manager #user-avatar { box-shadow: 0 0 15px rgba(41, 98, 255, 0.8); }
     .profile-card.role-rank-seller #user-avatar { box-shadow: 0 0 15px rgba(0, 200, 83, 0.8); }
+    @keyframes fade-in-down { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 768px) {
+      .profile-card { top: 65px; right: 10px; padding: 8px 14px; gap: 12px; min-width: 0; }
+      #user-avatar { width: 40px; height: 40px; }
+      #user-name { font-size: 16px; }
+      #user-tag { font-size: 10px; }
+    }
     #role-action-btn {
       position: fixed;
-      top: 160px;
+      top: 148px;
       right: 20px;
       display: none;
       padding: 9px 14px;
@@ -55,58 +74,24 @@
       border-radius: 10px;
       background: linear-gradient(135deg, #5865F2, #4752C4);
       color: #fff;
-      border: none;
+      border: none !important;
+      outline: none !important;
       cursor: pointer;
       z-index: 1001;
+      transition: transform .2s ease, filter .2s ease, background .2s ease;
       display: flex;
       align-items: center;
       gap: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+      white-space: nowrap;
+      user-select: none;
     }
-    #role-action-btn .material-icons { font-size: 18px; }
-    #price-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      z-index: 2000;
-      justify-content: center;
-      align-items: center;
-    }
-    #price-modal .modal-content {
-      background: #222;
-      padding: 20px;
-      border-radius: 12px;
-      width: 320px;
-      color: white;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-    }
-    #price-modal h2 { margin-bottom: 15px; font-size: 20px; }
-    #price-modal label { display: block; margin: 10px 0 5px; }
-    #price-modal input {
-      width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: none;
-      margin-bottom: 10px;
-    }
-    #price-modal .btn-submit {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background: #5865F2;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    #price-modal .btn-close {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 20px;
-      float: right;
-      cursor: pointer;
+    #role-action-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+    #role-action-btn:active { transform: translateY(0); filter: brightness(.98); }
+    #role-action-btn:focus-visible { outline: none !important; box-shadow: 0 0 0 2px rgba(88,101,242,.25), 0 6px 16px rgba(0,0,0,.35); }
+    #role-action-btn .material-icons { font-size: 18px; line-height: 1; }
+    @media (max-width: 768px) {
+      #role-action-btn { top: 118px; right: 10px; padding: 8px 12px; font-size: 12px; border-radius: 8px; }
     }
   </style>
 </head>
@@ -127,18 +112,6 @@
     Change Price
   </button>
 
-  <div id="price-modal">
-    <div class="modal-content">
-      <button class="btn-close" onclick="closeModal()">×</button>
-      <h2 id="modal-item-name">Item Name</h2>
-      <label for="market-price">Market Price</label>
-      <input type="number" id="market-price" />
-      <label for="npc-price">NPC Price</label>
-      <input type="number" id="npc-price" />
-      <button class="btn-submit" onclick="submitPriceChange()">Submit</button>
-    </div>
-  </div>
-
   <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
@@ -158,14 +131,15 @@
   <script>
     let isDevUser = false;
     let allItems = [];
-    let currentItem = null;
-    let currentMarketPrice = "";
-    let currentNpcPrice = "";
 
     function getCookie(name) { const value = `; ${document.cookie}`; const parts = value.split(`; ${name}=`); if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift()); return ''; }
 
     async function loadUserInfo() {
       const profileCard = document.getElementById('profile-card');
+      const defaultAvatar = "https://placehold.co/110x110/dddddd/333333?text=...&font=inter";
+      const avatarEl = document.getElementById('user-avatar');
+      const nameEl = document.getElementById('user-name');
+      const tagEl = document.getElementById('user-tag');
       const roleActionBtn = document.getElementById('role-action-btn');
       try {
         const storedUserCookie = getCookie('discordUser');
@@ -177,9 +151,29 @@
         if (!response.ok) { profileCard.style.display = 'none'; return; }
         const user = await response.json();
         profileCard.style.display = 'flex';
+        const avatarUrl = user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : defaultAvatar;
+        avatarEl.src = avatarUrl;
+        avatarEl.onerror = () => { avatarEl.src = defaultAvatar; };
+        nameEl.textContent = user.global_name || user.username || 'Unknown User';
+        const roleColors = { dev: '#d50000', manager: '#ffc107', "data manager": '#2962ff', "rank seller": '#00c853' };
         const userRole = user.role ? user.role.toLowerCase() : '';
-        if (["dev", "manager", "data manager"].includes(userRole)) { roleActionBtn.style.display = "flex"; }
-      } catch (err) { console.error('Error in loadUserInfo function:', err); profileCard.style.display = 'none'; }
+        profileCard.classList.remove('role-dev', 'role-manager', 'role-data-manager', 'role-rank-seller');
+        if (userRole && userRole !== 'normal user') {
+          const roleClass = userRole.replace(' ', '-');
+          profileCard.classList.add(`role-${roleClass}`);
+        }
+        if (roleColors[userRole]) {
+          tagEl.textContent = user.role.toUpperCase();
+          tagEl.style.color = roleColors[userRole];
+        } else {
+          tagEl.textContent = '';
+          tagEl.style.color = '';
+        }
+        if (["dev", "manager", "data manager"].includes(userRole)) { roleActionBtn.style.display = "flex"; } else { roleActionBtn.style.display = "none"; }
+      } catch (err) {
+        console.error('Error in loadUserInfo function:', err);
+        profileCard.style.display = 'none';
+      }
     }
 
     async function fetchAllItems() { try { const res = await fetch("market/market.txt"); allItems = await res.json(); } catch (e) { console.error("Could not fetch market.txt", e); } }
@@ -189,12 +183,27 @@
       const itemId = urlParams.get('item');
       if (itemId) {
         try {
+          const storedUser = getCookie("discordUser");
+          if (storedUser) {
+            let devIds = [];
+            try {
+              const response = await fetch('/devs.txt');
+              if (response.ok) {
+                const text = await response.text();
+                devIds = text.split('\n').map(id => id.trim()).filter(id => id);
+              }
+            } catch (error) { console.error('Error TwT:', error); }
+            const user = JSON.parse(storedUser);
+            isDevUser = devIds.includes(user.id);
+          }
           const [marketRes, pricesRes] = await Promise.all([fetch('market/market.txt'), fetch('market/mprices.txt')]);
           const marketData = await marketRes.text();
           const pricesData = await pricesRes.text();
           const items = JSON.parse(marketData);
-          currentItem = items.find(item => item.id === itemId);
-          if (currentItem) {
+          const item = items.find(item => item.id === itemId);
+          if (item) {
+            const isPublic = item.hasOwnProperty("public") ? item.public : true;
+            if (!isPublic && !isDevUser) { document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`; return; }
             const pricesMap = new Map(); const npcPricesMap = new Map();
             pricesData.split('\n').forEach(line => {
               const [id, arrayStr] = line.split(':').map(part => part.trim());
@@ -205,29 +214,25 @@
                     pricesMap.set(id, parsedArray[1]);
                     if (parsedArray.length >= 3) { npcPricesMap.set(id, parsedArray[2]); }
                   }
-                } catch (e) {}
+                } catch (e) { console.error(e) }
               }
             });
-            currentMarketPrice = pricesMap.get(currentItem.id) ?? currentItem.price ?? "";
-            currentNpcPrice = npcPricesMap.get(currentItem.id) ?? "";
-            document.getElementById('itemDetails').innerHTML = `<h1>${currentItem.name}</h1>`;
-            document.getElementById('modal-item-name').textContent = currentItem.name;
-            document.getElementById('market-price').value = currentMarketPrice;
-            document.getElementById('npc-price').value = currentNpcPrice;
+            const marketPrice = pricesMap.get(item.id) ?? item.price ?? "N/A";
+            const npcPrice = npcPricesMap.get(item.id);
+            let privateHighlight = (isDevUser && !isPublic) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
+            document.getElementById('itemDetails').innerHTML = `${privateHighlight}<h1>${item.name}</h1>
+            ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
+            ${item.rarity ? `<div class="item-rarity-display"><img class="item-rarity" src="img/rarity/${item.rarity}.webp"></div>` : ''}
+            <p><strong class="item-strong">ID:</strong> ${item.id}</p><div class="item-price-container"><p class="item-price"><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p><hr width="150px">${npcPrice !== null && npcPrice !== undefined ? `<p class="item-price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>` : ''}</div>`;
+          } else {
+            document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`;
           }
-        } catch (error) { console.error('Error loading item details:', error); }
+        } catch (error) {
+          console.error('Error loading item details:', error);
+          document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: Could not load item details.</h2>`;
+        }
       }
     }
-
-    function openModal() {
-      if (!currentItem) return;
-      document.getElementById('modal-item-name').textContent = currentItem.name;
-      document.getElementById('market-price').value = currentMarketPrice;
-      document.getElementById('npc-price').value = currentNpcPrice;
-      document.getElementById('price-modal').style.display = 'flex';
-    }
-    function closeModal() { document.getElementById('price-modal').style.display = 'none'; }
-    function submitPriceChange() { showToast("Something should happen but after update", "success"); closeModal(); }
 
     function showToast(message, type = 'info') {
       const toast = document.createElement('div');
@@ -238,9 +243,51 @@
       setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 4000);
     }
 
-    document.getElementById("role-action-btn").addEventListener("click", openModal);
+    function formatPrice(price) {
+      if (price === "N/A" || price === "NAN" || price === null || price === undefined) { return `<span class="item-price-img">N/A</span>`; }
+      return `<span class="item-price-img">${Number(price).toLocaleString()} <img src="img/coin.png"></span>`;
+    }
 
-    async function initializePage() { await loadUserInfo(); await fetchAllItems(); await loadItemDetails(); }
+    function goToPrevItem() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let id = parseInt(urlParams.get("item"), 10);
+      if (isNaN(id) || id <= 1) return;
+      if (isDevUser) {
+        window.location.href = `item.html?item=${id - 1}`;
+      } else {
+        let prevId = id - 1;
+        while (prevId > 0) {
+          const prevItem = allItems.find(i => i.id == prevId);
+          if (prevItem && (prevItem.public === undefined || prevItem.public)) { window.location.href = `item.html?item=${prevId}`; return; }
+          prevId--;
+        }
+      }
+    }
+
+    function goToNextItem() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let id = parseInt(urlParams.get("item"), 10);
+      if (isNaN(id)) return;
+      if (isDevUser) {
+        window.location.href = `item.html?item=${id + 1}`;
+      } else {
+        let nextId = id + 1;
+        while (nextId <= allItems.length + 1000) {
+          const nextItem = allItems.find(i => i.id == nextId);
+          if (nextItem && (nextItem.public === undefined || nextItem.public)) { window.location.href = `item.html?item=${nextId}`; return; }
+          nextId++;
+        }
+      }
+    }
+
+    document.getElementById("prevItemBtn").addEventListener("click", goToPrevItem);
+    document.getElementById("nextItemBtn").addEventListener("click", goToNextItem);
+
+    async function initializePage() {
+      await loadUserInfo();
+      await fetchAllItems();
+      await loadItemDetails();
+    }
     initializePage();
   </script>
 </body>
