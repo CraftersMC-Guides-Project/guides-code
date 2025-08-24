@@ -10,7 +10,6 @@
   <script src="js/script.js"></script>
   <style>
     .top { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
-    .login-btn { background-color: #5865F2; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 8px; }
     .toast-notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 8px; color: white; font-weight: 500; transition: bottom 0.5s ease-in-out; z-index: 10001; }
     .toast-notification.show { bottom: 30px; }
     .toast-notification.success { background-color: #2d8831; }
@@ -102,6 +101,7 @@
   <div id="loader"><div></div><div></div><div></div></div>
   <div class="market-background"></div>
 
+  <!-- Profile Card -->
   <a href="/profile.html" class="profile-card" id="profile-card">
     <img id="user-avatar" src="https://placehold.co/110x110/dddddd/333333?text=...&font=inter" alt="User Avatar" />
     <div id="user-details">
@@ -110,6 +110,7 @@
     </div>
   </a>
 
+  <!-- Role Button -->
   <div id="role-btn-container"></div>
 
   <!-- Modal -->
@@ -132,20 +133,36 @@
     </div>
   </div>
 
+  <!-- Navbar + Sidebar -->
+  <div class="top"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Floating Buttons -->
+  <button id="float">
+    <span class="material-icons" id="sweepBtn" style="background:#222;border-radius:50px;">chevron_right</span>
+    <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
+    <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
+    <span class="material-icons" id="scrollToTopBtn">north</span>
+  </button>
+
+  <!-- Filters -->
   <div class="pet-filter-buttons" style="display:flex;gap:10px;justify-content:center;margin:5rem 0;">
     <button class="btn pet-filter-btn" data-nature="reset">Reset Filter</button>
   </div>
 
+  <!-- Pet Details -->
   <div class="pet-item-container" id="petDetails"><p>Loading pet details...</p></div>
   <div class="pet-nav-buttons">
     <button id="prevPetBtn" class="btn" type="button">&larr; Previous</button>
     <button id="nextPetBtn" class="btn" type="button">Next &rarr;</button>
   </div>
+
+  <!-- Footer -->
   <div id="footer"></div>
 
 <script>
   let allPets = [];
-  let isDevUser = false;
 
   function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -258,6 +275,26 @@
     setTimeout(() => toast.classList.add('show'), 100);
     setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 4000);
   }
+
+  document.getElementById('prevPetBtn').addEventListener('click', () => {
+    if (allPets.length < 2) return;
+    const urlParams = new URLSearchParams(window.location.search);
+    let idx = allPets.findIndex(p => p.id === urlParams.get('pet'));
+    idx = (idx - 1 + allPets.length) % allPets.length;
+    window.location.search = `?pet=${allPets[idx].id}`;
+  });
+
+  document.getElementById('nextPetBtn').addEventListener('click', () => {
+    if (allPets.length < 2) return;
+    const urlParams = new URLSearchParams(window.location.search);
+    let idx = allPets.findIndex(p => p.id === urlParams.get('pet'));
+    idx = (idx + 1) % allPets.length;
+    window.location.search = `?pet=${allPets[idx].id}`;
+  });
+
+  document.querySelector('.pet-filter-btn[data-nature="reset"]').addEventListener('click', () => {
+    if (allPets.length) window.location.search = `?pet=${allPets[0].id}`;
+  });
 
   async function initializePage() {
     await loadUserInfo();
