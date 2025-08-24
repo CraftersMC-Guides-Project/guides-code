@@ -64,6 +64,29 @@
       box-shadow: inset 0 -8px 0 rgba(0,0,0,.25);
     }
 
+    /* Role badge inside banner */
+    .role-badge{
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius: 10px;
+      border:1px solid var(--card-border);
+      background: rgba(0,0,0,.55);
+      box-shadow: 0 4px 12px rgba(0,0,0,.35);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 13px;
+    }
+    .dot{
+      width:10px; height:10px; border-radius: 3px;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+    }
+
     .avatar{
       position: absolute;
       left: 22px;
@@ -112,27 +135,6 @@
       word-break: break-all;
     }
 
-    /* Role badge */
-    .role-badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius: 10px;
-      border:1px solid var(--card-border);
-      background: rgba(0,0,0,.4);
-      box-shadow: inset 0 0 0 2px rgba(0,0,0,.25), 0 8px 20px rgba(0,0,0,.35);
-      margin-top: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-      font-size: 13px;
-    }
-    .dot{
-      width:10px; height:10px; border-radius: 3px;
-      background: var(--accent);
-      box-shadow: 0 0 12px var(--accent);
-    }
-
     /* Accent divider */
     .rule{
       height: 3px; border-radius: 3px; margin: 10px 0 14px 0;
@@ -164,13 +166,13 @@
   <div class="profile-wrap">
     <div class="profile-card theme-user" id="card">
       <div class="banner" id="banner">
+        <div class="role-badge hidden" id="roleBadge">
+          <span class="dot"></span><span id="roleText">role</span>
+        </div>
         <div class="avatar" id="avatar"></div>
       </div>
       <div class="content">
         <h1 class="title" id="displayName">Loading…</h1>
-        <div class="role-badge hidden" id="roleBadge">
-          <span class="dot"></span><span id="roleText">role</span>
-        </div>
         <div class="rule"></div>
 
         <div class="grid">
@@ -233,7 +235,7 @@
         el("xbox").textContent = (data.xbox && data.xbox.name) ? data.xbox.name : "Not linked";
         el("verified").textContent = data.verified ? "✅" : "❌";
 
-        // Theme + role tag
+        // Theme + role badge
         const role = (data.role || "user").toLowerCase();
         const card = el("card");
         const badge = el("roleBadge");
