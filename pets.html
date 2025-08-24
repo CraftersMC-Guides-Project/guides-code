@@ -9,108 +9,60 @@
   <link rel="stylesheet" href="themes/minecraft/style.css">
   <script src="js/script.js"></script>
   <style>
-    .top { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
     .toast-notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 8px; color: white; font-weight: 500; transition: bottom 0.5s ease-in-out; z-index: 10001; }
     .toast-notification.show { bottom: 30px; }
     .toast-notification.success { background-color: #2d8831; }
     .toast-notification.error { background-color: #c62828; }
     .profile-card {
-      position: fixed;
-      top: 80px;
-      right: 20px;
-      z-index: 1001;
-      display: none;
-      align-items: center;
-      gap: 15px;
+      position: fixed; top: 80px; right: 20px; z-index: 1001;
+      display: none; align-items: center; gap: 15px;
       background: linear-gradient(135deg, rgba(40, 40, 40, 0.7), rgba(25, 25, 25, 0.8));
-      backdrop-filter: blur(10px);
-      padding: 12px 20px;
-      border-radius: 50px;
-      color: white;
-      text-decoration: none;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px); padding: 12px 20px; border-radius: 50px; color: white;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);
       min-width: 200px;
     }
-    #user-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); }
-    #user-details { text-align: left; }
-    #user-name { font-size: 18px; font-weight: 700; line-height: 1.2; }
-    #user-tag { font-size: 12px; font-weight: 700; text-transform: uppercase; opacity: 0.9; margin-top: 3px; display: block; letter-spacing: 0.5px; }
     .role-action-btn {
-      position: fixed;
-      top: 148px;
-      right: 20px;
-      padding: 9px 14px;
-      font-size: 13px;
-      font-weight: 700;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #5865F2, #4752C4);
-      color: #fff;
-      border: none !important;
-      cursor: pointer;
-      z-index: 1001;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-      white-space: nowrap;
+      position: fixed; top: 148px; right: 20px;
+      padding: 9px 14px; font-size: 13px; font-weight: 700;
+      border-radius: 10px; background: linear-gradient(135deg, #5865F2, #4752C4);
+      color: #fff; border: none; cursor: pointer; z-index: 1001;
+      display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.35);
     }
     #price-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      z-index: 2000;
-      justify-content: center;
-      align-items: center;
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center;
     }
     #price-modal .modal-content {
-      background: #222;
-      padding: 20px;
-      border-radius: 12px;
-      width: 360px;
-      color: white;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-      max-height: 90vh;
-      overflow-y: auto;
+      background: #1e1e1e; padding: 20px; border-radius: 12px;
+      width: 400px; color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+      max-height: 90vh; overflow-y: auto;
     }
-    #price-modal h2 { margin-bottom: 15px; font-size: 20px; }
-    #price-modal label { display: block; margin: 10px 0 5px; }
-    #price-modal input { width: 100%; padding: 8px; border-radius: 6px; border: none; margin-bottom: 10px; }
+    #price-modal h2 { margin-bottom: 10px; font-size: 20px; text-align:center; }
+    #price-modal h3 { margin: 15px 0 10px; font-size: 16px; border-bottom: 1px solid #444; padding-bottom: 5px; }
+    .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .price-grid label { font-weight: 600; font-size: 14px; margin-bottom: 4px; display: block; }
+    .price-grid input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #444; background:#2a2a2a; color:white; }
     #price-modal .btn-submit {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background: #5865F2;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
+      margin-top: 15px; width: 100%; padding: 10px;
+      border: none; border-radius: 8px; background: #5865F2;
+      color: white; font-weight: bold; cursor: pointer;
     }
     #price-modal .btn-close {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 20px;
-      float: right;
-      cursor: pointer;
+      background: none; border: none; color: white; font-size: 20px; float: right; cursor: pointer;
     }
+    .rarity-label { display:flex; align-items:center; gap:6px; }
+    .rarity-label img { height:18px; }
   </style>
 </head>
 <body>
   <div id="loader"><div></div><div></div><div></div></div>
   <div class="market-background"></div>
 
-  <!-- Profile Card -->
+  <!-- Profile -->
   <a href="/profile.html" class="profile-card" id="profile-card">
-    <img id="user-avatar" src="https://placehold.co/110x110/dddddd/333333?text=...&font=inter" alt="User Avatar" />
-    <div id="user-details">
-      <div id="user-name">Loading...</div>
-      <div id="user-tag"></div>
-    </div>
+    <img id="user-avatar" src="https://placehold.co/110x110" alt="User Avatar" />
+    <div id="user-details"><div id="user-name">Loading...</div><div id="user-tag"></div></div>
   </a>
-
-  <!-- Role Button -->
   <div id="role-btn-container"></div>
 
   <!-- Modal -->
@@ -118,27 +70,33 @@
     <div class="modal-content">
       <button class="btn-close" onclick="closePriceModal()">×</button>
       <h2 id="modal-pet-name">Pet Name</h2>
-      <label>Common Price</label><input type="number" id="common-price" />
-      <label>Uncommon Price</label><input type="number" id="uncommon-price" />
-      <label>Rare Price</label><input type="number" id="rare-price" />
-      <label>Epic Price</label><input type="number" id="epic-price" />
-      <label>Legendary Price</label><input type="number" id="legendary-price" />
-      <hr>
-      <label>Common NPC Price</label><input type="number" id="ncommon-price" />
-      <label>Uncommon NPC Price</label><input type="number" id="nuncommon-price" />
-      <label>Rare NPC Price</label><input type="number" id="nrare-price" />
-      <label>Epic NPC Price</label><input type="number" id="nepic-price" />
-      <label>Legendary NPC Price</label><input type="number" id="nlegendary-price" />
-      <button class="btn-submit" onclick="submitPriceModal()">Submit</button>
+
+      <h3>Market Prices</h3>
+      <div class="price-grid">
+        <div><label class="rarity-label"><img src="img/rarity/common.webp"> Common</label><input type="number" id="common-price" /></div>
+        <div><label class="rarity-label"><img src="img/rarity/uncommon.webp"> Uncommon</label><input type="number" id="uncommon-price" /></div>
+        <div><label class="rarity-label"><img src="img/rarity/rare.webp"> Rare</label><input type="number" id="rare-price" /></div>
+        <div><label class="rarity-label"><img src="img/rarity/epic.webp"> Epic</label><input type="number" id="epic-price" /></div>
+        <div><label class="rarity-label"><img src="img/rarity/legendary.webp"> Legendary</label><input type="number" id="legendary-price" /></div>
+      </div>
+
+      <h3>NPC Prices</h3>
+      <div class="price-grid">
+        <div><label class="rarity-label"><img src="img/rarity/common.webp"> Common NPC</label><input type="number" id="ncommon-price" /></div>
+        <div><label class="rarity-label"><img src="img/rarity/uncommon.webp"> Uncommon NPC</label><input type="number" id="nuncommon-price" /></div>
+        <div><label class="rarity-label"><img src="img/rarity/rare.webp"> Rare NPC</label><input type="number" id="nrare-price" /></div>
+        <div><label class="rarity-label"><img src="img/rarity/epic.webp"> Epic NPC</label><input type="number" id="nepic-price" /></div>
+        <div><label class="rarity-label"><img src="img/rarity/legendary.webp"> Legendary NPC</label><input type="number" id="nlegendary-price" /></div>
+      </div>
+
+      <button class="btn-submit" onclick="submitPriceModal()">💾 Save Changes</button>
     </div>
   </div>
 
-  <!-- Navbar + Sidebar -->
+  <!-- Sidebar + Buttons -->
   <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-
-  <!-- Floating Buttons -->
   <button id="float">
     <span class="material-icons" id="sweepBtn" style="background:#222;border-radius:50px;">chevron_right</span>
     <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
@@ -154,15 +112,13 @@
   <!-- Pet Details -->
   <div class="pet-item-container" id="petDetails"><p>Loading pet details...</p></div>
   <div class="pet-nav-buttons">
-    <button id="prevPetBtn" class="btn" type="button">&larr; Previous</button>
-    <button id="nextPetBtn" class="btn" type="button">Next &rarr;</button>
+    <button id="prevPetBtn" class="btn">&larr; Previous</button>
+    <button id="nextPetBtn" class="btn">Next &rarr;</button>
   </div>
-
-  <!-- Footer -->
   <div id="footer"></div>
 
 <script>
-  let allPets = [];
+  let allPets = [], allPrices = [];
 
   function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -199,14 +155,14 @@
         btn.addEventListener("click", openPriceModal);
         roleBtnContainer.appendChild(btn);
       }
-    } catch (err) {
-      console.error('Error loading user info', err);
-    }
+    } catch (err) { console.error(err); }
   }
 
   async function loadPetDetails() {
-    const res = await fetch("market/pets.txt");
-    allPets = await res.json();
+    const [petsRes, pricesRes] = await Promise.all([fetch("market/pets.txt"), fetch("market/pet-prices.txt")]);
+    allPets = await petsRes.json();
+    allPrices = await pricesRes.json();
+
     const urlParams = new URLSearchParams(window.location.search);
     const petId = urlParams.get("pet");
     const pet = allPets.find(p => p.id === petId);
@@ -220,12 +176,25 @@
           <p><strong>Description:</strong> ${pet.description || 'No description available'}</p>
         </div>`;
       document.getElementById('modal-pet-name').textContent = pet.name;
-    } else {
-      document.getElementById('petDetails').innerHTML = `<h2 style="color:red;">Error: Pet not found.</h2>`;
     }
   }
 
-  function openPriceModal() { document.getElementById('price-modal').style.display = 'flex'; }
+  function openPriceModal() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const petId = urlParams.get('pet');
+    const petPrice = allPrices.find(p => p.petId === petId) || {};
+    document.getElementById('common-price').value = petPrice.common || "";
+    document.getElementById('uncommon-price').value = petPrice.uncommon || "";
+    document.getElementById('rare-price').value = petPrice.rare || "";
+    document.getElementById('epic-price').value = petPrice.epic || "";
+    document.getElementById('legendary-price').value = petPrice.legendary || "";
+    document.getElementById('ncommon-price').value = petPrice.ncommon || "";
+    document.getElementById('nuncommon-price').value = petPrice.nuncommon || "";
+    document.getElementById('nrare-price').value = petPrice.nrare || "";
+    document.getElementById('nepic-price').value = petPrice.nepic || "";
+    document.getElementById('nlegendary-price').value = petPrice.nlegendary || "";
+    document.getElementById('price-modal').style.display = 'flex';
+  }
   function closePriceModal() { document.getElementById('price-modal').style.display = 'none'; }
 
   async function submitPriceModal() {
@@ -254,17 +223,9 @@
       const endpoint = `https://data-manager.roumakdatta.workers.dev/pets/${discordId}/${petId}/${vals.join("/")}`;
       const res = await fetch(endpoint);
       const data = await res.json();
-
-      if (data.success) {
-        showToast("✅ Pet prices updated!", "success");
-        closePriceModal();
-      } else {
-        showToast("❌ Failed: " + (data.response?.message || "Unknown error"), "error");
-      }
-    } catch (err) {
-      console.error(err);
-      showToast("Something went wrong", "error");
-    }
+      if (data.success) { showToast("✅ Pet prices updated!", "success"); closePriceModal(); }
+      else { showToast("❌ Failed: " + (data.response?.message || "Unknown error"), "error"); }
+    } catch (err) { console.error(err); showToast("Something went wrong", "error"); }
   }
 
   function showToast(message, type) {
@@ -276,30 +237,7 @@
     setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 4000);
   }
 
-  document.getElementById('prevPetBtn').addEventListener('click', () => {
-    if (allPets.length < 2) return;
-    const urlParams = new URLSearchParams(window.location.search);
-    let idx = allPets.findIndex(p => p.id === urlParams.get('pet'));
-    idx = (idx - 1 + allPets.length) % allPets.length;
-    window.location.search = `?pet=${allPets[idx].id}`;
-  });
-
-  document.getElementById('nextPetBtn').addEventListener('click', () => {
-    if (allPets.length < 2) return;
-    const urlParams = new URLSearchParams(window.location.search);
-    let idx = allPets.findIndex(p => p.id === urlParams.get('pet'));
-    idx = (idx + 1) % allPets.length;
-    window.location.search = `?pet=${allPets[idx].id}`;
-  });
-
-  document.querySelector('.pet-filter-btn[data-nature="reset"]').addEventListener('click', () => {
-    if (allPets.length) window.location.search = `?pet=${allPets[0].id}`;
-  });
-
-  async function initializePage() {
-    await loadUserInfo();
-    await loadPetDetails();
-  }
+  async function initializePage() { await loadUserInfo(); await loadPetDetails(); }
   initializePage();
 </script>
 </body>
