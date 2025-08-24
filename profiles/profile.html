@@ -5,6 +5,7 @@
   <title>Profile</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css"> <!-- use same stylesheet as index.html -->
   <style>
     :root{
       --card-bg: rgba(18,18,18,.72);
@@ -16,7 +17,7 @@
       --accent-2:#616161;
     }
 
-    /* Fullscreen blurred background */
+    /* Profile page background */
     .page-bg{
       position: fixed;
       inset: 0;
@@ -36,15 +37,19 @@
       margin:0;
       min-height:100vh;
       color:var(--text);
+      font-family: Inter, "Press Start 2P", sans-serif;
+    }
+
+    .main{
       display:grid;
       place-items:center;
-      font-family: Inter, "Press Start 2P", sans-serif;
       padding: 32px 16px;
     }
 
     .profile-wrap{
       width: clamp(340px, 92vw, 680px);
       position: relative;
+      z-index: 2;
     }
 
     .profile-card{
@@ -158,48 +163,80 @@
   </style>
 </head>
 <body>
+  <!-- header + sidebar copied from index.html -->
+  <div class="top">
+    <div class="logo">CraftersMC</div>
+    <div class="menu-btn" onclick="toggleSidebar()">☰</div>
+  </div>
+  <div class="sidebar" id="sidebar">
+    <a href="/">Home</a>
+    <a href="/profiles/profile.html">Profiles</a>
+    <a href="/guides.html">Guides</a>
+    <a href="/about.html">About</a>
+  </div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- page bg -->
   <div class="page-bg"></div>
   <div class="page-overlay"></div>
 
-  <div class="profile-wrap">
-    <div class="profile-card theme-user" id="card">
-      <div class="banner" id="banner">
-        <div class="avatar" id="avatar"></div>
-      </div>
-      <div class="content">
-        <h1 class="title" id="displayName">Loading…</h1>
-        <div class="role-badge hidden" id="roleBadge">
-          <span class="dot"></span><span id="roleText">role</span>
+  <div class="main">
+    <div class="profile-wrap">
+      <div class="profile-card theme-user" id="card">
+        <div class="banner" id="banner">
+          <div class="avatar" id="avatar"></div>
         </div>
-        <div class="rule"></div>
+        <div class="content">
+          <h1 class="title" id="displayName">Loading…</h1>
+          <div class="role-badge hidden" id="roleBadge">
+            <span class="dot"></span><span id="roleText">role</span>
+          </div>
+          <div class="rule"></div>
 
-        <div class="grid">
-          <div class="row">
-            <span class="label">Username</span>
-            <span class="value" id="username">—</span>
-          </div>
-          <div class="row">
-            <span class="label">User ID</span>
-            <span class="value" id="uid">—</span>
-          </div>
-          <div class="row">
-            <span class="label">Xbox</span>
-            <span class="value" id="xbox">Not linked</span>
-          </div>
-          <div class="row">
-            <span class="label">Verified</span>
-            <span class="value" id="verified">—</span>
+          <div class="grid">
+            <div class="row">
+              <span class="label">Username</span>
+              <span class="value" id="username">—</span>
+            </div>
+            <div class="row">
+              <span class="label">User ID</span>
+              <span class="value" id="uid">—</span>
+            </div>
+            <div class="row">
+              <span class="label">Xbox</span>
+              <span class="value" id="xbox">Not linked</span>
+            </div>
+            <div class="row">
+              <span class="label">Verified</span>
+              <span class="value" id="verified">—</span>
+            </div>
           </div>
         </div>
       </div>
+
+      <p id="msg" class="center hidden" style="margin-top:14px;color:#ffb4b4;">
+        Error loading profile.
+      </p>
     </div>
-
-    <p id="msg" class="center hidden" style="margin-top:14px;color:#ffb4b4;">
-      Error loading profile.
-    </p>
   </div>
 
+  <!-- bottom nav + footer copied from index.html -->
+  <div class="bottom-nav">
+    <a href="/">Home</a>
+    <a href="/profiles/profile.html">Profiles</a>
+    <a href="/guides.html">Guides</a>
+    <a href="/about.html">About</a>
+  </div>
+  <footer id="footer">
+    <p>© 2025 CraftersMC Guides. All rights reserved.</p>
+  </footer>
+
   <script>
+    function toggleSidebar(){
+      document.getElementById("sidebar").classList.toggle("active");
+      document.getElementById("sidebar-overlay").classList.toggle("active");
+    }
+
     async function loadProfile(){
       const el = (id)=>document.getElementById(id);
 
@@ -216,24 +253,20 @@
         if(!res.ok) throw new Error("User not found");
         const data = await res.json();
 
-        // Avatar
         const avatarUrl = data.avatar
           ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=256`
           : "https://cdn.discordapp.com/embed/avatars/0.png";
         el("avatar").style.backgroundImage = `url("${avatarUrl}")`;
 
-        // Title + name
         const displayName = data.global_name || data.username || "Unknown";
         document.title = `${displayName} | Profile`;
         el("displayName").textContent = displayName;
 
-        // Info
         el("username").textContent = data.username || "—";
         el("uid").textContent = data.id || "—";
         el("xbox").textContent = (data.xbox && data.xbox.name) ? data.xbox.name : "Not linked";
         el("verified").textContent = data.verified ? "✅" : "❌";
 
-        // Theme + role tag
         const role = (data.role || "user").toLowerCase();
         const card = el("card");
         const badge = el("roleBadge");
