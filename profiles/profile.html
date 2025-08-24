@@ -1,150 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    body {
-      margin: 0;
-      font-family: 'Press Start 2P', cursive;
-      background: url('../Backgrounds/jungle-lake.webp') no-repeat center center fixed;
-      background-size: cover;
+    :root{
+      --card-bg: rgba(18,18,18,.72);
+      --card-border: rgba(255,255,255,.12);
+      --text: #fff;
+      --muted: #d9d9d9;
+      --shadow: 0 25px 80px rgba(0,0,0,.6);
+      --accent: #9e9e9e;    /* user (default) */
+      --accent-2:#616161;
     }
-    .overlay {
+
+    /* Fullscreen blurred background */
+    .page-bg{
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      backdrop-filter: blur(6px) brightness(0.8);
+      inset: 0;
+      background: url("/Backgrounds/jungle-lake.webp") center/cover no-repeat;
+      z-index: -2;
+      filter: blur(8px) brightness(.65) saturate(.9);
+      transform: scale(1.06);
+    }
+    .page-overlay{
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.75));
       z-index: -1;
     }
-    .profile-card {
-      max-width: 700px;
-      margin: 100px auto;
-      background: rgba(20, 20, 20, 0.9);
-      border-radius: 16px;
+
+    body{
+      margin:0;
+      min-height:100vh;
+      color:var(--text);
+      display:grid;
+      place-items:center;
+      font-family: Inter, "Press Start 2P", sans-serif;
+      padding: 32px 16px;
+    }
+
+    .profile-wrap{
+      width: clamp(340px, 92vw, 680px);
+      position: relative;
+    }
+
+    .profile-card{
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
       overflow: hidden;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-      position: relative;
-      color: #fff;
-      border: 3px solid #555;
+      backdrop-filter: blur(6px);
     }
-    .banner {
-      width: 100%;
+
+    .banner{
+      position: relative;
       height: 180px;
-      background: url('../Backgrounds/minecraft-grass.png') center/cover no-repeat;
-      position: relative;
+      background: center/cover no-repeat url("/Backgrounds/sunset.webp");
+      border-bottom: 1px solid var(--card-border);
+      box-shadow: inset 0 -8px 0 rgba(0,0,0,.25);
     }
-    .avatar {
-      width: 120px;
-      height: 120px;
+
+    .avatar{
+      position: absolute;
+      left: 22px;
+      bottom: -46px;
+      width: 112px; height: 112px;
+      border-radius: 50%;
+      border: 6px solid #0e0e0e;
+      outline: 2px solid rgba(255,255,255,.25);
+      background: #111 center/cover no-repeat;
+      box-shadow: 0 12px 30px rgba(0,0,0,.55);
+    }
+
+    .content{
+      padding: 60px 22px 24px 22px;
+    }
+
+    .title{
+      font-family: "Press Start 2P", monospace;
+      font-size: clamp(18px, 1.9vw, 22px);
+      margin: 0 0 6px 0;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px 18px;
+      margin-top:14px;
+    }
+    .row{
+      background: rgba(0,0,0,.35);
+      border:1px solid var(--card-border);
       border-radius: 12px;
-      border: 4px solid #fff;
-      position: absolute;
-      top: 130px;
-      left: 40px;
-      background: #222;
-    }
-    .content {
-      margin-left: 180px;
-      padding: 20px;
-    }
-    .username {
-      font-size: 22px;
-      margin: 10px 0;
-      color: #00ff00;
-      text-shadow: 2px 2px #000;
-    }
-    .info {
+      padding: 12px 12px;
       font-size: 14px;
-      color: #ccc;
-      margin: 6px 0;
     }
-    /* Role Tag */
-    .role-tag {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      padding: 6px 12px;
-      border-radius: 8px;
+    .label{
+      display:block;
+      color: var(--muted);
       font-size: 12px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      margin-bottom:6px;
+      text-transform: uppercase;
     }
-    .role-dev { background: #e74c3c; color: #fff; }
-    .role-manager { background: #f1c40f; color: #000; }
-    .role-data { background: #3498db; color: #fff; }
-    /* Glow for roles */
-    .profile-card.dev { border: 3px solid #e74c3c; box-shadow: 0 0 15px #e74c3c; }
-    .profile-card.manager { border: 3px solid #f1c40f; box-shadow: 0 0 15px #f1c40f; }
-    .profile-card.data { border: 3px solid #3498db; box-shadow: 0 0 15px #3498db; }
+    .value{
+      font-weight: 700;
+      word-break: break-all;
+    }
+
+    /* Role badge */
+    .role-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius: 10px;
+      border:1px solid var(--card-border);
+      background: rgba(0,0,0,.4);
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,.25), 0 8px 20px rgba(0,0,0,.35);
+      margin-top: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 13px;
+    }
+    .dot{
+      width:10px; height:10px; border-radius: 3px;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+    }
+
+    /* Accent divider */
+    .rule{
+      height: 3px; border-radius: 3px; margin: 10px 0 14px 0;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 18px var(--accent);
+      opacity:.9;
+    }
+
+    /* Themes */
+    .theme-dev{ --accent:#ff5252; --accent-2:#b70f0f; }
+    .theme-manager{ --accent:#ffc400; --accent-2:#8b6b00; }
+    .theme-data-manager{ --accent:#42a5f5; --accent-2:#0d47a1; }
+    .theme-user{ --accent:#9e9e9e; --accent-2:#616161; }
+
+    @media (max-width:560px){
+      .grid{ grid-template-columns: 1fr; }
+      .avatar{ left: 18px; bottom: -44px; }
+      .content{ padding: 58px 16px 20px 16px; }
+    }
+
+    .hidden{ display:none !important; }
+    .center{ text-align:center; }
   </style>
 </head>
 <body>
-  <div class="overlay"></div>
-  <div id="profile"></div>
+  <div class="page-bg"></div>
+  <div class="page-overlay"></div>
 
-  <script>
-    function renderProfile(data) {
-      const roleClass = data.role === "dev" ? "dev" :
-                        data.role === "manager" ? "manager" :
-                        data.role === "data manager" ? "data" : "";
+  <div class="profile-wrap">
+    <div class="profile-card theme-user" id="card">
+      <div class="banner" id="banner">
+        <div class="avatar" id="avatar"></div>
+      </div>
+      <div class="content">
+        <h1 class="title" id="displayName">Loading…</h1>
+        <div class="role-badge hidden" id="roleBadge">
+          <span class="dot"></span><span id="roleText">role</span>
+        </div>
+        <div class="rule"></div>
 
-      let roleTag = "";
-      if (data.role && data.role !== "user") {
-        const icon = data.role === "dev" ? "🛠️" :
-                     data.role === "manager" ? "👑" :
-                     data.role === "data manager" ? "📊" : "";
-        const roleClassTag = data.role === "dev" ? "role-dev" :
-                             data.role === "manager" ? "role-manager" :
-                             "role-data";
-        roleTag = `<div class="role-tag ${roleClassTag}">${icon} ${data.role}</div>`;
-      }
-
-      document.title = `${data.global_name || data.username} | profile`;
-
-      document.getElementById("profile").innerHTML = `
-        <div class="profile-card ${roleClass}">
-          <div class="banner">${roleTag}</div>
-          <img class="avatar" src="https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png" alt="avatar">
-          <div class="content">
-            <div class="username">${data.global_name || data.username}</div>
-            <div class="info">Username: ${data.username}</div>
-            <div class="info">ID: ${data.id}</div>
-            <div class="info">Xbox Username: ${data.xbox_username || "Not linked"}</div>
+        <div class="grid">
+          <div class="row">
+            <span class="label">Username</span>
+            <span class="value" id="username">—</span>
+          </div>
+          <div class="row">
+            <span class="label">User ID</span>
+            <span class="value" id="uid">—</span>
+          </div>
+          <div class="row">
+            <span class="label">Xbox</span>
+            <span class="value" id="xbox">Not linked</span>
+          </div>
+          <div class="row">
+            <span class="label">Verified</span>
+            <span class="value" id="verified">—</span>
           </div>
         </div>
-      `;
-    }
 
-    async function loadProfile() {
+        <p class="center" style="margin-top:16px; font-family:'Press Start 2P', monospace; font-size:12px;">
+          Minecraft Profile
+        </p>
+      </div>
+    </div>
+
+    <p id="msg" class="center hidden" style="margin-top:14px;color:#ffb4b4;">
+      Error loading profile.
+    </p>
+  </div>
+
+  <script>
+    async function loadProfile(){
+      const el = (id)=>document.getElementById(id);
+
       const params = new URLSearchParams(window.location.search);
       const userId = params.get("id");
-      const profileContainer = document.getElementById("profile");
-
-      if (!userId) {
-        profileContainer.innerHTML = "<p style='color:white;text-align:center'>No user ID provided.</p>";
+      if(!userId){
+        el("msg").textContent = "No user ID provided.";
+        el("msg").classList.remove("hidden");
         return;
       }
 
-      const cached = localStorage.getItem("profile_" + userId);
-      if (cached) {
-        renderProfile(JSON.parse(cached));
-      } else {
-        profileContainer.innerHTML = "<p style='color:white;text-align:center'>Loading...</p>";
-      }
+      try{
+        const res = await fetch(`https://discord-auth.roumakdatta.workers.dev/users/${userId}`);
+        if(!res.ok) throw new Error("User not found");
+        const data = await res.json();
 
-      try {
-        const response = await fetch(`https://discord-auth.roumakdatta.workers.dev/users/${userId}`);
-        const data = await response.json();
-        renderProfile(data);
-        localStorage.setItem("profile_" + userId, JSON.stringify(data));
-      } catch (error) {
-        if (!cached) {
-          profileContainer.innerHTML = "<p style='color:white;text-align:center'>Error loading profile.</p>";
+        // Avatar
+        const avatarUrl = data.avatar
+          ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=256`
+          : "https://cdn.discordapp.com/embed/avatars/0.png";
+        el("avatar").style.backgroundImage = `url("${avatarUrl}")`;
+
+        // Title + name
+        const displayName = data.global_name || data.username || "Unknown";
+        document.title = `${displayName} | Profile`;
+        el("displayName").textContent = displayName;
+
+        // Info
+        el("username").textContent = data.username || "—";
+        el("uid").textContent = data.id || "—";
+        el("xbox").textContent = (data.xbox && data.xbox.name) ? data.xbox.name : "Not linked";
+        el("verified").textContent = data.verified ? "✅" : "❌";
+
+        // Theme + role tag
+        const role = (data.role || "user").toLowerCase();
+        const card = el("card");
+        const badge = el("roleBadge");
+        card.classList.remove("theme-dev","theme-manager","theme-data-manager","theme-user");
+
+        if(role === "dev"){
+          card.classList.add("theme-dev");
+          badge.classList.remove("hidden");
+          el("roleText").textContent = "DEV";
+        } else if(role === "manager"){
+          card.classList.add("theme-manager");
+          badge.classList.remove("hidden");
+          el("roleText").textContent = "MANAGER";
+        } else if(role === "data manager"){
+          card.classList.add("theme-data-manager");
+          badge.classList.remove("hidden");
+          el("roleText").textContent = "DATA MANAGER";
+        } else {
+          card.classList.add("theme-user");
+          badge.classList.add("hidden");
         }
+
+      }catch(err){
+        el("msg").textContent = "Error: " + err.message;
+        el("msg").classList.remove("hidden");
       }
     }
 
