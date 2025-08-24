@@ -15,6 +15,18 @@
       --accent: #9e9e9e;
       --accent-2:#616161;
     }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      color:var(--text);
+      display:grid;
+      place-items:center;
+      font-family: Inter, "Press Start 2P", sans-serif;
+      background: #0e0e0e;
+      padding: 32px 16px;
+    }
+
     .page-bg{
       position: fixed;
       inset: 0;
@@ -29,19 +41,12 @@
       background: linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.75));
       z-index: -1;
     }
-    body{
-      margin:0;
-      min-height:100vh;
-      color:var(--text);
-      display:grid;
-      place-items:center;
-      font-family: Inter, "Press Start 2P", sans-serif;
-      padding: 32px 16px;
-    }
+
     .profile-wrap{
-      width: clamp(340px, 92vw, 680px);
+      width: clamp(360px, 95vw, 880px);
       position: relative;
     }
+
     .profile-card{
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -49,7 +54,9 @@
       box-shadow: var(--shadow);
       overflow: hidden;
       backdrop-filter: blur(6px);
+      padding-bottom: 20px;
     }
+
     .banner{
       position: relative;
       height: 180px;
@@ -57,27 +64,7 @@
       border-bottom: 1px solid var(--card-border);
       box-shadow: inset 0 -8px 0 rgba(0,0,0,.25);
     }
-    .role-badge{
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius: 10px;
-      border:1px solid var(--card-border);
-      background: rgba(0,0,0,.55);
-      box-shadow: 0 4px 12px rgba(0,0,0,.35);
-      font-weight: 800;
-      text-transform: uppercase;
-      font-size: 13px;
-    }
-    .dot{
-      width:10px; height:10px; border-radius: 3px;
-      background: var(--accent);
-      box-shadow: 0 0 12px var(--accent);
-    }
+
     .avatar{
       position: absolute;
       left: 22px;
@@ -89,28 +76,60 @@
       background: #111 center/cover no-repeat;
       box-shadow: 0 12px 30px rgba(0,0,0,.55);
     }
+
+    .role-badge{
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius: 10px;
+      border:1px solid var(--card-border);
+      background: rgba(0,0,0,.5);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 13px;
+    }
+    .dot{
+      width:10px; height:10px; border-radius: 3px;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+    }
+
     .content{
       padding: 60px 22px 24px 22px;
     }
+
     .title{
       font-family: "Press Start 2P", monospace;
       font-size: clamp(18px, 1.9vw, 22px);
       margin: 0 0 6px 0;
       text-shadow: 2px 2px 0 #000;
     }
-    .grid{
-      display:grid;
+
+    .rule{
+      height: 3px;
+      border-radius: 3px;
+      margin: 12px 0 20px 0;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 18px var(--accent);
+    }
+
+    .details{
+      display: grid;
       grid-template-columns: 1fr 1fr;
-      gap:12px 18px;
-      margin-top:14px;
+      gap: 20px;
     }
-    .row{
+
+    .box{
       background: rgba(0,0,0,.35);
-      border:1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 12px 12px;
-      font-size: 14px;
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px;
     }
+
     .label{
       display:block;
       color: var(--muted);
@@ -120,25 +139,17 @@
     }
     .value{
       font-weight: 700;
-      word-break: break-all;
+      word-break: break-word;
     }
-    .rule{
-      height: 3px; border-radius: 3px; margin: 10px 0 14px 0;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      box-shadow: 0 0 18px var(--accent);
-      opacity:.9;
-    }
+
+    .hidden{ display:none !important; }
+
+    /* Themes */
     .theme-dev{ --accent:#ff5252; --accent-2:#b70f0f; }
     .theme-manager{ --accent:#ffc400; --accent-2:#8b6b00; }
     .theme-data-manager{ --accent:#42a5f5; --accent-2:#0d47a1; }
+    .theme-rank-seller{ --accent:#7FFF00; --accent-2:#006400; }
     .theme-user{ --accent:#9e9e9e; --accent-2:#616161; }
-    @media (max-width:560px){
-      .grid{ grid-template-columns: 1fr; }
-      .avatar{ left: 18px; bottom: -44px; }
-      .content{ padding: 58px 16px 20px 16px; }
-    }
-    .hidden{ display:none !important; }
-    .center{ text-align:center; }
   </style>
 </head>
 <body>
@@ -148,31 +159,38 @@
   <div class="profile-wrap">
     <div class="profile-card theme-user" id="card">
       <div class="banner" id="banner">
-        <div class="role-badge hidden" id="roleBadge">
-          <span class="dot"></span><span id="roleText">role</span>
-        </div>
+        <div class="role-badge hidden" id="roleBadge"><span class="dot"></span><span id="roleText">role</span></div>
         <div class="avatar" id="avatar"></div>
       </div>
       <div class="content">
         <h1 class="title" id="displayName">Loading…</h1>
         <div class="rule"></div>
 
-        <div class="grid">
-          <div class="row">
+        <div class="details">
+          <!-- Left column -->
+          <div class="box">
             <span class="label">Username</span>
             <span class="value" id="username">—</span>
-          </div>
-          <div class="row">
             <span class="label">User ID</span>
             <span class="value" id="uid">—</span>
-          </div>
-          <div class="row">
             <span class="label">Xbox</span>
             <span class="value" id="xbox">Not linked</span>
-          </div>
-          <div class="row">
             <span class="label">Verified</span>
             <span class="value" id="verified">—</span>
+          </div>
+
+          <!-- Right column -->
+          <div class="box hidden" id="specialBox">
+            <span class="label">Status</span>
+            <span class="value" id="status">—</span>
+            <span class="label">Gold Price</span>
+            <span class="value" id="gold">—</span>
+            <span class="label">Diamond Price</span>
+            <span class="value" id="diamond">—</span>
+            <span class="label">Emerald Price</span>
+            <span class="value" id="emerald">—</span>
+            <span class="label">Gems Price</span>
+            <span class="value" id="gems">—</span>
           </div>
         </div>
       </div>
@@ -200,64 +218,54 @@
         if(!res.ok) throw new Error("User not found");
         const data = await res.json();
 
+        // Avatar
         const avatarUrl = data.avatar
           ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=256`
           : "https://cdn.discordapp.com/embed/avatars/0.png";
         el("avatar").style.backgroundImage = `url("${avatarUrl}")`;
 
+        // Title
         const displayName = data.global_name || data.username || "Unknown";
         document.title = `${displayName} | Profile`;
         el("displayName").textContent = displayName;
 
+        // Info
         el("username").textContent = data.username || "—";
         el("uid").textContent = data.id || "—";
         el("xbox").textContent = (data.xbox && data.xbox.name) ? data.xbox.name : "Not linked";
         el("verified").textContent = data.verified ? "✅" : "❌";
 
+        // Theme + role tag
         const role = (data.role || "user").toLowerCase();
         const card = el("card");
         const badge = el("roleBadge");
-        card.classList.remove("theme-dev","theme-manager","theme-data-manager","theme-user");
+        const special = el("specialBox");
+        card.classList.remove("theme-dev","theme-manager","theme-data-manager","theme-user","theme-rank-seller");
 
         if(role === "dev"){
           card.classList.add("theme-dev");
           badge.classList.remove("hidden");
           el("roleText").textContent = "DEV";
+          special.classList.remove("hidden");
         } else if(role === "manager"){
           card.classList.add("theme-manager");
           badge.classList.remove("hidden");
           el("roleText").textContent = "MANAGER";
+          special.classList.remove("hidden");
         } else if(role === "data manager"){
           card.classList.add("theme-data-manager");
           badge.classList.remove("hidden");
           el("roleText").textContent = "DATA MANAGER";
+          special.classList.remove("hidden");
+        } else if(role === "rank seller"){
+          card.classList.add("theme-rank-seller");
+          badge.classList.remove("hidden");
+          el("roleText").textContent = "RANK SELLER";
+          special.classList.remove("hidden");
         } else {
           card.classList.add("theme-user");
           badge.classList.add("hidden");
-        }
-
-        // Custom banner only for non-user roles
-        if(role !== "user"){
-          try {
-            const bannerRes = await fetch("https://craftersmc-guides.pages.dev/data/banner.txt");
-            const bannerText = await bannerRes.text();
-            let customBanner = null;
-            const lines = bannerText.split("\n");
-            for (const line of lines){
-              const [id, url] = line.split("=");
-              if(id && url && id.trim() === userId){
-                customBanner = url.replace(/['"]/g,"").trim();
-                break;
-              }
-            }
-            if(customBanner){
-              el("banner").style.backgroundImage = `url("${customBanner}")`;
-            }
-          } catch(e){
-            // ignore errors, keep default
-          }
-        } else {
-          el("banner").style.backgroundImage = 'url("/Backgrounds/sunset.webp")';
+          special.classList.add("hidden");
         }
 
       }catch(err){
