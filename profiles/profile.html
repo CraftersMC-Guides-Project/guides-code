@@ -1,307 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Minecraft Profile</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Pixel/Minecraft-ish vibe but still readable -->
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Profile</title>
   <style>
-    :root{
-      --card-bg: rgba(18,18,18,.72);
-      --card-border: rgba(255,255,255,.12);
-      --text: #fff;
-      --muted: #d9d9d9;
-      --shadow: 0 25px 80px rgba(0,0,0,.6);
-      --accent: #E53935;    /* dev (default) */
-      --accent-2:#7b0f0f;
-    }
-
-    /* Fullscreen background that we can swap via JS */
-    .page-bg{
-      position: fixed;
-      inset: 0;
-      background: #0e0e0e;
-      background-position: center;
+    body {
+      margin: 0;
+      font-family: 'Press Start 2P', cursive;
+      background: url('../Backgrounds/jungle-lake.webp') no-repeat center center fixed;
       background-size: cover;
-      z-index: -2;
-      filter: blur(8px) brightness(.65) saturate(.9);
-      transform: scale(1.06); /* hide blur edges */
     }
-    /* subtle dark overlay on top of bg */
-    .page-overlay{
+    .overlay {
       position: fixed;
-      inset: 0;
-      background: radial-gradient(1200px 600px at 70% -10%, rgba(255,255,255,.07), transparent 60%),
-                  linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.75));
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      backdrop-filter: blur(6px) brightness(0.8);
       z-index: -1;
     }
-
-    body{
-      margin:0;
-      min-height:100vh;
-      color:var(--text);
-      display:grid;
-      place-items:center;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Press Start 2P", Arial, sans-serif;
-      text-rendering: optimizeLegibility;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      padding: 32px 16px;
-    }
-
-    /* Card wrapper to help place avatar overlapping the banner */
-    .profile-wrap{
-      width: clamp(340px, 92vw, 680px);
-      position: relative;
-    }
-
-    .profile-card{
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
+    .profile-card {
+      max-width: 600px;
+      margin: 100px auto;
+      background: rgba(20, 20, 20, 0.9);
+      border-radius: 16px;
       overflow: hidden;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-    }
-
-    /* Banner with fixed height & safe cropping */
-    .banner{
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
       position: relative;
-      height: 180px;
-      background: center/cover no-repeat url("/Backgrounds/sunset.webp");
-      border-bottom: 1px solid var(--card-border);
-      /* Minecraft-y bevel */
-      box-shadow: inset 0 -8px 0 rgba(0,0,0,.25);
+      text-align: center;
+      color: #fff;
+      border: 3px solid #555;
     }
-    /* Decorative shape edge on the banner (tiny notch) */
-    .banner::after{
-      content:"";
-      position:absolute; inset:0;
-      background: linear-gradient(to bottom, rgba(0,0,0,.0), rgba(0,0,0,.25));
-      pointer-events:none;
+    .banner {
+      width: 100%;
+      height: 160px;
+      background: url('../Backgrounds/minecraft-grass.png') center/cover no-repeat;
+      position: relative;
     }
-
-    /* Avatar overlaps banner and content */
-    .avatar{
+    .avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 12px;
+      border: 4px solid #fff;
       position: absolute;
-      left: 22px;
-      bottom: -46px;   /* overlap into the content */
-      width: 112px; height: 112px;
-      border-radius: 50%;
-      border: 6px solid #0e0e0e;
-      outline: 2px solid rgba(255,255,255,.25);
-      background: #111 center/cover no-repeat;
-      image-rendering: pixelated;
-      box-shadow: 0 12px 30px rgba(0,0,0,.55);
+      top: 110px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #222;
     }
-    /* role-colored ring */
-    .avatar::after{
-      content:"";
-      position:absolute; inset:-6px;
-      border-radius: 50%;
-      box-shadow:
-        0 0 0 3px var(--accent),
-        0 0 22px 2px var(--accent-2);
-      pointer-events:none;
-      opacity:.6;
+    .content {
+      margin-top: 70px;
+      padding: 20px;
     }
-
-    .content{
-      padding: 60px 22px 24px 22px; /* top accounts for avatar space */
+    .username {
+      font-size: 22px;
+      margin: 10px 0;
+      color: #00ff00;
+      text-shadow: 2px 2px #000;
     }
-
-    .title{
-      font-family: "Press Start 2P", monospace;
-      font-size: clamp(18px, 1.9vw, 22px);
-      letter-spacing: .5px;
-      margin: 0 0 6px 0;
-      text-shadow: 2px 2px 0 #000;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px 18px;
-      margin-top:14px;
-    }
-    .row{
-      background: rgba(0,0,0,.35);
-      border:1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 12px 12px;
+    .userid, .xbox {
       font-size: 14px;
-      line-height: 1.25;
+      color: #ccc;
+      margin: 4px 0;
     }
-    .label{
-      display:block;
-      color: var(--muted);
+    /* Role Tag */
+    .role-tag {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      padding: 6px 12px;
+      border-radius: 8px;
       font-size: 12px;
-      margin-bottom:6px;
-      text-transform: uppercase;
-      letter-spacing:.06em;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
-    .value{
-      font-weight: 700;
-      word-break: break-all;
-    }
-
-    /* Role badge */
-    .role-badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:10px 14px;
-      border-radius: 12px;
-      border:1px solid var(--card-border);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.01));
-      box-shadow: inset 0 0 0 2px rgba(0,0,0,.25), 0 8px 20px rgba(0,0,0,.35);
-      margin-top: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing:.08em;
-    }
-    .dot{
-      width:10px; height:10px; border-radius: 3px;
-      background: var(--accent);
-      box-shadow: 0 0 18px var(--accent);
-    }
-
-    /* Accent divider */
-    .rule{
-      height: 3px; border-radius: 3px; margin: 10px 0 14px 0;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      box-shadow: 0 0 18px var(--accent);
-      opacity:.9;
-    }
-
-    /* Role themes via CSS variables */
-    .theme-dev{ --accent:#ff5252; --accent-2:#b70f0f; }
-    .theme-manager{ --accent:#ffc400; --accent-2:#8b6b00; }
-    .theme-data-manager{ --accent:#42a5f5; --accent-2:#0d47a1; }
-    .theme-user{ --accent:#9e9e9e; --accent-2:#616161; }
-
-    /* Small screens: make grid one column */
-    @media (max-width:560px){
-      .grid{ grid-template-columns: 1fr; }
-      .avatar{ left: 18px; bottom: -44px; }
-      .content{ padding: 58px 16px 20px 16px; }
-    }
-
-    .hidden{ display:none !important; }
-    .center{ text-align:center; }
+    .role-dev { background: #e74c3c; color: #fff; }
+    .role-manager { background: #f1c40f; color: #000; }
+    .role-data { background: #3498db; color: #fff; }
+    /* Glow based on role */
+    .profile-card.user { border: 3px solid #888; }
+    .profile-card.dev { border: 3px solid #e74c3c; box-shadow: 0 0 15px #e74c3c; }
+    .profile-card.manager { border: 3px solid #f1c40f; box-shadow: 0 0 15px #f1c40f; }
+    .profile-card.data { border: 3px solid #3498db; box-shadow: 0 0 15px #3498db; }
   </style>
 </head>
 <body>
-  <!-- dynamic background + overlay -->
-  <div id="bg" class="page-bg"></div>
-  <div class="page-overlay"></div>
-
-  <div class="profile-wrap">
-    <div class="profile-card theme-user" id="card">
-      <div class="banner" id="banner">
-        <div class="avatar" id="avatar"></div>
-      </div>
-      <div class="content">
-        <h1 class="title" id="displayName">Loading…</h1>
-        <div class="role-badge"><span class="dot"></span><span id="roleText">role</span></div>
-        <div class="rule"></div>
-
-        <div class="grid">
-          <div class="row">
-            <span class="label">Username</span>
-            <span class="value" id="username">—</span>
-          </div>
-          <div class="row">
-            <span class="label">User ID</span>
-            <span class="value" id="uid">—</span>
-          </div>
-          <div class="row">
-            <span class="label">Xbox</span>
-            <span class="value" id="xbox">Not linked</span>
-          </div>
-          <div class="row">
-            <span class="label">Verified</span>
-            <span class="value" id="verified">—</span>
-          </div>
-        </div>
-
-        <p class="center" style="margin-top:16px; font-family:'Press Start 2P', monospace; font-size:12px;">
-          Minecraft Profile
-        </p>
-      </div>
-    </div>
-
-    <p id="msg" class="center hidden" style="margin-top:14px;color:#ffb4b4;">
-      Error loading profile.
-    </p>
-  </div>
+  <div class="overlay"></div>
+  <div id="profile"></div>
 
   <script>
-    async function loadProfile(){
-      const el = (id)=>document.getElementById(id);
+    function renderProfile(data) {
+      const roleClass = data.role === "dev" ? "dev" :
+                        data.role === "manager" ? "manager" :
+                        data.role === "data manager" ? "data" : "user";
 
+      let roleTag = "";
+      if (data.role !== "user") {
+        const icon = data.role === "dev" ? "🛠️" :
+                     data.role === "manager" ? "👑" :
+                     data.role === "data manager" ? "📊" : "";
+        const roleClassTag = data.role === "dev" ? "role-dev" :
+                             data.role === "manager" ? "role-manager" :
+                             "role-data";
+        roleTag = `<div class="role-tag ${roleClassTag}">${icon} ${data.role}</div>`;
+      }
+
+      // Update page title with "name | profile"
+      document.title = `${data.global_name || data.username} | profile`;
+
+      document.getElementById("profile").innerHTML = `
+        <div class="profile-card ${roleClass}">
+          <div class="banner">${roleTag}</div>
+          <img class="avatar" src="https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png" alt="avatar">
+          <div class="content">
+            <div class="username">${data.global_name || data.username}</div>
+            <div class="userid">ID: ${data.id}</div>
+            <div class="xbox">Xbox: ${data.xbox_username || "Not linked"}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function loadProfile() {
       const params = new URLSearchParams(window.location.search);
       const userId = params.get("id");
-      if(!userId){
-        el("msg").textContent = "No user ID provided.";
-        el("msg").classList.remove("hidden");
+      const profileContainer = document.getElementById("profile");
+
+      if (!userId) {
+        profileContainer.innerHTML = "<p style='color:white;text-align:center'>No user ID provided.</p>";
         return;
       }
 
-      try{
-        const res = await fetch(`https://discord-auth.roumakdatta.workers.dev/users/${userId}`);
-        if(!res.ok) throw new Error("User not found");
-        const data = await res.json();
+      const cached = localStorage.getItem("profile_" + userId);
+      if (cached) {
+        renderProfile(JSON.parse(cached));
+      } else {
+        profileContainer.innerHTML = "<p style='color:white;text-align:center'>Loading...</p>";
+      }
 
-        // Avatar (Discord CDN) with fallback
-        const avatarUrl = data.avatar
-          ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=256`
-          : "https://cdn.discordapp.com/embed/avatars/0.png";
-
-        el("avatar").style.backgroundImage = `url("${avatarUrl}")`;
-        el("displayName").textContent = data.global_name || data.username || "Unknown";
-        el("username").textContent = data.username || "—";
-        el("uid").textContent = data.id || "—";
-        el("roleText").textContent = (data.role || "user").toUpperCase();
-
-        // Xbox
-        const xboxName = (data.xbox && data.xbox.name) ? data.xbox.name : "Not linked";
-        const xboxVerified = (data.xbox && data.xbox.verified) ? "✅" : "❌";
-        el("xbox").textContent = `${xboxName} ${xboxVerified}`;
-
-        // Discord verified (top-level)
-        el("verified").textContent = data.verified ? "✅" : "❌";
-
-        // Theme by role
-        const role = (data.role || "user").toLowerCase();
-        const card = el("card");
-        card.classList.remove("theme-dev","theme-manager","theme-data-manager","theme-user");
-
-        switch(role){
-          case "dev":
-            card.classList.add("theme-dev");
-            // Page background for DEV (blurred jungle lake)
-            el("bg").style.backgroundImage = 'url("/Backgrounds/jungle-lake.webp")';
-            break;
-          case "manager":
-            card.classList.add("theme-manager");
-            break;
-          case "data manager":
-            card.classList.add("theme-data-manager");
-            break;
-          default:
-            card.classList.add("theme-user");
+      try {
+        const response = await fetch(`https://discord-auth.roumakdatta.workers.dev/users/${userId}`);
+        const data = await response.json();
+        renderProfile(data);
+        localStorage.setItem("profile_" + userId, JSON.stringify(data));
+      } catch (error) {
+        if (!cached) {
+          profileContainer.innerHTML = "<p style='color:white;text-align:center'>Error loading profile.</p>";
         }
-
-        // Banner image (fixed & safely cropped)
-        el("banner").style.backgroundImage = 'url("/Backgrounds/sunset.webp")';
-
-      }catch(err){
-        el("msg").textContent = "Error: " + err.message;
-        el("msg").classList.remove("hidden");
       }
     }
 
