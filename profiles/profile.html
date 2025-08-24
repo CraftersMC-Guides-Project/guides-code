@@ -18,36 +18,34 @@
       z-index: -1;
     }
     .profile-card {
-      max-width: 600px;
+      max-width: 700px;
       margin: 100px auto;
       background: rgba(20, 20, 20, 0.9);
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 8px 25px rgba(0,0,0,0.5);
       position: relative;
-      text-align: center;
       color: #fff;
       border: 3px solid #555;
     }
     .banner {
       width: 100%;
-      height: 160px;
+      height: 180px;
       background: url('../Backgrounds/minecraft-grass.png') center/cover no-repeat;
       position: relative;
     }
     .avatar {
-      width: 110px;
-      height: 110px;
+      width: 120px;
+      height: 120px;
       border-radius: 12px;
       border: 4px solid #fff;
       position: absolute;
-      top: 110px;
-      left: 50%;
-      transform: translateX(-50%);
+      top: 130px;
+      left: 40px;
       background: #222;
     }
     .content {
-      margin-top: 70px;
+      margin-left: 180px;
       padding: 20px;
     }
     .username {
@@ -56,10 +54,10 @@
       color: #00ff00;
       text-shadow: 2px 2px #000;
     }
-    .userid, .xbox {
+    .info {
       font-size: 14px;
       color: #ccc;
-      margin: 4px 0;
+      margin: 6px 0;
     }
     /* Role Tag */
     .role-tag {
@@ -78,8 +76,7 @@
     .role-dev { background: #e74c3c; color: #fff; }
     .role-manager { background: #f1c40f; color: #000; }
     .role-data { background: #3498db; color: #fff; }
-    /* Glow based on role */
-    .profile-card.user { border: 3px solid #888; }
+    /* Glow for roles */
     .profile-card.dev { border: 3px solid #e74c3c; box-shadow: 0 0 15px #e74c3c; }
     .profile-card.manager { border: 3px solid #f1c40f; box-shadow: 0 0 15px #f1c40f; }
     .profile-card.data { border: 3px solid #3498db; box-shadow: 0 0 15px #3498db; }
@@ -93,10 +90,10 @@
     function renderProfile(data) {
       const roleClass = data.role === "dev" ? "dev" :
                         data.role === "manager" ? "manager" :
-                        data.role === "data manager" ? "data" : "user";
+                        data.role === "data manager" ? "data" : "";
 
       let roleTag = "";
-      if (data.role !== "user") {
+      if (data.role && data.role !== "user") {
         const icon = data.role === "dev" ? "🛠️" :
                      data.role === "manager" ? "👑" :
                      data.role === "data manager" ? "📊" : "";
@@ -106,7 +103,6 @@
         roleTag = `<div class="role-tag ${roleClassTag}">${icon} ${data.role}</div>`;
       }
 
-      // Update page title with "name | profile"
       document.title = `${data.global_name || data.username} | profile`;
 
       document.getElementById("profile").innerHTML = `
@@ -115,8 +111,9 @@
           <img class="avatar" src="https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png" alt="avatar">
           <div class="content">
             <div class="username">${data.global_name || data.username}</div>
-            <div class="userid">ID: ${data.id}</div>
-            <div class="xbox">Xbox: ${data.xbox_username || "Not linked"}</div>
+            <div class="info">Username: ${data.username}</div>
+            <div class="info">ID: ${data.id}</div>
+            <div class="info">Xbox Username: ${data.xbox_username || "Not linked"}</div>
           </div>
         </div>
       `;
