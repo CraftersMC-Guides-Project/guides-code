@@ -2,172 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Profile</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile</title>
+
+  <!-- Shared styles and fonts -->
+  <link rel="stylesheet" href="/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css"> <!-- use same stylesheet as index.html -->
-  <style>
-    :root{
-      --card-bg: rgba(18,18,18,.72);
-      --card-border: rgba(255,255,255,.12);
-      --text: #fff;
-      --muted: #d9d9d9;
-      --shadow: 0 25px 80px rgba(0,0,0,.6);
-      --accent: #9e9e9e;    /* user (default) */
-      --accent-2:#616161;
-    }
-
-    /* Profile page background */
-    .page-bg{
-      position: fixed;
-      inset: 0;
-      background: url("/Backgrounds/jungle-lake.webp") center/cover no-repeat;
-      z-index: -2;
-      filter: blur(8px) brightness(.65) saturate(.9);
-      transform: scale(1.06);
-    }
-    .page-overlay{
-      position: fixed;
-      inset: 0;
-      background: linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.75));
-      z-index: -1;
-    }
-
-    body{
-      margin:0;
-      min-height:100vh;
-      color:var(--text);
-      font-family: Inter, "Press Start 2P", sans-serif;
-    }
-
-    .main{
-      display:grid;
-      place-items:center;
-      padding: 32px 16px;
-    }
-
-    .profile-wrap{
-      width: clamp(340px, 92vw, 680px);
-      position: relative;
-      z-index: 2;
-    }
-
-    .profile-card{
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      backdrop-filter: blur(6px);
-    }
-
-    .banner{
-      position: relative;
-      height: 180px;
-      background: center/cover no-repeat url("/Backgrounds/sunset.webp");
-      border-bottom: 1px solid var(--card-border);
-      box-shadow: inset 0 -8px 0 rgba(0,0,0,.25);
-    }
-
-    .avatar{
-      position: absolute;
-      left: 22px;
-      bottom: -46px;
-      width: 112px; height: 112px;
-      border-radius: 50%;
-      border: 6px solid #0e0e0e;
-      outline: 2px solid rgba(255,255,255,.25);
-      background: #111 center/cover no-repeat;
-      box-shadow: 0 12px 30px rgba(0,0,0,.55);
-    }
-
-    .content{
-      padding: 60px 22px 24px 22px;
-    }
-
-    .title{
-      font-family: "Press Start 2P", monospace;
-      font-size: clamp(18px, 1.9vw, 22px);
-      margin: 0 0 6px 0;
-      text-shadow: 2px 2px 0 #000;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px 18px;
-      margin-top:14px;
-    }
-    .row{
-      background: rgba(0,0,0,.35);
-      border:1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 12px 12px;
-      font-size: 14px;
-    }
-    .label{
-      display:block;
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom:6px;
-      text-transform: uppercase;
-    }
-    .value{
-      font-weight: 700;
-      word-break: break-all;
-    }
-
-    /* Role badge */
-    .role-badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius: 10px;
-      border:1px solid var(--card-border);
-      background: rgba(0,0,0,.4);
-      box-shadow: inset 0 0 0 2px rgba(0,0,0,.25), 0 8px 20px rgba(0,0,0,.35);
-      margin-top: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-      font-size: 13px;
-    }
-    .dot{
-      width:10px; height:10px; border-radius: 3px;
-      background: var(--accent);
-      box-shadow: 0 0 12px var(--accent);
-    }
-
-    /* Accent divider */
-    .rule{
-      height: 3px; border-radius: 3px; margin: 10px 0 14px 0;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      box-shadow: 0 0 18px var(--accent);
-      opacity:.9;
-    }
-
-    /* Themes */
-    .theme-dev{ --accent:#ff5252; --accent-2:#b70f0f; }
-    .theme-manager{ --accent:#ffc400; --accent-2:#8b6b00; }
-    .theme-data-manager{ --accent:#42a5f5; --accent-2:#0d47a1; }
-    .theme-user{ --accent:#9e9e9e; --accent-2:#616161; }
-
-    @media (max-width:560px){
-      .grid{ grid-template-columns: 1fr; }
-      .avatar{ left: 18px; bottom: -44px; }
-      .content{ padding: 58px 16px 20px 16px; }
-    }
-
-    .hidden{ display:none !important; }
-    .center{ text-align:center; }
-  </style>
+  <link rel="icon" href="/Images/icon.png" type="image/png">
 </head>
 <body>
-  <!-- header + sidebar copied from index.html -->
+  <!-- Loader (copied from index.html) -->
+  <div id="loader">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Top bar -->
   <div class="top">
     <div class="logo">CraftersMC</div>
     <div class="menu-btn" onclick="toggleSidebar()">☰</div>
   </div>
+
+  <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <a href="/">Home</a>
     <a href="/profiles/profile.html">Profiles</a>
@@ -176,10 +31,18 @@
   </div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-  <!-- page bg -->
+  <!-- Floating buttons -->
+  <div id="float">
+    <a href="/" class="float-btn">🏠</a>
+    <a href="/profiles/profile.html" class="float-btn">👤</a>
+    <a href="/guides.html" class="float-btn">📘</a>
+  </div>
+
+  <!-- Background -->
   <div class="page-bg"></div>
   <div class="page-overlay"></div>
 
+  <!-- Main content -->
   <div class="main">
     <div class="profile-wrap">
       <div class="profile-card theme-user" id="card">
@@ -220,23 +83,22 @@
     </div>
   </div>
 
-  <!-- bottom nav + footer copied from index.html -->
+  <!-- Bottom navigation -->
   <div class="bottom-nav">
     <a href="/">Home</a>
     <a href="/profiles/profile.html">Profiles</a>
     <a href="/guides.html">Guides</a>
     <a href="/about.html">About</a>
   </div>
+
+  <!-- Footer -->
   <footer id="footer">
     <p>© 2025 CraftersMC Guides. All rights reserved.</p>
   </footer>
 
+  <!-- Scripts -->
+  <script src="/script.js"></script>
   <script>
-    function toggleSidebar(){
-      document.getElementById("sidebar").classList.toggle("active");
-      document.getElementById("sidebar-overlay").classList.toggle("active");
-    }
-
     async function loadProfile(){
       const el = (id)=>document.getElementById(id);
 
@@ -253,20 +115,24 @@
         if(!res.ok) throw new Error("User not found");
         const data = await res.json();
 
+        // Avatar
         const avatarUrl = data.avatar
           ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png?size=256`
           : "https://cdn.discordapp.com/embed/avatars/0.png";
         el("avatar").style.backgroundImage = `url("${avatarUrl}")`;
 
+        // Title + name
         const displayName = data.global_name || data.username || "Unknown";
         document.title = `${displayName} | Profile`;
         el("displayName").textContent = displayName;
 
+        // Info
         el("username").textContent = data.username || "—";
         el("uid").textContent = data.id || "—";
         el("xbox").textContent = (data.xbox && data.xbox.name) ? data.xbox.name : "Not linked";
         el("verified").textContent = data.verified ? "✅" : "❌";
 
+        // Role
         const role = (data.role || "user").toLowerCase();
         const card = el("card");
         const badge = el("roleBadge");
