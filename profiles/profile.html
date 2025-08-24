@@ -179,7 +179,7 @@
             <span class="value" id="verified">—</span>
           </div>
 
-          <!-- Right column -->
+          <!-- Right column (special details, only for rank sellers) -->
           <div class="box hidden" id="specialBox">
             <span class="label">Status</span>
             <span class="value" id="status">—</span>
@@ -240,32 +240,59 @@
         const card = el("card");
         const badge = el("roleBadge");
         const special = el("specialBox");
+        const banner = el("banner");
+
         card.classList.remove("theme-dev","theme-manager","theme-data-manager","theme-user","theme-rank-seller");
 
         if(role === "dev"){
           card.classList.add("theme-dev");
           badge.classList.remove("hidden");
           el("roleText").textContent = "DEV";
-          special.classList.remove("hidden");
+          special.classList.add("hidden");
         } else if(role === "manager"){
           card.classList.add("theme-manager");
           badge.classList.remove("hidden");
           el("roleText").textContent = "MANAGER";
-          special.classList.remove("hidden");
+          special.classList.add("hidden");
         } else if(role === "data manager"){
           card.classList.add("theme-data-manager");
           badge.classList.remove("hidden");
           el("roleText").textContent = "DATA MANAGER";
-          special.classList.remove("hidden");
+          special.classList.add("hidden");
         } else if(role === "rank seller"){
           card.classList.add("theme-rank-seller");
           badge.classList.remove("hidden");
           el("roleText").textContent = "RANK SELLER";
-          special.classList.remove("hidden");
+          special.classList.remove("hidden"); // ✅ only show for rank seller
         } else {
           card.classList.add("theme-user");
           badge.classList.add("hidden");
           special.classList.add("hidden");
+        }
+
+        // Banner logic
+        if(role === "user" || role === "rank seller"){
+          banner.style.backgroundImage = 'url("/Backgrounds/sunset.webp")';
+        } else {
+          // fetch custom banner if available
+          try {
+            const bannerRes = await fetch("/data/banner.txt");
+            const text = await bannerRes.text();
+            const lines = text.split("\n");
+            let customBanner = null;
+            for (const line of lines){
+              const [id, url] = line.split("=");
+              if(id && url && id.trim() === userId){
+                customBanner = url.trim().replace(/['"]/g, "");
+                break;
+              }
+            }
+            if(customBanner){
+              banner.style.backgroundImage = `url("${customBanner}")`;
+            }
+          } catch(e) {
+            console.warn("No custom banner found");
+          }
         }
 
       }catch(err){
