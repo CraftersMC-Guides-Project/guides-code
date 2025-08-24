@@ -10,520 +10,226 @@
   <link rel="stylesheet" href="themes/minecraft/style.css">
   <script src="js/script.js"></script>
   <style>
-    /* Profile Card and Dev Button Styles */
+    /* Profile + Button */
     #top-right-ui-container {
-        position: fixed;
-        top: 80px;
-        right: 20px;
-        z-index: 1001;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        gap: 10px;
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
     }
-
     .profile-card {
       display: flex;
       align-items: center;
       gap: 10px;
-      background-color: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.5);
       padding: 8px 12px;
       border-radius: 50px;
       color: white;
       text-decoration: none;
-      transition: background-color 0.3s;
     }
-
-    .profile-card:hover {
-      background-color: rgba(0, 0, 0, 0.8);
-    }
-
     .profile-card-avatar {
       width: 32px;
       height: 32px;
       border-radius: 50%;
     }
-
-    .profile-card-name {
-      font-weight: 500;
-      font-size: 14px;
+    .profile-card-name { font-weight: 500; font-size: 14px; }
+    .role-btn {
+      background: #5865F2;
+      color: #fff;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
+    .role-btn:hover { background: #4752C4; }
 
-    .dev-label {
-      color: #ff4d4d;
-      font-weight: bold;
-      margin-left: 5px;
-    }
-
-    .dev-btn {
-        background-color: #313131;
-        color: #FFFFFF;
-        padding: 10px 15px;
-        border: 2px solid #555;
-        border-radius: 4px;
-        font-weight: normal;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transition: background-color 0.2s;
-    }
-
-    .dev-btn:hover {
-        background-color: #424242;
-    }
-
-    /* Modal Styles */
+    /* Modal */
     .modal-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 9998;
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.7); display:none;
+      align-items:center; justify-content:center; z-index:2000;
     }
     .modal-content {
-        background: #2a2a2a; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px;
-        border: 1px solid #444;
-        max-height: 80vh; /* Allow modal to scroll on small screens */
-        overflow-y: auto; /* Allow modal to scroll on small screens */
+      background:#2a2a2a; color:white;
+      padding:20px; border-radius:12px;
+      width:90%; max-width:420px;
+      max-height:80vh; overflow-y:auto;
     }
-    .modal-content h3 { margin-top: 0; }
-    .modal-content label { display: block; margin-bottom: 5px; font-weight: bold; }
-    .modal-content input { width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 15px; background: #1a1a1a; border: 1px solid #555; color: white; border-radius: 5px;}
-    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
-    .modal-btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
-    .modal-btn-save { background-color: #28a745; color: white; }
-    .modal-btn-cancel { background-color: #6c757d; color: white; }
-    
-    /* Toast Notification */
-    .toast-notification {
-        position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
-        padding: 15px 25px; border-radius: 8px; color: white; font-weight: 500;
-        transition: bottom 0.5s ease-in-out; z-index: 10001;
+    .modal-content h3 { margin-top:0; text-align:center; }
+    .modal-content label { display:block; margin:6px 0 2px; }
+    .modal-content input {
+      width:100%; padding:8px;
+      border-radius:6px; border:1px solid #555;
+      background:#1a1a1a; color:white;
     }
-    .toast-notification.show { bottom: 30px; }
-    .toast-notification.success { background-color: #2d8831; }
-    .toast-notification.error { background-color: #c62828; }
+    .modal-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:12px; }
+    .modal-btn { padding:8px 16px; border:none; border-radius:6px; cursor:pointer; }
+    .modal-btn-save { background:#28a745; color:white; }
+    .modal-btn-cancel { background:#6c757d; color:white; }
 
-    @media (max-width: 768px) {
-        #top-right-ui-container {
-            top: 65px;
-            right: 10px;
-            gap: 8px;
-        }
-        .profile-card {
-            padding: 4px 8px;
-        }
-        .profile-card-avatar {
-            width: 28px;
-            height: 28px;
-        }
-        .profile-card-name {
-            font-size: 12px;
-        }
+    /* Toast */
+    .toast {
+      position: fixed; bottom:-100px; left:50%; transform:translateX(-50%);
+      padding:12px 20px; border-radius:8px; color:white; font-weight:500;
+      transition:bottom .4s; z-index:3000;
     }
+    .toast.show { bottom:30px; }
+    .toast.success { background:#2d8831; }
+    .toast.error { background:#c62828; }
   </style>
 </head>
 
 <body>
-  <div id="loader">
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
+  <div id="loader"><div></div><div></div><div></div></div>
   <div class="market-background"></div>
 
   <div id="top-right-ui-container">
     <div id="profile-card-container"></div>
-    <div id="dev-actions-container"></div>
+    <div id="role-btn-container"></div>
   </div>
 
   <div class="top"></div>
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
   <button id="float">
-    <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px;">chevron_right</span>
+    <span class="material-icons" id="sweepBtn" style="background:#222;border-radius:50px;">chevron_right</span>
     <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
     <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
     <span class="material-icons" id="scrollToTopBtn">north</span>
   </button>
-  <!--  -->
 
   <div class="pet-filter-buttons" style="display:flex;gap:10px;justify-content:center;margin:5rem 0;">
     <button class="btn pet-filter-btn" data-nature="reset">Reset Filter</button>
   </div>
 
-  <div class="pet-item-container" id="petDetails">
-    <p>Loading pet details...</p>
-  </div>
+  <div class="pet-item-container" id="petDetails"><p>Loading pet details...</p></div>
   <div class="pet-nav-buttons">
-    <button id="prevPetBtn" class="btn" type="button">&larr; Previous</button>
-    <button id="nextPetBtn" class="btn" type="button">Next &rarr;</button>
+    <button id="prevPetBtn" class="btn">&larr; Previous</button>
+    <button id="nextPetBtn" class="btn">Next &rarr;</button>
   </div>
-
   <div id="footer"></div>
 
-  <!-- Pet Price Update Modal -->
-  <div id="pet-price-modal" class="modal-overlay">
-      <div class="modal-content">
-          <h3>Update Pet Prices</h3>
-          <div id="pet-price-inputs"></div>
-          <div class="modal-actions">
-              <button id="cancel-pet-price-update" class="modal-btn modal-btn-cancel">Cancel</button>
-              <button id="save-pet-price-update" class="modal-btn modal-btn-save">Save</button>
-          </div>
+  <!-- Modal -->
+  <div id="price-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>Update Pet Prices</h3>
+      <div id="price-inputs"></div>
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="modal-btn modal-btn-save" onclick="savePrices()">Save</button>
       </div>
+    </div>
   </div>
 
   <script>
-    const PETS_FILE_PATH = "market/pets.txt";
-    const PET_PRICES_FILE_PATH = "market/pet-prices.txt";
+    const PETS_FILE = "market/pets.txt";
+    const PRICES_FILE = "market/pet-prices.txt";
+    let allPets = [], petPrices = [], filteredPets = [], currentPetIndex = 0, currentPetRarities = [], currentRarityIndex=0;
 
-    let currentRarityIndex = 0;
-    let currentPetRarities = [];
-    let isDevUser = false;
-    let allPets = [];
-    let filteredPets = [];
-    let currentPetIndex = 0;
-    let petPrices = [];
-
-    function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+    function getCookie(name){
+      const value=`; ${document.cookie}`;
+      const parts=value.split(`; ${name}=`);
+      if(parts.length===2) return decodeURIComponent(parts.pop().split(';').shift());
       return '';
     }
 
-    async function loadProfileCard() {
-        const storedUser = getCookie("discordUser");
-        const profileContainer = document.getElementById("profile-card-container");
-        
-        let devIds = [];
-        try {
-            const response = await fetch('/devs.txt');
-            if (response.ok) {
-                const text = await response.text();
-                devIds = text.split('\n').map(id => id.trim()).filter(id => id);
-            }
-        } catch (error) {
-            console.error('Could not load or parse devs.txt:', error);
+    async function loadProfile(){
+      const container=document.getElementById("profile-card-container");
+      const btnContainer=document.getElementById("role-btn-container");
+      try{
+        const stored=getCookie("discordUser"); if(!stored) return;
+        const user=JSON.parse(stored);
+        container.innerHTML=`<a href="/profile.html" class="profile-card">
+          <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" class="profile-card-avatar">
+          <span class="profile-card-name">${user.global_name||user.username}</span></a>`;
+        const res=await fetch(`https://discord-auth.roumakdatta.workers.dev/users/${user.id}`);
+        if(!res.ok) return; const full=await res.json();
+        const role=full.role?full.role.toLowerCase():"";
+        if(["dev","manager","data manager"].includes(role)){
+          btnContainer.innerHTML=`<button class="role-btn" onclick="openModal()"><span class="material-icons">edit</span> Change Price</button>`;
         }
-
-        if (storedUser) {
-            const user = JSON.parse(storedUser);
-            const displayName = user.global_name || user.username;
-            isDevUser = devIds.includes(user.id);
-
-            profileContainer.innerHTML = `
-                <a href="/profile" class="profile-card">
-                    <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="Avatar" class="profile-card-avatar">
-                    <span class="profile-card-name">
-                        ${displayName}
-                        ${isDevUser ? '<span class="dev-label">[DEV]</span>' : ''}
-                    </span>
-                </a>
-            `;
-        } else {
-            profileContainer.innerHTML = '';
-        }
+      }catch(e){console.error(e);}
     }
 
-    // Load all pets and filter by nature from URL
-    async function loadAndFilterPets() {
-      const petDetailsResponse = await fetch(PETS_FILE_PATH);
-      allPets = await petDetailsResponse.json();
-
-      // Fetch pet prices
-      const petPricesResponse = await fetch(PET_PRICES_FILE_PATH);
-      petPrices = await petPricesResponse.json();
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const nature = urlParams.get('nature') || 'all';
-
-      if (nature === 'all' || nature === 'reset') {
-        filteredPets = allPets;
-      } else {
-        filteredPets = allPets.filter(pet =>
-          pet.nature && pet.nature.toUpperCase().includes(nature.toUpperCase())
-        );
-      }
+    async function loadData(){
+      const [petsRes, pricesRes]=await Promise.all([fetch(PETS_FILE), fetch(PRICES_FILE)]);
+      allPets=await petsRes.json(); petPrices=await pricesRes.json();
+      const url=new URLSearchParams(window.location.search);
+      const petId=url.get("pet"); const nature=url.get("nature")||"all";
+      filteredPets=(nature==="all"||nature==="reset")?allPets:allPets.filter(p=>p.nature&&p.nature.toUpperCase().includes(nature.toUpperCase()));
+      currentPetIndex=filteredPets.findIndex(p=>p.id===petId);
+      if(currentPetIndex<0&&filteredPets.length){currentPetIndex=0;window.history.replaceState({},'',`?pet=${filteredPets[0].id}&nature=${nature}`);}
+      renderPet();
     }
 
-    // Modified loadPetDetails to use filteredPets
-    async function loadPetDetails() {
-      await loadAndFilterPets();
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const petId = urlParams.get('pet');
-      const nature = urlParams.get('nature') || 'all';
-
-      currentPetIndex = filteredPets.findIndex(pet => pet.id === petId);
-
-      let pet = filteredPets[currentPetIndex];
-      if (!pet && filteredPets.length) {
-        pet = filteredPets[0];
-        currentPetIndex = 0;
-        window.history.replaceState({}, '', `?pet=${pet.id}&nature=${nature}`);
-      }
-
-      if (pet) {
-        if (isDevUser) {
-            document.getElementById('dev-actions-container').innerHTML = `
-                <button class="dev-btn" onclick="openPetPriceModal()">
-                    <span class="material-icons">edit</span>
-                    Edit Details
-                </button>
-            `;
-        } else {
-            document.getElementById('dev-actions-container').innerHTML = '';
-        }
-
-        const petPrice = petPrices.find(price => price.petId === petId);
-        const petDetailsDiv = document.getElementById('petDetails');
-        const initialRarity = pet.rarity[0];
-
-        petDetailsDiv.innerHTML = `
-          <div class="item-container">
-            <h1>${pet.name}</h1>
-            <img src="${pet.picture}" alt="${pet.name}" class="pet-item-image">
-            <div class="pet-rarity-dropdown" id="rarityDropdown">
-              <button class="pet-rarity-arrow left" onclick="changeRarity(-1, '${pet.id}')">
-                <span class="material-icons">chevron_left</span>
-              </button>
-              <div class="pet-selected" id="selectedRarity" style="min-width:120px;display:inline-flex;align-items:center;justify-content:center;">
-                <img src="/img/rarity/${initialRarity}.webp" alt="${initialRarity}" style="height:24px; margin:0;">
-              </div>
-              <button class="pet-rarity-arrow right" onclick="changeRarity(1, '${pet.id}')">
-                <span class="material-icons">chevron_right</span>
-              </button>
-            </div>
-            <div id="petPrice" class="item-pet-price-container"></div>
-            <p><strong>ID:</strong> ${pet.id}</p>
-            <p><strong>Category:</strong> ${pet.category}</p>
-            <p><strong>Description:</strong> ${pet.description || 'No description available'}</p>
-            <div class="pet-stability">
-            ${generateNatureBox(pet.nature)}
-            ${generateDemandBox(pet.demand)}
-            </div>
-            <div class="pet-attribute-container">
-              ${generateAttributeBox('Tradable', pet.tradable)}
-              ${generateAttributeBox('Auctionable', pet.auctionable)}
-            </div>
+    function renderPet(){
+      const pet=filteredPets[currentPetIndex]; if(!pet){document.getElementById("petDetails").innerHTML="<p>Pet not found.</p>";return;}
+      const rarity=pet.rarity[0]; currentPetRarities=pet.rarity; currentRarityIndex=0;
+      document.getElementById("petDetails").innerHTML=`
+        <div class="item-container">
+          <h1>${pet.name}</h1>
+          <img src="${pet.picture}" class="pet-item-image">
+          <div class="pet-rarity-dropdown">
+            <button class="pet-rarity-arrow" onclick="changeRarity(-1,'${pet.id}')"><span class="material-icons">chevron_left</span></button>
+            <div id="selectedRarity"><img src="/img/rarity/${rarity}.webp" style="height:24px;"></div>
+            <button class="pet-rarity-arrow" onclick="changeRarity(1,'${pet.id}')"><span class="material-icons">chevron_right</span></button>
           </div>
-        `;
-
-        window.petPrices = petPrices; // make it accessible globally
-        updatePrice(pet.id, initialRarity);
-
-        currentPetRarities = pet.rarity;
-        currentRarityIndex = 0;
-        
-      } else {
-        document.getElementById('petDetails').innerHTML = '<p>Pet not found.</p>';
-      }
-    }
-    
-    // --- Pet Price Modal and Update Logic ---
-    async function openPetPriceModal() {
-        document.body.style.overflow = 'hidden'; // Prevent background scroll
-        const urlParams = new URLSearchParams(window.location.search);
-        const petId = urlParams.get('pet');
-        const inputsContainer = document.getElementById('pet-price-inputs');
-        inputsContainer.innerHTML = ''; // Clear previous inputs
-
-        try {
-            const [petsRes, pricesRes] = await Promise.all([
-                fetch(PETS_FILE_PATH, { cache: 'no-cache' }),
-                fetch(PET_PRICES_FILE_PATH, { cache: 'no-cache' })
-            ]);
-            const pets = await petsRes.json();
-            const prices = await pricesRes.json();
-            
-            const pet = pets.find(p => p.id === petId);
-            const petPriceData = prices.find(p => p.petId === petId);
-
-            if (pet && pet.rarity) {
-                pet.rarity.forEach(rarity => {
-                    const r = rarity.toLowerCase();
-                    const marketPrice = petPriceData ? petPriceData[r] ?? '' : '';
-                    const npcPrice = petPriceData ? petPriceData[`n${r}`] ?? '' : '';
-                    
-                    const inputGroup = document.createElement('div');
-                    inputGroup.innerHTML = `
-                        <label>${rarity.charAt(0).toUpperCase() + rarity.slice(1)} Market Price:</label>
-                        <input type="number" min="0" data-rarity="${r}" data-type="market" value="${marketPrice}">
-                        <label>${rarity.charAt(0).toUpperCase() + rarity.slice(1)} NPC Price:</label>
-                        <input type="number" min="0" data-rarity="${r}" data-type="npc" value="${npcPrice}">
-                    `;
-                    inputsContainer.appendChild(inputGroup);
-                });
-            }
-        } catch (e) {
-            console.error(e);
-            showToast('Could not load current pet data.', 'error');
-        }
-        document.getElementById('pet-price-modal').style.display = 'flex';
-    }
-
-    function closeModal() {
-        document.getElementById('pet-price-modal').style.display = 'none';
-        document.body.style.overflow = ''; // Re-enable background scroll
-    }
-
-    document.getElementById('cancel-pet-price-update').addEventListener('click', closeModal);
-
-    // === NEW SAVE HANDLER — uses Worker endpoint ===
-    document.getElementById('save-pet-price-update').addEventListener('click', async () => {
-        const storedUser = getCookie('discordUser');
-        if (!storedUser) {
-            showToast('Please log in with Discord to update prices.', 'error');
-            return;
-        }
-        const user = JSON.parse(storedUser);
-        const discordId = user.id;
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const petId = urlParams.get('pet');
-        if (!petId) { showToast('Pet ID missing.', 'error'); return; }
-
-        try {
-            // Build a map from inputs (only those rarities the pet actually has)
-            const inputs = document.querySelectorAll('#pet-price-inputs input');
-            const inputMap = {};
-            inputs.forEach(input => {
-                const r = input.dataset.rarity.toLowerCase();
-                const type = input.dataset.type; // 'market' | 'npc'
-                const key = type === 'market' ? r : `n${r}`;
-                inputMap[key] = input.value;
-            });
-
-            // Get existing values for fallbacks
-            const existing = petPrices.find(p => p.petId === petId) || {};
-
-            // Always send 10 numbers in required order
-            const order = ['common','uncommon','rare','epic','legendary'];
-            const numbers = [];
-            // Market 5
-            order.forEach(r => {
-                const v = inputMap[r] ?? existing[r] ?? 0;
-                numbers.push(Number.isFinite(+v) ? parseInt(v, 10) : 0);
-            });
-            // NPC 5
-            order.forEach(r => {
-                const key = `n${r}`;
-                const v = inputMap[key] ?? existing[key] ?? 0;
-                numbers.push(Number.isFinite(+v) ? parseInt(v, 10) : 0);
-            });
-
-            const endpoint = `https://data-manager.roumakdatta.workers.dev/pets/${discordId}/${petId}/${numbers.join('/')}`;
-            const res = await fetch(endpoint, { method: 'GET' });
-            let data = {};
-            try { data = await res.json(); } catch {}
-
-            if (res.ok && (data.success === undefined || data.success === true)) {
-                showToast('Pet prices updated successfully!', 'success');
-                closeModal();
-                setTimeout(() => location.reload(), 1200);
-            } else {
-                const msg = data?.response?.message || data?.message || `HTTP ${res.status}`;
-                showToast(`Error updating prices: ${msg}`, 'error');
-            }
-        } catch (err) {
-            console.error('Error updating pet prices:', err);
-            showToast('Unexpected error while updating prices.', 'error');
-        }
-    });
-
-
-    function showToast(message, type = 'info') {
-        const toast = document.createElement('div');
-        toast.className = `toast-notification ${type}`;
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        
-        setTimeout(() => toast.classList.add('show'), 100);
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 500);
-        }, 4000);
-    }
-
-    function updatePrice(petId, rarity) {
-      const price = window.petPrices.find(price => price.petId === petId);
-      if (!price) return;
-      const npcRarityKey = `n${rarity.toLowerCase()}`;
-      const marketPrice = price[rarity.toLowerCase()] ?? 'Price not available';
-      const npcPrice = price[npcRarityKey] ?? 'Not sold by NPC';
-      document.getElementById('petPrice').innerHTML = `
-        <div class="item-price-row">
-          <strong>Market Price:</strong> <div class="item-price-img">${formatPrice(marketPrice)}</div>
-        </div><hr width="150px" style="color:var(--border-color);">
-        <div class="item-price-row">
-          <strong>NPC Price:</strong> <div class="item-price-img">${formatPrice(npcPrice)}</div>
+          <div id="petPrice"></div>
+          <p><strong>ID:</strong> ${pet.id}</p>
+          <p><strong>Category:</strong> ${pet.category}</p>
+          <p><strong>Description:</strong> ${pet.description||'No description available'}</p>
         </div>`;
+      updatePrice(pet.id,rarity);
     }
 
-    function formatPrice(price) {
-      return typeof price === 'number' ? price.toLocaleString() + ' <img src="img/coin.png" alt="Coin" style="margin:0;">' : price;
+    function updatePrice(petId,rarity){
+      const data=petPrices.find(p=>p.petId===petId)||{};
+      const m=data[rarity.toLowerCase()]??"N/A"; const n=data["n"+rarity.toLowerCase()]??"N/A";
+      document.getElementById("petPrice").innerHTML=`
+        <div><strong>Market Price:</strong> ${formatPrice(m)}</div>
+        <div><strong>NPC Price:</strong> ${formatPrice(n)}</div>`;
+      document.getElementById("selectedRarity").innerHTML=`<img src="/img/rarity/${rarity}.webp" style="height:24px;">`;
+    }
+    function formatPrice(v){return(v==="N/A")?v:`${Number(v).toLocaleString()} <img src="img/coin.png">`;}
+    function changeRarity(dir,petId){currentRarityIndex=(currentRarityIndex+dir+currentPetRarities.length)%currentPetRarities.length;updatePrice(petId,currentPetRarities[currentRarityIndex]);}
+
+    function openModal(){
+      const pet=filteredPets[currentPetIndex]; const price=petPrices.find(p=>p.petId===pet.id)||{};
+      const rarities=["common","uncommon","rare","epic","legendary"];
+      const container=document.getElementById("price-inputs"); container.innerHTML="";
+      rarities.forEach(r=>{
+        container.innerHTML+=`<label>${r.charAt(0).toUpperCase()+r.slice(1)} Market Price:</label><input type="number" id="${r}" value="${price[r]||''}">`;
+        container.innerHTML+=`<label>${r.charAt(0).toUpperCase()+r.slice(1)} NPC Price:</label><input type="number" id="n${r}" value="${price["n"+r]||''}">`;
+      });
+      document.getElementById("price-modal").style.display="flex";
+    }
+    function closeModal(){document.getElementById("price-modal").style.display="none";}
+    async function savePrices(){
+      try{
+        const stored=getCookie("discordUser"); if(!stored){toast("Not logged in","error");return;}
+        const user=JSON.parse(stored); const pet=filteredPets[currentPetIndex]; const rarities=["common","uncommon","rare","epic","legendary"];
+        const nums=[]; rarities.forEach(r=>nums.push(document.getElementById(r).value||0)); rarities.forEach(r=>nums.push(document.getElementById("n"+r).value||0));
+        const url=`https://data-manager.roumakdatta.workers.dev/pets/${user.id}/${pet.id}/${nums.join("/")}`;
+        const res=await fetch(url); const data=await res.json();
+        if(res.ok&&(!data.success||data.success)){toast("✅ Prices updated!","success");closeModal();setTimeout(()=>location.reload(),1000);}
+        else toast("❌ Error: "+(data?.message||res.status),"error");
+      }catch(e){console.error(e);toast("Unexpected error","error");}
     }
 
-    function generateNatureBox(nature) {
-      if (!nature) return '';
-      let icon = nature.includes("STABLE") ? '✅' : nature.includes("UNDERPAID") ? '⚠️' : '❌';
-      let natureText = nature.replace(/\[|\]|_/g, ' ').trim().toLowerCase();
-      return `<div class="pet-nature-pill ${natureText}">${icon} Market Nature: ${natureText.toUpperCase()}</div>`;
-    }
+    function toast(msg,type){const t=document.createElement("div");t.className=`toast ${type}`;t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.classList.add("show"),100);setTimeout(()=>{t.classList.remove("show");setTimeout(()=>t.remove(),400);},3000);}
 
-    function generateDemandBox(demand) {
-      if (!demand) return '';
-      const score = parseInt(demand.match(/\[(\d+)\/10\]/)?.[1] || 0);
-      const barWidth = Math.min(score * 10, 100);
-      let color = score >= 7 ? 'limegreen' : score >= 4 ? 'orange' : 'red';
-      return `<div class="item-demand-box"><div class="item-demand-main"><strong>Demand:</strong> ${demand}</div><div class="pet-demand-bar"><div class="pet-demand-progress" style="width: ${barWidth}%; background-color: ${color};"></div></div></div>`;
-    }
+    document.getElementById("prevPetBtn").onclick=()=>{if(filteredPets.length<2)return;currentPetIndex=(currentPetIndex-1+filteredPets.length)%filteredPets.length;const n=new URLSearchParams(window.location.search).get("nature")||"all";window.location.search=`?pet=${filteredPets[currentPetIndex].id}&nature=${n}`;}
+    document.getElementById("nextPetBtn").onclick=()=>{if(filteredPets.length<2)return;currentPetIndex=(currentPetIndex+1)%filteredPets.length;const n=new URLSearchParams(window.location.search).get("nature")||"all";window.location.search=`?pet=${filteredPets[currentPetIndex].id}&nature=${n}`;}
+    document.querySelector('.pet-filter-btn[data-nature="reset"]').onclick=()=>{if(allPets.length)window.location.search=`?pet=${allPets[0].id}&nature=all`;}
 
-    function generateAttributeBox(label, value) {
-      if (value === undefined) return '';
-      return `<div class="pet-attribute-box ${value ? 'yes' : 'no'}"><img src="${value ? 'img/check.png' : 'img/cross.png'}" alt="${value ? 'Yes' : 'No'}"> ${label}</div>`;
-    }
-
-    function changeRarity(direction, petId) {
-      if (!currentPetRarities.length) return;
-      currentRarityIndex = (currentRarityIndex + direction + currentPetRarities.length) % currentPetRarities.length;
-      const rarity = currentPetRarities[currentRarityIndex];
-      document.getElementById('selectedRarity').innerHTML = `<img src="/img/rarity/${rarity}.webp" alt="${rarity}" style="margin:0;height:24px;">`;
-      updatePrice(petId, rarity);
-    }
-
-    async function initializePage() {
-        await loadProfileCard();
-        await loadPetDetails();
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      initializePage();
-    });
-
-    // Next/Previous navigation
-    document.getElementById('prevPetBtn').addEventListener('click', () => {
-      if (filteredPets.length < 2) return;
-      currentPetIndex = (currentPetIndex - 1 + filteredPets.length) % filteredPets.length;
-      const nature = new URLSearchParams(window.location.search).get('nature') || 'all';
-      window.location.search = `?pet=${filteredPets[currentPetIndex].id}&nature=${nature}`;
-    });
-
-    document.getElementById('nextPetBtn').addEventListener('click', () => {
-      if (filteredPets.length < 2) return;
-      currentPetIndex = (currentPetIndex + 1) % filteredPets.length;
-      const nature = new URLSearchParams(window.location.search).get('nature') || 'all';
-      window.location.search = `?pet=${filteredPets[currentPetIndex].id}&nature=${nature}`;
-    });
-
-    // Reset filter button
-    document.querySelector('.pet-filter-btn[data-nature="reset"]').addEventListener('click', () => {
-      if (allPets.length) {
-        window.location.search = `?pet=${allPets[0].id}&nature=all`;
-      }
-    });
+    (async()=>{await loadProfile();await loadData();})();
   </script>
-
 </body>
-
 </html>
