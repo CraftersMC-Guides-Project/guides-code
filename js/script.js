@@ -661,7 +661,7 @@ document.addEventListener("DOMContentLoaded", function () {
       document.cookie = `${name}=${value}; expires=${expires}; path=/`;
     }
 
-    const validThemes = ['essential', 'minecraft', 'lightweight'];
+    const validThemes = ['essential', 'minecraft', 'default'];
     let savedTheme = getCookie('theme');
 
     if (!validThemes.includes(savedTheme)) {
