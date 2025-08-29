@@ -28,13 +28,7 @@
         <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
         <span class="material-icons" id="scrollToTopBtn">north</span>
     </button>
-    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
-        crossorigin="anonymous"></script>
-    <ins class="login-adsbygoogle" style="display:block;width:90%;height:100px;z-index: 9999999;"
-        data-ad-client="ca-pub-3105845866547691" data-ad-slot="9849702725"></ins>
-    <script>
-        (adsbygoogle = window.adsbygoogle || []).push({});
-    </script> -->
+
     <div class="login-container">
         <h3 class="login-h3">Login</h3>
         <div id="xbox-danger-msg-container"></div>
@@ -152,7 +146,6 @@
             // Check cookie consent status
             const cookieConsent = localStorage.getItem('cookieConsent');
             if (cookieConsent === 'denied') {
-                // If denied, delete user data from cookies if present
                 deleteCookie('discordUser');
             }
 
@@ -168,7 +161,6 @@
                     };
                 }
                 loginStatus.style.display = 'none';
-                // Optionally, hide login button or disable it
                 document.querySelector('.login-button-container').style.display = 'none';
             } else {
                 if (messageDiv) {
@@ -197,7 +189,6 @@
                             console.error('API response missing user:', data);
                             showError('Login Error', 'User data not found');
                         } else {
-                            // Check cookie consent before saving user data
                             const cookieConsent = localStorage.getItem('cookieConsent');
                             if (cookieConsent === 'denied') {
                                 if (messageDiv) {
@@ -230,14 +221,12 @@
                                 xbox: data.user.xbox || null
                             };
 
-                            // Only save login if Xbox is connected
                             if (userData.xbox && userData.xbox.name) {
                                 setCookie('discordUser', JSON.stringify(userData), 7);
                                 showLoggedInState(userData);
                             } else {
-                                // Show danger message and block login
-                                showLoggedInState(userData); // This will show the danger message and hide UI
-                                deleteCookie('discordUser'); // Ensure cookie is not set
+                                showLoggedInState(userData);
+                                deleteCookie('discordUser');
                             }
                         }
                     })
@@ -253,6 +242,7 @@
             discordLoginBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 loginModal.style.display = 'block';
+                loginModal.focus();
             });
 
             closeModalButton.addEventListener('click', () => {
@@ -264,12 +254,22 @@
                 window.location.href = "https://discord.com/oauth2/authorize?client_id=1359486772366672022&response_type=code&redirect_uri=https%3A%2F%2Fcraftersmc-guides.pages.dev%2Flogin&scope=identify+connections";
             });
 
+            // ✅ Keyboard shortcuts for modal
+            document.addEventListener('keydown', function (e) {
+                if (loginModal.style.display === 'block') {
+                    if (e.key === "Enter") {
+                        proceedLoginButton.click();
+                    }
+                    if (e.key === "Escape" || e.key === "Backspace") {
+                        closeModalButton.click();
+                    }
+                }
+            });
+
             logoutButton.addEventListener('click', logout);
 
             function showLoggedInState(userData) {
-                // Check for Xbox connection
                 if (!userData.xbox || !userData.xbox.name) {
-                    // Show danger message and block login
                     let dangerMsg = document.getElementById('xbox-danger-msg');
                     if (dangerMsg) dangerMsg.remove();
 
@@ -287,10 +287,8 @@
                 Please connect your Xbox account to Discord:<br>
                 <a href="https://discord.com/channels/@me" target="_blank" style="color:#ffd700;text-decoration:underline;">Discord Connections</a>
             `;
-                    // Insert at top of your login container
                     document.querySelector('#xbox-danger-msg-container').prepend(dangerMsg);
 
-                    // Hide login success UI, buttons, etc.
                     document.querySelector('.login-button-container').style.display = 'none';
                     document.querySelector('.login-other-options').style.display = 'none';
                     document.querySelector('hr').style.display = 'none';
@@ -340,7 +338,6 @@
                     messageDiv.textContent = '';
                 }
 
-                // GIVEAWAY BUTTON
                 let giveawayBtn = document.getElementById('giveaway-button');
                 if (!giveawayBtn) {
                     giveawayBtn = document.createElement('button');
@@ -392,8 +389,6 @@
             }
         });
     </script>
-<!--     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3105845866547691"
-        crossorigin="anonymous"></script> -->
 </body>
 
 </html>
