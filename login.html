@@ -193,6 +193,9 @@
                     .then(data => {
                         if (data.error) {
                             showError(data.error, data.details);
+                        } else if (!data.user) {
+                            console.error('API response missing user:', data);
+                            showError('Login Error', 'User data not found');
                         } else {
                             // Check cookie consent before saving user data
                             const cookieConsent = localStorage.getItem('cookieConsent');
