@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const loader = document.querySelector('#loader');
-  if (loader) loader.style.display = 'none';
+  const loader = document.querySelector("#loader");
+  if (loader) loader.style.display = "none";
 
   const scrollToTopBtn = document.getElementById("scrollToTopBtn");
   if (scrollToTopBtn) {
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
       sweep: sweepBtn,
       home: document.getElementById("homeBtn"),
       ai: document.getElementById("ai"),
-      top: document.getElementById("scrollToTopBtn")
+      top: document.getElementById("scrollToTopBtn"),
     };
 
     let isActive = false;
@@ -24,12 +24,16 @@ document.addEventListener("DOMContentLoaded", function () {
     sweepBtn.addEventListener("click", () => {
       isActive = !isActive;
       if (elementsToStyle.container) {
-        elementsToStyle.container.style.backgroundColor = isActive ? "var(--primary-text-color)" : "";
-        elementsToStyle.container.style.left = isActive ? "calc(100% - 13rem)" : "calc(100% - 4rem)";
+        elementsToStyle.container.style.backgroundColor = isActive
+          ? "var(--primary-text-color)"
+          : "";
+        elementsToStyle.container.style.left = isActive
+          ? "calc(100% - 13rem)"
+          : "calc(100% - 4rem)";
         elementsToStyle.container.style.transition = "transform 0.3s ease";
       }
 
-      ["home", "ai", "top"].forEach(key => {
+      ["home", "ai", "top"].forEach((key) => {
         if (elementsToStyle[key]) {
           elementsToStyle[key].style.display = isActive ? "block" : "none";
           elementsToStyle[key].style.transition = "transform 0.3s ease";
@@ -37,7 +41,9 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       if (elementsToStyle.sweep) {
-        elementsToStyle.sweep.style.transform = isActive ? "rotate(0deg)" : "rotate(180deg)";
+        elementsToStyle.sweep.style.transform = isActive
+          ? "rotate(0deg)"
+          : "rotate(180deg)";
         elementsToStyle.sweep.style.transition = "transform 0.3s ease";
       }
     });
@@ -72,7 +78,9 @@ function toggleLid() {
     document.body.style.overflow = "hidden";
     sidelid.style.overflowY = "auto";
     overlay.style.display = "block";
-    tips.forEach(tip => tip.setAttribute("style", "display: none !important"));
+    tips.forEach((tip) =>
+      tip.setAttribute("style", "display: none !important")
+    );
   } else {
     document.body.style.overflow = "";
     setTimeout(() => {
@@ -123,13 +131,15 @@ document.addEventListener("click", (event) => {
   if (!menuIcon || !left || !overlay) return;
 
   const clickedOverlay = event.target === overlay;
-  const clickedOutsideSidebar = sidebar?.classList.contains("openSbar") &&
+  const clickedOutsideSidebar =
+    sidebar?.classList.contains("openSbar") &&
     !sidebar.contains(event.target) &&
     !menuIcon.contains(event.target) &&
     !left.contains(event.target) &&
     !clickedOverlay;
 
-  const clickedOutsideSidelid = sidelid?.classList.contains("openlid") &&
+  const clickedOutsideSidelid =
+    sidelid?.classList.contains("openlid") &&
     !sidelid.contains(event.target) &&
     !menuIcon.contains(event.target) &&
     !left.contains(event.target) &&
@@ -140,7 +150,7 @@ document.addEventListener("click", (event) => {
       sidebar.classList.remove("openSbar");
       document.body.style.overflow = "";
       overlay.style.display = "none";
-      setTimeout(() => sidebar.scrollTop = 0, 300);
+      setTimeout(() => (sidebar.scrollTop = 0), 300);
     }
   }
 
@@ -149,7 +159,7 @@ document.addEventListener("click", (event) => {
       sidelid.classList.remove("openlid");
       document.body.style.overflow = "";
       overlay.style.display = "none";
-      setTimeout(() => sidelid.scrollTop = 0, 300);
+      setTimeout(() => (sidelid.scrollTop = 0), 300);
     }
   }
 });
@@ -165,58 +175,65 @@ function aiBtn() {
 function fetchPartial(url, key) {
   const cached = localStorage.getItem(key);
   if (cached) return Promise.resolve(cached);
-  return fetch(url).then(res => res.text()).then(html => {
-    localStorage.setItem(key, html);
-    return html;
-  });
+  return fetch(url)
+    .then((res) => res.text())
+    .then((html) => {
+      localStorage.setItem(key, html);
+      return html;
+    });
 }
 
 function fetchAllPartials() {
   Promise.all([
-    fetchPartial('../navbarv2.html', 'navbarHtml'),
-    fetchPartial('../sidebar.html', 'sidebarHtml'),
-    fetchPartial('../footer.html', 'footerHtml')
-  ]).then(([navbarHtml, sidebarHtml, footerHtml]) => {
-    document.querySelector('.top').innerHTML = navbarHtml;
-    document.getElementById('sidebar').innerHTML = sidebarHtml;
-    document.getElementById('footer').innerHTML = footerHtml;
-    setupThemeSwitchers();
-    updateSidebarLoginButton();
-    const loader = document.getElementById('loader');
-    if (loader) loader.style.display = 'none';
-    setupPgNetworkScrambler();
-  }).catch(error => {
-    console.error("Error loading partials:", error);
-    const loader = document.getElementById('loader');
-    if (loader) loader.style.display = 'none';
-  });
+    fetchPartial("../navbarv2.html", "navbarHtml"),
+    fetchPartial("../sidebar.html", "sidebarHtml"),
+    fetchPartial("../footer.html", "footerHtml"),
+  ])
+    .then(([navbarHtml, sidebarHtml, footerHtml]) => {
+      document.querySelector(".top").innerHTML = navbarHtml;
+      document.getElementById("sidebar").innerHTML = sidebarHtml;
+      document.getElementById("footer").innerHTML = footerHtml;
+      setupThemeSwitchers();
+      updateSidebarLoginButton();
+      const loader = document.getElementById("loader");
+      if (loader) loader.style.display = "none";
+      setupPgNetworkScrambler();
+    })
+    .catch((error) => {
+      console.error("Error loading partials:", error);
+      const loader = document.getElementById("loader");
+      if (loader) loader.style.display = "none";
+    });
 }
 
 setTimeout(() => {
   // Use cookie for discordUser
   function getCookie(name) {
-    return document.cookie.split('; ').reduce((r, v) => {
-      const parts = v.split('=');
-      return parts[0] === name ? decodeURIComponent(parts[1]) : r
-    }, '');
+    return document.cookie.split("; ").reduce((r, v) => {
+      const parts = v.split("=");
+      return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+    }, "");
   }
 
-  const gUser = JSON.parse(localStorage.getItem('googleAuth'));
-  const dUserCookie = getCookie('discordUser');
+  const gUser = JSON.parse(localStorage.getItem("googleAuth"));
+  const dUserCookie = getCookie("discordUser");
   const dUser = dUserCookie ? JSON.parse(dUserCookie) : null;
-  const user = JSON.parse(localStorage.getItem('user'));
-  const userSettings = user ? JSON.parse(localStorage.getItem(`userSettings_${user.email}`)) : null;
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userSettings = user
+    ? JSON.parse(localStorage.getItem(`userSettings_${user.email}`))
+    : null;
 
   const infoDiv = document.getElementById("sidebarUsername");
   const infoDivName = document.getElementById("sidebarName");
   const infoDivImg = document.getElementById("sidebarAvatar");
 
   if (dUser) {
-    infoDiv.innerHTML = `${dUser.email || ''}`;
-    infoDivName.innerHTML = `${dUser.username || ''}`;
-    infoDivImg.innerHTML = dUser.avatar && dUser.id
-      ? `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="https://cdn.discordapp.com/avatars/${dUser.id}/${dUser.avatar}.png">`
-      : '';
+    infoDiv.innerHTML = `${dUser.email || ""}`;
+    infoDivName.innerHTML = `${dUser.username || ""}`;
+    infoDivImg.innerHTML =
+      dUser.avatar && dUser.id
+        ? `<img style="width: 30px; height: 30px; margin: 0; border-radius: 50%;" src="https://cdn.discordapp.com/avatars/${dUser.id}/${dUser.avatar}.png">`
+        : "";
   } else if (user && user.token) {
     if (userSettings) {
       infoDiv.innerHTML = `${user.email}`;
@@ -228,7 +245,8 @@ setTimeout(() => {
 
 function logout() {
   // Remove user data from cookies and localStorage
-  document.cookie = "discordUser=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+  document.cookie =
+    "discordUser=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
   localStorage.removeItem("user");
   localStorage.removeItem("discordUser");
   location.reload();
@@ -243,7 +261,7 @@ function profile() {
 }
 
 function checkLoginStatus() {
-  var userLoggedIn = localStorage.getItem('discordUser') !== null;
+  var userLoggedIn = localStorage.getItem("discordUser") !== null;
 }
 
 window.onload = function () {
@@ -252,27 +270,29 @@ window.onload = function () {
 
 function fetchAllLPartials() {
   Promise.all([
-    fetch('../sidebar.html').then(res => res.text()),
-    fetch('../footer.html').then(res => res.text())
-  ]).then(([sidebarHtml, footerHtml]) => {
-    document.getElementById('sidebar').innerHTML = sidebarHtml;
-    document.getElementById('footer').innerHTML = footerHtml;
-    updateSidebarLoginButton();
-    const loader = document.getElementById('loader');
-    if (loader) loader.style.display = 'none';
-    setupPgNetworkScrambler();
-  }).catch(err => {
-    console.error("[Partials] Failed to load:", err);
-    // Hide loader even if error
-    const loader = document.getElementById('loader');
-    if (loader) loader.style.display = 'none';
-  });
+    fetch("../sidebar.html").then((res) => res.text()),
+    fetch("../footer.html").then((res) => res.text()),
+  ])
+    .then(([sidebarHtml, footerHtml]) => {
+      document.getElementById("sidebar").innerHTML = sidebarHtml;
+      document.getElementById("footer").innerHTML = footerHtml;
+      updateSidebarLoginButton();
+      const loader = document.getElementById("loader");
+      if (loader) loader.style.display = "none";
+      setupPgNetworkScrambler();
+    })
+    .catch((err) => {
+      console.error("[Partials] Failed to load:", err);
+      // Hide loader even if error
+      const loader = document.getElementById("loader");
+      if (loader) loader.style.display = "none";
+    });
 }
 
 function setupThemeSwitchers() {
   const themeSwitches = [
     document.getElementById("theme-switch"),
-    document.getElementById("leaderboard-theme-switch")
+    document.getElementById("leaderboard-theme-switch"),
   ].filter(Boolean);
 
   if (!themeSwitches.length) return;
@@ -280,7 +300,7 @@ function setupThemeSwitchers() {
   const updateTheme = () => {
     const isDark = localStorage.getItem("darkMode") === "true";
     document.body.classList.toggle("darkmode", isDark);
-    themeSwitches.forEach(switchEl => {
+    themeSwitches.forEach((switchEl) => {
       switchEl.textContent = isDark ? "light_mode" : "dark_mode";
     });
   };
@@ -292,7 +312,7 @@ function setupThemeSwitchers() {
   };
 
   updateTheme();
-  themeSwitches.forEach(switchEl => {
+  themeSwitches.forEach((switchEl) => {
     switchEl.addEventListener("click", toggleTheme);
   });
 }
@@ -300,10 +320,10 @@ function setupThemeSwitchers() {
 function updateSidebarLoginButton() {
   // Use cookie for discordUser
   function getCookie(name) {
-    return document.cookie.split('; ').reduce((r, v) => {
-      const parts = v.split('=');
-      return parts[0] === name ? decodeURIComponent(parts[1]) : r
-    }, '');
+    return document.cookie.split("; ").reduce((r, v) => {
+      const parts = v.split("=");
+      return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+    }, "");
   }
 
   const profileImg = document.getElementById("sidebarProfilePic");
@@ -319,28 +339,32 @@ function updateSidebarLoginButton() {
 
   if (storedUser) {
     // Show user info (optional: you can add your user info logic here)
-    if (sidebarAvatarElement) sidebarAvatarElement.style.display = 'block';
-    if (sidebarNameElement) sidebarNameElement.style.display = '';
+    if (sidebarAvatarElement) sidebarAvatarElement.style.display = "block";
+    if (sidebarNameElement) sidebarNameElement.style.display = "";
     if (profileImg) profileImg.src = "../assets/cmc-guides.png";
     // Remove login button if present
-    const oldBtn = sidebarTopTop.querySelector('.sidebar-login-btn');
+    const oldBtn = sidebarTopTop.querySelector(".sidebar-login-btn");
     if (oldBtn) oldBtn.remove();
     // Optionally, show settings icon etc.
-    const userInfoRow = sidebarTopTop.querySelector('div[style*="display: flex"]');
+    const userInfoRow = sidebarTopTop.querySelector(
+      'div[style*="display: flex"]'
+    );
     const settingsDiv = document.getElementById("settings");
     if (userInfoRow) userInfoRow.style.display = "";
     if (settingsDiv) settingsDiv.style.display = "";
   } else {
     // Hide user info and settings
-    if (sidebarAvatarElement) sidebarAvatarElement.style.display = 'none';
+    if (sidebarAvatarElement) sidebarAvatarElement.style.display = "none";
     if (sidebarNameElement) sidebarNameElement.textContent = "Name";
     if (profileImg) profileImg.src = "../assets/cmc-guides.png";
-    const userInfoRow = sidebarTopTop.querySelector('div[style*="display: flex"]');
+    const userInfoRow = sidebarTopTop.querySelector(
+      'div[style*="display: flex"]'
+    );
     const settingsDiv = document.getElementById("settings");
     if (userInfoRow) userInfoRow.style.display = "none";
     if (settingsDiv) settingsDiv.style.display = "none";
     // Remove any existing login button to avoid duplicates
-    const oldBtn = sidebarTopTop.querySelector('.sidebar-login-btn');
+    const oldBtn = sidebarTopTop.querySelector(".sidebar-login-btn");
     if (oldBtn) oldBtn.remove();
     // Add login button
     const loginBtn = document.createElement("button");
@@ -357,22 +381,22 @@ function updateSidebarLoginButton() {
       margin: 0 auto 10px auto;
       display: block;
     `;
-    loginBtn.onclick = () => window.location.href = '/login.html';
+    loginBtn.onclick = () => (window.location.href = "/login.html");
     sidebarTopTop.appendChild(loginBtn);
   }
 }
 
 function closeAnnouncementBanner() {
-  document.getElementById('announcement-banner').style.display = 'none';
-  document.querySelector('.navbar').style.marginTop = '0';
+  document.getElementById("announcement-banner").style.display = "none";
+  document.querySelector(".navbar").style.marginTop = "0";
 }
 
 // --- Cookie Consent Logic ---
 function showCookieConsent() {
-  if (document.getElementById('cookie-consent-banner')) return;
+  if (document.getElementById("cookie-consent-banner")) return;
 
-  const banner = document.createElement('div');
-  banner.id = 'cookie-consent-banner';
+  const banner = document.createElement("div");
+  banner.id = "cookie-consent-banner";
   banner.style.cssText = `
     position: fixed;
     bottom: 0;
@@ -394,9 +418,9 @@ function showCookieConsent() {
   `;
 
   // Add keyframes for fade-in
-  if (!document.getElementById('cookie-consent-style')) {
-    const style = document.createElement('style');
-    style.id = 'cookie-consent-style';
+  if (!document.getElementById("cookie-consent-style")) {
+    const style = document.createElement("style");
+    style.id = "cookie-consent-style";
     style.innerHTML = `
       @keyframes cookieFadeIn {
         from { transform: translateY(100%); opacity: 0; }
@@ -484,20 +508,22 @@ function showCookieConsent() {
 
   document.body.appendChild(banner);
 
-  document.getElementById('cookie-allow-btn').onclick = function () {
-    localStorage.setItem('cookieConsent', 'allowed');
+  document.getElementById("cookie-allow-btn").onclick = function () {
+    localStorage.setItem("cookieConsent", "allowed");
     banner.remove();
   };
-  document.getElementById('cookie-deny-btn').onclick = function () {
-    localStorage.setItem('cookieConsent', 'denied');
+  document.getElementById("cookie-deny-btn").onclick = function () {
+    localStorage.setItem("cookieConsent", "denied");
     banner.remove();
-    alert("You have denied cookies. You will not be able to join giveaways or access login-required services.");
+    alert(
+      "You have denied cookies. You will not be able to join giveaways or access login-required services."
+    );
   };
 }
 
 document.addEventListener("DOMContentLoaded", function () {
   // ...existing code...
-  if (!localStorage.getItem('cookieConsent')) {
+  if (!localStorage.getItem("cookieConsent")) {
     showCookieConsent();
   }
 });
@@ -505,36 +531,48 @@ document.addEventListener("DOMContentLoaded", function () {
 // developmental Login Bypass
 
 if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
-  document.cookie = 'discordUser=' + encodeURIComponent(JSON.stringify({
-    id: "AakashNeverDies",
-    username: "AakashNeverDies",
-    avatar: "",
-  })) + '; path=/';
+  document.cookie =
+    "discordUser=" +
+    encodeURIComponent(
+      JSON.stringify({
+        id: "AakashNeverDies",
+        username: "AakashNeverDies",
+        avatar: "https/cdn.discordapp.com/avatars/845690488752832522/0215f3267e4726c1ef8fa5fb693873b1.png?format=webp",
+        global_name: "AakashNeverDies",
+        verified: true,
+        first_login: "1234-12-01T12:00:00Z",
+        last_login: "2023-12-01T12:00:00Z",
+        login_count: 69,
+        xbox: {name: "AakashNeverDiesXbox", verified: true},
+      })
+    ) +
+    "; path=/";
 }
 
 // Audio handling for click and chest sounds
 document.addEventListener("DOMContentLoaded", function () {
-
-  const clickAudio = document.createElement('audio');
-  clickAudio.src = '/assets/audio/click.mp3';
-  clickAudio.preload = 'auto';
+  const clickAudio = document.createElement("audio");
+  clickAudio.src = "/assets/audio/click.mp3";
+  clickAudio.preload = "auto";
   document.body.appendChild(clickAudio);
 
-  const chestOpenAudio = document.createElement('audio');
-  chestOpenAudio.src = '/assets/audio/chest-open.mp3';
-  chestOpenAudio.preload = 'auto';
+  const chestOpenAudio = document.createElement("audio");
+  chestOpenAudio.src = "/assets/audio/chest-open.mp3";
+  chestOpenAudio.preload = "auto";
   document.body.appendChild(chestOpenAudio);
 
-  const chestCloseAudio = document.createElement('audio');
-  chestCloseAudio.src = '/assets/audio/chest-close.mp3';
-  chestCloseAudio.preload = 'auto';
+  const chestCloseAudio = document.createElement("audio");
+  chestCloseAudio.src = "/assets/audio/chest-close.mp3";
+  chestCloseAudio.preload = "auto";
   document.body.appendChild(chestCloseAudio);
 
   function playClickSound() {
     console.log("[DEBUG] playClickSound called");
     try {
       clickAudio.currentTime = 0.2;
-      clickAudio.play().catch((err) => { console.warn("[DEBUG] clickAudio play error:", err); });
+      clickAudio.play().catch((err) => {
+        console.warn("[DEBUG] clickAudio play error:", err);
+      });
     } catch (err) {
       console.warn("[DEBUG] clickAudio play error (outer):", err);
     }
@@ -544,38 +582,46 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("[DEBUG] playChestOpenSound called");
     chestOpenAudio.pause();
     chestOpenAudio.currentTime = 0;
-    chestOpenAudio.play().catch((err) => { console.warn("[DEBUG] chestOpenAudio play error:", err); });
+    chestOpenAudio.play().catch((err) => {
+      console.warn("[DEBUG] chestOpenAudio play error:", err);
+    });
   }
 
   function playChestCloseSound() {
     console.log("[DEBUG] playChestCloseSound called");
     chestCloseAudio.pause();
     chestCloseAudio.currentTime = 0;
-    chestCloseAudio.play().catch((err) => { console.warn("[DEBUG] chestCloseAudio play error:", err); });
+    chestCloseAudio.play().catch((err) => {
+      console.warn("[DEBUG] chestCloseAudio play error:", err);
+    });
   }
 
   window.playClickSound = playClickSound;
   window.playChestOpenSound = playChestOpenSound;
   window.playChestCloseSound = playChestCloseSound;
 
-  document.addEventListener('pointerdown', function (e) {
-    if (e.button !== 0) return; // Only play sound for left-click
-    let el = e.target;
-    while (el && el !== document.body) {
-      if (
-        el.tagName === 'A' ||
-        el.tagName === 'BUTTON' ||
-        el.classList.contains('toggle') ||
-        el.getAttribute('role') === 'switch' ||
-        el.getAttribute('aria-pressed') !== null
-      ) {
-        console.log("[DEBUG] pointerdown on clickable element:", el);
-        if (window.playClickSound) window.playClickSound();
-        break;
+  document.addEventListener(
+    "pointerdown",
+    function (e) {
+      if (e.button !== 0) return; // Only play sound for left-click
+      let el = e.target;
+      while (el && el !== document.body) {
+        if (
+          el.tagName === "A" ||
+          el.tagName === "BUTTON" ||
+          el.classList.contains("toggle") ||
+          el.getAttribute("role") === "switch" ||
+          el.getAttribute("aria-pressed") !== null
+        ) {
+          console.log("[DEBUG] pointerdown on clickable element:", el);
+          if (window.playClickSound) window.playClickSound();
+          break;
+        }
+        el = el.parentElement;
       }
-      el = el.parentElement;
-    }
-  }, true);
+    },
+    true
+  );
 });
 
 function overlay() {
@@ -589,7 +635,7 @@ function overlay() {
     sidelid.classList.remove("openlid");
     document.body.style.overflow = "";
     overlay.style.display = "none";
-    setTimeout(() => sidelid.scrollTop = 0, 300);
+    setTimeout(() => (sidelid.scrollTop = 0), 300);
     if (window.playChestCloseSound) window.playChestCloseSound();
     return;
   }
@@ -600,77 +646,84 @@ function overlay() {
     sidebar.classList.remove("openSbar");
     document.body.style.overflow = "";
     overlay.style.display = "none";
-    setTimeout(() => sidebar.scrollTop = 0, 300);
+    setTimeout(() => (sidebar.scrollTop = 0), 300);
     if (window.playChestCloseSound) window.playChestCloseSound();
   }
 }
 
 function setupPgNetworkScrambler() {
-    const link = document.getElementById("pg-network-anim");
-    if (!link) return;
+  const link = document.getElementById("pg-network-anim");
+  if (!link) return;
 
-    const originalText = 'Pg Network <img src="../assets/dev-ui.svg" alt="Developer" class="ui" title="Developer">';
-    const scrambleText = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#&^%$!*-_=+;:|~`";
-    let interval = null;
+  const originalText =
+    'Pg Network <img src="../assets/dev-ui.svg" alt="Developer" class="ui" title="Developer">';
+  const scrambleText =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#&^%$!*-_=+;:|~`";
+  let interval = null;
 
-    // Extract the text and HTML parts
-    const textPart = "Pg Network";
-    const htmlPart = ' <img src="../assets/dev-ui.svg" alt="Developer" class="ui" title="Developer">';
+  // Extract the text and HTML parts
+  const textPart = "Pg Network";
+  const htmlPart =
+    ' <img src="../assets/dev-ui.svg" alt="Developer" class="ui" title="Developer">';
 
-    function randomizeText(text) {
-        return text.split('').map(char => {
-            if (char === ' ' || char === '(' || char === ')') return char;
-            return scrambleText[Math.floor(Math.random() * scrambleText.length)];
-        }).join('');
-    }
+  function randomizeText(text) {
+    return text
+      .split("")
+      .map((char) => {
+        if (char === " " || char === "(" || char === ")") return char;
+        return scrambleText[Math.floor(Math.random() * scrambleText.length)];
+      })
+      .join("");
+  }
 
-    link.addEventListener("mouseenter", function() {
-        let frame = 0;
-        clearInterval(interval);
-        link.style.color = "red";
-        interval = setInterval(() => {
-            if (frame < 10) {
-                link.innerHTML = randomizeText(textPart) + htmlPart;
-                frame++;
-            } else {
-                clearInterval(interval);
-                link.innerHTML = originalText;
-                link.style.color = "";
-            }
-        }, 50);
-    });
-
-    link.addEventListener("mouseleave", function() {
+  link.addEventListener("mouseenter", function () {
+    let frame = 0;
+    clearInterval(interval);
+    link.style.color = "red";
+    interval = setInterval(() => {
+      if (frame < 10) {
+        link.innerHTML = randomizeText(textPart) + htmlPart;
+        frame++;
+      } else {
         clearInterval(interval);
         link.innerHTML = originalText;
         link.style.color = "";
-    });
+      }
+    }, 50);
+  });
+
+  link.addEventListener("mouseleave", function () {
+    clearInterval(interval);
+    link.innerHTML = originalText;
+    link.style.color = "";
+  });
 }
 document.addEventListener("DOMContentLoaded", function () {
   setupPgNetworkScrambler();
 
-    function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
-      return '';
-    }
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2)
+      return decodeURIComponent(parts.pop().split(";").shift());
+    return "";
+  }
 
-    function setCookie(name, value, days) {
-      const expires = new Date(Date.now() + days * 864e5).toUTCString();
-      document.cookie = `${name}=${value}; expires=${expires}; path=/`;
-    }
+  function setCookie(name, value, days) {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+  }
 
-    const validThemes = ['essential', 'minecraft', 'default'];
-    let savedTheme = getCookie('theme');
+  const validThemes = ["essential", "minecraft", "default"];
+  let savedTheme = getCookie("theme");
 
-    if (!validThemes.includes(savedTheme)) {
-      savedTheme = 'minecraft';
-      setCookie('theme', savedTheme, 365);
-    }
+  if (!validThemes.includes(savedTheme)) {
+    savedTheme = "minecraft";
+    setCookie("theme", savedTheme, 365);
+  }
 
-    const themeLink = document.createElement('link');
-    themeLink.rel = 'stylesheet';
-    themeLink.href = `../themes/${savedTheme}/style.css`;
-    document.head.appendChild(themeLink);
+  const themeLink = document.createElement("link");
+  themeLink.rel = "stylesheet";
+  themeLink.href = `../themes/${savedTheme}/style.css`;
+  document.head.appendChild(themeLink);
 });
