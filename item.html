@@ -9,7 +9,7 @@
   <script src="js/script.js"></script>
   <style>
     .login-btn { background-color: #5865F2; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 8px; }
-    .toast-notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 8px; color: white; font-weight: 500; transition: bottom 0.5s ease-in-out; z-index: 10001; }
+    .toast-notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 8px; color: white; font-weight: 500; transition: bottom 0.5s ease-in-out; z-index: 10001; white-space: pre-line; }
     .toast-notification.show { bottom: 30px; }
     .toast-notification.success { background-color: #2d8831; }
     .toast-notification.error { background-color: #c62828; }
@@ -299,8 +299,8 @@
     }
 
     function formatPrice(price) {
-      if (price === "N/A" || price === "NAN" || price === null || price === undefined) { return `<span class="item-price-img">N/A</span>`; }
-      return `<span class="item-price-img">${Number(price).toLocaleString()} <img src="img/coin.png"></span>`;
+      if (price === "N/A" || price === "NAN" || price === null || price === undefined) { return `N/A`; }
+      return `${Number(price).toLocaleString()}c`;
     }
 
     function goToPrevItem() {
@@ -367,8 +367,12 @@
         const data = await res.json();
 
         if (data.success) {
-          showToast(`✅ Price updated successfully for item ${data.itemId}!`, "success");
+          showToast(
+            `✅ ${data.itemName} updated!\nMarket: ${formatPrice(data.oldPrice)} → ${formatPrice(data.newPrice)}\nNPC: ${formatPrice(data.oldNpcPrice)} → ${formatPrice(data.newNpcPrice)}`,
+            "success"
+          );
           closePriceModal();
+          await loadItemDetails();
         } else {
           const reason = data.response?.message || "Unknown error";
           showToast(`❌ Failed to update: ${reason}`, "error");
