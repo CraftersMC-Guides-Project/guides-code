@@ -352,13 +352,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "Exnned",
-                    "score": "100M+"
+                    "name": "C4P2L",
+                    "score": "96.8M+"
                 },
                 {
                     "rank": 4,
-                    "name": "C4P2L",
-                    "score": "84.8M+"
+                    "name": "Exnned",
+                    "score": "N/A"
                 },
                 {
                     "rank": 5,
