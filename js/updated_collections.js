@@ -803,17 +803,17 @@ const collectionsData = {
                 {
                     "rank": 3,
                     "name": "Mrbase101",
-                    "score": "90M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 4,
                     "name": "RanuTheAxo",
-                    "score": "99.6M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 5,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Jeremy2075",
+                    "score": "171M+"
                 },
                 {
                     "rank": 6,
