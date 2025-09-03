@@ -240,12 +240,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "Unknown",
+                    "name": "LORDXGASTER1508",
                     "score": "N/A"
                 },
                 {
                     "rank": 4,
-                    "name": "LORDXGASTER1508",
+                    "name": "Unknown",
                     "score": "9.2M+"
                 },
                 {
