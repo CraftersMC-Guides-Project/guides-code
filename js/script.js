@@ -9,12 +9,43 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  const float = document.getElementById("float");
   const sweepBtn = document.getElementById("sweepBtn");
+  if (sweepBtn) {
+    const elementsToStyle = {
+      container: document.getElementById("float"),
+      sweep: sweepBtn,
+      home: document.getElementById("homeBtn"),
+      ai: document.getElementById("ai"),
+      top: document.getElementById("scrollToTopBtn"),
+    };
 
-  if (sweepBtn && float) {
+    let isActive = false;
+
     sweepBtn.addEventListener("click", () => {
-      float.classList.toggle("active");
+      isActive = !isActive;
+      if (elementsToStyle.container) {
+        elementsToStyle.container.style.backgroundColor = isActive
+          ? "var(--primary-text-color)"
+          : "";
+        elementsToStyle.container.style.left = isActive
+          ? "calc(100% - 13rem)"
+          : "calc(100% - 4rem)";
+        elementsToStyle.container.style.transition = "transform 0.3s ease";
+      }
+
+      ["home", "ai", "top"].forEach((key) => {
+        if (elementsToStyle[key]) {
+          elementsToStyle[key].style.display = isActive ? "block" : "none";
+          elementsToStyle[key].style.transition = "transform 0.3s ease";
+        }
+      });
+
+      if (elementsToStyle.sweep) {
+        elementsToStyle.sweep.style.transform = isActive
+          ? "rotate(0deg)"
+          : "rotate(180deg)";
+        elementsToStyle.sweep.style.transition = "transform 0.3s ease";
+      }
     });
   }
 
