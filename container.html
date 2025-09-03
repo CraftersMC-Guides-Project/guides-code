@@ -196,10 +196,10 @@
       }
 
       .extreme-inner-container {
-        background-color: #8b8b8b;
-        box-shadow: inset 2px 2px 0 0 #373737, inset -2px -2px 0 0 #ffffff;
         color: #262626;
-        padding: 10px;
+        display: grid;
+        grid-template-columns: repeat(9, auto);
+        grid-template-rows: repeat(4, auto);
       }
 
       .inner-container h3 {
@@ -211,10 +211,48 @@
       .extreme-inner-container p {
         margin: 0.5rem 0;
       }
+
+      .cell img {
+        height: 1.5rem;
+        width: 1.5rem;
+        margin: 0.25rem;
+      }
+      .cat {
+        background-color: #c6c6c6;
+        box-shadow: inset 4px 4px 0 0 #fff;
+        height: 3.5rem;
+        width: 3rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-top-right-radius: 10px;
+        border-top-left-radius: 10px;
+      }
+
+      .cat img {
+        height: 2rem;
+        width: 2rem;
+        margin: 0;
+      }
+
+      .catnav {
+        position: relative;
+        display: flex;
+        gap: 0.5rem;
+        margin-left: 4px;
+      }
     </style>
   </head>
 
   <body>
+    <div class="contain">
+    <div class="catnav">
+        <div id="farming" class="cat"><img src="assets/farming/hoe.png"></div>
+        <div id="mining" class="cat"><img src="assets/mining/pickaxe.png"></div>
+        <div id="combat" class="cat"><img src="assets/combat/sword.png"></div>
+        <div id="foraging" class="cat"><img src="assets/foraging/axe.png"></div>
+        <div id="special" class="cat"><img src="img/Magical_Encyclopedia.png"></div>
+      </div>
     <div class="container">
       <div class="corner-left"></div>
       <div class="corner-right"></div>
@@ -230,14 +268,79 @@
       <div class="tr-br s-br"></div>
       <div class="bl-br s-br"></div>
       <div class="br-br"></div>
-
       <div class="inventory inner-container">
-        <h3>Inner Container H3</h3>
+        <h3>Bazaar</h3>
         <div class="extreme-inner-container">
-          <p>This is a paragraph inside the inner container.</p>
-          <button class="btn">Click Me</button>
+          <div class="cell"><img src="img/Wheat.webp"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
         </div>
       </div>
     </div>
+    </div>
+    <script>
+  // List of farming items and their image paths
+  const farmingItems = [
+    "Wheat.webp",
+    "Carrot.webp",
+    "Potato.png",
+    "Beetroot.webp",
+    "Pumpkin.webp",
+    "Melon.webp",
+    "Minecraft_items_brown_mushroom.png",
+    "Cocoa_Beans.webp",
+    "Cactus.webp",
+    "Sugar_Cane.webp",
+    "Leather.png",
+    "Raw_Porkchop.webp",
+    "Raw_Chicken.png",
+    "Raw_Duck.png",
+    "Raw_Mutton.webp",
+    "Raw_Rabbit.png",
+    "100px-Cropie.webp"
+  ];
+
+  document.getElementById("farming").addEventListener("click", () => {
+    const cells = document.querySelectorAll(".extreme-inner-container .cell");
+    cells.forEach((cell, i) => {
+      cell.innerHTML = farmingItems[i]
+        ? `<img src="img/${farmingItems[i]}" alt="${farmingItems[i].split('.')[0]}">`
+        : "";
+    });
+  });
+</script>
   </body>
 </html>
