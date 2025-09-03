@@ -328,135 +328,490 @@
     </div>
     </div>
     <script>
-  // List of farming items and their image paths
+  // Farming items (already in object format)
   const farmingItems = [
-    "Wheat.webp",
-    "Carrot.webp",
-    "Potato.png",
-    "Beetroot.webp",
-    "Pumpkin.webp",
-    "Melon.webp",
-    "Minecraft_items_brown_mushroom.png",
-    "Cocoa_Beans.webp",
-    "Cactus.webp",
-    "Sugar_Cane.webp",
-    "Leather.png",
-    "Raw_Porkchop.webp",
-    "Raw_Chicken.png",
-    "Raw_Duck.png",
-    "Raw_Mutton.webp",
-    "Raw_Rabbit.png",
-    "100px-Cropie.webp"
+    {
+      name: "Wheat",
+      img: "Wheat.webp",
+      subItems: [
+        { name: "Wheat", img: "Wheat.webp" },
+        { name: "Enchanted Haybale", img: "Enchanted_Hay_Bale.webp" },
+        { name: "Wheat Seeds", img: "Wheat_Seeds.webp" },
+        { name: "Enchanted Wheat Seeds", img: "100px-Enchanted_Wheat_Seeds.webp" },
+        { name: "Box of Seeds", img: "100px-Box_of_Seeds.webp" }
+      ]
+    },
+    {
+      name: "Carrot",
+      img: "Carrot.webp",
+      subItems: [
+        { name: "Carrot", img: "Carrot.webp" },
+        { name: "Enchanted Carrot", img: "Enchanted_Carrot.png" },
+        { name: "Enchanted Golden Carrot", img: "Enchanted_Golden_Carrot.png" }
+      ]
+    },
+    {
+      name: "Potato",
+      img: "Potato.png",
+      subItems: [
+        { name: "Potato", img: "Potato.png" },
+        { name: "Enchanted Potato", img: "Enchanted_Potato.png" },
+        { name: "Enchanted Cooked Potato", img: "Enchanted_Cooked_Potato.webp" }
+      ]
+    },
+    {
+      name: "Beetroot",
+      img: "Beetroot.webp",
+      subItems: [
+        { name: "Beetroot", img: "Beetroot.webp" },
+        { name: "Enchanted Beetroot", img: "Enchanted_Beetroot.webp" },
+        { name: "Enchanted Golden Beetroot", img: "Enchanted_Golden_Beetroot.webp" },
+        { name: "Beetroot Seeds", img: "150px-Beetroot_Seeds_JE2_BE2.webp" }
+      ]
+    },
+    {
+      name: "Pumpkin",
+      img: "Pumpkin.webp",
+      subItems: [
+        { name: "Pumpkin", img: "Pumpkin.webp" },
+        { name: "Enchanted Pumpkin", img: "Enchanted_Pumpkin.webp" },
+        { name: "Polished Pumpkin", img: "Polished_Pumpkin.webp" }
+      ]
+    },
+    {
+      name: "Melon",
+      img: "Melon.webp",
+      subItems: [
+        { name: "Melon", img: "Melon.webp" },
+        { name: "Enchanted Melon", img: "Enchanted_Melon.png" },
+        { name: "Melon Block", img: "Melon_Block.png" },
+        { name: "Enchanted Melon Block", img: "Enchanted_Melon_Block.webp" }
+      ]
+    },
+    {
+      name: "Brown Mushroom",
+      img: "Minecraft_items_brown_mushroom.png",
+      subItems: [
+        { name: "Brown Mushroom", img: "Minecraft_items_brown_mushroom.png" },
+        { name: "Enchanted Brown Mushroom", img: "Enchanted_Brown_Mushroom.webp" },
+        { name: "Brown Mushroom Block", img: "Brown_Mushroom_Block.png" },
+        { name: "Red Mushroom", img: "Minecraft_items_red_mushroom.png" },
+        { name: "Enchanted Red Mushroom", img: "Enchanted_Red_Mushroom.webp" },
+        { name: "Red Mushroom Block", img: "Red_Mushroom_Block.png" }
+      ]
+    },
+    {
+      name: "Cocoa Beans",
+      img: "Cocoa_Beans.webp",
+      subItems: [
+        { name: "Cocoa Beans", img: "Cocoa_Beans.webp" },
+        { name: "Enchanted Cocoa Beans", img: "Enchanted_Cocoa_Beans.webp" },
+        { name: "Enchanted Cookie", img: "Enchanted_Cookie.webp" }
+      ]
+    },
+    {
+      name: "Cactus",
+      img: "Cactus.webp",
+      subItems: [
+        { name: "Cactus", img: "Cactus.webp" },
+        { name: "Enchanted Cactus Green", img: "Enchanted_Cactus_Green.webp" },
+        { name: "Enchanted Cactus", img: "Enchanted_Cactus.png" }
+      ]
+    },
+    {
+      name: "Sugar Cane",
+      img: "Sugar_Cane.webp",
+      subItems: [
+        { name: "Sugar Cane", img: "Sugar_Cane.webp" },
+        { name: "Enchanted Sugar Cane", img: "Enchanted_Sugar_Cane.webp" },
+        { name: "Enchanted Sugar", img: "Enchanted_Sugar.webp" },
+        { name: "Enchanted Paper", img: "Enchanted_Paper.webp" },
+        { name: "Enchanted Bookshelf", img: "300px-Enchanted_Bookshelf.webp" }
+      ]
+    },
+    {
+      name: "Leather",
+      img: "Leather.png",
+      subItems: [
+        { name: "Leather", img: "Leather.png" },
+        { name: "Enchanted Leather", img: "Enchanted_Leather.png" },
+        { name: "Raw Beef", img: "Raw_Beef.png" },
+        { name: "Enchanted Raw Beef", img: "Enchanted_Raw_Beef.png" }
+      ]
+    },
+    {
+      name: "Raw Porkchop",
+      img: "Raw_Porkchop.webp",
+      subItems: [
+        { name: "Raw Porkchop", img: "Raw_Porkchop.webp" },
+        { name: "Enchanted Raw Porkchop", img: "Enchanted_Raw_Porkchop.webp" },
+        { name: "Enchanted Cooked Porkchop", img: "Enchanted_Cooked_Porkchop.webp" }
+      ]
+    },
+    {
+      name: "Raw Chicken",
+      img: "Raw_Chicken.png",
+      subItems: [
+        { name: "Raw Chicken", img: "Raw_Chicken.png" },
+        { name: "Enchanted Raw Chicken", img: "Enchanted_Raw_Chicken.webp" },
+        { name: "Feather", img: "Feather.png" },
+        { name: "Enchanted Feather", img: "Enchanted_Feather.webp" },
+        { name: "Egg", img: "Egg.webp" },
+        { name: "Enchanted Egg", img: "Enchanted_Egg.webp" }
+      ]
+    },
+    {
+      name: "Raw Duck",
+      img: "Raw_Duck.png",
+      subItems: [
+        { name: "Raw Duck", img: "Raw_Duck.png" },
+        { name: "Enchanted Raw Duck", img: "Enchanted_Raw_Duck.webp" },
+        { name: "Duck Egg", img: "Duck_Egg.webp" },
+        { name: "Enchanted Duck Egg", img: "Enchanted_Duck_Egg.webp" },
+        { name: "Super Enchanted Duck Egg", img: "Super_Enchanted_Duck_Egg.webp" },
+        { name: "Golden Feather", img: "Golden_Feather.webp" }
+      ]
+    },
+    {
+      name: "Raw Mutton",
+      img: "Raw_Mutton.webp",
+      subItems: [
+        { name: "Raw Mutton", img: "Raw_Mutton.webp" },
+        { name: "Enchanted Raw Mutton", img: "Enchanted_Raw_Mutton.png" },
+        { name: "Enchanted Cooked Mutton", img: "Enchanted_Cooked_Mutton.png" },
+        { name: "White Wool", img: "Wool.png" },
+        { name: "Enchanted Wool", img: "Enchanted_Wool.png" }
+      ]
+    },
+    {
+      name: "Raw Rabbit",
+      img: "Raw_Rabbit.png",
+      subItems: [
+        { name: "Raw Rabbit", img: "Raw_Rabbit.png" },
+        { name: "Enchanted Raw Rabbit", img: "Enchanted_Raw_Rabbit.png" },
+        { name: "Rabbit Foot", img: "Rabbit's_Foot_JE3_BE2.webp" },
+        { name: "Enchanted Rabbit Foot", img: "Enchanted_Rabbit_Foot.png" },
+        { name: "Rabbit Hide", img: "Rabbit_Hide_JE3_BE2.webp" },
+        { name: "Enchanted Rabbit Hide", img: "Enchanted_Rabbit_Hide.png" }
+      ]
+    },
+    {
+      name: "Cropie",
+      img: "100px-Cropie.webp",
+      subItems: [
+        { name: "Cropie", img: "100px-Cropie.webp" },
+        { name: "Squash", img: "100px-Squash.webp" },
+        { name: "Fermento", img: "100px-Fermento.png" },
+        { name: "Condensed Fermento", img: "100px-Condensed_Fermento.webp" }
+      ]
+    }
   ];
 
   // Mining items
   const miningItems = [
-    "Cobblestone.png",
-    "Coal.webp",
-    "Iron_Ingot.webp",
-    "Gold_Ingot.png",
-    "Diamond.png",
-    "Lapis_Lazuli.webp",
-    "Emerald.png",
-    "Redstone_Dust.webp",
-    "Obsidian.webp",
-    "Ice.png",
+    {
+      name: "Cobblestone",
+      img: "Cobblestone.png",
+      subItems: [
+        { name: "Enchanted Cobblestone", img: "Enchanted_Cobblestone.png" }
+      ]
+    },
+    {
+      name: "Coal",
+      img: "Coal.webp",
+      subItems: [
+        { name: "Enchanted Coal", img: "Enchanted_Coal.webp" }
+      ]
+    },
+    {
+      name: "Iron Ingot",
+      img: "Iron_Ingot.webp",
+      subItems: [
+        { name: "Enchanted Iron", img: "Enchanted_Iron.webp" }
+      ]
+    },
+    {
+      name: "Gold Ingot",
+      img: "Gold_Ingot.png",
+      subItems: [
+        { name: "Enchanted Gold", img: "Enchanted_Gold.webp" }
+      ]
+    },
+    {
+      name: "Diamond",
+      img: "Diamond.png",
+      subItems: [
+        { name: "Enchanted Diamond", img: "Enchanted_Diamond.webp" }
+      ]
+    },
+    {
+      name: "Lapis Lazuli",
+      img: "Lapis_Lazuli.webp",
+      subItems: [
+        { name: "Enchanted Lapis", img: "Enchanted_Lapis.webp" }
+      ]
+    },
+    {
+      name: "Emerald",
+      img: "Emerald.png",
+      subItems: [
+        { name: "Enchanted Emerald", img: "Enchanted_Emerald.webp" }
+      ]
+    },
+    {
+      name: "Redstone Dust",
+      img: "Redstone_Dust.webp",
+      subItems: [
+        { name: "Enchanted Redstone", img: "Enchanted_Redstone.webp" }
+      ]
+    },
+    {
+      name: "Obsidian",
+      img: "Obsidian.webp",
+      subItems: [
+        { name: "Enchanted Obsidian", img: "Enchanted_Obsidian.webp" }
+      ]
+    },
+    {
+      name: "Ice",
+      img: "Ice.png",
+      subItems: [
+        { name: "Enchanted Ice", img: "Enchanted_Ice.webp" }
+      ]
+    }
   ];
 
   // Combat items
   const combatItems = [
-    "Rotten_Flesh.webp",
-    "Bone.webp",
-    "String.webp",
-    "Gunpowder.webp",
-    "Slime_Ball.webp",
-    "Magma_Cream.webp",
-    "Blaze_Rod.webp",
-    "100px-Envoy's_Horn.webp",
-    "Revenant_Flesh.webp",
-    "Wolf_Tooth.png",
+    {
+      name: "Rotten Flesh",
+      img: "Rotten_Flesh.webp",
+      subItems: [
+        { name: "Enchanted Rotten Flesh", img: "Enchanted_Rotten_Flesh.webp" }
+      ]
+    },
+    {
+      name: "Bone",
+      img: "Bone.webp",
+      subItems: [
+        { name: "Enchanted Bone", img: "Enchanted_Bone.webp" }
+      ]
+    },
+    {
+      name: "String",
+      img: "String.webp",
+      subItems: [
+        { name: "Enchanted String", img: "Enchanted_String.webp" }
+      ]
+    },
+    {
+      name: "Gunpowder",
+      img: "Gunpowder.webp",
+      subItems: [
+        { name: "Enchanted Gunpowder", img: "Enchanted_Gunpowder.webp" }
+      ]
+    },
+    {
+      name: "Slime Ball",
+      img: "Slime_Ball.webp",
+      subItems: [
+        { name: "Enchanted Slime Ball", img: "Enchanted_Slime_Ball.webp" }
+      ]
+    },
+    {
+      name: "Magma Cream",
+      img: "Magma_Cream.webp",
+      subItems: [
+        { name: "Enchanted Magma Cream", img: "Enchanted_Magma_Cream.webp" }
+      ]
+    },
+    {
+      name: "Blaze Rod",
+      img: "Blaze_Rod.webp",
+      subItems: [
+        { name: "Enchanted Blaze Rod", img: "Enchanted_Blaze_Rod.webp" }
+      ]
+    },
+    {
+      name: "Envoy's Horn",
+      img: "100px-Envoy's_Horn.webp",
+      subItems: []
+    },
+    {
+      name: "Revenant Flesh",
+      img: "Revenant_Flesh.webp",
+      subItems: []
+    },
+    {
+      name: "Wolf Tooth",
+      img: "Wolf_Tooth.png",
+      subItems: []
+    }
   ];
 
   // Foraging items
   const foragingItems = [
-    "Oak_Log.png",
-    "Spruce_Log.png",
-    "Birch_Log.png",
-    "Jungle_Log.png",
-    "Dark_Oak_Log.png",
-    "Acacia_Log.png",
-    "100px-Bamboo.webp",
+    {
+      name: "Oak Log",
+      img: "Oak_Log.png",
+      subItems: [
+        { name: "Enchanted Oak Log", img: "Enchanted_Oak_Log.webp" }
+      ]
+    },
+    {
+      name: "Spruce Log",
+      img: "Spruce_Log.png",
+      subItems: [
+        { name: "Enchanted Spruce Log", img: "Enchanted_Spruce_Log.webp" }
+      ]
+    },
+    {
+      name: "Birch Log",
+      img: "Birch_Log.png",
+      subItems: [
+        { name: "Enchanted Birch Log", img: "Enchanted_Birch_Log.webp" }
+      ]
+    },
+    {
+      name: "Jungle Log",
+      img: "Jungle_Log.png",
+      subItems: [
+        { name: "Enchanted Jungle Log", img: "Enchanted_Jungle_Log.webp" }
+      ]
+    },
+    {
+      name: "Dark Oak Log",
+      img: "Dark_Oak_Log.png",
+      subItems: [
+        { name: "Enchanted Dark Oak Log", img: "Enchanted_Dark_Oak_Log.webp" }
+      ]
+    },
+    {
+      name: "Acacia Log",
+      img: "Acacia_Log.png",
+      subItems: [
+        { name: "Enchanted Acacia Log", img: "Enchanted_Acacia_Log.webp" }
+      ]
+    },
+    {
+      name: "Bamboo",
+      img: "100px-Bamboo.webp",
+      subItems: [
+        { name: "Enchanted Bamboo", img: "Enchanted_Bamboo.webp" }
+      ]
+    }
   ];
 
   // Oddities/Special items
   const specialItems = [
-    "100px-Enchanted_Book.gif",
-    "Hot_Potato_Book.webp",
-    "Bottle_o'_Enchanting.webp",
-    "Simple_Beetroot_Candy.png",
-    "Small_Minion_Backpack.png",
+    {
+      name: "Enchanted Book",
+      img: "100px-Enchanted_Book.gif",
+      subItems: [
+        { name: "Hot Potato Book", img: "Hot_Potato_Book.webp" }
+      ]
+    },
+    {
+      name: "Bottle o' Enchanting",
+      img: "Bottle_o'_Enchanting.webp",
+      subItems: []
+    },
+    {
+      name: "Simple Beetroot Candy",
+      img: "Simple_Beetroot_Candy.png",
+      subItems: []
+    },
+    {
+      name: "Small Minion Backpack",
+      img: "Small_Minion_Backpack.png",
+      subItems: []
+    }
   ];
 
+  // Minion items (no subItems for now, but you can add them)
   const minionItems = [
-    "acacia-minion/Acacia_Log_Minion.png",
-    "bamboo-minion/100px-Bamboo_Minion_(Tier_1).webp",
-    "beetroot-minion/Beetroot_Minion.webp",
-    "birch-minion/Birch_Log_Minion.png",
-    "blaze-minion/Blaze_Minion.png",
-    "cactus-minion/Cactus_Minion.png",
-    "carrot-minion/Carrot_Minion.png",
-    "chicken-minion/Chicken_Minion.png",
-    "coal-minion/Coal_Minion.png",
-    "cobblestone-minion/Cobblestone_Minion.png",
-    "cocoa-minion/Cocoa_Beans_Minion.png",
-    "cow-minion/Cow_Minion.png",
-    "creeper-minion/Creeper_Minion.png",
-    "dark-oak-minion/Dark_Oak_Log_Minion.png",
-    "diamond-minion/Diamond_Minion.png",
-    "duck-minion/Duck_Minion.png",
-    "emerald-minion/Emerald_Minion.png",
-    "gold-minion/Gold_Minion.png",
-    "ice-minion/Ice_Minion.png",
-    "iron-minion/Iron_Minion.png",
-    "jungle-minion/Jungle_Log_Minion.png",
-    "lapis-minion/Lapis_Lazuli_Minion.png",
-    "magma-minion/Magma_Cube_Minion.png",
-    "melon-minion/Melon_Minion.png",
-    "mushroom-minion/Mushroom_Minion.png",
-    "oak-minion/Oak_Log_Minion.png",
-    "obsidian-minion/Obsidian_Minion.png",
-    "potato-minion/Potato_Minion.png",
-    "pumpkin-minion/Pumpkin_Minion.png",
-    "sheep-minion/Sheep_Minion.png",
-    "pig-minion/Pig_Minion.png",
-    "rabbit-minion/Rabbit_Minion.png",
-    "redstone-minion/Redstone_Minion.png",
-    "skeleton-minion/Skeleton_Minion.png",
-    "slime-minion/Slime_Minion.png",
-    "spider-minion/Spider_Minion.png",
-    "spruce-minion/Spruce_Log_Minion.png",
-    "sugarcane-minion/Sugar_Cane_Minion.png",
-    "wheat-minion/Wheat_Minion.png",
-    "zombie-minion/Zombie_Minion.png"
+    { name: "Acacia Minion", img: "acacia-minion/Acacia_Log_Minion.png", subItems: [] },
+    { name: "Bamboo Minion", img: "bamboo-minion/100px-Bamboo_Minion_(Tier_1).webp", subItems: [] },
+    { name: "Beetroot Minion", img: "beetroot-minion/Beetroot_Minion.webp", subItems: [] },
+    { name: "Birch Minion", img: "birch-minion/Birch_Log_Minion.png", subItems: [] },
+    { name: "Blaze Minion", img: "blaze-minion/Blaze_Minion.png", subItems: [] },
+    { name: "Cactus Minion", img: "cactus-minion/Cactus_Minion.png", subItems: [] },
+    { name: "Carrot Minion", img: "carrot-minion/Carrot_Minion.png", subItems: [] },
+    { name: "Chicken Minion", img: "chicken-minion/Chicken_Minion.png", subItems: [] },
+    { name: "Coal Minion", img: "coal-minion/Coal_Minion.png", subItems: [] },
+    { name: "Cobblestone Minion", img: "cobblestone-minion/Cobblestone_Minion.png", subItems: [] },
+    { name: "Cocoa Minion", img: "cocoa-minion/Cocoa_Beans_Minion.png", subItems: [] },
+    { name: "Cow Minion", img: "cow-minion/Cow_Minion.png", subItems: [] },
+    { name: "Creeper Minion", img: "creeper-minion/Creeper_Minion.png", subItems: [] },
+    { name: "Dark Oak Minion", img: "dark-oak-minion/Dark_Oak_Log_Minion.png", subItems: [] },
+    { name: "Diamond Minion", img: "diamond-minion/Diamond_Minion.png", subItems: [] },
+    { name: "Duck Minion", img: "duck-minion/Duck_Minion.png", subItems: [] },
+    { name: "Emerald Minion", img: "emerald-minion/Emerald_Minion.png", subItems: [] },
+    { name: "Gold Minion", img: "gold-minion/Gold_Minion.png", subItems: [] },
+    { name: "Ice Minion", img: "ice-minion/Ice_Minion.png", subItems: [] },
+    { name: "Iron Minion", img: "iron-minion/Iron_Minion.png", subItems: [] },
+    { name: "Jungle Minion", img: "jungle-minion/Jungle_Log_Minion.png", subItems: [] },
+    { name: "Lapis Minion", img: "lapis-minion/Lapis_Lazuli_Minion.png", subItems: [] },
+    { name: "Magma Minion", img: "magma-minion/Magma_Cube_Minion.png", subItems: [] },
+    { name: "Melon Minion", img: "melon-minion/Melon_Minion.png", subItems: [] },
+    { name: "Mushroom Minion", img: "mushroom-minion/Mushroom_Minion.png", subItems: [] },
+    { name: "Oak Minion", img: "oak-minion/Oak_Log_Minion.png", subItems: [] },
+    { name: "Obsidian Minion", img: "obsidian-minion/Obsidian_Minion.png", subItems: [] },
+    { name: "Potato Minion", img: "potato-minion/Potato_Minion.png", subItems: [] },
+    { name: "Pumpkin Minion", img: "pumpkin-minion/Pumpkin_Minion.png", subItems: [] },
+    { name: "Sheep Minion", img: "sheep-minion/Sheep_Minion.png", subItems: [] },
+    { name: "Pig Minion", img: "pig-minion/Pig_Minion.png", subItems: [] },
+    { name: "Rabbit Minion", img: "rabbit-minion/Rabbit_Minion.png", subItems: [] },
+    { name: "Redstone Minion", img: "redstone-minion/Redstone_Minion.png", subItems: [] },
+    { name: "Skeleton Minion", img: "skeleton-minion/Skeleton_Minion.png", subItems: [] },
+    { name: "Slime Minion", img: "slime-minion/Slime_Minion.png", subItems: [] },
+    { name: "Spider Minion", img: "spider-minion/Spider_Minion.png", subItems: [] },
+    { name: "Spruce Minion", img: "spruce-minion/Spruce_Log_Minion.png", subItems: [] },
+    { name: "Sugar Cane Minion", img: "sugarcane-minion/Sugar_Cane_Minion.png", subItems: [] },
+    { name: "Wheat Minion", img: "wheat-minion/Wheat_Minion.png", subItems: [] },
+    { name: "Zombie Minion", img: "zombie-minion/Zombie_Minion.png", subItems: [] }
   ];
 
   function fillCells(items) {
     const mainCells = document.querySelectorAll(".extreme-inner-container .cell");
     const hotbarCells = document.querySelectorAll(".hotbar-extreme-inner-container .cell");
 
+    // Clear all cells
+    [...mainCells, ...hotbarCells].forEach(cell => cell.innerHTML = "");
+
     // Fill main grid (36 cells)
     mainCells.forEach((cell, i) => {
-      cell.innerHTML = items[i]
-        ? `<img src="img/${items[i]}" alt="${items[i].split('/').pop().split('.')[0]}">`
-        : "";
+      const item = items[i];
+      if (item) {
+        cell.innerHTML = `
+          <div class="item-with-sub" style="cursor:pointer;">
+            <img src="img/${item.img}" alt="${item.name}">
+          </div>
+        `;
+        // Show sub-items in cells when clicked
+        cell.onclick = () => {
+          if (item.subItems && item.subItems.length > 0) {
+            fillCells(item.subItems);
+          }
+        };
+      }
     });
 
     // Fill hotbar (9 cells) if there are more than 36 items
     hotbarCells.forEach((cell, i) => {
-      const itemIndex = 36 + i;
-      cell.innerHTML = items[itemIndex]
-        ? `<img src="img/${items[itemIndex]}" alt="${items[itemIndex].split('/').pop().split('.')[0]}">`
-        : "";
+      const item = items[36 + i];
+      if (item) {
+        cell.innerHTML = `
+          <div class="item-with-sub" style="cursor:pointer;">
+            <img src="img/${item.img}" alt="${item.name}">
+          </div>
+        `;
+        cell.onclick = () => {
+          if (item.subItems && item.subItems.length > 0) {
+            fillCells(item.subItems);
+          }
+        };
+      }
     });
   }
 
@@ -468,6 +823,28 @@
   document.getElementById("minion").addEventListener("click", () => fillCells(minionItems));
 
   fillCells(farmingItems); // Default view is farming
+
+  // Remove hover CSS for tooltip, keep styling for .sub-items-tooltip
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .item-with-sub {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+    .sub-items-tooltip {
+      min-width: 2rem;
+    }
+    .sub-items-tooltip img {
+      width: 1.2rem;
+      height: 1.2rem;
+      margin: 2px;
+      border: 1px solid #bbb;
+      background: #fff;
+      border-radius: 2px;
+    }
+  `;
+  document.head.appendChild(style);
 </script>
   </body>
 </html>
