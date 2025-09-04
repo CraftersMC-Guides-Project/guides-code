@@ -1,15 +1,200 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <title>FCM Push Example</title>
-    <script type="module">
-        // Import Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-messaging.js";
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCM Push Notification Demo</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+        }
+        
+        p {
+            color: #718096;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .status {
+            background: #f7fafc;
+            border-left: 4px solid #4299e1;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+        
+        .token-display {
+            background: #edf2f7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            word-break: break-all;
+            text-align: left;
+            font-family: monospace;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .instructions {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .instructions h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+        }
+        
+        .success {
+            color: #38a169;
+            font-weight: bold;
+        }
+        
+        .error {
+            color: #e53e3e;
+            font-weight: bold;
+        }
+        
+        .warning {
+            color: #dd6b20;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Firebase Cloud Messaging Demo</h1>
+        <p>This demo shows how to set up push notifications with Firebase Cloud Messaging and a service worker.</p>
+        
+        <div class="status" id="status">
+            <div>Status: Ready to initialize...</div>
+        </div>
+        
+        <button class="btn" id="initBtn">Initialize FCM</button>
+        <button class="btn btn-secondary" id="requestPermissionBtn" disabled>Request Notification Permission</button>
+        <button class="btn btn-secondary" id="getTokenBtn" disabled>Get FCM Token</button>
+        
+        <div class="token-display" id="tokenDisplay"></div>
+        
+        <div class="instructions">
+            <h3>How to Fix Service Worker Issues:</h3>
+            <ol>
+                <li>Ensure your service worker file is accessible at the correct path</li>
+                <li>Verify the service worker is registered with the proper scope</li>
+                <li>Check that the service worker file has no syntax errors</li>
+                <li>Make sure your Firebase config values are correct</li>
+            </ol>
+            <p>Check the browser console for detailed error messages.</p>
+        </div>
+    </div>
 
-        // TODO: Replace with your own Firebase config
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-messaging.js";
+        
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
             authDomain: "craftersmc-guides.firebaseapp.com",
@@ -18,44 +203,135 @@
             messagingSenderId: "647290515320",
             appId: "1:647290515320:web:44e1be1528c86af00d628d",
             measurementId: "G-K3WGXSF9DQ"
-
         };
-
+        
+        // DOM elements
+        const statusDiv = document.getElementById('status');
+        const initBtn = document.getElementById('initBtn');
+        const requestPermissionBtn = document.getElementById('requestPermissionBtn');
+        const getTokenBtn = document.getElementById('getTokenBtn');
+        const tokenDisplay = document.getElementById('tokenDisplay');
+        
+        let app;
+        let messaging;
+        
+        // Update status function
+        function updateStatus(message, type = 'info') {
+            const statusLine = document.createElement('div');
+            statusLine.innerHTML = `Status: <span class="${type}">${message}</span>`;
+            statusDiv.appendChild(statusLine);
+            statusDiv.scrollTop = statusDiv.scrollHeight;
+            console.log(message);
+        }
+        
         // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const messaging = getMessaging(app);
-
-        // Request notification permission and get FCM token
-        async function initFCM() {
+        async function initializeFirebase() {
             try {
-                const permission = await Notification.requestPermission();
-                if (permission === "granted") {
-                    const token = await getToken(messaging, {
-                        vapidKey: " BBX00DXJcQ8ecENr3uNTxXsaZFv35UGNeKCbOWe6rU-pTSYOzbmb3-CCF0-QWwo927V1n4Y7MEmoART-JooYrdk" // from Firebase Console → Project Settings → Cloud Messaging
-                    });
-                    console.log("FCM Token:", token);
-                    alert("Your FCM Token:\n" + token);
-                } else {
-                    console.log("Permission not granted for notifications.");
+                updateStatus('Initializing Firebase...');
+                app = initializeApp(firebaseConfig);
+                
+                // Check if messaging is supported
+                const isMessagingSupported = await isSupported();
+                if (!isMessagingSupported) {
+                    throw new Error('Messaging is not supported in this browser');
                 }
-            } catch (err) {
-                console.error("Error initializing FCM", err);
+                
+                messaging = getMessaging(app);
+                updateStatus('Firebase initialized successfully', 'success');
+                
+                // Enable buttons
+                requestPermissionBtn.disabled = false;
+                getTokenBtn.disabled = false;
+                
+                // Listen for foreground messages
+                onMessage(messaging, (payload) => {
+                    updateStatus('Foreground message received: ' + payload.notification.title, 'success');
+                    alert("Notification received: " + payload.notification.title);
+                });
+                
+            } catch (error) {
+                updateStatus('Error initializing Firebase: ' + error.message, 'error');
+                console.error(error);
             }
         }
-
-        // Listen for messages when page is open
-        onMessage(messaging, (payload) => {
-            console.log("Message received. ", payload);
-            alert("Notification received: " + payload.notification.title);
-        });
-
-        window.initFCM = initFCM;
+        
+        // Request notification permission
+        async function requestNotificationPermission() {
+            try {
+                updateStatus('Requesting notification permission...');
+                const permission = await Notification.requestPermission();
+                
+                if (permission === 'granted') {
+                    updateStatus('Notification permission granted', 'success');
+                    return true;
+                } else {
+                    updateStatus('Notification permission denied', 'warning');
+                    return false;
+                }
+            } catch (error) {
+                updateStatus('Error requesting permission: ' + error.message, 'error');
+                console.error(error);
+                return false;
+            }
+        }
+        
+        // Get FCM token
+        async function getFCMToken() {
+            try {
+                updateStatus('Getting FCM token...');
+                
+                // Check if we have a service worker registration
+                let registration;
+                try {
+                    registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+                        scope: '/firebase-cloud-messaging-push-scope/'
+                    });
+                    updateStatus('Service worker registered', 'success');
+                } catch (swError) {
+                    updateStatus('Service worker registration failed, trying default scope...', 'warning');
+                    console.warn(swError);
+                    
+                    // Try with default scope
+                    registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                    updateStatus('Service worker registered with default scope', 'success');
+                }
+                
+                // Wait for the service worker to be ready
+                await navigator.serviceWorker.ready;
+                
+                const token = await getToken(messaging, {
+                    vapidKey: "BBX00DXJcQ8ecENr3uNTxXsaZFv35UGNeKCbOWe6rU-pTSYOzbmb3-CCF0-QWwo927V1n4Y7MEmoART-JooYrdk",
+                    serviceWorkerRegistration: registration
+                });
+                
+                if (token) {
+                    updateStatus('FCM token obtained successfully', 'success');
+                    tokenDisplay.textContent = token;
+                    tokenDisplay.style.display = 'block';
+                    return token;
+                } else {
+                    updateStatus('No token available', 'warning');
+                    return null;
+                }
+            } catch (error) {
+                updateStatus('Error getting FCM token: ' + error.message, 'error');
+                console.error(error);
+                return null;
+            }
+        }
+        
+        // Event listeners
+        initBtn.addEventListener('click', initializeFirebase);
+        requestPermissionBtn.addEventListener('click', requestNotificationPermission);
+        getTokenBtn.addEventListener('click', getFCMToken);
+        
+        // Initial check for service worker support
+        if ('serviceWorker' in navigator) {
+            updateStatus('Service workers are supported in this browser', 'success');
+        } else {
+            updateStatus('Service workers are not supported in this browser', 'error');
+            initBtn.disabled = true;
+        }
     </script>
-</head>
-
-<body>
-    <h1>Firebase Push Notifications Example</h1>
-    <button onclick="initFCM()">Enable Notifications</button>
 </body>
-
 </html>
