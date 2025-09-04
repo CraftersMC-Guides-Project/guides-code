@@ -62,13 +62,13 @@
     }
 
     // --- Theme Changer Functions ---
-    const validThemes = ['essential', 'minecraft', 'default'];
-    let selectedThemeForSaving = 'minecraft';
+    const validThemes = ['default', 'minecraft', 'essential'];
+    let selectedThemeForSaving = 'default';
 
     function selectTheme(theme) {
       if (!validThemes.includes(theme)) return;
       selectedThemeForSaving = theme;
-      document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('selected'));
+      document.querySelectorAll('.profile-theme-btn').forEach(btn => btn.classList.remove('selected'));
       const btn = document.getElementById(theme + 'Btn');
       if (btn) btn.classList.add('selected');
     }
@@ -140,7 +140,7 @@
       if (!storedUser) {
         profileElement.innerHTML = `
         <div class="profile-login-prompt">
-          <h3>Login to view your profile</h3>
+          <h3>Login to view your profile!</h3>
         <div class="profile-actions">
           <button class="profile-btn btn-logout" onclick="window.location.href='/login'">
             <span class="material-icons">login</span>
@@ -217,9 +217,9 @@
         <div class="profile-detail-card">
             <div class="profile-detail-title">Theme Settings</div>
             <div class="profile-theme-buttons">
-                <button class="profile-theme-btn" onclick="selectTheme('essential')" id="essentialBtn">Essential</button>
+                <button class="profile-theme-btn" onclick="selectTheme('default')" id="defaultBtn">Default</button>
                 <button class="profile-theme-btn" onclick="selectTheme('minecraft')" id="minecraftBtn">Minecraft</button>
-                <button class="profile-theme-btn" onclick="selectTheme('default')" id="defaultBtn">default</button>
+                <button class="profile-theme-btn" onclick="selectTheme('essential')" id="essentialBtn">Essential</button>
             </div>
             <button class="profile-save-btn" onclick="saveTheme()">Save Changes</button>
         </div>
@@ -251,7 +251,7 @@
       if (validThemes.includes(savedTheme)) {
         selectTheme(savedTheme);
       } else {
-        selectTheme('minecraft');
+        selectTheme('default');
       }
     };
   </script>
