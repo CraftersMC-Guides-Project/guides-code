@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FCM Push Notification Demo</title>
+    <title>FCM Token Manager - Cloudflare KV Integration</title>
     <style>
         * {
             box-sizing: border-box;
@@ -29,7 +29,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             padding: 30px;
             width: 100%;
-            max-width: 700px;
+            max-width: 800px;
             text-align: center;
         }
         
@@ -97,6 +97,14 @@
             background: #cbd5e0;
         }
         
+        .btn-success {
+            background: #48bb78;
+        }
+        
+        .btn-success:hover {
+            background: #38a169;
+        }
+        
         .token-display {
             background: #edf2f7;
             padding: 15px;
@@ -146,26 +154,45 @@
             font-weight: bold;
         }
         
-        .solution-box {
-            background: #fff5eb;
-            border: 1px solid #fbd38d;
+        .code-block {
+            background: #2d3748;
+            color: #cbd5e0;
+            padding: 15px;
             border-radius: 8px;
-            padding: 20px;
             margin: 20px 0;
+            text-align: left;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid #667eea;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
             text-align: left;
         }
         
-        .solution-box h3 {
-            color: #c05621;
-            margin-bottom: 10px;
-        }
-        
-        code {
-            background: #2d3748;
-            color: #cbd5e0;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
+        .tab-content.active {
+            display: block;
         }
         
         @media (max-width: 600px) {
@@ -181,45 +208,197 @@
                 width: 100%;
                 margin: 5px 0;
             }
+            
+            .tabs {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Firebase Cloud Messaging Demo</h1>
-        <p>This demo shows how to set up push notifications with Firebase Cloud Messaging and a service worker.</p>
+        <h1>FCM Token Manager</h1>
+        <p>Enable notifications, generate FCM tokens, and store them in Cloudflare KV</p>
         
-        <div class="solution-box">
-            <h3>Solution to Service Worker Error</h3>
-            <p>The error you're experiencing is because the service worker file is not accessible at the expected URL.</p>
-            <p>To fix this:</p>
+        <div class="tabs">
+            <div class="tab active" data-tab="frontend">Frontend</div>
+            <div class="tab" data-tab="worker">Worker Code</div>
+            <div class="tab" data-tab="instructions">Instructions</div>
+        </div>
+        
+        <div class="tab-content active" id="frontend">
+            <div class="status" id="status">
+                <div>Status: Ready to initialize...</div>
+            </div>
+            
+            <button class="btn" id="initBtn">Initialize FCM</button>
+            <button class="btn btn-secondary" id="requestPermissionBtn" disabled>Request Notification Permission</button>
+            <button class="btn btn-secondary" id="getTokenBtn" disabled>Get FCM Token</button>
+            <button class="btn btn-success" id="saveTokenBtn" disabled>Save Token to KV</button>
+            
+            <div class="token-display" id="tokenDisplay"></div>
+        </div>
+        
+        <div class="tab-content" id="worker">
+            <h3>Cloudflare Worker Code for KV Storage</h3>
+            <p>This worker handles saving FCM tokens to KV and sending notifications:</p>
+            
+            <div class="code-block">
+// Cloudflare Worker for FCM Token Management<br><br>
+// Define the KV namespace binding<br>
+// Make sure to create a KV namespace in your Cloudflare dashboard<br>
+// and add it to your wrangler.toml or dashboard bindings<br><br>
+const FCM_TOKENS = "fcm-tokens"; // Your KV namespace<br><br>
+async function handleRequest(request) {<br>
+  const url = new URL(request.url);<br>
+  const path = url.pathname;<br>
+  const method = request.method;<br><br>
+  // Handle preflight OPTIONS request for CORS<br>
+  if (method === 'OPTIONS') {<br>
+    return handleOptions(request);<br>
+  }<br><br>
+  // Save FCM token to KV<br>
+  if (method === 'POST' && path === '/save-token') {<br>
+    try {<br>
+      const { token, userId } = await request.json();<br>
+      <br>
+      if (!token) {<br>
+        return new Response('Token is required', { status: 400 });<br>
+      }<br>
+      <br>
+      // Use current timestamp as user ID if not provided<br>
+      const user = userId || Date.now().toString();<br>
+      <br>
+      // Save token to KV (store multiple tokens per user)<br>
+      let userTokens = [];<br>
+      try {<br>
+        const existing = await FCM_TOKENS.get(user);<br>
+        userTokens = existing ? JSON.parse(existing) : [];<br>
+      } catch (e) {<br>
+        console.log('No existing tokens for user:', user);<br>
+      }<br>
+      <br>
+      // Add new token if not already present<br>
+      if (!userTokens.includes(token)) {<br>
+        userTokens.push(token);<br>
+      }<br>
+      <br>
+      // Save updated tokens<br>
+      await FCM_TOKENS.put(user, JSON.stringify(userTokens));<br>
+      <br>
+      return new Response(JSON.stringify({ success: true, userId: user }), {<br>
+        headers: {<br>
+          'Content-Type': 'application/json',<br>
+          'Access-Control-Allow-Origin': '*',<br>
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',<br>
+          'Access-Control-Allow-Headers': 'Content-Type'<br>
+        }<br>
+      });<br>
+    } catch (error) {<br>
+      return new Response(JSON.stringify({ error: error.message }), {<br>
+        status: 500,<br>
+        headers: {<br>
+          'Content-Type': 'application/json',<br>
+          'Access-Control-Allow-Origin': '*',<br>
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',<br>
+          'Access-Control-Allow-Headers': 'Content-Type'<br>
+        }<br>
+      });<br>
+    }<br>
+  }<br><br>
+  // Send notification to all users<br>
+  if (method === 'POST' && path === '/send-notification') {<br>
+    try {<br>
+      const { title, body } = await request.json();<br>
+      <br>
+      if (!title || !body) {<br>
+        return new Response('Title and body are required', { status: 400 });<br>
+      }<br>
+      <br>
+      // Get all keys from KV<br>
+      const keys = await FCM_TOKENS.list();<br>
+      <br>
+      // Send notification to each token<br>
+      const results = [];<br>
+      for (const key of keys.keys) {<br>
+        const tokens = JSON.parse(await FCM_TOKENS.get(key.name));<br>
+        <br>
+        for (const token of tokens) {<br>
+          // Send FCM notification using Firebase Admin SDK<br>
+          // This would typically be done in a Node.js environment<br>
+          // For demonstration, we'll just log it<br>
+          console.log(`Sending notification to token: ${token}`);<br>
+          console.log(`Title: ${title}, Body: ${body}`);<br>
+          results.push({ token, status: 'simulated' });<br>
+        }<br>
+      }<br>
+      <br>
+      return new Response(JSON.stringify({ <br>
+        success: true, <br>
+        sent: results.length,<br>
+        results <br>
+      }), {<br>
+        headers: {<br>
+          'Content-Type': 'application/json',<br>
+          'Access-Control-Allow-Origin': '*',<br>
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',<br>
+          'Access-Control-Allow-Headers': 'Content-Type'<br>
+        }<br>
+      });<br>
+    } catch (error) {<br>
+      return new Response(JSON.stringify({ error: error.message }), {<br>
+        status: 500,<br>
+        headers: {<br>
+          'Content-Type': 'application/json',<br>
+          'Access-Control-Allow-Origin': '*',<br>
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',<br>
+          'Access-Control-Allow-Headers': 'Content-Type'<br>
+        }<br>
+      });<br>
+    }<br>
+  }<br><br>
+  return new Response('Not found', { status: 404 });<br>
+}<br><br>
+// Handle CORS preflight requests<br>
+function handleOptions(request) {<br>
+  return new Response(null, {<br>
+    headers: {<br>
+      'Access-Control-Allow-Origin': '*',<br>
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',<br>
+      'Access-Control-Allow-Headers': 'Content-Type'<br>
+    }<br>
+  });<br>
+}<br><br>
+// Add event listener for fetch events<br>
+addEventListener('fetch', event => {<br>
+  event.respondWith(handleRequest(event.request));<br>
+});
+            </div>
+            
+            <p>Make sure to:</p>
             <ol>
-                <li>Make sure your service worker file is publicly accessible</li>
-                <li>Verify the file path is correct</li>
-                <li>Ensure there are no syntax errors in the service worker code</li>
+                <li>Create a KV namespace in your Cloudflare dashboard</li>
+                <li>Add the binding to your worker (wrangler.toml or dashboard)</li>
+                <li>Deploy the worker to your Cloudflare account</li>
             </ol>
         </div>
         
-        <div class="status" id="status">
-            <div>Status: Ready to initialize...</div>
-        </div>
-        
-        <button class="btn" id="initBtn">Initialize FCM</button>
-        <button class="btn btn-secondary" id="requestPermissionBtn" disabled>Request Notification Permission</button>
-        <button class="btn btn-secondary" id="getTokenBtn" disabled>Get FCM Token</button>
-        
-        <div class="token-display" id="tokenDisplay"></div>
-        
-        <div class="instructions">
-            <h3>How to Fix Service Worker Issues:</h3>
+        <div class="tab-content" id="instructions">
+            <h3>Implementation Instructions</h3>
             <ol>
-                <li>Ensure your service worker file is accessible at the correct path</li>
-                <li>Verify the service worker is registered with the proper scope</li>
-                <li>Check that the service worker file has no syntax errors</li>
-                <li>Make sure your Firebase config values are correct</li>
-                <li>For Cloudflare Pages, ensure the service worker file is in your build output</li>
+                <li>Set up a Firebase project and enable Cloud Messaging</li>
+                <li>Create a Cloudflare Pages project with your frontend code</li>
+                <li>Create a Cloudflare Worker and KV namespace for token storage</li>
+                <li>Update the worker URL in the frontend code below</li>
+                <li>Deploy both the frontend and worker</li>
             </ol>
-            <p>Check the browser console for detailed error messages.</p>
+            
+            <h3>Frontend Code Modifications</h3>
+            <p>In the frontend JavaScript, update the worker URL:</p>
+            <div class="code-block">
+// Update this URL to match your Cloudflare Worker endpoint<br>
+const WORKER_URL = 'https://your-worker.your-subdomain.workers.dev';
+            </div>
         </div>
     </div>
 
@@ -239,15 +418,37 @@
             measurementId: "G-K3WGXSF9DQ"
         };
         
+        // Update this URL to match your Cloudflare Worker endpoint
+        const WORKER_URL = 'https://your-worker.your-subdomain.workers.dev';
+        
         // DOM elements
         const statusDiv = document.getElementById('status');
         const initBtn = document.getElementById('initBtn');
         const requestPermissionBtn = document.getElementById('requestPermissionBtn');
         const getTokenBtn = document.getElementById('getTokenBtn');
+        const saveTokenBtn = document.getElementById('saveTokenBtn');
         const tokenDisplay = document.getElementById('tokenDisplay');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
         
         let app;
         let messaging;
+        let fcmToken = null;
+        
+        // Tab switching functionality
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                // Update active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Update active content
+                tabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
         
         // Update status function
         function updateStatus(message, type = 'info') {
@@ -347,8 +548,10 @@
                 
                 if (token) {
                     updateStatus('FCM token obtained successfully', 'success');
+                    fcmToken = token;
                     tokenDisplay.textContent = token;
                     tokenDisplay.style.display = 'block';
+                    saveTokenBtn.disabled = false;
                     
                     // Copy token to clipboard functionality
                     tokenDisplay.onclick = function() {
@@ -375,10 +578,45 @@
             }
         }
         
+        // Save token to Cloudflare KV via Worker
+        async function saveTokenToKV() {
+            if (!fcmToken) {
+                updateStatus('No token to save', 'error');
+                return;
+            }
+            
+            try {
+                updateStatus('Saving token to Cloudflare KV...');
+                
+                const response = await fetch(`${WORKER_URL}/save-token`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: fcmToken,
+                        userId: 'user_' + Date.now() // Generate a simple user ID
+                    })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    updateStatus(`Token saved successfully for user: ${result.userId}`, 'success');
+                } else {
+                    const error = await response.text();
+                    throw new Error(error);
+                }
+            } catch (error) {
+                updateStatus('Error saving token: ' + error.message, 'error');
+                console.error(error);
+            }
+        }
+        
         // Event listeners
         initBtn.addEventListener('click', initializeFirebase);
         requestPermissionBtn.addEventListener('click', requestNotificationPermission);
         getTokenBtn.addEventListener('click', getFCMToken);
+        saveTokenBtn.addEventListener('click', saveTokenToKV);
         
         // Initial check for service worker support
         if ('serviceWorker' in navigator) {
