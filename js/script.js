@@ -718,7 +718,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let savedTheme = getCookie("theme");
 
   if (!validThemes.includes(savedTheme)) {
-    savedTheme = "minecraft";
+    savedTheme = "default";
     setCookie("theme", savedTheme, 365);
   }
 
