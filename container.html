@@ -290,6 +290,7 @@
       font-weight: bold;
       font-size: 1.1rem;
       display: block;
+      width: min-content;
     }
 
     .item-tooltip .item-rarity {
@@ -1183,6 +1184,55 @@
             </div>
           </div>
         `;
+
+        // Tooltip position fix
+        const itemDiv = cell.querySelector('.item-with-sub');
+        const tooltip = itemDiv.querySelector('.item-tooltip');
+        itemDiv.onmouseenter = function () {
+          tooltip.style.display = "block";
+          setTimeout(() => {
+            const rect = tooltip.getBoundingClientRect();
+            const overflowRight = rect.right > window.innerWidth;
+            const overflowLeft = rect.left < 0;
+            const overflowBottom = rect.bottom > window.innerHeight;
+            // Default position: right and below
+            tooltip.style.left = "110%";
+            tooltip.style.right = "auto";
+            tooltip.style.top = "110%";
+            tooltip.style.bottom = "auto";
+            // If overflowing right, show to left
+            if (overflowRight && !overflowLeft) {
+              tooltip.style.left = "-224%";
+              tooltip.style.right = "auto";
+              tooltip.style.top = "110%";
+            }
+            // If overflowing left, force to right
+            if (overflowLeft && !overflowRight) {
+              tooltip.style.left = "50%";
+              tooltip.style.right = "auto";
+              tooltip.style.top = "110%";
+            }
+            // If overflowing both sides, center it
+            if (overflowLeft && overflowRight) {
+              tooltip.style.left = "50%";
+              tooltip.style.right = "auto";
+              tooltip.style.transform = "translateX(-50%)";
+              tooltip.style.top = "110%";
+            } else {
+              tooltip.style.transform = "";
+            }
+            // If overflowing bottom, show above
+            if (overflowBottom) {
+              tooltip.style.top = "auto";
+              tooltip.style.bottom = "110%";
+            }
+          }, 10);
+        };
+        itemDiv.onmouseleave = function () {
+          tooltip.style.display = "none";
+          tooltip.style.transform = "";
+        };
+
         cell.onclick = () => {
           if (item.subItems && item.subItems.length > 0) {
             fillCells(item.subItems);
