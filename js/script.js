@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
       isActive = !isActive;
       if (elementsToStyle.container) {
         elementsToStyle.container.style.backgroundColor = isActive
-          ? "var(--primary-text-color)"
+          ? "#000"
           : "";
         elementsToStyle.container.style.left = isActive
           ? "calc(100% - 13rem)"
