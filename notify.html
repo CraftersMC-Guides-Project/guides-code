@@ -24,12 +24,12 @@
         }
         
         .container {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             padding: 30px;
             width: 100%;
-            max-width: 600px;
+            max-width: 700px;
             text-align: center;
         }
         
@@ -146,6 +146,28 @@
             font-weight: bold;
         }
         
+        .solution-box {
+            background: #fff5eb;
+            border: 1px solid #fbd38d;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .solution-box h3 {
+            color: #c05621;
+            margin-bottom: 10px;
+        }
+        
+        code {
+            background: #2d3748;
+            color: #cbd5e0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
@@ -167,6 +189,17 @@
         <h1>Firebase Cloud Messaging Demo</h1>
         <p>This demo shows how to set up push notifications with Firebase Cloud Messaging and a service worker.</p>
         
+        <div class="solution-box">
+            <h3>Solution to Service Worker Error</h3>
+            <p>The error you're experiencing is because the service worker file is not accessible at the expected URL.</p>
+            <p>To fix this:</p>
+            <ol>
+                <li>Make sure your service worker file is publicly accessible</li>
+                <li>Verify the file path is correct</li>
+                <li>Ensure there are no syntax errors in the service worker code</li>
+            </ol>
+        </div>
+        
         <div class="status" id="status">
             <div>Status: Ready to initialize...</div>
         </div>
@@ -184,6 +217,7 @@
                 <li>Verify the service worker is registered with the proper scope</li>
                 <li>Check that the service worker file has no syntax errors</li>
                 <li>Make sure your Firebase config values are correct</li>
+                <li>For Cloudflare Pages, ensure the service worker file is in your build output</li>
             </ol>
             <p>Check the browser console for detailed error messages.</p>
         </div>
@@ -283,17 +317,24 @@
                 // Check if we have a service worker registration
                 let registration;
                 try {
+                    // First try with the correct scope
                     registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
                         scope: '/firebase-cloud-messaging-push-scope/'
                     });
-                    updateStatus('Service worker registered', 'success');
+                    updateStatus('Service worker registered with custom scope', 'success');
                 } catch (swError) {
                     updateStatus('Service worker registration failed, trying default scope...', 'warning');
                     console.warn(swError);
                     
                     // Try with default scope
-                    registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-                    updateStatus('Service worker registered with default scope', 'success');
+                    try {
+                        registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                        updateStatus('Service worker registered with default scope', 'success');
+                    } catch (secondError) {
+                        updateStatus('Service worker registration completely failed', 'error');
+                        console.error(secondError);
+                        throw new Error('Cannot register service worker: ' + secondError.message);
+                    }
                 }
                 
                 // Wait for the service worker to be ready
@@ -308,6 +349,14 @@
                     updateStatus('FCM token obtained successfully', 'success');
                     tokenDisplay.textContent = token;
                     tokenDisplay.style.display = 'block';
+                    
+                    // Copy token to clipboard functionality
+                    tokenDisplay.onclick = function() {
+                        navigator.clipboard.writeText(token).then(() => {
+                            updateStatus('Token copied to clipboard!', 'success');
+                        });
+                    };
+                    
                     return token;
                 } else {
                     updateStatus('No token available', 'warning');
@@ -316,6 +365,12 @@
             } catch (error) {
                 updateStatus('Error getting FCM token: ' + error.message, 'error');
                 console.error(error);
+                
+                // Provide more specific guidance based on error type
+                if (error.message.includes('service worker')) {
+                    updateStatus('Please ensure your service worker file is accessible at the root of your domain', 'error');
+                }
+                
                 return null;
             }
         }
@@ -331,6 +386,11 @@
         } else {
             updateStatus('Service workers are not supported in this browser', 'error');
             initBtn.disabled = true;
+        }
+        
+        // Check if service worker is already registered
+        if (navigator.serviceWorker.controller) {
+            updateStatus('Service worker already controlling the page', 'success');
         }
     </script>
 </body>
