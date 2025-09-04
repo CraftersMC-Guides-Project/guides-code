@@ -228,18 +228,19 @@
     .cat {
       background-color: #c6c6c6;
       box-shadow: inset 4px 4px 0 0 #fff;
-      height: 2.5rem;
-      width: 2.5rem;
+      height: 2rem;
+      width: 2rem;
       display: flex;
       justify-content: center;
       align-items: center;
       border-top-right-radius: 5px;
       border-top-left-radius: 5px;
+      padding: 20px;
     }
 
     .cat img {
-      height: 2rem;
-      width: 2rem;
+      height: 1.5rem;
+      width: 1.5rem;
       margin: 0;
     }
 
@@ -249,16 +250,89 @@
       gap: 0.5rem;
       margin-left: 4px;
     }
+
+    .item-tooltip {
+      display: none;
+      position: absolute;
+      left: auto;
+      top: 110%;
+      background: #2d143b;
+      color: #ffe16b;
+      border: 2px solid #4b267a;
+      border-radius: 6px;
+      padding: 8px 12px;
+      z-index: 100;
+      min-width: max-content;
+      font-family: 'Minecraft', 'Arial', sans-serif;
+      font-size: 0rem;
+      box-shadow: 0 2px 8px #0008;
+      white-space: pre-line;
+      /* Pixelated corners */
+      box-shadow:
+        0 0 0 2px #4b267a,
+        /* main border */
+        -4px -4px 0 0 #fff,
+        /* top-left pixel */
+        4px -4px 0 0 #fff,
+        /* top-right pixel */
+        -4px 4px 0 0 #555,
+        /* bottom-left pixel */
+        4px 4px 0 0 #555;
+      /* bottom-right pixel */
+    }
+
+    .item-with-sub:hover .item-tooltip {
+      display: block;
+    }
+
+    .item-tooltip .item-title {
+      color: #6d5cff;
+      font-weight: bold;
+      font-size: 1.1rem;
+      display: block;
+    }
+
+    .item-tooltip .item-rarity {
+      color: #4b9fff;
+      font-size: 0.95rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: block;
+      position: relative;
+      left: -6px;
+    }
+
+    .item-tooltip .item-desc {
+      color: #ffe16b;
+      font-size: 13px;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .item-tooltip .item-price {
+      color: #ffd700;
+      font-size: 13px;
+      margin-bottom: 2px;
+      display: block;
+    }
+
+    .item-rarity .category-rarity {
+      width: 60px;
+      height: auto;
+    }
+    .item-price-container {
+  margin-bottom: 13px;
+}
   </style>
 </head>
 
 <body>
   <div class="contain">
     <div class="catnav">
-      <div id="farming" class="cat"><img src="assets/farming/hoe.png"></div>
-      <div id="mining" class="cat"><img src="assets/mining/pickaxe.png"></div>
-      <div id="combat" class="cat"><img src="assets/combat/sword.png"></div>
-      <div id="foraging" class="cat"><img src="assets/foraging/axe.png"></div>
+      <div id="farming" class="cat"><img src="assets/ui-icons/ui_bazaar_category_farming_active.png"></div>
+      <div id="mining" class="cat"><img src="assets/ui-icons/ui_bazaar_category_mining_active.png"></div>
+      <div id="combat" class="cat"><img src="assets/ui-icons/ui_bazaar_category_combat_active.png"></div>
+      <div id="foraging" class="cat"><img src="assets/ui-icons/ui_bazaar_category_foraging_active.png"></div>
       <div id="special" class="cat"><img src="img/Magical_Encyclopedia.png"></div>
       <div id="minion" class="cat"><img src="img/cobblestone-minion/Cobblestone_Minion.png"></div>
     </div>
@@ -1020,25 +1094,95 @@
       { name: "Zombie Minion", img: "zombie-minion/Zombie_Minion.png", subItems: [] }
     ];
 
-    function fillCells(items) {
+    // Utility to fetch and parse market data and prices
+    async function getItemData() {
+      // Fetch market.txt and mprices.txt
+      const [marketRes, pricesRes] = await Promise.all([
+        fetch('market/market.txt'),
+        fetch('market/mprices.txt')
+      ]);
+      const marketData = await marketRes.text();
+      const pricesData = await pricesRes.text();
+
+      // Parse market.txt
+      let items = [];
+      try {
+        items = JSON.parse(marketData);
+      } catch (e) {
+        console.error("Failed to parse market.txt", e);
+        return [];
+      }
+
+      // Parse mprices.txt
+      const pricesMap = new Map();
+      const npcPricesMap = new Map();
+      pricesData.split('\n').forEach(line => {
+        const [id, arrayStr] = line.split(':').map(part => part.trim());
+        if (id && arrayStr) {
+          try {
+            const parsedArray = JSON.parse(arrayStr);
+            if (Array.isArray(parsedArray) && parsedArray.length >= 2) {
+              pricesMap.set(id, parsedArray[1]);
+              if (parsedArray.length >= 3) {
+                npcPricesMap.set(id, parsedArray[2]);
+              }
+            }
+          } catch (e) { }
+        }
+      });
+
+      // Attach price info to items
+      items.forEach(item => {
+        item.marketPrice = pricesMap.get(item.id) ?? item.price ?? "N/A";
+        item.npcPrice = npcPricesMap.get(item.id) ?? "N/A";
+      });
+
+      return items;
+    }
+
+    // Tooltip generator using market data
+    function getTooltipHTML(item) {
+      return `
+        <span class="item-title">${item.name}</span>
+        <span class="item-rarity"><img class="category-rarity" src="img/rarity/${item.rarity}.webp"></span>
+        <div class="item-price-container">
+        <span class="item-price"><strong>Market Price:</strong> ${item.marketPrice !== undefined ? Number(item.marketPrice).toLocaleString() : "N/A"}</span>
+        ${item.npcPrice !== undefined && item.npcPrice !== "N/A" ? `<span class="item-price"><strong>NPC Price:</strong> ${Number(item.npcPrice).toLocaleString()}</span>` : ""}
+        </div>
+        ${item.nature ? `<span class="item-desc">${item.nature}</span>` : ""}
+        ${item.demand ? `<span class="item-desc">Demand: ${item.demand}</span>` : ""}
+        <span style="color:#ffe16b;">Click to view details!</span>
+      `;
+    }
+
+    // Find item by name (case-insensitive, fallback to first match)
+    function findItemByName(name, items) {
+      return items.find(i => i.name.toLowerCase() === name.toLowerCase()) || items.find(i => i.name.includes(name)) || null;
+    }
+
+    // Main fillCells function using live data
+    async function fillCells(itemsList) {
+      const allMarketItems = await getItemData();
       const mainCells = document.querySelectorAll(".extreme-inner-container .cell");
       const hotbarCells = document.querySelectorAll(".hotbar-extreme-inner-container .cell");
 
-      // Clear all cells
-      [...mainCells, ...hotbarCells].forEach(cell => cell.innerHTML = "");
-
-      // Helper to render items recursively
+      // Helper to render items recursively, supports sub-sub-items
       function renderItem(cell, item) {
         if (!item) {
           cell.innerHTML = "";
           cell.onclick = null;
           return;
         }
+        // Try to get full market info for tooltip
+        const marketItem = findItemByName(item.name, allMarketItems) || item;
         cell.innerHTML = `
-        <div class="item-with-sub" style="cursor:pointer;">
-          <img src="img/${item.img}" alt="${item.name}" title="${item.name}">
-        </div>
-      `;
+          <div class="item-with-sub" style="cursor:pointer; position:relative;">
+            <img src="img/${item.img}" alt="${item.name}" title="${item.name}">
+            <div class="item-tooltip">
+              ${getTooltipHTML(marketItem)}
+            </div>
+          </div>
+        `;
         cell.onclick = () => {
           if (item.subItems && item.subItems.length > 0) {
             fillCells(item.subItems);
@@ -1047,9 +1191,9 @@
       }
 
       // Fill main grid (36 cells)
-      mainCells.forEach((cell, i) => renderItem(cell, items[i]));
+      mainCells.forEach((cell, i) => renderItem(cell, itemsList[i]));
       // Fill hotbar (9 cells) if there are more than 36 items
-      hotbarCells.forEach((cell, i) => renderItem(cell, items[36 + i]));
+      hotbarCells.forEach((cell, i) => renderItem(cell, itemsList[36 + i]));
     }
 
     document.getElementById("farming").addEventListener("click", () => fillCells(farmingItems));
@@ -1082,6 +1226,8 @@
     }
   `;
     document.head.appendChild(style);
+
+
   </script>
 </body>
 
