@@ -714,11 +714,11 @@ document.addEventListener("DOMContentLoaded", function () {
     document.cookie = `${name}=${value}; expires=${expires}; path=/`;
   }
 
-  const validThemes = ["essential", "minecraft", "default"];
+  const validThemes = ["neon", "minecraft", "default"];
   let savedTheme = getCookie("theme");
 
   if (!validThemes.includes(savedTheme)) {
-    savedTheme = "minecraft";
+    savedTheme = "default";
     setCookie("theme", savedTheme, 365);
   }
 
