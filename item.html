@@ -124,6 +124,7 @@
       cursor: pointer;
     }
 .expected-input {
+  display: none;
   position: absolute;
   top: 550px;
   right: 150px;
@@ -132,6 +133,7 @@
   z-index: 9999;
 }
     .expected-btn{
+      display: none;
       position: absolute;
       top: 25px;
       right: 25px;
@@ -149,6 +151,9 @@
       background: aqua;
       border-radius: 10px;
       box-shadow: 5px;
+    }
+    .exp-display{
+      display: block;
     }
   </style>
 </head>
@@ -204,6 +209,11 @@
   <script>
     let isDevUser = false;
     let allItems = [];
+    const expected = document.querySelector("expected");
+    const expInput = document.querySelector("expected-input");
+    expected.addEventListener('click', event => {
+      expInput.classList.toggle("exp-display");
+    });
 
     function getCookie(name) { const value = `; ${document.cookie}`; const parts = value.split(`; ${name}=`); if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift()); return ''; }
 
