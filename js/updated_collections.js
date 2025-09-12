@@ -568,17 +568,17 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "PriestlyPath870",
+                    "name": "Troubles2Go",
                     "score": "N/A"
                 },
                 {
                     "rank": 2,
-                    "name": "Hefty6248",
+                    "name": "PriestlyPath870",
                     "score": "N/A"
                 },
                 {
                     "rank": 3,
-                    "name": "Unknown",
+                    "name": "Hefty6248",
                     "score": "N/A"
                 },
                 {
@@ -848,12 +848,12 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "PriestlyPath870",
+                    "name": "Troubles2Go",
                     "score": "N/A"
                 },
                 {
                     "rank": 2,
-                    "name": "Unknown",
+                    "name": "PriestlyPath870",
                     "score": "N/A"
                 },
                 {
