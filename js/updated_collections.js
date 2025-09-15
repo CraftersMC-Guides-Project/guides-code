@@ -1077,12 +1077,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 2,
-                    "name": "Hefty6248",
-                    "score": "N/A"
+                    "name": "Moerderfisch",
+                    "score": "51.6M+"
                 },
                 {
                     "rank": 3,
-                    "name": "Unknown",
+                    "name": "Hefty6248",
                     "score": "N/A"
                 },
                 {
@@ -1092,8 +1092,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "Moerderfisch",
-                    "score": "26.2M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 6,
