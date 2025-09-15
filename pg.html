@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta property="og:title" content="Upcoming Farming Contests - CraftersMC Guides">
+  <meta property="og:description" content="See the exact Skyblock day, season & year, the 3 crops, time until start, and always 5 next contests!">
+  <meta property="og:image" content="https://cdn.discordapp.com/attachments/1416722412032229457/1416722509201543230/1000024054.jpg?ex=68c7e127&is=68c68fa7&hm=3f60b138e8d5e2c3c8b14453fe3ced7363b10fb11dff8b57d78a66bfc92d8a29">
+  <meta property="og:url" content="https://craftersmc-guides.pages.dev/upcoming-farming-contests.html">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#007bff">
+  <meta name="twitter:card" content="summary_large_image">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <title>Upcoming Farming Contests</title>
+  <style>
+    :root {
+      --primary-color: #4CAF50;
+      --secondary-color: #2E7D32;
+      --background-dark: #1a1a1a;
+      --text-light: #f5f5f5;
+      --border-color: #444;
+    }
+    
+    body {
+      font-family: 'Minecraft', Arial, sans-serif;
+      background-color: #2d2d2d;
+      color: var(--text-light);
+      margin: 0;
+      padding: 0;
+    }
+    
+    .mc-container {
+      position: relative;
+      background-color: #3a3a3a;
+      border: 4px solid #555;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 1000px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+    
+    .inner-container {
+      padding: 15px;
+      background-color: #2a2a2a;
+      border: 2px solid #555;
+    }
+    
+    .extreme-inner-container {
+      padding: 15px;
+      background-color: #222;
+      border: 1px solid #444;
+    }
+    
+    h3 {
+      color: var(--primary-color);
+      text-align: center;
+      font-size: 24px;
+      margin-top: 0;
+      text-shadow: 2px 2px 0 #000;
+    }
+    
+    .ufq-table-container {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    
+    .ufq-th {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+      background-color: #333;
+    }
+    
+    .ufq-tr:hover {
+      background-color: #3a3a3a;
+    }
+    
+    .btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      cursor: pointer;
+      font-family: 'Minecraft', Arial, sans-serif;
+      border: 2px solid #2a2a2a;
+    }
+    
+    .btn:hover {
+      background-color: var(--secondary-color);
+    }
+    
+    input[type="datetime-local"], 
+    input[type="text"] {
+      padding: 8px;
+      margin: 5px;
+      background-color: #333;
+      color: var(--text-light);
+      border: 1px solid var(--border-color);
+      font-family: 'Minecraft', Arial, sans-serif;
+    }
+    
+    /* Notification panel styles */
+    .notification-panel {
+      background-color: #2a2a2a;
+      border: 2px solid #555;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    
+    .notification-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    
+    .crop-selection {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    
+    .crop-checkbox {
+      display: flex;
+      align-items: center;
+      background-color: #333;
+      padding: 5px 10px;
+      border-radius: 4px;
+      border: 1px solid #555;
+    }
+    
+    .crop-checkbox input {
+      margin-right: 5px;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+    
+    .status-ongoing {
+      background-color: #4CAF50;
+      color: white;
+    }
+    
+    .status-upcoming {
+      background-color: #FF9800;
+      color: black;
+    }
+    
+    .status-ended {
+      background-color: #f44336;
+      color: white;
+    }
+    
+    /* Loader animation */
+    #loader {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+    }
+    
+    #loader div {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin: 2px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      animation: loader 1.4s infinite ease-in-out both;
+    }
+    
+    #loader div:nth-child(1) { animation-delay: -0.32s; }
+    #loader div:nth-child(2) { animation-delay: -0.16s; }
+    
+    @keyframes loader {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .mc-container {
+        margin: 10px;
+        padding: 10px;
+      }
+      
+      .ufq-th {
+        padding: 8px 4px;
+        font-size: 14px;
+      }
+      
+      .crop-selection {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="loader">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+
+  <!-- Your existing navigation elements -->
+  <div class="top"></div>
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <button id="float">
+    <span class="material-icons" id="sweepBtn" style="background: #222; border-radius: 50px">chevron_right</span>
+    <span class="material-icons" id="homeBtn" onclick="homeBtn()">home</span>
+    <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
+    <span class="material-icons" id="scrollToTopBtn">north</span>
+  </button>
+
+  <div class="gap"></div>
+  <div class="mc-container">
+    <div class="corner-left"></div>
+    <div class="corner-right"></div>
+    <div class="corner-bottom"></div>
+    <div class="corner-top"></div>
+    <div class="tl-tl"></div>
+    <div class="tr-tl s-tl"></div>
+    <div class="bl-tl s-tl"></div>
+    <div class="br-tl"></div>
+    <div class="tr-bl s-bl"></div>
+    <div class="bl-tr s-tr"></div>
+    <div class="tl-br"></div>
+    <div class="tr-br s-br"></div>
+    <div class="bl-br s-br"></div>
+    <div class="br-br"></div>
+    <div class="inventory inner-container">
+      <h3>Upcoming Farming Contests</h3>
+      
+      <!-- Notification Panel -->
+      <div class="notification-panel">
+        <div class="notification-header">
+          <h4>🔔 Notification Settings</h4>
+          <button class="btn" id="enableNotifications">Enable Notifications</button>
+        </div>
+        <p>Select crops to get notified about:</p>
+        <div class="crop-selection" id="cropSelection">
+          <!-- Will be populated by JavaScript -->
+        </div>
+        <div id="notificationStatus">Notifications: Disabled</div>
+      </div>
+      
+      <div class="extreme-inner-container">
+        <form id="timeForm">
+          <input type="datetime-local" id="timeInput" />
+          <input type="text" id="cropInput" placeholder="Filter by crop"/>
+          <button class="btn" type="submit">Filter</button>
+        </form>
+        <table class="ufq-table ufq-table-container">
+          <thead class="ufq-thead">
+            <tr class="ufq-tr">
+              <th class="ufq-th">Skyblock Date</th>
+              <th class="ufq-th">Crops</th>
+              <th class="ufq-th">Status</th>
+            </tr>
+          </thead>
+          <tbody class="ufq-table" id="contestRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer"></div>
+
+  <script>
+    // Available crops for notifications
+    const ALL_CROPS = [
+      "Wheat", "Sugar Cane", "Carrot", "Potato", "Melon",
+      "Pumpkin", "Cocoa Beans", "Cactus", "Mushroom", "Beetroot"
+    ];
+    
+    // Global variables
+    let notificationPermission = false;
+    let selectedCrops = [];
+    let lastNotifiedEventId = null;
+    let notificationCheckInterval = null;
+
+    // Format JS date → "DD-MM-YYYY:HH:MM"
+    function formatApiDate(d) {
+      const pad = n => String(n).padStart(2, "0");
+      return `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()}:${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function snapToContestMinute(date) {
+      const minutes = date.getMinutes();
+      if (minutes < 30) {
+        date.setMinutes(30, 0, 0);
+      } else if (minutes < 50) {
+        date.setMinutes(50, 0, 0);
+      } else {
+        date.setHours(date.getHours() + 1);
+        date.setMinutes(10, 0, 0); // Next contest after :50 is :10 of next hour
+      }
+      return date;
+    }
+
+    async function fetchMultipleEvents(time, crop) {
+      try {
+        showLoader();
+        let url;
+        if (crop) {
+          // For crop filtering: /api/DD-MM-YYYY:HH:MM/cropName
+          url = `https://bhai-bhai.roumakdatta.workers.dev/api/${time}/${crop}`;
+        } else {
+          // For multiple events: /api/DD-MM-YYYY:HH:MM/5
+          url = `https://bhai-bhai.roumakdatta.workers.dev/api/${time}/5`;
+        }
+
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Bad response " + res.status);
+        const data = await res.json();
+
+        // Update table
+        const tbody = document.getElementById("contestRows");
+        tbody.innerHTML = "";
+
+        // Handle both single event and array of events
+        const events = Array.isArray(data) ? data : [data];
+
+        events.slice(0, 5).forEach((ev, index) => {
+          // Determine status
+          let statusText = "";
+          let statusClass = "";
+          
+          if (ev.timeUntil) {
+            if (ev.timeUntil.includes("ENDED")) {
+              statusText = "ENDED";
+              statusClass = "status-ended";
+            } else if (ev.timeUntil.includes("ENDS IN")) {
+              statusText = "ONGOING";
+              statusClass = "status-ongoing";
+            } else if (ev.timeUntil.includes("STARTS IN")) {
+              statusText = "UPCOMING";
+              statusClass = "status-upcoming";
+            } else {
+              statusText = ev.timeUntil;
+            }
+          } else {
+            statusText = index === 0 ? "NOW" : `in ${index * 3} SkyBlock days`;
+          }
+          
+          const row = `<tr class="ufq-tr">
+                <td class="ufq-th">${ev.skyblockDate || "-"}</td>
+                <td class="ufq-th">${(ev.crops || []).join(", ")}</td>
+                <td class="ufq-th"><span class="status-badge ${statusClass}">${statusText}</span></td>
+            </tr>`;
+          tbody.insertAdjacentHTML("beforeend", row);
+        });
+
+        // Check for notifications if enabled
+        if (notificationPermission) {
+          checkForNotifications(events);
+        }
+
+      } catch (err) {
+        alert("Error fetching data: " + err.message);
+      } finally {
+        hideLoader();
+      }
+    }
+
+    // Handle form submit
+    document.getElementById("timeForm").addEventListener("submit", e => {
+      e.preventDefault();
+      let timeVal = document.getElementById("timeInput").value;
+      let date = new Date(timeVal);
+      date = snapToContestMinute(date);
+      const cropVal = document.getElementById("cropInput").value.trim().toLowerCase();
+      const formatted = formatApiDate(date);
+      fetchMultipleEvents(formatted, cropVal || null);
+    });
+
+    // Initialize crop selection UI
+    function initializeCropSelection() {
+      const container = document.getElementById("cropSelection");
+      container.innerHTML = "";
+      
+      ALL_CROPS.forEach(crop => {
+        const checkboxDiv = document.createElement("div");
+        checkboxDiv.className = "crop-checkbox";
+        
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `crop-${crop.toLowerCase()}`;
+        checkbox.value = crop;
+        checkbox.checked = selectedCrops.includes(crop);
+        checkbox.addEventListener("change", handleCropSelectionChange);
+        
+        const label = document.createElement("label");
+        label.htmlFor = `crop-${crop.toLowerCase()}`;
+        label.textContent = crop;
+        
+        checkboxDiv.appendChild(checkbox);
+        checkboxDiv.appendChild(label);
+        container.appendChild(checkboxDiv);
+      });
+    }
+
+    // Handle crop selection changes
+    function handleCropSelectionChange(e) {
+      const crop = e.target.value;
+      
+      if (e.target.checked) {
+        if (!selectedCrops.includes(crop)) {
+          selectedCrops.push(crop);
+        }
+      } else {
+        selectedCrops = selectedCrops.filter(c => c !== crop);
+      }
+      
+      // Save to localStorage
+      localStorage.setItem("selectedCrops", JSON.stringify(selectedCrops));
+    }
+
+    // Enable notifications
+    document.getElementById("enableNotifications").addEventListener("click", async function() {
+      if (!("Notification" in window)) {
+        alert("This browser does not support notifications");
+        return;
+      }
+      
+      if (Notification.permission === "granted") {
+        notificationPermission = true;
+        startNotificationChecker();
+        updateNotificationStatus();
+      } else if (Notification.permission !== "denied") {
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+          notificationPermission = true;
+          startNotificationChecker();
+          updateNotificationStatus();
+        }
+      }
+    });
+
+    // Update notification status text
+    function updateNotificationStatus() {
+      const statusEl = document.getElementById("notificationStatus");
+      if (notificationPermission) {
+        statusEl.textContent = `Notifications: Enabled (${selectedCrops.length} crops selected)`;
+        statusEl.style.color = "#4CAF50";
+      } else {
+        statusEl.textContent = "Notifications: Disabled";
+        statusEl.style.color = "#f44336";
+      }
+    }
+
+    // Check for notifications
+    function checkForNotifications(events) {
+      if (!notificationPermission || selectedCrops.length === 0) return;
+      
+      const currentEvent = events[0];
+      if (!currentEvent || !currentEvent.crops) return;
+      
+      // Check if current event has any selected crops
+      const hasSelectedCrop = currentEvent.crops.some(crop => 
+        selectedCrops.includes(crop)
+      );
+      
+      // Check if we haven't notified for this event yet
+      if (hasSelectedCrop && currentEvent.eventId !== lastNotifiedEventId) {
+        sendNotification(currentEvent);
+        lastNotifiedEventId = currentEvent.eventId;
+        localStorage.setItem("lastNotifiedEventId", lastNotifiedEventId);
+      }
+    }
+
+    // Send browser notification
+    function sendNotification(event) {
+      const notification = new Notification("🌾 Farming Contest Started!", {
+        body: `Crops: ${event.crops.join(", ")}\nSkyBlock Date: ${event.skyblockDate}`,
+        icon: "https://craftersmc-guides.pages.dev/favicon.ico",
+        tag: `contest-${event.eventId}`
+      });
+      
+      notification.onclick = function() {
+        window.focus();
+        this.close();
+      };
+    }
+
+    // Start periodic notification checker
+    function startNotificationChecker() {
+      // Clear any existing interval
+      if (notificationCheckInterval) {
+        clearInterval(notificationCheckInterval);
+      }
+      
+      // Check every minute
+      notificationCheckInterval = setInterval(() => {
+        const now = new Date();
+        const formatted = formatApiDate(now);
+        fetchMultipleEvents(formatted, null);
+      }, 60000); // 1 minute
+    }
+
+    // Show/hide loader
+    function showLoader() {
+      document.getElementById("loader").style.display = "block";
+    }
+    
+    function hideLoader() {
+      document.getElementById("loader").style.display = "none";
+    }
+
+    // On load → prefill datetime + fetch immediately
+    window.addEventListener("DOMContentLoaded", () => {
+      // Load saved preferences
+      const savedCrops = localStorage.getItem("selectedCrops");
+      if (savedCrops) {
+        selectedCrops = JSON.parse(savedCrops);
+      }
+      
+      lastNotifiedEventId = localStorage.getItem("lastNotifiedEventId");
+      
+      // Initialize UI
+      initializeCropSelection();
+      updateNotificationStatus();
+      
+      // Check if notifications are already granted
+      if (Notification.permission === "granted") {
+        notificationPermission = true;
+        startNotificationChecker();
+        updateNotificationStatus();
+      }
+      
+      // Load initial data
+      let now = new Date();
+      now = snapToContestMinute(now);
+      document.getElementById("timeInput").value = now.toISOString().slice(0, 16);
+      const formatted = formatApiDate(now);
+      fetchMultipleEvents(formatted, null);
+    });
+
+    // Helper function to get next 5 events by making multiple API calls
+    async function getNextFiveEvents(initialTime) {
+      const events = [];
+      let currentTime = initialTime;
+
+      for (let i = 0; i < 5; i++) {
+        try {
+          const url = `https://bhai-bhai.roumakdatta.workers.dev/api/${currentTime}`;
+          const res = await fetch(url);
+          if (!res.ok) throw new Error("Bad response " + res.status);
+          const data = await res.json();
+
+          const event = Array.isArray(data) ? data[0] : data;
+          events.push(event);
+
+          // Calculate next time (3 SkyBlock days later)
+          // Parse the current time to get a Date object
+          const [datePart, timePart] = currentTime.split(":");
+          const [day, month, year] = datePart.split("-").map(Number);
+          const [hours, minutes] = timePart.split(":").map(Number);
+
+          const currentDate = new Date(year, month - 1, day, hours, minutes);
+          // Add time equivalent to 3 SkyBlock days (3 * 24 * 60 * 60 / 72 real seconds)
+          const nextDate = new Date(currentDate.getTime() + (3 * 24 * 60 * 60 * 1000) / 72);
+
+          // Format the next date for the API
+          currentTime = formatApiDate(nextDate);
+
+        } catch (err) {
+          console.error("Error fetching event:", err);
+          events.push({ skyblockDate: "-", crops: ["Error"], timeUntil: "Error" });
+        }
+      }
+
+      return events;
+    }
+  </script>
+</body>
+
+</html>
