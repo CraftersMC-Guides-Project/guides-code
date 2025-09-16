@@ -1184,13 +1184,13 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "SammyMishu",
-                    "score": "29.6M+"
+                    "name": "The_Winchi",
+                    "score": "40.5M+"
                 },
                 {
                     "rank": 2,
-                    "name": "The_Winchi",
-                    "score": "N/A"
+                    "name": "SammyMishu",
+                    "score": "29.6M+"
                 },
                 {
                     "rank": 3,
@@ -1408,13 +1408,13 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "SammyMishu",
-                    "score": "29.5M+"
+                    "name": "The_Winchi",
+                    "score": "40.6M+"
                 },
                 {
                     "rank": 2,
-                    "name": "The_Winchi",
-                    "score": "26.5M+"
+                    "name": "SammyMishu",
+                    "score": "29.5M+"
                 },
                 {
                     "rank": 3,
