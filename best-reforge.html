@@ -33,7 +33,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 20px;
+      margin-top: 20px;
     }
     th, td {
       border: 1px solid #ddd;
@@ -44,20 +44,15 @@
       background: #f0f0f0;
     }
   </style>
-  <script src="js/reforges.js"></script> <!--Data comes from this js file thatd make the calc work-->
+  <script src="reforges.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>Best Reforge Calculator</h1>
     <div class="controls">
-      <label for="stat">Choose Stat:</label>
-      <select id="stat">
-        <option value="Speed">Speed</option>
-        <option value="Strength">Strength</option>
-        <option value="Defense">Defense</option>
-      </select><br>
       <label for="item">Choose Item:</label>
       <select id="item">
+        <option value="">-- Select Item --</option>
         <option value="Sword">Sword</option>
         <option value="Armor">Armor</option>
         <option value="Axe">Axe</option>
@@ -66,7 +61,11 @@
         <option value="Bow">Bow</option>
         <option value="Boomerang">Boomerang</option>
       </select>
-      <button id="calculateBtn">Calculate</button>
+      <label for="stat">Choose Stat:</label>
+      <select id="stat" disabled>
+        <option value="">-- Select Stat --</option>
+      </select>
+      <button id="calculateBtn" disabled>Calculate</button>
     </div>
     <table id="resultsTable">
       <thead>
@@ -86,17 +85,48 @@
   </div>
   <script>
     const rarities = ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Special"];
+    const itemSelect = document.getElementById("item");
+    const statSelect = document.getElementById("stat");
+    const calcBtn = document.getElementById("calculateBtn");
     const resultsTable = document.querySelector("#resultsTable tbody");
-    document.getElementById("calculateBtn").addEventListener("click", calculate);
-    function calculate() {
-      const stat = document.getElementById("stat").value;
-      const item = document.getElementById("item").value;
-      if (typeof reforges === "undefined") {
-        alert("No reforges data found. Please load reforges.js");
-        return;
-      }
+
+    itemSelect.addEventListener("change", updateStatOptions);
+    statSelect.addEventListener("change", () => {
+      calcBtn.disabled = !statSelect.value;
+    });
+    calcBtn.addEventListener("click", calculate);
+
+    function updateStatOptions() {
+      const item = itemSelect.value;
+      statSelect.innerHTML = '<option value="">-- Select Stat --</option>';
+      statSelect.disabled = true;
+      calcBtn.disabled = true;
+      if (!item || typeof reforges === "undefined") return;
       const validReforges = reforges.filter(r => r.itemTypes.includes(item));
-      const ranked = [...validReforges].sort((a, b) => {
+      const statSet = new Set();
+      validReforges.forEach(r => {
+        rarities.forEach(rarity => {
+          const stats = r.stats[rarity] || {};
+          Object.keys(stats).forEach(stat => statSet.add(stat));
+        });
+      });
+      Array.from(statSet).sort().forEach(stat => {
+        const option = document.createElement("option");
+        option.value = stat;
+        option.textContent = stat;
+        statSelect.appendChild(option);
+      });
+      statSelect.disabled = statSet.size === 0;
+    }
+
+    function calculate() {
+      const item = itemSelect.value;
+      const stat = statSelect.value;
+      const validReforges = reforges.filter(r => r.itemTypes.includes(item));
+      const filtered = validReforges.filter(r =>
+        rarities.some(rarity => (r.stats[rarity] || {})[stat] !== undefined)
+      );
+      const ranked = [...filtered].sort((a, b) => {
         const aVal = a.stats.Special?.[stat] || 0;
         const bVal = b.stats.Special?.[stat] || 0;
         return bVal - aVal;
