@@ -550,79 +550,79 @@ if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
 }
 
 // Audio handling for click and chest sounds
-document.addEventListener("DOMContentLoaded", function () {
-  const clickAudio = document.createElement("audio");
-  clickAudio.src = "/assets/audio/click.mp3";
-  clickAudio.preload = "auto";
-  document.body.appendChild(clickAudio);
+// document.addEventListener("DOMContentLoaded", function () {
+//   const clickAudio = document.createElement("audio");
+//   clickAudio.src = "/assets/audio/click.mp3";
+//   clickAudio.preload = "auto";
+//   document.body.appendChild(clickAudio);
 
-  const chestOpenAudio = document.createElement("audio");
-  chestOpenAudio.src = "/assets/audio/chest-open.mp3";
-  chestOpenAudio.preload = "auto";
-  document.body.appendChild(chestOpenAudio);
+//   const chestOpenAudio = document.createElement("audio");
+//   chestOpenAudio.src = "/assets/audio/chest-open.mp3";
+//   chestOpenAudio.preload = "auto";
+//   document.body.appendChild(chestOpenAudio);
 
-  const chestCloseAudio = document.createElement("audio");
-  chestCloseAudio.src = "/assets/audio/chest-close.mp3";
-  chestCloseAudio.preload = "auto";
-  document.body.appendChild(chestCloseAudio);
+//   const chestCloseAudio = document.createElement("audio");
+//   chestCloseAudio.src = "/assets/audio/chest-close.mp3";
+//   chestCloseAudio.preload = "auto";
+//   document.body.appendChild(chestCloseAudio);
 
-  function playClickSound() {
-    console.log("[DEBUG] playClickSound called");
-    try {
-      clickAudio.currentTime = 0.2;
-      clickAudio.play().catch((err) => {
-        console.warn("[DEBUG] clickAudio play error:", err);
-      });
-    } catch (err) {
-      console.warn("[DEBUG] clickAudio play error (outer):", err);
-    }
-  }
+//   function playClickSound() {
+//     console.log("[DEBUG] playClickSound called");
+//     try {
+//       clickAudio.currentTime = 0.2;
+//       clickAudio.play().catch((err) => {
+//         console.warn("[DEBUG] clickAudio play error:", err);
+//       });
+//     } catch (err) {
+//       console.warn("[DEBUG] clickAudio play error (outer):", err);
+//     }
+//   }
 
-  function playChestOpenSound() {
-    console.log("[DEBUG] playChestOpenSound called");
-    chestOpenAudio.pause();
-    chestOpenAudio.currentTime = 0;
-    chestOpenAudio.play().catch((err) => {
-      console.warn("[DEBUG] chestOpenAudio play error:", err);
-    });
-  }
+//   function playChestOpenSound() {
+//     console.log("[DEBUG] playChestOpenSound called");
+//     chestOpenAudio.pause();
+//     chestOpenAudio.currentTime = 0;
+//     chestOpenAudio.play().catch((err) => {
+//       console.warn("[DEBUG] chestOpenAudio play error:", err);
+//     });
+//   }
 
-  function playChestCloseSound() {
-    console.log("[DEBUG] playChestCloseSound called");
-    chestCloseAudio.pause();
-    chestCloseAudio.currentTime = 0;
-    chestCloseAudio.play().catch((err) => {
-      console.warn("[DEBUG] chestCloseAudio play error:", err);
-    });
-  }
+//   function playChestCloseSound() {
+//     console.log("[DEBUG] playChestCloseSound called");
+//     chestCloseAudio.pause();
+//     chestCloseAudio.currentTime = 0;
+//     chestCloseAudio.play().catch((err) => {
+//       console.warn("[DEBUG] chestCloseAudio play error:", err);
+//     });
+//   }
 
-  window.playClickSound = playClickSound;
-  window.playChestOpenSound = playChestOpenSound;
-  window.playChestCloseSound = playChestCloseSound;
+//   window.playClickSound = playClickSound;
+//   window.playChestOpenSound = playChestOpenSound;
+//   window.playChestCloseSound = playChestCloseSound;
 
-  document.addEventListener(
-    "pointerdown",
-    function (e) {
-      if (e.button !== 0) return; // Only play sound for left-click
-      let el = e.target;
-      while (el && el !== document.body) {
-        if (
-          el.tagName === "A" ||
-          el.tagName === "BUTTON" ||
-          el.classList.contains("toggle") ||
-          el.getAttribute("role") === "switch" ||
-          el.getAttribute("aria-pressed") !== null
-        ) {
-          console.log("[DEBUG] pointerdown on clickable element:", el);
-          if (window.playClickSound) window.playClickSound();
-          break;
-        }
-        el = el.parentElement;
-      }
-    },
-    true
-  );
-});
+//   document.addEventListener(
+//     "pointerdown",
+//     function (e) {
+//       if (e.button !== 0) return; // Only play sound for left-click
+//       let el = e.target;
+//       while (el && el !== document.body) {
+//         if (
+//           el.tagName === "A" ||
+//           el.tagName === "BUTTON" ||
+//           el.classList.contains("toggle") ||
+//           el.getAttribute("role") === "switch" ||
+//           el.getAttribute("aria-pressed") !== null
+//         ) {
+//           console.log("[DEBUG] pointerdown on clickable element:", el);
+//           if (window.playClickSound) window.playClickSound();
+//           break;
+//         }
+//         el = el.parentElement;
+//       }
+//     },
+//     true
+//   );
+// });
 
 function overlay() {
   const sidelid = document.getElementById("sidelid");
