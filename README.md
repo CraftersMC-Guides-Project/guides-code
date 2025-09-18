@@ -75,3 +75,6 @@ Join our discord server to get updates of the project and give us your feedbacks
 ## **License**
 
 This project is licensed under the **GNU General Public License**. See the [LICENSE](./LICENSE) file for details.
+
+> [!NOTE] 
+> We are not affiliated with Minecraft, Microsoft, or TEON CREATIVE.
