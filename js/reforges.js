@@ -333,7 +333,211 @@ const reforges = [
   // Hoe Reforges End
   // Accessory (18 reforges)
   {
-    name: "Reforge1E",
+    name: "Bizarre",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Itchy",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Ominous",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Pleasant",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Pretty",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Shiny",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Simple",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Strange",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Vivid",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Godly",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Demonic",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Forceful",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Hurtful",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Keen",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Strong",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Superior",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Unpleasant",
+    itemTypes: ["Accessory"],
+    stats: {
+      Common: { Stat1: 1, Stat2: 2 },
+      Uncommon: { Stat1: 2, Stat2: 3 },
+      Rare: { Stat1: 3, Stat2: 4 },
+      Epic: { Stat1: 4, Stat2: 5 },
+      Legendary: { Stat1: 5, Stat2: 6 },
+      Special: { Stat1: 6, Stat2: 7 }
+    }
+  },
+  {
+    name: "Zealous",
     itemTypes: ["Accessory"],
     stats: {
       Common: { Stat1: 1, Stat2: 2 },
@@ -345,7 +549,6 @@ const reforges = [
     }
   },
   // Accessory Reforges End
-
   // Bow + Boomerang (9 reforges)
   {
     name: "Deadly",
