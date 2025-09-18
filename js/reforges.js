@@ -52,7 +52,7 @@ const reforges = [
     name: "Epic",
     itemTypes: ["Sword"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
+      Common: { Lowstat: 1, Stat2: 2 },
       Uncommon: { Stat1: 2, Stat2: 3 },
       Rare: { Stat1: 3, Stat2: 4 },
       Epic: { Stat1: 4, Stat2: 5 },
@@ -64,7 +64,7 @@ const reforges = [
     name: "Sharp",
     itemTypes: ["Sword"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
+      Common: { Highstat: 7, Stat2: 2 },
       Uncommon: { Stat1: 2, Stat2: 3 },
       Rare: { Stat1: 3, Stat2: 4 },
       Epic: { Stat1: 4, Stat2: 5 },
