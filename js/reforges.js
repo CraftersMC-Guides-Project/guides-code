@@ -64,12 +64,12 @@ const reforges = [
     name: "Sharp",
     itemTypes: ["Sword"],
     stats: {
-      Common: { Highstat: 7, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { "Critical Chance" +10, "Critical Damage": +20 },
+      Uncommon: { "Critical Chance": +12, "Critical Damage": +30 },
+      Rare: { "Critical Chance": +14, "Critical Damage": +40 },
+      Epic: { "Critical Chance": +17, "Critical Damage": +55 },
+      Legendary: { "Critical Chance": +20, "Critical Damage": +75 },
+      Special: { "Critical Chance": +25, "Critical Damage": +90 }
     }
   },
   {
