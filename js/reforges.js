@@ -88,12 +88,12 @@ const reforges = [
     name: "Spicy",
     itemTypes: ["Sword"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +2, "Critical Chance": +1, "Critical Damage": +25, "Attack Speed": +1 },
+      Uncommon: { Strength: +3, "Critical Chance": +1, "Critical Damage": +35, "Attack Speed": +2 },
+      Rare: { Strength: +4, "Critical Chance": +1, "Critical Damage": +45, "Attack Speed": +4 },
+      Epic: { Strength: +7, "Critical Chance": +1, "Critical Damage": +60, "Attack Speed": +7 },
+      Legendary: { Strength: +10, "Critical Chance": +1, "Critical Damage": +80, "Attack Speed": +10 },
+      Special: { Strength: +12, "Critical Chance": +1, "Critical Damage": +100, "Attack Speed": +15 }
     }
   },
   {
