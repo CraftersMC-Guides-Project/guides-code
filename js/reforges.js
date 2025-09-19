@@ -100,12 +100,12 @@ const reforges = [
     name: "Legendary",
     itemTypes: ["Sword"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +3, "Critical Chance": +5, "Critical Damage": +5, Intelligence: +5, "Attack Speed": +2 },
+      Uncommon: { Strength: +7, "Critical Chance": +7, "Critical Damage": +10, Intelligence: +8, "Attack Speed": +3 },
+      Rare: { Strength: +12, "Critical Chance": +9, "Critical Damage": +15, Intelligence: +12, "Attack Speed": +5 },
+      Epic: { Strength: +18, "Critical Chance": +12, "Critical Damage": +22, Intelligence: +18, "Attack Speed": +7 },
+      Legendary: { Strength: +25, "Critical Chance": +15, "Critical Damage": +28, Intelligence: +28, "Attack Speed": +10 },
+      Special: { Strength: +32, "Critical Chance": +18, "Critical Damage": +36, Intelligence: +36, "Attack Speed": +15 }
     }
   },
   // Sword Reforges End
