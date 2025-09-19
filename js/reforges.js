@@ -4,24 +4,24 @@ const reforges = [
     name: "Gentle",
     itemTypes: ["Sword"],
     stats: {
-      Common: { Strength: 3, Attack Speed: 8 },
-      Uncommon: { Strength: 5, Attack Speed: 10 },
-      Rare: { Strength: 7, Attack Speed: 15 },
-      Epic: { Strength: 10, Attack Speed: 20 },
-      Legendary: { Strength: 15, Attack Speed: 25 },
-      Special: { Strength: 20, Attack Speed: 30 }
+      Common: { Strength: 3, "Attack Speed": 8 },
+      Uncommon: { Strength: 5, "Attack Speed": 10 },
+      Rare: { Strength: 7, "Attack Speed": 15 },
+      Epic: { Strength: 10, "Attack Speed": 20 },
+      Legendary: { Strength: 15, "Attack Speed": 25 },
+      Special: { Strength: 20, "Attack Speed": 30 }
     }
   },
   {
     name: "Odd",
     itemTypes: ["Sword"],
     stats: {
-      Common: { Highstat: 9, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { "Critical Chance": 12, "Critical Damage": 10, Intelligence: -5 },
+      Uncommon: { "Critical Chance": 15, "Critical Damage": 15, Intelligence: -10 },
+      Rare: { "Critical Chance": 15, "Critical Damage": 15, Intelligence: -18 },
+      Epic: { "Critical Chance": 20, "Critical Damage": 22, Intelligence: -32 },
+      Legendary: { "Critical Chance": 25, "Critical Damage": 30, Intelligence: -50 },
+      Special: { "Critical Chance": 30, "Critical Damage": 40, Intelligence: -75 }
     }
   },
   {
