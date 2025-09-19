@@ -81,7 +81,7 @@ const reforges = [
       Rare: { Strength: +25, Intelligence: +65, "Attack Speed": +2 },
       Epic: { Strength: +32, Intelligence: +80, "Attack Speed": +3 },
       Legendary: { Strength: +40, Intelligence: +100, "Attack Speed": +5 },
-      Special: { Strength: +50, Intelligence: +125, "Attack Speed": +7}
+      Special: { Strength: +50, Intelligence: +125, "Attack Speed": +7 }
     }
   },
   {
