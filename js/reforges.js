@@ -76,12 +76,12 @@ const reforges = [
     name: "Heroic",
     itemTypes: ["Sword"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +15, Intelligence: +40, "Attack Speed": +1 },
+      Uncommon: { Strength: +20, Intelligence: +50, "Attack Speed": +2 },
+      Rare: { Strength: +25, Intelligence: +65, "Attack Speed": +2 },
+      Epic: { Strength: +32, Intelligence: +80, "Attack Speed": +3 },
+      Legendary: { Strength: +40, Intelligence: +100, "Attack Speed": +5 },
+      Special: { Strength: +50, Intelligence: +125, "Attack Speed": +7}
     }
   },
   {
