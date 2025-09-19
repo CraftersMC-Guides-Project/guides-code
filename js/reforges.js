@@ -28,24 +28,24 @@ const reforges = [
     name: "Fast",
     itemTypes: ["Sword"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { "Attack Speed": +10 },
+      Uncommon: { "Attack Speed": +20 },
+      Rare: { "Attack Speed": +30 },
+      Epic: { "Attack Speed": +40 },
+      Legendary: { "Attack Speed": +50 },
+      Special: { "Attack Speed": +60 }
     }
   },
   {
     name: "Fair",
     itemTypes: ["Sword"],
     stats: {
-      Common: { Lowstat: 0.5, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +2, "Critical Chance": +2, "Critical Damage": +2, Intelligence: +2, "Attack Speed": +2 },
+      Uncommon: { Strength: +3, "Critical Chance": +3, "Critical Damage": +3, Intelligence: +3, "Attack Speed": +3 },
+      Rare: { Strength: +4, "Critical Chance": +4, "Critical Damage": +4, Intelligence: +4, "Attack Speed": +4 },
+      Epic: { Strength: +7, "Critical Chance": +7, "Critical Damage": +7, Intelligence: +7, "Attack Speed": +7 },
+      Legendary: { Strength: +10, "Critical Chance": +10, "Critical Damage": +10, Intelligence: +10, "Attack Speed": +10 },
+      Special: { Strength: +12, "Critical Chance": +12, "Critical Damage": +12, Intelligence: +12, "Attack Speed": +12 }
     }
   },
   {
