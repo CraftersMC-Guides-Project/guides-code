@@ -4,12 +4,12 @@ const reforges = [
     name: "Gentle",
     itemTypes: ["Sword"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: 3, Attack Speed: 8 },
+      Uncommon: { Strength: 5, Attack Speed: 10 },
+      Rare: { Strength: 7, Attack Speed: 15 },
+      Epic: { Strength: 10, Attack Speed: 20 },
+      Legendary: { Strength: 15, Attack Speed: 25 },
+      Special: { Strength: 20, Attack Speed: 30 }
     }
   },
   {
