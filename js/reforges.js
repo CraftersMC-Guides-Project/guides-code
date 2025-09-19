@@ -52,12 +52,12 @@ const reforges = [
     name: "Epic",
     itemTypes: ["Sword"],
     stats: {
-      Common: { Strength: +15, "Critical Damage": +10, "Attack Speed":},
-      Uncommon: { Strength: +20, "Critical Damage": +15, "Attack Speed":},
-      Rare: { Strength: +25, "Critical Damage": +20, "Attack Speed":},
-      Epic: { Strength: +32, "Critical Damage": +27, "Attack Speed":},
-      Legendary: { Strength: +40, "Critical Damage": +35, "Attack Speed":},
-      Special: { Strength: +50, "Critical Damage": +45, "Attack Speed":}
+      Common: { Strength: +15, "Critical Damage": +10, "Attack Speed": +1 },
+      Uncommon: { Strength: +20, "Critical Damage": +15, "Attack Speed": +2 },
+      Rare: { Strength: +25, "Critical Damage": +20, "Attack Speed": +4 },
+      Epic: { Strength: +32, "Critical Damage": +27, "Attack Speed": +7 },
+      Legendary: { Strength: +40, "Critical Damage": +35, "Attack Speed": +10 },
+      Special: { Strength: +50, "Critical Damage": +45, "Attack Speed": +15 }
     }
   },
   {
