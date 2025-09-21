@@ -286,48 +286,48 @@ const reforges = [
     name: "Green Thumb",
     itemTypes: ["Hoe"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Speed: +1, Fortune: +1 },
+      Uncommon: { Speed: +2, Fortune: +2 },
+      Rare: { Speed: +3, Fortune: +3 },
+      Epic: { Speed: +5, Fortune: +4 },
+      Legendary: { Speed: +7, Fortune: +5 },
+      Special: { Speed: +9, Fortune: +6 }
     }
   },
   {
     name: "Robust",
     itemTypes: ["Hoe"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Fortune: +2 },
+      Uncommon: { Fortune: +3 },
+      Rare: { Fortune: +4 },
+      Epic: { Fortune: +6 },
+      Legendary: { Fortune: +8 },
+      Special: { Fortune: +10 }
     }
   },
   {
     name: "Zooming",
     itemTypes: ["Hoe"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Speed: +5 },
+      Uncommon: { Speed: +8 },
+      Rare: { Speed: +12 },
+      Epic: { Speed: +16 },
+      Legendary: { Speed: +20 },
+      Special: { Speed: +25 }
     }
   },
   {
     name: "Peasant's",
     itemTypes: ["Hoe"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Speed: +1 },
+      Uncommon: { Speed: +2 },
+      Rare: { Speed: +3 },
+      Epic: { Speed: +5 },
+      Legendary: { Speed: +7 },
+      Special: { Speed: +9 }
     }
   },
   // Hoe Reforges End
