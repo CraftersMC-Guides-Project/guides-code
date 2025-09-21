@@ -186,12 +186,12 @@ const reforges = [
     name: "Smart",
     itemTypes: ["Armor"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Health: +4, Defense: +4, Intelligence: +20 },
+      Uncommon: { Health: +6, Defense: +6, Intelligence: +40 },
+      Rare: { Health: +9, Defense: +9, Intelligence: +60 },
+      Epic: { Health: +12, Defense: +12, Intelligence: +80 },
+      Legendary: { Health: +15, Defense: +15, Intelligence: +100 },
+      Special: { Health: +20, Defense: +20, Intelligence: +120 }
     }
   },
   {
