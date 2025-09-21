@@ -138,12 +138,12 @@ const reforges = [
     name: "Heavy",
     itemTypes: ["Armor"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Defense: +25, Intelligence: -1, "Critical Damage": -1 },
+      Uncommon: { Defense: +35, Intelligence: -1, "Critical Damage": -2 },
+      Rare: { Defense: +50, Intelligence: -1, "Critical Damage": -2 },
+      Epic: { Defense: +60, Intelligence: -1, "Critical Damage": -3 },
+      Legendary: { Defense: +80, Intelligence: -1, "Critical Damage": -5 },
+      Special: { Defense: +110, Intelligence: -1, "Critical Damage": -7 }
     }
   },
   {
