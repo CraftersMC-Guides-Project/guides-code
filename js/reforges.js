@@ -198,24 +198,24 @@ const reforges = [
     name: "Titanic",
     itemTypes: ["Armor"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Health: +10, Defense: +10 },
+      Uncommon: { Health: +15, Defense: +15 },
+      Rare: { Health: +20, Defense: +20 },
+      Epic: { Health: +25, Defense: +25 },
+      Legendary: { Health: +35, Defense: +35 },
+      Special: { Health: +50, Defense: +50 }
     }
   },
   {
     name: "Wise",
     itemTypes: ["Armor"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Health: +6, Speed: +1, Intelligence: +25 },
+      Uncommon: { Health: +8, Speed: +1, Intelligence: +50 },
+      Rare: { Health: +10, Speed: +1, Intelligence: +75 },
+      Epic: { Health: +12, Speed: +2, Intelligence: +100 },
+      Legendary: { Health: +15, Speed: +2, Intelligence: +125 },
+      Special: { Health: +20, Speed: +3, Intelligence: +150 }
     }
   },
   // Armor Reforges End
