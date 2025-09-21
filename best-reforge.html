@@ -1,11 +1,139 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Best Reforge Calculator</title>
-  <script src="js/script.js"></script>
   <script src="js/reforges.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0d0d0d;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .container {
+  width: 100%;
+  max-width: 800px;
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #3b82f6;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: 600;
+  color: #fff;
+}
+
+select, button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #3b82f6;
+  background-color: #0d0d0d;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+select:disabled, button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button {
+  background-color: #3b82f6;
+  border: none;
+  font-weight: 600;
+}
+
+button:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.rarity-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.rarity-nav button {
+  background-color: #1a1a1a;
+  border: 1px solid #3b82f6;
+  color: #3b82f6;
+  font-size: 16px;
+  padding: 5px 12px;
+  border-radius: 6px;
+}
+
+.rarity-nav button:hover:not(:disabled) {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+.rarity-nav span {
+  margin: 0 15px;
+  font-weight: bold;
+  color: #fff;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: center;
+  border-bottom: 1px solid #333;
+}
+
+thead th {
+  background-color: #007bff;
+  font-weight: 600;
+  color: #fff;
+}
+
+tbody tr:hover {
+  background-color: #222;
+}
+
+tbody tr:nth-child(1) td {
+  background-color: #ffd700;
+  font-weight: bold;
+  color: #000;
+}
+
+tbody tr:nth-child(2) td {
+  background-color: #c0c0c0;
+  font-weight: bold;
+  color: #000;
+}
+
+tbody tr:nth-child(3) td {
+  background-color: #cd7f32;
+  font-weight: bold;
+  color: #000;
+}
+
+  </style>
 </head>
 <body>
   <div class="container">
@@ -21,88 +149,127 @@
         <option value="Accessory">Accessory</option>
         <option value="Bow">Bow</option>
         <option value="Boomerang">Boomerang</option>
-      </select>
-      <label for="stat">Choose Stat:</label>
-      <select id="stat" class="skill-calc-input">
-        <option value="" disabled selected hidden>No stat selected</option>
-      </select>
-      <button id="calculateBtn" class="login-discord-login-button" disabled>Calculate</button>
-    </div>
-    <table class="slay-lb-table" id="resultsTable">
-      <thead>
-        <tr>
-          <th>Rank</th>
-          <th>Reforge</th>
-          <th>Common</th>
-          <th>Uncommon</th>
-          <th>Rare</th>
-          <th>Epic</th>
-          <th>Legendary</th>
-          <th>Special</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-  <script>
-    const rarities = ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Special"];
-    const itemSelect = document.getElementById("item");
-    const statSelect = document.getElementById("stat");
-    const calcBtn = document.getElementById("calculateBtn");
-    const resultsTable = document.querySelector("#resultsTable tbody");
+      </select><label for="stat">Choose Stat:</label>
+  <select id="stat" class="skill-calc-input">
+    <option value="" disabled selected hidden>No stat selected</option>
+  </select>
 
-    itemSelect.addEventListener("change", updateStatOptions);
-    statSelect.addEventListener("change", () => {
-      calcBtn.disabled = !statSelect.value;
+  <button id="calculateBtn" disabled>Calculate</button>
+</div>
+
+<div class="rarity-nav">
+  <button id="prevRarity">←</button>
+  <span id="currentRarity"></span>
+  <button id="nextRarity">→</button>
+</div>
+
+<table id="resultsTable">
+  <thead>
+    <tr>
+      <th>Rank</th>
+      <th>Reforge</th>
+      <th id="rarityHeader">Stat</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+  </div>  <script>
+const rarities = ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Special"];
+let currentRarityIndex = 0;
+
+const itemSelect = document.getElementById("item");
+const statSelect = document.getElementById("stat");
+const calcBtn = document.getElementById("calculateBtn");
+const resultsTable = document.querySelector("#resultsTable tbody");
+const rarityHeader = document.getElementById("rarityHeader");
+
+const prevRarityBtn = document.getElementById("prevRarity");
+const nextRarityBtn = document.getElementById("nextRarity");
+const currentRarityLabel = document.getElementById("currentRarity");
+
+itemSelect.addEventListener("change", updateStatOptions);
+statSelect.addEventListener("change", () => {
+  calcBtn.disabled = !statSelect.value;
+});
+calcBtn.addEventListener("click", () => renderTable(rarities[currentRarityIndex]));
+
+prevRarityBtn.addEventListener("click", () => {
+  if (currentRarityIndex > 0) {
+    currentRarityIndex--;
+    updateRarity();
+  }
+});
+
+nextRarityBtn.addEventListener("click", () => {
+  if (currentRarityIndex < rarities.length - 1) {
+    currentRarityIndex++;
+    updateRarity();
+  }
+});
+
+function updateRarity() {
+  currentRarityLabel.textContent = rarities[currentRarityIndex];
+  rarityHeader.textContent = rarities[currentRarityIndex];
+  renderTable(rarities[currentRarityIndex]);
+  prevRarityBtn.disabled = currentRarityIndex === 0;
+  nextRarityBtn.disabled = currentRarityIndex === rarities.length - 1;
+}
+
+function updateStatOptions() {
+  const item = itemSelect.value;
+  statSelect.innerHTML = '<option value="" disabled selected hidden>No stat selected</option>';
+  statSelect.disabled = true;
+  calcBtn.disabled = true;
+  if (!item || typeof reforges === "undefined") return;
+
+  const validReforges = reforges.filter(r => r.itemTypes.includes(item));
+  const statSet = new Set();
+
+  validReforges.forEach(r => {
+    rarities.forEach(rarity => {
+      const stats = r.stats[rarity] || {};
+      Object.keys(stats).forEach(stat => statSet.add(stat));
     });
-    calcBtn.addEventListener("click", calculate);
+  });
 
-    function updateStatOptions() {
-      const item = itemSelect.value;
-      statSelect.innerHTML = '<option value="" disabled selected hidden>No stat selected</option>';
-      statSelect.disabled = true;
-      calcBtn.disabled = true;
-      if (!item || typeof reforges === "undefined") return;
-      const validReforges = reforges.filter(r => r.itemTypes.includes(item));
-      const statSet = new Set();
-      validReforges.forEach(r => {
-        rarities.forEach(rarity => {
-          const stats = r.stats[rarity] || {};
-          Object.keys(stats).forEach(stat => statSet.add(stat));
-        });
-      });
-      Array.from(statSet).sort().forEach(stat => {
-        const option = document.createElement("option");
-        option.value = stat;
-        option.textContent = stat;
-        statSelect.appendChild(option);
-      });
-      statSelect.disabled = statSet.size === 0;
-    }
+  Array.from(statSet).sort().forEach(stat => {
+    const option = document.createElement("option");
+    option.value = stat;
+    option.textContent = stat;
+    statSelect.appendChild(option);
+  });
 
-    function calculate() {
-      const item = itemSelect.value;
-      const stat = statSelect.value;
-      const validReforges = reforges.filter(r => r.itemTypes.includes(item));
-      const filtered = validReforges.filter(r =>
-        rarities.some(rarity => (r.stats[rarity] || {})[stat] !== undefined)
-      );
-      const ranked = [...filtered].sort((a, b) => {
-        const aVal = a.stats.Special?.[stat] || 0;
-        const bVal = b.stats.Special?.[stat] || 0;
-        return bVal - aVal;
-      });
-      resultsTable.innerHTML = "";
-      ranked.forEach((reforge, i) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${i + 1}</td>
-          <td>${reforge.name}</td>
-          ${rarities.map(r => `<td>${reforge.stats[r]?.[stat] || "-"}</td>`).join("")}
-        `;
-        resultsTable.appendChild(row);
-      });
-    }
-  </script>
-</body>
+  statSelect.disabled = statSet.size === 0;
+}
+
+function renderTable(rarity) {
+  const item = itemSelect.value;
+  const stat = statSelect.value;
+  if (!item || !stat) return;
+
+  const validReforges = reforges.filter(r => r.itemTypes.includes(item));
+  const filtered = validReforges.filter(r => (r.stats[rarity] || {})[stat] !== undefined);
+
+  const ranked = [...filtered].sort((a, b) => {
+    const aVal = a.stats[rarity]?.[stat] || 0;
+    const bVal = b.stats[rarity]?.[stat] || 0;
+    return bVal - aVal;
+  });
+
+  resultsTable.innerHTML = "";
+
+  ranked.forEach((reforge, i) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${reforge.name}</td>
+      <td>${reforge.stats[rarity]?.[stat] || "-"}</td>
+    `;
+    resultsTable.appendChild(row);
+  });
+}
+
+updateRarity();
+</script></body>
 </html>
