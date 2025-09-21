@@ -578,36 +578,36 @@ const reforges = [
     name: "Grand",
     itemTypes: ["Bow","Boomerang"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +25 },
+      Uncommon: { Strength: +32 },
+      Rare: { Strength: +40 },
+      Epic: { Strength: +50 },
+      Legendary: { Strength: +60 },
+      Special: { Strength: +75 }
     }
   },
   {
     name: "Hasty",
     itemTypes: ["Bow","Boomerang"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +3, "Critical Chance": +20 },
+      Uncommon: { Strength: +5, "Critical Chance": +25 },
+      Rare: { Strength: +7, "Critical Chance": +30 },
+      Epic: { Strength: +10, "Critical Chance": +40 },
+      Legendary: { Strength: +15, "Critical Chance": +50 },
+      Special: { Strength: +20, "Critical Chance": +75 }
     }
   },
   {
     name: "Neat",
     itemTypes: ["Bow","Boomerang"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { "Critical Chance": +10, "Critical Damage": +4, Intelligence: +3 },
+      Uncommon: { "Critical Chance": +12, "Critical Damage": +8, Intelligence: +6 },
+      Rare: { "Critical Chance": +14, "Critical Damage": +14, Intelligence: +10 },
+      Epic: { "Critical Chance": +17, "Critical Damage": +20, Intelligence: +15 },
+      Legendary: { "Critical Chance": +20, "Critical Damage": +30, Intelligence: +20 },
+      Special: { "Critical Chance": +26, "Critical Damage": +40, Intelligence: +25 }
     }
   },
   {
