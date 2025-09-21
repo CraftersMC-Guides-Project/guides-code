@@ -138,36 +138,36 @@ const reforges = [
     name: "Heavy",
     itemTypes: ["Armor"],
     stats: {
-      Common: { Defense: +25, Intelligence: -1, "Critical Damage": -1 },
-      Uncommon: { Defense: +35, Intelligence: -1, "Critical Damage": -2 },
-      Rare: { Defense: +50, Intelligence: -1, "Critical Damage": -2 },
-      Epic: { Defense: +60, Intelligence: -1, "Critical Damage": -3 },
-      Legendary: { Defense: +80, Intelligence: -1, "Critical Damage": -5 },
-      Special: { Defense: +110, Intelligence: -1, "Critical Damage": -7 }
+      Common: { Defense: +25, Speed: -1, "Critical Damage": -1 },
+      Uncommon: { Defense: +35, Speed: -1, "Critical Damage": -2 },
+      Rare: { Defense: +50, Speed: -1, "Critical Damage": -2 },
+      Epic: { Defense: +60, Speed: -1, "Critical Damage": -3 },
+      Legendary: { Defense: +80, Speed: -1, "Critical Damage": -5 },
+      Special: { Defense: +110, Speed: -1, "Critical Damage": -7 }
     }
   },
   {
     name: "Light",
     itemTypes: ["Armor"],
     stats: {
-      Common: { Health: +5, Defense: +1, Intelligence: +1, "Critical Chance": +1, "Critical Damage": +1, "Attack Speed": +1 },
-      Uncommon: { Health: +7, Defense: +2, Intelligence: +2, "Critical Chance": +1, "Critical Damage": +2, "Attack Speed": +2 },
-      Rare: { Health: +10, Defense: +3, Intelligence: +3, "Critical Chance": +2, "Critical Damage": +3, "Attack Speed": +3 },
-      Epic: { Health: +15, Defense: +4, Intelligence: +4, "Critical Chance": +2, "Critical Damage": +4, "Attack Speed": +4 },
-      Legendary: { Health: +20, Defense: +5, Intelligence: +5, "Critical Chance": +3, "Critical Damage": +5, "Attack Speed": +5 },
-      Special: { Health: +25, Defense: +6, Intelligence: +6, "Critical Chance": +3, "Critical Damage": +6, "Attack Speed": +6 }
+      Common: { Health: +5, Defense: +1, Speed: +1, "Critical Chance": +1, "Critical Damage": +1, "Attack Speed": +1 },
+      Uncommon: { Health: +7, Defense: +2, Speed: +2, "Critical Chance": +1, "Critical Damage": +2, "Attack Speed": +2 },
+      Rare: { Health: +10, Defense: +3, Speed: +3, "Critical Chance": +2, "Critical Damage": +3, "Attack Speed": +3 },
+      Epic: { Health: +15, Defense: +4, Speed: +4, "Critical Chance": +2, "Critical Damage": +4, "Attack Speed": +4 },
+      Legendary: { Health: +20, Defense: +5, Speed: +5, "Critical Chance": +3, "Critical Damage": +5, "Attack Speed": +5 },
+      Special: { Health: +25, Defense: +6, Speed: +6, "Critical Chance": +3, "Critical Damage": +6, "Attack Speed": +6 }
     }
   },
   {
     name: "Mythic",
     itemTypes: ["Armor"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Health: +2, Defense: +2, Strength: +2, Speed: +2, "Critical Chance": +1, Intelligence: +20 },
+      Uncommon: { Health: +4, Defense: +4, Strength: +4, Speed: +2, "Critical Chance": +2, Intelligence: +25 },
+      Rare: { Health: +6, Defense: +6, Strength: +6, Speed: +2, "Critical Chance": +3, Intelligence: +30 },
+      Epic: { Health: +8, Defense: +8, Strength: +8, Speed: +2, "Critical Chance": +4, Intelligence: +40 },
+      Legendary: { Health: +10, Defense: +10, Strength: +10, Speed: +2, "Critical Chance": +5, Intelligence: +50 },
+      Special: { Health: +12, Defense: +12, Strength: +12, Speed: +2, "Critical Chance": +6, Intelligence: +60 }
     }
   },
   {
