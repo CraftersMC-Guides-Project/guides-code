@@ -174,12 +174,12 @@ const reforges = [
     name: "Pure",
     itemTypes: ["Armor"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Health: +2, Defense: +2, Strength: +2, Speed: +1, "Critical Chance": +2, "Critical Damage": +2, "Attack Speed": +1, Intelligence: +2 },
+      Uncommon: { Health: +4, Defense: +4, Strength: +4, Speed: +1, "Critical Chance": +4, "Critical Damage": +3, "Attack Speed": +1, Intelligence: +3 },
+      Rare: { Health: +6, Defense: +6, Strength: +6, Speed: +1, "Critical Chance": +6, "Critical Damage": +4, "Attack Speed": +2, Intelligence: +4 },
+      Epic: { Health: +8, Defense: +8, Strength: +8, Speed: +1, "Critical Chance": +8, "Critical Damage": +6, "Attack Speed": +3, Intelligence: +6 },
+      Legendary: { Health: +10, Defense: +10, Strength: +10, Speed: +1, "Critical Chance": +10, "Critical Damage": +8, "Attack Speed": +4, Intelligence: +8 },
+      Special: { Health: +12, Defense: +12, Strength: +12, Speed: +1, "Critical Chance": +12, "Critical Damage": +8, "Attack Speed": +5, Intelligence: +10 }
     }
   },
   {
