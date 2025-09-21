@@ -1021,23 +1021,23 @@ const collectionsData = {
                 },
                 {
                     "rank": 2,
+                    "name": "GRAVITY8303",
+                    "score": "N/A"
+                },
+                {
+                    "rank": 3,
                     "name": "GlumnorbG",
                     "score": "155M+"
                 },
                 {
-                    "rank": 3,
+                    "rank": 4,
                     "name": "GPK4",
                     "score": "N/A"
                 },
                 {
-                    "rank": 4,
+                    "rank": 5,
                     "name": "SphinxWraith",
                     "score": "N/A"
-                },
-                {
-                    "rank": 5,
-                    "name": "GRAVITY8303",
-                    "score": "100M+"
                 },
                 {
                     "rank": 6,
