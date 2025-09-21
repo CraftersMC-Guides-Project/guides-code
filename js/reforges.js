@@ -150,12 +150,12 @@ const reforges = [
     name: "Light",
     itemTypes: ["Armor"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Health: +5, Defense: +1, Intelligence: +1, "Critical Chance": +1, "Critical Damage": +1, "Attack Speed": +1 },
+      Uncommon: { Health: +7, Defense: +2, Intelligence: +2, "Critical Chance": +1, "Critical Damage": +2, "Attack Speed": +2 },
+      Rare: { Health: +10, Defense: +3, Intelligence: +3, "Critical Chance": +2, "Critical Damage": +3, "Attack Speed": +3 },
+      Epic: { Health: +15, Defense: +4, Intelligence: +4, "Critical Chance": +2, "Critical Damage": +4, "Attack Speed": +4 },
+      Legendary: { Health: +20, Defense: +5, Intelligence: +5, "Critical Chance": +3, "Critical Damage": +5, "Attack Speed": +5 },
+      Special: { Health: +25, Defense: +6, Intelligence: +6, "Critical Chance": +3, "Critical Damage": +6, "Attack Speed": +6 }
     }
   },
   {
