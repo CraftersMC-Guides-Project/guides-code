@@ -224,60 +224,60 @@ const reforges = [
     name: "Great",
     itemTypes: ["Axe"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Speed: +1, Strength: +2, "Critical Damage": +2 },
+      Uncommon: { Speed: +2, Strength: +4, "Critical Damage": +4 },
+      Rare: { Speed: +3, Strength: +6, "Critical Damage": +6 },
+      Epic: { Speed: +4, Strength: +9, "Critical Damage": +9 },
+      Legendary: { Speed: +5, Strength: +12, "Critical Damage": +12 },
+      Special: { Speed: +7, Strength: +16, "Critical Damage": +16 }
     }
   },
   {
     name: "Rugged",
     itemTypes: ["Axe"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +4, "Critical Damage": +3 },
+      Uncommon: { Strength: +6, "Critical Damage": +5 },
+      Rare: { Strength: +9, "Critical Damage": +8 },
+      Epic: { Strength: +13, "Critical Damage": +12 },
+      Legendary: { Strength: +18, "Critical Damage": +16 },
+      Special: { Strength: +24, "Critical Damage": +22 }
     }
   },
   {
     name: "Lush",
     itemTypes: ["Axe"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Speed: 3, Fortune: 1 },
+      Uncommon: { Speed: 4, Fortune: 1 },
+      Rare: { Speed: 5, Fortune: 2 },
+      Epic: { Speed: 7, Fortune: 2 },
+      Legendary: { Speed: 10, Fortune: 3 },
+      Special: { Speed: 15, Fortune: 5 }
     }
   },
   {
     name: "Double-Bit",
     itemTypes: ["Axe"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Speed: 1, Fortune: 1 },
+      Uncommon: { Speed: 2, Fortune: 2 },
+      Rare: { Speed: 3, Fortune: 3 },
+      Epic: { Speed: 5, Fortune: 4 },
+      Legendary: { Speed: 7, Fortune: 5 },
+      Special: { Speed: 9, Fortune: 6 }
     }
   },
   {
     name: "Lumberjack's",
     itemTypes: ["Axe"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Speed: +1 },
+      Uncommon: { Speed: +2 },
+      Rare: { Speed: +3 },
+      Epic: { Speed: +5 },
+      Legendary: { Speed: +7 },
+      Special: { Speed: +9 }
     }
   },
   // Axe Reforges End
