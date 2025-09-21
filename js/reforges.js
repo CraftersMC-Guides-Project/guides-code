@@ -614,36 +614,36 @@ const reforges = [
     name: "Rapid",
     itemTypes: ["Bow","Boomerang"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +2, "Critical Damage": +35 },
+      Uncommon: { Strength: +3, "Critical Damage": +45 },
+      Rare: { Strength: +4, "Critical Damage": +55 },
+      Epic: { Strength: +7, "Critical Damage": +65 },
+      Legendary: { Strength: +10, "Critical Damage": +75 },
+      Special: { Strength: +15, "Critical Damage": +90 }
     }
   },
   {
     name: "Unreal",
     itemTypes: ["Bow","Boomerang"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +3,"Critical Chance": +8, "Critical Damage": +5 },
+      Uncommon: { Strength: +7,"Critical Chance": +9, "Critical Damage": +10 },
+      Rare: { Strength: +12,"Critical Chance": +10, "Critical Damage": +18 },
+      Epic: { Strength: +18,"Critical Chance": +11, "Critical Damage": +32 },
+      Legendary: { Strength: +25,"Critical Chance": +13, "Critical Damage": +50 },
+      Special: { Strength: +34,"Critical Chance": +15, "Critical Damage": +70 }
     }
   },
   {
     name: "Awkward",
     itemTypes: ["Bow","Boomerang"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { "Critical Chance": +10, "Critical Damage": +5, Intelligence: -5 },
+      Uncommon: { "Critical Chance": +12, "Critical Damage": +10, Intelligence: -10 },
+      Rare: { "Critical Chance": +15, "Critical Damage": +15, Intelligence: -18 },
+      Epic: { "Critical Chance": +20, "Critical Damage": +22, Intelligence: -32 },
+      Legendary: { "Critical Chance": +25, "Critical Damage": +30, Intelligence: -50 },
+      Special: { "Critical Chance": +30, "Critical Damage": +35, Intelligence: -72 }
     }
   },
   {
