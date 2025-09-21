@@ -114,24 +114,24 @@ const reforges = [
     name: "Clean",
     itemTypes: ["Armor"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Health: +5, Defense: +5, "Critical Chance": +2 },
+      Uncommon: { Health: +7, Defense: +7, "Critical Chance": +4 },
+      Rare: { Health: +10, Defense: +10, "Critical Chance": +6 },
+      Epic: { Health: +15, Defense: +15, "Critical Chance": +8 },
+      Legendary: { Health: +20, Defense: +20, "Critical Chance": +10 },
+      Special: { Health: +25, Defense: +25, "Critical Chance": +12 }
     }
   },
   {
     name: "Fierce",
     itemTypes: ["Armor"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +2, "Critical Chance": +2, "Critical Damage": +4 },
+      Uncommon: { Strength: +4, "Critical Chance": +3, "Critical Damage": +7 },
+      Rare: { Strength: +6, "Critical Chance": +4, "Critical Damage": +10 },
+      Epic: { Strength: +8, "Critical Chance": +5, "Critical Damage": +14 },
+      Legendary: { Strength: +10, "Critical Chance": +6, "Critical Damage": +18 },
+      Special: { Strength: +12, "Critical Chance": +8, "Critical Damage": +24 }
     }
   },
   {
