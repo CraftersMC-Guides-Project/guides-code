@@ -408,12 +408,12 @@ const reforges = [
     name: "Simple",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Health: +1, Defense: +1, Strength: +1, "Critical Damage": +1, Speed: +1, Intelligence: +1 },
+      Uncommon: { Health: +1, Defense: +1, Strength: +1, "Critical Damage": +1, Speed: +1, Intelligence: +1 },
+      Rare: { Health: +1, Defense: +1, Strength: +1, "Critical Damage": +1, Speed: +1, Intelligence: +1 },
+      Epic: { Health: +1, Defense: +1, Strength: +1, "Critical Damage": +1, Speed: +1, Intelligence: +1 },
+      Legendary: { Health: +1, Defense: +1, Strength: +1, "Critical Damage": +1, Speed: +1, Intelligence: +1 },
+      Special: { Health: +1, Defense: +1, Strength: +1, "Critical Damage": +1, Speed: +1, Intelligence: +1 }
     }
   },
   {
