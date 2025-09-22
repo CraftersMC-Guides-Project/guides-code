@@ -480,36 +480,36 @@ const reforges = [
     name: "Hurtful",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { "Critical Damage": +4 },
+      Uncommon: { "Critical Damage": +5 },
+      Rare: { "Critical Damage": +7 },
+      Epic: { "Critical Damage": +10 },
+      Legendary: { "Critical Damage": +15 },
+      Special: { "Critical Damage": +7 }
     }
   },
   {
     name: "Keen",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Health: +1, Defense: +1, Intelligence: +1 },
+      Uncommon: { Health: +2, Defense: +2, Intelligence: +2 },
+      Rare: { Health: +3, Defense: +3, Intelligence: +3 },
+      Epic: { Health: +4, Defense: +4, Intelligence: +4 },
+      Legendary: { Health: +5, Defense: +5, Intelligence: +5 },
+      Special: { Health: +3, Defense: +3, Intelligence: +3 }
     }
   },
   {
     name: "Strong",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +1, "Critical Damage": +2 },
+      Uncommon: { Strength: +2, "Critical Damage": +2 },
+      Rare: { Strength: +3, "Critical Damage": +3, Defense: +1 },
+      Epic: { Strength: +5, "Critical Damage": +5, Defense: +2 },
+      Legendary: { Strength: +8, "Critical Damage": +8, Defense: +3 },
+      Special: { Strength: +3, "Critical Damage": +3, Defense: +1 }
     }
   },
   {
