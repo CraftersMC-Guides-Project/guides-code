@@ -432,24 +432,24 @@ const reforges = [
     name: "Vivid",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Health: +1, Speed: +1 },
+      Uncommon: { Health: +2, Speed: +2 },
+      Rare: { Health: +3, Speed: +3 },
+      Epic: { Health: +4, Speed: +4 },
+      Legendary: { Health: +5, Speed: +5 },
+      Special: { Health: +3, Speed: +3 }
     }
   },
   {
     name: "Godly",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +1, "Critical Damage": +2 },
+      Uncommon: { Strength: +2, "Critical Damage": +2 },
+      Rare: { Strength: +3, "Critical Damage": +3 },
+      Epic: { Strength: +5, "Critical Damage": +4 },
+      Legendary: { Strength: +7, "Critical Damage": +6 },
+      Special: { Strength: +3, "Critical Damage": +3 }
     }
   },
   {
