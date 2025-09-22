@@ -43,6 +43,8 @@ p {
   padding: 10px;
   color: white;
   width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .controls {
@@ -120,7 +122,7 @@ table {
 }
 
 th, td {
-  padding: 12px 15px;
+  padding: 12px 8px;
   text-align: center;
   border-bottom: 1px solid #333;
 }
@@ -189,7 +191,7 @@ tbody tr:nth-child(3) td {
     <tr>
       <th>Rank</th>
       <th>Reforge</th>
-      <th id="rarityHeader">Stat</th>
+      <th id="statHeader">Stat</th>
     </tr>
   </thead>
   <tbody></tbody>
@@ -231,7 +233,7 @@ nextRarityBtn.addEventListener("click", () => {
 
 function updateRarity() {
   currentRarityLabel.textContent = rarities[currentRarityIndex];
-  rarityHeader.textContent = rarities[currentRarityIndex];
+ // rarityHeader.textContent = rarities[currentRarityIndex];
   renderTable(rarities[currentRarityIndex]);
   prevRarityBtn.disabled = currentRarityIndex === 0;
   nextRarityBtn.disabled = currentRarityIndex === rarities.length - 1;
@@ -268,7 +270,9 @@ function renderTable(rarity) {
   const item = itemSelect.value;
   const stat = statSelect.value;
   if (!item || !stat) return;
-
+  
+  const statHeader = document.getElementById("statHeader");
+  statHeader.textContent = stat || "Stat";
   const validReforges = reforges.filter(r => r.itemTypes.includes(item));
   const filtered = validReforges.filter(r => (r.stats[rarity] || {})[stat] !== undefined);
 
