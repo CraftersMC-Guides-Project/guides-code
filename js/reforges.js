@@ -372,36 +372,36 @@ const reforges = [
     name: "Pleasant",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Defense: +4 },
+      Uncommon: { Defense: +5 },
+      Rare: { Defense: +7 },
+      Epic: { Defense: +10 },
+      Legendary: { Defense: +15 },
+      Special: { Defense: +7 }
     }
   },
   {
     name: "Pretty",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Health: +1, Intelligence: +3 },
+      Uncommon: { Health: +1, Intelligence: +4 },
+      Rare: { Health: +2, Intelligence: +6, "Attack Speed": +1 },
+      Epic: { Health: +2, Speed: +1, Intelligence: +9, "Attack Speed": +1 },
+      Legendary: { Health: +3, Speed: +1, Intelligence: +13, "Attack Speed": +1 },
+      Special: { Health: +2, Intelligence: +6, "Attack Speed": +1 }
     }
   },
   {
     name: "Shiny",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Health: +4, Intelligence: +1 },
+      Uncommon: { Health: +5, Intelligence: +2 },
+      Rare: { Health: +7, Intelligence: +2 },
+      Epic: { Health: +10, Intelligence: +3l },
+      Legendary: { Health: +15, Intelligence: +5 },
+      Special: { Health: +7, Intelligence: +2 }
     }
   },
   {
