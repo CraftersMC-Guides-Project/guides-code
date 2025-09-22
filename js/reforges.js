@@ -456,24 +456,24 @@ const reforges = [
     name: "Demonic",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +1, Intelligence: +5 },
+      Uncommon: { Strength: +2, Intelligence: +7 },
+      Rare: { Strength: +2, Intelligence: +9 },
+      Epic: { Strength: +3, Intelligence: +12 },
+      Legendary: { Strength: +5, Intelligence: +17 },
+      Special: { Strength: +2, Intelligence: +9 }
     }
   },
   {
     name: "Forceful",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +4 },
+      Uncommon: { Strength: +5 },
+      Rare: { Strength: +7 },
+      Epic: { Strength: +10 },
+      Legendary: { Strength: +15 },
+      Special: { Strength: +7 }
     }
   },
   {
