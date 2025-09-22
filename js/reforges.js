@@ -336,12 +336,12 @@ const reforges = [
     name: "Bizarre",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Health: +1, Strength: +1, "Critical Damage": -1, Intelligence: +6 },
+      Uncommon: { Health: +1, Strength: +2, "Critical Damage": -2, Intelligence: +8 },
+      Rare: { Health: +1, Strength: +2, "Critical Damage": -2, Intelligence: +10 },
+      Epic: { Health: +1, Strength: +3, "Critical Damage": -3, Intelligence: +14 },
+      Legendary: { Health: +1, Strength: +5, "Critical Damage": -5, Intelligence: +20 },
+      Special: { Health: +1, Strength: +2, "Critical Damage": -2, Intelligence: +10 }
     }
   },
   {
