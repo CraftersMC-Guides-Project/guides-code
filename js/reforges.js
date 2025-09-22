@@ -348,24 +348,24 @@ const reforges = [
     name: "Itchy",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +1, "Critical Damage": +3 },
+      Uncommon: { Strength: +1, "Critical Damage": +4 },
+      Rare: { Strength: +1, "Critical Damage": +5, "Attack Speed": +1 },
+      Epic: { Strength: +2, "Critical Damage": +7, "Attack Speed": +1 },
+      Legendary: { Strength: +3, "Critical Damage": +10, "Attack Speed": +1 },
+      Special: { Strength: +1, "Critical Damage": +5, "Attack Speed": +1 }
     }
   },
   {
     name: "Ominous",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Health: +1, Defense: +1, Strength: +1, "Critical Damage": +1 },
+      Uncommon: { Health: +1, Defense: +1, Strength: +1, "Critical Damage": +1, Intelligence: +1 },
+      Rare: { Health: +2, Defense: +1, Strength: +1, "Critical Damage": +1, Intelligence: +2 },
+      Epic: { Health: +3, Defense: +2, Strength: +2, "Critical Damage": +1, Intelligence: +3 },
+      Legendary: { Health: +4, Defense: +3, Strength: +3, "Critical Damage": +1, Intelligence: +4 },
+      Special: { Health: +2, Defense: +1, Strength: +1, "Critical Damage": +1, Intelligence: +2 }
     }
   },
   {
