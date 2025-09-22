@@ -154,6 +154,49 @@ tbody tr:nth-child(3) td {
   color: #000;
 }
 
+.reforge-name-wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+.info-icon {
+  position: absolute;
+  top: -5px;
+  right: -11px;
+  background-color: #888;
+  color: #fff;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  font-size: 9px;
+  line-height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: default;
+  opacity: 0.8;
+  z-index: 10;
+}
+
+.info-popup {
+  display: none;
+  position: absolute;
+  top: -5px;
+  left: 110%;
+  background-color: #1a1a1a;
+  color: #fff;
+  padding: 6px;
+  border: 1px solid #888;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  z-index: 9;
+}
+
+.info-icon:hover .info-popup {
+  display: block;
+}
   </style>
 </head>
 <body>
@@ -265,6 +308,11 @@ function updateStatOptions() {
   statSelect.disabled = statSet.size === 0;
 }
 
+function toggleInfo(el) {
+  const popup = el.nextElementSibling;
+  popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+}
+
 function renderTable(rarity) {
   const item = itemSelect.value;
   const stat = statSelect.value;
@@ -272,6 +320,7 @@ function renderTable(rarity) {
   
   const statHeader = document.getElementById("statHeader");
   statHeader.textContent = stat || "Stat";
+
   const validReforges = reforges.filter(r => r.itemTypes.includes(item));
   const filtered = validReforges.filter(r => (r.stats[rarity] || {})[stat] !== undefined);
 
@@ -284,12 +333,24 @@ function renderTable(rarity) {
   resultsTable.innerHTML = "";
 
   ranked.forEach((reforge, i) => {
+    const allStats = reforge.stats[rarity] || {}; 
+    const statsList = Object.entries(allStats)
+                            .map(([key, value]) => `${key}: ${value}`)
+                            .join('<br>');
+
     const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${i + 1}</td>
-      <td>${reforge.name}</td>
-      <td>${reforge.stats[rarity]?.[stat] || "-"}</td>
-    `;
+row.innerHTML = `
+  <td>${i + 1}</td>
+  <td>
+    <div class="reforge-name-wrapper">
+      ${reforge.name}
+      <span class="info-icon">i
+        <div class="info-popup"><b>All Stats</b><br><hr>${statsList}</div>
+      </span>
+    </div>
+  </td>
+  <td>${reforge.stats[rarity]?.[stat] || "-"}</td>
+`;
     resultsTable.appendChild(row);
   });
 }
