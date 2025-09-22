@@ -399,7 +399,7 @@ const reforges = [
       Common: { Health: +4, Intelligence: +1 },
       Uncommon: { Health: +5, Intelligence: +2 },
       Rare: { Health: +7, Intelligence: +2 },
-      Epic: { Health: +10, Intelligence: +3l },
+      Epic: { Health: +10, Intelligence: +3 },
       Legendary: { Health: +15, Intelligence: +5 },
       Special: { Health: +7, Intelligence: +2 }
     }
