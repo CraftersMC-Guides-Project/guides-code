@@ -516,36 +516,36 @@ const reforges = [
     name: "Superior",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +2, "Critical Damage": +2 },
+      Uncommon: { Strength: +3, "Critical Damage": +2 },
+      Rare: { Strength: +4, "Critical Damage": +2 },
+      Epic: { Strength: +5, "Critical Damage": +3 },
+      Legendary: { Strength: +7, "Critical Damage": +3 },
+      Special: { Strength: +4, "Critical Damage": +2 }
     }
   },
   {
     name: "Unpleasant",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { "Critical Chance": +1 },
+      Uncommon: { "Critical Chance": +1 },
+      Rare: { "Critical Chance": +1 },
+      Epic: { "Critical Chance": +2 },
+      Legendary: { "Critical Chance": +2 },
+      Special: { "Critical Chance": +1 }
     }
   },
   {
     name: "Zealous",
     itemTypes: ["Accessory"],
     stats: {
-      Common: { Stat1: 1, Stat2: 2 },
-      Uncommon: { Stat1: 2, Stat2: 3 },
-      Rare: { Stat1: 3, Stat2: 4 },
-      Epic: { Stat1: 4, Stat2: 5 },
-      Legendary: { Stat1: 5, Stat2: 6 },
-      Special: { Stat1: 6, Stat2: 7 }
+      Common: { Strength: +1, "Critical Damage": +1, Intelligence: +1 },
+      Uncommon: { Strength: +2, "Critical Damage": +2, Intelligence: +2 },
+      Rare: { Strength: +2, "Critical Damage": +2, Speed: +1, Intelligence: +2 },
+      Epic: { Strength: +3, "Critical Damage": +3, Speed: +1, Intelligence: +3 },
+      Legendary: { Strength: +5, "Critical Damage": +5, Speed: +1, Intelligence: +5 },
+      Special: { Strength: +2, "Critical Damage": +2, Speed: +1, Intelligence: +2 }
     }
   },
   // Accessory Reforges End
