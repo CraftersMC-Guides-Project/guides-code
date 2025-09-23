@@ -1859,7 +1859,7 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "AhmedTheGuy6100",
-                    "score": "118M+"
+                    "score": "167M+"
                 },
                 {
                     "rank": 2,
