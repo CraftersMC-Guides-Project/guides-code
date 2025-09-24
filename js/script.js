@@ -722,8 +722,6 @@ document.addEventListener("DOMContentLoaded", function () {
     setCookie("theme", savedTheme, 365);
   }
 
-  const themeLink = document.createElement("link");
-  themeLink.rel = "stylesheet";
-  themeLink.href = `../themes/${savedTheme}/style.css`;
+
   document.head.appendChild(themeLink);
 });
