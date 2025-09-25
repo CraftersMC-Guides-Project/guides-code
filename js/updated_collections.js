@@ -888,8 +888,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Araaflatif",
+                    "score": "10.4M+"
                 },
                 {
                     "rank": 10,
@@ -1731,12 +1731,12 @@ const collectionsData = {
                 {
                     "rank": 9,
                     "name": "ENDERxBEAST4806",
-                    "score": "20.5M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 10,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "MADERUCHIA07",
+                    "score": "23M+"
                 }
             ]
         },
