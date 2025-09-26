@@ -233,6 +233,50 @@ tbody tr:nth-child(3) td {
   opacity: 0.4;
   cursor: not-allowed;
 }
+.header-info {
+  display: inline-block;
+  position: relative;
+}
+
+.header-info .info-icon {
+  position: relative;
+  top: -2px;
+  right: -2px;
+  background-color: #888;
+  color: #fff;
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  font-size: 10px;
+  line-height: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: default;
+  opacity: 0.8;
+  margin-left: 4px;
+}
+
+.header-info .info-popup {
+  display: none;
+  position: absolute;
+  top: -120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1a1a1a;
+  color: #fff;
+  padding: 6px;
+  border: 1px solid #888;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  z-index: 20;
+}
+
+.header-info .info-icon:hover .info-popup {
+  display: block;
+}
   </style>
 </head>
 <body>
@@ -409,17 +453,25 @@ function renderTable(rarity) {
   if (!selectedItem || selectedStats.length === 0) return;
 
   const statHeader = document.getElementById("statHeader");
-  statHeader.textContent = selectedStats.join(", ");
+  if (selectedStats.length === 1) {
+  statHeader.textContent = selectedStats[0];
+} else if (selectedStats.length > 1) {
+  statHeader.innerHTML = `
+    <span class="header-info">
+      Stats <span class="info-icon">𝚒
+        <div class="info-popup"><b>Selected Stats</b><br><hr>${selectedStats.join("<br>")}</div>
+      </span>
+    </span>`;
+} else {
+  statHeader.textContent = "Stat";
+}
 
   const validReforges = reforges.filter(r => r.itemTypes.includes(selectedItem));
-  const filtered = validReforges.filter(r => {
-    const reforgeStats = r.stats[rarity] || {};
-    return selectedStats.every(stat => reforgeStats[stat] !== undefined);
-  });
+  const filtered = validReforges.filter(r => selectedStats.every(stat => (r.stats[rarity] || {})[stat] !== undefined));
 
   const ranked = [...filtered].sort((a, b) => {
-    const sumA = selectedStats.reduce((acc, stat) => acc + (a.stats[rarity][stat] || 0), 0);
-    const sumB = selectedStats.reduce((acc, stat) => acc + (b.stats[rarity][stat] || 0), 0);
+    const sumA = selectedStats.reduce((acc, s) => acc + (a.stats[rarity]?.[s] || 0), 0);
+    const sumB = selectedStats.reduce((acc, s) => acc + (b.stats[rarity]?.[s] || 0), 0);
     return sumB - sumA;
   });
 
@@ -428,6 +480,13 @@ function renderTable(rarity) {
   ranked.forEach((reforge, i) => {
     const allStats = reforge.stats[rarity] || {};
     const statsList = Object.entries(allStats).map(([key, value]) => `${key}: ${value}`).join('<br>');
+
+    let cellValue;
+    if (selectedStats.length === 1) {
+      cellValue = reforge.stats[rarity]?.[selectedStats[0]] || "-";
+    } else {
+      cellValue = selectedStats.map(s => reforge.stats[rarity]?.[s] || 0).join(" / ");
+    }
 
     const row = document.createElement("tr");
     row.innerHTML = `
@@ -440,7 +499,7 @@ function renderTable(rarity) {
           </span>
         </div>
       </td>
-      <td>${selectedStats.map(stat => reforge.stats[rarity][stat] || "-").join(" / ")}</td>
+      <td>${cellValue}</td>
     `;
     resultsTable.appendChild(row);
   });
