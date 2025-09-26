@@ -9,7 +9,9 @@
   <style>
 * {
   -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
 }
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #0d0d0d;
@@ -21,6 +23,7 @@ body {
   overflow-x: hidden;
   margin-bottom: 120px;
 }
+
 .container {
   width: 100%;
   max-width: 800px;
@@ -28,8 +31,6 @@ body {
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.6);
   padding: 20px;
-  box-sizing: border-box;
-  justify-content: center;
   margin: 0 auto;
 }
 
@@ -43,7 +44,7 @@ h1 {
 
 p {
   text-align: center;
-  padding: 20px 0px;
+  padding: 20px 0;
   color: white;
   width: 100%;
   margin: 0 auto;
@@ -122,9 +123,6 @@ table {
   border-collapse: collapse;
   margin-top: 10px;
   user-select: none;
-  -ms-user-select: none;
-  -moz-user-select: none;
-  -webkit-user-select: none;
 }
 
 th, td {
@@ -185,9 +183,6 @@ tbody tr:nth-child(3) td {
   opacity: 0.8;
   z-index: 9;
   user-select: none;
-  -ms-user-select: none;
-  -moz-user-select: none;
-  -webkit-user-select: none;
 }
 
 .info-popup {
@@ -203,14 +198,35 @@ tbody tr:nth-child(3) td {
   font-size: 0.8rem;
   white-space: nowrap;
   z-index: 10;
-  user-select: none;
-  -ms-user-select: none;
-  -moz-user-select: none;
-  -webkit-user-select: none;
 }
 
 .info-icon:hover .info-popup {
   display: block;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  accent-color: #3b82f6;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.checkbox-group label {
+  cursor: pointer;
+  user-select: none;
+  font-weight: 500;
+}
+
+.checkbox-group input[type="checkbox"]:hover + label,
+.checkbox-group label:hover {
+  color: #3b82f6;
 }
   </style>
 </head>
@@ -231,19 +247,33 @@ tbody tr:nth-child(3) td {
   <div class="container">
     <div class="controls">
       <label for="item">Choose Item:</label>
-      <select id="item" class="skill-calc-input">
-        <option value="" disabled selected hidden>No item selected</option>
-        <option value="Sword">Sword</option>
-        <option value="Armor">Armor</option>
-        <option value="Axe">Axe</option>
-        <option value="Hoe">Hoe</option>
-        <option value="Accessory">Accessory</option>
-        <option value="Bow">Bow</option>
-        <option value="Boomerang">Boomerang</option>
-      </select><label for="stat">Choose Stat:</label>
-  <select id="stat" class="skill-calc-input">
-    <option value="" disabled selected hidden>No stat selected</option>
-  </select>
+<div class="controls">
+  <label>Choose Item(s):</label>
+  <div class="checkbox-group" id="itemCheckboxes">
+    <input type="checkbox" id="item_sword" value="Sword">
+    <label for="item_sword">Sword</label>
+
+    <input type="checkbox" id="item_armor" value="Armor">
+    <label for="item_armor">Armor</label>
+
+    <input type="checkbox" id="item_axe" value="Axe">
+    <label for="item_axe">Axe</label>
+
+    <input type="checkbox" id="item_hoe" value="Hoe">
+    <label for="item_hoe">Hoe</label>
+
+    <input type="checkbox" id="item_accessory" value="Accessory">
+    <label for="item_accessory">Accessory</label>
+
+    <input type="checkbox" id="item_bow" value="Bow">
+    <label for="item_bow">Bow</label>
+
+    <input type="checkbox" id="item_boomerang" value="Boomerang">
+    <label for="item_boomerang">Boomerang</label>
+  </div>
+
+  <label>Choose Stat(s):</label>
+  <div class="checkbox-group" id="statCheckboxes"></div>
 
   <button id="calculateBtn" disabled>Calculate</button>
 </div>
@@ -270,9 +300,8 @@ tbody tr:nth-child(3) td {
     <div id="footer"></div><script>
 const rarities = ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Special"];
 let currentRarityIndex = 0;
-
-const itemSelect = document.getElementById("item");
-const statSelect = document.getElementById("stat");
+const itemCheckboxes = document.querySelectorAll("#itemCheckboxes input[type='checkbox']");
+const statCheckboxesDiv = document.getElementById("statCheckboxes");
 const calcBtn = document.getElementById("calculateBtn");
 const resultsTable = document.querySelector("#resultsTable tbody");
 const rarityHeader = document.getElementById("rarityHeader");
@@ -281,10 +310,7 @@ const prevRarityBtn = document.getElementById("prevRarity");
 const nextRarityBtn = document.getElementById("nextRarity");
 const currentRarityLabel = document.getElementById("currentRarity");
 
-itemSelect.addEventListener("change", updateStatOptions);
-statSelect.addEventListener("change", () => {
-  calcBtn.disabled = !statSelect.value;
-});
+itemCheckboxes.forEach(cb => cb.addEventListener("change", updateStatOptions));
 calcBtn.addEventListener("click", () => renderTable(rarities[currentRarityIndex]));
 
 prevRarityBtn.addEventListener("click", () => {
@@ -310,30 +336,47 @@ function updateRarity() {
 }
 
 function updateStatOptions() {
-  const item = itemSelect.value;
-  statSelect.innerHTML = '<option value="" disabled selected hidden>No stat selected</option>';
-  statSelect.disabled = true;
-  calcBtn.disabled = true;
-  if (!item || typeof reforges === "undefined") return;
+  const selectedItems = Array.from(itemCheckboxes)
+                             .filter(cb => cb.checked)
+                             .map(cb => cb.value);
+  statCheckboxesDiv.innerHTML = "";
+  if (selectedItems.length === 0) {
+    calcBtn.disabled = true;
+    return;
+  }
 
-  const validReforges = reforges.filter(r => r.itemTypes.includes(item));
   const statSet = new Set();
-
-  validReforges.forEach(r => {
-    rarities.forEach(rarity => {
-      const stats = r.stats[rarity] || {};
-      Object.keys(stats).forEach(stat => statSet.add(stat));
-    });
+  reforges.forEach(r => {
+    if (r.itemTypes.some(i => selectedItems.includes(i))) {
+      rarities.forEach(rarity => {
+        Object.keys(r.stats[rarity] || {}).forEach(stat => statSet.add(stat));
+      });
+    }
   });
 
   Array.from(statSet).sort().forEach(stat => {
-    const option = document.createElement("option");
-    option.value = stat;
-    option.textContent = stat;
-    statSelect.appendChild(option);
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.id = "stat_" + stat;
+    cb.value = stat;
+
+    const label = document.createElement("label");
+    label.htmlFor = cb.id;
+    label.textContent = stat;
+
+    cb.addEventListener("change", updateCalculateButton);
+
+    statCheckboxesDiv.appendChild(cb);
+    statCheckboxesDiv.appendChild(label);
   });
 
-  statSelect.disabled = statSet.size === 0;
+  updateCalculateButton();
+}
+
+function updateCalculateButton() {
+  const selectedStats = Array.from(statCheckboxesDiv.querySelectorAll("input[type='checkbox']:checked"));
+  const selectedItems = Array.from(itemCheckboxes).filter(cb => cb.checked);
+  calcBtn.disabled = selectedItems.length === 0 || selectedStats.length === 0;
 }
 
 function toggleInfo(el) {
@@ -342,14 +385,15 @@ function toggleInfo(el) {
 }
 
 function renderTable(rarity) {
-  const item = itemSelect.value;
-  const stat = statSelect.value;
-  if (!item || !stat) return;
-  
+  const selectedItems = Array.from(itemCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+  const selectedStats = Array.from(statCheckboxesDiv.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
+  if (selectedItems.length === 0 || selectedStats.length === 0) return;
+
+  const stat = selectedStats[0];
   const statHeader = document.getElementById("statHeader");
   statHeader.textContent = stat || "Stat";
 
-  const validReforges = reforges.filter(r => r.itemTypes.includes(item));
+  const validReforges = reforges.filter(r => r.itemTypes.some(i => selectedItems.includes(i)));
   const filtered = validReforges.filter(r => (r.stats[rarity] || {})[stat] !== undefined);
 
   const ranked = [...filtered].sort((a, b) => {
@@ -361,24 +405,24 @@ function renderTable(rarity) {
   resultsTable.innerHTML = "";
 
   ranked.forEach((reforge, i) => {
-    const allStats = reforge.stats[rarity] || {}; 
+    const allStats = reforge.stats[rarity] || {};
     const statsList = Object.entries(allStats)
-                            .map(([key, value]) => `${key}: ${value}`)
-                            .join('<br>');
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('<br>');
 
     const row = document.createElement("tr");
-row.innerHTML = `
-  <td>${i + 1}</td>
-  <td>
-    <div class="reforge-name-wrapper">
-      ${reforge.name}
-      <span class="info-icon">𝚒
-        <div class="info-popup"><b>All Stats</b><br><hr>${statsList}</div>
-      </span>
-    </div>
-  </td>
-  <td>${reforge.stats[rarity]?.[stat] || "-"}</td>
-`;
+    row.innerHTML = `
+      <td>${i + 1}</td>
+      <td>
+        <div class="reforge-name-wrapper">
+          ${reforge.name}
+          <span class="info-icon">𝚒
+            <div class="info-popup"><b>All Stats</b><br><hr>${statsList}</div>
+          </span>
+        </div>
+      </td>
+      <td>${reforge.stats[rarity]?.[stat] || "-"}</td>
+    `;
     resultsTable.appendChild(row);
   });
 }
