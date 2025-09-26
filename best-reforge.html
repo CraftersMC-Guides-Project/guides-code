@@ -322,7 +322,6 @@ nextRarityBtn.addEventListener("click", () => {
 
 function updateRarity() {
   currentRarityLabel.textContent = rarities[currentRarityIndex];
- // rarityHeader.textContent = rarities[currentRarityIndex];
   renderTable(rarities[currentRarityIndex]);
   prevRarityBtn.disabled = currentRarityIndex === 0;
   nextRarityBtn.disabled = currentRarityIndex === rarities.length - 1;
@@ -336,7 +335,6 @@ function updateStatOptions() {
     return;
   }
 
-  // Build set of stats for this item
   const statSet = new Set();
   reforges.forEach(r => {
     if (r.itemTypes.includes(selectedItem)) {
@@ -346,10 +344,9 @@ function updateStatOptions() {
     }
   });
 
-  // Clear old checkboxes
+
   statCheckboxesDiv.innerHTML = "";
 
-  // Create checkboxes for this item
   Array.from(statSet).sort().forEach(stat => {
     const cb = document.createElement("input");
     cb.type = "checkbox";
@@ -380,8 +377,8 @@ function updateDisabledStats() {
   statCheckboxesDiv.querySelectorAll("input[type='checkbox']").forEach(cb => {
     const hypothetical = selectedStats.includes(cb.value) ? selectedStats : [...selectedStats, cb.value];
     const anyValid = reforges.some(r => 
-      r.itemTypes.includes(selectedItem) && 
-      hypothetical.some(stat => rarities.some(rarity => (r.stats[rarity] || {})[stat] !== undefined))
+      r.itemTypes.includes(selectedItem) &&
+      hypothetical.every(stat => Object.values(r.stats).some(statsByRarity => statsByRarity[stat] !== undefined))
     );
     cb.disabled = !anyValid;
   });
@@ -403,14 +400,20 @@ function renderTable(rarity) {
   const selectedStats = Array.from(statCheckboxesDiv.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
   if (!selectedItem || selectedStats.length === 0) return;
 
-  const stat = selectedStats[0];
   const statHeader = document.getElementById("statHeader");
-  statHeader.textContent = stat || "Stat";
+  statHeader.textContent = selectedStats.join(", ");
 
   const validReforges = reforges.filter(r => r.itemTypes.includes(selectedItem));
-  const filtered = validReforges.filter(r => (r.stats[rarity] || {})[stat] !== undefined);
+  const filtered = validReforges.filter(r => {
+    const reforgeStats = r.stats[rarity] || {};
+    return selectedStats.every(stat => reforgeStats[stat] !== undefined);
+  });
 
-  const ranked = [...filtered].sort((a, b) => (b.stats[rarity]?.[stat] || 0) - (a.stats[rarity]?.[stat] || 0));
+  const ranked = [...filtered].sort((a, b) => {
+    const sumA = selectedStats.reduce((acc, stat) => acc + (a.stats[rarity][stat] || 0), 0);
+    const sumB = selectedStats.reduce((acc, stat) => acc + (b.stats[rarity][stat] || 0), 0);
+    return sumB - sumA;
+  });
 
   resultsTable.innerHTML = "";
 
@@ -429,7 +432,7 @@ function renderTable(rarity) {
           </span>
         </div>
       </td>
-      <td>${reforge.stats[rarity]?.[stat] || "-"}</td>
+      <td>${selectedStats.map(stat => reforge.stats[rarity][stat] || "-").join(" / ")}</td>
     `;
     resultsTable.appendChild(row);
   });
