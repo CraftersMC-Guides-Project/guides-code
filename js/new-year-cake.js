@@ -73,9 +73,9 @@ function displayEvents() {
 }
 
 function toggleEventContainer() {
-    const content = document.querySelector(".timer-content");
+    const content = document.querySelector(".content");
     content.classList.toggle("show");
-    const collapsible = document.querySelector(".timer-collapsible");
+    const collapsible = document.querySelector(".collapsible");
     displayEvents()
     displayNextEvent();
     if (content.classList.contains("show")) {

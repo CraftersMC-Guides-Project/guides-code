@@ -26,8 +26,16 @@ function updateInterestTimes() {
 }
 
 function toggleInterestContainer() {
-    let content = document.querySelector('.timer-event-container .timer-content');
-    content.style.display = (content.style.display === "none" || content.style.display === "") ? "block" : "none";
+    const content = document.querySelector(".content");
+    content.classList.toggle("show");
+    const collapsible = document.querySelector(".collapsible");
+    if (content.classList.contains("show")) {
+        collapsible.innerHTML = "Next Events (Click to Collapse)";
+        content.style.display = "block";
+    } else {
+        collapsible.innerHTML = "Next Events (Click to Expand)";
+        content.style.display = "none";
+    }
 }
 
 function updateCountdown() {
