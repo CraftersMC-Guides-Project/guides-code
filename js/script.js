@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const loader = document.querySelector("#loader");
-  if (loader) loader.style.display = "none";
 
   const scrollToTopBtn = document.getElementById("scrollToTopBtn");
   if (scrollToTopBtn) {
@@ -63,10 +61,6 @@ function toggleLid() {
 
   const isOpening = !sidelid.classList.contains("openlid");
 
-  if (isOpening && window.playChestOpenSound) {
-    window.playChestOpenSound();
-  }
-
   if (isOpening) {
     sidelid.style.display = "block";
     sidelid.offsetHeight;
@@ -97,12 +91,6 @@ function toggleSidebar() {
   const sidelid = document.getElementById("sidelid");
 
   const isOpening = !sidebar.classList.contains("openSbar");
-
-  if (isOpening) {
-    if (window.playChestOpenSound) window.playChestOpenSound();
-  } else {
-    if (window.playChestCloseSound) window.playChestCloseSound();
-  }
 
   sidebar.classList.toggle("openSbar");
 
@@ -188,20 +176,29 @@ function fetchAllPartials() {
     fetchPartial("../navbarv2.html", "navbarHtml"),
     fetchPartial("../sidebar.html", "sidebarHtml"),
     fetchPartial("../footer.html", "footerHtml"),
+    fetchPartial("../loader.html", "loaderHtml"),
   ])
-    .then(([navbarHtml, sidebarHtml, footerHtml]) => {
+    .then(([navbarHtml, sidebarHtml, footerHtml, loaderHtml]) => {
       document.querySelector(".top").innerHTML = navbarHtml;
       document.getElementById("sidebar").innerHTML = sidebarHtml;
       document.getElementById("footer").innerHTML = footerHtml;
+      document.getElementById("loader").innerHTML = loaderHtml;
       setupThemeSwitchers();
-      const loader = document.getElementById("loader");
-      if (loader) loader.style.display = "none";
-      setupPgNetworkScrambler();
+      window.addEventListener('load', () => {
+        const o = document.getElementById('loader-wrapper');
+        o && (o.classList.add('hidden'), setTimeout(() => {
+          o && (o.style.display = 'none')
+        }, 500));
+      });
     })
     .catch((error) => {
       console.error("Error loading partials:", error);
-      const loader = document.getElementById("loader");
-      if (loader) loader.style.display = "none";
+      window.addEventListener('load', () => {
+        const o = document.getElementById('loader-wrapper');
+        o && (o.classList.add('hidden'), setTimeout(() => {
+          o && (o.style.display = 'none')
+        }, 500));
+      });
     });
 }
 
@@ -209,19 +206,28 @@ function fetchAllLPartials() {
   Promise.all([
     fetch("../sidebar.html").then((res) => res.text()),
     fetch("../footer.html").then((res) => res.text()),
+    fetch("../loader.html").then((res) => res.text()),
   ])
-    .then(([sidebarHtml, footerHtml]) => {
+    .then(([sidebarHtml, footerHtml, loaderHtml]) => {
       document.getElementById("sidebar").innerHTML = sidebarHtml;
       document.getElementById("footer").innerHTML = footerHtml;
-      const loader = document.getElementById("loader");
-      if (loader) loader.style.display = "none";
-      setupPgNetworkScrambler();
+      document.getElementById("loader").innerHTML = loaderHtml;
+      window.addEventListener('load', () => {
+        const o = document.getElementById('loader-wrapper');
+        o && (o.classList.add('hidden'), setTimeout(() => {
+          o && (o.style.display = 'none')
+        }, 500));
+      });
     })
     .catch((err) => {
       console.error("[Partials] Failed to load:", err);
       // Hide loader even if error
-      const loader = document.getElementById("loader");
-      if (loader) loader.style.display = "none";
+      window.addEventListener('load', () => {
+        const o = document.getElementById('loader-wrapper');
+        o && (o.classList.add('hidden'), setTimeout(() => {
+          o && (o.style.display = 'none')
+        }, 500));
+      });
     });
 }
 
