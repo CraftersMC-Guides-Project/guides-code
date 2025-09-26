@@ -265,8 +265,9 @@ tbody tr:nth-child(3) td {
   <option value="Boomerang">Boomerang</option>
 </select>
 
-  <label>Choose Stat(s):</label>
-  <div class="checkbox-group" id="statCheckboxes"></div>
+<label>Choose Stat(s):</label>
+<div class="checkbox-group" id="statCheckboxes"></div>
+<button id="clearStatsBtn" style="background-color:red;">Clear Stats</button>
 
   <button id="calculateBtn" disabled>Calculate</button>
 </div>
@@ -299,7 +300,14 @@ const statCheckboxesDiv = document.getElementById("statCheckboxes");
 const calcBtn = document.getElementById("calculateBtn");
 const resultsTable = document.querySelector("#resultsTable tbody");
 const rarityHeader = document.getElementById("rarityHeader");
-
+const clearStatsBtn = document.getElementById("clearStatsBtn");
+clearStatsBtn.addEventListener("click", () => {
+  statCheckboxesDiv.querySelectorAll("input[type='checkbox']").forEach(cb => {
+    cb.checked = false;
+  });
+  updateDisabledStats();
+  updateCalculateButton();
+});
 const prevRarityBtn = document.getElementById("prevRarity");
 const nextRarityBtn = document.getElementById("nextRarity");
 const currentRarityLabel = document.getElementById("currentRarity");
