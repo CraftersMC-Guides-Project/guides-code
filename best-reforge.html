@@ -228,6 +228,11 @@ tbody tr:nth-child(3) td {
 .checkbox-group label:hover {
   color: #3b82f6;
 }
+
+.checkbox-group input[type="checkbox"]:disabled + label {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
   </style>
 </head>
 <body>
@@ -325,12 +330,13 @@ function updateRarity() {
 
 function updateStatOptions() {
   const selectedItem = itemSelect.value;
-if (!selectedItem) {
-  calcBtn.disabled = true;
-  statCheckboxesDiv.innerHTML = "";
-  return;
-}
+  if (!selectedItem) {
+    calcBtn.disabled = true;
+    statCheckboxesDiv.innerHTML = "";
+    return;
+  }
 
+  // Build set of stats for this item
   const statSet = new Set();
   reforges.forEach(r => {
     if (r.itemTypes.includes(selectedItem)) {
@@ -340,6 +346,10 @@ if (!selectedItem) {
     }
   });
 
+  // Clear old checkboxes
+  statCheckboxesDiv.innerHTML = "";
+
+  // Create checkboxes for this item
   Array.from(statSet).sort().forEach(stat => {
     const cb = document.createElement("input");
     cb.type = "checkbox";
@@ -350,13 +360,31 @@ if (!selectedItem) {
     label.htmlFor = cb.id;
     label.textContent = stat;
 
-    cb.addEventListener("change", updateCalculateButton);
+    cb.addEventListener("change", () => {
+      updateCalculateButton();
+      updateDisabledStats();
+    });
 
     statCheckboxesDiv.appendChild(cb);
     statCheckboxesDiv.appendChild(label);
   });
 
+  updateDisabledStats();
   updateCalculateButton();
+}
+
+function updateDisabledStats() {
+  const selectedItem = itemSelect.value;
+  const selectedStats = Array.from(statCheckboxesDiv.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
+
+  statCheckboxesDiv.querySelectorAll("input[type='checkbox']").forEach(cb => {
+    const hypothetical = selectedStats.includes(cb.value) ? selectedStats : [...selectedStats, cb.value];
+    const anyValid = reforges.some(r => 
+      r.itemTypes.includes(selectedItem) && 
+      hypothetical.some(stat => rarities.some(rarity => (r.stats[rarity] || {})[stat] !== undefined))
+    );
+    cb.disabled = !anyValid;
+  });
 }
 
 function updateCalculateButton() {
