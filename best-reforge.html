@@ -287,6 +287,57 @@ tbody tr:nth-child(3) td {
 .header-info .info-icon:hover .info-popup {
   display: block;
 }
+.accordion {
+  margin: 15px 0;
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.accordion-toggle {
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  background-color: #1a1a1a;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.accordion-toggle:hover {
+  background-color: #2a2a2a;
+}
+
+.accordion-content {
+  display: none;
+  padding: 10px 14px;
+  background-color: #111;
+}
+
+.pref-mode {
+  margin: 6px 0;
+}
+
+.pref-mode input[type="radio"] {
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+.pref-mode label {
+  margin-left: 6px;
+  cursor: pointer;
+}
+.accordion-icon {
+  transition: transform 0.2s ease;
+  margin-left: auto;
+}
+
+.accordion-header.active .accordion-icon {
+  transform: rotate(180deg);
+}
   </style>
 </head>
 <body>
@@ -324,7 +375,19 @@ tbody tr:nth-child(3) td {
 <button id="clearStatsBtn" style="background-color:red;">Clear Stats</button>
 <button id="calculateBtn" disabled>Calculate</button>
 </div></div>
-
+<div class="accordion">
+  <button class="accordion-toggle">
+    Preferred Stat Mode
+    <span class="material-icons accordion-icon">expand_more</span>
+  </button>
+  <div class="accordion-content">
+    <div class="pref-mode">
+      <input type="radio" id="pref_balanced" name="prefMode" value="balanced" checked>
+      <label for="pref_balanced">Balanced</label>
+    </div>
+    <!-- more modes here -->
+  </div>
+</div>
 <div class="rarity-nav">
   <button id="prevRarity"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" height="1.5em" width="1.5em"><path fill="currentColor" d="m22.35 38.95-13.9-13.9q-.25-.25-.35-.5Q8 24.3 8 24q0-.3.1-.55.1-.25.35-.5L22.4 9q.4-.4 1-.4t1.05.45q.45.45.45 1.05 0 .6-.45 1.05L13.1 22.5h24.8q.65 0 1.075.425.425.425.425 1.075 0 .65-.425 1.075-.425.425-1.075.425H13.1l11.4 11.4q.4.4.4 1t-.45 1.05q-.45.45-1.05.45-.6 0-1.05-.45Z"/></svg></button>
   <span id="currentRarity"></span>
@@ -364,7 +427,17 @@ clearStatsBtn.addEventListener("click", () => {
 const prevRarityBtn = document.getElementById("prevRarity");
 const nextRarityBtn = document.getElementById("nextRarity");
 const currentRarityLabel = document.getElementById("currentRarity");
+const accordionToggle = document.querySelector(".accordion-toggle");
+const accordionContent = document.querySelector(".accordion-content");
+const accordionIcon = accordionToggle.querySelector(".accordion-icon");
 
+accordionToggle.addEventListener("click", () => {
+  const isVisible = accordionContent.style.display === "block";
+  accordionContent.style.display = isVisible ? "none" : "block";
+  accordionToggle.classList.toggle("active");
+
+  accordionIcon.textContent = isVisible ? "expand_more" : "expand_less";
+});
 calcBtn.addEventListener("click", () => renderTable(rarities[currentRarityIndex]));
 
 prevRarityBtn.addEventListener("click", () => {
