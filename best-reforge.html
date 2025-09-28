@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <title>Best Reforge Calculator</title>
-  <script src="js/script.js" defer></script>
+  <!--<script src="js/script.js" defer></script>-->
   <script src="js/reforges.js"></script>
   <style>
 * {
@@ -571,15 +571,16 @@ function renderTable(rarity) {
 
   const ranked = [...filtered].sort((a, b) => {
     if (prefMode === "balanced") {
-      const sumA = selectedStats.reduce((acc, s) => acc + (a.stats[rarity]?.[s] || 0), 0);
-      const sumB = selectedStats.reduce((acc, s) => acc + (b.stats[rarity]?.[s] || 0), 0);
-      return sumB - sumA;
-    } else {
-      const focusedStat = prefMode.replace("_focused", "");
-      const sumA = (a.stats[rarity]?.[focusedStat] || 0);
-      const sumB = (b.stats[rarity]?.[focusedStat] || 0);
-      return sumB - sumA;
-    }
+  const weight = 1 / selectedStats.length;
+  const scoreA = selectedStats.reduce((acc, s) => acc + ((a.stats[rarity]?.[s] || 0) * weight), 0);
+  const scoreB = selectedStats.reduce((acc, s) => acc + ((b.stats[rarity]?.[s] || 0) * weight), 0);
+  return scoreB - scoreA;
+} else {
+  const focusedStat = prefMode.replace("_focused", "");
+  const scoreA = a.stats[rarity]?.[focusedStat] || 0;
+  const scoreB = b.stats[rarity]?.[focusedStat] || 0;
+  return scoreB - scoreA;
+}
   });
 
   resultsTable.innerHTML = "";
