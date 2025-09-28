@@ -415,14 +415,12 @@ itemSelect.addEventListener("change", updateStatOptions);
 const statCheckboxesDiv = document.getElementById("statCheckboxes");
 const calcBtn = document.getElementById("calculateBtn");
 const resultsTable = document.querySelector("#resultsTable tbody");
-const rarityHeader = document.getElementById("rarityHeader");
 const clearStatsBtn = document.getElementById("clearStatsBtn");
 clearStatsBtn.addEventListener("click", () => {
-  statCheckboxesDiv.querySelectorAll("input[type='checkbox']").forEach(cb => {
-    cb.checked = false;
-  });
+  statCheckboxesDiv.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = false);
   updateDisabledStats();
   updateCalculateButton();
+  updatePreferredModes();
 });
 const prevRarityBtn = document.getElementById("prevRarity");
 const nextRarityBtn = document.getElementById("nextRarity");
@@ -435,18 +433,15 @@ accordionToggle.addEventListener("click", () => {
   const isVisible = accordionContent.style.display === "block";
   accordionContent.style.display = isVisible ? "none" : "block";
   accordionToggle.classList.toggle("active");
-
   accordionIcon.textContent = isVisible ? "expand_more" : "expand_less";
 });
 calcBtn.addEventListener("click", () => renderTable(rarities[currentRarityIndex]));
-
 prevRarityBtn.addEventListener("click", () => {
   if (currentRarityIndex > 0) {
     currentRarityIndex--;
     updateRarity();
   }
 });
-
 nextRarityBtn.addEventListener("click", () => {
   if (currentRarityIndex < rarities.length - 1) {
     currentRarityIndex++;
@@ -468,7 +463,6 @@ function updateStatOptions() {
     statCheckboxesDiv.innerHTML = "";
     return;
   }
-
   const statSet = new Set();
   reforges.forEach(r => {
     if (r.itemTypes.includes(selectedItem)) {
@@ -477,37 +471,52 @@ function updateStatOptions() {
       });
     }
   });
-
-
   statCheckboxesDiv.innerHTML = "";
-
   Array.from(statSet).sort().forEach(stat => {
     const cb = document.createElement("input");
     cb.type = "checkbox";
     cb.id = "stat_" + stat;
     cb.value = stat;
-
     const label = document.createElement("label");
     label.htmlFor = cb.id;
     label.textContent = stat;
-
     cb.addEventListener("change", () => {
       updateCalculateButton();
       updateDisabledStats();
+      updatePreferredModes();
     });
-
     statCheckboxesDiv.appendChild(cb);
     statCheckboxesDiv.appendChild(label);
   });
-
   updateDisabledStats();
   updateCalculateButton();
+  updatePreferredModes();
+}
+
+function updatePreferredModes() {
+  const prefContent = document.querySelector(".accordion-content");
+  prefContent.querySelectorAll(".pref-mode.focused").forEach(el => el.remove());
+  const selectedStats = Array.from(statCheckboxesDiv.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
+  selectedStats.forEach(stat => {
+    const radio = document.createElement("input");
+    radio.type = "radio";
+    radio.id = "pref_focus_" + stat;
+    radio.name = "prefMode";
+    radio.value = stat + "_focused";
+    const label = document.createElement("label");
+    label.htmlFor = radio.id;
+    label.textContent = `${stat} Focused`;
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("pref-mode", "focused");
+    wrapper.appendChild(radio);
+    wrapper.appendChild(label);
+    prefContent.appendChild(wrapper);
+  });
 }
 
 function updateDisabledStats() {
   const selectedItem = itemSelect.value;
   const selectedStats = Array.from(statCheckboxesDiv.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
-
   statCheckboxesDiv.querySelectorAll("input[type='checkbox']").forEach(cb => {
     const hypothetical = selectedStats.includes(cb.value) ? selectedStats : [...selectedStats, cb.value];
     const anyValid = reforges.some(r => 
@@ -533,28 +542,35 @@ function renderTable(rarity) {
   const selectedItem = itemSelect.value;
   const selectedStats = Array.from(statCheckboxesDiv.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
   if (!selectedItem || selectedStats.length === 0) return;
-
+  const prefMode = document.querySelector('input[name="prefMode"]:checked')?.value || "balanced";
   const statHeader = document.getElementById("statHeader");
   if (selectedStats.length === 1) {
-  statHeader.textContent = selectedStats[0];
-} else if (selectedStats.length > 1) {
-  statHeader.innerHTML = `
-    <span class="header-info">
-      Stats <span class="info-icon">𝚒
-        <div class="info-popup"><b>Selected Stats</b><br><hr>${selectedStats.join("<br>")}</div>
-      </span>
-    </span>`;
-} else {
-  statHeader.textContent = "Stat";
-}
+    statHeader.textContent = selectedStats[0];
+  } else if (selectedStats.length > 1) {
+    statHeader.innerHTML = `
+      <span class="header-info">
+        Stats <span class="info-icon">𝚒
+          <div class="info-popup"><b>Selected Stats</b><br><hr>${selectedStats.join("<br>")}</div>
+        </span>
+      </span>`;
+  } else {
+    statHeader.textContent = "Stat";
+  }
 
   const validReforges = reforges.filter(r => r.itemTypes.includes(selectedItem));
   const filtered = validReforges.filter(r => selectedStats.every(stat => (r.stats[rarity] || {})[stat] !== undefined));
 
   const ranked = [...filtered].sort((a, b) => {
-    const sumA = selectedStats.reduce((acc, s) => acc + (a.stats[rarity]?.[s] || 0), 0);
-    const sumB = selectedStats.reduce((acc, s) => acc + (b.stats[rarity]?.[s] || 0), 0);
-    return sumB - sumA;
+    if (prefMode === "balanced") {
+      const sumA = selectedStats.reduce((acc, s) => acc + (a.stats[rarity]?.[s] || 0), 0);
+      const sumB = selectedStats.reduce((acc, s) => acc + (b.stats[rarity]?.[s] || 0), 0);
+      return sumB - sumA;
+    } else {
+      const focusedStat = prefMode.replace("_focused", "");
+      const sumA = (a.stats[rarity]?.[focusedStat] || 0);
+      const sumB = (b.stats[rarity]?.[focusedStat] || 0);
+      return sumB - sumA;
+    }
   });
 
   resultsTable.innerHTML = "";
@@ -562,14 +578,12 @@ function renderTable(rarity) {
   ranked.forEach((reforge, i) => {
     const allStats = reforge.stats[rarity] || {};
     const statsList = Object.entries(allStats).map(([key, value]) => `${key}: ${value}`).join('<br>');
-
     let cellValue;
     if (selectedStats.length === 1) {
       cellValue = reforge.stats[rarity]?.[selectedStats[0]] || "-";
     } else {
       cellValue = selectedStats.map(s => reforge.stats[rarity]?.[s] || 0).join(" / ");
     }
-
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${i + 1}</td>
