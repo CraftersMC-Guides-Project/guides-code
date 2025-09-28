@@ -338,6 +338,15 @@ tbody tr:nth-child(3) td {
 .accordion-header.active .accordion-icon {
   transform: rotate(180deg);
 }
+tbody tr:nth-child(1) td:last-child,
+tbody tr:nth-child(2) td:last-child,
+tbody tr:nth-child(3) td:last-child {
+  text-shadow:
+    0.5px 0.5px black,
+    -0.5px -0.5px black,
+    0.5px -0.5px black,
+    -0.5px 0.5px black;
+}
   </style>
 </head>
 <body>
@@ -557,10 +566,15 @@ function toggleInfo(el) {
 
 function renderTable(rarity) {
   const selectedItem = itemSelect.value;
-  const selectedStats = Array.from(statCheckboxesDiv.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
+  const selectedStats = Array.from(
+    statCheckboxesDiv.querySelectorAll("input[type='checkbox']:checked")
+  ).map(cb => cb.value);
+
   if (!selectedItem || selectedStats.length === 0) return;
+
   const prefMode = document.querySelector('input[name="prefMode"]:checked')?.value || "balanced";
   const statHeader = document.getElementById("statHeader");
+
   if (selectedStats.length === 1) {
     statHeader.textContent = selectedStats[0];
   } else if (selectedStats.length > 1) {
@@ -575,33 +589,56 @@ function renderTable(rarity) {
   }
 
   const validReforges = reforges.filter(r => r.itemTypes.includes(selectedItem));
-  const filtered = validReforges.filter(r => selectedStats.every(stat => (r.stats[rarity] || {})[stat] !== undefined));
+  const filtered = validReforges.filter(r =>
+    selectedStats.every(stat => (r.stats[rarity] || {})[stat] !== undefined)
+  );
 
   const ranked = [...filtered].sort((a, b) => {
     if (prefMode === "balanced") {
-  const weight = 1 / selectedStats.length;
-  const scoreA = selectedStats.reduce((acc, s) => acc + ((a.stats[rarity]?.[s] || 0) * weight), 0);
-  const scoreB = selectedStats.reduce((acc, s) => acc + ((b.stats[rarity]?.[s] || 0) * weight), 0);
-  return scoreB - scoreA;
-} else {
-  const focusedStat = prefMode.replace("_focused", "");
-  const scoreA = a.stats[rarity]?.[focusedStat] || 0;
-  const scoreB = b.stats[rarity]?.[focusedStat] || 0;
-  return scoreB - scoreA;
-}
+      const weight = 1 / selectedStats.length;
+      const scoreA = selectedStats.reduce(
+        (acc, s) => acc + ((a.stats[rarity]?.[s] || 0) * weight), 0
+      );
+      const scoreB = selectedStats.reduce(
+        (acc, s) => acc + ((b.stats[rarity]?.[s] || 0) * weight), 0
+      );
+      return scoreB - scoreA;
+    } else {
+      const focusedStat = prefMode.replace("_focused", "");
+      const scoreA = a.stats[rarity]?.[focusedStat] || 0;
+      const scoreB = b.stats[rarity]?.[focusedStat] || 0;
+      return scoreB - scoreA;
+    }
   });
 
   resultsTable.innerHTML = "";
 
   ranked.forEach((reforge, i) => {
     const allStats = reforge.stats[rarity] || {};
-    const statsList = Object.entries(allStats).map(([key, value]) => `${key}: ${value}`).join('<br>');
+
+    // Colorize stats in popup
+    const statsList = Object.entries(allStats)
+      .map(([key, value]) => {
+        const color = statColors[key] || "#fff";
+        return `<span style="color:${color}">${key}: ${value}</span>`;
+      })
+      .join("<br>");
+
+    // Colorize cell values
     let cellValue;
     if (selectedStats.length === 1) {
-      cellValue = reforge.stats[rarity]?.[selectedStats[0]] || "-";
+      const stat = selectedStats[0];
+      const color = statColors[stat] || "#fff";
+      cellValue = `<span style="color:${color}">${reforge.stats[rarity]?.[stat] || "-"}</span>`;
     } else {
-      cellValue = selectedStats.map(s => reforge.stats[rarity]?.[s] || 0).join(" / ");
+      cellValue = selectedStats
+        .map(s => {
+          const color = statColors[s] || "#fff";
+          return `<span style="color:${color}">${reforge.stats[rarity]?.[s] || 0}</span>`;
+        })
+        .join(" / ");
     }
+
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${i + 1}</td>
