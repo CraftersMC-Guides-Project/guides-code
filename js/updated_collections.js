@@ -771,12 +771,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 8,
-                    "name": "IceBerg899",
-                    "score": "N/A"
+                    "name": "Sky691485",
+                    "score": "24.2M+"
                 },
                 {
                     "rank": 9,
-                    "name": "Unknown",
+                    "name": "IceBerg899",
                     "score": "N/A"
                 },
                 {
@@ -1331,8 +1331,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 8,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Sky691485",
+                    "score": "21.6M+"
                 },
                 {
                     "rank": 9,
@@ -1474,12 +1474,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "Meetgamer76",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
                     "rank": 4,
-                    "name": "Unknown",
+                    "name": "Meetgamer76",
                     "score": "N/A"
                 },
                 {
@@ -1859,7 +1859,7 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "AhmedTheGuy6100",
-                    "score": "167M+"
+                    "score": "167.4M+"
                 },
                 {
                     "rank": 2,
@@ -1874,7 +1874,7 @@ const collectionsData = {
                 {
                     "rank": 4,
                     "name": "SeaborneClamp18",
-                    "score": "55M+"
+                    "score": "85M+"
                 },
                 {
                     "rank": 5,
