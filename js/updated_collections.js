@@ -737,7 +737,7 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "Madstar118YT",
-                    "score": "62M+"
+                    "score": "100M+"
                 },
                 {
                     "rank": 2,
