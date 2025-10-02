@@ -751,13 +751,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "Notenderman9677",
-                    "score": "26.4M+"
+                    "name": "aPumpkinGod2",
+                    "score": "28.2M+"
                 },
                 {
                     "rank": 5,
-                    "name": "aPumpkinGod2",
-                    "score": "28.2M+"
+                    "name": "Notenderman9677",
+                    "score": "26.4M+"
                 },
                 {
                     "rank": 6,
