@@ -1,12 +1,12 @@
 const playtimeData = [
-    { rank: 1, name: "PlayerOne", playtime: "500h" },
-    { rank: 2, name: "PlayerTwo", playtime: "420h" },
-    { rank: 3, name: "PlayerThree", playtime: "390h" },
-    { rank: 4, name: "PlayerFour", playtime: "350h" },
-    { rank: 5, name: "PlayerFive", playtime: "300h" },
-    { rank: 6, name: "PlayerSix", playtime: "270h" },
-    { rank: 7, name: "PlayerSeven", playtime: "250h" },
-    { rank: 8, name: "PlayerEight", playtime: "220h" },
-    { rank: 9, name: "PlayerNine", playtime: "200h" },
-    { rank: 10, name: "PlayerTen", playtime: "180h" }
+    { rank: 1, name: "gelacktic", playtime: "3841h" },
+    { rank: 2, name: "Itzomkar1232891", playtime: "3001h" },
+    { rank: 3, name: "AK_GAMERR5398", playtime: "794.6h" },
+    { rank: 4, name: "Unknown", playtime: "N/A" },
+    { rank: 5, name: "Unknown", playtime: "N/A" },
+    { rank: 6, name: "Unknown", playtime: "N/A" },
+    { rank: 7, name: "Unknown", playtime: "N/A" },
+    { rank: 8, name: "Unknown", playtime: "N/A" },
+    { rank: 9, name: "Unknown", playtime: "N/A" },
+    { rank: 10, name: "Unknown", playtime: "N/A" }
 ];
