@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Playtime Leaderboard">
+    <meta property="og:description" content="See who has the most playtime in CraftersMC Minecraft server!">
+    <meta property="og:image" content="#">
+    <meta property="og:url" content="https://craftersmc-guides.pages.dev/playtime.html">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#000000">
+    <title>Playtime Leaderboard</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="js/playtime.js"></script>
+</head>
+
+<body>
+    <h2>Playtime Leaderboard</h2>
+    <p>Check out the top players with the most hours played! This is total hours played on the CraftersMC Minecraft server and is not specifically for a gamemode.</p>
+
+    <table border="1" cellspacing="0" cellpadding="5">
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Playtime</th>
+            </tr>
+        </thead>
+        <tbody id="leaderboardData">
+            <tr>
+                <td>1</td>
+                <td>???</td>
+                <td>???</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const leaderboardData = document.getElementById("leaderboardData");
+
+            if (typeof playtimeData !== "undefined" && playtimeData.length > 0) {
+                leaderboardData.innerHTML = playtimeData
+                    .map(player => `<tr><td>${player.rank}</td><td>${player.name}</td><td>${player.playtime}</td></tr>`)
+                    .join("");
+            } else {
+                leaderboardData.innerHTML = "<tr><td>1</td><td>???</td><td>???</td></tr>".repeat(10);
+            }
+        });
+    </script>
+</body>
+
+</html>
