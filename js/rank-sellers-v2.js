@@ -14,7 +14,7 @@ function changeBackground(type) {
     'bush': 'url("../Backgrounds/IMG_0004.jpeg")',
     'fireworks': 'url("../Backgrounds/IMG_0097.jpeg")',
     'snowdrops': 'url("../Backgrounds/IMG_0669.jpeg")',
-    'fountain': 'url("../Backgrounds/IMG_0179.jpeg")',
+    'fountain': 'url("../Backgrounds/IMG_0179.webp")',
     'skylights': 'url("../Backgrounds/IMG_0205.jpeg")',
     'crocus': 'url("../Backgrounds/Crocus.jpeg")',
     'daisy': 'url("../Backgrounds/Daisy.jpeg")',

@@ -26,6 +26,7 @@ function loadTheme(themePath) {
     if (getCookie('theme') !== themePath) {
         setCookie('theme', themePath, 365);
     }
+    console.log(`loadTheme used js/theme.js`);
 }
 
 function setTheme(themePath) {
@@ -54,5 +55,6 @@ function getCookie(name) {
             return cookie.substring(cookieName.length, cookie.length);
         }
     }
+    console.log(`getCookie used js/theme.js`);
     return "";
 }

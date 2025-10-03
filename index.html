@@ -16,203 +16,30 @@
   <script src="js/home.js" defer></script>
   <!-- Social / SEO -->
   <meta property="og:title" content="CraftersMC Guides" />
-  <meta property="og:description" content="Just like a captain needs a map to navigate the seas, mastering SkyBlock in CraftersMC requires a guide and the right tools to succeed!"/>
-  <meta property="og:image" content="https://cdn.discordapp.com/attachments/1416722412032229457/1419393858302771350/image5ge.png?ex=68d1990a&is=68d0478a&hm=d9fe3422c7c97ee57f553ac6c678e571ee4f0fac997e36e450a5b95e173875dc&" />
+  <meta property="og:description"
+    content="Just like a captain needs a map to navigate the seas, mastering SkyBlock in CraftersMC requires a guide and the right tools to succeed!" />
+  <meta property="og:image"
+    content="https://cdn.discordapp.com/attachments/1416722412032229457/1419393858302771350/image5ge.png?ex=68d1990a&is=68d0478a&hm=d9fe3422c7c97ee57f553ac6c678e571ee4f0fac997e36e450a5b95e173875dc&" />
   <meta property="og:url" content="https://craftersmc-guides.pages.dev/index.html" />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="CraftersMC Guides" />
-  <meta name="twitter:description" content="Just like a captain needs a map to navigate the seas, mastering SkyBlock in CraftersMC requires a guide and the right tools to succeed!" />
-  <meta name="twitter:image" content="https://cdn.discordapp.com/attachments/1416722412032229457/1419393858302771350/image5ge.png?ex=68d1990a&is=68d0478a&hm=d9fe3422c7c97ee57f553ac6c678e571ee4f0fac997e36e450a5b95e173875dc&" />
-  <meta name="keywords" content="Craftersmc, guide, skyblock, leaderboard, unicode, event log, rank sellers, wiki, cmc..." />
-
-  <!-- Loader and Profile Card Styles -->
-  <style>
-    /* Loader Styles */
-    #loader-wrapper {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #000;
-      z-index: 99999;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      opacity: 1;
-      transition: opacity 0.5s ease-out;
-      pointer-events: auto;
-    }
-
-    #loader-wrapper.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .loader-container {
-      display: flex;
-      gap: 15px;
-    }
-
-    .loader-dot {
-      width: 25px;
-      height: 25px;
-      border-radius: 50%;
-      animation: bounce-loader 1.4s infinite ease-in-out both;
-    }
-
-    .loader-dot:nth-child(1) {
-      background-color: #007bff;
-      animation-delay: -0.32s;
-    }
-
-    .loader-dot:nth-child(2) {
-      background-color: #fff;
-      animation-delay: -0.16s;
-    }
-
-    .loader-dot:nth-child(3) {
-      background-color: #007bff;
-    }
-
-    @keyframes bounce-loader {
-
-      0%,
-      80%,
-      100% {
-        transform: scale(0);
-      }
-
-      40% {
-        transform: scale(1);
-      }
-    }
-
-    /* Enhanced Profile Card Styles for Top-Right Corner */
-    .profile-card {
-      position: fixed;
-      top: 80px;
-      right: 20px;
-      z-index: 1001;
-      
-      display: none; /* Hide by default, JS will change to 'flex' */
-      align-items: center;
-      gap: 15px; /* Increased gap */
-      
-      background: linear-gradient(135deg, rgba(40, 40, 40, 0.7), rgba(25, 25, 25, 0.8));
-      backdrop-filter: blur(10px);
-      padding: 12px 20px; /* Increased padding */
-      border-radius: 50px;
-      color: white;
-      text-decoration: none;
-      transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      animation: fade-in-down 0.5s ease-out forwards;
-      min-width: 200px;
-    }
-    
-    .profile-card:hover {
-        background-color: rgba(0, 0, 0, 0.8);
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    }
-
-    #user-avatar {
-      width: 48px; /* Increased size */
-      height: 48px; /* Increased size */
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid rgba(255,255,255,0.2);
-      transition: box-shadow 0.3s;
-    }
-    
-    #user-details {
-        text-align: left;
-    }
-
-    #user-name {
-      font-size: 18px; /* Increased size */
-      font-weight: 700; /* Bolder */
-      line-height: 1.2;
-    }
-
-    #user-tag {
-      font-size: 12px; /* Increased size */
-      font-weight: 700;
-      text-transform: uppercase;
-      opacity: 0.9;
-      margin-top: 3px;
-      display: block; /* Ensures it takes its own line */
-      letter-spacing: 0.5px;
-    }
-
-    /* Role-based Avatar Glow */
-    .profile-card.role-dev #user-avatar {
-        box-shadow: 0 0 15px rgba(213, 0, 0, 0.8);
-    }
-    .profile-card.role-manager #user-avatar {
-        box-shadow: 0 0 15px rgba(255, 193, 7, 0.8);
-    }
-    .profile-card.role-data-manager #user-avatar {
-        box-shadow: 0 0 15px rgba(41, 98, 255, 0.8); /* Blue glow */
-    }
-    .profile-card.role-rank-seller #user-avatar {
-        box-shadow: 0 0 15px rgba(0, 200, 83, 0.8);
-    }
-
-
-    @keyframes fade-in-down {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @media (max-width: 768px) {
-      .profile-card {
-        top: 65px;
-        right: 10px;
-        padding: 8px 14px;
-        gap: 12px;
-        min-width: 0;
-      }
-      #user-avatar {
-          width: 40px;
-          height: 40px;
-      }
-      #user-name {
-          font-size: 16px;
-      }
-      #user-tag {
-          font-size: 10px;
-      }
-    }
-  </style>
-
-  <div id="loader-wrapper">
-    <div class="loader-container">
-      <div class="loader-dot"></div>
-      <div class="loader-dot"></div>
-      <div class="loader-dot"></div>
-    </div>
-  </div>
-  <script>
-    window.addEventListener('load', () => {
-      const o = document.getElementById('loader-wrapper');
-      o && (o.classList.add('hidden'), setTimeout(() => {
-        o && (o.style.display = 'none')
-      }, 500));
-    });
-  </script>
+  <meta name="twitter:description"
+    content="Just like a captain needs a map to navigate the seas, mastering SkyBlock in CraftersMC requires a guide and the right tools to succeed!" />
+  <meta name="twitter:image"
+    content="https://cdn.discordapp.com/attachments/1416722412032229457/1419393858302771350/image5ge.png?ex=68d1990a&is=68d0478a&hm=d9fe3422c7c97ee57f553ac6c678e571ee4f0fac997e36e450a5b95e173875dc&" />
+  <meta name="keywords"
+    content="Craftersmc, guide, skyblock, leaderboard, unicode, event log, rank sellers, wiki, cmc..." />
+  <link rel="stylesheet" href="css/essential.css">
+  <link rel="stylesheet" href="css/home.css">
 </head>
 
 <body>
+  <div id="loader">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
   <div class="background"></div>
 
   <div class="top"></div>
@@ -225,22 +52,24 @@
     <span class="material-icons" id="ai" onclick="aiBtn()">smart_toy</span>
     <span class="material-icons" id="scrollToTopBtn">north</span>
   </button>
-  
+
   <div class="index-gap"></div>
   <div class="hero-container">
     <div class="hero">
       <h1>CraftersMC Guides</h1>
-      <p>Just like a captain needs a map to navigate the seas, mastering SkyBlock in CraftersMC requires a guide and the right tools to succeed</p>
-      <a class="cta-btn" href="#down">Get Started</a>
+      <p>Just like a captain needs a map to navigate the seas, mastering SkyBlock in CraftersMC requires a guide and the
+        right tools to succeed</p>
+      <a class="btn" onClick="document.getElementById('down').scrollIntoView({behavior: 'smooth'});">Get Started</a>
+
     </div>
   </div>
-  
+
   <!-- New Profile Card HTML -->
   <a href="/profile.html" class="profile-card" id="profile-card">
     <img id="user-avatar" src="https://placehold.co/110x110/dddddd/333333?text=...&font=inter" alt="User Avatar" />
     <div id="user-details">
-        <div id="user-name">Loading...</div>
-        <div id="user-tag"></div>
+      <div id="user-name">Loading...</div>
+      <div id="user-tag"></div>
     </div>
   </a>
 
@@ -249,9 +78,9 @@
       <span class="material-icons botton-nav-icon">play_arrow</span>
       <small>Guides</small>
     </a>
-    <a href="giveaway.html" class="nav-item">
+    <a href="rank-sellers.html" class="nav-item">
       <span class="material-icons botton-nav-icon">card_giftcard</span>
-      <small>Giveaways</small>
+      <small>Rank Sellers</small>
     </a>
     <a href="leaderboards.html" class="nav-item">
       <span class="material-icons botton-nav-icon">diversity_3</span>
@@ -268,46 +97,49 @@
   </div>
 
   <div class="card-container" id="down">
-    <a class="card" href="market.html" style="background: url('Backgrounds/bazaarCardImage.webp'); background-size: cover;">
+    <a class="card" href="rank-sellers.html"
+      style="background: url('Backgrounds/IMG_4502.webp'); background-size: cover;">
       <div class="card-content">
-        <h3>Market</h3>
-        <p>Find out correct prices of any items, pets or minions in-game and be up-to-date!</p>
-        <button>Visit</button>
+        <h3>Rank & Gems Sellers</h3>
+        <p>Discover trusted rank and gems sellers and avoid getting scammed!</p>
+        <button><span>Visit</span></button>
       </div>
     </a>
-    <a class="card" href="giveaway.html" style="background: url('Backgrounds/IMG_4498.webp'); background-size: cover;">
+    <a class="card" href="leaderboards.html" style="background: url('Backgrounds/IMG_4498.webp'); background-size: cover;">
       <div class="card-content">
-        <h3>Giveaways</h3>
-        <p>Participate in our regular giveaways for a chance to win exclusive in-game rewards!</p>
-        <button>Visit</button>
+        <h3>Leaderboards</h3>
+        <p>Find out the placements of certain players in item collections and slayer levels with our leaderboards viewer</p>
+        <button><span>Visit</span></button>
       </div>
     </a>
-    <a class="card" href="journey-guides.html" style="background: url('Backgrounds/IMG_4500.webp'); background-size: cover;">
+    <a class="card" href="journey-guides.html"
+      style="background: url('Backgrounds/IMG_4500.webp'); background-size: cover;">
       <div class="card-content">
         <h3>The Guides</h3>
         <p>Browse and learn from our journey guides!</p>
-        <button>Visit</button>
+        <button><span>Visit</span></button>
       </div>
     </a>
-    <a class="card" href="rank-sellers.html" style="background: url('Backgrounds/IMG_4502.webp'); background-size: cover;">
+    <a class="card" href="texture-packs.html"
+      style="background: url('Backgrounds/image8307.webp'); background-size: cover;">
       <div class="card-content">
-        <h3>Rank & Gems Sellers</h3>
-        <p>Discover trusted rank and gems sellers and avoid getting scammed! Terms & Conditions apply.</p>
-        <button>Visit</button>
+        <h3>Texture Packs</h3>
+        <p>Check out what texture packs we recommend to level up your CraftersMC experience</p>
+        <button><span>Visit</span></button>
       </div>
     </a>
     <a class="card" href="event-log.html" style="background: url('Backgrounds/IMG_4501.gif'); background-size: cover;">
       <div class="card-content">
         <h3>Event Log</h3>
         <p>Find out what and when seasonal events are coming next and get notified about them!</p>
-        <button>Visit</button>
+        <button><span>Visit</span></button>
       </div>
     </a>
     <a class="card" href="unicode.html" style="background: url('Backgrounds/IMG_4499.webp'); background-size: cover;">
       <div class="card-content">
         <h3>Unicode Guide</h3>
         <p>Our most complex guide in friendly language. Learn how to use unicodes in CraftersMC!</p>
-        <button>Visit</button>
+        <button><span>Visit</span></button>
       </div>
     </a>
   </div>
@@ -322,7 +154,7 @@
     if (!navigator.onLine) {
       const xhr = new XMLHttpRequest();
       xhr.open('GET', 'no-internet.html', true);
-      xhr.onload = function() {
+      xhr.onload = function () {
         if (this.status === 200) {
           document.write(this.responseText);
         } else {
@@ -332,7 +164,7 @@
       xhr.send();
     }
 
-    window.addEventListener('offline', function() {
+    window.addEventListener('offline', function () {
       window.location.href = 'no-internet.html';
     });
 
@@ -343,11 +175,11 @@
       const avatarEl = document.getElementById('user-avatar');
       const nameEl = document.getElementById('user-name');
       const tagEl = document.getElementById('user-tag');
-      
+
       try {
         // 1. Get user data from the 'discordUser' cookie
         const storedUserCookie = getCookie('discordUser');
-        
+
         // If there's no cookie, the user is not logged in.
         if (!storedUserCookie) {
           console.log("User not logged in. Profile card will not be shown.");
@@ -360,22 +192,22 @@
         const userId = loggedInUser.id;
 
         if (!userId) {
-            console.error("User ID not found in cookie data.");
-            profileCard.style.display = 'none';
-            return;
+          console.error("User ID not found in cookie data.");
+          profileCard.style.display = 'none';
+          return;
         }
 
         // 2. Fetch fresh user info from your API using the user's ID
         console.log(`Found userId: ${userId}. Fetching data...`);
         const response = await fetch(`https://discord-auth.roumakdatta.workers.dev/users/${userId}`);
-        
+
         if (!response.ok) {
-            // If user ID from storage is invalid, don't show the card
-            console.error(`Failed to fetch user data for ID ${userId}. Status: ${response.status}`);
-            profileCard.style.display = 'none'; // Ensure card is hidden
-            return;
+          // If user ID from storage is invalid, don't show the card
+          console.error(`Failed to fetch user data for ID ${userId}. Status: ${response.status}`);
+          profileCard.style.display = 'none'; // Ensure card is hidden
+          return;
         }
-        
+
         const user = await response.json();
         console.log("Successfully fetched user data:", user);
 
@@ -400,7 +232,7 @@
           "data manager": '#2962ff', // blue
           "rank seller": '#00c853' // green
         };
-        
+
         const userRole = user.role ? user.role.toLowerCase() : '';
 
         // Remove previous role classes to prevent conflicts
@@ -408,8 +240,8 @@
 
         // Add new role class for styling hooks (like the avatar glow)
         if (userRole && userRole !== 'normal user') {
-            const roleClass = userRole.replace(' ', '-'); // e.g., "rank seller" -> "rank-seller"
-            profileCard.classList.add(`role-${roleClass}`);
+          const roleClass = userRole.replace(' ', '-'); // e.g., "rank seller" -> "rank-seller"
+          profileCard.classList.add(`role-${roleClass}`);
         }
 
         // 6. Show colored tag only if the role exists in our map
