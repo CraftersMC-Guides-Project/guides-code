@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Playtime Leaderboard">
+    <meta property="og:description" content="See who has the most playtime in CraftersMC Minecraft server!">
+    <meta property="og:image" content="https://cdn.discordapp.com/attachments/1416722412032229457/1423269690213535825/image12.png?ex=68dfb2b1&is=68de6131&hm=e2494049af40a60fb69cb93cde0c275f17f95315f44636d1255400af2a851c7c&">
+    <meta property="og:url" content="https://craftersmc-guides.pages.dev/playtime.html">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#000000">
+    <title>Playtime Leaderboard</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="js/script.js"></script>
+    <script src="js/playtime.js"></script>
+</head>
+
+<body>
+      <div id="loader">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div class="col-lb-background"></div>
+    <div id="sidebar-overlay" onclick="overlay()"></div>
+    <!-- Navbar -->
+    <div class="top"></div>
+    <div class="gap"></div>
+    <div class="sidebar" id="sidebar"></div>
+<div class="lb-container">
+    <h3 class="lb-h3">Playtime Leaderboard</h3>
+    <p>Check out the top players with the most hours played! This is total hours played on the CraftersMC Minecraft server and is not specifically for a gamemode.</p>
+
+    <div class="lb-leaderboard">
+        <h2 class="lb-h2">Top Players</h2>
+        <table class="slay-lb-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Playtime</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboardData">
+                <tr>
+                    <td>1</td>
+                    <td>???</td>
+                    <td>???</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+    <div id="footer"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const leaderboardData = document.getElementById("leaderboardData");
+
+            if (typeof playtimeData !== "undefined" && playtimeData.length > 0) {
+                leaderboardData.innerHTML = playtimeData
+                    .map(player => `<tr><td>${player.rank}</td><td>${player.name}</td><td>${player.playtime}</td></tr>`)
+                    .join("");
+            } else {
+                leaderboardData.innerHTML = "<tr><td>1</td><td>???</td><td>???</td></tr>".repeat(10);
+            }
+        });
+    </script>
+</body>
+
+</html>

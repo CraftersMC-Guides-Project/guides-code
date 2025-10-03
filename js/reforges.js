@@ -1,3 +1,14 @@
+const statColors = {
+  Strength: "#ff5555",
+  Health: "#ff5555",
+  "Attack Speed": "#ffff55",
+  "Critical Chance": "#2073e7",
+  "Critical Damage": "#2073e7",
+  Intelligence: "#55ffff",
+  Speed: "#55ffff",
+  Defense: "#00AA00",
+  Fortune: "#ffaa00"
+};
 const reforges = [
   // Sword (9 reforges)
   {
