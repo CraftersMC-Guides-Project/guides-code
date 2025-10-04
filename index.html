@@ -14,7 +14,6 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <script src="js/script.js" defer></script>
   <script src="js/home.js" defer></script>
-  <!-- Social / SEO -->
   <meta property="og:title" content="CraftersMC Guides" />
   <meta property="og:description"
     content="Just like a captain needs a map to navigate the seas, mastering SkyBlock in CraftersMC requires a guide and the right tools to succeed!" />
@@ -64,14 +63,6 @@
     </div>
   </div>
 
-  <!-- New Profile Card HTML -->
-  <a href="/profile.html" class="profile-card" id="profile-card">
-    <img id="user-avatar" src="https://placehold.co/110x110/dddddd/333333?text=...&font=inter" alt="User Avatar" />
-    <div id="user-details">
-      <div id="user-name">Loading...</div>
-      <div id="user-tag"></div>
-    </div>
-  </a>
 
   <div class="bottom-nav">
     <a href="journey-guides.html" class="nav-item">
@@ -148,121 +139,6 @@
     <div id="footer"></div>
   </div>
 
-  <!-- Updated Script Section -->
-  <script>
-    // Offline Page Fallback
-    if (!navigator.onLine) {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', 'no-internet.html', true);
-      xhr.onload = function () {
-        if (this.status === 200) {
-          document.write(this.responseText);
-        } else {
-          document.body.innerHTML = '<h1>Offline</h1><p>No internet connection</p>';
-        }
-      };
-      xhr.send();
-    }
-
-    window.addEventListener('offline', function () {
-      window.location.href = 'no-internet.html';
-    });
-
-    // New Profile Card Loading Logic from API
-    async function loadUserInfo() {
-      const profileCard = document.getElementById('profile-card');
-      const defaultAvatar = "https://placehold.co/110x110/dddddd/333333?text=...&font=inter";
-      const avatarEl = document.getElementById('user-avatar');
-      const nameEl = document.getElementById('user-name');
-      const tagEl = document.getElementById('user-tag');
-
-      try {
-        // 1. Get user data from the 'discordUser' cookie
-        const storedUserCookie = getCookie('discordUser');
-
-        // If there's no cookie, the user is not logged in.
-        if (!storedUserCookie) {
-          console.log("User not logged in. Profile card will not be shown.");
-          profileCard.style.display = 'none'; // Ensure card is hidden
-          return;
-        }
-
-        // Parse the user data from the cookie to get the ID
-        const loggedInUser = JSON.parse(storedUserCookie);
-        const userId = loggedInUser.id;
-
-        if (!userId) {
-          console.error("User ID not found in cookie data.");
-          profileCard.style.display = 'none';
-          return;
-        }
-
-        // 2. Fetch fresh user info from your API using the user's ID
-        console.log(`Found userId: ${userId}. Fetching data...`);
-        const response = await fetch(`https://discord-auth.roumakdatta.workers.dev/users/${userId}`);
-
-        if (!response.ok) {
-          // If user ID from storage is invalid, don't show the card
-          console.error(`Failed to fetch user data for ID ${userId}. Status: ${response.status}`);
-          profileCard.style.display = 'none'; // Ensure card is hidden
-          return;
-        }
-
-        const user = await response.json();
-        console.log("Successfully fetched user data:", user);
-
-        // If we successfully get user data, NOW we show the card.
-        profileCard.style.display = 'flex'; // Changed from 'block' to 'flex'
-
-        // 3. Compute avatar URL or use fallback
-        const avatarUrl = user.avatar ?
-          `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` :
-          defaultAvatar;
-
-        avatarEl.src = avatarUrl;
-        avatarEl.onerror = () => { avatarEl.src = defaultAvatar; }; // Handle cases where the Discord avatar link is broken
-
-        // 4. Set user's name, prioritizing global_name
-        nameEl.textContent = user.global_name || user.username || 'Unknown User';
-
-        // 5. Define role colors
-        const roleColors = {
-          dev: '#d50000', // red
-          manager: '#ffc107', // gold
-          "data manager": '#2962ff', // blue
-          "rank seller": '#00c853' // green
-        };
-
-        const userRole = user.role ? user.role.toLowerCase() : '';
-
-        // Remove previous role classes to prevent conflicts
-        profileCard.classList.remove('role-dev', 'role-manager', 'role-data-manager', 'role-rank-seller');
-
-        // Add new role class for styling hooks (like the avatar glow)
-        if (userRole && userRole !== 'normal user') {
-          const roleClass = userRole.replace(' ', '-'); // e.g., "rank seller" -> "rank-seller"
-          profileCard.classList.add(`role-${roleClass}`);
-        }
-
-        // 6. Show colored tag only if the role exists in our map
-        if (roleColors[userRole]) {
-          tagEl.textContent = user.role.toUpperCase();
-          tagEl.style.color = roleColors[userRole];
-        } else {
-          // Clear tag area if role is 'user', 'normal user', or not in our map
-          tagEl.textContent = '';
-          tagEl.style.color = '';
-        }
-      } catch (err) {
-        console.error('Error in loadUserInfo function:', err);
-        // In case of a network error etc., ensure the card remains hidden.
-        profileCard.style.display = 'none';
-      }
-    }
-
-    // Run the function after the DOM is fully loaded
-    window.addEventListener('DOMContentLoaded', loadUserInfo);
-  </script>
 </body>
 
 </html>
