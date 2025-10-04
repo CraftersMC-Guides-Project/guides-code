@@ -79,10 +79,10 @@ function toggleEventContainer() {
     displayEvents()
     displayNextEvent();
     if (content.classList.contains("show")) {
-        collapsible.innerHTML = "Next Events (Click to Collapse)";
+        collapsible.innerHTML = "Next Cakes (Click to Collapse)";
         content.style.display = "block";
     } else {
-        collapsible.innerHTML = "Next Events (Click to Expand)";
+        collapsible.innerHTML = "Next Cakes (Click to Expand)";
         content.style.display = "none";
     }
 }
