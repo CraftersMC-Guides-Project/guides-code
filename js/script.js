@@ -3,14 +3,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const loader = document.querySelector("#loader");
   if (loader) loader.style.display = "none";
 
-
-  const scrollToTopBtn = document.getElementById("scrollToTopBtn");
-  if (scrollToTopBtn) {
-    scrollToTopBtn.addEventListener("click", () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-  }
-
   setupThemeSwitchers();
   fetchAllPartials();
   fetchAllLPartials();
@@ -115,14 +107,6 @@ document.addEventListener("click", (event) => {
     }
   }
 });
-
-function homeBtn() {
-  window.location.href = "../index.html";
-}
-
-function aiBtn() {
-  window.location.href = "/ai";
-}
 
 function fetchPartial(url, key) {
   const cached = localStorage.getItem(key);
