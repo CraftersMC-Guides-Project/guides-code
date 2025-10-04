@@ -30,10 +30,10 @@ function toggleInterestContainer() {
     content.classList.toggle("show");
     const collapsible = document.querySelector(".collapsible");
     if (content.classList.contains("show")) {
-        collapsible.innerHTML = "Next Events (Click to Collapse)";
+        collapsible.innerHTML = "Next Interests (Click to Collapse)";
         content.style.display = "block";
     } else {
-        collapsible.innerHTML = "Next Events (Click to Expand)";
+        collapsible.innerHTML = "Next Interests (Click to Expand)";
         content.style.display = "none";
     }
 }
