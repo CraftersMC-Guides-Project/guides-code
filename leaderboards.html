@@ -25,47 +25,7 @@
         <div></div>
         <div></div>
     </div>
-
-    <!-- Profile Card (drop this anywhere inside <body>) -->
-<div id="top-right-ui-container">
-  <div id="profile-card-container"></div>
-</div>
-
-<script>
-function getCookie(name) {
-  return document.cookie.split('; ').reduce((r, v) => {
-    const parts = v.split('=');
-    return parts[0] === name ? decodeURIComponent(parts[1]) : r
-  }, '');
-}
-async function loadProfileCard() {
-  const storedUser = getCookie("discordUser");
-  const profileContainer = document.getElementById("profile-card-container");
-  let devIds = [];
-  try {
-    const response = await fetch('/devs.txt');
-    if (response.ok) {
-      const text = await response.text();
-      devIds = text.split('\n').map(id => id.trim()).filter(id => id);
-    }
-  } catch {}
-  if (storedUser) {
-    const user = JSON.parse(storedUser);
-    const displayName = user.global_name || user.username;
-    const isDevUser = devIds.includes(user.id);
-    profileContainer.innerHTML = `
-      <a href="/profile" class="profile-card">
-        <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" class="profile-card-avatar">
-        <span class="profile-card-name">${displayName}${isDevUser ? ' <span class="dev-label">[DEV]</span>' : ''}</span>
-      </a>`;
-  } else {
-    profileContainer.innerHTML = '';
-  }
-}
-document.addEventListener("DOMContentLoaded", loadProfileCard);
-</script>
-
-
+    
     <!-- This is the main selection view, shown on first visit -->
     <div id="main-selection-view">
         <div class="leaderboard-interface-background"></div>
