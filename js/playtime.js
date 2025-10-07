@@ -8,5 +8,5 @@ const playtimeData = [
     { rank: 7, name: "Vishal2697144", playtime: "2026.8h" },
     { rank: 8, name: "ST4ANG3", playtime: "1576h" },
     { rank: 9, name: "Mistry_Human", playtime: "1446.8h" },
-    { rank: 10, name: "Yashodon1233", playtime: "962.2h" }
+    { rank: 10, name: "Toncool", playtime: "1245.9h" }
 ];
