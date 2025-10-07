@@ -473,7 +473,18 @@ accordionToggle.addEventListener("click", () => {
   accordionToggle.classList.toggle("active");
   accordionIcon.textContent = isVisible ? "expand_more" : "expand_less";
 });
-calcBtn.addEventListener("click", () => renderTable(rarities[currentRarityIndex]));
+calcBtn.addEventListener("click", () => {
+  renderTable(rarities[currentRarityIndex]);
+
+  const table = document.getElementById("resultsTable");
+  if (table) {
+    const offset = table.getBoundingClientRect().top + window.scrollY - 180;
+    window.scrollTo({
+      top: offset,
+      behavior: "smooth"
+    });
+  }
+});
 prevRarityBtn.addEventListener("click", () => {
   if (currentRarityIndex > 0) {
     currentRarityIndex--;
@@ -611,11 +622,16 @@ function renderTable(rarity) {
     statHeader.textContent = selectedStats[0];
   } else if (selectedStats.length > 1) {
     statHeader.innerHTML = `
-      <span class="header-info">
-        Stats <span class="info-icon">𝚒
-          <div class="info-popup"><b>Selected Stats</b><br><hr>${selectedStats.join("<br>")}</div>
-        </span>
-      </span>`;
+  <span class="header-info">
+    Stats <span class="info-icon">𝚒
+      <div class="info-popup"><b>Selected Stats</b><br><hr>
+        ${selectedStats.map(stat => {
+          const color = statColors[stat] || "#fff";
+          return `<span style="color:${color}">${stat}</span>`;
+        }).join("<br>")}
+      </div>
+    </span>
+  </span>`;
   } else {
     statHeader.textContent = "Stat";
   }
