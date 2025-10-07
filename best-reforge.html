@@ -8,7 +8,7 @@
   <script src="js/reforges.js"></script>
     <link rel="stylesheet" href="css/essential.css">
   <style>
-* {
+  * {
   -webkit-tap-highlight-color: transparent;
   box-sizing: border-box;
 }
@@ -101,7 +101,6 @@ button {
 .accordion button {
   margin: 0;
 }
-
 
 .rarity-nav {
   display: flex;
@@ -221,32 +220,36 @@ tbody tr:nth-child(3) td {
 
 .checkbox-container {
   display: block;
+  gap: 6px;
   margin-top: 4px;
 }
 
 .checkbox-group {
-  display: inline-block;
+  display: flex;
+  flex-direction: row;
   gap: 6px;
-  margin-bottom: 15px;
-  margin-top: 4px;
+  align-items: center;
 }
 
-.checkbox-group input[type="checkbox"] + label {
+.checkbox-group input[type="checkbox"] {
   accent-color: #007bff;
   cursor: pointer;
-  display: block;
+  transform: scale(1.05);
+  margin-right: 6px;
 }
 
-/*.checkbox-group input[type="checkbox"],
-.checkbox-group label {
-  display: block;
-}*/
+#statCheckboxes.checkbox-group {
+  display: block !important;
+}
 
 .checkbox-group label {
   cursor: pointer;
   user-select: none;
   font-weight: 500;
-  display: inline-block;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .checkbox-group input[type="checkbox"]:hover + label,
@@ -258,6 +261,7 @@ tbody tr:nth-child(3) td {
   opacity: 0.4;
   cursor: not-allowed;
 }
+
 .header-info {
   display: inline-block;
   position: relative;
@@ -302,6 +306,7 @@ tbody tr:nth-child(3) td {
 .header-info .info-icon:hover .info-popup {
   display: block;
 }
+
 .accordion {
   margin: 15px 0;
   border: 1px solid #333;
@@ -345,6 +350,7 @@ tbody tr:nth-child(3) td {
   margin-left: 6px;
   cursor: pointer;
 }
+
 .accordion-icon {
   transition: transform 0.2s ease;
   margin-left: auto;
@@ -353,6 +359,7 @@ tbody tr:nth-child(3) td {
 .accordion-header.active .accordion-icon {
   transform: rotate(180deg);
 }
+
 tbody tr:nth-child(1) td:last-child,
 tbody tr:nth-child(2) td:last-child,
 tbody tr:nth-child(3) td:last-child {
@@ -362,7 +369,7 @@ tbody tr:nth-child(3) td:last-child {
     0.5px -0.5px black,
     -0.5px 0.5px black;
 }
-  </style>
+</style>
 </head>
 <body>
     <div class="top"></div>
@@ -489,6 +496,7 @@ function updateStatOptions() {
     statCheckboxesDiv.innerHTML = "";
     return;
   }
+
   const statSet = new Set();
   reforges.forEach(r => {
     if (r.itemTypes.includes(selectedItem)) {
@@ -497,23 +505,33 @@ function updateStatOptions() {
       });
     }
   });
+
   statCheckboxesDiv.innerHTML = "";
+
   Array.from(statSet).sort().forEach(stat => {
     const cb = document.createElement("input");
     cb.type = "checkbox";
     cb.id = "stat_" + stat;
     cb.value = stat;
+
     const label = document.createElement("label");
     label.htmlFor = cb.id;
     label.textContent = stat;
+
     cb.addEventListener("change", () => {
       updateCalculateButton();
       updateDisabledStats();
       updatePreferredModes();
     });
-    statCheckboxesDiv.appendChild(cb);
-    statCheckboxesDiv.appendChild(label);
+
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("checkbox-group");
+    wrapper.appendChild(cb);
+    wrapper.appendChild(label);
+
+    statCheckboxesDiv.appendChild(wrapper);
   });
+
   updateDisabledStats();
   updateCalculateButton();
   updatePreferredModes();
