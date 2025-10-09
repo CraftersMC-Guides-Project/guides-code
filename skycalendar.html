@@ -26,37 +26,57 @@ anyways i have the new covid variant so im going to sleep bye
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/essential.css" />
     <style>
         :root {
-            --bg-primary: #111827; /* gray-900 */
-            --bg-secondary: #1f2937; /* gray-800 */
-            --bg-tertiary: #374151; /* gray-700 */
-            --bg-interactive: #4b5563; /* gray-600 */
-            --border-color: #4b5563; /* gray-600 */
-            --text-primary: #f3f4f6; /* gray-200 */
-            --text-secondary: #9ca3af; /* gray-400 */
-            --accent-color: #3b82f6; /* blue-500 */
-            --accent-hover: #2563eb; /* blue-600 */
-            --highlight-color: #f59e0b; /* amber-500 */
+            --bg-primary: #111827;
+            --bg-secondary: rgba(0, 0, 0, 0);
+            --bg-tertiary: rgba(100, 100, 100, 0.5);
+            --bg-interactive: #4b5563;
+            --border-color: #4b5563;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --accent-color: #007bff;
+            --accent-hover: #005bef;
+            --highlight-color: #f59e0b;
         }
         
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-primary);
+            background-image: url('Backgrounds/IMG_4500Blurred.webp');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
             color: var(--text-primary);
             margin: 0;
             padding: 1rem;
         }
 
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            pointer-events: none;
+            z-index: -1;
+        }
+
         .container {
+            display: flex;
+            flex-direction: column;
             max-width: 1280px;
             margin: 0 auto;
+            align-items: center;
         }
 
         /* Header */
         header {
             text-align: center;
             margin-bottom: 2rem;
+            background-color: var(--bg-secondary);
+            border-radius: 16px;
+            
+            padding: 5px;
         }
         header h1 {
             font-size: 2.25rem;
@@ -73,8 +93,10 @@ anyways i have the new covid variant so im going to sleep bye
             background-color: var(--bg-secondary);
             border-radius: 1rem;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             padding: 1.5rem;
             margin-bottom: 2rem;
+            width: 95%;
         }
 
         .card-header {
@@ -102,20 +124,6 @@ anyways i have the new covid variant so im going to sleep bye
             width: 5rem;
         }
         
-        button {
-            background-color: var(--accent-color);
-            color: white;
-            font-weight: 700;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        button:hover {
-            background-color: var(--accent-hover);
-        }
         
         button:disabled {
             background-color: var(--bg-tertiary);
@@ -123,9 +131,7 @@ anyways i have the new covid variant so im going to sleep bye
             cursor: not-allowed;
         }
         
-        #prev-page-btn {
-            background-color: var(--bg-tertiary);
-        }
+
         #prev-page-btn:not(:disabled):hover {
             background-color: var(--bg-interactive);
         }
@@ -185,22 +191,60 @@ anyways i have the new covid variant so im going to sleep bye
             overflow: hidden;
         }
         
-        .event-icon { font-size: 1.5rem; }
+        .event-icon {
+            font-size: 1.5rem; 
+        }
+
         .event-icons-wrapper {
             display: flex;
             gap: 0.5rem;
             font-size: 1.25rem;
+            align-items: center;
         }
-        .event-name { margin-top: auto; font-size: 0.75rem; font-weight: 600;}
-        .multiple-events-indicator { font-size: 0.8rem; font-weight: bold; color: var(--text-secondary); }
+        .event-name {
+             margin-top: auto; 
+             font-size: 0.75rem; 
+             font-weight: 600;
+        }
+        .multiple-events-indicator { 
+            font-size: 0.8rem; 
+            font-weight: bold; 
+            color: var(--text-secondary); }
 
         /* Upcoming Events */
-        #upcoming-events-list { display: flex; flex-direction: column; gap: 1rem; }
-        .event-timer-item { display: flex; align-items: center; justify-content: space-between; background-color: rgba(55, 65, 81, 0.5); padding: 0.75rem; border-radius: 0.5rem; }
-        .event-timer-info { display: flex; align-items: center; gap: 0.75rem; }
-        .event-timer-info .event-name { font-weight: 600; }
-        .event-timer-info .event-subtext { font-size: 0.75rem; color: var(--text-secondary); }
-        .event-timer-countdown { font-family: monospace; font-size: 1.125rem; color: var(--highlight-color); }
+        #upcoming-events-list { 
+            display: flex; flex-direction: column; gap: 1rem; 
+        }
+        .event-timer-item { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            background-color: rgba(55, 65, 81, 0.5); 
+            padding: 0.75rem; 
+            border-radius: 0.5rem; 
+        }
+        .event-timer-info {
+             display: flex; 
+             align-items: center; 
+             gap: 0.75rem; 
+        }
+        .event-timer-info .event-name {
+             font-weight: 600; 
+        }
+
+        .event-timer-info .event-subtext {
+             font-size: 0.75rem; 
+             color: var(--text-secondary);
+             display: flex;
+             align-items: center; 
+             margin: 8px;
+        }
+        .event-timer-countdown {
+             font-family: monospace; 
+             font-size: 1.125rem; 
+             color: var(--highlight-color); 
+        }
+        
 
         /* Modal Styles */
         .modal-overlay {
@@ -218,12 +262,15 @@ anyways i have the new covid variant so im going to sleep bye
             visibility: hidden;
             transition: opacity 0.3s, visibility 0.3s;
         }
+
         .modal-overlay.visible {
             opacity: 1;
             visibility: visible;
         }
+
         .modal-content {
             background-color: var(--bg-secondary);
+            backdrop-filter: blur(10px);
             padding: 2rem;
             border-radius: 1rem;
             width: 90%;
@@ -232,9 +279,11 @@ anyways i have the new covid variant so im going to sleep bye
             transform: scale(0.95);
             transition: transform 0.3s;
         }
+
         .modal-overlay.visible .modal-content {
             transform: scale(1);
         }
+
         .modal-close-btn {
             position: absolute;
             top: 1rem;
@@ -245,13 +294,47 @@ anyways i have the new covid variant so im going to sleep bye
             font-size: 1.5rem;
             cursor: pointer;
         }
-        .modal-header h3 { font-size: 1.5rem; font-weight: 600; margin: 0; }
-        .modal-header p { color: var(--text-secondary); margin: 0.25rem 0 0 0; }
-        .modal-body { margin-top: 1.5rem; }
-        .modal-body h4 { font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin: 0 0 1rem 0; }
-        .modal-event-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
-        .modal-event-item { display: flex; align-items: center; gap: 1rem; }
-        .modal-event-item .event-icon { font-size: 1.75rem; }
+
+        .modal-header h3 { 
+            font-size: 1.5rem; 
+            font-weight: 600; 
+            margin: 0; 
+        }
+        .modal-header p { 
+            color: var(--text-secondary); 
+            
+        }
+        .modal-body { 
+            margin-top: 1.5rem; 
+        }
+        .modal-body h4 { 
+            font-weight: 600; 
+            border-bottom: 1px solid var(--border-color); 
+            padding-bottom: 0.5rem; 
+            margin: 0 0 1rem 0; 
+        }
+        .modal-event-list { 
+            list-style: none; 
+            padding: 0; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 0.75rem; 
+        }
+        .modal-event-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 1rem; 
+        }
+        .modal-event-item .event-icon { 
+            font-size: 1.75rem; 
+        }
+
+        .modal-event-item span {
+            display: flex;
+            align-items: center;
+            gap: 4px
+        }
     </style>
 </head>
 <body>
@@ -301,7 +384,7 @@ anyways i have the new covid variant so im going to sleep bye
          * It can be moved to a Web Worker file in the future.
          */
         const CalendarEngine = {
-            // basic variables and offsets
+            // basic variables and some offsets
             START_OF_TIMES: 1648800000, //secs
             TIME_MULTIPLIER: 72,
             SEASON_LENGTH: 93, // in days obv
@@ -311,18 +394,22 @@ anyways i have the new covid variant so im going to sleep bye
             MINUTES_PER_SKYBLOCK_DAY: 20,
             SEASON_SPRING: 0, SEASON_SUMMER: 1, SEASON_AUTUMN: 2, SEASON_WINTER: 3,
             
-            // travelling zoo legendary pattern (elephant, giraffe, tiger, lion, monkey)
             LEGENDARY_PATTERN: ['elephant','giraffe','tiger','lion','monkey'],
-            LEGENDARY_ICONS: { 'elephant':'<img src="img/pets/Elephant_Pet.webp" style="height:auto;width:24px;">','giraffe':'<img src="img/pets/Giraffe_Pet.webp" style="height:auto;width:24px;">','tiger':'<img src="img/pets/300px-Tiger_pet.webp" style="height:auto;width:24px;">','lion':'<img src="img/pets/300px-Lion_pet.webp" style="height:auto;width:24px;">','monkey':'<img src="img/pets/Monkey_pet.webp" style="height:auto;width:24px;">' },
-            // offset chosen so Summer of year 250 -> elephant (reference provided)
-            TRAVELING_ZOO_LEGENDARY_OFFSET: 2,
+            LEGENDARY_ICONS: { 'elephant':'<img src="img/pets/Elephant_Pet.webp" style="height:24px;width:auto;margin:4px;">',
 
-            // names, icons and cache
+            'giraffe':'<img src="img/pets/Giraffe_Pet.webp" style="height:24px;width:auto;margin:4px;">',
+
+            'tiger':'<img src="img/pets/300px-Tiger_pet.webp" style="height:24px;width:auto;margin:4px;">',
+
+            'lion':'<img src="img/pets/300px-Lion_pet.webp" style="height:24px;width:auto;margin:4px;">',
+
+            'monkey':'<img src="img/pets/Monkey_pet.webp" style="height:24px;width:auto;margin:4px;">'},
+            TRAVELING_ZOO_LEGENDARY_OFFSET: 2,
             pagesDataCache: new Map(),
             SEASON_NAMES: ['Spring', 'Summer', 'Autumn', 'Winter'],
             CropType: ['WHEAT', 'SUGAR_CANE', 'CARROT', 'POTATO', 'MELON', 'PUMPKIN', 'COCOA_BEANS', 'CACTUS', 'MUSHROOM', 'BEETROOT'],
             CROP_ICONS: { 'WHEAT': '🌾', 'SUGAR_CANE': '🎍', 'CARROT': '🥕', 'POTATO': '🥔', 'MELON': '🍉', 'PUMPKIN': '🎃', 'COCOA_BEANS': '🫘', 'CACTUS': '🌵', 'MUSHROOM': '🍄', 'BEETROOT': '🍓' },
-            // farming contest seed algorithm
+            // farming contest seed algorithm from craftersmc official calendarjs
             Random: (function() {
                 // Constants for the PRNG algorithm.
                 const p2_16 = 65536, p2_32 = 4294967296, p2_48 = 281474976710656, m2_16 = 65535;
@@ -411,7 +498,7 @@ anyways i have the new covid variant so im going to sleep bye
                 
                 const events = [];
                 if (daysSinceEpoch % 3 === 0) {
-                    events.push({ name: 'Farming Contest', icon: '🏆', type: 'farming', crops: this.getFarmingCrops(Math.floor(daysSinceEpoch / 3)) });
+                    events.push({ name: 'Farming Contest', icon: '<img src="assets/farming/Farm-o-Matic.webp" style="width:24px">', type: 'farming', crops: this.getFarmingCrops(Math.floor(daysSinceEpoch / 3)) });
                 }
                 if (season === this.SEASON_SPRING && (year - 1) % 4 === 0) {
                     events.push({ name: "Season of the Pig", icon: '🐷' });
@@ -481,7 +568,6 @@ anyways i have the new covid variant so im going to sleep bye
                 if(time.currentDayOfYear < summerStart) nextZooDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + summerStart;
                 else if(time.currentDayOfYear < winterStart) nextZooDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + winterStart;
                 else nextZooDay = (time.currentYear * this.DAYS_PER_YEAR) + summerStart;
-                // include legendary info for that next zoo
                 const legendaryNext = this.getTravelingZooLegendaryForDay(nextZooDay) || { name: 'Unknown', icon: '🐘' };
                 upcoming.push({ name: "Traveling Zoo", icon: legendaryNext.icon, legendaryName: legendaryNext.name, nextDay: nextZooDay });
 
@@ -599,7 +685,7 @@ anyways i have the new covid variant so im going to sleep bye
                     if (event.type === 'farming' && event.crops) {
                         subtext = event.crops.map(c => this.engine.CROP_ICONS[c] || '?').join(' ');
                     } else if (event.name === 'Traveling Zoo' && event.legendaryName) {
-                        subtext = `${event.legendaryName} ${event.icon}`;
+                        subtext = `Legendary pet: ${capitalize(event.legendaryName)} ${event.icon}`;
                     }
                     return `
                         <div class="event-timer-item">
@@ -669,7 +755,7 @@ anyways i have the new covid variant so im going to sleep bye
                          if (event.type === 'farming') {
                              subtext = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(${event.crops.join(', ')})</span>`;
                          } else if (event.name === 'Traveling Zoo' && event.legendaryName) {
-                             subtext = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(Legendary: ${event.legendaryName} ${event.icon})</span>`;
+                             subtext = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(Legendary: ${capitalize(event.legendaryName)} ${event.icon})</span>`;
                          }
                          li.innerHTML = `<span class="event-icon">${event.icon}</span> <span>${event.name}${subtext}</span>`;
                          eventListEl.appendChild(li);
@@ -689,6 +775,10 @@ anyways i have the new covid variant so im going to sleep bye
          document.addEventListener('DOMContentLoaded', () => {
              UIController.init(CalendarEngine);
          });
+
+        function capitalize(val) {
+            return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+        }
      </script>
  </body>
  </html>
