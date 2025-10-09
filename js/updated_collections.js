@@ -1700,8 +1700,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "AYUSH_BHAKTE",
+                    "score": "30M+"
                 },
                 {
                     "rank": 4,
