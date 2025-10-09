@@ -301,23 +301,28 @@ anyways i have the new covid variant so im going to sleep bye
          * It can be moved to a Web Worker file in the future.
          */
         const CalendarEngine = {
-            // --- Constants ---
-            START_OF_TIMES: 1648800000, // seconds
+            // basic variables and offsets
+            START_OF_TIMES: 1648800000, //secs
             TIME_MULTIPLIER: 72,
-            SEASON_LENGTH: 93, // days
+            SEASON_LENGTH: 93, // in days obv
             YEAR_LENGTH: 4,
-            DAYS_PER_YEAR: 372, // 93 * 4
-            DAYS_PER_PAGE: 31,
+            DAYS_PER_YEAR: 372,
+            DAYS_PER_PAGE: 31, 
             MINUTES_PER_SKYBLOCK_DAY: 20,
             SEASON_SPRING: 0, SEASON_SUMMER: 1, SEASON_AUTUMN: 2, SEASON_WINTER: 3,
             
-            // --- Properties ---
+            // travelling zoo legendary pattern (elephant, giraffe, tiger, lion, monkey)
+            LEGENDARY_PATTERN: ['elephant','giraffe','tiger','lion','monkey'],
+            LEGENDARY_ICONS: { 'elephant':'<img src="img/pets/Elephant_Pet.webp" style="height:auto;width:24px;">','giraffe':'<img src="img/pets/Giraffe_Pet.webp" style="height:auto;width:24px;">','tiger':'<img src="img/pets/300px-Tiger_pet.webp" style="height:auto;width:24px;">','lion':'<img src="img/pets/300px-Lion_pet.webp" style="height:auto;width:24px;">','monkey':'<img src="img/pets/Monkey_pet.webp" style="height:auto;width:24px;">' },
+            // offset chosen so Summer of year 250 -> elephant (reference provided)
+            TRAVELING_ZOO_LEGENDARY_OFFSET: 2,
+
+            // names, icons and cache
             pagesDataCache: new Map(),
             SEASON_NAMES: ['Spring', 'Summer', 'Autumn', 'Winter'],
             CropType: ['WHEAT', 'SUGAR_CANE', 'CARROT', 'POTATO', 'MELON', 'PUMPKIN', 'COCOA_BEANS', 'CACTUS', 'MUSHROOM', 'BEETROOT'],
             CROP_ICONS: { 'WHEAT': '🌾', 'SUGAR_CANE': '🎍', 'CARROT': '🥕', 'POTATO': '🥔', 'MELON': '🍉', 'PUMPKIN': '🎃', 'COCOA_BEANS': '🫘', 'CACTUS': '🌵', 'MUSHROOM': '🍄', 'BEETROOT': '🍓' },
-
-            // --- Dependencies (self-contained and cleaned) ---
+            // farming contest seed algorithm
             Random: (function() {
                 // Constants for the PRNG algorithm.
                 const p2_16 = 65536, p2_32 = 4294967296, p2_48 = 281474976710656, m2_16 = 65535;
@@ -361,6 +366,22 @@ anyways i have the new covid variant so im going to sleep bye
                 };
             })(),
 
+            // helper to compute which legendary pet a travelling zoo has on a given totalDay
+            getTravelingZooLegendaryForDay(totalDay) {
+                const daysSinceEpoch = totalDay - 1;
+                const seasonsSinceEpoch = Math.floor(daysSinceEpoch / this.SEASON_LENGTH);
+                const year = Math.floor(seasonsSinceEpoch / this.YEAR_LENGTH) + 1;
+                const season = seasonsSinceEpoch % this.YEAR_LENGTH; // 0..3
+                // only valid for summer/winter traveling zoo
+                if (season !== this.SEASON_SUMMER && season !== this.SEASON_WINTER) return null;
+
+                // occurrence index (zero-based): per year there are 2 zoos: summer then winter
+                const occurrenceIndex = (year - 1) * 2 + (season === this.SEASON_SUMMER ? 0 : 1);
+                const idx = (occurrenceIndex + this.TRAVELING_ZOO_LEGENDARY_OFFSET) % this.LEGENDARY_PATTERN.length;
+                const name = this.LEGENDARY_PATTERN[idx];
+                return { name, icon: this.LEGENDARY_ICONS[name] || '❓' };
+            },
+
             // --- Methods ---
             getPageData(pageNumber) {
                 if (!this.pagesDataCache.has(pageNumber)) this.calculatePage(pageNumber);
@@ -383,7 +404,7 @@ anyways i have the new covid variant so im going to sleep bye
                 const daysSinceEpoch = totalDay - 1;
                 const seasonsSinceEpoch = Math.floor(daysSinceEpoch / this.SEASON_LENGTH);
                 const yearsSinceEpoch = Math.floor(seasonsSinceEpoch / this.YEAR_LENGTH);
-
+ 
                 const year = yearsSinceEpoch + 1;
                 const season = seasonsSinceEpoch % this.YEAR_LENGTH;
                 const dayOfSeason = daysSinceEpoch % this.SEASON_LENGTH + 1;
@@ -396,13 +417,15 @@ anyways i have the new covid variant so im going to sleep bye
                     events.push({ name: "Season of the Pig", icon: '🐷' });
                 }
                 if ((season === this.SEASON_SUMMER && dayOfSeason <= 3) || (season === this.SEASON_WINTER && dayOfSeason <= 3)) {
-                     events.push({ name: "Traveling Zoo", icon: '🐘' });
+                    // attach legendary info for this travelling zoo occurrence
+                    const legendary = this.getTravelingZooLegendaryForDay(totalDay) || { name: 'Unknown', icon: '🐘' };
+                    events.push({ name: "Traveling Zoo", icon: legendary.icon, legendaryName: legendary.name });
                 }
-                if (season === this.SEASON_WINTER && dayOfSeason >= 91) {
-                    events.push({ name: "New Year Celebration", icon: '🎉' });
-                }
-
-                return { totalDay, year, season: this.SEASON_NAMES[season], dayOfSeason, events };
+                 if (season === this.SEASON_WINTER && dayOfSeason >= 91) {
+                     events.push({ name: "New Year Celebration", icon: '🎉' });
+                 }
+ 
+                 return { totalDay, year, season: this.SEASON_NAMES[season], dayOfSeason, events };
             },
 
             getFarmingCrops(eventId) {
@@ -442,7 +465,7 @@ anyways i have the new covid variant so im going to sleep bye
                 upcoming.push({ name: "Farming Contest", icon: '🏆', type: 'farming', nextDay: nextContestDay > time.currentSkyblockDay ? nextContestDay : nextContestDay + 3, crops: this.getFarmingCrops(Math.floor(nextContestDay/3))});
 
                 // Season of the Pig
-                let nextPigYear = Math.ceil(time.currentYear / 4) * 4;
+                let nextPigYear = Math.ceil(time.currentYear / 4) * 4 + 1; //+1 for accuracy
                 if(time.currentYear > nextPigYear || (time.currentYear === nextPigYear && time.currentSeason > this.SEASON_SPRING)) nextPigYear += 4;
                 upcoming.push({ name: "Season of the Pig", icon: '🐷', nextDay: ((nextPigYear - 1) * this.DAYS_PER_YEAR) + 1});
 
@@ -458,7 +481,9 @@ anyways i have the new covid variant so im going to sleep bye
                 if(time.currentDayOfYear < summerStart) nextZooDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + summerStart;
                 else if(time.currentDayOfYear < winterStart) nextZooDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + winterStart;
                 else nextZooDay = (time.currentYear * this.DAYS_PER_YEAR) + summerStart;
-                upcoming.push({ name: "Traveling Zoo", icon: '🐘', nextDay: nextZooDay });
+                // include legendary info for that next zoo
+                const legendaryNext = this.getTravelingZooLegendaryForDay(nextZooDay) || { name: 'Unknown', icon: '🐘' };
+                upcoming.push({ name: "Traveling Zoo", icon: legendaryNext.icon, legendaryName: legendaryNext.name, nextDay: nextZooDay });
 
                 // Calculate msUntil for all events
                 upcoming.forEach(event => {
@@ -488,8 +513,16 @@ anyways i have the new covid variant so im going to sleep bye
                 this.engine = engine;
                 this.cacheDOMElements();
                 this.bindEventListeners();
-                this.engine.preCalculatePage(1);
-                this.engine.preCalculatePage(2);
+                // Determine the current skyblock day and jump to its page immediately
+                const time = this.engine.getCurrentTimeData();
+                this.currentSkyblockDay = time.currentSkyblockDay;
+                // Ensure at least page 1
+                this.currentPage = Math.max(1, Math.ceil(this.currentSkyblockDay / this.engine.DAYS_PER_PAGE));
+                // Pre-calc current and next page for snappy navigation
+                this.engine.preCalculatePage(this.currentPage);
+                this.engine.preCalculatePage(this.currentPage + 1);
+                // Render the page so the current day is highlighted right away
+                this.renderCurrentPage();
                 this.startTimers();
             },
 
@@ -530,12 +563,21 @@ anyways i have the new covid variant so im going to sleep bye
             startTimers() {
                 const update = () => {
                     const timeData = this.engine.getCurrentTimeData();
-                    const dayChanged = this.currentSkyblockDay !== timeData.currentSkyblockDay;
-                    
-                    this.currentSkyblockDay = timeData.currentSkyblockDay;
+                    const newSkyblockDay = timeData.currentSkyblockDay;
+                    const dayChanged = this.currentSkyblockDay !== newSkyblockDay;
+                    this.currentSkyblockDay = newSkyblockDay;
                     this.elements.currentDateInfoEl.textContent = `Today: Year ${timeData.currentYear}, ${this.engine.SEASON_NAMES[timeData.currentSeason]}, Day ${timeData.currentDayOfSeason}`;
                     
-                    if (dayChanged) this.renderCurrentPage();
+                    if (dayChanged) {
+                        // If the day moved into a different page, jump to that page
+                        const newPage = Math.max(1, Math.ceil(this.currentSkyblockDay / this.engine.DAYS_PER_PAGE));
+                        if (newPage !== this.currentPage) {
+                            this.currentPage = newPage;
+                            // Pre-calc the next page for smooth navigation
+                            this.engine.preCalculatePage(this.currentPage + 1);
+                        }
+                        this.renderCurrentPage();
+                    }
                     
                     const upcomingEvents = this.engine.getUpcomingEventsData();
                     this.renderUpcomingEvents(upcomingEvents);
@@ -556,6 +598,8 @@ anyways i have the new covid variant so im going to sleep bye
                     let subtext = 'Starts in...';
                     if (event.type === 'farming' && event.crops) {
                         subtext = event.crops.map(c => this.engine.CROP_ICONS[c] || '?').join(' ');
+                    } else if (event.name === 'Traveling Zoo' && event.legendaryName) {
+                        subtext = `${event.legendaryName} ${event.icon}`;
                     }
                     return `
                         <div class="event-timer-item">
@@ -570,80 +614,81 @@ anyways i have the new covid variant so im going to sleep bye
                         </div>`;
                 }).join('');
             },
-
-            renderCurrentPage() {
-                const pageData = this.engine.getPageData(this.currentPage);
-                this.renderPage(pageData);
-            },
-
-            renderPage(pageData) {
-                this.elements.calendarGrid.innerHTML = '';
-                if (!pageData) return;
-                
-                this.elements.calendarPageEl.textContent = this.currentPage;
-                this.elements.calendarYearEl.textContent = pageData[0].year;
-                this.elements.prevPageBtn.disabled = this.currentPage <= 1;
-
-                pageData.forEach(dayInfo => {
-                    const dayCell = document.createElement('div');
-                    dayCell.className = 'day-cell';
-                    if (dayInfo.totalDay === this.currentSkyblockDay) dayCell.classList.add('current-day');
-                    
-                    let eventContent = '';
-                    if (dayInfo.events.length > 0) {
-                        const icons = dayInfo.events.slice(0, 2).map(e => e.icon).join('');
-                        const moreCount = dayInfo.events.length - 2;
-                        eventContent = `<div class="event-icons-wrapper">${icons}${moreCount > 0 ? `<span class="multiple-events-indicator">+${moreCount}</span>` : ''}</div>`;
-                    }
-
-                    dayCell.innerHTML = `
-                        <div class="day-cell-header">
-                            <span class="day-season">${dayInfo.season.substring(0,3)} ${dayInfo.dayOfSeason}</span>
-                            <span class="day-total">Day ${dayInfo.totalDay}</span>
-                        </div>
-                        <div class="day-cell-body">${eventContent}</div>`;
-                    dayCell.addEventListener('click', () => this.showDayDetails(dayInfo));
-                    this.elements.calendarGrid.appendChild(dayCell);
-                });
-            },
-
-            showDayDetails(dayInfo) {
-                const realDate = this.engine.getRealTimeForDay(dayInfo.totalDay);
-                document.getElementById('modal-ingame-date').textContent = `Year ${dayInfo.year}, ${dayInfo.season} ${dayInfo.dayOfSeason}`;
-                document.getElementById('modal-real-date').textContent = `Starts: ${realDate.toLocaleString()}`;
-                
-                const eventListEl = document.getElementById('modal-event-list');
-                const eventsTitleEl = document.getElementById('modal-events-title');
-                eventListEl.innerHTML = '';
-                
-                if (dayInfo.events.length > 0) {
-                    eventsTitleEl.style.display = 'block';
-                    dayInfo.events.forEach(event => {
-                        const li = document.createElement('li');
-                        li.className = 'modal-event-item';
-                        let subtext = '';
-                        if (event.type === 'farming') {
-                            subtext = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(${event.crops.join(', ')})</span>`;
-                        }
-                        li.innerHTML = `<span class="event-icon">${event.icon}</span> <span>${event.name}${subtext}</span>`;
-                        eventListEl.appendChild(li);
-                    });
-                } else {
-                    eventsTitleEl.style.display = 'none';
-                    eventListEl.innerHTML = '<li>No events on this day.</li>';
-                }
-                this.elements.modal.classList.add('visible');
-            },
-
-            closeModal() {
-                this.elements.modal.classList.remove('visible');
-            }
-        };
-
-        // --- Initialization ---
-        document.addEventListener('DOMContentLoaded', () => {
-            UIController.init(CalendarEngine);
-        });
-    </script>
-</body>
-</html>
+ 
+             renderCurrentPage() {
+                 const pageData = this.engine.getPageData(this.currentPage);
+                 this.renderPage(pageData);
+             },
+ 
+             renderPage(pageData) {
+                 this.elements.calendarGrid.innerHTML = '';
+                 if (!pageData) return;
+                 
+                 this.elements.calendarPageEl.textContent = this.currentPage;
+                 this.elements.calendarYearEl.textContent = pageData[0].year;
+                 this.elements.prevPageBtn.disabled = this.currentPage <= 1;
+ 
+                 pageData.forEach(dayInfo => {
+                     const dayCell = document.createElement('div');
+                     dayCell.className = 'day-cell';
+                     if (dayInfo.totalDay === this.currentSkyblockDay) dayCell.classList.add('current-day');
+                     
+                     let eventContent = '';
+                     if (dayInfo.events.length > 0) {
+                         const icons = dayInfo.events.slice(0, 2).map(e => e.icon).join('');
+                         const moreCount = dayInfo.events.length - 2;
+                         eventContent = `<div class="event-icons-wrapper">${icons}${moreCount > 0 ? `<span class="multiple-events-indicator">+${moreCount}</span>` : ''}</div>`;
+                     }
+ 
+                     dayCell.innerHTML = `
+                         <div class="day-cell-header">
+                             <span class="day-season">${dayInfo.season.substring(0,3)} ${dayInfo.dayOfSeason}</span>
+                             <span class="day-total">ID ${dayInfo.totalDay}</span>
+                         </div>
+                         <div class="day-cell-body">${eventContent}</div>`;
+                     dayCell.addEventListener('click', () => this.showDayDetails(dayInfo));
+                     this.elements.calendarGrid.appendChild(dayCell);
+                 });
+             },
+ 
+             showDayDetails(dayInfo) {
+                 const realDate = this.engine.getRealTimeForDay(dayInfo.totalDay);
+                 document.getElementById('modal-ingame-date').textContent = `Year ${dayInfo.year}, ${dayInfo.season} ${dayInfo.dayOfSeason}`;
+                 document.getElementById('modal-real-date').textContent = `Starts: ${realDate.toLocaleString()}`;
+                 
+                 const eventListEl = document.getElementById('modal-event-list');
+                 const eventsTitleEl = document.getElementById('modal-events-title');
+                 eventListEl.innerHTML = '';
+                 
+                 if (dayInfo.events.length > 0) {
+                     eventsTitleEl.style.display = 'block';
+                     dayInfo.events.forEach(event => {
+                         const li = document.createElement('li');
+                         li.className = 'modal-event-item';
+                         let subtext = '';
+                         if (event.type === 'farming') {
+                             subtext = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(${event.crops.join(', ')})</span>`;
+                         } else if (event.name === 'Traveling Zoo' && event.legendaryName) {
+                             subtext = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(Legendary: ${event.legendaryName} ${event.icon})</span>`;
+                         }
+                         li.innerHTML = `<span class="event-icon">${event.icon}</span> <span>${event.name}${subtext}</span>`;
+                         eventListEl.appendChild(li);
+                     });
+                 } else {
+                     eventsTitleEl.style.display = 'none';
+                     eventListEl.innerHTML = '<li>No events on this day.</li>';
+                 }
+                 this.elements.modal.classList.add('visible');
+             },
+ 
+             closeModal() {
+                 this.elements.modal.classList.remove('visible');
+             }
+         };
+ 
+         document.addEventListener('DOMContentLoaded', () => {
+             UIController.init(CalendarEngine);
+         });
+     </script>
+ </body>
+ </html>
