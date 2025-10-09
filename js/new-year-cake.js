@@ -1,6 +1,6 @@
 const intervalDuration = 84*3600*1000; // 84hrs
 const eventDuration = 60 * 60 * 1000; // 1 hour in ms
-const lastCakeNumber = 235;
+const lastCakeNumber = 229;
 const lastCakeTime = new Date('2025-07-30T08:30:00+05:30').getTime(); // for IST (India Standard Time)
 
 function formatTime(date) {
