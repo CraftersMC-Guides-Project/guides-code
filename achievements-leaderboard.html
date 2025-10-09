@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Achievements Leaderboard">
+    <meta property="og:description" content="See who has the most achievements in CraftersMC Minecraft server!">
+    <meta property="og:image" content="">
+    <meta property="og:url" content="https://craftersmc-guides.pages.dev/achievements-leaderboard.html">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#007bff">
+    <title>Achievements Leaderboard</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="js/script.js"></script>
+    <script src="js/achievements-leaderboard.js"></script>
+    <link rel="stylesheet" href="css/essential.css">
+    <link rel="stylesheet" href="css/collections-leaderboards.css">
+</head>
+
+<body>
+      <div id="loader">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div class="col-lb-background"></div>
+    <div id="sidebar-overlay" onclick="overlay()"></div>
+    <!-- Navbar -->
+    <div class="top"></div>
+    <div class="gap"></div>
+    <div class="sidebar" id="sidebar"></div>
+<div class="lb-container">
+    <h3 class="lb-h3">Achievements Leaderboard</h3>
+    <p>Check out the top players with the most achievements achieved! This is based on the whole CraftersMC Minecraft server and is not specifically for a gamemode.</p>
+
+    <div class="lb-leaderboard">
+        <h2 class="lb-h2">Top Players</h2>
+        <table class="slay-lb-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Achievements</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboardData">
+                <tr>
+                    <td>1</td>
+                    <td>???</td>
+                    <td>???</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+    <div id="footer"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+    const leaderboardData = document.getElementById("leaderboardData");
+    const totalAchievements = 72;
+
+    if (typeof achievementsData !== "undefined" && achievementsData.length > 0) {
+        leaderboardData.innerHTML = achievementsData
+            .map(player => {
+                const achieved = player.achievements ?? 0;
+                return `<tr>
+                    <td>${player.rank}</td>
+                    <td>${player.name}</td>
+                    <td>${achieved}/${totalAchievements}</td>
+                </tr>`;
+            })
+            .join("");
+    } else {
+        leaderboardData.innerHTML = "<tr><td>1</td><td>???</td><td>0/72</td></tr>".repeat(10);
+    }
+});
+    </script>
+</body>
+
+</html>
