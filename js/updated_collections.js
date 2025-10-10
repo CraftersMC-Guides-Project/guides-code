@@ -1042,12 +1042,12 @@ const collectionsData = {
                 {
                     "rank": 6,
                     "name": "AndyGamer024",
-                    "score": "50M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 7,
                     "name": "Moerderfisch",
-                    "score": "49.4M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 8,
@@ -1056,8 +1056,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "SpiralCard90164",
+                    "score": "82.6M+"
                 },
                 {
                     "rank": 10,
@@ -1730,13 +1730,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "ENDERxBEAST4806",
-                    "score": "N/A"
+                    "name": "MADERUCHIA07",
+                    "score": "23.7M+"
                 },
                 {
                     "rank": 10,
-                    "name": "MADERUCHIA07",
-                    "score": "23M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 }
             ]
         },
