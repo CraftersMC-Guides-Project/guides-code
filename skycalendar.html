@@ -379,6 +379,7 @@ anyways i have the new covid variant so im going to sleep bye
             <div class="modal-header">
                 <h3 id="modal-ingame-date"></h3>
                 <p id="modal-real-date"></p>
+                <p id="modal-countdown-to-day" style="color:var(--highlight-color);font-family:monospace;margin-top:0.5em;"></p>
             </div>
             <div class="modal-body">
                 <h4 id="modal-events-title">Events</h4>
@@ -418,6 +419,7 @@ anyways i have the new covid variant so im going to sleep bye
             pagesDataCache: new Map(),
             SEASON_NAMES: ['Spring', 'Summer', 'Autumn', 'Winter'],
             CropType: ['WHEAT', 'SUGAR_CANE', 'CARROT', 'POTATO', 'MELON', 'PUMPKIN', 'COCOA_BEANS', 'CACTUS', 'MUSHROOM', 'BEETROOT'],
+            //const crops = ["Wheat", "Sugar Cane", "Carrot", "Potato", "Melon", "Pumpkin", "Cocoa Beans", "Cactus", "Mushroom", "Beetroot"];
             CROP_ICONS: { 'WHEAT': '🌾', 'SUGAR_CANE': '🎍', 'CARROT': '🥕', 'POTATO': '🥔', 'MELON': '🍉', 'PUMPKIN': '🎃', 'COCOA_BEANS': '🫘', 'CACTUS': '🌵', 'MUSHROOM': '🍄', 'BEETROOT': '🍓' },
             // farming contest seed algorithm from craftersmc official calendarjs
             Random: (function() {
@@ -458,7 +460,7 @@ anyways i have the new covid variant so im going to sleep bye
                             return val;
                         };
                         
-                        this.setSeed(seedval === undefined ? Math.floor(Math.random() * p2_48) : seedval);
+                        this.setSeed(seedval === undefined ? 'Failed' : seedval);
                     }
                 };
             })(),
@@ -604,6 +606,7 @@ anyways i have the new covid variant so im going to sleep bye
             currentSkyblockDay: 0,
             engine: null,
             elements: {},
+            modalCountdownInterval: null,
 
             init(engine) {
                 this.engine = engine;
@@ -748,37 +751,57 @@ anyways i have the new covid variant so im going to sleep bye
              },
  
              showDayDetails(dayInfo) {
-                 const realDate = this.engine.getRealTimeForDay(dayInfo.totalDay);
-                 document.getElementById('modal-ingame-date').textContent = `Year ${dayInfo.year}, ${dayInfo.season} ${dayInfo.dayOfSeason}`;
-                 document.getElementById('modal-real-date').textContent = `Starts: ${realDate.toLocaleString()}`;
-                 
-                 const eventListEl = document.getElementById('modal-event-list');
-                 const eventsTitleEl = document.getElementById('modal-events-title');
-                 eventListEl.innerHTML = '';
-                 
-                 if (dayInfo.events.length > 0) {
-                     eventsTitleEl.style.display = 'block';
-                     dayInfo.events.forEach(event => {
-                         const li = document.createElement('li');
-                         li.className = 'modal-event-item';
-                         let subtext = '';
-                         if (event.type === 'farming') {
-                             subtext = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(${event.crops.join(', ')})</span>`;
-                         } else if (event.name === 'Traveling Zoo' && event.legendaryName) {
-                             subtext = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(Legendary: ${capitalize(event.legendaryName)} ${event.icon})</span>`;
-                         }
-                         li.innerHTML = `<span class="event-icon">${event.icon}</span> <span>${event.name}${subtext}</span>`;
-                         eventListEl.appendChild(li);
-                     });
-                 } else {
-                     eventsTitleEl.style.display = 'none';
-                     eventListEl.innerHTML = '<li>No events on this day.</li>';
-                 }
-                 this.elements.modal.classList.add('visible');
+                const realDate = this.engine.getRealTimeForDay(dayInfo.totalDay);
+                document.getElementById('modal-ingame-date').textContent = `Year ${dayInfo.year}, ${dayInfo.season} ${dayInfo.dayOfSeason}`;
+                document.getElementById('modal-real-date').textContent = `Date: ${realDate.toLocaleString()}`;
+                // Setup countdown
+                const countdownEl = document.getElementById('modal-countdown-to-day');
+                if (this.modalCountdownInterval) clearInterval(this.modalCountdownInterval);
+                const updateCountdown = () => {
+                    const now = Date.now();
+                    const ms = realDate.getTime() - now;
+                    if (ms > 0) {
+                        countdownEl.style.display = '';
+                        countdownEl.textContent = `Countdown: ${this.formatTime(ms)}`;
+                    } else {
+                        countdownEl.style.display = 'none';
+                    }
+                };
+                updateCountdown();
+                this.modalCountdownInterval = setInterval(updateCountdown, 1000);
+
+                const eventListEl = document.getElementById('modal-event-list');
+                const eventsTitleEl = document.getElementById('modal-events-title');
+                eventListEl.innerHTML = '';
+                
+                if (dayInfo.events.length > 0) {
+                    eventsTitleEl.style.display = 'block';
+                    dayInfo.events.forEach(event => {
+                        const li = document.createElement('li');
+                        li.className = 'modal-event-item';
+                        let subtext = '';
+                        if (event.type === 'farming') {
+                            subtext = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(${event.crops.join(', ')})</span>`;
+                        } else if (event.name === 'Traveling Zoo' && event.legendaryName) {
+                            subtext = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(Legendary: ${capitalize(event.legendaryName)} ${event.icon})</span>`;
+                        }
+                        li.innerHTML = `<span class="event-icon">${event.icon}</span> <span>${event.name}${subtext}</span>`;
+                        eventListEl.appendChild(li);
+                    });
+                } else {
+                    eventsTitleEl.style.display = 'none';
+                    eventListEl.innerHTML = '<li>No events on this day.</li>';
+                }
+                this.elements.modal.classList.add('visible');
              },
  
              closeModal() {
                  this.elements.modal.classList.remove('visible');
+                 // Stop countdown timer
+                 if (this.modalCountdownInterval) {
+                     clearInterval(this.modalCountdownInterval);
+                     this.modalCountdownInterval = null;
+                 }
              }
          };
  
