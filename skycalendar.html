@@ -1,21 +1,8 @@
-<!--Plan: 
-make a mockup of the craftersmc calendar ingame, as a website
-use a system to calculate each day and it can be infinitely calculated,
-each page is 31 days, so page 1 is day 1-31, page 2 is day 32-62, etc
-it will calcuate the first 2 pages on load,
-a button to go to the next page, onlick it will replace the current page with the next pages
-the button will also calculate the next pages, so if you are on page 2, it wll callculate page 3,
-page 5, calculate page 6
-page 10, calculate page 11
-etc
-Underneath that calendar, it will show the next upcoming events with timers, like the first page before the json UI calendar ingame
-It will show the next upcoming event for each event
-Then we will have underneath that the same timer and next 10 calculations as we have already, all in one page. 
+<!--todo: 
+underneath calendar add the same timers and next 10 calculations as we have already, all in one page. 
 This is gonna be hugeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 anyways i have the new covid variant so im going to sleep bye
 -->
-
-<!--This is the AI made prototype we can adapt into our own system, Gemini 2.5 pro-->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -230,6 +217,7 @@ anyways i have the new covid variant so im going to sleep bye
             background-color: rgba(55, 65, 81, 0.5); 
             padding: 0.75rem; 
             border-radius: 0.5rem; 
+            height: 80px;
         }
 
         .event-timer-item img {
@@ -424,13 +412,13 @@ anyways i have the new covid variant so im going to sleep bye
             SEASON_SPRING: 0, SEASON_SUMMER: 1, SEASON_AUTUMN: 2, SEASON_WINTER: 3,
             
             LEGENDARY_PATTERN: ['elephant','giraffe','tiger','lion','monkey'],
-            LEGENDARY_ICONS: { 'elephant':'<img src="img/pets/Elephant_Pet.webp" style="height:40px;width:auto;margin:4px;">',
+            LEGENDARY_ICONS: { 'elephant':'<img src="img/pets/Elephant_Pet.webp" style="height:40px;width:auto;">',
 
-            'giraffe':'<img src="img/pets/Giraffe_Pet.webp" style="height:40px;width:auto;margin:4px;">',
+            'giraffe':'<img src="img/pets/Giraffe_Pet.webp" style="height:40px;width:auto;">',
 
-            'tiger':'<img src="img/pets/300px-Tiger_pet.webp" style="height:40px;width:auto;margin:4px;">',
+            'tiger':'<img src="img/pets/300px-Tiger_pet.webp" style="height:40px;width:auto;">',
 
-            'lion':'<img src="img/pets/300px-Lion_pet.webp" style="height:40px;width:auto;margin:4px;">',
+            'lion':'<img src="img/pets/300px-Lion_pet.webp" style="height:40px;width:auto;">',
 
             'monkey':'<img src="img/pets/Monkey_pet.webp" style="height:40px;width:auto;margin:4px;">'},
             TRAVELING_ZOO_LEGENDARY_OFFSET: 2,
@@ -438,7 +426,18 @@ anyways i have the new covid variant so im going to sleep bye
             SEASON_NAMES: ['Spring', 'Summer', 'Autumn', 'Winter'],
             CropType: ['WHEAT', 'SUGAR_CANE', 'CARROT', 'POTATO', 'MELON', 'PUMPKIN', 'COCOA_BEANS', 'CACTUS', 'MUSHROOM', 'BEETROOT'],
             //const crops = ["Wheat", "Sugar Cane", "Carrot", "Potato", "Melon", "Pumpkin", "Cocoa Beans", "Cactus", "Mushroom", "Beetroot"];
-            CROP_ICONS: { 'WHEAT': '🌾', 'SUGAR_CANE': '🎍', 'CARROT': '🥕', 'POTATO': '🥔', 'MELON': '🍉', 'PUMPKIN': '🎃', 'COCOA_BEANS': '🫘', 'CACTUS': '🌵', 'MUSHROOM': '🍄', 'BEETROOT': '🍓' },
+            CROP_ICONS: { 
+                'WHEAT': '🌾',
+                'SUGAR_CANE': '🎍',
+                'CARROT': '🥕',
+                'POTATO': '🥔', 
+                'MELON': '🍉', 
+                'PUMPKIN': '🎃', 
+                'COCOA_BEANS': '🫘', 
+                'CACTUS': '🌵', 
+                'MUSHROOM': '🍄', 
+                'BEETROOT': '🍓' 
+            },
             // farming contest seed algorithm from craftersmc official calendarjs
             Random: (function() {
                 const MUL = 0x5DEECE66Dn;
@@ -525,8 +524,7 @@ anyways i have the new covid variant so im going to sleep bye
                     events.push({ name: "Season of the Pig", icon: '<img src="img/100px-Shiny_Orb.webp">' });
                 }
                 if ((season === this.SEASON_SUMMER && dayOfSeason <= 3) || (season === this.SEASON_WINTER && dayOfSeason <= 3)) {
-                    // attach legendary info for this travelling zoo occurrence
-                    const legendary = this.getTravelingZooLegendaryForDay(totalDay) || { name: 'Unknown', icon: '🐘' };
+                    const legendary = this.getTravelingZooLegendaryForDay(totalDay) || { name: 'Error', icon: '❌' };
                     events.push({ name: "Traveling Zoo", icon: legendary.icon, legendaryName: legendary.name });
                 }
                  if (season === this.SEASON_WINTER && dayOfSeason >= 91) {
@@ -573,21 +571,21 @@ anyways i have the new covid variant so im going to sleep bye
                 const time = this.getCurrentTimeData();
                 const upcoming = [];
 
-                // Farming Contest
+                // contest
                 const nextContestDay = Math.floor(time.currentSkyblockDay / 3) * 3 + 1;
                 upcoming.push({ name: "Farming Contest", icon: '<img src="assets/farming/Farm-o-Matic.webp">', type: 'farming', nextDay: nextContestDay > time.currentSkyblockDay ? nextContestDay : nextContestDay + 3, crops: this.getFarmingCrops(Math.floor(nextContestDay/3))});
 
-                // Season of the Pig
+                // SHINY PIGS MY GOAT
                 let nextPigYear = Math.ceil(time.currentYear / 4) * 4 + 1; //+1 for accuracy
                 if(time.currentYear > nextPigYear || (time.currentYear === nextPigYear && time.currentSeason > this.SEASON_SPRING)) nextPigYear += 4;
                 upcoming.push({ name: "Season of the Pig", icon: '<img src="img/100px-Shiny_Orb.webp">', nextDay: ((nextPigYear - 1) * this.DAYS_PER_YEAR) + 1});
 
-                // New Year
+                // cake
                 let nextNewYearDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + (this.SEASON_WINTER * this.SEASON_LENGTH) + 91;
                 if(time.currentDayOfYear > (this.SEASON_WINTER * this.SEASON_LENGTH) + 91) nextNewYearDay += this.DAYS_PER_YEAR;
                 upcoming.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.webp">', nextDay: nextNewYearDay });
 
-                // Traveling Zoo
+                // zoo
                 const summerStart = (this.SEASON_SUMMER * this.SEASON_LENGTH) + 1;
                 const winterStart = (this.SEASON_WINTER * this.SEASON_LENGTH) + 1;
                 let nextZooDay;
@@ -597,7 +595,7 @@ anyways i have the new covid variant so im going to sleep bye
                 const legendaryNext = this.getTravelingZooLegendaryForDay(nextZooDay) || { name: 'Unknown', icon: '🐘' };
                 upcoming.push({ name: "Traveling Zoo", icon: legendaryNext.icon, legendaryName: legendaryNext.name, nextDay: nextZooDay });
 
-                // Calculate msUntil for all events
+                // calculate msUntil for all events
                 upcoming.forEach(event => {
                     const daysUntil = event.nextDay - time.skyblockDecimalDays - 1;
                     event.msUntil = daysUntil * this.MINUTES_PER_SKYBLOCK_DAY * 60 * 1000;
@@ -626,15 +624,14 @@ anyways i have the new covid variant so im going to sleep bye
                 this.engine = engine;
                 this.cacheDOMElements();
                 this.bindEventListeners();
-                // Determine the current skyblock day and jump to its page immediately
+                // jump to todays page
                 const time = this.engine.getCurrentTimeData();
                 this.currentSkyblockDay = time.currentSkyblockDay;
-                // Ensure at least page 1
                 this.currentPage = Math.max(1, Math.ceil(this.currentSkyblockDay / this.engine.DAYS_PER_PAGE));
-                // Pre-calc current and next page for snappy navigation
+                // calc current and next page on start
                 this.engine.preCalculatePage(this.currentPage);
                 this.engine.preCalculatePage(this.currentPage + 1);
-                // Render the page so the current day is highlighted right away
+                // render all that
                 this.renderCurrentPage();
                 this.startTimers();
             },
@@ -674,29 +671,46 @@ anyways i have the new covid variant so im going to sleep bye
             },
 
             startTimers() {
-                const update = () => {
+                // init timers
+                let upcomingEvents = this.engine.getUpcomingEventsData().map(event => {
+                    event.targetTime = Date.now() + event.msUntil;
+                    return event;
+                });
+                this.renderUpcomingEvents(upcomingEvents);
+  
+                // update countdowns
+                setInterval(() => {
+                    upcomingEvents.forEach((event, idx) => {
+                        const countdownEl = document.querySelectorAll('.event-timer-countdown')[idx];
+                        if (countdownEl) {
+                            const msLeft = event.targetTime - Date.now();
+                            countdownEl.textContent = this.formatTime(msLeft);
+                        }
+                    });
+                }, 1000);
+
+                // on day change update everything
+                setInterval(() => {
                     const timeData = this.engine.getCurrentTimeData();
                     const newSkyblockDay = timeData.currentSkyblockDay;
                     const dayChanged = this.currentSkyblockDay !== newSkyblockDay;
                     this.currentSkyblockDay = newSkyblockDay;
                     this.elements.currentDateInfoEl.textContent = `Today: Year ${timeData.currentYear}, ${this.engine.SEASON_NAMES[timeData.currentSeason]}, Day ${timeData.currentDayOfSeason}`;
-                    
                     if (dayChanged) {
-                        // If the day moved into a different page, jump to that page
                         const newPage = Math.max(1, Math.ceil(this.currentSkyblockDay / this.engine.DAYS_PER_PAGE));
                         if (newPage !== this.currentPage) {
                             this.currentPage = newPage;
-                            // Pre-calc the next page for smooth navigation
                             this.engine.preCalculatePage(this.currentPage + 1);
                         }
                         this.renderCurrentPage();
+                        // refresh events with new day
+                        upcomingEvents = this.engine.getUpcomingEventsData().map(event => {
+                            event.targetTime = Date.now() + event.msUntil;
+                            return event;
+                        });
+                        this.renderUpcomingEvents(upcomingEvents);
                     }
-                    
-                    const upcomingEvents = this.engine.getUpcomingEventsData();
-                    this.renderUpcomingEvents(upcomingEvents);
-                };
-                update();
-                setInterval(update, 1000);
+                }, 1000);
             },
             
             formatTime(ms) {
@@ -770,6 +784,7 @@ anyways i have the new covid variant so im going to sleep bye
                 document.getElementById('modal-real-date').textContent = `Date: ${realDate.toLocaleString()}`;
                 const countdownEl = document.getElementById('modal-countdown-to-day');
                 if (this.modalCountdownInterval) clearInterval(this.modalCountdownInterval);
+
                 const updateCountdown = () => {
                     const now = Date.now();
                     const ms = realDate.getTime() - now;
@@ -810,7 +825,6 @@ anyways i have the new covid variant so im going to sleep bye
  
              closeModal() {
                  this.elements.modal.classList.remove('visible');
-                 // Stop countdown timer
                  if (this.modalCountdownInterval) {
                      clearInterval(this.modalCountdownInterval);
                      this.modalCountdownInterval = null;
