@@ -905,7 +905,7 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "Creepyshorts",
-                    "score": "77M+"
+                    "score": "123.2M+"
                 },
                 {
                     "rank": 2,
