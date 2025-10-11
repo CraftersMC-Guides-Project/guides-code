@@ -142,7 +142,7 @@ anyways i have the new covid variant so im going to sleep bye
         /* Calendar Grid */
         #calendar-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             gap: 0.75rem;
         }
         
@@ -156,6 +156,11 @@ anyways i have the new covid variant so im going to sleep bye
             transition: transform 0.2s, box-shadow 0.2s;
             background-color: var(--bg-tertiary);
             cursor: pointer;
+        }
+
+        .day-cell img {
+            width: 36px;
+            height: auto;
         }
 
         .day-cell:hover {
@@ -226,6 +231,12 @@ anyways i have the new covid variant so im going to sleep bye
             padding: 0.75rem; 
             border-radius: 0.5rem; 
         }
+
+        .event-timer-item img {
+            width: 36px;
+            height: auto;
+        }
+
         .event-timer-info {
              display: flex; 
              align-items: center; 
@@ -281,6 +292,11 @@ anyways i have the new covid variant so im going to sleep bye
             position: relative;
             transform: scale(0.95);
             transition: transform 0.3s;
+        }
+
+        .modal-content img {
+            width: 48px;
+            height: auto;
         }
 
         .modal-overlay.visible .modal-content {
@@ -408,15 +424,15 @@ anyways i have the new covid variant so im going to sleep bye
             SEASON_SPRING: 0, SEASON_SUMMER: 1, SEASON_AUTUMN: 2, SEASON_WINTER: 3,
             
             LEGENDARY_PATTERN: ['elephant','giraffe','tiger','lion','monkey'],
-            LEGENDARY_ICONS: { 'elephant':'<img src="img/pets/Elephant_Pet.webp" style="height:30px;width:auto;margin:4px;">',
+            LEGENDARY_ICONS: { 'elephant':'<img src="img/pets/Elephant_Pet.webp" style="height:40px;width:auto;margin:4px;">',
 
-            'giraffe':'<img src="img/pets/Giraffe_Pet.webp" style="height:30px;width:auto;margin:4px;">',
+            'giraffe':'<img src="img/pets/Giraffe_Pet.webp" style="height:40px;width:auto;margin:4px;">',
 
-            'tiger':'<img src="img/pets/300px-Tiger_pet.webp" style="height:30px;width:auto;margin:4px;">',
+            'tiger':'<img src="img/pets/300px-Tiger_pet.webp" style="height:40px;width:auto;margin:4px;">',
 
-            'lion':'<img src="img/pets/300px-Lion_pet.webp" style="height:30px;width:auto;margin:4px;">',
+            'lion':'<img src="img/pets/300px-Lion_pet.webp" style="height:40px;width:auto;margin:4px;">',
 
-            'monkey':'<img src="img/pets/Monkey_pet.webp" style="height:30px;width:auto;margin:4px;">'},
+            'monkey':'<img src="img/pets/Monkey_pet.webp" style="height:40px;width:auto;margin:4px;">'},
             TRAVELING_ZOO_LEGENDARY_OFFSET: 2,
             pagesDataCache: new Map(),
             SEASON_NAMES: ['Spring', 'Summer', 'Autumn', 'Winter'],
@@ -503,10 +519,10 @@ anyways i have the new covid variant so im going to sleep bye
                 
                 const events = [];
                 if (daysSinceEpoch % 3 === 0) {
-                    events.push({ name: 'Farming Contest', icon: '<img src="assets/farming/Farm-o-Matic.webp" style="width:24px">', type: 'farming', crops: this.getFarmingCrops(Math.floor(daysSinceEpoch / 3)) });
+                    events.push({ name: 'Farming Contest', icon: '<img src="assets/farming/Farm-o-Matic.webp">', type: 'farming', crops: this.getFarmingCrops(Math.floor(daysSinceEpoch / 3)) });
                 }
                 if (season === this.SEASON_SPRING && (year - 1) % 4 === 0) {
-                    events.push({ name: "Season of the Pig", icon: '<img src="img/100px-Shiny_Orb.webp" style="width:30px">' });
+                    events.push({ name: "Season of the Pig", icon: '<img src="img/100px-Shiny_Orb.webp">' });
                 }
                 if ((season === this.SEASON_SUMMER && dayOfSeason <= 3) || (season === this.SEASON_WINTER && dayOfSeason <= 3)) {
                     // attach legendary info for this travelling zoo occurrence
@@ -514,7 +530,7 @@ anyways i have the new covid variant so im going to sleep bye
                     events.push({ name: "Traveling Zoo", icon: legendary.icon, legendaryName: legendary.name });
                 }
                  if (season === this.SEASON_WINTER && dayOfSeason >= 91) {
-                     events.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.webp" style="width:30px">' });
+                     events.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.webp">' });
                  }
  
                  return { totalDay, year, season: this.SEASON_NAMES[season], dayOfSeason, events };
@@ -559,17 +575,17 @@ anyways i have the new covid variant so im going to sleep bye
 
                 // Farming Contest
                 const nextContestDay = Math.floor(time.currentSkyblockDay / 3) * 3 + 1;
-                upcoming.push({ name: "Farming Contest", icon: '<img src="assets/farming/Farm-o-Matic.webp" style="width:24px">', type: 'farming', nextDay: nextContestDay > time.currentSkyblockDay ? nextContestDay : nextContestDay + 3, crops: this.getFarmingCrops(Math.floor(nextContestDay/3))});
+                upcoming.push({ name: "Farming Contest", icon: '<img src="assets/farming/Farm-o-Matic.webp">', type: 'farming', nextDay: nextContestDay > time.currentSkyblockDay ? nextContestDay : nextContestDay + 3, crops: this.getFarmingCrops(Math.floor(nextContestDay/3))});
 
                 // Season of the Pig
                 let nextPigYear = Math.ceil(time.currentYear / 4) * 4 + 1; //+1 for accuracy
                 if(time.currentYear > nextPigYear || (time.currentYear === nextPigYear && time.currentSeason > this.SEASON_SPRING)) nextPigYear += 4;
-                upcoming.push({ name: "Season of the Pig", icon: '<img src="img/100px-Shiny_Orb.webp" style="width:30px">', nextDay: ((nextPigYear - 1) * this.DAYS_PER_YEAR) + 1});
+                upcoming.push({ name: "Season of the Pig", icon: '<img src="img/100px-Shiny_Orb.webp">', nextDay: ((nextPigYear - 1) * this.DAYS_PER_YEAR) + 1});
 
                 // New Year
                 let nextNewYearDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + (this.SEASON_WINTER * this.SEASON_LENGTH) + 91;
                 if(time.currentDayOfYear > (this.SEASON_WINTER * this.SEASON_LENGTH) + 91) nextNewYearDay += this.DAYS_PER_YEAR;
-                upcoming.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.webp" style="width:30px">', nextDay: nextNewYearDay });
+                upcoming.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.webp">', nextDay: nextNewYearDay });
 
                 // Traveling Zoo
                 const summerStart = (this.SEASON_SUMMER * this.SEASON_LENGTH) + 1;
@@ -696,7 +712,7 @@ anyways i have the new covid variant so im going to sleep bye
                     if (event.type === 'farming' && event.crops) {
                         subtext = event.crops.map(c => this.engine.CROP_ICONS[c] || '?').join(' ');
                     } else if (event.name === 'Traveling Zoo' && event.legendaryName) {
-                        subtext = `Legendary pet: ${capitalize(event.legendaryName)} ${event.icon}`;
+                        subtext = `Legendary pet: ${capitalize(event.legendaryName)}`;
                     }
                     return `
                         <div class="event-timer-item">
@@ -752,7 +768,6 @@ anyways i have the new covid variant so im going to sleep bye
                 const realDate = this.engine.getRealTimeForDay(dayInfo.totalDay);
                 document.getElementById('modal-ingame-date').textContent = `Year ${dayInfo.year}, ${dayInfo.season} ${dayInfo.dayOfSeason}`;
                 document.getElementById('modal-real-date').textContent = `Date: ${realDate.toLocaleString()}`;
-                // Setup countdown
                 const countdownEl = document.getElementById('modal-countdown-to-day');
                 if (this.modalCountdownInterval) clearInterval(this.modalCountdownInterval);
                 const updateCountdown = () => {
@@ -781,7 +796,7 @@ anyways i have the new covid variant so im going to sleep bye
                         if (event.type === 'farming') {
                             subtext = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(${event.crops.join(', ')})</span>`;
                         } else if (event.name === 'Traveling Zoo' && event.legendaryName) {
-                            subtext = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(Legendary: ${capitalize(event.legendaryName)} ${event.icon})</span>`;
+                            subtext = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(Legendary: ${capitalize(event.legendaryName)})</span>`;
                         }
                         li.innerHTML = `<span class="event-icon">${event.icon}</span> <span>${event.name}${subtext}</span>`;
                         eventListEl.appendChild(li);
