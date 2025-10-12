@@ -1639,8 +1639,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 2,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Kg_lcky_01",
+                    "score": "7.6M+"
                 },
                 {
                     "rank": 3,
@@ -2150,12 +2150,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "Kg_lcky_01",
+                    "name": "Creepyshorts",
                     "score": "N/A"
                 },
                 {
                     "rank": 4,
-                    "name": "Unknown",
+                    "name": "Kg_lcky_01",
                     "score": "N/A"
                 },
                 {
