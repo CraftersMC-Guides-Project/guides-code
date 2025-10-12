@@ -8,15 +8,10 @@
   <meta property="og:description"
     content="Calculate how long it takes for your minion inventory to fill up, includes backpack, fuel, diamond spreading, and block conversion support."/>
   <meta property="og:image"
-    content="https://cdn.discordapp.com/attachments/1416722412032229457/1425519284699922634/downloadfile-1.jpg" />
+    content="https://cdn.discordapp.com/attachments/993570700096979005/1204324864241045584/IMG_20240206_124536.jpg?ex=68eca76e&is=68eb55ee&hm=2cecc7c7008f8d5897918361cdac17f2b44f42f61fa54e544b976af3314c8f86&" />
   <meta property="og:url" content="https://craftersmc-guides.pages.dev/tools/minion-inv-time.html" />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Minion Inventory Calculator" />
-  <meta name="twitter:description"
-    content="Calculate days for your Skyblock minion inventory to fill up — easy, accurate, and includes advanced options." />
-  <meta name="twitter:image"
-    content="https://cdn.discordapp.com/attachments/1416722412032229457/1425519284699922634/downloadfile-1.jpg" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <title>Minion Inventory Calculator</title>
   <script src="../js/script.js" defer></script>
@@ -43,24 +38,26 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.3);
     z-index: -1;
   }
 
   .container {
-    background: rgba(30, 30, 30, 0.9);
+    background: rgba(30, 30, 30, 0.4);
     border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
     padding: 20px;
     max-width: 450px;
-    margin: 0 auto;
+    margin: 0 auto 60px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
   }
 
   h1 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     color: #007bff;
-    font-size: 2.5rem;
+    font-size: 3rem;
   }
 
   label {
@@ -76,6 +73,10 @@
     border: 1px solid #aaa;
     background-color: #0d0d0d;
     color: #fff;
+  }
+  
+  input[type="range"] {
+    display: block;
   }
 
   button {
@@ -115,9 +116,12 @@
     margin-top: 10px;
     text-align: center;
   }
-
-  .gap {
-    margin: 40px 0;
+  
+  .toggle-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 12px 0;
   }
   </style>
 </head>
@@ -136,20 +140,18 @@
     <label for="backpackSlots">Backpack Slots (optional):</label>
     <input type="number" id="backpackSlots" placeholder="Enter number of slots" min="0">
 
-    <label for="fuel">Fuel Percentage (0-100, optional):</label>
-    <input type="number" id="fuel" placeholder="Enter fuel percentage" min="0" max="100">
+    <label for="fuel">Fuel: <span id="fuelValue">No fuel</span></label>
+    <input type="range" id="fuel" min="0" max="100" value="0" step="1" oninput="updateFuelValue(this.value)">
 
-    <label for="diamondSpreading">Diamond Spreading:</label>
-    <select id="diamondSpreading">
-      <option value="yes">Yes</option>
-      <option value="no">No</option>
-    </select>
-
-    <label for="blockConversion">Does your minion convert items to block form?</label>
-    <select id="blockConversion">
-      <option value="yes">Yes</option>
-      <option value="no">No</option>
-    </select>
+    <div class="toggle-group">
+      <label for="diamondSpreading">Diamond Spreading</label>
+      <input type="checkbox" id="diamondSpreading" class="switch" checked>
+    </div>
+    
+    <div class="toggle-group">
+      <label for="blockConversion">Block Conversion</label>
+      <input type="checkbox" id="blockConversion" class="switch" checked>
+    </div>
 
     <label for="production">Production in 1 Day:</label>
     <input type="number" id="production" placeholder="Enter production amount" step="0.000001" required>
@@ -165,12 +167,20 @@
   </div>
 
   <script>
+    function updateFuelValue(value) {
+      document.getElementById('fuelValue').innerText = value == 0 ? "No fuel" : value + '%';
+    }
+    function updateToggleLabel(id) {
+      const checkbox = document.getElementById(id);
+      const label = document.getElementById(id + 'Label');
+      label.innerText = checkbox.checked ? 'Yes' : 'No';
+    }
     function calculateDays() {
       const inventorySlots = parseFloat(document.getElementById('inventorySlots').value) || 0;
       const backpackSlots = parseFloat(document.getElementById('backpackSlots').value) || 0;
       const fuelPercentage = parseFloat(document.getElementById('fuel').value) || 0;
-      const diamondSpreading = document.getElementById('diamondSpreading').value;
-      const blockConversion = document.getElementById('blockConversion').value;
+      const diamondSpreading = document.getElementById('diamondSpreading').checked ? 'yes' : 'no';
+      const blockConversion = document.getElementById('blockConversion').checked ? 'yes' : 'no';
       const production = parseFloat(document.getElementById('production').value) || 0;
       const note = document.getElementById('note');
       const result = document.getElementById('result');
