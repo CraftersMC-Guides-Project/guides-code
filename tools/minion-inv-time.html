@@ -143,17 +143,11 @@
     <label for="fuel">Fuel: <span id="fuelValue">No fuel</span></label>
     <input type="range" id="fuel" min="0" max="100" value="0" step="1" oninput="updateFuelValue(this.value)">
 
-    <label for="diamondSpreading">Diamond Spreading:</label>
-    <select id="diamondSpreading">
-      <option value="yes">Yes</option>
-      <option value="no">No</option>
-    </select>
+    <label for="diamondSpreading">Diamond Spreading: <span id="diamondSpreadingLabel">Yes</span></label>
+    <input type="checkbox" id="diamondSpreading" class="switch" checked onchange="updateToggleLabel('diamondSpreading')">
 
-    <label for="blockConversion">Does your minion convert items to block form?</label>
-    <select id="blockConversion">
-      <option value="yes">Yes</option>
-      <option value="no">No</option>
-    </select>
+    <label for="blockConversion">Block Conversion: <span id="blockConversionLabel">Yes</span></label>
+    <input type="checkbox" id="blockConversion" class="switch" checked onchange="updateToggleLabel('blockConversion')">
 
     <label for="production">Production in 1 Day:</label>
     <input type="number" id="production" placeholder="Enter production amount" step="0.000001" required>
@@ -172,12 +166,17 @@
     function updateFuelValue(value) {
       document.getElementById('fuelValue').innerText = value == 0 ? "No fuel" : value + '%';
     }
+    function updateToggleLabel(id) {
+      const checkbox = document.getElementById(id);
+      const label = document.getElementById(id + 'Label');
+      label.innerText = checkbox.checked ? 'Yes' : 'No';
+    }
     function calculateDays() {
       const inventorySlots = parseFloat(document.getElementById('inventorySlots').value) || 0;
       const backpackSlots = parseFloat(document.getElementById('backpackSlots').value) || 0;
       const fuelPercentage = parseFloat(document.getElementById('fuel').value) || 0;
-      const diamondSpreading = document.getElementById('diamondSpreading').value;
-      const blockConversion = document.getElementById('blockConversion').value;
+      const diamondSpreading = document.getElementById('diamondSpreading').checked ? 'yes' : 'no';
+      const blockConversion = document.getElementById('blockConversion').checked ? 'yes' : 'no';
       const production = parseFloat(document.getElementById('production').value) || 0;
       const note = document.getElementById('note');
       const result = document.getElementById('result');
