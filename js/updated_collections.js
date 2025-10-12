@@ -2029,7 +2029,7 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "Oak_Optic",
-                    "score": "60M+"
+                    "score": "111.9M+"
                 },
                 {
                     "rank": 2,
