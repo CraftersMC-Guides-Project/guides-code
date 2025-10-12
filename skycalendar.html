@@ -1,5 +1,6 @@
-<!--todo: 
-underneath calendar add the same timers and next 10 calculations as we have already, all in one page. 
+<!--todo:
+adjust comments
+make everyting root variables
 This is gonna be hugeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 anyways i have the new covid variant so im going to sleep bye
 -->
@@ -19,11 +20,13 @@ anyways i have the new covid variant so im going to sleep bye
     <script src="js/script.js" defer></script>
     <style>
         :root {
+            --body-bg-tint: rgba(0, 0, 0, 0.7);
             --bg-primary: rgba(0, 0, 0, 0.5);
             --bg-secondary: rgba(0, 0, 0, 0);
             --bg-tertiary: rgba(100, 100, 100, 0.5);
             --bg-interactive: #4b5563;
-            --border-color: #4b5563;
+            --border-color: rgba(255, 255, 255, 0.2);
+            --card-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
             --text-primary: #f3f4f6;
             --text-secondary: #9ca3af;
             --accent-color: #007bff;
@@ -46,7 +49,7 @@ anyways i have the new covid variant so im going to sleep bye
             content: "";
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: var(--body-bg-tint);
             pointer-events: none;
             z-index: -1;
         }
@@ -81,8 +84,8 @@ anyways i have the new covid variant so im going to sleep bye
         .card {
             background-color: var(--bg-secondary);
             border-radius: 1rem;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--card-shadow);
+            border: 2px solid var(--border-color);
             padding: 1.5rem;
             margin-bottom: 2rem;
             width: 95%;
@@ -135,7 +138,7 @@ anyways i have the new covid variant so im going to sleep bye
         .day-cell {
             padding: 0.75rem;
             border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            box-shadow: var(--card-shadow);
             display: flex;
             flex-direction: column;
             height: 8rem;
@@ -151,7 +154,7 @@ anyways i have the new covid variant so im going to sleep bye
 
         .day-cell:hover {
             transform: scale(1.05);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2), 0 4px 6px -2px rgba(0,0,0,0.1);
+            box-shadow: var(--card-shadow);
         }
 
         .day-cell.current-day {
@@ -213,7 +216,7 @@ anyways i have the new covid variant so im going to sleep bye
             display: flex; 
             align-items: center; 
             justify-content: space-between; 
-            background-color: rgba(55, 65, 81, 0.5); 
+            background-color: var(--bg-tertiary); 
             padding: 0.75rem; 
             border-radius: 0.5rem; 
             min-height: 100px;
@@ -222,7 +225,7 @@ anyways i have the new covid variant so im going to sleep bye
         }
 
         .event-timer-item:hover {
-            transform: scale(1.05);
+            transform: scale(1.02);
         }
 
         .event-timer-item img {
@@ -268,7 +271,7 @@ anyways i have the new covid variant so im going to sleep bye
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(17, 24, 39, 0.8);
+            background-color: var(--body-bg-tint);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -284,11 +287,11 @@ anyways i have the new covid variant so im going to sleep bye
         }
 
         .modal-content {
-            background-color: var(--bg-secondary);
-            backdrop-filter: blur(10px);
+            background-color: var(--bg-primary);
+            backdrop-filter: blur(6px);
             padding: 2rem;
             border-radius: 1rem;
-            width: 90%;
+            width: 95%;
             max-width: 500px;
             position: relative;
             transform: scale(0.95);
@@ -308,11 +311,7 @@ anyways i have the new covid variant so im going to sleep bye
             position: absolute;
             top: 1rem;
             right: 1rem;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
             font-size: 1.5rem;
-            cursor: pointer;
         }
 
         .modal-header h3 { 
@@ -365,7 +364,7 @@ anyways i have the new covid variant so im going to sleep bye
             gap: 0.5rem;
         }
         .accordion-item {
-            background: rgba(0, 0, 0, 0.5);
+            background: var(--bg-primary);
             border-radius: 8px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.04);
@@ -377,10 +376,11 @@ anyways i have the new covid variant so im going to sleep bye
             gap: 0.75rem;
             padding: 0.6rem 0.8rem;
         }
-        .accordion-header .left {
+        .accordion-header .header-left {
             display: flex;
             gap: 0.6rem;
             align-items: center;
+            margin: 8px;
         }
         .accordion-header h3 {
             margin: 0;
@@ -404,7 +404,7 @@ anyways i have the new covid variant so im going to sleep bye
         .occurrences-table th, .occurrences-table td {
             text-align: left;
             padding: 0.45rem 0.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border-color);
         }
         .occurrences-table th {
             font-weight: 600;
@@ -413,7 +413,7 @@ anyways i have the new covid variant so im going to sleep bye
         }
         .occ-extra { color: var(--text-secondary); font-size: 0.85rem; display:flex; gap:6px; align-items:center; }
 
-        /* farming filter checkboxes (new) */
+        /* farming stuff*/
         .farming-filters {
             display: flex;
             flex-wrap: wrap;
@@ -421,22 +421,29 @@ anyways i have the new covid variant so im going to sleep bye
             margin-bottom: 0.5rem;
             align-items: center;
         }
+
         .farming-filter {
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
             padding: 0.25rem 0.45rem;
-            background: rgba(255,255,255,0.02);
+            background: var(--bg-tertiary);
             border-radius: 6px;
             font-size: 0.85rem;
             cursor: pointer;
         }
-        .farming-filter input[type="checkbox"] { transform: scale(1.05); }
-        .farming-filter .crop-icon { margin-right: 0.25rem; }
 
-        /* small screen adjustments */
+        .farming-filter input[type="checkbox"] { 
+            transform: scale(1.05); 
+        }
+
+        .farming-filter .crop-icon {
+             margin-right: 0.25rem; 
+        }
+
         @media (max-width:640px) {
-            .occurrences-table th:nth-child(3), .occurrences-table td:nth-child(3) { display:none; } /* hide in-game date column if needed */
+            .occurrences-table th:nth-child(3), .occurrences-table td:nth-child(3) { display:none; } 
+            
         }
     </style>
 </head>
@@ -523,7 +530,6 @@ anyways i have the new covid variant so im going to sleep bye
             pagesDataCache: new Map(),
             SEASON_NAMES: ['Spring', 'Summer', 'Autumn', 'Winter'],
             CropType: ['WHEAT', 'SUGAR_CANE', 'CARROT', 'POTATO', 'MELON', 'PUMPKIN', 'COCOA_BEANS', 'CACTUS', 'MUSHROOM', 'BEETROOT'],
-            //const crops = ["Wheat", "Sugar Cane", "Carrot", "Potato", "Melon", "Pumpkin", "Cocoa Beans", "Cactus", "Mushroom", "Beetroot"];
             CROP_ICONS: { 
                 'WHEAT': '<img src="img/Wheat.webp" style="height:20px;width:auto;">',
                 'SUGAR_CANE': '<img src="img/Sugar_Cane.webp" style="height:20px;width:auto;">',
@@ -536,7 +542,6 @@ anyways i have the new covid variant so im going to sleep bye
                 'MUSHROOM': '<img src="img/Mushroom.gif" style="height:20px;width:auto;">', 
                 'BEETROOT': '<img src="img/Beetroot.webp" style="height:20px;width:auto;">' 
             },
-            // farming contest seed algorithm from craftersmc official calendarjs
             Random: (function() {
                 const MUL = 0x5DEECE66Dn;
                 const ADD = 0xBn;
@@ -776,7 +781,7 @@ anyways i have the new covid variant so im going to sleep bye
             engine: null,
             elements: {},
             modalCountdownInterval: null,
-            currentUpcomingEvents: [], // store last rendered upcoming events
+            currentUpcomingEvents: [], 
 
             init(engine) {
                 this.engine = engine;
@@ -786,10 +791,8 @@ anyways i have the new covid variant so im going to sleep bye
                 const time = this.engine.getCurrentTimeData();
                 this.currentSkyblockDay = time.currentSkyblockDay;
                 this.currentPage = Math.max(1, Math.ceil(this.currentSkyblockDay / this.engine.DAYS_PER_PAGE));
-                // calc current and next page on start
                 this.engine.preCalculatePage(this.currentPage);
                 this.engine.preCalculatePage(this.currentPage + 1);
-                // render all that
                 this.renderCurrentPage();
                 this.startTimers();
             },
@@ -814,15 +817,12 @@ anyways i have the new covid variant so im going to sleep bye
                 this.elements.modal.addEventListener('click', (e) => { if (e.target === this.elements.modal) this.closeModal(); });
                 this.elements.modalCloseBtn.addEventListener('click', () => this.closeModal());
 
-                // handle clicks on upcoming events via delegation
                 this.elements.upcomingEventsListEl.addEventListener('click', (e) => {
                     const item = e.target.closest('.event-timer-item');
                     if (!item) return;
                     const idx = Number(item.dataset.eventIndex);
                     const ev = this.currentUpcomingEvents && this.currentUpcomingEvents[idx];
 
-                    // toggle: if this item already has an inserted accordion directly after it, remove it;
-                    // otherwise insert one for this event.
                     const next = item.nextElementSibling;
                     if (next && next.classList.contains('event-occurrences-wrapper')) {
                         next.remove();
@@ -846,7 +846,6 @@ anyways i have the new covid variant so im going to sleep bye
             },
 
             startTimers() {
-                // init timers
                 let upcomingEvents = this.engine.getUpcomingEventsData().map(event => {
                     event.targetTime = Date.now() + event.msUntil;
                     return event;
@@ -865,7 +864,6 @@ anyways i have the new covid variant so im going to sleep bye
                     });
                 }, 1000);
 
-                // on day change update everything
                 setInterval(() => {
                     const timeData = this.engine.getCurrentTimeData();
                     const newSkyblockDay = timeData.currentSkyblockDay;
@@ -879,7 +877,6 @@ anyways i have the new covid variant so im going to sleep bye
                             this.engine.preCalculatePage(this.currentPage + 1);
                         }
                         this.renderCurrentPage();
-                        // refresh events with new day
                         upcomingEvents = this.engine.getUpcomingEventsData().map(event => {
                             event.targetTime = Date.now() + event.msUntil;
                             return event;
@@ -898,7 +895,6 @@ anyways i have the new covid variant so im going to sleep bye
             },
             
             renderUpcomingEvents(events) {
-                // keep controller copy
                 this.currentUpcomingEvents = events;
                 this.elements.upcomingEventsListEl.innerHTML = events.map((event, idx) => {
                     let subtext = 'Starts in...';
@@ -1004,28 +1000,19 @@ anyways i have the new covid variant so im going to sleep bye
                 this.elements.modal.classList.add('visible');
              },
  
-             // REPLACE: showEventOccurrences now inserts an accordion directly under the clicked event item
              showEventOccurrences(event, itemEl) {
-                // remove any existing inserted accordions
                 document.querySelectorAll('.event-occurrences-wrapper').forEach(el => el.remove());
-
-                const occ = this.engine.getNextOccurrences(event.name, this.currentSkyblockDay, 200); // request many then filter if needed
-
-                // determine if any occurrence has extra info (crops or legendary)
+                const occ = this.engine.getNextOccurrences(event.name, this.currentSkyblockDay, 200);
                 const hasExtra = occ.some(o => (o.crops && o.crops.length) || o.legendaryName);
-
-                // wrapper uses existing accordion styles so it pushes following items down
                 const wrapper = document.createElement('div');
                 wrapper.className = 'event-occurrences-wrapper accordion';
-
                 const accItem = document.createElement('div');
                 accItem.className = 'accordion-item';
                 accItem.setAttribute('data-event-name', event.name);
-
                 const header = document.createElement('div');
                 header.className = 'accordion-header';
                 header.innerHTML = `
-                    <div class="left">
+                    <div class="header-left">
                         <div>
                             <h3>${event.name}</h3>
                             <div style="font-size:0.85rem;color:var(--text-secondary)">${event.type === 'farming' && event.crops ? event.crops.map(c => this.engine.CROP_ICONS[c] || c).join(' ') : (event.legendaryName ? 'Legendary: ' + capitalize(event.legendaryName) : '')}</div>
@@ -1037,13 +1024,12 @@ anyways i have the new covid variant so im going to sleep bye
                 const body = document.createElement('div');
                 body.className = 'accordion-body';
 
-                // For farming contests: render crop filters and support filtered next-10 matching contests
+                // contests first
                 if (event.name === 'Farming Contest') {
-                    // create filter container
                     const filterContainer = document.createElement('div');
                     filterContainer.className = 'farming-filters';
-
-                    // list of crops to allow filtering (use engine.CropType order)
+                    const filterLabel = document.createElement('div');
+                    filterLabel.textContent = 'Filter by crop:';
                     this.engine.CropType.forEach(cropKey => {
                         const label = document.createElement('label');
                         label.className = 'farming-filter';
@@ -1054,14 +1040,11 @@ anyways i have the new covid variant so im going to sleep bye
 
                     body.appendChild(filterContainer);
 
-                    // create table element below filters
                     const table = document.createElement('table');
                     table.className = 'occurrences-table';
                     body.appendChild(table);
 
-                    // helper to render table rows given a list of occurrences
                     const renderTable = (list) => {
-                        // header includes Extra column because farming contests always have crops
                         table.innerHTML = `
                             <thead>
                                 <tr>
@@ -1089,19 +1072,15 @@ anyways i have the new covid variant so im going to sleep bye
                         `;
                     };
 
-                    // initial render: next 10 farming contests (filter none)
                     const farmingOcc = occ.filter(o => o.crops && o.crops.length).slice(0, 1000); // ensure plenty
                     renderTable(farmingOcc);
 
-                    // when filters change, show next 10 contests that include checked crop(s)
                     filterContainer.addEventListener('change', () => {
                         const checked = Array.from(filterContainer.querySelectorAll('input:checked')).map(i => i.value);
                         if (checked.length === 0) {
-                            // no filter: first 10 contests in chronological order
                             renderTable(farmingOcc);
                             return;
                         }
-                        // find matching occurrences until we have 10 matches
                         const matches = [];
                         for (let i = 0; i < farmingOcc.length && matches.length < 10; i++) {
                             const o = farmingOcc[i];
@@ -1110,7 +1089,7 @@ anyways i have the new covid variant so im going to sleep bye
                         renderTable(matches);
                     });
                 } else {
-                    // Non-farming: build a single table with dynamic Extra column only if needed
+                    // not contest
                     const table = document.createElement('table');
                     table.className = 'occurrences-table';
 
@@ -1154,14 +1133,8 @@ anyways i have the new covid variant so im going to sleep bye
                 accItem.appendChild(header);
                 accItem.appendChild(body);
                 wrapper.appendChild(accItem);
-
-                // insert wrapper directly after clicked item so it pushes others down
                 itemEl.parentNode.insertBefore(wrapper, itemEl.nextSibling);
-
-                // expand body after insertion
                 requestAnimationFrame(() => body.classList.add('expanded'));
-
-                // NOTE: header intentionally has no click handler so clicking accordion does nothing.
             },
  
              closeModal() {
