@@ -170,7 +170,7 @@ const UIController = {
                 dayCell.innerHTML = `
                     <div class="day-cell-header">
                         <span class="day-season">${dayInfo.season.substring(0,3)} ${dayInfo.dayOfSeason}</span>
-                        <span class="day-total">ID ${dayInfo.totalDay}</span>
+                        <span class="day-year">Y${dayInfo.year}</span>
                     </div>
                     <div class="day-cell-body">${eventContent}</div>`;
                 dayCell.addEventListener('click', () => this.showDayDetails(dayInfo));
