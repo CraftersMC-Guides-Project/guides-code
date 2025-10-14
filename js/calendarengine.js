@@ -1,8 +1,7 @@
 const CalendarEngine = {
-    // basic variables and some offsets
-    START_OF_TIMES: 1648800000, //secs
+    START_OF_TIMES: 1648800000, 
     TIME_MULTIPLIER: 72,
-    SEASON_LENGTH: 93, // in days obv
+    SEASON_LENGTH: 93,
     YEAR_LENGTH: 4,
     DAYS_PER_YEAR: 372,
     DAYS_PER_PAGE: 31, 
@@ -69,23 +68,19 @@ const CalendarEngine = {
         };
     })(),
 
-    // helper to compute which legendary pet a travelling zoo has on a given totalDay
     getTravelingZooLegendaryForDay(totalDay) {
         const daysSinceEpoch = totalDay - 1;
         const seasonsSinceEpoch = Math.floor(daysSinceEpoch / this.SEASON_LENGTH);
         const year = Math.floor(seasonsSinceEpoch / this.YEAR_LENGTH) + 1;
-        const season = seasonsSinceEpoch % this.YEAR_LENGTH; // 0..3
-        // only valid for summer/winter traveling zoo
+        const season = seasonsSinceEpoch % this.YEAR_LENGTH;
         if (season !== this.SEASON_SUMMER && season !== this.SEASON_WINTER) return null;
 
-        // occurrence index (zero-based): per year there are 2 zoos: summer then winter
         const occurrenceIndex = (year - 1) * 2 + (season === this.SEASON_SUMMER ? 0 : 1);
         const idx = (occurrenceIndex + this.TRAVELING_ZOO_LEGENDARY_OFFSET) % this.LEGENDARY_PATTERN.length;
         const name = this.LEGENDARY_PATTERN[idx];
         return { name, icon: this.LEGENDARY_ICONS[name] || '❓' };
     },
 
-    // --- Methods ---
     getPageData(pageNumber) {
         if (!this.pagesDataCache.has(pageNumber)) this.calculatePage(pageNumber);
         return this.pagesDataCache.get(pageNumber);
@@ -191,7 +186,6 @@ const CalendarEngine = {
         const legendaryNext = this.getTravelingZooLegendaryForDay(nextZooDay) || { name: 'Unknown', icon: '🐘' };
         upcoming.push({ name: "Traveling Zoo", icon: legendaryNext.icon, legendaryName: legendaryNext.name, nextDay: nextZooDay });
 
-        // calculate msUntil for all events
         upcoming.forEach(event => {
             const daysUntil = event.nextDay - time.skyblockDecimalDays - 1;
             event.msUntil = daysUntil * this.MINUTES_PER_SKYBLOCK_DAY * 60 * 1000;
@@ -200,11 +194,9 @@ const CalendarEngine = {
         return upcoming.sort((a,b) => a.msUntil - b.msUntil);
     },
 
-    // accordion next 10
     getNextOccurrences(eventName, startSkyblockDay, count = 10) {
         const results = [];
         const start = Math.max(1, Math.floor(startSkyblockDay));
-        // helper to push enriched object
         const pushOcc = (totalDay, extra = {}) => {
             const realDate = this.getRealTimeForDay(totalDay);
             const msUntil = realDate.getTime() - Date.now();
@@ -212,7 +204,6 @@ const CalendarEngine = {
         };
 
         if (eventName === 'Farming Contest') {
-            // occurs every 3 days: day ids 1,4,7,...
             let first = Math.floor((start - 1) / 3) * 3 + 1;
             if (first < start) first += 3;
             for (let i = 0; results.length < count; i++) {
@@ -252,7 +243,6 @@ const CalendarEngine = {
                 year++;
             }
         } else {
-            // generic fallback: next consecutive days
             for (let i = 0; results.length < count; i++) pushOcc(start + i);
         }
 
