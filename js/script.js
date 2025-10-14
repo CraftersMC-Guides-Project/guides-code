@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const loader = document.querySelector("#loader");
   if (loader) loader.style.display = "none";
 
-  setupThemeSwitchers();
+  //setupThemeSwitchers();
   fetchAllPartials();
   fetchAllLPartials();
 });
@@ -131,7 +131,7 @@ function fetchAllPartials() {
       document.getElementById("sidebar").innerHTML = sidebarHtml;
       document.getElementById("footer").innerHTML = footerHtml;
       document.getElementById("loader").innerHTML = loaderHtml;
-      setupThemeSwitchers();
+      //setupThemeSwitchers();
       window.addEventListener('load', () => {
         const o = document.getElementById('loader-wrapper');
         o && (o.classList.add('hidden'), setTimeout(() => {
@@ -224,7 +224,6 @@ function overlay() {
     document.body.style.overflow = "";
     overlay.style.display = "none";
     setTimeout(() => (sidelid.scrollTop = 0), 300);
-    if (window.playChestCloseSound) window.playChestCloseSound();
     return;
   }
 
@@ -235,7 +234,6 @@ function overlay() {
     document.body.style.overflow = "";
     overlay.style.display = "none";
     setTimeout(() => (sidebar.scrollTop = 0), 300);
-    if (window.playChestCloseSound) window.playChestCloseSound();
   }
 }
 

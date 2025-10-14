@@ -35,6 +35,7 @@ const CalendarEngine = {
         'BEETROOT': '<img src="img/Beetroot.webp" style="height:20px;width:auto;">' 
     },
     Random: (function() {
+        //calendarjs by irrl
         const MUL = 0x5DEECE66Dn;
         const ADD = 0xBn;
         const MASK48 = (1n << 48n) - 1n;
@@ -54,7 +55,7 @@ const CalendarEngine = {
             }
             nextInt(bound) {
                 if (bound === undefined) return this.next(32) | 0;
-                if (!Number.isInteger(bound) || bound <= 0) throw new RangeError('bound must be positive integer');
+                if (!Number.isInteger(bound) || bound <= 0) throw new RangeError('bound must be positive int');
                 if ((bound & (bound - 1)) === 0) {
                     return Math.floor(bound * (this.next(31) / 2147483648));
                 }
@@ -68,7 +69,7 @@ const CalendarEngine = {
         };
     })(),
 
-    getTravelingZooLegendaryForDay(totalDay) {
+    getZooLeg(totalDay) {
         const daysSinceEpoch = totalDay - 1;
         const seasonsSinceEpoch = Math.floor(daysSinceEpoch / this.SEASON_LENGTH);
         const year = Math.floor(seasonsSinceEpoch / this.YEAR_LENGTH) + 1;
@@ -82,15 +83,15 @@ const CalendarEngine = {
     },
 
     getPageData(pageNumber) {
-        if (!this.pagesDataCache.has(pageNumber)) this.calculatePage(pageNumber);
+        if (!this.pagesDataCache.has(pageNumber)) this.calcPage(pageNumber);
         return this.pagesDataCache.get(pageNumber);
     },
 
-    preCalculatePage(pageNumber) {
-        if (!this.pagesDataCache.has(pageNumber)) this.calculatePage(pageNumber);
+    preCalcPage(pageNumber) {
+        if (!this.pagesDataCache.has(pageNumber)) this.calcPage(pageNumber);
     },
 
-    calculatePage(pageNumber) {
+    calcPage(pageNumber) {
         const pageDays = [];
         const startDay = (pageNumber - 1) * this.DAYS_PER_PAGE + 1;
         const endDay = startDay + this.DAYS_PER_PAGE - 1;
@@ -115,7 +116,7 @@ const CalendarEngine = {
             events.push({ name: "Season of the Pig", icon: '<img src="img/100px-Shiny_Orb.webp">' });
         }
         if ((season === this.SEASON_SUMMER && dayOfSeason <= 3) || (season === this.SEASON_WINTER && dayOfSeason <= 3)) {
-            const legendary = this.getTravelingZooLegendaryForDay(totalDay) || { name: 'Error', icon: '❌' };
+            const legendary = this.getZooLeg(totalDay) || { name: 'Error', icon: '❌' };
             events.push({ name: "Traveling Zoo", icon: legendary.icon, legendaryName: legendary.name });
         }
             if (season === this.SEASON_WINTER && dayOfSeason >= 91) {
@@ -161,21 +162,17 @@ const CalendarEngine = {
     getUpcomingEventsData() {
         const time = this.getCurrentTimeData();
         const upcoming = [];
-
         // contest
         const nextContestDay = Math.floor(time.currentSkyblockDay / 3) * 3 + 1;
         upcoming.push({ name: "Farming Contest", icon: '<img src="assets/farming/Farm-o-Matic.webp">', type: 'farming', nextDay: nextContestDay > time.currentSkyblockDay ? nextContestDay : nextContestDay + 3, crops: this.getFarmingCrops(Math.floor(nextContestDay/3))});
-
         // SHINY PIGS MY GOAT
         let nextPigYear = Math.ceil(time.currentYear / 4) * 4 + 1; //+1 for accuracy
         if(time.currentYear > nextPigYear || (time.currentYear === nextPigYear && time.currentSeason > this.SEASON_SPRING)) nextPigYear += 4;
         upcoming.push({ name: "Season of the Pig", icon: '<img src="img/100px-Shiny_Orb.webp">', nextDay: ((nextPigYear - 1) * this.DAYS_PER_YEAR) + 1});
-
         // cake
         let nextNewYearDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + (this.SEASON_WINTER * this.SEASON_LENGTH) + 91;
         if(time.currentDayOfYear > (this.SEASON_WINTER * this.SEASON_LENGTH) + 91) nextNewYearDay += this.DAYS_PER_YEAR;
         upcoming.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.webp">', nextDay: nextNewYearDay });
-
         // zoo
         const summerStart = (this.SEASON_SUMMER * this.SEASON_LENGTH) + 1;
         const winterStart = (this.SEASON_WINTER * this.SEASON_LENGTH) + 1;
@@ -183,9 +180,8 @@ const CalendarEngine = {
         if(time.currentDayOfYear < summerStart) nextZooDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + summerStart;
         else if(time.currentDayOfYear < winterStart) nextZooDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + winterStart;
         else nextZooDay = (time.currentYear * this.DAYS_PER_YEAR) + summerStart;
-        const legendaryNext = this.getTravelingZooLegendaryForDay(nextZooDay) || { name: 'Unknown', icon: '🐘' };
+        const legendaryNext = this.getZooLeg(nextZooDay) || { name: 'Unknown', icon: '🐘' };
         upcoming.push({ name: "Traveling Zoo", icon: legendaryNext.icon, legendaryName: legendaryNext.name, nextDay: nextZooDay });
-
         upcoming.forEach(event => {
             const daysUntil = event.nextDay - time.skyblockDecimalDays - 1;
             event.msUntil = daysUntil * this.MINUTES_PER_SKYBLOCK_DAY * 60 * 1000;
@@ -193,7 +189,7 @@ const CalendarEngine = {
         
         return upcoming.sort((a,b) => a.msUntil - b.msUntil);
     },
-
+//if you are reading this noticable notice you may notice that this noticable notice is not worth noticing and has no noticable value
     getNextOccurrences(eventName, startSkyblockDay, count = 10) {
         const results = [];
         const start = Math.max(1, Math.floor(startSkyblockDay));
@@ -218,12 +214,12 @@ const CalendarEngine = {
             while (results.length < count) {
                 const s = ((year - 1) * this.DAYS_PER_YEAR) + summerStart;
                 if (s >= start) {
-                    const legendary = this.getTravelingZooLegendaryForDay(s) || { name: 'Unknown', icon: '❓' };
+                    const legendary = this.getZooLeg(s) || { name: 'Unknown', icon: '❓' };
                     pushOcc(s, { legendaryName: legendary.name, legendaryIcon: legendary.icon });
                 }
                 const w = ((year - 1) * this.DAYS_PER_YEAR) + winterStart;
                 if (results.length < count && w >= start) {
-                    const legendary = this.getTravelingZooLegendaryForDay(w) || { name: 'Unknown', icon: '❓' };
+                    const legendary = this.getZooLeg(w) || { name: 'Unknown', icon: '❓' };
                     pushOcc(w, { legendaryName: legendary.name, legendaryIcon: legendary.icon });
                 }
                 year++;

@@ -14,8 +14,8 @@ const UIController = {
         const time = this.engine.getCurrentTimeData();
         this.currentSkyblockDay = time.currentSkyblockDay;
         this.currentPage = Math.max(1, Math.ceil(this.currentSkyblockDay / this.engine.DAYS_PER_PAGE));
-        this.engine.preCalculatePage(this.currentPage);
-        this.engine.preCalculatePage(this.currentPage + 1);
+        this.engine.preCalcPage(this.currentPage);
+        this.engine.preCalcPage(this.currentPage + 1);
         this.renderCurrentPage();
         this.startTimers();
     },
@@ -58,7 +58,7 @@ const UIController = {
     goToNextPage() {
         this.currentPage++;
         this.renderCurrentPage();
-        this.engine.preCalculatePage(this.currentPage + 1);
+        this.engine.preCalcPage(this.currentPage + 1);
     },
     
     goToPrevPage() {
@@ -97,7 +97,7 @@ const UIController = {
                 const newPage = Math.max(1, Math.ceil(this.currentSkyblockDay / this.engine.DAYS_PER_PAGE));
                 if (newPage !== this.currentPage) {
                     this.currentPage = newPage;
-                    this.engine.preCalculatePage(this.currentPage + 1);
+                    this.engine.preCalcPage(this.currentPage + 1);
                 }
                 this.renderCurrentPage();
                 upcomingEvents = this.engine.getUpcomingEventsData().map(event => {
@@ -405,7 +405,7 @@ function goToTodayAndPage() {
         if (ui && typeof ui.renderCurrentPage === 'function') {
             ui.currentSkyblockDay = time.currentSkyblockDay;
             ui.currentPage = desiredPage;
-            if (typeof engine.preCalculatePage === 'function') engine.preCalculatePage(desiredPage + 1);
+            if (typeof engine.preCalcPage === 'function') engine.preCalcPage(desiredPage + 1);
             ui.renderCurrentPage();
 
             // Wait for DOM update, then scroll
