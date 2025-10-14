@@ -9,37 +9,37 @@ const UIController = {
     init(engine) {
         this.engine = engine;
         this.cacheDOMElements();
-        this.bindEventListeners();
+        this.setupListeners();
         const time = this.engine.getCurrentTimeData();
         this.currentSkyblockDay = time.currentSkyblockDay;
         this.currentPage = Math.max(1, Math.ceil(this.currentSkyblockDay / this.engine.DAYS_PER_PAGE));
         this.engine.preCalcPage(this.currentPage);
         this.engine.preCalcPage(this.currentPage + 1);
-        this.renderCurrentPage();
-        this.startTimers();
+        this.loadCurrentPage();
+        this.initTimers();
     },
 
     cacheDOMElements() {
         this.elements = {
             calendarGrid: document.getElementById('calendar-grid'),
-            calendarPageEl: document.getElementById('calendar-page'),
-            calendarYearEl: document.getElementById('calendar-year'),
+            calendarPage: document.getElementById('calendar-page'),
+            calendarYear: document.getElementById('calendar-year'),
             nextPageBtn: document.getElementById('next-page-btn'),
             prevPageBtn: document.getElementById('prev-page-btn'),
-            currentDateInfoEl: document.getElementById('current-date-info'),
-            upcomingEventsListEl: document.getElementById('upcoming-events-list'),
+            currentDateInfo: document.getElementById('current-date-info'),
+            upcomingEventsList: document.getElementById('upcoming-events-list'),
             modal: document.getElementById('day-modal'),
-            modalCloseBtn: document.getElementById('modal-close-btn')
+            modalClose: document.getElementById('modal-close-btn')
         };
     },
 
-    bindEventListeners() {
-        this.elements.nextPageBtn.addEventListener('click', () => this.goToNextPage());
-        this.elements.prevPageBtn.addEventListener('click', () => this.goToPrevPage());
+    setupListeners() {
+        this.elements.nextPageBtn.addEventListener('click', () => this.nextPage());
+        this.elements.prevPageBtn.addEventListener('click', () => this.prevPage());
         this.elements.modal.addEventListener('click', (e) => { if (e.target === this.elements.modal) this.closeModal(); });
-        this.elements.modalCloseBtn.addEventListener('click', () => this.closeModal());
+        this.elements.modalClose.addEventListener('click', () => this.closeModal());
 
-        this.elements.upcomingEventsListEl.addEventListener('click', (e) => {
+        this.elements.upcomingEventsList.addEventListener('click', (e) => {
             const item = e.target.closest('.event-timer-item');
             if (!item) return;
             const idx = Number(item.dataset.eventIndex);
@@ -54,26 +54,26 @@ const UIController = {
         });
     },
 
-    goToNextPage() {
+    nextPage() {
         this.currentPage++;
-        this.renderCurrentPage();
+        this.loadCurrentPage();
         this.engine.preCalcPage(this.currentPage + 1);
     },
     
-    goToPrevPage() {
+    prevPage() {
         if (this.currentPage > 1) {
             this.currentPage--;
-            this.renderCurrentPage();
+            this.loadCurrentPage();
         }
     },
 
-    startTimers() {
+    initTimers() {
         let upcomingEvents = this.engine.getUpcomingEventsData().map(event => {
             event.targetTime = Date.now() + event.msUntil;
             return event;
         });
         this.currentUpcomingEvents = upcomingEvents;
-        this.renderUpcomingEvents(upcomingEvents);
+        this.loadUpcomingEvents(upcomingEvents);
 
         setInterval(() => {
             upcomingEvents.forEach((event, idx) => {
@@ -90,20 +90,20 @@ const UIController = {
             const newSkyblockDay = timeData.currentSkyblockDay;
             const dayChanged = this.currentSkyblockDay !== newSkyblockDay;
             this.currentSkyblockDay = newSkyblockDay;
-            this.elements.currentDateInfoEl.textContent = `Today: Year ${timeData.currentYear}, ${this.engine.SEASON_NAMES[timeData.currentSeason]}, Day ${timeData.currentDayOfSeason}`;
+            this.elements.currentDateInfo.textContent = `Today: Year ${timeData.currentYear}, ${this.engine.SEASON_NAMES[timeData.currentSeason]}, Day ${timeData.currentDayOfSeason}`;
             if (dayChanged) {
                 const newPage = Math.max(1, Math.ceil(this.currentSkyblockDay / this.engine.DAYS_PER_PAGE));
                 if (newPage !== this.currentPage) {
                     this.currentPage = newPage;
                     this.engine.preCalcPage(this.currentPage + 1);
                 }
-                this.renderCurrentPage();
+                this.loadCurrentPage();
                 upcomingEvents = this.engine.getUpcomingEventsData().map(event => {
                     event.targetTime = Date.now() + event.msUntil;
                     return event;
                 });
                 this.currentUpcomingEvents = upcomingEvents;
-                this.renderUpcomingEvents(upcomingEvents);
+                this.loadUpcomingEvents(upcomingEvents);
             }
         }, 1000);
     },
@@ -115,9 +115,9 @@ const UIController = {
         return `${d}d ${h % 24}h ${m % 60}m ${s % 60}s`;
     },
     
-    renderUpcomingEvents(events) {
+    loadUpcomingEvents(events) {
         this.currentUpcomingEvents = events;
-        this.elements.upcomingEventsListEl.innerHTML = events.map((event, idx) => {
+        this.elements.upcomingEventsList.innerHTML = events.map((event, idx) => {
             let subtext = 'Starts in...';
             if (event.type === 'farming' && event.crops) {
                 subtext = event.crops.map(c => this.engine.CROP_ICONS[c] || '?').join(' ');
@@ -140,22 +140,22 @@ const UIController = {
         }).join('');
     },
 
-        renderCurrentPage() {
+        loadCurrentPage() {
             const pageData = this.engine.getPageData(this.currentPage);
             if (pageData && pageData.length > 0) {
-                this.elements.calendarPageEl.textContent = this.currentPage;
-                this.elements.calendarYearEl.textContent = pageData[0].year;
+                this.elements.calendarPage.textContent = this.currentPage;
+                this.elements.calendarYear.textContent = pageData[0].year;
                 this.elements.prevPageBtn.disabled = this.currentPage <= 1;
             }
-            this.renderPage(pageData);
+            this.loadPage(pageData);
         },
 
-        renderPage(pageData) {
+        loadPage(pageData) {
             this.elements.calendarGrid.innerHTML = '';
             if (!pageData) return;
             
-            this.elements.calendarPageEl.textContent = this.currentPage;
-            this.elements.calendarYearEl.textContent = pageData[0].year;
+            this.elements.calendarPage.textContent = this.currentPage;
+            this.elements.calendarYear.textContent = pageData[0].year;
             this.elements.prevPageBtn.disabled = this.currentPage <= 1;
 
             pageData.forEach(dayInfo => {
@@ -180,12 +180,12 @@ const UIController = {
                         <span class="day-year">Y${dayInfo.year}</span>
                     </div>
                     <div class="day-cell-body">${eventContent}</div>`;
-                dayCell.addEventListener('click', () => this.showDayDetails(dayInfo));
+                dayCell.addEventListener('click', () => this.modalThing(dayInfo));
                 this.elements.calendarGrid.appendChild(dayCell);
             });
         },
 
-        showDayDetails(dayInfo) {
+        modalThing(dayInfo) {
         const realDate = this.engine.getRealTimeForDay(dayInfo.totalDay);
         document.getElementById('modal-ingame-date').textContent = `Year ${dayInfo.year}, ${dayInfo.season} ${dayInfo.dayOfSeason}`;
         document.getElementById('modal-real-date').textContent = `Date: ${realDate.toLocaleString()}`;
@@ -384,11 +384,10 @@ function capitalize(val) {
 
 function goToTodayAndPage() {
     try {
-        const engine = window.CalendarEngine;
-        const ui = window.UIController;
         if (!engine) {
             const el = document.getElementById('current-day') || document.querySelector('.current-day');
             if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            console.warn('goToTodayAndPage: CalendarEngine not found');
             return;
         }
 
@@ -396,16 +395,16 @@ function goToTodayAndPage() {
         const daysPerPage = engine.DAYS_PER_PAGE || 31;
         const desiredPage = Math.max(1, Math.ceil(time.currentSkyblockDay / daysPerPage));
 
-        if (ui && typeof ui.renderCurrentPage === 'function') {
-            ui.currentSkyblockDay = time.currentSkyblockDay;
-            ui.currentPage = desiredPage;
+        if (typeof loadCurrentPage === 'function') {
+            currentPage = desiredPage;
             if (typeof engine.preCalcPage === 'function') engine.preCalcPage(desiredPage + 1);
-            ui.renderCurrentPage();
+            loadCurrentPage();
 
             setTimeout(() => {
                 const el = document.getElementById('current-day') || document.querySelector('.current-day');
                 if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 50);
+            console.log('goToTodayAndPage: Moved to page', desiredPage);
             return;
         }
         const pageEl = document.getElementById('calendar-page');
