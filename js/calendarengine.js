@@ -69,8 +69,8 @@ const CalendarEngine = {
         };
     })(),
 
-    getZooLeg(totalDay) {
-        const daysSinceEpoch = totalDay - 1;
+    getZooLeg(totalDays) {
+        const daysSinceEpoch = totalDays - 1;
         const seasonsSinceEpoch = Math.floor(daysSinceEpoch / this.SEASON_LENGTH);
         const year = Math.floor(seasonsSinceEpoch / this.YEAR_LENGTH) + 1;
         const season = seasonsSinceEpoch % this.YEAR_LENGTH;
@@ -99,8 +99,8 @@ const CalendarEngine = {
         this.pagesDataCache.set(pageNumber, pageDays);
     },
     
-    getDayInfo(totalDay) {
-        const daysSinceEpoch = totalDay - 1;
+    getDayInfo(totalDays) {
+        const daysSinceEpoch = totalDays - 1;
         const seasonsSinceEpoch = Math.floor(daysSinceEpoch / this.SEASON_LENGTH);
         const yearsSinceEpoch = Math.floor(seasonsSinceEpoch / this.YEAR_LENGTH);
 
@@ -116,14 +116,14 @@ const CalendarEngine = {
             events.push({ name: "Season of the Pig", icon: '<img src="img/100px-Shiny_Orb.webp">' });
         }
         if ((season === this.SEASON_SUMMER && dayOfSeason <= 3) || (season === this.SEASON_WINTER && dayOfSeason <= 3)) {
-            const legendary = this.getZooLeg(totalDay) || { name: 'Error', icon: '❌' };
-            events.push({ name: "Traveling Zoo", icon: legendary.icon, legendaryName: legendary.name });
+            const legendary = this.getZooLeg(totalDays) || { name: 'Error', icon: '❌' };
+            events.push({ name: "Travelling Zoo", icon: legendary.icon, legendaryName: legendary.name });
         }
             if (season === this.SEASON_WINTER && dayOfSeason >= 91) {
                 events.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.webp">' });
             }
 
-            return { totalDay, year, season: this.SEASON_NAMES[season], dayOfSeason, events };
+            return { totalDays, year, season: this.SEASON_NAMES[season], dayOfSeason, events };
     },
 
     getFarmingCrops(eventId) {
@@ -150,12 +150,12 @@ const CalendarEngine = {
         const seasonsSinceEpoch = Math.floor(daysSinceEpoch / this.SEASON_LENGTH);
         const currentYear = Math.floor(seasonsSinceEpoch / this.YEAR_LENGTH) + 1;
         const currentSeason = seasonsSinceEpoch % this.YEAR_LENGTH;
-        const currentDayOfSeason = daysSinceEpoch % this.SEASON_LENGTH + 1;
+        const todaySeason = daysSinceEpoch % this.SEASON_LENGTH + 1;
 
         return {
-            currentYear, currentSeason, currentDayOfSeason, skyblockDecimalDays,
-            currentSkyblockDay: daysSinceEpoch + 1,
-            currentDayOfYear: (currentSeason * this.SEASON_LENGTH) + currentDayOfSeason
+            currentYear, currentSeason, todaySeason, skyblockDecimalDays,
+            todaySkyblock: daysSinceEpoch + 1,
+            todayInYear: (currentSeason * this.SEASON_LENGTH) + todaySeason
         };
     },
 
@@ -163,25 +163,25 @@ const CalendarEngine = {
         const time = this.getCurrentTimeData();
         const upcoming = [];
         // contest
-        const nextContestDay = Math.floor(time.currentSkyblockDay / 3) * 3 + 1;
-        upcoming.push({ name: "Farming Contest", icon: '<img src="assets/farming/Farm-o-Matic.webp">', type: 'farming', nextDay: nextContestDay > time.currentSkyblockDay ? nextContestDay : nextContestDay + 3, crops: this.getFarmingCrops(Math.floor(nextContestDay/3))});
+        const nextContestDay = Math.floor(time.todaySkyblock / 3) * 3 + 1;
+        upcoming.push({ name: "Farming Contest", icon: '<img src="assets/farming/Farm-o-Matic.webp">', type: 'farming', nextDay: nextContestDay > time.todaySkyblock ? nextContestDay : nextContestDay + 3, crops: this.getFarmingCrops(Math.floor(nextContestDay/3))});
         // SHINY PIGS MY GOAT
         let nextPigYear = Math.ceil(time.currentYear / 4) * 4 + 1; //offset
         if(time.currentYear > nextPigYear || (time.currentYear === nextPigYear && time.currentSeason > this.SEASON_SPRING)) nextPigYear += 4;
         upcoming.push({ name: "Season of the Pig", icon: '<img src="img/100px-Shiny_Orb.webp">', nextDay: ((nextPigYear - 1) * this.DAYS_PER_YEAR) + 1});
         // cake
         let nextNewYearDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + (this.SEASON_WINTER * this.SEASON_LENGTH) + 91;
-        if(time.currentDayOfYear > (this.SEASON_WINTER * this.SEASON_LENGTH) + 91) nextNewYearDay += this.DAYS_PER_YEAR;
+        if(time.todayInYear > (this.SEASON_WINTER * this.SEASON_LENGTH) + 91) nextNewYearDay += this.DAYS_PER_YEAR;
         upcoming.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.webp">', nextDay: nextNewYearDay });
         // zoo
         const summerStart = (this.SEASON_SUMMER * this.SEASON_LENGTH) + 1;
         const winterStart = (this.SEASON_WINTER * this.SEASON_LENGTH) + 1;
         let nextZooDay;
-        if(time.currentDayOfYear < summerStart) nextZooDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + summerStart;
-        else if(time.currentDayOfYear < winterStart) nextZooDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + winterStart;
+        if(time.todayInYear < summerStart) nextZooDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + summerStart;
+        else if(time.todayInYear < winterStart) nextZooDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + winterStart;
         else nextZooDay = (time.currentYear * this.DAYS_PER_YEAR) + summerStart;
         const legendaryNext = this.getZooLeg(nextZooDay) || { name: 'Unknown', icon: '🐘' };
-        upcoming.push({ name: "Traveling Zoo", icon: legendaryNext.icon, legendaryName: legendaryNext.name, nextDay: nextZooDay });
+        upcoming.push({ name: "Travelling Zoo", icon: legendaryNext.icon, legendaryName: legendaryNext.name, nextDay: nextZooDay });
         upcoming.forEach(event => {
             const daysUntil = event.nextDay - time.skyblockDecimalDays - 1;
             event.msUntil = daysUntil * this.MINUTES_PER_SKYBLOCK_DAY * 60 * 1000;
@@ -193,10 +193,10 @@ const CalendarEngine = {
     getNextOccurrences(eventName, startSkyblockDay, count = 10) {
         const results = [];
         const start = Math.max(1, Math.floor(startSkyblockDay));
-        const pushOcc = (totalDay, extra = {}) => {
-            const realDate = this.getRealTimeForDay(totalDay);
+        const pushOcc = (totalDays, extra = {}) => {
+            const realDate = this.getRealTimeForDay(totalDays);
             const msUntil = realDate.getTime() - Date.now();
-            results.push(Object.assign({ totalDay, realDate, msUntil }, extra));
+            results.push(Object.assign({ totalDays, realDate, msUntil }, extra));
         };
 
         if (eventName === 'Farming Contest') {
@@ -207,7 +207,7 @@ const CalendarEngine = {
                 const eventId = Math.floor((day - 1) / 3);
                 pushOcc(day, { crops: this.getFarmingCrops(eventId) });
             }
-        } else if (eventName === 'Traveling Zoo') {
+        } else if (eventName === 'Travelling Zoo') {
             const summerStart = (this.SEASON_SUMMER * this.SEASON_LENGTH) + 1;
             const winterStart = (this.SEASON_WINTER * this.SEASON_LENGTH) + 1;
             let year = Math.floor((start - 1) / this.DAYS_PER_YEAR) + 1;
@@ -245,8 +245,8 @@ const CalendarEngine = {
         return results.slice(0, count);
     },
 
-    getRealTimeForDay(totalDay) {
-        const realSeconds = this.START_OF_TIMES + ((totalDay - 1) * this.MINUTES_PER_SKYBLOCK_DAY * 60);
+    getRealTimeForDay(totalDays) {
+        const realSeconds = this.START_OF_TIMES + ((totalDays - 1) * this.MINUTES_PER_SKYBLOCK_DAY * 60);
         return new Date(realSeconds * 1000);
     },
 };
