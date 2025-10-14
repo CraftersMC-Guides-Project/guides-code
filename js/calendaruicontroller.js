@@ -371,56 +371,62 @@ const UIController = {
                 clearInterval(this.modalCountdownInterval);
                 this.modalCountdownInterval = null;
             }
+        },
+        //THIS WAS A PAINNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
+        toToday() {
+            engine = this.engine;
+            ui = this;
+            try {
+                if (!engine) {
+                    const el = document.getElementById('current-day') || document.querySelector('.current-day');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    console.warn('toToday: CalendarEngine not found');
+                    return;
+                }
+
+                const time = engine.getCurrentTimeData();
+                const daysPerPage = engine.DAYS_PER_PAGE || 31;
+                const desiredPage = Math.max(1, Math.ceil(time.currentSkyblockDay / daysPerPage));
+
+                if (ui && typeof loadCurrentPage === 'function') {
+                    currentSkyblockDay = time.currentSkyblockDay;
+                    currentPage = desiredPage;
+                    if (typeof engine.preCalcPage === 'function') engine.preCalcPage(desiredPage + 1);
+                    loadCurrentPage();
+
+                    setTimeout(() => {
+                        const el = document.getElementById('current-day') || document.querySelector('.current-day');
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 50);
+                    return;
+                }
+                const pageEl = document.getElementById('calendar-page');
+                if (!pageEl) return;
+                let curr = Number(pageEl.textContent) || 1;
+                const diff = desiredPage - curr;
+                const btn = diff > 0 ? document.getElementById('next-page-btn') : document.getElementById('prev-page-btn');
+                const clicks = Math.abs(diff);
+                for (let i = 0; i < clicks; i++) {
+                    if (btn) btn.click();
+                }
+                setTimeout(() => {
+                    const el = document.getElementById('current-day') || document.querySelector('.current-day');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 200);
+            } catch (e) {
+                console.error('toToday error', e);
+            }
         }
     };
 
-    document.addEventListener('DOMContentLoaded', () => {
-        UIController.init(CalendarEngine);
-    });
+document.addEventListener('DOMContentLoaded', () => {
+    UIController.init(CalendarEngine);
+});
 
 function capitalize(val) {
     return String(val).charAt(0).toUpperCase() + String(val).slice(1);
 }
 
-function goToTodayAndPage() {
-    try {
-        if (!engine) {
-            const el = document.getElementById('current-day') || document.querySelector('.current-day');
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            console.warn('goToTodayAndPage: CalendarEngine not found');
-            return;
-        }
-
-        const time = engine.getCurrentTimeData();
-        const daysPerPage = engine.DAYS_PER_PAGE || 31;
-        const desiredPage = Math.max(1, Math.ceil(time.currentSkyblockDay / daysPerPage));
-
-        if (typeof loadCurrentPage === 'function') {
-            currentPage = desiredPage;
-            if (typeof engine.preCalcPage === 'function') engine.preCalcPage(desiredPage + 1);
-            loadCurrentPage();
-
-            setTimeout(() => {
-                const el = document.getElementById('current-day') || document.querySelector('.current-day');
-                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 50);
-            console.log('goToTodayAndPage: Moved to page', desiredPage);
-            return;
-        }
-        const pageEl = document.getElementById('calendar-page');
-        if (!pageEl) return;
-        let curr = Number(pageEl.textContent) || 1;
-        const diff = desiredPage - curr;
-        const btn = diff > 0 ? document.getElementById('next-page-btn') : document.getElementById('prev-page-btn');
-        const clicks = Math.abs(diff);
-        for (let i = 0; i < clicks; i++) {
-            if (btn) btn.click();
-        }
-        setTimeout(() => {
-            const el = document.getElementById('current-day') || document.querySelector('.current-day');
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 200);
-    } catch (e) {
-        console.error('goToTodayAndPage error', e);
-    }
+function toToday() {
+    UIController.toToday();
 }
