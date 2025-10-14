@@ -178,7 +178,7 @@ function fetchAllLPartials() {
       });
     });
 }
-
+/*
 function setupThemeSwitchers() {
   const themeSwitches = [
     document.getElementById("theme-switch"),
@@ -205,7 +205,7 @@ function setupThemeSwitchers() {
   themeSwitches.forEach((switchEl) => {
     switchEl.addEventListener("click", toggleTheme);
   });
-}
+}*/
 
 function closeAnnouncementBanner() {
   document.getElementById("announcement-banner").style.display = "none";
