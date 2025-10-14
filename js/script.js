@@ -169,7 +169,6 @@ function fetchAllLPartials() {
     })
     .catch((err) => {
       console.error("[Partials] Failed to load:", err);
-      // Hide loader even if error
       window.addEventListener('load', () => {
         const o = document.getElementById('loader-wrapper');
         o && (o.classList.add('hidden'), setTimeout(() => {
@@ -217,7 +216,6 @@ function overlay() {
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("sidebar-overlay");
 
-  // Close sidelid if open
   if (sidelid && sidelid.classList.contains("openlid")) {
     console.log("[DEBUG] overlay(): closing sidelid");
     sidelid.classList.remove("openlid");
@@ -227,7 +225,6 @@ function overlay() {
     return;
   }
 
-  // Else, close sidebar if open
   if (sidebar && sidebar.classList.contains("openSbar")) {
     console.log("[DEBUG] overlay(): closing sidebar");
     sidebar.classList.remove("openSbar");

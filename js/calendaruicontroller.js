@@ -10,7 +10,6 @@ const UIController = {
         this.engine = engine;
         this.cacheDOMElements();
         this.bindEventListeners();
-        // jump to todays page
         const time = this.engine.getCurrentTimeData();
         this.currentSkyblockDay = time.currentSkyblockDay;
         this.currentPage = Math.max(1, Math.ceil(this.currentSkyblockDay / this.engine.DAYS_PER_PAGE));
@@ -76,7 +75,6 @@ const UIController = {
         this.currentUpcomingEvents = upcomingEvents;
         this.renderUpcomingEvents(upcomingEvents);
 
-        // update countdowns
         setInterval(() => {
             upcomingEvents.forEach((event, idx) => {
                 const countdownEl = document.querySelectorAll('.event-timer-countdown')[idx];
@@ -143,7 +141,6 @@ const UIController = {
     },
 
         renderCurrentPage() {
-            // Always update page number and year in DOM
             const pageData = this.engine.getPageData(this.currentPage);
             if (pageData && pageData.length > 0) {
                 this.elements.calendarPageEl.textContent = this.currentPage;
@@ -257,7 +254,6 @@ const UIController = {
         const body = document.createElement('div');
         body.className = 'accordion-body';
 
-        // contests first
         if (event.name === 'Farming Contest') {
             const filterContainer = document.createElement('div');
             filterContainer.className = 'farming-filters';
@@ -304,8 +300,8 @@ const UIController = {
                     </tbody>
                 `;
             };
-
-            const farmingOcc = occ.filter(o => o.crops && o.crops.length).slice(0, 1000); // ensure plenty
+            //if you are reading this noticable notice you may notice that this noticable notice is not worth noticing and has no noticable value
+            const farmingOcc = occ.filter(o => o.crops && o.crops.length).slice(0, 1000);
             renderTable(farmingOcc);
 
             filterContainer.addEventListener('change', () => {
@@ -322,7 +318,6 @@ const UIController = {
                 renderTable(matches);
             });
         } else {
-            // not contest
             const table = document.createElement('table');
             table.className = 'occurrences-table';
 
@@ -392,7 +387,6 @@ function goToTodayAndPage() {
         const engine = window.CalendarEngine;
         const ui = window.UIController;
         if (!engine) {
-            // fallback: just attempt to scroll
             const el = document.getElementById('current-day') || document.querySelector('.current-day');
             if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
@@ -408,15 +402,12 @@ function goToTodayAndPage() {
             if (typeof engine.preCalcPage === 'function') engine.preCalcPage(desiredPage + 1);
             ui.renderCurrentPage();
 
-            // Wait for DOM update, then scroll
             setTimeout(() => {
                 const el = document.getElementById('current-day') || document.querySelector('.current-day');
                 if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 50);
             return;
         }
-
-        // fallback: click pagination buttons until the target page is reached
         const pageEl = document.getElementById('calendar-page');
         if (!pageEl) return;
         let curr = Number(pageEl.textContent) || 1;

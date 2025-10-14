@@ -166,7 +166,7 @@ const CalendarEngine = {
         const nextContestDay = Math.floor(time.currentSkyblockDay / 3) * 3 + 1;
         upcoming.push({ name: "Farming Contest", icon: '<img src="assets/farming/Farm-o-Matic.webp">', type: 'farming', nextDay: nextContestDay > time.currentSkyblockDay ? nextContestDay : nextContestDay + 3, crops: this.getFarmingCrops(Math.floor(nextContestDay/3))});
         // SHINY PIGS MY GOAT
-        let nextPigYear = Math.ceil(time.currentYear / 4) * 4 + 1; //+1 for accuracy
+        let nextPigYear = Math.ceil(time.currentYear / 4) * 4 + 1; //offset
         if(time.currentYear > nextPigYear || (time.currentYear === nextPigYear && time.currentSeason > this.SEASON_SPRING)) nextPigYear += 4;
         upcoming.push({ name: "Season of the Pig", icon: '<img src="img/100px-Shiny_Orb.webp">', nextDay: ((nextPigYear - 1) * this.DAYS_PER_YEAR) + 1});
         // cake
