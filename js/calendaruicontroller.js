@@ -321,7 +321,7 @@ const UIController = {
             table.className = 'occurrences-table';
 
             const filtered = occ.slice(0, 10);
-            const hasExtraNonFarm = filtered.some(o => o.legendaryName);
+            const hasExtraNonFarm = filtered.some(o => o.legendaryName) || event.name === 'New Year Celebration';
             const theadCols = [
                 '<th>In-game date</th>',
                 '<th>Real date (local)</th>',
@@ -343,6 +343,8 @@ const UIController = {
                         if (o.legendaryName) {
                             const icon = o.legendaryIcon || (this.engine.LEGENDARY_ICONS && this.engine.LEGENDARY_ICONS[o.legendaryName]) || '';
                             extra = `<span class="occ-extra">${icon} ${capitalize(o.legendaryName)}</span>`;
+                        } else if (event.name === 'New Year Celebration') {
+                            extra = `Y${day.year}`;
                         }
                         const baseCells = [
                             `<td>Year ${day.year}, ${shortSeason} ${day.dayOfSeason}</td>`,
@@ -356,7 +358,6 @@ const UIController = {
             `;
             body.appendChild(table);
         }
-
         accItem.appendChild(header);
         accItem.appendChild(body);
         wrapper.appendChild(accItem);
