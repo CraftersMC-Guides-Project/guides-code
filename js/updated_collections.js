@@ -736,18 +736,18 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
+                    "name": "Classyisreal",
+                    "score": "106.9M+"
+                },
+                {
+                    "rank": 2,
                     "name": "Madstar118YT",
                     "score": "100M+"
                 },
                 {
-                    "rank": 2,
+                    "rank": 3,
                     "name": "HeGzoStRqFe",
                     "score": "30M+"
-                },
-                {
-                    "rank": 3,
-                    "name": "Unknown",
-                    "score": "N/A"
                 },
                 {
                     "rank": 4,
