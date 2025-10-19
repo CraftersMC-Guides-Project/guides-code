@@ -756,8 +756,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "Notenderman9677",
-                    "score": "26.4M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 6,
