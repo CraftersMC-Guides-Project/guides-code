@@ -1873,13 +1873,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "Watermark998517",
-                    "score": "N/A"
+                    "name": "SeaborneClamp18",
+                    "score": "91.6M+"
                 },
                 {
                     "rank": 5,
-                    "name": "SeaborneClamp18",
-                    "score": "85M+"
+                    "name": "Watermark998517",
+                    "score": "N/A"
                 },
                 {
                     "rank": 6,
