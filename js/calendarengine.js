@@ -9,30 +9,30 @@ const CalendarEngine = {
     SEASON_SPRING: 0, SEASON_SUMMER: 1, SEASON_AUTUMN: 2, SEASON_WINTER: 3,
     
     LEGENDARY_PATTERN: ['elephant','giraffe','tiger','lion','monkey'],
-    LEGENDARY_ICONS: { 'elephant':'<img src="img/pets/Elephant_Pet.webp" style="height:40px;width:auto;">',
+    LEGENDARY_ICONS: { 'elephant':'<img src="../img/pets/Elephant_Pet.webp" style="height:40px;width:auto;">',
 
-    'giraffe':'<img src="img/pets/Giraffe_Pet.webp" style="height:40px;width:auto;">',
+    'giraffe':'<img src="../img/pets/Giraffe_Pet.webp" style="height:40px;width:auto;">',
 
-    'tiger':'<img src="img/pets/300px-Tiger_pet.webp" style="height:40px;width:auto;">',
+    'tiger':'<img src="../img/pets/300px-Tiger_pet.webp" style="height:40px;width:auto;">',
 
-    'lion':'<img src="img/pets/300px-Lion_pet.webp" style="height:40px;width:auto;">',
+    'lion':'<img src="../img/pets/300px-Lion_pet.webp" style="height:40px;width:auto;">',
 
-    'monkey':'<img src="img/pets/Monkey_pet.webp" style="height:40px;width:auto;margin:4px;">'},
+    'monkey':'<img src="../img/pets/Monkey_pet.webp" style="height:40px;width:auto;margin:4px;">'},
     TRAVELING_ZOO_LEGENDARY_OFFSET: 2,
     pagesDataCache: new Map(),
     SEASON_NAMES: ['Spring', 'Summer', 'Autumn', 'Winter'],
     CropType: ['WHEAT', 'SUGAR_CANE', 'CARROT', 'POTATO', 'MELON', 'PUMPKIN', 'COCOA_BEANS', 'CACTUS', 'MUSHROOM', 'BEETROOT'],
     CROP_ICONS: { 
-        'WHEAT': '<img src="img/Wheat.webp" style="height:20px;width:auto;">',
-        'SUGAR_CANE': '<img src="img/Sugar_Cane.webp" style="height:20px;width:auto;">',
-        'CARROT': '<img src="img/Carrot.webp" style="height:20px;width:auto;">',
-        'POTATO': '<img src="img/Potato.webp" style="height:20px;width:auto;">', 
-        'MELON': '<img src="img/Melon.webp" style="height:20px;width:auto;">', 
-        'PUMPKIN': '<img src="img/Pumpkin.webp" style="height:20px;width:auto;">', 
-        'COCOA_BEANS': '<img src="img/Cocoa_Beans.webp" style="height:20px;width:auto;">', 
-        'CACTUS': '<img src="img/Cactus.webp" style="height:20px;width:auto;">', 
-        'MUSHROOM': '<img src="img/Mushroom.gif" style="height:20px;width:auto;">', 
-        'BEETROOT': '<img src="img/Beetroot.webp" style="height:20px;width:auto;">' 
+        'WHEAT': '<img src="../img/Wheat.webp" style="height:20px;width:auto;">',
+        'SUGAR_CANE': '<img src="../img/Sugar_Cane.webp" style="height:20px;width:auto;">',
+        'CARROT': '<img src="../img/Carrot.webp" style="height:20px;width:auto;">',
+        'POTATO': '<img src="../img/Potato.webp" style="height:20px;width:auto;">', 
+        'MELON': '<img src="../img/Melon.webp" style="height:20px;width:auto;">', 
+        'PUMPKIN': '<img src="../img/Pumpkin.webp" style="height:20px;width:auto;">', 
+        'COCOA_BEANS': '<img src="../img/Cocoa_Beans.webp" style="height:20px;width:auto;">', 
+        'CACTUS': '<img src="../img/Cactus.webp" style="height:20px;width:auto;">', 
+        'MUSHROOM': '<img src="../img/Mushroom.gif" style="height:20px;width:auto;">', 
+        'BEETROOT': '<img src="../img/Beetroot.webp" style="height:20px;width:auto;">' 
     },
     Random: (function() {
         //calendarjs by irrl
@@ -113,14 +113,14 @@ const CalendarEngine = {
             events.push({ name: 'Farming Contest', icon: '<img src="assets/farming/Farm-o-Matic.webp">', type: 'farming', crops: this.getFarmingCrops(Math.floor(daysSinceEpoch / 3)) });
         }
         if (season === this.SEASON_SPRING && (year - 1) % 4 === 0) {
-            events.push({ name: "Season of the Pig", icon: '<img src="img/100px-Shiny_Orb.webp">' });
+            events.push({ name: "Season of the Pig", icon: '<img src="../img/100px-Shiny_Orb.webp">' });
         }
         if ((season === this.SEASON_SUMMER && dayOfSeason <= 3) || (season === this.SEASON_WINTER && dayOfSeason <= 3)) {
             const legendary = this.getZooLeg(totalDays) || { name: 'Error', icon: '❌' };
             events.push({ name: "Travelling Zoo", icon: legendary.icon, legendaryName: legendary.name });
         }
             if (season === this.SEASON_WINTER && dayOfSeason >= 91) {
-                events.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.webp">' });
+                events.push({ name: "New Year Celebration", icon: '<img src="../img/Enchanted_Cake.webp">' });
             }
 
             return { totalDays, year, season: this.SEASON_NAMES[season], dayOfSeason, events };
@@ -168,11 +168,11 @@ const CalendarEngine = {
         // SHINY PIGS MY GOAT
         let nextPigYear = Math.ceil(time.currentYear / 4) * 4 + 1; //offset
         if(time.currentYear > nextPigYear || (time.currentYear === nextPigYear && time.currentSeason > this.SEASON_SPRING)) nextPigYear += 4;
-        upcoming.push({ name: "Season of the Pig", icon: '<img src="img/100px-Shiny_Orb.webp">', nextDay: ((nextPigYear - 1) * this.DAYS_PER_YEAR) + 1});
+        upcoming.push({ name: "Season of the Pig", icon: '<img src="../img/100px-Shiny_Orb.webp">', nextDay: ((nextPigYear - 1) * this.DAYS_PER_YEAR) + 1});
         // cake
         let nextNewYearDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + (this.SEASON_WINTER * this.SEASON_LENGTH) + 91;
         if(time.todayInYear > (this.SEASON_WINTER * this.SEASON_LENGTH) + 91) nextNewYearDay += this.DAYS_PER_YEAR;
-        upcoming.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.webp">', nextDay: nextNewYearDay });
+        upcoming.push({ name: "New Year Celebration", icon: '<img src="../img/Enchanted_Cake.webp">', nextDay: nextNewYearDay });
         // zoo
         const summerStart = (this.SEASON_SUMMER * this.SEASON_LENGTH) + 1;
         const winterStart = (this.SEASON_WINTER * this.SEASON_LENGTH) + 1;

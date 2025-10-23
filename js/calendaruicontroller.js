@@ -341,6 +341,7 @@ const UIController = {
                         const until = this.timeCorrect(o.msUntil);
                         let extra = '';
                         if (o.legendaryName) {
+                            console.log(o.legendaryName);
                             const icon = o.legendaryIcon || (this.engine.LEGENDARY_ICONS && this.engine.LEGENDARY_ICONS[o.legendaryName]) || '';
                             extra = `<span class="occ-extra">${icon} ${capitalize(o.legendaryName)}</span>`;
                         } else if (event.name === 'New Year Celebration') {
@@ -429,7 +430,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function capitalize(e) {
-    return String(encodeURI).charAt(0).toUpperCase() + String(e).slice(1);
+    const s = String(e || '');
+    return s.length === 0 ? '' : s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function toToday() {
