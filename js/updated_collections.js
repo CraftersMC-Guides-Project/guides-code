@@ -72,13 +72,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "ZepthyrX",
-                    "score": "18M+"
+                    "name": "weball22604",
+                    "score": "45.5M+"
                 },
                 {
                     "rank": 4,
                     "name": "Emircanyilmaz",
-                    "score": "17M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 5,
