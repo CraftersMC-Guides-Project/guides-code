@@ -2005,18 +2005,18 @@ const collectionsData = {
                 },
                 {
                     "rank": 8,
-                    "name": "Rehan2038",
-                    "score": "45.2M+"
-                },
-                {
-                    "rank": 9,
                     "name": "Unknown",
                     "score": "N/A"
                 },
                 {
-                    "rank": 10,
+                    "rank": 9,
                     "name": "BlackKeyur",
                     "score": "N/A"
+                },
+                {
+                    "rank": 10,
+                    "name": "Rehan2038",
+                    "score": "49.4M+"
                 }
             ]
         }
