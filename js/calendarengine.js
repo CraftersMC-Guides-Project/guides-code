@@ -13,7 +13,7 @@ const CalendarEngine = {
 
     'giraffe':'<img src="img/pets/Giraffe_Pet.webp" style="height:40px;width:auto;">',
 
-    'tiger':'<img src="img/pets/300px-Tiger_pet.webp" style="height:40px;width:auto;">',
+    'tiger':'<img src="img/pets/300px-Tiger_Pet.webp" style="height:40px;width:auto;">',
 
     'lion':'<img src="img/pets/300px-Lion_Pet.webp" style="height:40px;width:auto;">',
 
