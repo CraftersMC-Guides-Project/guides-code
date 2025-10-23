@@ -2085,7 +2085,7 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "ST4ANG3",
-                    "score": "32.9M+"
+                    "score": "51.2M+"
                 },
                 {
                     "rank": 2,
