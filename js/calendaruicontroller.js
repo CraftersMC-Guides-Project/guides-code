@@ -161,6 +161,8 @@ const UIController = {
                 if (day.events.length > 0) {
                     const icons = day.events.slice(0, 2).map(e => e.icon).join('');
                     eventContent = `<div class="event-icons">${icons}</div>`;
+                } else {
+                    eventContent = `<div class="no-events" style="font-size: 8px; opacity:0.5;">None</div>`;
                 }
 
                 dayCell.innerHTML = `
