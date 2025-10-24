@@ -30,7 +30,7 @@ The **CraftersMC Guides** almost covers every aspect of progression in SkyBlock,
 - **[Unicode Guide Page](https://craftersmc-guides.pages.dev/unicode)**
 - **[Collection Leaderboards Page](https://craftersmc-guides.pages.dev/leaderboards)**
 - **[Bank Interest Countdown](https://craftersmc-guides.pages.dev/bank-interest)**
-- **[Bazaar Prices (Beta)](https://craftersmc-guides.pages.dev/market)**
+- **[SkyCalendar](https://craftersmc-guides.pages.dev/skycalendar)**
 - **[Texture Packs](https://craftersmc-guides.pages.dev/texture-packs)**
 
 ---
