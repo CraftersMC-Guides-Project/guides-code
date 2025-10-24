@@ -337,38 +337,29 @@ input {
         }
 
         async function saveChanges() {
-            const token = context.env.MarigoldEditToken;
-            if (!token) {
-                alert('GitHub token is not working. Please contact the team to get it fixed.');
-                return;
-            }
             const saveButton = document.getElementById('saveButton');
             const successText = document.getElementById('successText');
             const successBox = document.querySelector('.successBox');
             successText.textContent = '';
-            saveButton.disabled = true; 
+            saveButton.disabled = true;
             saveButton.classList.add('button-loading');
             saveButton.textContent = 'Saving...';
 
             try {
-                const fileResponse = await fetch('https://api.github.com/repos/CraftersMC-Guides-Project/guides-code/contents/ranksellers/ranksellers.txt', {
+                const fileResponse = await fetch('/seller-api', { 
+                    method: 'GET',
                     headers: {
-                        'Authorization': `token ${token}`,
                         'Accept': 'application/vnd.github.v3+json',
-                        'Origin': window.location.origin
                     },
-                    mode: 'cors'
                 });
 
                 if (!fileResponse.ok) {
                     const errorData = await fileResponse.text();
-                    console.error('File fetch error:', errorData);
-                    throw new Error(`GitHub API error: ${fileResponse.status} ${fileResponse.statusText}`);
+                    console.error('File fetch error (from proxy):', errorData);
+                    throw new Error(`API error: ${fileResponse.status} ${fileResponse.statusText}`);
                 }
 
                 const fileData = await fileResponse.json();
-                
-                // Update seller data
                 const index = allSellers.findIndex(s => s["access-code"] === currentAccessCode);
                 if (index === -1) {
                     throw new Error('Seller not found in array');
@@ -397,16 +388,13 @@ input {
                 const encoder = new TextEncoder();
                 const data = encoder.encode(jsonString);
                 const content = btoa(String.fromCharCode(...data));
-                
-                const response = await fetch('https://api.github.com/repos/CraftersMC-Guides-Project/guides-code/contents/ranksellers/ranksellers.txt', {
+                //call pages func
+                const response = await fetch('/seller-api', { 
                     method: 'PUT',
                     headers: {
-                        'Authorization': `token ${token}`,
                         'Accept': 'application/vnd.github.v3+json',
                         'Content-Type': 'application/json',
-                        'Origin': window.location.origin
                     },
-                    mode: 'cors',
                     body: JSON.stringify({
                         message: `Update seller data for ${updatedSeller.name}`,
                         content: content,
@@ -416,7 +404,7 @@ input {
 
                 if (!response.ok) {
                     const errorData = await response.text();
-                    console.error('Update error:', errorData);
+                    console.error('Update error (from proxy):', errorData);
                     throw new Error(`Update failed: ${response.status} ${response.statusText}`);
                 }
 
@@ -432,18 +420,18 @@ input {
                 successBox.style.display = 'block';
                 setTimeout(() => {
                     successBox.style.display = 'none';
-                }, 3000); 
+                }, 3000);
             } finally {
                 saveButton.disabled = false;
                 saveButton.classList.remove('button-loading');
                 saveButton.textContent = 'Save Changes';
-                successBox.classList.remove('error');
+                successBox.classList.remove('error'); 
                 successText.textContent = 'Changes saved. Please wait 20-50 seconds for the changes to take effect.';
                 successText.classList.add('success');
                 successBox.style.display = 'block';
                 setTimeout(() => {
                     successBox.style.display = 'none';
-                }, 3000); 
+                }, 3000);
             }
         }
     </script>
