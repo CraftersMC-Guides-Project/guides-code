@@ -239,7 +239,7 @@ input {
             <h1 class="h1">Seller Profile Editor</h1>
             <h2 class="h2">Enter Access Code</h2>
             <input class="input" type="text" id="seller-edit-accessCodeInput" placeholder="Access Code">
-            <button onclick="checkAccessCode()">Submit</button>
+            <button onclick="checkAccessCode()" id="submit-button">Submit</button>
             <div id="seller-edit-result"></div>
         </div>
     </div>
@@ -259,6 +259,7 @@ input {
             currentAccessCode = code;
             const seller = allSellers.find(s => s["access-code"] === code.toUpperCase());
             const resultDiv = document.getElementById('seller-edit-result');
+            const submitBtn = document.getElementById('submit-button');
             if (seller) {
                 id = seller.id;
                 resultDiv.innerHTML = `
@@ -331,6 +332,7 @@ input {
                         <button class="seller-edit-button" onclick="saveChanges()" id="seller-edit-saveButton">Save Changes</button>
                     </div>
                 `;
+                submitBtn.style.display = 'none';
             } else {
                 resultDiv.innerHTML = `<p class="seller-edit-error">Access code not found. Please try again.</p>`;
             }
@@ -396,7 +398,7 @@ input {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        message: `Update seller data for ${updatedSeller.name}`,
+                        message: `Marigold via Token: Update seller data for ${updatedSeller.name}`,
                         content: content,
                         sha: fileData.sha
                     })
