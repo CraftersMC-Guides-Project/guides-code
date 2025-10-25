@@ -1700,17 +1700,17 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
+                    "name": "MythicalPanda30",
+                    "score": "N/A"
+                },
+                {
+                    "rank": 4,
                     "name": "AYUSH_BHAKTE",
                     "score": "30M+"
                 },
                 {
-                    "rank": 4,
-                    "name": "MythicRen13",
-                    "score": "N/A"
-                },
-                {
                     "rank": 5,
-                    "name": "Unknown",
+                    "name": "MythicRen13",
                     "score": "N/A"
                 },
                 {
@@ -1766,7 +1766,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "Unknown",
+                    "name": "MythicalPanda30",
                     "score": "N/A"
                 },
                 {
@@ -1786,7 +1786,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "MythicalPanda30",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
