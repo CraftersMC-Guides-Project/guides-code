@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Crafters Level Leaderboard">
+    <meta property="og:description" content="See who has the highest crafters level in CraftersMC Minecraft server!">
+    <meta property="og:image" content="">
+    <meta property="og:url" content="https://craftersmc-guides.pages.dev/crafters-level-leaderboard.html">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#007bff">
+    <title>Crafters Level Leaderboard</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="js/script.js"></script>
+    <script src="js/level-leaderboard.js"></script>
+    <link rel="stylesheet" href="css/essential.css">
+    <link rel="stylesheet" href="css/collections-leaderboards.css">
+</head>
+
+<body>
+    <div id="loader">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div id="sidebar-overlay" onclick="overlay()"></div>
+
+    <!-- Navbar -->
+    <div class="top"></div>
+    <div class="gap"></div>
+    <div class="sidebar" id="sidebar"></div>
+
+    <div class="lb-container" style="width:100%; align-items: center; justify-content: center; max-width: 101%;">
+        <h3 class="lb-h3">Crafters Level Leaderboard</h3>
+        <p>Check out the top players with the highest levels on the entire CraftersMC Minecraft server!</p>
+
+        <div class="lb-leaderboard">
+            <h2 class="lb-h2">Top Players</h2>
+            <table class="slay-lb-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Level</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboardData">
+                    <tr>
+                        <td>1</td>
+                        <td>???</td>
+                        <td>???</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const leaderboardData = document.getElementById("leaderboardData");
+
+            if (typeof levelsData !== "undefined" && levelsData.length > 0) {
+                leaderboardData.innerHTML = levelsData
+                    .map(player => {
+                        const level = player.level ?? 0;
+                        return `<tr>
+                            <td>${player.rank}</td>
+                            <td>${player.name}</td>
+                            <td>${level}</td>
+                        </tr>`;
+                    })
+                    .join("");
+            } else {
+                leaderboardData.innerHTML = "<tr><td>1</td><td>???</td><td>0</td></tr>".repeat(10);
+            }
+        });
+    </script>
+</body>
+
+</html>
