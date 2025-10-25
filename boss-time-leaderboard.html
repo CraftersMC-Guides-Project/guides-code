@@ -5,25 +5,20 @@
     <link rel="icon" href="assets/cmc-icon.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="Farming Contests Leaderboards">
+    <meta property="og:title" content="Boss Time Leaderboards">
     <meta property="og:description"
-        content="See who leads in farming contests, medals, and personal bests on CraftersMC.">
+        content="See who leads in boss spawn/kill times on CraftersMC.">
     <meta property="og:image"
         content="https://cdn.discordapp.com/attachments/1320310626232569887/1346040574616010752/collcslay-lb384.png?ex=67c6bd79&is=67c56bf9&hm=555f9d6bea96134f32f623e63b67fdbf2b9641ebfe5ee6ab265cc20ae3534ea7&">
-    <meta property="og:url" content="https://craftersmc-guides.pages.dev/farming-contest-leaderboard.html">
+    <meta property="og:url" content="https://craftersmc-guides.pages.dev/boss-time-leaderboard.html">
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#007bff">
-    <title>Farming Contests Leaderboards</title>
+    <title>Boss Time Leaderboards</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="js/script.js"></script>
-    <script src="js/farming-contest-leaderboard.js"></script>
+    <script src="js/boss-time-leaderboard.js"></script>
     <link rel="stylesheet" href="css/essential.css">
     <link rel="stylesheet" href="css/collections-leaderboards.css">
-    <style>
-        .lb-collection-item img {
-            width: 36px;
-        }
-    </style>
 </head>
 
 <body>
@@ -50,7 +45,7 @@
     </div>
     <div class="gap"></div>
     <div id="sidelid" class="sidelid">
-        <h2 class="lb-h2">Farming Contests Leaderboards</h2>
+        <h2 class="lb-h2">Boss Time Leaderboards</h2>
         <div class="lb-collections" id="collectionGrid"></div>
     </div>
     <div class="lb-content">
@@ -59,11 +54,10 @@
         <div class="lb-container-wrapper">
             <div class="push"></div>
             <div class="lb-container">
-                <h3 class="lb-h3">CraftersMC Farming Contests Leaderboards</h3>
-                <p>See who leads in farming contests, medals, and personal bests on CraftersMC.</p><br>
-                <p id="mobileGuide">Click the menu icon at the top left to select a category and see the top 10 players
-                    for each leaderboard.</p><br>
-                <p>Select a category to view the top 10 players.</p>
+                <h3 class="lb-h3">CraftersMC Boss Time Leaderboards</h3>
+                <p>See who leads in boss spawn and kill times on CraftersMC.</p><br>
+                <p id="mobileGuide">Click the menu icon at the top left to select a category and see the top players for each leaderboard.</p><br>
+                <p>Select a category to view the top players.</p>
 
                 <div class="lb-leaderboard">
                     <h2 class="lb-h2" id="collectionTitle">Select a Category</h2>
@@ -134,38 +128,67 @@
     </div>
     <div id="footer"></div>
     <script>
-        let currentCategory = null;
+        let currentBoss = null;
+        let currentSubcategory = null;
+
         document.addEventListener("DOMContentLoaded", () => {
-            showMainCategories();
+            showBossTypes();
         });
-        function showMainCategories() {
-            currentCategory = null;
+
+        function showBossTypes() {
+            currentBoss = null;
+            currentSubcategory = null;
             const collectionGrid = document.getElementById("collectionGrid");
             collectionGrid.innerHTML = "";
-            Object.keys(collectionsData).forEach(category => {
-                const catDiv = document.createElement("div");
-                catDiv.className = "lb-collection-item main-category";
-                catDiv.innerHTML = `<div style="font-size:1.2em;font-weight:bold;">${category}</div>`;
-                catDiv.onclick = () => showCategory(category);
-                collectionGrid.appendChild(catDiv);
+            collectionsData["Boss Type"].forEach(boss => {
+                const bossDiv = document.createElement("div");
+                bossDiv.className = "lb-collection-item main-category";
+                bossDiv.innerHTML = `<img src="${boss.image}" alt="${boss.name}" style="width:32px;height:32px;">`;
+                bossDiv.onclick = () => showSubcategories(boss);
+                collectionGrid.appendChild(bossDiv);
             });
         }
 
-        function showCategory(category) {
-            currentCategory = category;
+        function showSubcategories(boss) {
+            currentBoss = boss;
+            currentSubcategory = null;
             const collectionGrid = document.getElementById("collectionGrid");
             collectionGrid.innerHTML = "";
+
+            // Back button
             const backBtn = document.createElement("div");
             backBtn.className = "lb-collection-item back-btn";
             backBtn.innerHTML = "← Back";
-            backBtn.onclick = showMainCategories;
+            backBtn.onclick = showBossTypes;
             collectionGrid.appendChild(backBtn);
-            collectionsData[category].forEach(item => {
-                const itemDiv = document.createElement("div");
-                itemDiv.className = "lb-collection-item";
-                itemDiv.innerHTML = `<img src="${item.image}" alt="${item.name}" title="${item.name}">`;
-                itemDiv.onclick = () => showLeaderboard(item);
-                collectionGrid.appendChild(itemDiv);
+
+            boss.subcategories.forEach(subcat => {
+                const subcatDiv = document.createElement("div");
+                subcatDiv.className = "lb-collection-item";
+                subcatDiv.innerHTML = `<img src="${subcat.image}" alt="${subcat.name}" style="width:32px;height:32px;">`;
+                subcatDiv.onclick = () => showSubitems(subcat);
+                collectionGrid.appendChild(subcatDiv);
+            });
+        }
+
+        function showSubitems(subcat) {
+            currentSubcategory = subcat;
+            const collectionGrid = document.getElementById("collectionGrid");
+            collectionGrid.innerHTML = "";
+
+            // Back button
+            const backBtn = document.createElement("div");
+            backBtn.className = "lb-collection-item back-btn";
+            backBtn.innerHTML = "← Back";
+            backBtn.onclick = () => showSubcategories(currentBoss);
+            collectionGrid.appendChild(backBtn);
+
+            subcat.subitems.forEach(subitem => {
+                const subitemDiv = document.createElement("div");
+                subitemDiv.className = "lb-collection-item";
+                subitemDiv.innerHTML = `<img src="${subitem.image}" alt="${subitem.name}" style="width:32px;height:32px;">`;
+                subitemDiv.onclick = () => showLeaderboard(subitem);
+                collectionGrid.appendChild(subitemDiv);
             });
         }
 
@@ -185,26 +208,6 @@
                 leaderboardData.innerHTML = "<tr><td colspan='3'>No data available</td></tr>";
             }
         }
-
-
-        function loadLeaderboard(key) {
-            const lb = leaderboards[key];
-            document.getElementById("collectionTitle").innerText = lb ? lb.name + " Leaderboard" : "Select a Category";
-            document.getElementById("scoreHeader").innerText = lb ? lb.scoreLabel : "Score";
-            const leaderboardData = document.getElementById("leaderboardData");
-            if (lb && lb.players.length) {
-                leaderboardData.innerHTML = lb.players.map(player => `
-            <tr>
-                <td>${player.rank}</td>
-                <td>${player.name}</td>
-                <td>${player.score}</td>
-            </tr>
-        `).join("");
-            } else {
-                leaderboardData.innerHTML = "<tr><td colspan='3'>No data available</td></tr>";
-            }
-        }
-        loadLeaderboard("medals_bronze");
     </script>
 </body>
 

@@ -2,7 +2,7 @@ const collectionsData = {
     "Medals": [
         {
             name: "Bronze",
-            image: "img/Bronze_Medal.webp",
+            image: "https://craftersmc.wiki.gg/images/thumb/Bronze_Medal.png/512px-Bronze_Medal.png?701aa5",
             players: [
                 { rank: 1, name: "Unknown", score: "N/A" },
                 { rank: 2, name: "Unknown", score: "N/A" },
@@ -18,7 +18,7 @@ const collectionsData = {
         },
         {
             name: "Silver",
-            image: "img/Silver_Medal.webp",
+            image: "https://craftersmc.wiki.gg/images/thumb/Silver_Medal.png/512px-Silver_Medal.png?30061f",
             players: [
                 { rank: 1, name: "Unknown", score: "N/A" },
                 { rank: 2, name: "Unknown", score: "N/A" },
@@ -34,7 +34,7 @@ const collectionsData = {
         },
         {
             name: "Gold",
-            image: "img/Gold_Medal.webp",
+            image: "https://craftersmc.wiki.gg/images/thumb/Gold_Medal.png/512px-Gold_Medal.png?48c6eb",
             players: [
                 { rank: 1, name: "Unknown", score: "N/A" },
                 { rank: 2, name: "Unknown", score: "N/A" },
