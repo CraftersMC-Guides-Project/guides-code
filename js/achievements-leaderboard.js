@@ -1,7 +1,7 @@
 const achievementsData = [
     { rank: 1, name: "SphinxWraith", achievements: "70" },
     { rank: 2, name: "Kg_lcky_01", achievements: "64" },
-    { rank: 3, name: "Unknown", achievements: "0" },
+    { rank: 3, name: "Perry3338", achievements: "51" },
     { rank: 4, name: "Unknown", achievements: "0" },
     { rank: 5, name: "Unknown", achievements: "0" },
     { rank: 6, name: "Unknown", achievements: "0" },
