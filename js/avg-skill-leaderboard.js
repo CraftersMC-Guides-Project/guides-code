@@ -1,5 +1,5 @@
 const skillData = [
-  { rank: 1, name: "Unknown", level: "N/A" },
+  { rank: 1, name: "Moerderfisch", level: "50.7" },
   { rank: 2, name: "Unknown", level: "N/A" },
   { rank: 3, name: "Unknown", level: "N/A" },
   { rank: 4, name: "Unknown", level: "N/A" },
