@@ -1634,13 +1634,13 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "HERKUL3S",
+                    "name": "Kg_lcky_01",
                     "score": "N/A"
                 },
                 {
                     "rank": 2,
-                    "name": "Kg_lcky_01",
-                    "score": "7.6M+"
+                    "name": "HERKUL3S",
+                    "score": "N/A"
                 },
                 {
                     "rank": 3,
