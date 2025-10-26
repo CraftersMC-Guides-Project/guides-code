@@ -793,7 +793,7 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "Lenny1sCo0l",
-                    "score": "N/A"
+                    "score": "139.7M+"
                 },
                 {
                     "rank": 2,
@@ -1634,13 +1634,13 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "HERKUL3S",
+                    "name": "Kg_lcky_01",
                     "score": "N/A"
                 },
                 {
                     "rank": 2,
-                    "name": "Kg_lcky_01",
-                    "score": "7.6M+"
+                    "name": "HERKUL3S",
+                    "score": "N/A"
                 },
                 {
                     "rank": 3,
@@ -1700,17 +1700,17 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
+                    "name": "MythicalPanda30",
+                    "score": "N/A"
+                },
+                {
+                    "rank": 4,
                     "name": "AYUSH_BHAKTE",
                     "score": "30M+"
                 },
                 {
-                    "rank": 4,
-                    "name": "MythicRen13",
-                    "score": "N/A"
-                },
-                {
                     "rank": 5,
-                    "name": "Unknown",
+                    "name": "MythicRen13",
                     "score": "N/A"
                 },
                 {
@@ -1766,7 +1766,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "Unknown",
+                    "name": "MythicalPanda30",
                     "score": "N/A"
                 },
                 {
@@ -1786,7 +1786,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "MythicalPanda30",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
@@ -2344,6 +2344,62 @@ const collectionsData = {
                 {
                     "rank": 8,
                     "name": "Herejefferson",
+                    "score": "N/A"
+                },
+                {
+                    "rank": 9,
+                    "name": "Unknown",
+                    "score": "N/A"
+                },
+                {
+                    "rank": 10,
+                    "name": "Unknown",
+                    "score": "N/A"
+                }
+            ]
+        },
+        {
+            "name": "Bamboo",
+            "image": "assets/foraging/Minecraft-Bamboo.webp",
+            "players": [
+                {
+                    "rank": 1,
+                    "name": "Unknown",
+                    "score": "N/A"
+                },
+                {
+                    "rank": 2,
+                    "name": "Unknown",
+                    "score": "N/A"
+                },
+                {
+                    "rank": 3,
+                    "name": "Unknown",
+                    "score": "N/A"
+                },
+                {
+                    "rank": 4,
+                    "name": "Unknown",
+                    "score": "N/A"
+                },
+                {
+                    "rank": 5,
+                    "name": "Unknown",
+                    "score": "N/A"
+                },
+                {
+                    "rank": 6,
+                    "name": "Unknown",
+                    "score": "N/A"
+                },
+                {
+                    "rank": 7,
+                    "name": "Unknown",
+                    "score": "N/A"
+                },
+                {
+                    "rank": 8,
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {

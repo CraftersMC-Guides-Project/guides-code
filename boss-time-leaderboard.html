@@ -5,18 +5,18 @@
     <link rel="icon" href="assets/cmc-icon.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="Slayers Leaderboards">
+    <meta property="og:title" content="Boss Time Leaderboards">
     <meta property="og:description"
-        content="Find out who is at what position with how much experience they have by our friendly-ui tool.">
+        content="See who leads in boss spawn/kill times on CraftersMC.">
     <meta property="og:image"
         content="https://cdn.discordapp.com/attachments/1320310626232569887/1346040574616010752/collcslay-lb384.png?ex=67c6bd79&is=67c56bf9&hm=555f9d6bea96134f32f623e63b67fdbf2b9641ebfe5ee6ab265cc20ae3534ea7&">
-    <meta property="og:url" content="https://craftersmc-guides.pages.dev/slayers-leaderboards.html">
+    <meta property="og:url" content="https://craftersmc-guides.pages.dev/boss-time-leaderboard.html">
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#007bff">
-    <title>Slayers Leaderboards</title>
+    <title>Boss Time Leaderboards</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="js/script.js"></script>
-    <script src="js/slayers_exp.js"></script>
+    <script src="js/boss-time-leaderboard.js"></script>
     <link rel="stylesheet" href="css/essential.css">
     <link rel="stylesheet" href="css/collections-leaderboards.css">
 </head>
@@ -45,30 +45,28 @@
     </div>
     <div class="gap"></div>
     <div id="sidelid" class="sidelid">
-        <h2 class="lb-h2">Select Slayer Type</h2>
+        <h2 class="lb-h2">Boss Time Leaderboards</h2>
         <div class="lb-collections" id="collectionGrid"></div>
     </div>
     <div class="lb-content">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar"></div>
-            <div class="lb-container-wrapper">
-                <div class="push"></div>
+        <div class="lb-container-wrapper">
+            <div class="push"></div>
             <div class="lb-container">
-                <h3 class="lb-h3">CraftersMC Slayers Leaderboards</h3>
-                <p>Find out who is at what position and how much experience they have by our friendly-ui tool.</p><br>
-                <p id="mobileGuide">Click on the icon with 3 different length lines at the top left of the screen to
-                    select any collection and see the top 10 highest ranked players in the slayers experience on the
-                    table.</p><br id="mobileGuide">
-                <p>Select the slayer type to view the top 10 players.</p>
+                <h3 class="lb-h3">CraftersMC Boss Time Leaderboards</h3>
+                <p>See who leads in boss spawn and kill times on CraftersMC.</p><br>
+                <p id="mobileGuide">Click the menu icon at the top left to select a category and see the top players for each leaderboard.</p><br>
+                <p>Select a category to view the top players.</p>
 
                 <div class="lb-leaderboard">
-                    <h2 class="lb-h2" id="collectionTitle">Select a Slayer Type</h2>
+                    <h2 class="lb-h2" id="collectionTitle">Select a Category</h2>
                     <table class="lb-table">
                         <thead>
                             <tr>
                                 <th>Rank</th>
                                 <th>Player</th>
-                                <th>Experience</th>
+                                <th id="scoreHeader">Score</th>
                             </tr>
                         </thead>
                         <tbody id="leaderboardData">
@@ -124,54 +122,92 @@
                             </tr>
                         </tbody>
                     </table>
-                    <br>
-                    <details>
-                        <summary>What Once Was: A Legacy Remembered</summary>
-                        <hr>
-                        <div class="lb-message">
-                            The first leaderboard page was originally created by NumberOne230564 and David_R06 using Google Docs, which was quite basic. Later, CraftersMC Guides improved it by designing a cleaner page and using information from that original Google Docs site and the page was created for actually NumberOne230564. However, NumberOne230564 chose not to work with us and eventually created his own page because he wanted no involvement of "CraftersMC Guides" certainly. Since we didn’t want to erase the time and effort that went into this project, we decided to keep it instead of deleting it. This is a shoutout to their early work, and a clarification that we didn’t collect all of the initial data ourselves. At present, NumberOne230564 and his team manage a separate page, while we run this page independently and collect our own data ourselves.
-                        </div>
-                    </details>
                 </div>
             </div>
         </div>
     </div>
     <div id="footer"></div>
     <script>
+        let currentBoss = null;
+        let currentSubcategory = null;
+
         document.addEventListener("DOMContentLoaded", () => {
-            loadCollections();
-
-            function loadCollections() {
-                const collectionGrid = document.getElementById("collectionGrid");
-                collectionGrid.innerHTML = "";
-
-                collectionsData.forEach((collection, index) => {
-                    let item = document.createElement("div");
-                    item.classList.add("lb-collection-item");
-                    item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`;
-                    item.onclick = () => loadLeaderboard(index);
-                    collectionGrid.appendChild(item);
-                });
-            }
-
-            function loadLeaderboard(index) {
-                const collection = collectionsData[index];
-                document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
-
-                const leaderboardData = document.getElementById("leaderboardData");
-                leaderboardData.innerHTML = collection.players.length
-                    ? collection.players.map(player => `
-                <tr>
-                    <td>${player.rank}</td>
-                    <td>${player.name || "???"}</td>
-                    <td>${player.score || "???"}</td>
-                </tr>
-            `).join("")
-                    : "<tr><td>1</td><td>???</td><td>???</td></tr>".repeat(10);
-
-                document.getElementById('collectionTitle').scrollIntoView({ behavior: 'smooth' });
-            }
+            showBossTypes();
         });
+
+        function showBossTypes() {
+            currentBoss = null;
+            currentSubcategory = null;
+            const collectionGrid = document.getElementById("collectionGrid");
+            collectionGrid.innerHTML = "";
+            collectionsData["Boss Type"].forEach(boss => {
+                const bossDiv = document.createElement("div");
+                bossDiv.className = "lb-collection-item main-category";
+                bossDiv.innerHTML = `<img src="${boss.image}" alt="${boss.name}" style="width:32px;height:32px;">`;
+                bossDiv.onclick = () => showSubcategories(boss);
+                collectionGrid.appendChild(bossDiv);
+            });
+        }
+
+        function showSubcategories(boss) {
+            currentBoss = boss;
+            currentSubcategory = null;
+            const collectionGrid = document.getElementById("collectionGrid");
+            collectionGrid.innerHTML = "";
+
+            // Back button
+            const backBtn = document.createElement("div");
+            backBtn.className = "lb-collection-item back-btn";
+            backBtn.innerHTML = "← Back";
+            backBtn.onclick = showBossTypes;
+            collectionGrid.appendChild(backBtn);
+
+            boss.subcategories.forEach(subcat => {
+                const subcatDiv = document.createElement("div");
+                subcatDiv.className = "lb-collection-item";
+                subcatDiv.innerHTML = `<img src="${subcat.image}" alt="${subcat.name}" style="width:32px;height:32px;">`;
+                subcatDiv.onclick = () => showSubitems(subcat);
+                collectionGrid.appendChild(subcatDiv);
+            });
+        }
+
+        function showSubitems(subcat) {
+            currentSubcategory = subcat;
+            const collectionGrid = document.getElementById("collectionGrid");
+            collectionGrid.innerHTML = "";
+
+            // Back button
+            const backBtn = document.createElement("div");
+            backBtn.className = "lb-collection-item back-btn";
+            backBtn.innerHTML = "← Back";
+            backBtn.onclick = () => showSubcategories(currentBoss);
+            collectionGrid.appendChild(backBtn);
+
+            subcat.subitems.forEach(subitem => {
+                const subitemDiv = document.createElement("div");
+                subitemDiv.className = "lb-collection-item";
+                subitemDiv.innerHTML = `<img src="${subitem.image}" alt="${subitem.name}" style="width:32px;height:32px;">`;
+                subitemDiv.onclick = () => showLeaderboard(subitem);
+                collectionGrid.appendChild(subitemDiv);
+            });
+        }
+
+        function showLeaderboard(item) {
+            document.getElementById("collectionTitle").innerText = item.name + " Leaderboard";
+            document.getElementById("scoreHeader").innerText = "Score";
+            const leaderboardData = document.getElementById("leaderboardData");
+            if (item.players && item.players.length) {
+                leaderboardData.innerHTML = item.players.map(player => `
+                    <tr>
+                        <td>${player.rank}</td>
+                        <td>${player.name}</td>
+                        <td>${player.score}</td>
+                    </tr>
+                `).join("");
+            } else {
+                leaderboardData.innerHTML = "<tr><td colspan='3'>No data available</td></tr>";
+            }
+        }
     </script>
 </body>
 
