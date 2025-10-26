@@ -2303,27 +2303,27 @@ const collectionsData = {
             ]
         },
         {
-            "name": "Jungle Log",
-            "image": "assets/foraging/Minecraft_items_jungle_log.png",
+            "name": "Bamboo",
+            "image": "assets/foraging/Minecraft-Bamboo.webp",
             "players": [
                 {
                     "rank": 1,
-                    "name": "IRONMAN1237721",
-                    "score": "57.3M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 2,
-                    "name": "Slayer1219978",
-                    "score": "40.5M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 3,
-                    "name": "NumberOne230564",
-                    "score": "13M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 4,
-                    "name": "TRIGUN2212",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
@@ -2343,7 +2343,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 8,
-                    "name": "Herejefferson",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
