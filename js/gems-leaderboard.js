@@ -1,5 +1,5 @@
 const gemsData = [
-  { rank: 1, name: "Unknown", gems: "N/A" },
+  { rank: 1, name: "Kautilya3072", gems: "25" },
   { rank: 2, name: "Unknown", gems: "N/A" },
   { rank: 3, name: "Unknown", gems: "N/A" },
   { rank: 4, name: "Unknown", gems: "N/A" },
