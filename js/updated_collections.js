@@ -1756,7 +1756,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "Unknown",
+                    "name": "MythicalPanda30",
                     "score": "N/A"
                 },
                 {
@@ -1766,7 +1766,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "MythicalPanda30",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
@@ -2364,13 +2364,13 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Rehan2038",
+                    "score": "41.4M+"
                 },
                 {
                     "rank": 2,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "ieduoo",
+                    "score": "22.1M+"
                 },
                 {
                     "rank": 3,
