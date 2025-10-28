@@ -87,13 +87,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 6,
-                    "name": "Exnned",
-                    "score": "16M+"
+                    "name": "ZepthyrX",
+                    "score": "29.5M+"
                 },
                 {
                     "rank": 7,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Exnned",
+                    "score": "16M+"
                 },
                 {
                     "rank": 8,
