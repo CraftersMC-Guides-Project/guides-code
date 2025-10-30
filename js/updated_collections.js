@@ -752,7 +752,7 @@ const collectionsData = {
                 {
                     "rank": 4,
                     "name": "aPumpkinGod2",
-                    "score": "28.2M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 5,
@@ -762,17 +762,17 @@ const collectionsData = {
                 {
                     "rank": 6,
                     "name": "GMG_games",
-                    "score": "25M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 7,
                     "name": "Parmeseanpud",
-                    "score": "15M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 8,
                     "name": "Sky691485",
-                    "score": "24.2M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 9,
@@ -781,8 +781,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 10,
-                    "name": "IRONMAN1237721",
-                    "score": "N/A"
+                    "name": "AndyGamer024",
+                    "score": "28.4M+"
                 }
             ]
         },
@@ -1041,7 +1041,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 6,
-                    "name": "AndyGamer024",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
@@ -1057,12 +1057,12 @@ const collectionsData = {
                 {
                     "rank": 9,
                     "name": "SpiralCard90164",
-                    "score": "82.6M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 10,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "AndyGamer024",
+                    "score": "102.3M+"
                 }
             ]
         },
