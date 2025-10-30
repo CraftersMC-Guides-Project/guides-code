@@ -4,7 +4,7 @@ const levelsData = [
   { rank: 3, name: "Dharmaveer31", level: "39" },
   { rank: 4, name: "MythicalPanda30", level: "27" },
   { rank: 5, name: "Kautilya3072", level: "16" },
-  { rank: 6, name: "Unknown", level: "N/A" },
+  { rank: 6, name: "SAAD_KING_07726", level: "15" },
   { rank: 7, name: "Unknown", level: "N/A" },
   { rank: 8, name: "Unknown", level: "N/A" },
   { rank: 9, name: "Unknown", level: "N/A" },
