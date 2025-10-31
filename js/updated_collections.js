@@ -1990,12 +1990,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "Unknown",
+                    "name": "BlackKeyur",
                     "score": "N/A"
                 },
                 {
                     "rank": 6,
-                    "name": "BlackKeyur",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
@@ -2090,12 +2090,12 @@ const collectionsData = {
                 {
                     "rank": 2,
                     "name": "Darkshadow52195",
-                    "score": "19M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 3,
                     "name": "TRIGUN2212",
-                    "score": "9M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 4,
@@ -2104,17 +2104,17 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
+                    "name": "Devilverma2533",
+                    "score": "24M+"
+                },
+                {
+                    "rank": 6,
                     "name": "GPK4",
                     "score": "N/A"
                 },
                 {
-                    "rank": 6,
-                    "name": "NumberOne230564",
-                    "score": "N/A"
-                },
-                {
                     "rank": 7,
-                    "name": "Unknown",
+                    "name": "NumberOne230564",
                     "score": "N/A"
                 },
                 {
