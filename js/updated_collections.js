@@ -793,7 +793,7 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "Lenny1sCo0l",
-                    "score": "139.7M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 2,
