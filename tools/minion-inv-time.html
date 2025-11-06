@@ -1,293 +1,343 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="theme-color" content="#007bff"/>
-  <meta property="og:title" content="Minion Inventory Calculator"/>
-  <meta property="og:description"
-    content="Calculate how long it takes for your minion inventory to fill up, includes backpack, fuel, diamond spreading, and block conversion support."/>
-  <meta property="og:image"
-    content="https://cdn.discordapp.com/attachments/993570700096979005/1204324864241045584/IMG_20240206_124536.jpg?ex=68eca76e&is=68eb55ee&hm=2cecc7c7008f8d5897918361cdac17f2b44f42f61fa54e544b976af3314c8f86&" />
-  <meta property="og:url" content="https://craftersmc-guides.pages.dev/tools/minion-inv-time.html" />
-  <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <title>Minion Inventory Calculator</title>
-  <script src="../js/script.js" defer></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <link rel="stylesheet" href="../css/essential.css">
   <style>
-  * {
-    -webkit-tap-highlight-color: transparent;
-    box-sizing: border-box;
-  }
-  body {
-    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
-    color: #fff;
-    overflow-x: hidden;
-    background: url('../Backgrounds/mines.webp') no-repeat center center fixed;
-    background-size: cover;
-  }
-  body::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: -1;
-  }
-  .container {
-    background: rgba(30, 30, 30, 0.4);
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    padding: 20px;
-    max-width: 450px;
-    margin: 0 auto 60px;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-  }
-  h1 {
-    text-align: center;
-    margin-bottom: 18px;
-    color: #007bff;
-    font-size: 3rem;
-  }
-  label {
-    font-weight: 600;
-    color: #fff;
-  }
-  input[type="number"] {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 6px;
-    border: 1px solid #aaa;
-    background-color: #0d0d0d;
-    color: #fff;
-  }
-  button {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 16px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.2s;
-    margin: 0 auto;
-    display: block;
-  }
-  button:hover {
-    background-color: #0056b3;
-  }
-  .result {
-    margin-top: 20px;
-    font-size: 18px;
-    text-align: center;
-  }
-  .error {
-    color: red;
-  }
-  .success {
-    color: #007bff;
-  }
-  #note {
-    font-size: 12px;
-    color: #fff;
-    margin-top: 10px;
-    text-align: center;
-  }
-  .toggle-group {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 12px 0;
-  }
-  .icon-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 14px;
-    margin: 12px 0 20px;
-  }
-  .icon-option {
-    width: 100px;
-    background: rgba(20, 20, 20, 0.6);
-    border: 2px solid transparent;
-    border-radius: 10px;
-    text-align: center;
-    padding: 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    backdrop-filter: blur(4px);
-  }
-  .icon-option:hover {
-    transform: scale(1.05);
-    border-color: #007bff;
-  }
-  .icon-option.selected {
-    border-color: #007bff;
-    background: rgba(0, 123, 255, 0.15);
-    box-shadow: 0 0 10px rgba(0,123,255,0.4);
-  }
-  .icon-option img {
-    width: 64px;
-    height: 64px;
-    object-fit: contain;
-    pointer-events: none;
-  }
-  .icon-option span {
-    display: block;
-    font-size: 0.9rem;
-    margin-top: 6px;
-    color: #fff;
-    font-weight: 600;
-  }
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      background: url('../Backgrounds/mines.webp') no-repeat center center fixed;
+      background-size: cover;
+    }
+    body::after {
+      content: "";
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.3); z-index: -1;
+    }
+    .container {
+      background: rgba(30, 30, 30, 0.4);
+      border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      padding: 20px; max-width: 700px; margin: 0 auto 60px;
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    }
+    h1 { text-align: center; margin-bottom: 18px; color: #007bff; font-size: 2.4rem; }
+    label { font-weight: 600; color: #fff; }
+    input[type="number"], select { width: 100%; padding: 8px; margin: 6px 0 12px; border-radius: 6px; border: 1px solid #aaa; background: #0d0d0d; color: #fff; }
+    .row { display: flex; gap:12px; align-items: center; }
+    .col { flex:1; }
+    button { background-color: #007bff; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: background-color 0.2s; margin: 6px 0; }
+    button:hover { background-color: #0056b3; }
+    .result { margin-top: 14px; font-size: 16px; text-align: left; }
+    .error { color: #ff7b7b; }
+    .success { color: #bfe7ff; }
+    .toggle-group { display: flex; align-items: center; justify-content: space-between; margin: 12px 0; }
+    .icon-grid { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 12px; margin: 12px 0; }
+    .icon-option { width: 86px; background: rgba(20,20,20,0.6); border:2px solid transparent; border-radius:10px; text-align:center; padding:8px; cursor:pointer; transition:all .15s; backdrop-filter: blur(4px); }
+    .icon-option:hover { transform: scale(1.03); border-color:#007bff; }
+    .icon-option.selected { border-color: #007bff; background: rgba(0,123,255,0.12); box-shadow: 0 0 12px rgba(0,123,255,0.14); }
+    .icon-option img { width:48px; height:48px; object-fit:contain; pointer-events:none; }
+    .icon-option span { display:block; font-size:0.85rem; margin-top:6px; color:#fff; font-weight:600; }
+    .section-title { margin-top: 8px; color: #bfe7ff; font-weight:700; }
+    #minionList { margin-top: 8px; }
+    .minion-card { display:flex; gap:12px; align-items:center; padding:8px; background: rgba(10,10,10,0.35); border-radius:8px; border:1px solid rgba(255,255,255,0.02); }
+    .minion-card img { width:40px; height:40px; object-fit:contain; }
+    .minion-card .meta { flex:1; }
+    .selected-minions { margin-top: 10px; display:flex; flex-direction:column; gap:8px; }
+    .selected-entry { display:flex; gap:8px; align-items:center; padding: 6px; background: rgba(20,20,20,0.4); border-radius:8px; }
+    .selected-entry input[type="number"]{ width:70px; padding:6px; }
+    .selected-entry select{ width:110px; padding:6px; }
+    .small-btn { background:transparent; border:1px solid rgba(255,255,255,0.06); color:#fff; padding:6px 8px; border-radius:6px; cursor:pointer; }
+    .note { font-size:12px; color:#d6d6d6; text-align:center; margin-top:8px; }
+    @media (max-width:720px){ .row { flex-direction:column; } .icon-grid { justify-content:center; } .container { padding:12px; } }
   </style>
 </head>
 <body>
-  <div class="top"></div>
-  <div class="sidebar" id="sidebar"></div>
-  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-  <div class="gap"></div>
-
   <div class="container">
-    <h1>Minion Inventory Calculator</h1>
-    
-    <label for="inventorySlots">Minion Inventory Slots:</label>
-    <input type="number" id="inventorySlots" placeholder="Enter number of slots" required>
+    <h1>Minion Production & Inventory Calculator</h1>
 
+    <!-- Inventory Input -->
+    <label for="inventorySlots">Minion Inventory Slots (your inventory):</label>
+    <input type="number" id="inventorySlots" placeholder="Enter number of slots" min="0">
+
+    <!-- Backpack selector (unchanged) -->
     <label>Choose Backpack (optional):</label>
     <div id="backpackSelector" class="icon-grid">
-      <div class="icon-option" data-slots="3">
-        <img src="../assets/bags/100px-Small_Minion_Backpack.png" alt="Small Backpack">
-        <span>Small</span>
-      </div>
-      <div class="icon-option" data-slots="9">
-        <img src="../assets/bags/100px-Medium_Minion_Backpack.webp" alt="Medium Backpack">
-        <span>Medium</span>
-      </div>
-      <div class="icon-option" data-slots="15">
-        <img src="../assets/bags/100px-Large_Minion_Backpack.webp" alt="Large Backpack">
-        <span>Large</span>
-      </div>
-      <div class="icon-option" data-slots="21">
-        <img src="../assets/bags/100px-Huge_Minion_Backpack.webp" alt="Huge Backpack">
-        <span>Huge</span>
-      </div>
-      <div class="icon-option" data-slots="27">
-        <img src="../assets/bags/100px-Giant_Minion_Backpack.webp" alt="Giant Backpack">
-        <span>Giant</span>
-      </div>
+      <div class="icon-option" data-slots="3"><img src="../assets/bags/100px-Small_Minion_Backpack.png" alt="Small"><span>Small</span></div>
+      <div class="icon-option" data-slots="9"><img src="../assets/bags/100px-Medium_Minion_Backpack.webp" alt="Medium"><span>Medium</span></div>
+      <div class="icon-option" data-slots="15"><img src="../assets/bags/100px-Large_Minion_Backpack.webp" alt="Large"><span>Large</span></div>
+      <div class="icon-option" data-slots="21"><img src="../assets/bags/100px-Huge_Minion_Backpack.webp" alt="Huge"><span>Huge</span></div>
+      <div class="icon-option" data-slots="27"><img src="../assets/bags/100px-Giant_Minion_Backpack.webp" alt="Giant"><span>Giant</span></div>
     </div>
-
     <input type="number" id="backpackSlots" value="0" style="display:none;">
 
-    <label>Choose Fuel:</label>
-    <div id="fuelSelector" class="icon-grid">
-      <div class="icon-option" data-fuel="5">
-        <img src="../assets/fuels/100px-Coal.png" alt="Coal">
-        <span>Coal (5%)</span>
-      </div>
-      <div class="icon-option" data-fuel="5">
-        <img src="../assets/fuels/100px-Enchanted_Bread.png" alt="Enchanted Bread">
-        <span>Bread (5%)</span>
-      </div>
-      <div class="icon-option" data-fuel="10">
-        <img src="../assets/fuels/100px-Enchanted_Coal.webp" alt="Enchanted Coal">
-        <span>E. Coal (10%)</span>
-      </div>
-      <div class="icon-option" data-fuel="20">
-        <img src="../assets/fuels/100px-Enchanted_Charcoal.png" alt="Enchanted Charcoal">
-        <span>E. Charcoal (20%)</span>
-      </div>
-      <div class="icon-option" data-fuel="25">
-        <img src="../assets/fuels/100px-Enchanted_Lava_Bucket.webp" alt="Enchanted Lava Bucket">
-        <span>E. Lava (25%)</span>
-      </div>
-      <div class="icon-option" data-fuel="40">
-        <img src="../assets/fuels/100px-Hamster_Wheel.webp" alt="Hamster Wheel">
-        <span>Hamster (40%)</span>
-      </div>
-      <div class="icon-option" data-fuel="80">
-        <img src="../assets/fuels/100px-Foul_Flesh.webp" alt="Foul Flesh">
-        <span>Foul Flesh (80%)</span>
-      </div>
+    <!-- Categories -->
+    <div class="section-title">Choose Category</div>
+    <div id="categoryGrid" class="icon-grid">
+      <div class="icon-option category" data-category="Mining"><img src="../assets/tools/100px-Pickaxe.png" alt="Mining"><span>Mining</span></div>
+      <div class="icon-option category" data-category="Farming"><img src="../assets/tools/100px-Hoe.png" alt="Farming"><span>Farming</span></div>
+      <div class="icon-option category" data-category="Combat"><img src="../assets/tools/100px-Sword.png" alt="Combat"><span>Combat</span></div>
+      <div class="icon-option category" data-category="Foraging"><img src="../assets/tools/100px-Axe.png" alt="Foraging"><span>Foraging</span></div>
+      <div class="icon-option category" data-category="Fishing"><img src="../assets/tools/100px-Fishing_Rod.png" alt="Fishing"><span>Fishing</span></div>
+      <div. class="icon-option category" data-category="Other"><img src="../assets/tools/100px-Other.png" alt="Other"><span>Other</span></div>
     </div>
 
+    <!-- Minion list for selected category -->
+    <div class="section-title">Minions in Selected Category</div>
+    <div id="minionList" class="icon-grid">
+      <!-- filled dynamically -->
+    </div>
+
+    <!-- Selected minions -->
+    <div class="section-title">Selected Minions</div>
+    <div id="selectedMinions" class="selected-minions">
+      <div class="note">No minions selected yet. Click a minion to add it to the list.</div>
+    </div>
+
+    <!-- Fuel selector (unchanged) -->
+    <label>Choose Fuel:</label>
+    <div id="fuelSelector" class="icon-grid">
+      <div class="icon-option" data-fuel="5"><img src="../assets/fuels/100px-Coal.png" alt="Coal"><span>Coal (5%)</span></div>
+      <div class="icon-option" data-fuel="5"><img src="../assets/fuels/100px-Enchanted_Bread.png" alt="Bread"><span>Bread (5%)</span></div>
+      <div class="icon-option" data-fuel="10"><img src="../assets/fuels/100px-Enchanted_Coal.webp" alt="ECoal"><span>E. Coal (10%)</span></div>
+      <div class="icon-option" data-fuel="20"><img src="../assets/fuels/100px-Enchanted_Charcoal.png" alt="EChar"><span>E. Charcoal (20%)</span></div>
+      <div class="icon-option" data-fuel="25"><img src="../assets/fuels/100px-Enchanted_Lava_Bucket.webp" alt="ELava"><span>E. Lava (25%)</span></div>
+      <div class="icon-option" data-fuel="40"><img src="../assets/fuels/100px-Hamster_Wheel.webp" alt="Hamster"><span>Hamster (40%)</span></div>
+      <div class="icon-option" data-fuel="80"><img src="../assets/fuels/100px-Foul_Flesh.webp" alt="Foul Flesh"><span>Foul Flesh (80%)</span></div>
+    </div>
     <input type="number" id="fuelValueInput" value="0" style="display:none;">
 
     <div class="toggle-group">
       <label for="diamondSpreading">Diamond Spreading</label>
       <label class="switch">
-        <input type="checkbox" id="diamondSpreading" class="switch" checked>
+        <input type="checkbox" id="diamondSpreading" checked>
         <span class="slider"></span>
       </label>
     </div>
-    
+
     <div class="toggle-group">
       <label for="blockConversion">Compact into blocks</label>
       <label class="switch">
-        <input type="checkbox" id="blockConversion" class="switch" checked>
+        <input type="checkbox" id="blockConversion">
         <span class="slider"></span>
       </label>
     </div>
 
-    <label for="production">Production in 1 Day:</label>
-    <input type="number" id="production" placeholder="Enter production amount" step="0.000001" required>
-
-    <button onclick="calculateDays()">Calculate Days to Fill Inventory</button>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <button id="calcBtn">Calculate</button>
+      <button id="clearSelected" class="small-btn" style="align-self:center;">Clear Selected Minions</button>
+    </div>
 
     <div class="result" id="result"></div>
-    <p id="note" style="display: none;">Note: The time shown above is in real-life format.</p>
-  </div>
-
-  <div class="index-footer">
-    <div id="footer"></div>
+    <p id="note" class="note" style="display:none;">Note: Times shown are real-life estimates.</p>
   </div>
 
   <script>
-    function calculateDays() {
-      const inventorySlots = parseFloat(document.getElementById('inventorySlots').value) || 0;
-      const backpackSlots = parseFloat(document.getElementById('backpackSlots').value) || 0;
-      const fuelPercentage = parseFloat(document.getElementById('fuelValueInput').value) || 0;
-      const diamondSpreading = document.getElementById('diamondSpreading').checked ? 'yes' : 'no';
-      const blockConversion = document.getElementById('blockConversion').checked ? 'yes' : 'no';
-      const production = parseFloat(document.getElementById('production').value) || 0;
-      const note = document.getElementById('note');
-      const result = document.getElementById('result');
-      if (inventorySlots <= 0 || production <= 0 || isNaN(production)) {
-        result.innerText = "Please fill the required fields correctly.";
-        result.className = "result error";
-        note.style.display = "none";
-        return;
-      }
-      const totalSlots = (inventorySlots * 64) + (backpackSlots * 64);
-      let effectiveProduction = production;
-      if (blockConversion === 'yes') effectiveProduction /= 160;
-      if (fuelPercentage > 0) effectiveProduction += (effectiveProduction * (fuelPercentage / 100));
-      if (diamondSpreading === 'yes') effectiveProduction += (effectiveProduction * 0.1);
-      const daysToFill = totalSlots / effectiveProduction;
-      const averageMonth = 30.42;
-      const averageYear = 365.04;
-      let breakdown = "";
-      if (daysToFill >= averageYear) {
-        const years = Math.floor(daysToFill / averageYear);
-        breakdown += `${years} year${years > 1 ? "s" : ""} `;
-      }
-      if (daysToFill >= averageMonth) {
-        const months = Math.floor((daysToFill % averageYear) / averageMonth);
-        breakdown += `${months} month${months > 1 ? "s" : ""} `;
-      }
-      const days = (daysToFill % averageMonth).toFixed(2);
-      breakdown += `${days} day${days > 1 ? "s" : ""}`;
-      result.innerHTML = `Days to fill inventory: ${daysToFill.toFixed(2)}<br>${breakdown}`;
-      result.className = "result success";
-      note.style.display = "block";
+    /* ---------------------------
+       Data: minions per category
+       icon: path to icon (adjust as needed)
+       baseProductionPerDay: real values example from wiki where available
+       compactible: true if can be compacted into blocks
+       ---------------------------*/
+    const minionData = {
+      "Mining": [
+        { id: "cobblestone", name: "Cobblestone", icon: "../assets/icons/100px-Cobblestone.png", baseProductionPerDay: 60000, compactible: true },
+        { id: "redstone", name: "Redstone Dust", icon: "../assets/icons/100px-Redstone_Dust.png", baseProductionPerDay: 384, compactible: false }, // example Tier I from wiki: 384 items/day for Redstone Minion Tier I. :contentReference[oaicite:0]{index=0}
+        { id: "coal", name: "Coal", icon: "../assets/icons/100px-Coal_Ore.png", baseProductionPerDay: 1200, compactible: false },
+        { id: "iron", name: "Iron Ore", icon: "../assets/icons/100px-Iron_Ore.png", baseProductionPerDay: 900, compactible: false },
+        { id: "gold", name: "Gold Ore", icon: "../assets/icons/100px-Gold_Ore.png", baseProductionPerDay: 450, compactible: false }
+      ],
+      "Farming": [
+        { id: "carrot", name: "Carrot", icon: "../assets/icons/100px-Carrot.png", baseProductionPerDay: 7200, compactible: false },
+        { id: "potato", name: "Potato", icon: "../assets/icons/100px-Potato.png", baseProductionPerDay: 7200, compactible: false },
+        { id: "wheat", name: "Wheat", icon: "../assets/icons/100px-Wheat.png", baseProductionPerDay: 5000, compactible: false },
+        { id: "pumpkin", name: "Pumpkin", icon: "../assets/icons/100px-Pumpkin.png", baseProductionPerDay: 1200, compactible: true },
+        { id: "melon", name: "Melon", icon: "../assets/icons/100px-Melon.png", baseProductionPerDay: 1200, compactible: true }
+      ],
+      "Combat": [
+        { id: "zombie", name: "Zombie Flesh", icon: "../assets/icons/100px-Zombie.png", baseProductionPerDay: 2000, compactible: false },
+        { id: "skeleton", name: "Bone", icon: "../assets/icons/100px-Skeleton.png", baseProductionPerDay: 1800, compactible: false },
+        { id: "spider", name: "String", icon: "../assets/icons/100px-Spider.png", baseProductionPerDay: 1500, compactible: false }
+      ],
+      "Foraging": [
+        { id: "oak", name: "Oak Wood", icon: "../assets/icons/100px-Oak_Log.png", baseProductionPerDay: 3600, compactible: true },
+        { id: "birch", name: "Birch Wood", icon: "../assets/icons/100px-Birch_Log.png", baseProductionPerDay: 3600, compactible: true }
+      ],
+      "Fishing": [
+        { id: "fish", name: "Raw Fish", icon: "../assets/icons/100px-Fish.png", baseProductionPerDay: 800, compactible: false }
+      ],
+      "Other": [
+        { id: "cactus", name: "Cactus", icon: "../assets/icons/100px-Cactus.png", baseProductionPerDay: 3600, compactible: true },
+        { id: "wool", name: "Wool", icon: "../assets/icons/100px-Wool.png", baseProductionPerDay: 1500, compactible: false }
+      ]
+    };
+
+    // Tier multipliers (Tier I..XI). Example values.
+    const tierMultipliers = {
+      1: 1.0, 2: 1.1, 3: 1.2, 4: 1.3, 5: 1.45,
+      6: 1.6, 7: 1.8, 8: 2.0, 9: 2.3, 10: 2.6, 11: 3.0
+    };
+
+    // State
+    let selectedCategory = null;
+    const selectedMinions = []; // {id, name, icon, tier, qty, baseProductionPerDay, compactible}
+
+    // DOM refs
+    const categoryGrid = document.getElementById('categoryGrid');
+    const minionList = document.getElementById('minionList');
+    const selectedMinionsDiv = document.getElementById('selectedMinions');
+    const fuelSelector = document.getElementById('fuelSelector');
+    const blockConversionCheckbox = document.getElementById('blockConversion');
+    const diamondSpreadingCheckbox = document.getElementById('diamondSpreading');
+    const inventorySlotsInput = document.getElementById('inventorySlots');
+    const backpackSlotsInput = document.getElementById('backpackSlots');
+    const resultDiv = document.getElementById('result');
+    const note = document.getElementById('note');
+
+    /* ---------- Helpers ---------- */
+    function clearChildren(el) {
+      while (el.firstChild) el.removeChild(el.firstChild);
     }
 
+    function renderMinionList(category) {
+      clearChildren(minionList);
+      if (!category || !minionData[category]) {
+        minionList.innerHTML = '<div class="note">Choose a category to see minions.</div>';
+        return;
+      }
+      minionData[category].forEach(m => {
+        const card = document.createElement('div');
+        card.className = 'icon-option';
+        card.title = m.name;
+        card.innerHTML = `<img src="${m.icon}" alt="${m.name}"><span>${m.name}</span>`;
+        card.addEventListener('click', () => addMinionToSelected(m));
+        minionList.appendChild(card);
+      });
+    }
+
+    function renderSelectedMinions() {
+      clearChildren(selectedMinionsDiv);
+      if (selectedMinions.length === 0) {
+        selectedMinionsDiv.innerHTML = '<div class="note">No minions selected yet. Click a minion to add it to the list.</div>';
+        return;
+      }
+      selectedMinions.forEach((entry, idx) => {
+        const div = document.createElement('div');
+        div.className = 'selected-entry';
+
+        const img = document.createElement('img');
+        img.src = entry.icon; img.alt = entry.name;
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.innerHTML = `<div style="font-weight:700">${entry.name}</div>
+                          <div style="font-size:12px;color:#cfcfcf">Base/day: ${entry.baseProductionPerDay.toLocaleString()}</div>`;
+
+        const qtyInput = document.createElement('input');
+        qtyInput.type = 'number';
+        qtyInput.min = 1;
+        qtyInput.value = entry.qty;
+        qtyInput.title = 'Quantity of this minion';
+        qtyInput.addEventListener('input', (e) => {
+          entry.qty = Math.max(1, parseInt(e.target.value || 1));
+          if (entry.compactible) {
+            blockConversionCheckbox.checked = true;
+            blockConversionCheckbox.disabled = true;
+          }
+        });
+
+        const tierSelect = document.createElement('select');
+        for (let i = 1; i <= 11; i++) {
+          const opt = document.createElement('option');
+          opt.value = i;
+          opt.text = `Tier ${i}`;
+          if (i === entry.tier) opt.selected = true;
+          tierSelect.appendChild(opt);
+        }
+        tierSelect.addEventListener('change', (e) => {
+          entry.tier = parseInt(e.target.value);
+          if (entry.compactible) {
+            blockConversionCheckbox.checked = true;
+            blockConversionCheckbox.disabled = true;
+          }
+        });
+
+        const compactibleInfo = document.createElement('div');
+        compactibleInfo.style.fontSize='11px';
+        compactibleInfo.style.color = '#d6d6d6';
+        compactibleInfo.innerText = entry.compactible ? 'Compactible → toggle locked' : 'Not compactible';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'small-btn';
+        removeBtn.innerText = 'Remove';
+        removeBtn.addEventListener('click', () => {
+          selectedMinions.splice(idx,1);
+          // If no selected minions or remaining have no compactible, re-enable the toggle
+          const anyCompactible = selectedMinions.some(s => s.compactible);
+          if (!anyCompactible) {
+            blockConversionCheckbox.disabled = false;
+          }
+          renderSelectedMinions();
+        });
+
+        div.appendChild(img);
+        div.appendChild(meta);
+        div.appendChild(qtyInput);
+        div.appendChild(tierSelect);
+        div.appendChild(compactibleInfo);
+        div.appendChild(removeBtn);
+        selectedMinionsDiv.appendChild(div);
+
+        if (entry.compactible) {
+          blockConversionCheckbox.checked = true;
+          blockConversionCheckbox.disabled = true;
+        }
+      });
+    }
+
+    function addMinionToSelected(minion) {
+      const existing = selectedMinions.find(s => s.id === minion.id);
+      if (existing) {
+        existing.qty += 1;
+        if (existing.compactible) {
+          blockConversionCheckbox.checked = true;
+          blockConversionCheckbox.disabled = true;
+        }
+        renderSelectedMinions();
+        return;
+      }
+      const entry = {
+        id: minion.id,
+        name: minion.name,
+        icon: minion.icon,
+        baseProductionPerDay: minion.baseProductionPerDay,
+        compactible: !!minion.compactible,
+        qty: 1,
+        tier: 1
+      };
+      selectedMinions.push(entry);
+      if (entry.compactible) {
+        blockConversionCheckbox.checked = true;
+        blockConversionCheckbox.disabled = true;
+      }
+      renderSelectedMinions();
+    }
+
+    /* ---------- Fuel selection ---------- */
+    document.querySelectorAll('#fuelSelector .icon-option').forEach(option => {
+      option.addEventListener('click', () => {
+        document.querySelectorAll('#fuelSelector .icon-option').forEach(o => o.classList.remove('selected'));
+        option.classList.add('selected');
+        document.getElementById('fuelValueInput').value = option.getAttribute('data-fuel');
+      });
+    });
+
+    /* ---------- Backpack selection ---------- */
     document.querySelectorAll('#backpackSelector .icon-option').forEach(option => {
       option.addEventListener('click', () => {
         document.querySelectorAll('#backpackSelector .icon-option').forEach(o => o.classList.remove('selected'));
@@ -296,13 +346,101 @@
       });
     });
 
-    document.querySelectorAll('#fuelSelector .icon-option').forEach(option => {
-      option.addEventListener('click', () => {
-        document.querySelectorAll('#fuelSelector .icon-option').forEach(o => o.classList.remove('selected'));
-        option.classList.add('selected');
-        document.getElementById('fuelValueInput').value = option.getAttribute('data-fuel');
+    /* ---------- Category selection ---------- */
+    document.querySelectorAll('.category').forEach(cat => {
+      cat.addEventListener('click', () => {
+        document.querySelectorAll('.category').forEach(c => c.classList.remove('selected'));
+        cat.classList.add('selected');
+        selectedCategory = cat.getAttribute('data-category');
+        renderMinionList(selectedCategory);
       });
     });
+
+    /* ---------- Calculation ---------- */
+    function calculateDays() {
+      resultDiv.innerHTML = '';
+      const inventorySlots = Math.max(0, parseInt(inventorySlotsInput.value || 0));
+      const backpackSlots = Math.max(0, parseInt(backpackSlotsInput.value || 0));
+      const fuelPercentage = parseFloat(document.getElementById('fuelValueInput').value || 0);
+      const diamondSpreading = diamondSpreadingCheckbox.checked;
+      const blockConversion = blockConversionCheckbox.checked;
+
+      if (selectedMinions.length === 0) {
+        resultDiv.className = 'result error';
+        resultDiv.innerText = 'Select at least one minion to calculate production.';
+        return;
+      }
+
+      // Total production per day = sum over selected minions: base * tierMultiplier * qty
+      let totalProductionPerDay = 0;
+      selectedMinions.forEach(m => {
+        const tierMul = tierMultipliers[m.tier] || 1;
+        totalProductionPerDay += (m.baseProductionPerDay * tierMul * m.qty);
+      });
+
+      if (blockConversion) {
+        totalProductionPerDay = totalProductionPerDay / 160;
+      }
+
+      if (fuelPercentage > 0) totalProductionPerDay += (totalProductionPerDay * (fuelPercentage / 100));
+      if (diamondSpreading) totalProductionPerDay += (totalProductionPerDay * 0.10);
+
+      if (totalProductionPerDay <= 0) {
+        resultDiv.className = 'result error';
+        resultDiv.innerText = 'Production is zero — check selected minions / tiers.';
+        return;
+      }
+
+      const itemsPerSlot = 64;
+      const slotsNeededForOneDay = Math.ceil(totalProductionPerDay / itemsPerSlot);
+
+      const totalSlots = (inventorySlots + backpackSlots);
+      if (totalSlots <= 0) {
+        resultDiv.className = 'result error';
+        resultDiv.innerText = 'Set inventory slots (and optionally backpack) to compute days-to-fill.';
+        return;
+      }
+
+      const capacityItems = totalSlots * itemsPerSlot;
+      const daysToFill = capacityItems / totalProductionPerDay;
+
+      const averageMonth = 30.42;
+      const averageYear = 365.04;
+      let breakdown = '';
+      if (daysToFill >= averageYear) {
+        const years = Math.floor(daysToFill / averageYear);
+        breakdown += `${years} year${years > 1 ? 's' : ''} `;
+      }
+      if (daysToFill >= averageMonth) {
+        const months = Math.floor((daysToFill % averageYear) / averageMonth);
+        breakdown += `${months} month${months > 1 ? 's' : ''} `;
+      }
+      const days = (daysToFill % averageMonth).toFixed(2);
+      breakdown += `${days} day${(parseFloat(days) > 1) ? 's' : ''}`;
+
+      resultDiv.className = 'result success';
+      resultDiv.innerHTML = `
+        <div><strong>Total production per day:</strong> ${Math.round(totalProductionPerDay).toLocaleString()} ${blockConversion ? '(in blocks)' : '(items)'}</div>
+        <div><strong>Slots needed to store 1 day production:</strong> ${slotsNeededForOneDay.toLocaleString()} slots</div>
+        <div><strong>Your capacity (slots):</strong> ${totalSlots} slots (${capacityItems.toLocaleString()} items)</div>
+        <div style="margin-top:8px;"><strong>Days to fill your inventory:</strong> ${daysToFill.toFixed(2)} days</div>
+        <div>${breakdown}</div>
+      `;
+      note.style.display = 'block';
+    }
+
+    document.getElementById('calcBtn').addEventListener('click', calculateDays);
+
+    document.getElementById('clearSelected').addEventListener('click', () => {
+      selectedMinions.length = 0;
+      blockConversionCheckbox.disabled = false;
+      renderSelectedMinions();
+    });
+
+    // initial render
+    renderMinionList(null);
+    renderSelectedMinions();
+
   </script>
 </body>
 </html>
