@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#007bff"/>
+<title>Minion Inventory Calculator</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<link rel="stylesheet" href="../css/essential.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{
+  font-family:'Segoe UI',Tahoma,Verdana,sans-serif;
+  color:#fff;
+  background:url('../Backgrounds/mines.webp') no-repeat center center fixed;
+  background-size:cover;
+  overflow-x:hidden;
+}
+body::before{
+  content:"";
+  position:fixed;
+  top:0;left:0;width:100%;height:100%;
+  backdrop-filter:blur(12px) brightness(0.7);
+  -webkit-backdrop-filter:blur(12px) brightness(0.7);
+  z-index:-1;
+}
+.container{
+  background:rgba(25,25,25,0.55);
+  border-radius:16px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.45);
+  padding:20px;
+  max-width:750px;
+  margin:30px auto 70px;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  animation:fadeIn .6s ease-out;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+h1{text-align:center;margin-bottom:18px;color:#00a2ff;font-size:2.3rem;}
+label{font-weight:600;color:#fff;}
+input[type="number"],select{
+  width:100%;padding:8px;margin:6px 0 12px;
+  border-radius:6px;border:1px solid #aaa;
+  background:rgba(10,10,10,0.6);color:#fff;
+}
+button{
+  background-color:#007bff;color:white;padding:10px 16px;
+  border:none;border-radius:6px;cursor:pointer;font-weight:600;
+  transition:background-color .2s,transform .1s;
+}
+button:hover{background-color:#005fc4;transform:scale(1.03);}
+.result{margin-top:14px;font-size:16px;text-align:left;}
+.error{color:#ff8080;}
+.success{color:#c8e7ff;}
+.icon-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:12px 0;}
+.icon-option{
+  width:90px;padding:10px;border-radius:10px;
+  background:rgba(25,25,25,0.55);
+  text-align:center;border:2px solid transparent;
+  transition:all .15s;cursor:pointer;
+  backdrop-filter:blur(6px);
+}
+.icon-option:hover{transform:scale(1.05);border-color:#007bff;}
+.icon-option.selected{border-color:#00a2ff;box-shadow:0 0 10px rgba(0,162,255,.3);}
+.icon-option img{width:48px;height:48px;object-fit:contain;pointer-events:none;}
+.icon-option span{display:block;margin-top:6px;font-size:.85rem;font-weight:600;color:#fff;}
+.section-title{margin-top:8px;color:#c8e7ff;font-weight:700;text-align:center;}
+.selected-minions{margin-top:12px;display:flex;flex-direction:column;gap:8px;}
+.selected-entry{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(20,20,20,0.45);
+  border-radius:8px;padding:8px;
+  animation:fadeIn .4s ease-out;
+}
+.selected-entry input[type=number]{width:70px;padding:6px;}
+.selected-entry select{width:100px;padding:6px;}
+.small-btn{
+  background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.1);
+  border-radius:6px;padding:6px 8px;cursor:pointer;transition:all .15s;
+}
+.small-btn:hover{background:rgba(255,255,255,0.1);}
+.toggle-group{display:flex;align-items:center;justify-content:space-between;margin:10px 0;}
+.note{text-align:center;font-size:12px;color:#ddd;margin-top:6px;}
+@media(max-width:720px){
+  .container{padding:14px;margin:16px;}
+  .icon-option{width:78px;padding:8px;}
+  h1{font-size:1.8rem;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Minion Production & Inventory Calculator</h1>
+<label for="inventorySlots">Inventory Slots:</label>
+<input type="number" id="inventorySlots" placeholder="Enter slot count" min="0">
+<label>Choose Backpack (optional):</label>
+<div id="backpackSelector" class="icon-grid">
+  <div class="icon-option" data-slots="3"><img src="../assets/bags/100px-Small_Minion_Backpack.png"><span>Small</span></div>
+  <div class="icon-option" data-slots="9"><img src="../assets/bags/100px-Medium_Minion_Backpack.webp"><span>Medium</span></div>
+  <div class="icon-option" data-slots="15"><img src="../assets/bags/100px-Large_Minion_Backpack.webp"><span>Large</span></div>
+  <div class="icon-option" data-slots="21"><img src="../assets/bags/100px-Huge_Minion_Backpack.webp"><span>Huge</span></div>
+  <div class="icon-option" data-slots="27"><img src="../assets/bags/100px-Giant_Minion_Backpack.webp"><span>Giant</span></div>
+</div>
+<input type="number" id="backpackSlots" value="0" style="display:none;">
+<div class="section-title">Choose Category</div>
+<div id="categoryGrid" class="icon-grid">
+  <div class="icon-option category" data-category="Mining"><img src="../assets/tools/100px-Pickaxe.png"><span>Mining</span></div>
+  <div class="icon-option category" data-category="Farming"><img src="../assets/tools/100px-Hoe.png"><span>Farming</span></div>
+  <div class="icon-option category" data-category="Combat"><img src="../assets/tools/100px-Sword.png"><span>Combat</span></div>
+  <div class="icon-option category" data-category="Foraging"><img src="../assets/tools/100px-Axe.png"><span>Foraging</span></div>
+</div>
+<div class="section-title">Minions in Selected Category</div>
+<div id="minionList" class="icon-grid"></div>
+<div class="section-title">Selected Minions</div>
+<div id="selectedMinions" class="selected-minions"><div class="note">No minions selected yet.</div></div>
+<label>Choose Fuel:</label>
+<div id="fuelSelector" class="icon-grid">
+  <div class="icon-option" data-fuel="5"><img src="../assets/fuels/100px-Coal.png"><span>Coal (5%)</span></div>
+  <div class="icon-option" data-fuel="10"><img src="../assets/fuels/100px-Enchanted_Coal.webp"><span>E. Coal (10%)</span></div>
+  <div class="icon-option" data-fuel="20"><img src="../assets/fuels/100px-Enchanted_Charcoal.png"><span>E. Charcoal (20%)</span></div>
+  <div class="icon-option" data-fuel="25"><img src="../assets/fuels/100px-Enchanted_Lava_Bucket.webp"><span>E. Lava (25%)</span></div>
+  <div class="icon-option" data-fuel="40"><img src="../assets/fuels/100px-Hamster_Wheel.webp"><span>Hamster (40%)</span></div>
+  <div class="icon-option" data-fuel="80"><img src="../assets/fuels/100px-Foul_Flesh.webp"><span>Foul Flesh (80%)</span></div>
+</div>
+<input type="number" id="fuelValueInput" value="0" style="display:none;">
+<div class="toggle-group">
+  <label>Diamond Spreading</label><input type="checkbox" id="diamondSpreading" checked>
+</div>
+<div class="toggle-group">
+  <label>Compact into blocks</label><input type="checkbox" id="blockConversion">
+</div>
+<div style="display:flex;gap:12px;flex-wrap:wrap;">
+  <button id="calcBtn">Calculate</button>
+  <button id="clearSelected" class="small-btn">Clear Selected</button>
+</div>
+<div class="result" id="result"></div>
+<p id="note" class="note" style="display:none;">Note: Times are estimates.</p>
+</div>
+</body>
+</html>
