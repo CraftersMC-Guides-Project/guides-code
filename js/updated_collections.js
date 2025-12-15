@@ -2196,13 +2196,13 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "Oak_Optic",
-                    "score": "100M+"
+                    "name": "Gameryash322",
+                    "score": "N/A"
                 },
                 {
                     "rank": 2,
-                    "name": "Gameryash322",
-                    "score": "60M+"
+                    "name": "Oak_Optic",
+                    "score": "100M+"
                 },
                 {
                     "rank": 3,
