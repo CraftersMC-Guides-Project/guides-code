@@ -1129,7 +1129,7 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "Luv_bats007",
-                    "score": "219M+"
+                    "score": "241.4M+"
                 },
                 {
                     "rank": 2,
