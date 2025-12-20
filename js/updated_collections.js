@@ -214,8 +214,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "HeGzoStRqFe",
+                    "score": "35.9M+"
                 },
                 {
                     "rank": 10,
@@ -342,12 +342,12 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "KaosTheChaos",
-                    "score": "N/A"
+                    "name": "HeGzoStRqFe",
+                    "score": "179.9M+"
                 },
                 {
                     "rank": 2,
-                    "name": "HeGzoStRqFe",
+                    "name": "KaosTheChaos",
                     "score": "N/A"
                 },
                 {
@@ -644,8 +644,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "HeGzoStRqFe",
+                    "score": "45.6M+"
                 },
                 {
                     "rank": 6,
@@ -751,12 +751,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "aPumpkinGod2",
-                    "score": "N/A"
+                    "name": "HeGzoStRqFe",
+                    "score": "48.3M+"
                 },
                 {
                     "rank": 5,
-                    "name": "Unknown",
+                    "name": "aPumpkinGod2",
                     "score": "N/A"
                 },
                 {
@@ -939,12 +939,12 @@ const collectionsData = {
                 },
                 {
                     "rank": 8,
-                    "name": "club32",
-                    "score": "N/A"
+                    "name": "HeGzoStRqFe",
+                    "score": "45M+"
                 },
                 {
                     "rank": 9,
-                    "name": "Unknown",
+                    "name": "club32",
                     "score": "N/A"
                 },
                 {
@@ -1588,27 +1588,27 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
+                    "name": "HeGzoStRqFe",
+                    "score": "106.3M+"
+                },
+                {
+                    "rank": 4,
                     "name": "Dadabhaai",
                     "score": "N/A"
                 },
                 {
-                    "rank": 4,
+                    "rank": 5,
                     "name": "Pranjal2389",
                     "score": "N/A"
                 },
                 {
-                    "rank": 5,
+                    "rank": 6,
                     "name": "Krar23456",
                     "score": "63M+"
                 },
                 {
-                    "rank": 6,
-                    "name": "Neelu18100",
-                    "score": "N/A"
-                },
-                {
                     "rank": 7,
-                    "name": "Unknown",
+                    "name": "Neelu18100",
                     "score": "N/A"
                 },
                 {
@@ -2226,8 +2226,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 7,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "HeGzoStRqFe",
+                    "score": "24.6M+"
                 },
                 {
                     "rank": 8,
@@ -2364,23 +2364,23 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
+                    "name": "HeGzoStRqFe",
+                    "score": "1B+"
+                },
+                {
+                    "rank": 2,
                     "name": "JODHEMANT8975",
                     "score": "132.3M+"
                 },
                 {
-                    "rank": 2,
+                    "rank": 3,
                     "name": "Rehan2038",
                     "score": "98M+"
                 },
                 {
-                    "rank": 3,
+                    "rank": 4,
                     "name": "ieduoo",
                     "score": "22.1M+"
-                },
-                {
-                    "rank": 4,
-                    "name": "Unknown",
-                    "score": "N/A"
                 },
                 {
                     "rank": 5,
