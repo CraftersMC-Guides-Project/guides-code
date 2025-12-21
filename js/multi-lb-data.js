@@ -2,7 +2,7 @@
 // Not here: Collections, Farming Contests, Boss Time (Or any other with 200-300 lines data)
 // Achievements
 const achievementsData = [
-    { rank: 1, name: "SphinxWraith", achievements: "70" },
+    { rank: 1, name: "SphinxWraith/HeGzoStRqFe", achievements: "70" },
     { rank: 2, name: "Kg_lcky_01", achievements: "64" },
     { rank: 3, name: "hornrush89", achievements: "62" },
     { rank: 4, name: "MythicalPanda30", achievements: "60" },
@@ -54,7 +54,7 @@ const gemsData = [
 ];
 // Crafters Level 
 const levelsData = [
-  { rank: 1, name: "HeGzoStRqFe", level: "101" },
+  { rank: 1, name: "HeGzoStRqFe", level: "105" },
   { rank: 2, name: "SphinxWraith", level: "91" },
   { rank: 3, name: "hornrush89", level: "88" },
   { rank: 4, name: "Froncyte", level: "58" },
