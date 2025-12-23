@@ -234,3 +234,36 @@ function overlay() {
   }
 }
 
+// Dropdown functionality for players with multiple names
+function createPlayerCell(playerName) {
+    if (!playerName.includes("/")) {
+        return `<td>${playerName}</td>`;
+    }
+    
+    const names = playerName.split("/");
+    const id = `dropdown-${Math.random().toString(36).substr(2, 9)}`;
+    
+    return `
+        <td>
+            <div class="player-dropdown">
+                <button class="dropdown-btn" onclick="toggleDropdown('${id}')">${names[0]} <span class="dropdown-arrow">▼</span></button>
+                <div class="dropdown-content" id="${id}">
+                    ${names.map(name => `<div class="dropdown-item">${name}</div>`).join("")}
+                </div>
+            </div>
+        </td>
+    `;
+}
+
+function toggleDropdown(id) {
+    const dropdown = document.getElementById(id);
+    dropdown.classList.toggle("show");
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener("click", function(event) {
+    if (!event.target.matches(".dropdown-btn")) {
+        document.querySelectorAll(".dropdown-content.show").forEach(d => d.classList.remove("show"));
+    }
+});
+
