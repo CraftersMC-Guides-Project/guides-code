@@ -246,7 +246,7 @@ function createPlayerCell(playerName) {
     return `
         <td>
             <div class="player-dropdown">
-                <button class="dropdown-btn" onclick="toggleDropdown('${id}')">${names[0]} <span class="dropdown-arrow">▼</span></button>
+                <button class="dropdown-btn" onclick="toggleDropdown('${id}')">Show more <span class="dropdown-arrow">▼</span></button>
                 <div class="dropdown-content" id="${id}">
                     ${names.map(name => `<div class="dropdown-item">${name}</div>`).join("")}
                 </div>
