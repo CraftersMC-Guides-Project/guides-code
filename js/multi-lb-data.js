@@ -18,7 +18,7 @@ const skillData = [
   { rank: 1, name: "SphinxWraith/David_R06", level: "51.7" },
   { rank: 2, name: "Moerderfisch", level: "50.7" },
   { rank: 3, name: "GRAVITY8303", level: "50.2" },
-  { rank: 4, name: "AndyGamer024", level: "50" },
+  { rank: 4, name: "AndyGamer024/Aryaan045", level: "50" },
   { rank: 5, name: "JODHEMANT8975", level: "48.7" },
   { rank: 6, name: "Itzomkar1232891", level: "47.2" },
   { rank: 7, name: "DRONZAR_OP", level: "46.2" },
