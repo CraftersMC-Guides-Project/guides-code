@@ -34,7 +34,7 @@ const cakeData = [
   { rank: 4, name: "Ghosthunter4233", cakes: "26" },
   { rank: 5, name: "HueDisNwPhn", cakes: "19" },
   { rank: 6, name: "C69P2W", cakes: "5" },
-  { rank: 7, name: "Unknown", cakes: "N/A" },
+  { rank: 7, name: "NetworkPg", cakes: "1" },
   { rank: 8, name: "Unknown", cakes: "N/A" },
   { rank: 9, name: "Unknown", cakes: "N/A" },
   { rank: 10, name: "Unknown", cakes: "N/A" }
