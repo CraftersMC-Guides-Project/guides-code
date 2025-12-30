@@ -41,8 +41,8 @@ const cakeData = [
 ];
 // Gems 
 const gemsData = [
-  { rank: 1, name: "Shakilbaby", gems: "52825" },
-  { rank: 2, name: "Darkshadow52195", gems: "32809" },
+  { rank: 1, name: "Darkshadow52195", gems: "54199" },
+  { rank: 2, name: "Shakilbaby", gems: "52825" },
   { rank: 3, name: "POSTALFERN73293", gems: "16426" },
   { rank: 4, name: "KRIZMORRENO", gems: "12970" },
   { rank: 5, name: "Mistry_Human", gems: "7625" },
