@@ -1092,8 +1092,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 5,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Kg_lcky_01",
+                    "score": "53.6M+"
                 },
                 {
                     "rank": 6,
@@ -1129,7 +1129,7 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "Luv_bats007",
-                    "score": "241.4M+"
+                    "score": "300.2M+"
                 },
                 {
                     "rank": 2,
