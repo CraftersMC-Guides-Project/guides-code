@@ -2262,13 +2262,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
-                    "name": "ImNdricim",
-                    "score": "N/A"
+                    "name": "SammyMishu",
+                    "score": "23.5M+"
                 },
                 {
                     "rank": 4,
-                    "name": "SammyMishu",
-                    "score": "18.9M+"
+                    "name": "ImNdricim",
+                    "score": "N/A"
                 },
                 {
                     "rank": 5,
