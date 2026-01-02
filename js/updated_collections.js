@@ -342,13 +342,13 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "HeGzoStRqFe",
-                    "score": "179.9M+"
+                    "name": "KaosTheChaos",
+                    "score": "N/A"
                 },
                 {
                     "rank": 2,
-                    "name": "KaosTheChaos",
-                    "score": "N/A"
+                    "name": "HeGzoStRqFe",
+                    "score": "179.9M+"
                 },
                 {
                     "rank": 3,
