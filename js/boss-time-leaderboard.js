@@ -84,7 +84,7 @@ const collectionsData = {
                                         { rank: 4, name: "IRONMAN1237721", score: "2m 46s" },
                                         { rank: 5, name: "AYUSHAKS30", score: "2m 54s" },
                                         { rank: 6, name: "MACroni777", score: "4m 25s" },
-                                        { rank: 7, name: "Unknown", score: "N/A" },
+                                        { rank: 7, name: "MADERUCHIA07", score: "4m 43s" },
                                         { rank: 8, name: "Unknown", score: "N/A" },
                                         { rank: 9, name: "Unknown", score: "N/A" },
                                         { rank: 10, name: "Unknown", score: "N/A" }
@@ -164,7 +164,7 @@ const collectionsData = {
                                     image: "assets/slayers/zombie-5.png",
                                     players: [
                                         { rank: 1, name: "AYUSHAKS30", score: "2s" },
-                                        { rank: 2, name: "MACroni777", score: "4s" },
+                                        { rank: 2, name: "MACroni777/MADERUCHIA07", score: "4s" },
                                         { rank: 3, name: "AndyGamer024/IRONMAN1237721", score: "5s" },
                                         { rank: 4, name: "Dipanshu_FF", score: "21s" },
                                         { rank: 5, name: "Kg_lcky_01", score: "23s" },
