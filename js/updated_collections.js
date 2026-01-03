@@ -1720,8 +1720,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 7,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "MADERUCHIA07",
+                    "score": "28.4M+"
                 },
                 {
                     "rank": 8,
@@ -1730,8 +1730,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "MADERUCHIA07",
-                    "score": "23.7M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 10,
@@ -1776,8 +1776,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 7,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "MADERUCHIA07",
+                    "score": "18.6M+"
                 },
                 {
                     "rank": 8,
