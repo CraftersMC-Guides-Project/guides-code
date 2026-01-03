@@ -6,9 +6,11 @@ const collectionsData = {
             categories: [
                 {
                     name: "Fastest",
+                    image: "img/Fastest_Time.png",
                     types: [
                         {
                             name: "Fastest Spawn Time",
+                            image: "img/Boss_Spawn.png",
                             tiers: [
                                 {
                                     name: "Tier 1",
@@ -94,6 +96,7 @@ const collectionsData = {
                         },
                         {
                             name: "Fastest Kill Time",
+                            image: "img/Boss_Kill.png",
                             tiers: [
                                 {
                                     name: "Tier 1",
@@ -181,9 +184,11 @@ const collectionsData = {
                 },
                 {
                     name: "Slowest",
+                    image: "img/Slowest_Time.png",
                     types: [
                         {
                             name: "Slowest Spawn Time",
+                            image: "img/Boss_Spawn.png",
                             tiers: [
                                 {
                                     name: "Tier 1",
@@ -269,6 +274,7 @@ const collectionsData = {
                         },
                         {
                             name: "Slowest Kill Time",
+                            image: "img/Boss_Kill.png",
                             tiers: [
                                 {
                                     name: "Tier 1",
@@ -362,9 +368,11 @@ const collectionsData = {
             categories: [
                 {
                     name: "Fastest",
+                    image: "img/Fastest_Time.png",
                     types: [
                         {
                             name: "Fastest Spawn Time",
+                            image: "img/Boss_Spawn.png",
                             tiers: [
                                 {
                                     name: "Tier 1",
@@ -450,6 +458,7 @@ const collectionsData = {
                         },
                         {
                             name: "Fastest Kill Time",
+                            image: "img/Boss_Kill.png",
                             tiers: [
                                 {
                                     name: "Tier 1",
@@ -537,9 +546,11 @@ const collectionsData = {
                 },
                 {
                     name: "Slowest",
+                    image: "img/Slowest_Time.png",
                     types: [
                         {
                             name: "Slowest Spawn Time",
+                            image: "img/Boss_Spawn.png",
                             tiers: [
                                 {
                                     name: "Tier 1",
@@ -625,6 +636,7 @@ const collectionsData = {
                         },
                         {
                             name: "Slowest Kill Time",
+                            image: "img/Boss_Kill.png",
                             tiers: [
                                 {
                                     name: "Tier 1",
