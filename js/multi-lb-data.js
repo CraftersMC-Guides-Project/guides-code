@@ -9,8 +9,8 @@ const achievementsData = [
     { rank: 5, name: "Dharmaveer31", achievements: "57" },
     { rank: 6, name: "SammyMishu", achievements: "52" },
     { rank: 7, name: "Perry3338", achievements: "51" },
-    { rank: 8, name: "TGJASSIYT", achievements: "49" },
-    { rank: 9, name: "Rehan2038", achievements: "48" },
+    { rank: 8, name: "Rehan2038", achievements: "51" },
+    { rank: 9, name: "TGJASSIYT", achievements: "49" },
     { rank: 10, name: "Kautilya3072", achievements: "46" }
 ];
 // Avg Skill
@@ -23,7 +23,7 @@ const skillData = [
   { rank: 6, name: "Itzomkar1232891", level: "47.2" },
   { rank: 7, name: "DRONZAR_OP", level: "46.2" },
   { rank: 8, name: "Kg_lcky_01", level: "46" },
-  { rank: 9, name: "Rehan2038", level: "45" },
+  { rank: 9, name: "Rehan2038", level: "45.2" },
   { rank: 10, name: "Perry3338", level: "39.5" }
 ];
 // Cakes
@@ -32,10 +32,10 @@ const cakeData = [
   { rank: 2, name: "MythicalPanda30", cakes: "172" },
   { rank: 3, name: "TGJASSIYT", cakes: "74" },
   { rank: 4, name: "Ghosthunter4233", cakes: "26" },
-  { rank: 5, name: "HueDisNwPhn", cakes: "19" },
-  { rank: 6, name: "C69P2W", cakes: "5" },
-  { rank: 7, name: "NetworkPg", cakes: "1" },
-  { rank: 8, name: "Unknown", cakes: "N/A" },
+  { rank: 5, name: "Rehan2038", cakes: "22" },
+  { rank: 6, name: "HueDisNwPhn", cakes: "19" },
+  { rank: 7, name: "C69P2W", cakes: "5" },
+  { rank: 8, name: "NetworkPg", cakes: "3" },
   { rank: 9, name: "Unknown", cakes: "N/A" },
   { rank: 10, name: "Unknown", cakes: "N/A" }
 ];
@@ -46,11 +46,11 @@ const gemsData = [
   { rank: 3, name: "Shakilbaby", gems: "52K" },
   { rank: 4, name: "POSTALFERN73293", gems: "16K" },
   { rank: 5, name: "KRIZMORRENO", gems: "12K" },
-  { rank: 6, name: "Mistry_Human", gems: "7.6K" },
-  { rank: 7, name: "Jaddu0192", gems: "7.3K" },
-  { rank: 8, name: "Chaosgem999yt", gems: "7.1K" },
-  { rank: 9, name: "Craniax6797", gems: "6.2K" },
-  { rank: 10, name: "Preenuu", gems: "3.6K" }
+  { rank: 6, name: "Spideyg4mer77", gems: "10.7K" },
+  { rank: 7, name: "Mistry_Human", gems: "7.6K" },
+  { rank: 8, name: "Jaddu0192", gems: "7.3K" },
+  { rank: 9, name: "Chaosgem999yt", gems: "7.1K" },
+  { rank: 10, name: "Craniax6797", gems: "6.2K" }
 ];
 // Crafters Level 
 const levelsData = [
@@ -63,7 +63,7 @@ const levelsData = [
   { rank: 7, name: "Perry3338", level: "44" },
   { rank: 8, name: "Jeremy2075/Darkshadow52195", level: "40" },
   { rank: 9, name: "Dharmaveer31/HueDisNwPhn", level: "39" },
-  { rank: 10, name: "MythicalPanda30", level: "27" }
+  { rank: 10, name: "Rehan2038", level: "28" }
 ];
 // Playtime
 const playtimeData = [
