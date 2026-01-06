@@ -1016,8 +1016,8 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "UbeRNooB8834",
-                    "score": "N/A"
+                    "name": "Hefty6248",
+                    "score": "1B+"
                 },
                 {
                     "rank": 2,
