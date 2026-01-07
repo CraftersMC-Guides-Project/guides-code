@@ -72,7 +72,7 @@ const collectionsData = {
             name: "Personal Best - Wheat",
             image: "img/Wheat.webp",
             players: [
-                { rank: 1, name: "AYUSHAKS30", score: "398K+" },
+                { rank: 1, name: "AYUSHAKS30", score: "502.6K+" },
                 { rank: 2, name: "Fallen1sec", score: "221K+" },
                 { rank: 3, name: "hhhuuuhh", score: "180K+" },
                 { rank: 4, name: "Vedant161008", score: "131k" },
