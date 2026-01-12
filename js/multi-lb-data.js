@@ -88,7 +88,7 @@ const collectionsData = [
       { "rank": 2, "name": "HeGzoStRqFe", "score": "N/A" },
       { "rank": 3, "name": "DueBacon2007102", "score": "34M+" },
       { "rank": 4, "name": "Itzomkar1232891", "score": "N/A" },
-      { "rank": 5, "name": "Kg_lcky_01", "score": "N/A" },
+      { "rank": 5, "name": "Kg_lcky_01", "score": "27.3M+" },
       { "rank": 6, "name": "DRONZAR_OP", "score": "25.6M+" },
       { "rank": 7, "name": "SoundClover8088", "score": "19.1M+" },
       { "rank": 8, "name": "Firegod174", "score": "17M+" },
