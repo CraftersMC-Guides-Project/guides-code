@@ -67,16 +67,16 @@ const levelsData = [
 ];
 // Playtime
 const playtimeData = [
-    { rank: 1, name: "SphinxWraith", playtime: "6454.9h" },
-    { rank: 2, name: "Perry3338", playtime: "5064.1h" },
-    { rank: 3, name: "gelacktic", playtime: "3841h" },
-    { rank: 4, name: "DueBacon2007102", playtime: "3809.1h" },
-    { rank: 5, name: "JODHEMANT8975", playtime: "3352.3h" },
-    { rank: 6, name: "Creepyshorts", playtime: "3350.7h" },
-    { rank: 7, name: "Itzomkar1232891", playtime: "3001h" },
-    { rank: 8, name: "Kg_lcky_01", playtime: "2515.7h" },
-    { rank: 9, name: "HueDisNwPhn", playtime: "2294.8h" },
-    { rank: 10, name: "DRONZAR_OP", playtime: "2104h" }
+    { rank: 1, name: "HeGzoStRqFe", playtime: "8156.4h" },
+    { rank: 2, name: "SphinxWraith", playtime: "6454.9h" },
+    { rank: 3, name: "Perry3338", playtime: "5064.1h" },
+    { rank: 4, name: "gelacktic", playtime: "3841h" },
+    { rank: 5, name: "DueBacon2007102", playtime: "3809.1h" },
+    { rank: 6, name: "JODHEMANT8975", playtime: "3352.3h" },
+    { rank: 7, name: "Creepyshorts", playtime: "3350.7h" },
+    { rank: 8, name: "Itzomkar1232891", playtime: "3001h" },
+    { rank: 9, name: "Kg_lcky_01", playtime: "2515.7h" },
+    { rank: 10, name: "HueDisNwPhn", playtime: "2294.8h" }
 ];
 // Zombie and Wolf Slayer Exp 
 const collectionsData = [
