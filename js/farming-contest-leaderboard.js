@@ -172,7 +172,7 @@ const collectionsData = {
                 { rank: 2, name: "HueDisNwPhn", score: "850K+" },
                 { rank: 3, name: "Fallen1sec", score: "753K+" },
                 { rank: 4, name: "Taranpreet3916", score: "655K+" },
-                { rank: 5, name: "hhhuuuhh/Taranpreet3916", score: "560K+" },
+                { rank: 5, name: "hhhuuuhh", score: "560K+" },
                 { rank: 6, name: "Gaurav_20073022", score: "277K+" },
                 { rank: 7, name: "Unknown", score: "N/A" },
                 { rank: 8, name: "Unknown", score: "N/A" },
