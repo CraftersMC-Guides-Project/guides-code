@@ -32,7 +32,7 @@ const cakeData = [
   { rank: 2, name: "MythicalPanda30", cakes: "172" },
   { rank: 3, name: "TGJASSIYT", cakes: "74" },
   { rank: 4, name: "Ghosthunter4233", cakes: "26" },
-  { rank: 5, name: "Rehan2038", cakes: "22" },
+  { rank: 5, name: "Rehan2038/HueDisNwPhn", cakes: "22" },
   { rank: 6, name: "HueDisNwPhn", cakes: "19" },
   { rank: 7, name: "C69P2W", cakes: "5" },
   { rank: 8, name: "NetworkPg", cakes: "3" },
@@ -61,9 +61,9 @@ const levelsData = [
   { rank: 5, name: "JODHEMANT8975", level: "50" },
   { rank: 6, name: "Kg_lcky_01", level: "48" },
   { rank: 7, name: "Perry3338", level: "44" },
-  { rank: 8, name: "Jeremy2075/Darkshadow52195", level: "40" },
-  { rank: 9, name: "Dharmaveer31/HueDisNwPhn", level: "39" },
-  { rank: 10, name: "Rehan2038", level: "28" }
+  { rank: 8, name: "HueDisNwPhn", level: "43" },
+  { rank: 9, name: "Jeremy2075/Darkshadow52195", level: "40" },
+  { rank: 10, name: "Dharmaveer31", level: "39" }
 ];
 // Playtime
 const playtimeData = [
