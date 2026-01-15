@@ -15,16 +15,16 @@ const achievementsData = [
 ];
 // Avg Skill
 const skillData = [
-  { rank: 1, name: "SphinxWraith/David_R06", level: "51.7" },
-  { rank: 2, name: "Moerderfisch", level: "50.7" },
-  { rank: 3, name: "GRAVITY8303", level: "50.2" },
-  { rank: 4, name: "AndyGamer024/Aryaan045", level: "50" },
-  { rank: 5, name: "JODHEMANT8975", level: "48.7" },
-  { rank: 6, name: "Itzomkar1232891", level: "47.2" },
-  { rank: 7, name: "DRONZAR_OP", level: "46.2" },
-  { rank: 8, name: "Kg_lcky_01", level: "46" },
-  { rank: 9, name: "Rehan2038", level: "45.2" },
-  { rank: 10, name: "Perry3338", level: "39.5" }
+  { rank: 1, name: "SphinxWraith/David_R06/Moerderfisch", level: "51.7" },
+  { rank: 2, name: "GRAVITY8303", level: "50.2" },
+  { rank: 3, name: "AndyGamer024/Aryaan045", level: "50" },
+  { rank: 4, name: "JODHEMANT8975", level: "48.7" },
+  { rank: 5, name: "Itzomkar1232891", level: "47.2" },
+  { rank: 6, name: "DRONZAR_OP", level: "46.2" },
+  { rank: 7, name: "Kg_lcky_01", level: "46" },
+  { rank: 8, name: "Rehan2038", level: "45.2" },
+  { rank: 9, name: "Perry3338", level: "39.5" },
+  { rank: 10, name: "Moerderfisch", level: "N/A" }
 ];
 // Cakes
 const cakeData = [
