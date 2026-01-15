@@ -24,7 +24,7 @@ const skillData = [
   { rank: 7, name: "Kg_lcky_01", level: "46" },
   { rank: 8, name: "Rehan2038", level: "45.2" },
   { rank: 9, name: "Perry3338", level: "39.5" },
-  { rank: 10, name: "Moerderfisch", level: "N/A" }
+  { rank: 10, name: "Unknown", level: "N/A" }
 ];
 // Cakes
 const cakeData = [
