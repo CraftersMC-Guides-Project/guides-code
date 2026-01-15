@@ -153,7 +153,7 @@ const collectionsData = {
             image: "img/Sugar_Cane.webp",
             players: [
                 { rank: 1, name: "AYUSHAKS30", score: "712K+" },
-                { rank: 2, name: "Taranpreet3916", score: "681K+" },
+                { rank: 2, name: "Luv_bats007", score: "681K+" },
                 { rank: 3, name: "hhhuuuhh", score: "647K+" },
                 { rank: 4, name: "Fallen1sec", score: "498K+" },
                 { rank: 5, name: "HueDisNwPhn", score: "446K" },
