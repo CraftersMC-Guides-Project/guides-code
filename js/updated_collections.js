@@ -792,12 +792,12 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "Lenny1sCo0l",
+                    "name": "HeGzoStRqFe",
                     "score": "N/A"
                 },
                 {
                     "rank": 2,
-                    "name": "Unknown",
+                    "name": "Lenny1sCo0l",
                     "score": "N/A"
                 },
                 {
