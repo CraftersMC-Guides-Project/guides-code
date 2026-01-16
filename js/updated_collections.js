@@ -945,7 +945,7 @@ const collectionsData = {
                 {
                     "rank": 9,
                     "name": "club32",
-                    "score": "N/A"
+                    "score": "45.3M+"
                 },
                 {
                     "rank": 10,
@@ -1103,12 +1103,12 @@ const collectionsData = {
                 {
                     "rank": 7,
                     "name": "JODHEMANT8975",
-                    "score": "37.9M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 8,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "club32",
+                    "score": "43M+"
                 },
                 {
                     "rank": 9,
