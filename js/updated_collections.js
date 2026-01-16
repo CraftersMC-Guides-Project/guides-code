@@ -154,7 +154,7 @@ const collectionsData = {
                 {
                     "rank": 8,
                     "name": "AndroidPARAS",
-                    "score": "N/A"
+                    "score": "50.9M+"
                 },
                 {
                     "rank": 9,
