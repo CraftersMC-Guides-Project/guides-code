@@ -442,7 +442,7 @@ const collectionsData = {
                                     name: "Tier 5",
                                     image: "assets/slayers/wolf-5.png",
                                     players: [
-                                        { rank: 1, name: "Unknown", score: "N/A" },
+                                        { rank: 1, name: "AndyGamer024", score: "3m 53s" },
                                         { rank: 2, name: "Unknown", score: "N/A" },
                                         { rank: 3, name: "Unknown", score: "N/A" },
                                         { rank: 4, name: "Unknown", score: "N/A" },
@@ -528,7 +528,7 @@ const collectionsData = {
                                     name: "Tier 5",
                                     image: "assets/slayers/wolf-5.png",
                                     players: [
-                                        { rank: 1, name: "Unknown", score: "N/A" },
+                                        { rank: 1, name: "AndyGamer024", score: "15s" },
                                         { rank: 2, name: "Unknown", score: "N/A" },
                                         { rank: 3, name: "Unknown", score: "N/A" },
                                         { rank: 4, name: "Unknown", score: "N/A" },
