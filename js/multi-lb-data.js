@@ -1,4 +1,4 @@
-// Data Here: Achievements, Arctic Cave Race, Avg Skill, Cakes, Gems, Crafters Level, Playtime, Slayers, Damage, Networth, Pets, Coins, Skills, Target Practice
+// Data Here: Achievements, Arctic Cave Race, Avg Skill, Cakes, Gems, Crafters Level, Playtime, Slayers, Damage, Networth, Pets, Coins, Skills, Target Practice, Ender Node Hunt
 // Not here: Collections, Farming Contests, Boss Time (Or any other with 200-300 lines data)
 // Achievements
 const achievementsData = [
@@ -291,6 +291,18 @@ const targetPracticeLeaderboard = {
 // Arctic Cave Race
 const arcticCaveRace = {
     name: "Arctic Cave Race",
+    scoreLabel: "Time",
+    players: [
+        { rank: 1, name: "Unknown", score: "N/A" },
+        { rank: 2, name: "Unknown", score: "N/A" },
+        { rank: 3, name: "Unknown", score: "N/A" },
+        { rank: 4, name: "Unknown", score: "N/A" },
+        { rank: 5, name: "Unknown", score: "N/A" }
+    ]
+};
+// Ender Node Hunt
+const enderNodeHunt = {
+    name: "Ender Node Hunt",
     scoreLabel: "Time",
     players: [
         { rank: 1, name: "Unknown", score: "N/A" },
