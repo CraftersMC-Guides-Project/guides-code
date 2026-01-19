@@ -57,13 +57,13 @@ const levelsData = [
   { rank: 1, name: "HeGzoStRqFe", level: "105" },
   { rank: 2, name: "SphinxWraith", level: "91" },
   { rank: 3, name: "hornrush89", level: "88" },
-  { rank: 4, name: "Froncyte", level: "58" },
-  { rank: 5, name: "JODHEMANT8975", level: "50" },
-  { rank: 6, name: "Kg_lcky_01", level: "48" },
-  { rank: 7, name: "Perry3338", level: "44" },
-  { rank: 8, name: "HueDisNwPhn", level: "43" },
-  { rank: 9, name: "Jeremy2075/Darkshadow52195", level: "40" },
-  { rank: 10, name: "Dharmaveer31", level: "39" }
+  { rank: 4, name: "Luv_bats007", level: "61" },
+  { rank: 5, name: "Froncyte", level: "58" },
+  { rank: 6, name: "JODHEMANT8975", level: "50" },
+  { rank: 7, name: "Kg_lcky_01", level: "48" },
+  { rank: 8, name: "Perry3338", level: "44" },
+  { rank: 9, name: "HueDisNwPhn", level: "43" },
+  { rank: 10, name: "Jeremy2075/Darkshadow52195", level: "40" }
 ];
 // Playtime
 const playtimeData = [
