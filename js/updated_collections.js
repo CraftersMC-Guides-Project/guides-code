@@ -455,7 +455,7 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "ENTITY_3038628",
-                    "score": "N/A"
+                    "score": "32.7M+"
                 },
                 {
                     "rank": 2,
