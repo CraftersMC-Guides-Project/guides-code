@@ -11,7 +11,7 @@ const achievementsData = [
     { rank: 7, name: "Perry3338", achievements: "51" },
     { rank: 8, name: "Rehan2038", achievements: "51" },
     { rank: 9, name: "TGJASSIYT", achievements: "49" },
-    { rank: 10, name: "Kautilya3072", achievements: "46" }
+    { rank: 10, name: "club32", achievements: "48" }
 ];
 // Avg Skill
 const skillData = [
@@ -61,7 +61,7 @@ const levelsData = [
   { rank: 5, name: "Froncyte", level: "58" },
   { rank: 6, name: "JODHEMANT8975", level: "50" },
   { rank: 7, name: "Kg_lcky_01", level: "48" },
-  { rank: 8, name: "Perry3338", level: "44" },
+  { rank: 8, name: "Perry3338/club32", level: "44" },
   { rank: 9, name: "HueDisNwPhn", level: "43" },
   { rank: 10, name: "Jeremy2075/Darkshadow52195", level: "40" }
 ];
