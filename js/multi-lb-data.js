@@ -24,7 +24,7 @@ const skillData = [
   { rank: 7, name: "Kg_lcky_01", level: "46" },
   { rank: 8, name: "Rehan2038", level: "45.2" },
   { rank: 9, name: "Perry3338", level: "39.5" },
-  { rank: 10, name: "Unknown", level: "N/A" }
+  { rank: 10, name: "HaleCellar7702", level: "34.8" }
 ];
 // Cakes
 const cakeData = [
@@ -75,8 +75,8 @@ const playtimeData = [
     { rank: 6, name: "JODHEMANT8975", playtime: "3352.3h" },
     { rank: 7, name: "Creepyshorts", playtime: "3350.7h" },
     { rank: 8, name: "Itzomkar1232891", playtime: "3001h" },
-    { rank: 9, name: "Kg_lcky_01", playtime: "2515.7h" },
-    { rank: 10, name: "HueDisNwPhn", playtime: "2294.8h" }
+    { rank: 9, name: "HueDisNwPhn", playtime: "2605.8h" },
+    { rank: 10, name: "Kg_lcky_01", playtime: "2515.7h" }
 ];
 // Zombie and Wolf Slayer Exp 
 const collectionsData = [
