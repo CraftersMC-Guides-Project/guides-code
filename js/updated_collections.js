@@ -516,7 +516,7 @@ const collectionsData = {
                 {
                     "rank": 2,
                     "name": "Copingo",
-                    "score": "125M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 3,
@@ -525,8 +525,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "SquareSquid8492",
+                    "score": "162.6M+"
                 },
                 {
                     "rank": 5,
