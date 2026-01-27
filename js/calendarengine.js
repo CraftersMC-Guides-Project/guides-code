@@ -22,7 +22,14 @@ const CalendarEngine = {
     pagesDataCache: new Map(),
     SEASON_NAMES: ['Spring', 'Summer', 'Autumn', 'Winter'],
     PET_TYPES: ['tiger', 'lion', 'monkey', 'elephant', 'giraffe'],
-    RARITIES: ['COMMON','UNCOMMON','RARE','EPIC'],
+    RARITIES: ['COMMON','UNCOMMON','RARE','EPIC'],// no leg here because it works without it somehow lol
+    RARITIES_ICONS: {
+        'COMMON': '<img src="img/rarity/common.webp" style="height:20px;width:auto;">',
+        'UNCOMMON': '<img src="img/rarity/uncommon.webp" style="height:20px;width:auto;">',
+        'RARE': '<img src="img/rarity/rare.webp" style="height:20px;width:auto;">',
+        'EPIC': '<img src="img/rarity/epic.webp" style="height:20px;width:auto;">',
+        'LEGENDARY': '<img src="img/rarity/legendary.webp" style="height:20px;width:auto;">'
+    },
     CropType: ['WHEAT', 'SUGAR_CANE', 'CARROT', 'POTATO', 'MELON', 'PUMPKIN', 'COCOA_BEANS', 'CACTUS', 'MUSHROOM', 'BEETROOT'],
     CROP_ICONS: { 
         'WHEAT': '<img src="img/Wheat.webp" style="height:20px;width:auto;">',

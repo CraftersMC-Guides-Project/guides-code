@@ -128,7 +128,9 @@ const UIController = {
             } else if (event.name === 'Travelling Zoo' && event.legendaryName) {
                 // Prefer full shop data if present, otherwise fallback to legendary name
                 if (event.pets && event.pets.length) {
-                    info = event.pets.map(p => `${p.icon} ${capitalize(p.name)}${p.rarity ? ' (' + p.rarity + ')' : ''}`).join(' ');
+                    // render a bullet list, slightly indented, using rarity icons
+                    const items = event.pets.map(p => `<li>${p.icon} ${capitalize(p.name)} ${this.engine.RARITIES_ICONS[p.rarity] || ''}</li>`).join('');
+                    info = ` <div style="margin-top:4px;"><ul class="zoo-pet-list">${items}</ul></div>`;
                 } else {
                     info = `Legendary pet: ${capitalize(event.legendaryName)}`;
                 }
@@ -230,7 +232,8 @@ const UIController = {
                     info = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(${event.crops.join(', ')})</span>`;
                 } else if (event.name === 'Travelling Zoo' && event.legendaryName) {
                     if (event.pets && event.pets.length) {
-                        info = ' <span style="color: var(--text-secondary); font-size: 0.9rem;">(' + event.pets.map(p => `${p.icon} ${capitalize(p.name)}${p.rarity ? ' (' + p.rarity + ')' : ''}`).join(', ') + ')</span>';
+                        const items = event.pets.map(p => `<li>${p.icon} ${capitalize(p.name)} ${this.engine.RARITIES_ICONS[p.rarity] || ''}</li>`).join('');
+                        info = ` <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top:4px;"><ul class="zoo-pet-list">${items}</ul></div>`;
                     } else {
                         info = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(Legendary: ${capitalize(event.legendaryName)})</span>`;
                     }
@@ -358,7 +361,9 @@ const UIController = {
                         let extra = '';
                         // If occurrence supplies full pet shop, display that
                         if (o.pets && o.pets.length) {
-                            extra = o.pets.map(p => `${p.icon} ${capitalize(p.name)}${p.rarity ? ' (' + p.rarity + ')' : ''}`).join(' ');
+                            // map rarity to icons and show as a bullet list to avoid overflow
+                            const items = o.pets.map(p => `<li>${p.icon} ${capitalize(p.name)} ${this.engine.RARITIES_ICONS[p.rarity] || ''}</li>`).join('');
+                            extra = `<ul class="zoo-pet-list">${items}</ul>`;
                         } else if (o.legendaryName) {
                             console.log(o.legendaryName);
                             const icon = o.legendaryIcon || (this.engine.LEGENDARY_ICONS && this.engine.LEGENDARY_ICONS[o.legendaryName]) || '';
