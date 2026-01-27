@@ -21,6 +21,8 @@ const CalendarEngine = {
     TRAVELING_ZOO_LEGENDARY_OFFSET: 2,
     pagesDataCache: new Map(),
     SEASON_NAMES: ['Spring', 'Summer', 'Autumn', 'Winter'],
+    PET_TYPES: ['tiger', 'lion', 'monkey', 'elephant', 'giraffe'],
+    RARITIES: ['COMMON','UNCOMMON','RARE','EPIC'],
     CropType: ['WHEAT', 'SUGAR_CANE', 'CARROT', 'POTATO', 'MELON', 'PUMPKIN', 'COCOA_BEANS', 'CACTUS', 'MUSHROOM', 'BEETROOT'],
     CROP_ICONS: { 
         'WHEAT': '<img src="img/Wheat.webp" style="height:20px;width:auto;">',
@@ -35,7 +37,7 @@ const CalendarEngine = {
         'BEETROOT': '<img src="img/Beetroot.webp" style="height:20px;width:auto;">' 
     },
     Random: (function() {
-        //calendarjs by irrl
+        //java random class from calendarjs by irrld
         const MUL = 0x5DEECE66Dn;
         const ADD = 0xBn;
         const MASK48 = (1n << 48n) - 1n;
@@ -69,17 +71,34 @@ const CalendarEngine = {
         };
     })(),
 
-    getZooLeg(totalDays) {
+    getZooPets(totalDays) {
         const daysSinceEpoch = totalDays - 1;
         const seasonsSinceEpoch = Math.floor(daysSinceEpoch / this.SEASON_LENGTH);
-        const year = Math.floor(seasonsSinceEpoch / this.YEAR_LENGTH) + 1;
-        const season = seasonsSinceEpoch % this.YEAR_LENGTH;
-        if (season !== this.SEASON_SUMMER && season !== this.SEASON_WINTER) return null;
+        const seed = Math.floor(seasonsSinceEpoch / 2);
+        const petTypes = this.PET_TYPES;
+        const rarities = this.RARITIES;
 
-        const occurrenceIndex = (year - 1) * 2 + (season === this.SEASON_SUMMER ? 0 : 1);
-        const idx = (occurrenceIndex + this.TRAVELING_ZOO_LEGENDARY_OFFSET) % this.LEGENDARY_PATTERN.length;
-        const name = this.LEGENDARY_PATTERN[idx];
-        return { name, icon: this.LEGENDARY_ICONS[name] || '❓' };
+        const legendaryIndex = seed % petTypes.length;
+        const picked = [legendaryIndex];
+        const rng = new this.Random(seed);
+        while (picked.length < 3) {
+            const idx = rng.nextInt(petTypes.length);
+            if (!picked.includes(idx)) picked.push(idx);
+        }
+        const pets = picked.map((idx) => {
+            const name = petTypes[idx];
+            const icon = this.LEGENDARY_ICONS[name] || '';
+            const rarity = idx === legendaryIndex ? 'LEGENDARY' : rarities[rng.nextInt(rarities.length)];
+            return { name, icon, rarity };
+        });
+
+        return { seed, pets, legendary: pets[0] };
+    },
+
+    getZooLeg(totalDays) {
+        const shop = this.getZooPets(totalDays);
+        if (!shop || !shop.legendary) return null;
+        return { name: shop.legendary.name, icon: shop.legendary.icon || '❓' };
     },
 
     getPageData(pageNumber) {
@@ -103,7 +122,7 @@ const CalendarEngine = {
         const daysSinceEpoch = totalDays - 1;
         const seasonsSinceEpoch = Math.floor(daysSinceEpoch / this.SEASON_LENGTH);
         const yearsSinceEpoch = Math.floor(seasonsSinceEpoch / this.YEAR_LENGTH);
-
+    
         const year = yearsSinceEpoch + 1;
         const season = seasonsSinceEpoch % this.YEAR_LENGTH;
         const dayOfSeason = daysSinceEpoch % this.SEASON_LENGTH + 1;
@@ -116,13 +135,13 @@ const CalendarEngine = {
             events.push({ name: "Season of the Pig", icon: '<img src="img/100px-Shiny_Orb.webp">' });
         }
         if ((season === this.SEASON_SUMMER && dayOfSeason <= 3) || (season === this.SEASON_WINTER && dayOfSeason <= 3)) {
-            const legendary = this.getZooLeg(totalDays) || { name: 'Error', icon: '❌' };
-            events.push({ name: "Travelling Zoo", icon: legendary.icon, legendaryName: legendary.name });
+            const shop = this.getZooPets(totalDays) || { legendary: { name: 'Error', icon: '❌' }, pets: [] };
+            events.push({ name: "Travelling Zoo", icon: shop.legendary.icon, legendaryName: shop.legendary.name, pets: shop.pets });
         }
             if (season === this.SEASON_WINTER && dayOfSeason >= 91) {
                 events.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.webp">' });
             }
-
+    
             return { totalDays, year, season: this.SEASON_NAMES[season], dayOfSeason, events };
     },
 
@@ -180,8 +199,8 @@ const CalendarEngine = {
         if(time.todayInYear < summerStart) nextZooDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + summerStart;
         else if(time.todayInYear < winterStart) nextZooDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + winterStart;
         else nextZooDay = (time.currentYear * this.DAYS_PER_YEAR) + summerStart;
-        const legendaryNext = this.getZooLeg(nextZooDay) || { name: 'Unknown', icon: '🐘' };
-        upcoming.push({ name: "Travelling Zoo", icon: legendaryNext.icon, legendaryName: legendaryNext.name, nextDay: nextZooDay });
+        const shop = this.getZooPets(nextZooDay) || { legendary: { name: 'Unknown', icon: '🐘' }, pets: [] };
+        upcoming.push({ name: "Travelling Zoo", icon: shop.legendary.icon, legendaryName: shop.legendary.name, pets: shop.pets, nextDay: nextZooDay });
         upcoming.forEach(event => {
             const daysUntil = event.nextDay - time.skyblockDecimalDays - 1;
             event.msUntil = daysUntil * this.MINUTES_PER_SKYBLOCK_DAY * 60 * 1000;
@@ -214,13 +233,13 @@ const CalendarEngine = {
             while (results.length < count) {
                 const s = ((year - 1) * this.DAYS_PER_YEAR) + summerStart;
                 if (s >= start) {
-                    const legendary = this.getZooLeg(s) || { name: 'Unknown', icon: '❓' };
-                    pushOcc(s, { legendaryName: legendary.name, legendaryIcon: legendary.icon });
+                    const shop = this.getZooPets(s) || { legendary: { name: 'Unknown', icon: '❓' }, pets: [] };
+                    pushOcc(s, { legendaryName: shop.legendary.name, legendaryIcon: shop.legendary.icon, pets: shop.pets });
                 }
                 const w = ((year - 1) * this.DAYS_PER_YEAR) + winterStart;
                 if (results.length < count && w >= start) {
-                    const legendary = this.getZooLeg(w) || { name: 'Unknown', icon: '❓' };
-                    pushOcc(w, { legendaryName: legendary.name, legendaryIcon: legendary.icon });
+                    const shop = this.getZooPets(w) || { legendary: { name: 'Unknown', icon: '❓' }, pets: [] };
+                    pushOcc(w, { legendaryName: shop.legendary.name, legendaryIcon: shop.legendary.icon, pets: shop.pets });
                 }
                 year++;
             }
@@ -244,7 +263,7 @@ const CalendarEngine = {
 
         return results.slice(0, count);
     },
-
+    
     getRealTimeForDay(totalDays) {
         const realSeconds = this.START_OF_TIMES + ((totalDays - 1) * this.MINUTES_PER_SKYBLOCK_DAY * 60);
         return new Date(realSeconds * 1000);

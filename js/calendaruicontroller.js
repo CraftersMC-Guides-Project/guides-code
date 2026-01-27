@@ -13,6 +13,7 @@ const UIController = {
         const time = this.engine.getCurrentTimeData();
         this.todaySkyblock = time.todaySkyblock;
         this.currentPage = Math.max(1, Math.ceil(this.todaySkyblock / this.engine.DAYS_PER_PAGE));
+        if (this.elements.yearInput) this.elements.yearInput.value = time.currentYear;
         this.engine.preCalcPage(this.currentPage);
         this.engine.preCalcPage(this.currentPage + 1);
         this.loadPageToday();
@@ -22,8 +23,9 @@ const UIController = {
     elementLoad() {
         this.elements = {
             calGrid: document.getElementById('grid'),
-            pageNum: document.getElementById('page-counter'),
             yearNum: document.getElementById('year'),
+            yearInput: document.getElementById('year-input'),
+            yearGo: document.getElementById('year-go'),
             nextPage: document.getElementById('next-page'),
             prevPage: document.getElementById('prev-page'),
             dateHeader: document.getElementById('date-top'),
@@ -36,6 +38,8 @@ const UIController = {
     setupListeners() {
         this.elements.nextPage.addEventListener('click', () => this.nextPage());
         this.elements.prevPage.addEventListener('click', () => this.prevPage());
+        if (this.elements.yearGo) this.elements.yearGo.addEventListener('click', () => this.goToYearFromInput());
+        if (this.elements.yearInput) this.elements.yearInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.goToYearFromInput(); });
         this.elements.modal.addEventListener('click', (e) => { if (e.target === this.elements.modal) this.closeModal(); });
         this.elements.modalClose.addEventListener('click', () => this.closeModal());
 
@@ -122,7 +126,12 @@ const UIController = {
             if (event.type === 'farming' && event.crops) {
                 info = event.crops.map(c => this.engine.CROP_ICONS[c] || '?').join(' ');
             } else if (event.name === 'Travelling Zoo' && event.legendaryName) {
-                info = `Legendary pet: ${capitalize(event.legendaryName)}`;
+                // Prefer full shop data if present, otherwise fallback to legendary name
+                if (event.pets && event.pets.length) {
+                    info = event.pets.map(p => `${p.icon} ${capitalize(p.name)}${p.rarity ? ' (' + p.rarity + ')' : ''}`).join(' ');
+                } else {
+                    info = `Legendary pet: ${capitalize(event.legendaryName)}`;
+                }
             }
             return `
                 <div class="event-timer-item" data-event-index="${idx}">
@@ -143,8 +152,9 @@ const UIController = {
         loadPage(page) {
             this.elements.calGrid.innerHTML = '';
             if (!page) return;
-            
-            this.elements.pageNum.textContent = this.currentPage;
+
+            // keep year input synced with what's shown on the page
+            if (this.elements.yearInput) this.elements.yearInput.value = page[0].year;
             this.elements.yearNum.textContent = page[0].year;
             this.elements.prevPage.disabled = this.currentPage <= 1;
 
@@ -179,7 +189,7 @@ const UIController = {
         loadPageToday() {
             const page = this.engine.getPageData(this.currentPage);
             if (page && page.length > 0) {
-                this.elements.pageNum.textContent = this.currentPage;
+                if (this.elements.yearInput) this.elements.yearInput.value = page[0].year;
                 this.elements.yearNum.textContent = page[0].year;
                 this.elements.prevPage.disabled = this.currentPage <= 1;
             }
@@ -219,7 +229,11 @@ const UIController = {
                 if (event.type === 'farming') {
                     info = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(${event.crops.join(', ')})</span>`;
                 } else if (event.name === 'Travelling Zoo' && event.legendaryName) {
-                    info = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(Legendary: ${capitalize(event.legendaryName)})</span>`;
+                    if (event.pets && event.pets.length) {
+                        info = ' <span style="color: var(--text-secondary); font-size: 0.9rem;">(' + event.pets.map(p => `${p.icon} ${capitalize(p.name)}${p.rarity ? ' (' + p.rarity + ')' : ''}`).join(', ') + ')</span>';
+                    } else {
+                        info = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(Legendary: ${capitalize(event.legendaryName)})</span>`;
+                    }
                 }
                 li.innerHTML = `<span class="event-icon">${event.icon}</span> <span>${event.name}${info}</span>`;
                 eventListEl.appendChild(li);
@@ -342,7 +356,10 @@ const UIController = {
                         const realStr = o.realDate.toLocaleString();
                         const until = this.timeCorrect(o.msUntil);
                         let extra = '';
-                        if (o.legendaryName) {
+                        // If occurrence supplies full pet shop, display that
+                        if (o.pets && o.pets.length) {
+                            extra = o.pets.map(p => `${p.icon} ${capitalize(p.name)}${p.rarity ? ' (' + p.rarity + ')' : ''}`).join(' ');
+                        } else if (o.legendaryName) {
                             console.log(o.legendaryName);
                             const icon = o.legendaryIcon || (this.engine.LEGENDARY_ICONS && this.engine.LEGENDARY_ICONS[o.legendaryName]) || '';
                             extra = `<span class="occ-extra">${icon} ${capitalize(o.legendaryName)}</span>`;
@@ -377,54 +394,37 @@ const UIController = {
         },
         //THIS WAS A PAINNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
         toToday() {
-            engine = this.engine;
-            ui = this;
             try {
-                if (!engine) {
+                if (!this.engine) {
                     const today = document.getElementById('today') || document.querySelector('.today');
                     if (today) today.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    console.warn('where calendarengine?');
+                    console.warn('missing engine');
                     return;
                 }
-
-                if (!ui) {
-                    console.warn('cant find ui even tho it is in ui');
-                    return;
-                }
-
-                const time = engine.getCurrentTimeData();
-                const pageDaysNum = engine.DAYS_PER_PAGE || 31;
+                const time = this.engine.getCurrentTimeData();
+                const pageDaysNum = this.engine.DAYS_PER_PAGE || 31;
                 const todayPage = Math.max(1, Math.ceil(time.todaySkyblock / pageDaysNum));
-
-                if (ui && typeof loadPageToday === 'function') {
-                    todaySkyblock = time.todaySkyblock;
-                    currentPage = todayPage;
-                    if (typeof engine.preCalcPage === 'function') engine.preCalcPage(todayPage + 1);
-                    loadPageToday();
-
-                    setTimeout(() => {
-                        const today = document.getElementById('today') || document.querySelector('.today');
-                        if (today) today.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 50);
-                    return;
-                }
-                const page = document.getElementById('page-counter');
-                if (!page) return;
-                let curr = Number(page.textContent) || 1;
-                const diff = todayPage - curr;
-                const btn = diff > 0 ? document.getElementById('next-page') : document.getElementById('prev-page');
-                const clicks = Math.abs(diff);
-                for (let i = 0; i < clicks; i++) {
-                    if (btn) btn.click();
-                }
+                this.currentPage = todayPage;
+                if (typeof this.engine.preCalcPage === 'function') this.engine.preCalcPage(todayPage + 1);
+                this.loadPageToday();
                 setTimeout(() => {
-                    const el = document.getElementById('today') || document.querySelector('.today');
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 200);
+                    const today = document.getElementById('today') || document.querySelector('.today');
+                    if (today) today.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 50);
             } catch (e) {
-                console.error('error:', e);
+                console.error('toToday error:', e);
             }
-        }
+        },
+        goToYearFromInput() {
+            const raw = this.elements && this.elements.yearInput ? this.elements.yearInput.value : null;
+            const year = Number(raw);
+            if (!Number.isInteger(year) || year < 1) return;
+            const firstDay = ((year - 1) * this.engine.DAYS_PER_YEAR) + 1;
+            const page = Math.max(1, Math.ceil(firstDay / this.engine.DAYS_PER_PAGE));
+            this.currentPage = page;
+            if (typeof this.engine.preCalcPage === 'function') this.engine.preCalcPage(this.currentPage + 1);
+            this.loadPageToday();
+        },
     };
 
 document.addEventListener('DOMContentLoaded', () => {
