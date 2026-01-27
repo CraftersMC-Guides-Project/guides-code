@@ -153,8 +153,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 8,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "AndroidPARAS",
+                    "score": "50.9M+"
                 },
                 {
                     "rank": 9,
@@ -301,13 +301,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "Rehan2038",
+                    "score": "97.1M+"
                 },
                 {
                     "rank": 5,
-                    "name": "Rehan2038",
-                    "score": "93.5M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 6,
@@ -342,13 +342,13 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "HeGzoStRqFe",
-                    "score": "179.9M+"
+                    "name": "KaosTheChaos",
+                    "score": "N/A"
                 },
                 {
                     "rank": 2,
-                    "name": "KaosTheChaos",
-                    "score": "N/A"
+                    "name": "HeGzoStRqFe",
+                    "score": "179.9M+"
                 },
                 {
                     "rank": 3,
@@ -455,7 +455,7 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "ENTITY_3038628",
-                    "score": "N/A"
+                    "score": "32.7M+"
                 },
                 {
                     "rank": 2,
@@ -516,7 +516,7 @@ const collectionsData = {
                 {
                     "rank": 2,
                     "name": "Copingo",
-                    "score": "125M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 3,
@@ -525,8 +525,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "SquareSquid8492",
+                    "score": "162.6M+"
                 },
                 {
                     "rank": 5,
@@ -792,12 +792,12 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "Lenny1sCo0l",
+                    "name": "HeGzoStRqFe",
                     "score": "N/A"
                 },
                 {
                     "rank": 2,
-                    "name": "Unknown",
+                    "name": "Lenny1sCo0l",
                     "score": "N/A"
                 },
                 {
@@ -945,7 +945,7 @@ const collectionsData = {
                 {
                     "rank": 9,
                     "name": "club32",
-                    "score": "N/A"
+                    "score": "45.3M+"
                 },
                 {
                     "rank": 10,
@@ -1016,8 +1016,8 @@ const collectionsData = {
             "players": [
                 {
                     "rank": 1,
-                    "name": "UbeRNooB8834",
-                    "score": "N/A"
+                    "name": "Hefty6248",
+                    "score": "1B+"
                 },
                 {
                     "rank": 2,
@@ -1103,12 +1103,12 @@ const collectionsData = {
                 {
                     "rank": 7,
                     "name": "JODHEMANT8975",
-                    "score": "37.9M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 8,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "club32",
+                    "score": "43M+"
                 },
                 {
                     "rank": 9,
@@ -1720,8 +1720,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 7,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "MADERUCHIA07",
+                    "score": "28.4M+"
                 },
                 {
                     "rank": 8,
@@ -1730,8 +1730,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "MADERUCHIA07",
-                    "score": "23.7M+"
+                    "name": "Unknown",
+                    "score": "N/A"
                 },
                 {
                     "rank": 10,
@@ -1776,8 +1776,8 @@ const collectionsData = {
                 },
                 {
                     "rank": 7,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "MADERUCHIA07",
+                    "score": "18.6M+"
                 },
                 {
                     "rank": 8,
@@ -1859,7 +1859,7 @@ const collectionsData = {
                 {
                     "rank": 1,
                     "name": "AhmedTheGuy6100",
-                    "score": "167.4M+"
+                    "score": "193.4M+"
                 },
                 {
                     "rank": 2,

@@ -1,4 +1,4 @@
-// Data Here: Achievements, Arctic Cave Race, Avg Skill, Cakes, Gems, Crafters Level, Playtime, Slayers, Damage, Networth, Pets, Coins, Skills, Target Practice
+// Data Here: Achievements, Arctic Cave Race, Avg Skill, Cakes, Gems, Crafters Level, Playtime, Slayers, Damage, Networth, Pets, Coins, Skills, Target Practice, Ender Node Hunt
 // Not here: Collections, Farming Contests, Boss Time (Or any other with 200-300 lines data)
 // Achievements
 const achievementsData = [
@@ -9,22 +9,22 @@ const achievementsData = [
     { rank: 5, name: "Dharmaveer31", achievements: "57" },
     { rank: 6, name: "SammyMishu", achievements: "52" },
     { rank: 7, name: "Perry3338", achievements: "51" },
-    { rank: 8, name: "TGJASSIYT", achievements: "49" },
-    { rank: 9, name: "Rehan2038", achievements: "48" },
-    { rank: 10, name: "Kautilya3072", achievements: "46" }
+    { rank: 8, name: "Rehan2038", achievements: "51" },
+    { rank: 9, name: "TGJASSIYT", achievements: "49" },
+    { rank: 10, name: "club32", achievements: "48" }
 ];
 // Avg Skill
 const skillData = [
-  { rank: 1, name: "SphinxWraith/David_R06", level: "51.7" },
-  { rank: 2, name: "Moerderfisch", level: "50.7" },
-  { rank: 3, name: "GRAVITY8303", level: "50.2" },
-  { rank: 4, name: "AndyGamer024/Aryaan045", level: "50" },
-  { rank: 5, name: "JODHEMANT8975", level: "48.7" },
+  { rank: 1, name: "SphinxWraith/David_R06/Moerderfisch", level: "51.7" },
+  { rank: 2, name: "GRAVITY8303", level: "50.2" },
+  { rank: 3, name: "AndyGamer024/Aryaan045", level: "50" },
+  { rank: 4, name: "Kg_lcky_01", level: "49" },
+  { rank: 5, name: "JODHEMANT8975/GlumnorbG", level: "48.7" },
   { rank: 6, name: "Itzomkar1232891", level: "47.2" },
   { rank: 7, name: "DRONZAR_OP", level: "46.2" },
-  { rank: 8, name: "Kg_lcky_01", level: "46" },
-  { rank: 9, name: "Rehan2038", level: "45" },
-  { rank: 10, name: "Perry3338", level: "39.5" }
+  { rank: 8, name: "Rehan2038", level: "45.2" },
+  { rank: 9, name: "Perry3338", level: "39.5" },
+  { rank: 10, name: "HaleCellar7702", level: "34.8" }
 ];
 // Cakes
 const cakeData = [
@@ -32,51 +32,51 @@ const cakeData = [
   { rank: 2, name: "MythicalPanda30", cakes: "172" },
   { rank: 3, name: "TGJASSIYT", cakes: "74" },
   { rank: 4, name: "Ghosthunter4233", cakes: "26" },
-  { rank: 5, name: "HueDisNwPhn", cakes: "19" },
-  { rank: 6, name: "C69P2W", cakes: "5" },
-  { rank: 7, name: "NetworkPg", cakes: "1" },
-  { rank: 8, name: "Unknown", cakes: "N/A" },
+  { rank: 5, name: "Rehan2038/HueDisNwPhn", cakes: "22" },
+  { rank: 6, name: "HueDisNwPhn", cakes: "19" },
+  { rank: 7, name: "C69P2W", cakes: "5" },
+  { rank: 8, name: "NetworkPg", cakes: "3" },
   { rank: 9, name: "Unknown", cakes: "N/A" },
   { rank: 10, name: "Unknown", cakes: "N/A" }
 ];
 // Gems 
 const gemsData = [
-  { rank: 1, name: "Darkshadow52195", gems: "54199" },
-  { rank: 2, name: "Shakilbaby", gems: "52825" },
-  { rank: 3, name: "POSTALFERN73293", gems: "16426" },
-  { rank: 4, name: "KRIZMORRENO", gems: "12970" },
-  { rank: 5, name: "Mistry_Human", gems: "7625" },
-  { rank: 6, name: "Jaddu0192", gems: "7325" },
-  { rank: 7, name: "Chaosgem999yt", gems: "7128" },
-  { rank: 8, name: "Craniax6797", gems: "6290" },
-  { rank: 9, name: "Preenuu", gems: "3600" },
-  { rank: 10, name: "Unknown", gems: "N/A" }
+  { rank: 1, name: "RaiTheBirds", gems: "208k" },
+  { rank: 2, name: "Darkshadow52195", gems: "54K" },
+  { rank: 3, name: "Shakilbaby", gems: "52K" },
+  { rank: 4, name: "Jaddu0192", gems: "42.6K" },
+  { rank: 5, name: "Craniax6797", gems: "19.2K" },
+  { rank: 6, name: "IceBerg899", gems: "16.4K" },
+  { rank: 7, name: "POSTALFERN73293", gems: "16K" },
+  { rank: 8, name: "KRIZMORRENO", gems: "12K" },
+  { rank: 9, name: "Spideyg4mer77", gems: "10.7K" },
+  { rank: 10, name: "Mistry_Human", gems: "7.6K" }
 ];
 // Crafters Level 
 const levelsData = [
   { rank: 1, name: "HeGzoStRqFe", level: "105" },
   { rank: 2, name: "SphinxWraith", level: "91" },
   { rank: 3, name: "hornrush89", level: "88" },
-  { rank: 4, name: "Froncyte", level: "58" },
-  { rank: 5, name: "JODHEMANT8975", level: "50" },
-  { rank: 6, name: "Kg_lcky_01", level: "48" },
-  { rank: 7, name: "Perry3338", level: "44" },
-  { rank: 8, name: "Jeremy2075/Darkshadow52195", level: "40" },
-  { rank: 9, name: "Dharmaveer31/HueDisNwPhn", level: "39" },
-  { rank: 10, name: "MythicalPanda30", level: "27" }
+  { rank: 4, name: "Luv_bats007", level: "61" },
+  { rank: 5, name: "Froncyte", level: "58" },
+  { rank: 6, name: "JODHEMANT8975", level: "50" },
+  { rank: 7, name: "Kg_lcky_01", level: "48" },
+  { rank: 8, name: "Perry3338/club32", level: "44" },
+  { rank: 9, name: "HueDisNwPhn", level: "43" },
+  { rank: 10, name: "Jeremy2075/Darkshadow52195", level: "40" }
 ];
 // Playtime
 const playtimeData = [
-    { rank: 1, name: "SphinxWraith", playtime: "6454.9h" },
-    { rank: 2, name: "Perry3338", playtime: "5064.1h" },
-    { rank: 3, name: "gelacktic", playtime: "3841h" },
-    { rank: 4, name: "DueBacon2007102", playtime: "3809.1h" },
-    { rank: 5, name: "JODHEMANT8975", playtime: "3352.3h" },
-    { rank: 6, name: "Creepyshorts", playtime: "3350.7h" },
-    { rank: 7, name: "Itzomkar1232891", playtime: "3001h" },
-    { rank: 8, name: "Kg_lcky_01", playtime: "2515.7h" },
-    { rank: 9, name: "HueDisNwPhn", playtime: "2294.8h" },
-    { rank: 10, name: "DRONZAR_OP", playtime: "2104h" }
+    { rank: 1, name: "HeGzoStRqFe", playtime: "8156.4h" },
+    { rank: 2, name: "SphinxWraith", playtime: "6454.9h" },
+    { rank: 3, name: "Perry3338", playtime: "5064.1h" },
+    { rank: 4, name: "gelacktic", playtime: "3841h" },
+    { rank: 5, name: "DueBacon2007102", playtime: "3809.1h" },
+    { rank: 6, name: "JODHEMANT8975", playtime: "3352.3h" },
+    { rank: 7, name: "Creepyshorts", playtime: "3350.7h" },
+    { rank: 8, name: "Itzomkar1232891", playtime: "3001h" },
+    { rank: 9, name: "HueDisNwPhn", playtime: "2605.8h" },
+    { rank: 10, name: "Kg_lcky_01", playtime: "2515.7h" }
 ];
 // Zombie and Wolf Slayer Exp 
 const collectionsData = [
@@ -88,7 +88,7 @@ const collectionsData = [
       { "rank": 2, "name": "HeGzoStRqFe", "score": "N/A" },
       { "rank": 3, "name": "DueBacon2007102", "score": "34M+" },
       { "rank": 4, "name": "Itzomkar1232891", "score": "N/A" },
-      { "rank": 5, "name": "Kg_lcky_01", "score": "N/A" },
+      { "rank": 5, "name": "Kg_lcky_01", "score": "27.3M+" },
       { "rank": 6, "name": "DRONZAR_OP", "score": "25.6M+" },
       { "rank": 7, "name": "SoundClover8088", "score": "19.1M+" },
       { "rank": 8, "name": "Firegod174", "score": "17M+" },
@@ -100,8 +100,8 @@ const collectionsData = [
     "name": "Wolf Slayer",
     "image": "img/fenrir-packmaster.png",
     "players": [
-      { "rank": 1, "name": "DueBacon2007102", "score": "N/A" },
-      { "rank": 2, "name": "Aryaan045", "score": "13M+" },
+      { "rank": 1, "name": "Aryaan045", "score": "17.7M+" },
+      { "rank": 2, "name": "DueBacon2007102", "score": "N/A" },
       { "rank": 3, "name": "SphinxWraith", "score": "10M+" },
       { "rank": 4, "name": "Herejefferson", "score": "N/A" },
       { "rank": 5, "name": "HeGzoStRqFe", "score": "N/A" },
@@ -291,6 +291,18 @@ const targetPracticeLeaderboard = {
 // Arctic Cave Race
 const arcticCaveRace = {
     name: "Arctic Cave Race",
+    scoreLabel: "Time",
+    players: [
+        { rank: 1, name: "Unknown", score: "N/A" },
+        { rank: 2, name: "Unknown", score: "N/A" },
+        { rank: 3, name: "Unknown", score: "N/A" },
+        { rank: 4, name: "Unknown", score: "N/A" },
+        { rank: 5, name: "Unknown", score: "N/A" }
+    ]
+};
+// Ender Node Hunt
+const enderNodeHunt = {
+    name: "Ender Node Hunt",
     scoreLabel: "Time",
     players: [
         { rank: 1, name: "Unknown", score: "N/A" },
