@@ -44,13 +44,13 @@ const gemsData = [
   { rank: 1, name: "RaiTheBirds", gems: "208k" },
   { rank: 2, name: "Darkshadow52195", gems: "54K" },
   { rank: 3, name: "Shakilbaby", gems: "52K" },
-  { rank: 4, name: "Jaddu0192", gems: "42.6K" },
+  { rank: 4, name: "Jaddu0192/Dipanshu_FF", gems: "42.6K" },
   { rank: 5, name: "Craniax6797", gems: "19.2K" },
-  { rank: 6, name: "IceBerg899", gems: "16.4K" },
-  { rank: 7, name: "POSTALFERN73293", gems: "16K" },
-  { rank: 8, name: "KRIZMORRENO", gems: "12K" },
-  { rank: 9, name: "Spideyg4mer77", gems: "10.7K" },
-  { rank: 10, name: "Mistry_Human", gems: "7.6K" }
+  { rank: 6, name: "Mistry_Human", gems: "16.7K" },
+  { rank: 7, name: "IceBerg899", gems: "16.4K" },
+  { rank: 8, name: "POSTALFERN73293", gems: "16K" },
+  { rank: 9, name: "KRIZMORRENO", gems: "12K" },
+  { rank: 10, name: "Spideyg4mer77", gems: "10.7K" }
 ];
 // Crafters Level 
 const levelsData = [
