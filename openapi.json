@@ -1,0 +1,1818 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "CraftersMC Public API",
+    "version": "v1-85e8c82",
+    "x-git": {
+      "commit": "85e8c82",
+      "branch": "main",
+      "time": "2026-02-02T23:54:48+0300"
+    },
+    "x-logo": {
+      "url": "https://craftersmc.net/data/assets/logo/newOriginal512.png",
+      "altText": "CraftersMC"
+    }
+  },
+  "paths": {
+    "/v1/network/status": {
+      "get": {
+        "tags": [
+          "Network"
+        ],
+        "summary": "Network Status",
+        "description": "Returns current network status including online player count.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Network status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerStatusResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/v1/player/{username}": {
+      "get": {
+        "tags": [
+          "Players"
+        ],
+        "summary": "Player",
+        "description": "Retrieves basic profile information for a player by their username.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "Minecraft username (3-16 characters, alphanumeric and underscore only)",
+            "required": true,
+            "deprecated": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Player found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Player"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid username format"
+          },
+          "404": {
+            "description": "Player not found"
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/v1/skyblock/bazaar/items": {
+      "get": {
+        "tags": [
+          "SkyBlock Bazaar"
+        ],
+        "summary": "Item List",
+        "description": "Get a list of available items in Bazaar.\n",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BazaarItemList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data was not populated yet"
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/v1/skyblock/bazaar/{itemId}/details": {
+      "get": {
+        "tags": [
+          "SkyBlock Bazaar"
+        ],
+        "summary": "Item Details",
+        "description": "Get the details of a Bazaar item.\n\nThis endpoint will return the top buy entries, top sell entries, buy volume and sell volume\n",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "description": "Identifier of the item, see the items endpoint for list of available values.",
+            "required": true,
+            "deprecated": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BazaarItemInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data was not populated yet"
+          },
+          "503": {
+            "description": "Service temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/v1/skyblock/profile/{profileId}": {
+      "get": {
+        "tags": [
+          "SkyBlock"
+        ],
+        "summary": "SkyBlock Profile",
+        "description": "Retrieves a SkyBlock profile.\n\n## Conditional Fields\nSome fields are only included if the profile owner has enabled them in their API settings.\n",
+        "parameters": [
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "UUID of the SkyBlock profile (32 hex characters, no dashes)",
+            "required": true,
+            "deprecated": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profile found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkyBlockProfile"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid profile ID format"
+          },
+          "404": {
+            "description": "Profile not found"
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/v1/skyblock/settings": {
+      "get": {
+        "tags": [
+          "SkyBlock"
+        ],
+        "summary": "SkyBlock Settings",
+        "description": "Retrieves a the global SkyBlock Settings.\n\nThese settings include the banner image queue for the SkyBlock Menu. Only the first non-expired image is served.\n",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkyBlockSettings"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Settings were not populated yet."
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GameCount": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "modes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        }
+      },
+      "ServerStatusResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "games": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/GameCount"
+            }
+          },
+          "playerCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxPlayerCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fullMaintenance": {
+            "type": "boolean"
+          },
+          "whitelistRank": {
+            "$ref": "#/components/schemas/PlayerRank"
+          },
+          "plannedMaintenance": {
+            "$ref": "#/components/schemas/PlannedMaintenance"
+          }
+        },
+        "required": [
+          "playerCount",
+          "maxPlayerCount",
+          "fullMaintenance"
+        ]
+      },
+      "BazaarItemInfo": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "itemId": {
+            "type": "string"
+          },
+          "buyTopEntries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TopEntry"
+            }
+          },
+          "sellTopEntries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TopEntry"
+            }
+          },
+          "buyVolume": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sellVolume": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "weeklyAveragePrice": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "buyVolume",
+          "sellVolume",
+          "weeklyAveragePrice"
+        ]
+      },
+      "BazaarItemList": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ImagePair": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          }
+        }
+      },
+      "MenuBanner": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "images": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ImagePair"
+            }
+          },
+          "expireAt": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "expireAt"
+        ]
+      },
+      "SkyBlockSettings": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "menuBannerQueue": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MenuBanner"
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "TopEntry": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "orderCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "price",
+          "quantity",
+          "orderCount"
+        ]
+      },
+      "AcceptedIslandVisits": {
+        "type": "string",
+        "enum": [
+          "ALL",
+          "FRIENDS",
+          "NONE"
+        ]
+      },
+      "FriendRequests": {
+        "type": "string",
+        "enum": [
+          "ALL",
+          "FRIENDS_OF_FRIEND",
+          "NONE"
+        ]
+      },
+      "PlayerRank": {
+        "type": "string",
+        "enum": [
+          "DEFAULT",
+          "VOTER",
+          "OLD_GOLD",
+          "OLD_DIAMOND",
+          "OLD_EMERALD",
+          "GOLD",
+          "DIAMOND",
+          "EMERALD",
+          "YOUTUBER",
+          "TRAINEE",
+          "HELPER",
+          "BUILDER",
+          "MODERATOR",
+          "DEVELOPER",
+          "SR_MODERATOR",
+          "ADMIN",
+          "OWNER"
+        ]
+      },
+      "PrivateMessages": {
+        "type": "string",
+        "enum": [
+          "ALL",
+          "ONLY_FRIENDS",
+          "NONE"
+        ]
+      },
+      "QuestStatus": {
+        "type": "string",
+        "enum": [
+          "COMPLETE",
+          "ACTIVE"
+        ]
+      },
+      "ServerType": {
+        "type": "string",
+        "enum": [
+          "HUB",
+          "SKYBLOCK_HUB",
+          "SKYBLOCK_ISLAND",
+          "SKYBLOCK_MINING_1",
+          "SKYBLOCK_THE_PARK",
+          "SKYBLOCK_END"
+        ]
+      },
+      "SkyBlockBankAccountTier": {
+        "type": "string",
+        "enum": [
+          "BASIC",
+          "EXCLUSIVE",
+          "ELITE",
+          "SUPER_ELITE",
+          "BILLIONAIRE",
+          "MULTI_BILLIONAIRE"
+        ]
+      },
+      "SkyBlockProfileType": {
+        "type": "string",
+        "enum": [
+          "DEFAULT",
+          "IRONMAN",
+          "STRANDED"
+        ]
+      },
+      "SlayerType": {
+        "type": "string",
+        "enum": [
+          "ZOMBIE",
+          "WOLF",
+          "SPIDER"
+        ]
+      },
+      "GameStats": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "skyBlock": {
+            "$ref": "#/components/schemas/SkyBlockStats"
+          }
+        }
+      },
+      "PlannedMaintenance": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "type": "string"
+          },
+          "startTimestamp": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "estimatedTime": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "startTimestamp",
+          "estimatedTime"
+        ]
+      },
+      "Player": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "sbClaimedCakes": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          "otherPacks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "activePackId": {
+            "type": "string"
+          },
+          "lastServer": {
+            "$ref": "#/components/schemas/ServerType"
+          },
+          "playtimePerGame": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          "pixelId": {
+            "type": "string"
+          },
+          "nameHistory": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "totalPlaytime": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "selectedPet": {
+            "type": "string"
+          },
+          "selectedParticle": {
+            "type": "string"
+          },
+          "selectedSuitHelmet": {
+            "type": "string"
+          },
+          "selectedSuitChestplate": {
+            "type": "string"
+          },
+          "selectedSuitLeggings": {
+            "type": "string"
+          },
+          "selectedSuitBoots": {
+            "type": "string"
+          },
+          "selectedGadget": {
+            "type": "string"
+          },
+          "selectedMorph": {
+            "type": "string"
+          },
+          "unlockedCollectables": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "networkCoins": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "playingMusic": {
+            "type": "string"
+          },
+          "musicQueue": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "musicShuffle": {
+            "type": "boolean"
+          },
+          "privateMessages": {
+            "$ref": "#/components/schemas/PrivateMessages"
+          },
+          "friendRequests": {
+            "$ref": "#/components/schemas/FriendRequests"
+          },
+          "language": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "rank": {
+            "$ref": "#/components/schemas/PlayerRankInfo"
+          },
+          "selectedRank": {
+            "$ref": "#/components/schemas/PlayerRank"
+          },
+          "stats": {
+            "$ref": "#/components/schemas/GameStats"
+          },
+          "firstLogin": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastLogin": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastSeenProtocol": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lastVoteClaimedTime": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "playtimePerGame",
+          "nameHistory",
+          "totalPlaytime",
+          "unlockedCollectables",
+          "networkCoins",
+          "privateMessages",
+          "friendRequests",
+          "language",
+          "rank",
+          "selectedRank",
+          "stats",
+          "lastSeenProtocol",
+          "lastVoteClaimedTime"
+        ]
+      },
+      "PlayerRankInfo": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ranks": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/SimpleRankInfo"
+            }
+          }
+        }
+      },
+      "SimpleRankInfo": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "endAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "textColor": {
+            "type": "string"
+          },
+          "nameColor": {
+            "type": "string"
+          },
+          "prefix": {
+            "type": "string"
+          },
+          "suffix": {
+            "type": "string"
+          }
+        },
+        "required": []
+      },
+      "ChatChannel": {
+        "type": "string",
+        "enum": [
+          "LOCAL",
+          "GLOBAL",
+          "COOP"
+        ]
+      },
+      "ItemRarity": {
+        "type": "string",
+        "enum": [
+          "COMMON",
+          "UNCOMMON",
+          "RARE",
+          "EPIC",
+          "LEGENDARY",
+          "MYTHIC",
+          "SUPREME",
+          "SPECIAL",
+          "VERY_SPECIAL"
+        ]
+      },
+      "Location5": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "type": "number",
+            "format": "double"
+          },
+          "y": {
+            "type": "number",
+            "format": "double"
+          },
+          "z": {
+            "type": "number",
+            "format": "double"
+          },
+          "yaw": {
+            "type": "number",
+            "format": "double"
+          },
+          "pitch": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "z",
+          "yaw",
+          "pitch"
+        ]
+      },
+      "DailyQuest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "updatedAtSb": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "startedAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "startedAtSb": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "status": {
+            "$ref": "#/components/schemas/QuestStatus"
+          },
+          "completedAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "completedAtSb": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "extra": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ExtraInfo"
+            }
+          },
+          "extraNullable": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            },
+            "nullable": true
+          }
+        },
+        "required": [
+          "updatedAt",
+          "updatedAtSb",
+          "startedAt",
+          "startedAtSb",
+          "completedAt",
+          "completedAtSb",
+          "extra"
+        ]
+      },
+      "Quest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "updatedAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "updatedAtSb": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "startedAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "startedAtSb": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "status": {
+            "$ref": "#/components/schemas/QuestStatus"
+          },
+          "completedObjectives": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "claimedRewards": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "completedObjectivesNullable": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "completedAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "completedAtSb": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "extra": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ExtraInfo"
+            }
+          },
+          "extraNullable": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            },
+            "nullable": true
+          }
+        },
+        "required": [
+          "updatedAt",
+          "updatedAtSb",
+          "startedAt",
+          "startedAtSb",
+          "completedObjectives",
+          "claimedRewards",
+          "completedAt",
+          "completedAtSb",
+          "extra"
+        ]
+      },
+      "ArcticCaveRaceData": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tries": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "bestTimeMilliseconds": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "lastTimeMilliseconds": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "tries"
+        ]
+      },
+      "CuteProfileName": {
+        "type": "string",
+        "enum": [
+          "APPLE",
+          "BANANA",
+          "BLUEBERRY",
+          "COCONUT",
+          "CUCUMBER",
+          "GRAPES",
+          "KIWI",
+          "LEMON",
+          "LIME",
+          "MANGO",
+          "ORANGE",
+          "PAPAYA",
+          "PEAR",
+          "PEACH",
+          "PINEAPPLE",
+          "POMEGRANTE",
+          "RASPBERRY",
+          "STRAWBERRY",
+          "TOMATO",
+          "WATERMELON",
+          "ZUCCHINI",
+          "STARFRUIT",
+          "PLUM",
+          "MANDARIN",
+          "CHERRY",
+          "QUINCE",
+          "DRAGONFRUIT",
+          "AVOCADO"
+        ]
+      },
+      "DailySkillExperienceData": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "enchantWrapper": {
+            "$ref": "#/components/schemas/ResettingValue"
+          },
+          "enchantExp": {
+            "type": "number",
+            "format": "double"
+          },
+          "enchant": {
+            "$ref": "#/components/schemas/ResettingValue"
+          }
+        },
+        "required": [
+          "enchantWrapper",
+          "enchantExp"
+        ]
+      },
+      "EnderNodeHuntData": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tries": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "bestTimeMilliseconds": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "lastTimeMilliseconds": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "tries"
+        ]
+      },
+      "ExperimentationData": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "timeLeftUntilReset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "superpairs": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "superpairResets": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalSuperpairs": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "timeLeftUntilReset",
+          "superpairs",
+          "superpairResets",
+          "totalSuperpairs"
+        ]
+      },
+      "FarmingContestData": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "personalBests": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "bracketHits": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          "highestBrackets": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        }
+      },
+      "PetSitter": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "entry": {
+            "$ref": "#/components/schemas/Entry"
+          }
+        }
+      },
+      "Entry": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "start": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "end": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemNbt": {
+            "type": "string"
+          },
+          "petName": {
+            "type": "string"
+          },
+          "petRarity": {
+            "$ref": "#/components/schemas/ItemRarity"
+          },
+          "petLevel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "paidCoins": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "paidItems": {
+            "type": "string"
+          },
+          "newRarity": {
+            "$ref": "#/components/schemas/ItemRarity"
+          },
+          "petType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "petLevel",
+          "paidCoins"
+        ]
+      },
+      "RealityShardData": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "collectedShards": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "realityShardStatTotal": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "realityShardStatBonus": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fusions": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "collectedShards",
+          "realityShardStatTotal",
+          "realityShardStatBonus",
+          "fusions"
+        ]
+      },
+      "RelationshipData": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "experiences": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          "extra": {
+            "type": "object",
+            "nullable": true
+          },
+          "experience": {
+            "type": "number",
+            "format": "double"
+          },
+          "level": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "experiences",
+          "extra",
+          "extra",
+          "experience",
+          "level"
+        ]
+      },
+      "ExtraInfo": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kv": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "kv"
+        ]
+      },
+      "SkyBlockBank": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tier": {
+            "$ref": "#/components/schemas/SkyBlockBankAccountTier"
+          },
+          "balance": {
+            "type": "number",
+            "format": "double"
+          },
+          "highestBalance": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "balance",
+          "highestBalance"
+        ]
+      },
+      "SkyBlockProfile": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "deletedAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "gameMode": {
+            "$ref": "#/components/schemas/SkyBlockProfileType"
+          },
+          "cuteName": {
+            "$ref": "#/components/schemas/CuteProfileName"
+          },
+          "craftedMinions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "playtimes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          "ownerLastRank": {
+            "$ref": "#/components/schemas/PlayerRank"
+          },
+          "collectionContributions": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          },
+          "collections": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          "leftMembers": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/SkyBlockProfileMember"
+            }
+          },
+          "ownerUniqueId": {
+            "type": "string"
+          },
+          "ownerLastName": {
+            "type": "string"
+          },
+          "visits": {
+            "$ref": "#/components/schemas/AcceptedIslandVisits"
+          },
+          "spawn": {
+            "$ref": "#/components/schemas/Location5"
+          },
+          "id": {
+            "type": "string"
+          },
+          "banking": {
+            "$ref": "#/components/schemas/SkyBlockBank"
+          },
+          "members": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/SkyBlockProfileMember"
+            }
+          },
+          "teleportPadWarps": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "gameMode",
+          "createdAt",
+          "playtimes",
+          "collectionContributions"
+        ]
+      },
+      "SkyBlockProfileLeaveReason": {
+        "type": "string",
+        "enum": [
+          "KICK",
+          "LEAVE",
+          "STAFF"
+        ]
+      },
+      "SkyBlockProfileMember": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "unlockedPowerStones": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bossKillTimes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          "bossHighestRanks": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "summoningEyeContribution": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "zealotsContribution": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "bossSummonCounts": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "bossKillCounts": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "maxTotalDamageToBosses": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          "farmingContestData": {
+            "$ref": "#/components/schemas/FarmingContestData"
+          },
+          "permanentPerks": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "otherInventories": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "chatChannel": {
+            "$ref": "#/components/schemas/ChatChannel"
+          },
+          "dailySkillExperienceData": {
+            "$ref": "#/components/schemas/DailySkillExperienceData"
+          },
+          "targetPracticeData": {
+            "$ref": "#/components/schemas/TargetPracticeData"
+          },
+          "arcticCaveRaceData": {
+            "$ref": "#/components/schemas/ArcticCaveRaceData"
+          },
+          "enderNodeHuntData": {
+            "$ref": "#/components/schemas/EnderNodeHuntData"
+          },
+          "relationshipData": {
+            "$ref": "#/components/schemas/RelationshipData"
+          },
+          "experimentationData": {
+            "$ref": "#/components/schemas/ExperimentationData"
+          },
+          "realityShardData": {
+            "$ref": "#/components/schemas/RealityShardData"
+          },
+          "petSitter": {
+            "$ref": "#/components/schemas/PetSitter"
+          },
+          "uniquePets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "npcInteractions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "maxDamage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "maxCritDamage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contacts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "totalDailyQuests": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "slayerQuest": {
+            "$ref": "#/components/schemas/SlayerQuest"
+          },
+          "slayerData": {
+            "$ref": "#/components/schemas/SkyBlockSlayerData"
+          },
+          "unlockedCollectionTiers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dailyQuestCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dailyQuestDay": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "dailyQuest": {
+            "$ref": "#/components/schemas/DailyQuest"
+          },
+          "newYearCakeBag": {
+            "type": "string"
+          },
+          "claimedNewYearCakes": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          "magicalMushroomSoupTime": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pinnedQuest": {
+            "type": "string"
+          },
+          "quiver": {
+            "type": "string"
+          },
+          "quests": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Quest"
+            }
+          },
+          "kills": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "accessoryBag": {
+            "type": "string"
+          },
+          "skills": {
+            "$ref": "#/components/schemas/SkyBlockSkills"
+          },
+          "claimed": {
+            "type": "boolean"
+          },
+          "leftAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "permissions": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          },
+          "deaths": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "exp": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "level": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "visitedZones": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "coinPurse": {
+            "type": "number",
+            "format": "double"
+          },
+          "armorContents": {
+            "type": "string"
+          },
+          "inventoryContents": {
+            "type": "string"
+          },
+          "enderContents": {
+            "type": "string"
+          },
+          "petInventory": {
+            "type": "string"
+          },
+          "lastInventoriesSaved": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "leaveReason": {
+            "$ref": "#/components/schemas/SkyBlockProfileLeaveReason"
+          },
+          "joinedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "firstJoinedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "miningMilestone": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "customizedMenu": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "shinyOrbsUsed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "shinyPigsCaptured": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "chatChannel",
+          "dailySkillExperienceData",
+          "targetPracticeData",
+          "arcticCaveRaceData",
+          "enderNodeHuntData",
+          "relationshipData",
+          "experimentationData",
+          "realityShardData",
+          "petSitter",
+          "maxDamage",
+          "maxCritDamage",
+          "totalDailyQuests",
+          "dailyQuestCount",
+          "dailyQuestDay",
+          "magicalMushroomSoupTime",
+          "kills",
+          "exp",
+          "level",
+          "coinPurse",
+          "miningMilestone",
+          "shinyOrbsUsed",
+          "shinyPigsCaptured"
+        ]
+      },
+      "SkyBlockStats": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "profiles": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/SkyBlockStatProfile"
+            }
+          },
+          "profileId": {
+            "type": "string"
+          }
+        }
+      },
+      "SkyBlockStatProfile": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "cuteName": {
+            "$ref": "#/components/schemas/CuteProfileName"
+          },
+          "profileId": {
+            "type": "string"
+          }
+        }
+      },
+      "SlayerQuest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "killedAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "spawnedAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "startedAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "type": {
+            "$ref": "#/components/schemas/SlayerType"
+          },
+          "tier": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "targetExperience": {
+            "type": "number",
+            "format": "float"
+          },
+          "currentExperience": {
+            "type": "number",
+            "format": "float"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SlayerQuestStatus"
+          }
+        },
+        "required": [
+          "killedAt",
+          "spawnedAt",
+          "startedAt",
+          "tier",
+          "targetExperience",
+          "currentExperience"
+        ]
+      },
+      "SlayerQuestStatus": {
+        "type": "string",
+        "enum": [
+          "FAILED",
+          "KILLED",
+          "BOSS_SPAWNED",
+          "KILL_MOBS"
+        ]
+      },
+      "TargetPracticeData": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "level": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tries": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "bestTimeMilliseconds": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "lastTimeMilliseconds": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "level",
+          "tries"
+        ]
+      },
+      "SkyBlockSkills": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "capIncreases": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        },
+        "required": []
+      },
+      "SkyBlockSlayerData": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "killedSpiderSlayer": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "killedWolfSlayer": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "killedZombieSlayer": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "killedSlayer": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "autoSlayer": {
+            "type": "boolean"
+          },
+          "claimedTiers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "zombieTier": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "spiderTier": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "wolfTier": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tier": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "killedSpiderSlayer",
+          "killedWolfSlayer",
+          "killedZombieSlayer",
+          "killedSlayer",
+          "autoSlayer",
+          "claimedTiers",
+          "zombieTier",
+          "spiderTier",
+          "wolfTier",
+          "tier"
+        ]
+      },
+      "ResettingValue": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "currentDate": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "andSet": {
+            "type": "object"
+          },
+          "timeLeftUntilReset": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "currentDate",
+          "timeLeftUntilReset"
+        ]
+      }
+    }
+  }
+}
