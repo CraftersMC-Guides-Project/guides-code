@@ -14,6 +14,44 @@
     <script src="js/script.js" defer></script>
     <link rel="stylesheet" href="css/essential.css">
     <style>
+        /* Dark theme overrides */
+        :root {
+            --primary-color: #0ea5e9;
+            --primary-color-hover: #0284c7;
+            --card-bg-color: #0f1724;
+            --card-bg-hover: #0b1220;
+            --main-text-color: #e6eef8;
+            --secondary-text-color: #9aa6b2;
+            --border-color: #1f2937;
+            --body-bg: #050814;
+            --card-shadow-color: rgba(0, 0, 0, 0.6);
+            --card-bg-hover: #0b1220;
+        }
+        body {
+            background: var(--body-bg) !important;
+            color: var(--main-text-color) !important;
+        }
+        /* Ensure key elements are readable on dark background */
+        #scrollToTopBtn { background-color: var(--primary-color) !important; }
+        .card, .data-section, .api-panel { background-color: var(--card-bg-color) !important; border-color: var(--border-color) !important; box-shadow: 0 6px 18px var(--card-shadow-color) !important; }
+        #loader .material-icons { color: var(--primary-color) !important; }
+        .profile-btn.active, .tab.active { background: var(--primary-color) !important; }
+    </style>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: url("../Backgrounds/IMG_4500Blurred.webp");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -38,8 +76,8 @@
         }
 
         .api-panel {
-            background-color: var(--card-bg-color);
-            border: 1px solid var(--border-color);
+            background-color: #00000087;
+            border: 1px solid #111;
             border-radius: 8px;
             padding: 25px;
             margin-bottom: 30px;
@@ -634,7 +672,7 @@
                 <button class="tab active" onclick="switchTab('overview')">Overview</button>
                 <button class="tab" onclick="switchTab('player')">Player Data</button>
                 <button class="tab" onclick="switchTab('profile')">Profile Data</button>
-                <button class="tab" onclick="switchTab('playtime')">Playtime</button>
+                <button class="tab" onclick="switchTab('playtime')">Time (hr)</button>
                 <button class="tab" onclick="switchTab('statistics')">Statistics</button>
                 <button class="tab" onclick="switchTab('slayers')">Slayers</button>
                 <button class="tab" onclick="switchTab('farming')">Farming</button>
@@ -659,7 +697,7 @@
             </div>
 
             <div id="playtimeTab" class="tab-content">
-                <!-- Playtime content will be populated -->
+                <!-- Time (hr) content will be populated -->
             </div>
 
             <div id="statisticsTab" class="tab-content">
@@ -737,7 +775,7 @@
 
         function formatCurrency(amount) {
             if (amount === null || amount === undefined) return 'N/A';
-            return '$' + formatNumber(amount);
+            return formatNumber(amount);
         }
 
         // API Functions
@@ -1012,7 +1050,7 @@
                 ['First Login', formatDate(playerData.firstLogin), 'date'],
                 ['Last Login', formatDate(playerData.lastLogin), 'date'],
                 ['Last Seen Protocol', playerData.lastSeenProtocol, 'number'],
-                ['Total Playtime', formatNumber(playerData.totalPlaytime), 'number']
+                ['Total Time (hr)', Math.floor(playerData.totalPlaytime / 3600).toLocaleString(), 'number']
             ]);
 
             // Social Settings
@@ -1045,9 +1083,13 @@
 
             html += '</div>';
 
-            // Playtime per game
+            // Time (hr) per game
             if (playerData.playtimePerGame && Object.keys(playerData.playtimePerGame).length > 0) {
-                html += createCollapseSection('fas fa-clock', 'Playtime Per Game', playerData.playtimePerGame);
+                const playtimeHours = {};
+                Object.entries(playerData.playtimePerGame).forEach(([game, seconds]) => {
+                    playtimeHours[game] = Math.floor(seconds / 3600);
+                });
+                html += createCollapseSection('fas fa-clock', 'Time (hr) Per Game', playtimeHours);
             }
 
             // Ranks
@@ -1115,9 +1157,9 @@
                 html += createCollapseSection('fas fa-location-arrow', 'Teleport Pad Warps', profileData.teleportPadWarps);
             }
 
-            // Playtimes
+            // Times (hr)
             if (profileData.playtimes) {
-                html += createCollapseSection('fas fa-clock', 'Playtimes', profileData.playtimes);
+                html += createCollapseSection('fas fa-clock', 'Times (hr)', profileData.playtimes);
             }
 
             container.innerHTML = html;
@@ -1130,26 +1172,27 @@
 
             let html = '<div class="cards-grid">';
 
-            // Total Playtime
-            const totalPlaytime = playerData.totalPlaytime || 0;
-            const playtimeHours = Math.floor(totalPlaytime / 3600);
+            // Total Time (hr)
+            const totalPlaytimeSeconds = playerData.totalPlaytime || 0;
+            const playtimeMinutes = Math.floor(totalPlaytimeSeconds / 60);
+            const playtimeHours = Math.floor(totalPlaytimeSeconds / 3600);
             const playtimeDays = Math.floor(playtimeHours / 24);
 
-            html += createDataCard('fas fa-hourglass-end', 'Total Playtime', [
-                ['Minutes', formatNumber(totalPlaytime), 'number'],
-                ['Hours', formatNumber(playtimeHours), 'number'],
-                ['Days', formatNumber(playtimeDays), 'number']
+            html += createDataCard('fas fa-hourglass-end', 'Total Time (hr)', [
+                ['Minutes', playtimeMinutes.toLocaleString(), 'number'],
+                ['Hours', playtimeHours.toLocaleString(), 'number'],
+                ['Days', playtimeDays.toLocaleString(), 'number']
             ]);
 
-            // Playtime Per Game
-            if (playerData.playtimePerGame) {
+            // Time (hr) Per Game
+            if (playerData.playtimePerGame && Object.keys(playerData.playtimePerGame).length > 0) {
                 const playtimeData = playerData.playtimePerGame;
                 const games = [
-                    ['Skyblock', formatNumber(Math.floor(playtimeData.SKYBLOCK / 3600)), 'number'],
-                    ['Limbo', formatNumber(Math.floor(playtimeData.LIMBO / 3600)), 'number'],
-                    ['Hub', formatNumber(Math.floor(playtimeData.HUB / 3600)), 'number']
+                    ['Skyblock', Math.floor((playtimeData.SKYBLOCK || 0) / 3600).toLocaleString(), 'number'],
+                    ['Limbo', Math.floor((playtimeData.LIMBO || 0) / 3600).toLocaleString(), 'number'],
+                    ['Hub', Math.floor((playtimeData.HUB || 0) / 3600).toLocaleString(), 'number']
                 ];
-                html += createDataCard('fas fa-gamepad', 'Playtime Per Game (Hours)', games);
+                html += createDataCard('fas fa-gamepad', 'Time (hr) Per Game', games);
             }
 
             // Voting Info
@@ -1643,13 +1686,21 @@
             }
 
             let html = '<div class="cards-grid">';
+            
+            const timeKeywords = ['playtime', 'time', 'duration', 'age', 'created', 'updated', 'joined', 'lastSeen', 'lastLogin', 'firstLogin', 'secondsSinceUpdate'];
+            const isTimeData = Object.keys(obj).some(key => timeKeywords.some(keyword => key.toLowerCase().includes(keyword)));
 
             Object.entries(obj).forEach(([key, value]) => {
                 let displayValue = value;
                 let type = 'string';
 
                 if (typeof value === 'number') {
-                    displayValue = formatNumber(value);
+                    const keyLower = key.toLowerCase();
+                    if (isTimeData || timeKeywords.some(keyword => keyLower.includes(keyword))) {
+                        displayValue = Math.floor(value / 3600).toLocaleString();
+                    } else {
+                        displayValue = value.toLocaleString();
+                    }
                     type = 'number';
                 } else if (typeof value === 'boolean') {
                     displayValue = formatBoolean(value);
@@ -1657,8 +1708,11 @@
                 } else if (Array.isArray(value)) {
                     displayValue = `[${value.length} items]`;
                     type = 'string';
+                } else if (typeof value === 'string' && (value.includes('Z') || value.includes('T'))) {
+                    displayValue = formatDate(value);
+                    type = 'date';
                 } else if (typeof value === 'object' && value !== null) {
-                    displayValue = '{...}';
+                    displayValue = JSON.stringify(value);
                     type = 'string';
                 }
 
@@ -1680,6 +1734,7 @@
             }
 
             let html = '';
+            const timeKeywords = ['playtime', 'time', 'duration', 'age', 'created', 'updated', 'joined', 'lastSeen', 'lastLogin', 'firstLogin', 'secondsSinceUpdate'];
 
             Object.entries(obj).forEach(([key, value]) => {
                 if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
@@ -1699,14 +1754,28 @@
                     let type = 'string';
 
                     if (typeof value === 'number') {
-                        displayValue = formatNumber(value);
+                        const keyLower = key.toLowerCase();
+                        if (timeKeywords.some(keyword => keyLower.includes(keyword))) {
+                            displayValue = Math.floor(value / 3600).toLocaleString();
+                        } else {
+                            displayValue = value.toLocaleString();
+                        }
                         type = 'number';
                     } else if (typeof value === 'boolean') {
                         displayValue = formatBoolean(value);
                         type = 'boolean';
                     } else if (Array.isArray(value)) {
-                        displayValue = `Array[${value.length}]`;
+                        if (value.length === 0) {
+                            displayValue = '[]';
+                        } else if (value.length <= 3 && typeof value[0] !== 'object') {
+                            displayValue = '[' + value.join(', ') + ']';
+                        } else {
+                            displayValue = `[${value.length} items]`;
+                        }
                         type = 'string';
+                    } else if (typeof value === 'string' && (value.includes('Z') || value.includes('T'))) {
+                        displayValue = formatDate(value);
+                        type = 'date';
                     }
 
                     html += `
