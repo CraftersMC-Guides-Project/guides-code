@@ -146,18 +146,6 @@ async function applyData(data, meta = { source: 'live', ts: Date.now() }) {
     setText('networkStatus', maintenance);
     setText('whitelistRank', `Whitelist: ${data.whitelistRank ?? '—'}`);
 
-    if (data.games) {
-        const rows = flattenGames(data.games);
-        const totalPlayers = rows.reduce((s, r) => s + (Number(r.value) || 0), 0);
-        const countText = `${rows.length} entr${rows.length === 1 ? 'y' : 'ies'}`;
-        setText('gamesSummary', totalPlayers ? `${countText} • ${totalPlayers} players` : countText);
-    } else {
-        setText('gamesSummary', '—');
-    }
-
-    setText('lastUpdated', formatTime(meta.ts));
-    setText('sourceIndicator', `Source: ${meta.source}`);
-
     const detailsContainer = document.getElementById('detailsContainer');
     detailsContainer.innerHTML = '';
 
