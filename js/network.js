@@ -44,11 +44,12 @@ function flattenGames(games) {
     const rows = [];
     const numericKeys = ['playerCount','player_count','players','count','value','online'];
 
-    function recurse(obj) {
+    function recurse(obj, prefix = '') {
         for (const [k, v] of Object.entries(obj)) {
+            const currentKey = prefix ? `${prefix}.${k}` : k;
             if (v === null) continue;
             if (typeof v === 'number' || (typeof v === 'string' && !isNaN(Number(v)))) {
-                rows.push({ name: k, value: Number(v) });
+                rows.push({ key: currentKey, label: k, value: Number(v) });
                 continue;
             }
             if (typeof v === 'object') {
@@ -60,10 +61,10 @@ function flattenGames(games) {
                     }
                 }
                 if (found !== null) {
-                    rows.push({ name: k, value: Number(found) });
+                    rows.push({ key: currentKey, label: k, value: Number(found) });
                 } else {
                     // dive deeper to collect leaf entries (merge across skyblock/limbo/hub)
-                    recurse(v);
+                    recurse(v, currentKey);
                 }
             }
         }
@@ -74,7 +75,17 @@ function flattenGames(games) {
     return rows;
 }
 
-function buildGamesTable(games) {
+async function loadExternalLabelMap() {
+    try {
+        const resp = await fetch('/network-labels.json', { cache: 'no-store' });
+        if (!resp.ok) return {};
+        return await resp.json();
+    } catch (e) {
+        return {};
+    }
+}
+
+function buildGamesTable(games, labelMap = {}) {
     const table = document.createElement('table');
     table.className = 'games-table';
 
@@ -87,7 +98,11 @@ function buildGamesTable(games) {
 
     for (const r of rows) {
         const tr = document.createElement('tr');
-        const tdName = document.createElement('td'); tdName.textContent = r.name;
+        const tdName = document.createElement('td');
+        tdName.className = 'server-name-cell';
+        // Use external label if available, otherwise default label
+        tdName.textContent = labelMap[r.key] ?? r.label;
+
         const tdVal = document.createElement('td'); tdVal.textContent = String(r.value);
         tr.appendChild(tdName); tr.appendChild(tdVal); tbody.appendChild(tr);
     }
@@ -106,40 +121,7 @@ function buildGamesTable(games) {
     return table;
 }
 
-function populateStaticGamesTable(games) {
-    const rowsData = flattenGames(games);
-    const tbody = document.getElementById('gamesTableBody');
-    const note = document.getElementById('gamesTableNote');
-    const maxRows = tbody ? tbody.querySelectorAll('tr').length : 0;
 
-    // clear existing counts
-    if (tbody) {
-        tbody.querySelectorAll('tr').forEach(tr => {
-            const countCell = tr.querySelector('.server-count');
-            if (countCell) countCell.textContent = '—';
-        });
-    }
-
-    // fill counts in order into existing rows
-    if (tbody && rowsData.length > 0) {
-        const trs = tbody.querySelectorAll('tr');
-        for (let i = 0; i < Math.min(rowsData.length, trs.length); i++) {
-            const countCell = trs[i].querySelector('.server-count');
-            if (countCell) countCell.textContent = String(rowsData[i].value);
-        }
-    }
-
-    // show note if overflow
-    if (note) {
-        if (rowsData.length > maxRows) {
-            note.textContent = `${rowsData.length - maxRows} entries not shown.`;
-            note.style.display = 'block';
-        } else {
-            note.textContent = `Showing ${Math.min(rowsData.length, maxRows)} entries.`;
-            note.style.display = 'block';
-        }
-    }
-}
 
 function getCached() {
     const raw = localStorage.getItem(CACHE_KEY);
@@ -154,7 +136,7 @@ function setText(id, value) {
     if (el) el.textContent = value;
 }
 
-function applyData(data, meta = { source: 'live', ts: Date.now() }) {
+async function applyData(data, meta = { source: 'live', ts: Date.now() }) {
     const playerCount = data.playerCount ?? (data.player_count ?? '—');
     const maxPlayerCount = data.maxPlayerCount ?? data.max_player_count ?? '—';
     const maintenance = data.fullMaintenance === true ? 'Full Maintenance' : (data.fullMaintenance === false ? 'Online' : 'Unknown');
@@ -182,11 +164,14 @@ function applyData(data, meta = { source: 'live', ts: Date.now() }) {
     detailsContainer.innerHTML = '';
 
     if (data.games) {
-        const table = buildGamesTable(data.games);
+        const labelMap = await loadExternalLabelMap();
+        const table = buildGamesTable(data.games, labelMap);
         const gamesDetails = document.createElement('details');
         const summary = document.createElement('summary'); summary.textContent = 'Games';
         const inner = document.createElement('div'); inner.className = 'details-content';
         inner.appendChild(table);
+        const hint = document.createElement('div'); hint.className = 'small'; hint.style.marginTop = '8px'; hint.textContent = 'Edit `network-labels.json` in the repo to set shared names for the servers.';
+        inner.appendChild(hint);
         const raw = document.createElement('details');
         const rs = document.createElement('summary'); rs.textContent = 'Raw games data';
         const pre = document.createElement('pre'); pre.textContent = JSON.stringify(data.games, null, 2);
@@ -214,7 +199,7 @@ async function fetchData(force = false) {
         const data = await resp.json();
         const now = Date.now();
         localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: now, data }));
-        applyData(data, { source: 'live', ts: now });
+        await applyData(data, { source: 'live', ts: now });
     } catch (err) {
         console.error('Fetch error:', err);
         const cached = getCached();
@@ -224,7 +209,7 @@ async function fetchData(force = false) {
         if (!cached) {
             if (detailsContainer) detailsContainer.innerHTML = `<div class="error">Error loading network status: ${err.message}</div>`;
         } else {
-            applyData(cached.data, { source: 'cache', ts: cached.ts });
+            await applyData(cached.data, { source: 'cache', ts: cached.ts });
             const errDiv = document.createElement('div');
             errDiv.className = 'error';
             errDiv.textContent = `Error fetching latest data: ${err.message}`;
@@ -238,7 +223,7 @@ async function fetchData(force = false) {
 async function loadStatus() {
     const cached = getCached();
     if (cached) {
-        applyData(cached.data, { source: 'cache', ts: cached.ts });
+        await applyData(cached.data, { source: 'cache', ts: cached.ts });
         if (Date.now() - cached.ts > TTL) {
             fetchData();
         }
@@ -247,8 +232,8 @@ async function loadStatus() {
     }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    loadStatus();
+window.addEventListener('DOMContentLoaded', async () => {
+    await loadStatus();
     const refreshBtn = document.getElementById('refreshBtn');
     if (refreshBtn) refreshBtn.addEventListener('click', () => fetchData(true));
 });
