@@ -1,20 +1,14 @@
-/* Fetch and render network status */
-
 const apiPath = '/network-status';
-
-function createBento(label, value, small) {
-    const div = document.createElement('div');
-    div.className = 'bento';
-    div.innerHTML = `<div class="label">${label}</div><div class="value">${value}</div>${small ? `<div class="small">${small}</div>` : ''}`;
-    return div;
-}
+const CACHE_KEY = 'network-status-cache';
+const TTL = 60 * 1000;
 
 function renderKV(container, obj) {
+    container.innerHTML = '';
     for (const [k, v] of Object.entries(obj)) {
         const row = document.createElement('div');
         row.className = 'kv';
 
-        const key = document.createElement('div'); key.className = 'k'; 
+        const key = document.createElement('div'); key.className = 'k';
         key.textContent = k;
 
         const val = document.createElement('div'); val.className = 'v';
@@ -46,52 +40,105 @@ function renderKV(container, obj) {
     }
 }
 
-async function loadStatus() {
-    const bentoGrid = document.getElementById('bentoGrid');
+function getCached() {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch (e) { localStorage.removeItem(CACHE_KEY); return null; }
+}
+
+function formatTime(ts) { return new Date(ts).toLocaleString(); }
+
+function setText(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+}
+
+function applyData(data, meta = { source: 'live', ts: Date.now() }) {
+    const playerCount = data.playerCount ?? (data.player_count ?? '—');
+    const maxPlayerCount = data.maxPlayerCount ?? data.max_player_count ?? '—';
+    const maintenance = data.fullMaintenance === true ? 'Full Maintenance' : (data.fullMaintenance === false ? 'Online' : 'Unknown');
+
+
+    setText('activePlayers', playerCount);
+    setText('activePlayersSmall', `Max: ${maxPlayerCount}`);
+
+    setText('networkStatus', maintenance);
+    setText('whitelistRank', `Whitelist: ${data.whitelistRank ?? '—'}`);
+
+    if (data.games) {
+        const gameKeys = Object.keys(data.games);
+        setText('gamesSummary', `${gameKeys.length} mode(s)`);
+    } else {
+        setText('gamesSummary', '—');
+    }
+
+    setText('lastUpdated', formatTime(meta.ts));
+    setText('sourceIndicator', `Source: ${meta.source}`);
+
     const detailsContainer = document.getElementById('detailsContainer');
-    bentoGrid.innerHTML = '';
     detailsContainer.innerHTML = '';
 
+    if (data.games) {
+        const gamesDetails = document.createElement('details');
+        const summary = document.createElement('summary'); summary.textContent = 'Games';
+        const inner = document.createElement('div'); inner.className = 'details-content';
+        renderKV(inner, data.games);
+        gamesDetails.appendChild(summary); gamesDetails.appendChild(inner);
+        detailsContainer.appendChild(gamesDetails);
+    }
+
+    const mainDetails = document.createElement('details');
+    const s = document.createElement('summary'); s.textContent = 'Full network data';
+    const c = document.createElement('div'); c.className = 'details-content';
+    renderKV(c, data);
+    mainDetails.appendChild(s); mainDetails.appendChild(c);
+    detailsContainer.appendChild(mainDetails);
+}
+
+async function fetchData(force = false) {
+    const refreshBtn = document.getElementById('refreshBtn');
     try {
+        if (refreshBtn) { refreshBtn.disabled = true; refreshBtn.textContent = 'Refreshing...'; }
         const resp = await fetch(apiPath, { cache: 'no-store' });
         if (!resp.ok) throw new Error(`API error: ${resp.status}`);
         const data = await resp.json();
-
-        // Important info first
-        const playerCount = data.playerCount ?? (data.player_count ?? '—');
-        const maxPlayerCount = data.maxPlayerCount ?? data.max_player_count ?? '—';
-        const maintenance = data.fullMaintenance === true ? 'Full Maintenance' : (data.fullMaintenance === false ? 'Online' : 'Unknown');
-
-        bentoGrid.appendChild(createBento('Active players', playerCount, `Max: ${maxPlayerCount}`));
-        bentoGrid.appendChild(createBento('Status', maintenance, `Whitelist Rank: ${data.whitelistRank ?? '—'}`));
-
-        // Games listing if exists
-        if (data.games) {
-            const gamesList = Object.entries(data.games).map(([k, v]) => `${k}: ${JSON.stringify(v)}`).join('\n');
-            bentoGrid.appendChild(createBento('Games summary', '', 'See details below'));
-
-            const gamesDetails = document.createElement('details');
-            const summary = document.createElement('summary'); summary.textContent = 'Games';
-            const inner = document.createElement('div'); inner.className = 'details-content';
-            renderKV(inner, data.games);
-            gamesDetails.appendChild(summary); gamesDetails.appendChild(inner);
-            detailsContainer.appendChild(gamesDetails);
-        }
-
-        // planned maintenance & other fields
-        const mainDetails = document.createElement('details');
-        const s = document.createElement('summary'); s.textContent = 'Full network data';
-        const c = document.createElement('div'); c.className = 'details-content';
-        renderKV(c, data);
-        mainDetails.appendChild(s); mainDetails.appendChild(c);
-        detailsContainer.appendChild(mainDetails);
-
+        const now = Date.now();
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: now, data }));
+        applyData(data, { source: 'live', ts: now });
     } catch (err) {
-        detailsContainer.innerHTML = `<div class="error">Error loading network status: ${err.message}</div>`;
+        console.error('Fetch error:', err);
+        const cached = getCached();
+        const detailsContainer = document.getElementById('detailsContainer');
+        const networkTopInfo = document.getElementsByClassName('network-top-info')[0];
+        networkTopInfo.style.display = 'none';
+        if (!cached) {
+            if (detailsContainer) detailsContainer.innerHTML = `<div class="error">Error loading network status: ${err.message}</div>`;
+        } else {
+            applyData(cached.data, { source: 'cache', ts: cached.ts });
+            const errDiv = document.createElement('div');
+            errDiv.className = 'error';
+            errDiv.textContent = `Error fetching latest data: ${err.message}`;
+            detailsContainer.prepend(errDiv);
+        }
+    } finally {
+        if (refreshBtn) { refreshBtn.disabled = false; refreshBtn.textContent = 'Refresh'; }
+    }
+}
+
+async function loadStatus() {
+    const cached = getCached();
+    if (cached) {
+        applyData(cached.data, { source: 'cache', ts: cached.ts });
+        if (Date.now() - cached.ts > TTL) {
+            fetchData();
+        }
+    } else {
+        fetchData();
     }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
     loadStatus();
-    document.getElementById('refreshBtn').addEventListener('click', () => loadStatus());
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) refreshBtn.addEventListener('click', () => fetchData(true));
 });
