@@ -53,7 +53,6 @@ function flattenGames(games) {
                 continue;
             }
             if (typeof v === 'object') {
-                // check for direct numeric-like properties
                 let found = null;
                 for (const nk of numericKeys) {
                     if (nk in v && (typeof v[nk] === 'number' || (typeof v[nk] === 'string' && !isNaN(Number(v[nk]))))) {
@@ -63,8 +62,8 @@ function flattenGames(games) {
                 if (found !== null) {
                     rows.push({ key: currentKey, label: k, value: Number(found) });
                 } else {
-                    // dive deeper to collect leaf entries (merge across skyblock/limbo/hub)
                     recurse(v, currentKey);
+                    console.log('recurseddd', currentKey);
                 }
             }
         }
@@ -100,14 +99,13 @@ function buildGamesTable(games, labelMap = {}) {
         const tr = document.createElement('tr');
         const tdName = document.createElement('td');
         tdName.className = 'server-name-cell';
-        // Use external label if available, otherwise default label
         tdName.textContent = labelMap[r.key] ?? r.label;
+        console.log('labelmap', r.key, labelMap[r.key]);
 
         const tdVal = document.createElement('td'); tdVal.textContent = String(r.value);
         tr.appendChild(tdName); tr.appendChild(tdVal); tbody.appendChild(tr);
     }
 
-    // if nothing usable, fall back to showing top-level keys
     if (rows.length === 0) {
         for (const [name, val] of Object.entries(games)) {
             const tr = document.createElement('tr');
