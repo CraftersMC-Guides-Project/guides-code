@@ -6,7 +6,8 @@
   <title>Bazaar Items - CraftersMC Guides</title>
   <link rel="stylesheet" href="css/essential.css" />
   <style>
-    body, html {
+    body,
+    html {
       height: 100%;
       width: 100%;
       margin: 0;
@@ -15,7 +16,6 @@
       align-items: center;
       justify-content: center;
       background-color: #1a1a2e;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .container {
@@ -30,20 +30,123 @@
         "bl-bl br-bl b bl-br br-br";
     }
 
+    .s-br {
+      box-shadow: 2px 0 0 black, 0 2px 0 black;
+    }
+
+    .s-bl {
+      box-shadow: -2px 0 0 black, 0 2px 0 black;
+    }
+
+    .s-tr {
+      box-shadow: 0 -2px 0 black, 2px 0 0 black;
+    }
+
+    .s-tl {
+      box-shadow: 0 -2px 0 black, -2px 0 0 black;
+    }
+
+    .corner-top {
+      grid-area: t;
+      box-shadow: 0 -2px 0 black;
+      background-color: #ffffff;
+    }
+
+    .corner-left {
+      grid-area: l;
+      box-shadow: -2px 0 0 black;
+      background-color: #ffffff;
+    }
+
+    .corner-right {
+      grid-area: r;
+      box-shadow: 2px 0 0 black;
+      background-color: #555555;
+    }
+
+    .corner-bottom {
+      grid-area: b;
+      box-shadow: 0 2px 0 black;
+      background-color: #555555;
+    }
+
     .inner-container {
       background-color: #c6c6c6;
       grid-area: inv;
       grid-column: inherit;
     }
 
-    .corner-left { grid-area: l; box-shadow: -2px 0 0 black; background-color: #ffffff; }
-    .corner-right { grid-area: r; box-shadow: 2px 0 0 black; background-color: #555555; }
-    .corner-bottom { grid-area: b; box-shadow: 0 2px 0 black; background-color: #555555; }
-    .corner-top { grid-area: t; box-shadow: 0 -2px 0 black; background-color: #ffffff; }
+    .tl-tl {
+      grid-area: tl-tl;
+      background-color: #ffffff;
+      position: relative;
+      bottom: -4px;
+      right: -4px;
+    }
+
+    .br-br {
+      grid-area: br-br;
+      background-color: #555555;
+      position: relative;
+      top: -4px;
+      left: -4px;
+    }
+
+    .bl-tl,
+    .tr-tl,
+    .br-tl {
+      background-color: #ffffff;
+    }
+
+    .bl-tl {
+      grid-area: bl-tl;
+    }
+
+    .tr-tl {
+      grid-area: tr-tl;
+    }
+
+    .br-tl {
+      grid-area: br-tl;
+    }
+
+    .bl-tr {
+      grid-area: bl-tr;
+      background-color: #c6c6c6;
+    }
+
+    .tr-bl {
+      grid-area: tr-bl;
+      background-color: #c6c6c6;
+    }
+
+    .tr-br,
+    .tl-br,
+    .bl-br {
+      background-color: #555555;
+    }
+
+    .tr-br {
+      grid-area: tr-br;
+    }
+
+    .tl-br {
+      grid-area: tl-br;
+    }
+
+    .bl-br {
+      grid-area: bl-br;
+    }
 
     .inventory {
       padding: 0.4rem;
       display: grid;
+    }
+
+    .inventory .inner-container,
+    .hotbar-extreme-inner-container {
+      display: grid;
+      grid-column: inherit;
     }
 
     .cell {
@@ -59,8 +162,27 @@
       background-color: #a1a1a1;
     }
 
+    .cell::before,
+    .cell::after {
+      content: "";
+      height: 2px;
+      width: 2px;
+      background-color: #8b8b8b;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+    .cell::after {
+      top: auto;
+      right: auto;
+      left: 0;
+      bottom: 0;
+    }
+
     .extreme-inner-container,
     .hotbar-extreme-inner-container {
+      color: #262626;
       display: grid;
       grid-template-columns: repeat(9, auto);
       grid-template-rows: repeat(4, auto);
@@ -177,9 +299,17 @@
       padding: 12px;
       z-index: 100;
       min-width: 250px;
+      font-family: 'Minecraft', 'Arial', sans-serif;
       font-size: 0.85rem;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
       white-space: normal;
+      box-shadow:
+        0 0 0 2px #4b267a,
+        -4px -4px 0 0 #fff,
+        4px -4px 0 0 #fff,
+        -4px 4px 0 0 #555,
+        4px 4px 0 0 #555;
+      font-weight: bold;
       display: none;
     }
 
@@ -187,7 +317,7 @@
       display: block;
     }
 
-    .item-title {
+    .item-tooltip .item-title {
       color: #6d5cff;
       font-weight: bold;
       font-size: 1.1rem;
@@ -195,7 +325,7 @@
       margin-bottom: 8px;
     }
 
-    .item-data {
+    .item-tooltip .item-data {
       margin-top: 8px;
       border-top: 1px solid #4b267a;
       padding-top: 8px;
@@ -252,6 +382,40 @@
       background: rgba(76, 175, 80, 0.1);
     }
 
+    .sub-items-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
+    .sub-item {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 4px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .sub-item:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .sub-item img {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 2px;
+    }
+
+    .sub-item-name {
+      font-size: 9px;
+      color: #ccc;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
     .status-badge {
       display: inline-block;
       padding: 2px 6px;
@@ -281,20 +445,21 @@
   </style>
 </head>
 <body>
-  <!-- API Key Input -->
+  <!-- API Settings Panel -->
   <div class="api-panel">
     <div class="api-input-group">
       <label for="apiKey">API Key:</label>
       <input type="password" id="apiKey" placeholder="Enter your CraftersMC API key">
     </div>
     <div class="api-input-group">
-      <label for="proxyUrl">Proxy URL:</label>
-      <input type="text" id="proxyUrl" placeholder="https://your-worker.workers.dev/">
-      <small style="color: #94a3b8; font-size: 11px;">
-        Your Cloudflare Worker URL (create at workers.cloudflare.com)
-      </small>
+      <label for="proxySelect">CORS Proxy:</label>
+      <select id="proxySelect">
+        <option value="https://corsproxy.io/?">corsproxy.io</option>
+        <option value="https://api.allorigins.win/raw?url=">allorigins.win</option>
+        <option value="none">No Proxy</option>
+      </select>
     </div>
-    <button class="api-button" onclick="saveApiKey()">Save Settings</button>
+    <button class="api-button" onclick="saveApiSettings()">Save Settings</button>
     <div id="apiStatus" style="margin-top: 10px; font-size: 12px;"></div>
   </div>
 
@@ -305,12 +470,23 @@
       <div id="combat" class="cat"><img src="assets/ui-icons/ui_bazaar_category_combat_active.png"></div>
       <div id="foraging" class="cat"><img src="assets/ui-icons/ui_bazaar_category_foraging_active.png"></div>
       <div id="special" class="cat"><img src="img/Magical_Encyclopedia.png"></div>
+      <div id="minion" class="cat"><img src="img/cobblestone-minion/Cobblestone_Minion.png"></div>
     </div>
     <div class="container">
       <div class="corner-left"></div>
       <div class="corner-right"></div>
       <div class="corner-bottom"></div>
       <div class="corner-top"></div>
+      <div class="tl-tl"></div>
+      <div class="tr-tl s-tl"></div>
+      <div class="bl-tl s-tl"></div>
+      <div class="br-tl"></div>
+      <div class="tr-bl s-bl"></div>
+      <div class="bl-tr s-tr"></div>
+      <div class="tl-br"></div>
+      <div class="tr-br s-br"></div>
+      <div class="bl-br s-br"></div>
+      <div class="br-br"></div>
       <div class="inventory inner-container">
         <h3>Bazaar Market</h3>
         <div class="extreme-inner-container" id="mainGrid">
@@ -325,10 +501,103 @@
 
   <script>
     // ==================== CONFIGURATION ====================
-    // Default proxy URL (update this after creating your Cloudflare Worker)
-    const DEFAULT_PROXY_URL = 'https://bazaar-proxy.craftersmcguides.workers.dev/';
-    
-    // Farming items (already in object format)
+    // Item ID mapping for API calls
+    const itemIdMap = {
+      "Wheat": "wheat",
+      "Wheat Seeds": "wheat_seeds",
+      "Enchanted Haybale": "enchanted_haybale",
+      "Enchanted Wheat Seeds": "enchanted_wheat_seeds",
+      "Box of Seeds": "box_of_seeds",
+      "Carrot": "carrot",
+      "Enchanted Carrot": "enchanted_carrot",
+      "Enchanted Golden Carrot": "enchanted_golden_carrot",
+      "Potato": "potato",
+      "Enchanted Potato": "enchanted_potato",
+      "Beetroot": "beetroot",
+      "Enchanted Beetroot": "enchanted_beetroot",
+      "Pumpkin": "pumpkin",
+      "Enchanted Pumpkin": "enchanted_pumpkin",
+      "Melon": "melon",
+      "Enchanted Melon": "enchanted_melon",
+      "Cocoa Beans": "cocoa_beans",
+      "Enchanted Cocoa Beans": "enchanted_cocoa_beans",
+      "Cactus": "cactus",
+      "Enchanted Cactus": "enchanted_cactus",
+      "Brown Mushroom": "brown_mushroom",
+      "Enchanted Brown Mushroom": "enchanted_brown_mushroom",
+      "Red Mushroom": "red_mushroom",
+      "Enchanted Red Mushroom": "enchanted_red_mushroom",
+      "Leather": "leather",
+      "Enchanted Leather": "enchanted_leather",
+      "Feather": "feather",
+      "Enchanted Feather": "enchanted_feather",
+      "Egg": "egg",
+      "Enchanted Egg": "enchanted_egg",
+      "Raw Mutton": "mutton",
+      "Enchanted Raw Mutton": "enchanted_mutton",
+      "White Wool": "wool",
+      "Enchanted Wool": "enchanted_wool",
+      "Cobblestone": "cobblestone",
+      "Enchanted Cobblestone": "enchanted_cobblestone",
+      "Coal": "coal",
+      "Enchanted Coal": "enchanted_coal",
+      "Iron Ingot": "iron_ingot",
+      "Enchanted Iron": "enchanted_iron",
+      "Gold Ingot": "gold_ingot",
+      "Enchanted Gold": "enchanted_gold",
+      "Diamond": "diamond",
+      "Enchanted Diamond": "enchanted_diamond",
+      "Lapis Lazuli": "lapis_lazuli",
+      "Enchanted Lapis": "enchanted_lapis_lazuli",
+      "Emerald": "emerald",
+      "Enchanted Emerald": "enchanted_emerald",
+      "Redstone Dust": "redstone",
+      "Enchanted Redstone": "enchanted_redstone",
+      "Obsidian": "obsidian",
+      "Enchanted Obsidian": "enchanted_obsidian",
+      "Rotten Flesh": "rotten_flesh",
+      "Enchanted Rotten Flesh": "enchanted_rotten_flesh",
+      "Bone": "bone",
+      "Enchanted Bone": "enchanted_bone",
+      "String": "string",
+      "Enchanted String": "enchanted_string",
+      "Spider Eye": "spider_eye",
+      "Enchanted Spider Eye": "enchanted_spider_eye",
+      "Gunpowder": "gunpowder",
+      "Enchanted Gunpowder": "enchanted_gunpowder",
+      "Slime Ball": "slime_ball",
+      "Enchanted Slime Ball": "enchanted_slime_ball",
+      "Magma Cream": "magma_cream",
+      "Enchanted Magma Cream": "enchanted_magma_cream",
+      "Blaze Rod": "blaze_rod",
+      "Enchanted Blaze Powder": "enchanted_blaze_powder",
+      "Oak Log": "oak_log",
+      "Enchanted Oak Log": "enchanted_oak_log",
+      "Spruce Log": "spruce_log",
+      "Enchanted Spruce Log": "enchanted_spruce_log",
+      "Birch Log": "birch_log",
+      "Enchanted Birch Log": "enchanted_birch_log",
+      "Jungle Log": "jungle_log",
+      "Enchanted Jungle Log": "enchanted_jungle_log",
+      "Acacia Log": "acacia_log",
+      "Enchanted Acacia Log": "enchanted_acacia_log",
+      "Hot Potato Book": "hot_potato_book",
+      "The Art Of War": "the_art_of_war",
+      "Bottle o' Enchanting": "experience_bottle",
+      "Grand Experience Bottle": "grand_experience_bottle",
+      "Titanic Experience Bottle": "titanic_experience_bottle"
+    };
+
+    // API Configuration
+    let apiSettings = {
+      apiKey: '',
+      proxy: 'https://corsproxy.io/?'
+    };
+
+    // Cache for API responses
+    const bazaarCache = new Map();
+
+    // Farming items (updated to match second UI)
     const farmingItems = [
       {
         name: "Wheat Items",
@@ -507,7 +776,7 @@
       }
     ];
 
-    // Mining items
+    // Mining items (updated to match second UI)
     const miningItems = [
       {
         name: "Cobblestone Items",
@@ -601,7 +870,7 @@
       }
     ];
 
-    // Combat items
+    // Combat items (updated to match second UI)
     const combatItems = [
       {
         name: "Rotten Flesh Items",
@@ -696,7 +965,7 @@
       }
     ];
 
-    // Foraging items
+    // Foraging items (updated to match second UI)
     const foragingItems = [
       {
         name: "Oak Log Items",
@@ -756,7 +1025,7 @@
       }
     ];
 
-    // Oddities/Special items
+    // Oddities/Special items (updated to match second UI)
     const specialItems = [
       {
         name: "Enchanted Book Items",
@@ -845,12 +1114,8 @@
       { name: "Cobblestone Minion Tiers", img: "cobblestone-minion/Cobblestone_Minion.png", subItems: [] },
       { name: "Cocoa Minion Tiers", img: "cocoa-minion/Cocoa_Beans_Minion.png", subItems: [] }
     ];
-    
+
     // ==================== CORE FUNCTIONS ====================
-    const bazaarCache = new Map();
-    let apiKey = '';
-    let proxyUrl = DEFAULT_PROXY_URL;
-    
     // Format currency
     function formatCurrency(amount) {
       if (amount === undefined || amount === null) return 'N/A';
@@ -858,16 +1123,20 @@
       if (amount >= 1000) return (amount / 1000).toFixed(1) + 'K';
       return Math.round(amount).toLocaleString();
     }
-    
+
     // Format number
     function formatNumber(num) {
       if (num === undefined || num === null) return 'N/A';
       return num.toLocaleString();
     }
-    
+
+    // Get item ID from name
+    function getItemId(itemName) {
+      return itemIdMap[itemName] || itemName.toLowerCase().replace(/ /g, '_');
+    }
+
     // Generate mock data for fallback
     function generateMockData(itemId) {
-      // Seed based on item ID for consistent mock data
       const seed = Array.from(itemId).reduce((acc, char) => acc + char.charCodeAt(0), 0);
       const basePrice = (seed % 500) + 50;
       const variation = Math.sin(seed) * 20;
@@ -887,8 +1156,8 @@
         _isMock: true
       };
     }
-    
-    // Fetch bazaar data through Cloudflare Worker
+
+    // Fetch bazaar data from API
     async function fetchBazaarData(itemId) {
       // Check cache first (30 second cache for live data, 5 minutes for mock)
       const cached = bazaarCache.get(itemId);
@@ -898,50 +1167,44 @@
           return cached.data;
         }
       }
-      
-      if (!apiKey) {
-        console.warn('No API key set, using mock data');
+
+      if (!apiSettings.apiKey) {
         const mockData = generateMockData(itemId);
         bazaarCache.set(itemId, { data: mockData, timestamp: Date.now() });
         return mockData;
       }
-      
+
       try {
-        // Build the proxy URL
-        const fullProxyUrl = proxyUrl.endsWith('/') ? proxyUrl : proxyUrl + '/';
-        const url = `${fullProxyUrl}${itemId}`;
-        
+        let url = `https://api.craftersmc.net/v1/skyblock/bazaar/${itemId}/details`;
+
+        // Add proxy if not "none"
+        if (apiSettings.proxy !== 'none') {
+          url = apiSettings.proxy + encodeURIComponent(url);
+        }
+
         const response = await fetch(url, {
           method: 'GET',
           headers: {
-            'X-API-Key': apiKey,
+            'X-API-Key': apiSettings.apiKey,
             'Content-Type': 'application/json'
-          },
-          // Timeout after 8 seconds
-          signal: AbortSignal.timeout(8000)
+          }
         });
-        
+
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-        
+
         const data = await response.json();
-        
-        // Check if it's an error response from the proxy
-        if (data.error) {
-          throw new Error(`Proxy error: ${data.error}`);
-        }
-        
+
         // Cache successful response
         bazaarCache.set(itemId, {
           data: data,
           timestamp: Date.now()
         });
-        
+
         return data;
-        
       } catch (error) {
-        console.warn(`Failed to fetch ${itemId} via proxy, using mock data:`, error.message);
+        console.warn(`Failed to fetch ${itemId}, using mock data:`, error.message);
         
         // Fallback to mock data
         const mockData = generateMockData(itemId);
@@ -949,10 +1212,30 @@
         return mockData;
       }
     }
-    
+
     // Generate tooltip HTML
     async function generateTooltipHTML(item) {
-      const bazaarData = await fetchBazaarData(item.id);
+      // If item has subItems, show sub-items grid
+      if (item.subItems && item.subItems.length > 0) {
+        const subItemsGrid = item.subItems.slice(0, 6).map(sub => `
+          <div class="sub-item" data-item='${JSON.stringify(sub).replace(/'/g, "\\'")}'>
+            <img src="img/${sub.img}" alt="${sub.name}" onerror="this.src='https://via.placeholder.com/24/8b8b8b/000?text=?'">
+            <div class="sub-item-name">${sub.name.length > 10 ? sub.name.substring(0, 8) + '...' : sub.name}</div>
+          </div>
+        `).join('');
+
+        return `
+          <span class="item-title">${item.name}</span>
+          <div class="sub-items-grid">
+            ${subItemsGrid}
+          </div>
+          ${item.subItems.length > 6 ? `<div style="text-align:center;color:#ccc;">+${item.subItems.length - 6} more items</div>` : ''}
+        `;
+      }
+
+      // For single items, fetch API data
+      const itemId = getItemId(item.name);
+      const bazaarData = await fetchBazaarData(itemId);
       
       const isMockData = bazaarData._isMock === true;
       const hasError = bazaarData.error || !bazaarData.buyTopEntries;
@@ -1015,7 +1298,7 @@
         html += `
           <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #4b267a;">
             <div style="color: #ff9800; font-size: 10px; text-align: center;">
-              Create a Cloudflare Worker to get live data
+              Enter API key to get live data
             </div>
           </div>
         `;
@@ -1024,23 +1307,23 @@
       html += `</div>`;
       return html;
     }
-    
+
     // ==================== UI FUNCTIONS ====================
-    // Create grid cells
-    function createGrid(items) {
+    // Fill cells with items
+    async function fillCells(itemsList) {
       const mainGrid = document.getElementById('mainGrid');
       const hotbarGrid = document.getElementById('hotbarGrid');
       
       mainGrid.innerHTML = '';
       hotbarGrid.innerHTML = '';
       
-      // Create main grid (36 cells)
+      // Fill main grid (36 cells)
       for (let i = 0; i < 36; i++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
         
-        if (i < items.length) {
-          const item = items[i];
+        if (i < itemsList.length) {
+          const item = itemsList[i];
           cell.innerHTML = `
             <div class="item-with-sub">
               <img src="img/${item.img}" alt="${item.name}" 
@@ -1051,21 +1334,27 @@
             </div>
           `;
           
-          // Tooltip functionality
           setupTooltip(cell, item);
+          
+          // Click handler for items with subItems
+          if (item.subItems && item.subItems.length > 0) {
+            cell.addEventListener('click', () => {
+              fillCells(item.subItems);
+            });
+          }
         }
         
         mainGrid.appendChild(cell);
       }
       
-      // Create hotbar (9 cells)
+      // Fill hotbar (9 cells)
       for (let i = 0; i < 9; i++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
         
         const itemIndex = 36 + i;
-        if (itemIndex < items.length) {
-          const item = items[itemIndex];
+        if (itemIndex < itemsList.length) {
+          const item = itemsList[itemIndex];
           cell.innerHTML = `
             <div class="item-with-sub">
               <img src="img/${item.img}" alt="${item.name}" 
@@ -1077,12 +1366,18 @@
           `;
           
           setupTooltip(cell, item);
+          
+          if (item.subItems && item.subItems.length > 0) {
+            cell.addEventListener('click', () => {
+              fillCells(item.subItems);
+            });
+          }
         }
         
         hotbarGrid.appendChild(cell);
       }
     }
-    
+
     // Setup tooltip for a cell
     function setupTooltip(cell, item) {
       const itemDiv = cell.querySelector('.item-with-sub');
@@ -1101,9 +1396,28 @@
           const content = await generateTooltipHTML(item);
           tooltip.innerHTML = content;
           
+          // Setup sub-item click handlers
+          const subItems = tooltip.querySelectorAll('.sub-item');
+          subItems.forEach(subItem => {
+            subItem.addEventListener('click', function(e) {
+              e.stopPropagation();
+              try {
+                const itemData = JSON.parse(this.getAttribute('data-item').replace(/\\'/g, "'"));
+                if (itemData.subItems && itemData.subItems.length > 0) {
+                  fillCells(itemData.subItems);
+                } else {
+                  // Show single item tooltip
+                  setupTooltip(cell, itemData);
+                }
+              } catch (error) {
+                console.error('Error parsing sub-item data:', error);
+              }
+            });
+          });
+          
           // Position tooltip
           positionTooltip(cell, tooltip);
-        }, 300); // Small delay to prevent flickering
+        }, 300);
       });
       
       itemDiv.addEventListener('mouseleave', function() {
@@ -1111,7 +1425,7 @@
         tooltip.style.display = "none";
       });
     }
-    
+
     // Position tooltip
     function positionTooltip(cell, tooltip) {
       const cellRect = cell.getBoundingClientRect();
@@ -1136,7 +1450,7 @@
       tooltip.style.left = (left - cellRect.left) + 'px';
       tooltip.style.top = (top - cellRect.top) + 'px';
     }
-    
+
     // ==================== CATEGORY NAVIGATION ====================
     function setupCategoryNavigation() {
       const categories = {
@@ -1144,27 +1458,27 @@
         mining: miningItems,
         combat: combatItems,
         foraging: foragingItems,
-        special: specialItems
+        special: specialItems,
+        minion: minionItems
       };
       
       Object.keys(categories).forEach(categoryId => {
         document.getElementById(categoryId).addEventListener('click', () => {
           document.querySelectorAll('.cat').forEach(cat => cat.classList.remove('active'));
           document.getElementById(categoryId).classList.add('active');
-          createGrid(categories[categoryId]);
+          fillCells(categories[categoryId]);
         });
       });
     }
-    
-    // ==================== API KEY MANAGEMENT ====================
-    function saveApiKey() {
-      apiKey = document.getElementById('apiKey').value.trim();
-      proxyUrl = document.getElementById('proxyUrl').value.trim() || DEFAULT_PROXY_URL;
+
+    // ==================== API SETTINGS MANAGEMENT ====================
+    function saveApiSettings() {
+      apiSettings.apiKey = document.getElementById('apiKey').value.trim();
+      apiSettings.proxy = document.getElementById('proxySelect').value;
       
-      localStorage.setItem('craftersApiKey', apiKey);
-      localStorage.setItem('craftersProxyUrl', proxyUrl);
+      localStorage.setItem('bazaarApiSettings', JSON.stringify(apiSettings));
       
-      // Clear cache when settings change
+      // Clear cache
       bazaarCache.clear();
       
       showStatus('Settings saved!', 'success');
@@ -1175,43 +1489,47 @@
         activeCat.click();
       }
     }
-    
-    function loadApiKey() {
-      const savedKey = localStorage.getItem('craftersApiKey');
-      const savedProxy = localStorage.getItem('craftersProxyUrl');
-      
-      if (savedKey) {
-        apiKey = savedKey;
-        document.getElementById('apiKey').value = savedKey;
-      }
-      
-      if (savedProxy) {
-        proxyUrl = savedProxy;
-        document.getElementById('proxyUrl').value = savedProxy;
-      } else {
-        document.getElementById('proxyUrl').value = DEFAULT_PROXY_URL;
+
+    function loadApiSettings() {
+      const saved = localStorage.getItem('bazaarApiSettings');
+      if (saved) {
+        try {
+          apiSettings = JSON.parse(saved);
+          
+          // Update UI
+          document.getElementById('apiKey').value = apiSettings.apiKey;
+          document.getElementById('proxySelect').value = apiSettings.proxy;
+        } catch (e) {
+          console.error('Error loading API settings:', e);
+        }
       }
     }
-    
+
     function showStatus(message, type = 'info') {
       const statusDiv = document.getElementById('apiStatus');
       statusDiv.textContent = message;
-      statusDiv.className = type;
+      
+      if (type === 'error') {
+        statusDiv.style.color = '#f87171';
+      } else if (type === 'success') {
+        statusDiv.style.color = '#10b981';
+      } else {
+        statusDiv.style.color = '#cbd5e1';
+      }
       
       // Auto-hide success messages
       if (type === 'success') {
         setTimeout(() => {
           statusDiv.textContent = '';
-          statusDiv.className = '';
         }, 3000);
       }
     }
-    
+
     // ==================== INITIALIZATION ====================
     document.addEventListener('DOMContentLoaded', function() {
-      loadApiKey();
+      loadApiSettings();
       setupCategoryNavigation();
-      createGrid(farmingItems);
+      fillCells(farmingItems);
     });
     
   </script>
