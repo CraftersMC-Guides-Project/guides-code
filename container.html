@@ -1086,84 +1086,93 @@
       };
     }
 
-    // Fetch bazaar data through Cloudflare Worker
-    async function fetchBazaarData(itemName) {
-      const itemId = getItemId(itemName);
-      console.log(`Fetching data for: ${itemName} (ID: ${itemId})`);
+    // Fetch bazaar data through Cloudflare Worker - FIXED VERSION
+async function fetchBazaarData(itemName) {
+  const itemId = getItemId(itemName);
+  console.log(`Fetching data for: ${itemName} (ID: ${itemId})`);
+  
+  // Check cache first (30 second cache for live data, 5 minutes for mock)
+  const cached = bazaarCache.get(itemId);
+  if (cached) {
+    const cacheTime = cached.data._isMock ? 300000 : 30000; // 5 min vs 30 sec
+    if (Date.now() - cached.timestamp < cacheTime) {
+      console.log(`Using cached data for ${itemId}`);
+      return cached.data;
+    }
+  }
+
+  if (!apiSettings.apiKey) {
+    console.log(`No API key set, using mock data for ${itemId}`);
+    const mockData = generateMockData(itemId);
+    bazaarCache.set(itemId, { data: mockData, timestamp: Date.now() });
+    return mockData;
+  }
+
+  if (!apiSettings.proxyUrl) {
+    console.log(`No proxy URL set, using mock data for ${itemId}`);
+    const mockData = generateMockData(itemId);
+    bazaarCache.set(itemId, { data: mockData, timestamp: Date.now() });
+    return mockData;
+  }
+
+  try {
+    // Build the proxy URL - FIXED: Direct /itemId path
+    const proxyUrl = apiSettings.proxyUrl.replace(/\/$/, ''); // Remove trailing slash
+    
+    // IMPORTANT: Use direct path /wheat NOT /bazaar/wheat
+    const url = `${proxyUrl}/${itemId}`;
+    
+    console.log(`Making request to: ${url}`);
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'X-API-Key': apiSettings.apiKey,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    console.log(`Response status: ${response.status}`);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`HTTP ${response.status}: ${errorText}`);
       
-      // Check cache first (30 second cache for live data, 5 minutes for mock)
-      const cached = bazaarCache.get(itemId);
-      if (cached) {
-        const cacheTime = cached.data._isMock ? 300000 : 30000; // 5 min vs 30 sec
-        if (Date.now() - cached.timestamp < cacheTime) {
-          console.log(`Using cached data for ${itemId}`);
-          return cached.data;
-        }
-      }
-
-      if (!apiSettings.apiKey) {
-        console.log(`No API key set, using mock data for ${itemId}`);
-        const mockData = generateMockData(itemId);
-        bazaarCache.set(itemId, { data: mockData, timestamp: Date.now() });
-        return mockData;
-      }
-
-      if (!apiSettings.proxyUrl) {
-        console.log(`No proxy URL set, using mock data for ${itemId}`);
-        const mockData = generateMockData(itemId);
-        bazaarCache.set(itemId, { data: mockData, timestamp: Date.now() });
-        return mockData;
-      }
-
-      try {
-        // Build the proxy URL
-        const proxyUrl = apiSettings.proxyUrl.replace(/\/$/, ''); // Remove trailing slash
-        const url = `${proxyUrl}/${itemId}`;
-        
-        console.log(`Making request to: ${url}`);
-        
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'X-API-Key': apiSettings.apiKey,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        console.log(`Response status: ${response.status}`);
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`HTTP ${response.status}: ${errorText}`);
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        console.log(`Successfully fetched data for ${itemId}`, data);
-        
-        // Check if it's an error response from the proxy
-        if (data.error) {
-          console.error(`Proxy error for ${itemId}:`, data.error);
-          throw new Error(`Proxy error: ${data.error}`);
-        }
-        
-        // Cache successful response
-        bazaarCache.set(itemId, {
-          data: data,
-          timestamp: Date.now()
-        });
-        
-        return data;
-        
-      } catch (error) {
-        console.warn(`Failed to fetch ${itemId} via proxy, using mock data:`, error.message);
-        
-        // Fallback to mock data
-        const mockData = generateMockData(itemId);
-        bazaarCache.set(itemId, { data: mockData, timestamp: Date.now() });
-        return mockData;
+      // If it's a 400 error, it might be because of wrong endpoint format
+      if (response.status === 400 && errorText.includes('Missing identifier')) {
+        console.log('Trying legacy format...');
+        throw new Error('Trying direct bazaar endpoint');
+      } else {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
     }
+    
+    const data = await response.json();
+    console.log(`Successfully fetched data for ${itemId}`, data);
+    
+    // Check if it's an error response from the proxy
+    if (data.error && data.error.includes('Missing identifier')) {
+      console.error(`Wrong endpoint format for ${itemId}:`, data.error);
+      throw new Error(`Endpoint format issue: ${data.error}`);
+    }
+    
+    // Cache successful response
+    bazaarCache.set(itemId, {
+      data: data,
+      timestamp: Date.now()
+    });
+    
+    return data;
+    
+  } catch (error) {
+    console.warn(`Failed to fetch ${itemId} via proxy, using mock data:`, error.message);
+    
+    // Fallback to mock data
+    const mockData = generateMockData(itemId);
+    bazaarCache.set(itemId, { data: mockData, timestamp: Date.now() });
+    return mockData;
+  }
+}
 
     // Generate tooltip HTML
     async function generateTooltipHTML(item) {
