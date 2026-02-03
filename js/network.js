@@ -40,6 +40,47 @@ function renderKV(container, obj) {
     }
 }
 
+function buildGamesTable(games) {
+    const table = document.createElement('table');
+    table.className = 'games-table';
+
+    const thead = document.createElement('thead');
+    thead.innerHTML = '<tr><th>Server</th><th>Count</th></tr>';
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+    for (const [name, val] of Object.entries(games)) {
+        const tr = document.createElement('tr');
+        const tdName = document.createElement('td'); tdName.textContent = name;
+        const tdVal = document.createElement('td');
+
+        if (val === null) {
+            tdVal.textContent = 'null';
+        } else if (typeof val === 'number' || typeof val === 'string') {
+            tdVal.textContent = String(val);
+        } else if (typeof val === 'object') {
+            const numericKeys = ['playerCount','player_count','players','count','value','online'];
+            let found = null;
+            for (const k of numericKeys) { if (k in val) { found = val[k]; break; } }
+            if (found !== null) {
+                tdVal.textContent = String(found);
+            } else {
+                const detail = document.createElement('details');
+                const s = document.createElement('summary'); s.textContent = 'Details';
+                const pre = document.createElement('pre'); pre.textContent = JSON.stringify(val, null, 2);
+                detail.appendChild(s); detail.appendChild(pre);
+                tdVal.appendChild(detail);
+            }
+        } else {
+            tdVal.textContent = String(val);
+        }
+
+        tr.appendChild(tdName); tr.appendChild(tdVal); tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+    return table;
+}
+
 function getCached() {
     const raw = localStorage.getItem(CACHE_KEY);
     if (!raw) return null;
@@ -79,10 +120,17 @@ function applyData(data, meta = { source: 'live', ts: Date.now() }) {
     detailsContainer.innerHTML = '';
 
     if (data.games) {
+        const table = buildGamesTable(data.games);
         const gamesDetails = document.createElement('details');
         const summary = document.createElement('summary'); summary.textContent = 'Games';
         const inner = document.createElement('div'); inner.className = 'details-content';
-        renderKV(inner, data.games);
+        inner.appendChild(table);
+        const raw = document.createElement('details');
+        const rs = document.createElement('summary'); rs.textContent = 'Raw games data';
+        const pre = document.createElement('pre'); pre.textContent = JSON.stringify(data.games, null, 2);
+        raw.appendChild(rs); raw.appendChild(pre);
+        inner.appendChild(raw);
+
         gamesDetails.appendChild(summary); gamesDetails.appendChild(inner);
         detailsContainer.appendChild(gamesDetails);
     }
