@@ -1,74 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CraftersMC Player & Profile Viewer</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta property="og:title" content="CraftersMC Player & Profile Viewer">
+    <meta property="og:description" content="View player data, SkyBlock profiles, and statistics">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#007bff">
+    <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="js/script.js" defer></script>
+    <link rel="stylesheet" href="css/essential.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #10b981;
-            --dark: #1e293b;
-            --darker: #0f172a;
-            --light: #f8fafc;
-            --gray: #64748b;
-            --gray-light: #e2e8f0;
-            --border: #334155;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --info: #3b82f6;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: var(--light);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 20px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
-            padding: 30px 0;
-            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+            margin-top: 20px;
         }
 
         .header h1 {
-            font-size: 2.8rem;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 2.5rem;
+            color: var(--primary-text-color);
             margin-bottom: 10px;
         }
 
         .header p {
-            color: var(--gray);
-            font-size: 1.1rem;
+            color: var(--secondary-text-color);
+            font-size: 1rem;
         }
 
         .api-panel {
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             padding: 25px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 6px var(--card-shadow-color);
         }
 
         .api-panel h2 {
@@ -76,17 +51,18 @@
             align-items: center;
             gap: 10px;
             margin-bottom: 20px;
-            color: var(--light);
+            color: var(--main-text-color);
+            font-size: 1.5rem;
         }
 
-        .api-panel h2 i {
-            color: var(--primary);
+        .api-panel h2 .material-icons {
+            color: var(--primary-color);
         }
 
         .input-group {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
             margin-bottom: 20px;
         }
 
@@ -98,36 +74,38 @@
 
         label {
             font-weight: 600;
-            color: var(--gray-light);
+            color: var(--main-text-color);
             font-size: 0.95rem;
         }
 
-        input, select {
+        input,
+        select {
             padding: 12px 15px;
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--light);
+            background: var(--body-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--main-text-color);
             font-size: 1rem;
             transition: all 0.3s ease;
         }
 
-        input:focus, select:focus {
+        input:focus,
+        select:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
         }
 
         input::placeholder {
-            color: var(--gray);
+            color: var(--secondary-text-color);
         }
 
         .btn {
             padding: 12px 24px;
-            background: var(--primary);
+            background: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 4px;
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
@@ -138,9 +116,8 @@
         }
 
         .btn:hover {
-            background: var(--primary-dark);
+            background: var(--primary-color-hover);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
         }
 
         .btn:active {
@@ -148,19 +125,19 @@
         }
 
         .btn-success {
-            background: var(--success);
+            background: #28a745;
         }
 
         .btn-success:hover {
-            background: #0da271;
+            background: #218838;
         }
 
         .btn-danger {
-            background: var(--danger);
+            background: #dc3545;
         }
 
         .btn-danger:hover {
-            background: #dc2626;
+            background: #c82333;
         }
 
         .btn-group {
@@ -171,41 +148,42 @@
 
         .status {
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 4px;
             margin: 10px 0;
             display: none;
             align-items: center;
             gap: 10px;
+            font-weight: 600;
         }
 
         .status.success {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid var(--success);
-            color: var(--success);
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+            color: #28a745;
             display: flex;
         }
 
         .status.error {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--danger);
-            color: var(--danger);
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+            color: #dc3545;
             display: flex;
         }
 
         .status.info {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid var(--info);
-            color: var(--info);
+            background: rgba(0, 123, 255, 0.2);
+            border: 1px solid #007bff;
+            color: #007bff;
             display: flex;
         }
 
         .data-section {
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             padding: 25px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 6px var(--card-shadow-color);
         }
 
         .data-section h2 {
@@ -213,25 +191,37 @@
             align-items: center;
             gap: 10px;
             margin-bottom: 20px;
-            color: var(--light);
+            color: var(--main-text-color);
             padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1.3rem;
         }
 
-        .data-section h2 i {
-            color: var(--primary);
+        .data-section h2 .material-icons {
+            color: var(--primary-color);
         }
 
         .loading {
             text-align: center;
-            padding: 40px;
-            color: var(--gray);
+            padding: 60px 20px;
+            color: var(--secondary-text-color);
         }
 
-        .loading i {
-            font-size: 2rem;
-            margin-bottom: 15px;
-            color: var(--primary);
+        .loading .material-icons {
+            font-size: 3rem;
+            color: var(--primary-color);
+            display: block;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .cards-grid {
@@ -242,17 +232,18 @@
         }
 
         .card {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid var(--border);
-            border-radius: 10px;
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             padding: 20px;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 6px var(--card-shadow-color);
         }
 
         .card:hover {
             transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary-color);
+            background-color: var(--card-bg-hover);
         }
 
         .card-header {
@@ -261,30 +252,35 @@
             gap: 10px;
             margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .card-header i {
-            color: var(--primary);
-            font-size: 1.2rem;
+        .card-header .material-icons {
+            color: var(--primary-color);
+            font-size: 1.3rem;
         }
 
         .card-title {
-            font-weight: 600;
-            color: var(--light);
+            font-weight: 700;
+            color: var(--main-text-color);
+            font-size: 1.1rem;
         }
 
         .card-body {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 12px;
         }
 
         .data-item {
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .darkmode .data-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .data-item:last-child {
@@ -292,12 +288,12 @@
         }
 
         .data-label {
-            color: var(--gray);
+            color: var(--secondary-text-color);
             font-weight: 500;
         }
 
         .data-value {
-            color: var(--light);
+            color: var(--main-text-color);
             font-weight: 600;
             text-align: right;
             max-width: 60%;
@@ -305,23 +301,23 @@
         }
 
         .data-value.number {
-            color: var(--secondary);
+            color: #28a745;
         }
 
         .data-value.boolean {
-            color: var(--warning);
+            color: #ffc107;
         }
 
         .data-value.string {
-            color: var(--info);
+            color: #007bff;
         }
 
         .data-value.date {
-            color: #8b5cf6;
+            color: #9966ff;
         }
 
         .data-value.currency {
-            color: var(--success);
+            color: #17a2b8;
         }
 
         .collapse-section {
@@ -329,43 +325,44 @@
         }
 
         .collapse-header {
-            background: rgba(15, 23, 42, 0.8);
+            background: var(--card-bg-color);
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 4px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-color);
             transition: all 0.3s ease;
         }
 
         .collapse-header:hover {
-            background: rgba(15, 23, 42, 1);
-            border-color: var(--primary);
+            background: var(--card-bg-hover);
+            border-color: var(--primary-color);
         }
 
         .collapse-header h3 {
             display: flex;
             align-items: center;
             gap: 10px;
-            color: var(--light);
+            color: var(--main-text-color);
+            font-size: 1.1rem;
         }
 
-        .collapse-header i {
+        .collapse-header .material-icons {
             transition: transform 0.3s ease;
         }
 
-        .collapse-header.collapsed i {
+        .collapse-header.collapsed .material-icons {
             transform: rotate(-90deg);
         }
 
         .collapse-content {
             padding: 20px;
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border);
+            background: var(--card-bg-color);
+            border: 1px solid var(--border-color);
             border-top: none;
-            border-radius: 0 0 8px 8px;
+            border-radius: 0 0 4px 4px;
             display: none;
         }
 
@@ -374,105 +371,88 @@
         }
 
         .json-viewer {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid var(--border);
-            border-radius: 8px;
+            background: var(--body-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
             padding: 20px;
-            max-height: 500px;
+            max-height: 600px;
             overflow-y: auto;
             font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             white-space: pre-wrap;
             word-break: break-all;
+            color: var(--main-text-color);
         }
 
         .json-key {
-            color: #ff79c6;
+            color: #d19a66;
         }
 
         .json-string {
-            color: #f1fa8c;
+            color: #98c379;
         }
 
         .json-number {
-            color: #bd93f9;
+            color: #e06c75;
         }
 
         .json-boolean {
-            color: #ffb86c;
+            color: #56b6c2;
         }
 
         .json-null {
-            color: #ff5555;
+            color: #c678dd;
         }
 
         .tabs {
             display: flex;
             gap: 5px;
             margin-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 5px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0;
+            flex-wrap: wrap;
         }
 
         .tab {
-            padding: 10px 20px;
+            padding: 12px 20px;
             background: transparent;
             border: none;
-            color: var(--gray);
+            color: var(--secondary-text-color);
             cursor: pointer;
-            border-radius: 8px 8px 0 0;
+            border-radius: 4px 4px 0 0;
             transition: all 0.3s ease;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 0.95rem;
         }
 
         .tab:hover {
-            background: rgba(37, 99, 235, 0.1);
-            color: var(--light);
+            background: var(--card-bg-hover);
+            color: var(--main-text-color);
         }
 
         .tab.active {
-            background: var(--primary);
+            background: var(--primary-color);
             color: white;
+            border-bottom: 3px solid var(--primary-color);
         }
 
         .tab-content {
             display: none;
+            animation: fadeIn 0.3s ease;
         }
 
         .tab-content.active {
             display: block;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
 
-        .stat-box {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .stat-box:hover {
-            border-color: var(--primary);
-            transform: translateY(-3px);
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--secondary);
-        }
-
-        .stat-label {
-            color: var(--gray);
-            font-size: 0.9rem;
+            to {
+                opacity: 1;
+            }
         }
 
         .profile-selector {
@@ -484,102 +464,129 @@
 
         .profile-btn {
             padding: 10px 20px;
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--gray);
+            background: var(--card-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--secondary-text-color);
             cursor: pointer;
             transition: all 0.3s ease;
+            font-weight: 600;
         }
 
         .profile-btn:hover {
-            border-color: var(--primary);
-            color: var(--light);
+            border-color: var(--primary-color);
+            color: var(--main-text-color);
+            background: var(--card-bg-hover);
         }
 
         .profile-btn.active {
-            background: var(--primary);
+            background: var(--primary-color);
             color: white;
-            border-color: var(--primary);
+            border-color: var(--primary-color);
         }
 
-        .inventory-grid {
-            display: grid;
-            grid-template-columns: repeat(9, 50px);
-            gap: 5px;
-            margin: 20px 0;
+        .timestamp {
+            font-size: 0.85rem;
+            color: var(--secondary-text-color);
+            margin-top: 30px;
+            text-align: center;
+            padding: 20px;
         }
 
-        .inventory-slot {
-            width: 50px;
-            height: 50px;
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            display: flex;
+        .gap {
+            height: 80px;
+        }
+
+        #scrollToTopBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 999;
+            display: none;
             align-items: center;
             justify-content: center;
-            color: var(--gray);
+            transition: all 0.3s ease;
         }
 
-        .inventory-slot.filled {
-            background: rgba(37, 99, 235, 0.2);
-            border-color: var(--primary);
-            color: var(--light);
+        #scrollToTopBtn:hover {
+            background-color: var(--primary-color-hover);
         }
 
         @media (max-width: 768px) {
             .cards-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .input-group {
                 grid-template-columns: 1fr;
             }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .btn-group {
-                flex-direction: column;
-            }
-        }
 
-        .timestamp {
-            font-size: 0.85rem;
-            color: var(--gray);
-            margin-top: 20px;
-            text-align: center;
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .tab {
+                padding: 10px 15px;
+                font-size: 0.85rem;
+            }
         }
     </style>
 </head>
+
 <body>
+    <div id="loader">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <div class="top" id="top"></div>
+    <div class="sidebar" id="sidebar"></div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <span class="material-icons" id="scrollToTopBtn">north</span>
+    <div class="gap"></div>
+
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-crown"></i> CraftersMC Viewer</h1>
+            <h1><span class="material-icons"
+                    style="display: inline-block; vertical-align: middle; margin-right: 10px;">verified_user</span>CraftersMC
+                Viewer</h1>
             <p>View player data, SkyBlock profiles, and bazaar market information</p>
         </div>
 
         <!-- API Settings Panel -->
         <div class="api-panel">
-            <h2><i class="fas fa-cog"></i> API Configuration</h2>
+            <h2><span class="material-icons">settings</span> API Configuration</h2>
             <div class="input-group">
                 <div class="form-group">
-                    <label for="apiKey"><i class="fas fa-key"></i> API Key</label>
+                    <label for="apiKey"><span class="material-icons"
+                            style="font-size: 1rem; vertical-align: middle;">vpn_key</span> API Key</label>
                     <input type="password" id="apiKey" placeholder="Enter your CraftersMC API key">
                 </div>
                 <div class="form-group">
-                    <label for="proxyUrl"><i class="fas fa-server"></i> Proxy URL</label>
-                    <input type="text" id="proxyUrl" placeholder="https://api-proxy.craftersmcguides.workers.dev" disabled>
+                    <label for="proxyUrl"><span class="material-icons"
+                            style="font-size: 1rem; vertical-align: middle;">storage</span> Proxy URL</label>
+                    <input type="text" id="proxyUrl" placeholder="https://api-proxy.craftersmcguides.workers.dev"
+                        disabled>
                 </div>
             </div>
             <div class="btn-group">
                 <button class="btn" onclick="saveSettings()">
-                    <i class="fas fa-save"></i> Save Settings
+                    <span class="material-icons">save</span> Save Settings
                 </button>
                 <button class="btn btn-success" onclick="testConnection()">
-                    <i class="fas fa-plug"></i> Test Connection
+                    <span class="material-icons">cable</span> Test Connection
                 </button>
             </div>
             <div id="status" class="status"></div>
@@ -587,30 +594,33 @@
 
         <!-- Search Panel -->
         <div class="data-section">
-            <h2><i class="fas fa-search"></i> Search</h2>
+            <h2><span class="material-icons">search</span> Search</h2>
             <div class="input-group">
                 <div class="form-group">
-                    <label for="username"><i class="fas fa-user"></i> Username</label>
+                    <label for="username"><span class="material-icons"
+                            style="font-size: 1rem; vertical-align: middle;">person</span> Username</label>
                     <input type="text" id="username" placeholder="Enter Minecraft username">
                 </div>
                 <div class="form-group">
-                    <label for="profileId"><i class="fas fa-id-card"></i> Profile ID (Optional)</label>
+                    <label for="profileId"><span class="material-icons"
+                            style="font-size: 1rem; vertical-align: middle;">badge</span> Profile ID (Optional)</label>
                     <input type="text" id="profileId" placeholder="Enter profile ID (or leave blank for first profile)">
                 </div>
             </div>
             <div class="btn-group">
                 <button class="btn btn-success" onclick="fetchPlayerData()">
-                    <i class="fas fa-download"></i> Fetch Player Data
+                    <span class="material-icons">download</span> Fetch Player Data
                 </button>
                 <button class="btn" onclick="clearData()">
-                    <i class="fas fa-trash"></i> Clear
+                    <span class="material-icons">delete</span> Clear
                 </button>
             </div>
         </div>
 
         <!-- Loading Indicator -->
         <div id="loading" class="loading" style="display: none;">
-            <i class="fas fa-spinner fa-spin"></i>
+            <span class="material-icons"
+                style="animation: spin 1s linear infinite; display: inline-block;">hourglass_empty</span>
             <p>Loading data...</p>
         </div>
 
@@ -821,26 +831,26 @@
         function displayProfiles(profiles) {
             const selector = document.getElementById('profileSelector');
             selector.innerHTML = '';
-            
+
             if (!profiles || Object.keys(profiles).length === 0) {
                 selector.style.display = 'none';
                 return;
             }
 
             selector.style.display = 'flex';
-            
+
             Object.entries(profiles).forEach(([profileId, profile]) => {
                 const btn = document.createElement('button');
                 btn.className = 'profile-btn';
                 if (profileId === currentProfileId) {
                     btn.classList.add('active');
                 }
-                
+
                 btn.innerHTML = `
                     <i class="fas fa-id-card"></i>
                     ${profile.cuteName || 'Unknown'} (${profileId.substring(0, 8)}...)
                 `;
-                
+
                 btn.onclick = () => fetchProfileData(profileId);
                 selector.appendChild(btn);
             });
@@ -952,7 +962,7 @@
             if (profileData.members) {
                 const memberId = Object.keys(profileData.members)[0];
                 const member = profileData.members[memberId];
-                
+
                 if (member) {
                     html += `
                         <div class="data-section">
@@ -1029,7 +1039,7 @@
                     id.substring(0, 12) + '...',
                     'string'
                 ]);
-                
+
                 html += createDataCard('fas fa-id-card', 'SkyBlock Profiles', profileItems);
             }
 
@@ -1192,7 +1202,7 @@
                     .slice(0, 5)
                     .map(([cause, count]) => `${cause}: ${count}`)
                     .join(' | ');
-                
+
                 html += createDataCard('fas fa-skull', 'Deaths Summary', [
                     ['Total Deaths', formatNumber(totalDeaths), 'number'],
                     ['Top Causes', deathCauses, 'string']
@@ -1207,7 +1217,7 @@
                     .slice(0, 3)
                     .map(([mob, count]) => `${mob}: ${count}`)
                     .join(' | ');
-                
+
                 html += createDataCard('fas fa-crosshairs', 'Kills Summary', [
                     ['Total Kills', formatNumber(totalKills), 'number'],
                     ['Top Kills', topKills, 'string']
@@ -1393,7 +1403,7 @@
                 .map(([type, level]) => [type, formatNumber(level), 'number']);
 
             let html = '<div class="cards-grid">';
-            
+
             // Summary Card
             html += createDataCard('fas fa-robot', 'Minion Summary', [
                 ['Total Minion Types', formatNumber(Object.keys(minionMap).length), 'number'],
@@ -1406,7 +1416,7 @@
             // Detailed Minion List
             html += '<h3><i class="fas fa-list"></i> Minion Levels</h3>';
             html += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">';
-            
+
             sortedMinions.forEach(([type, level]) => {
                 html += `
                     <div class="card">
@@ -1506,7 +1516,7 @@
 
         function displayJSON() {
             const container = document.getElementById('jsonTab');
-            
+
             const allData = {
                 player: playerData,
                 profile: profileData,
@@ -1527,11 +1537,57 @@
         }
 
         // Helper Functions
+        // Font Awesome to Material Icons mapping
+        const iconMap = {
+            'fas fa-info-circle': 'info',
+            'fas fa-sign-in-alt': 'login',
+            'fas fa-users': 'group',
+            'fas fa-tshirt': 'shopping_bag',
+            'fas fa-id-card': 'badge',
+            'fas fa-piggy-bank': 'savings',
+            'fas fa-user-shield': 'security',
+            'fas fa-map-marker-alt': 'location_on',
+            'fas fa-hourglass-end': 'hourglass_bottom',
+            'fas fa-gamepad': 'sports_esports',
+            'fas fa-vote-yea': 'thumb_up',
+            'fas fa-birthday-cake': 'cake',
+            'fas fa-fist-raised': 'sports_mma',
+            'fas fa-star': 'star',
+            'fas fa-skull': 'skull',
+            'fas fa-crosshairs': 'gps_fixed',
+            'fas fa-magic': 'auto_fix_high',
+            'fas fa-flask': 'science',
+            'fas fa-pickaxe': 'construction',
+            'fas fa-skull-crossbones': 'dangerous',
+            'fas fa-dragon': 'pets',
+            'fas fa-users': 'people',
+            'fas fa-user-slash': 'person_off',
+            'fas fa-location-arrow': 'navigation',
+            'fas fa-clock': 'schedule',
+            'fas fa-chart-bar': 'bar_chart',
+            'fas fa-cog': 'settings',
+            'fas fa-layer-group': 'layers',
+            'fas fa-tractor': 'agriculture',
+            'fas fa-leaf': 'local_florist',
+            'fas fa-robot': 'smart_toy',
+            'fas fa-list': 'list',
+            'fas fa-box-open': 'unarchive',
+            'fas fa-boxes': 'inventory_2',
+            'fas fa-chart-line': 'trending_up',
+            'fas fa-code': 'code',
+            'fas fa-coins': 'toll',
+        };
+
+        function convertIcon(faIcon) {
+            return iconMap[faIcon] || 'help';
+        }
+
         function createDataCard(icon, title, items) {
+            const materialIcon = convertIcon(icon);
             let html = `
                 <div class="card">
                     <div class="card-header">
-                        <i class="${icon}"></i>
+                        <span class="material-icons">${materialIcon}</span>
                         <div class="card-title">${title}</div>
                     </div>
                     <div class="card-body">
@@ -1556,12 +1612,13 @@
 
         function createCollapseSection(icon, title, data, isNested = false) {
             const id = title.replace(/\s+/g, '-').toLowerCase();
-            
+            const materialIcon = convertIcon(icon);
+
             let html = `
                 <div class="collapse-section">
                     <div class="collapse-header" onclick="toggleCollapse('${id}')">
-                        <h3><i class="${icon}"></i> ${title} (${Object.keys(data).length} items)</h3>
-                        <i class="fas fa-chevron-down"></i>
+                        <h3><span class="material-icons">${materialIcon}</span> ${title} (${Object.keys(data).length} items)</h3>
+                        <span class="material-icons">expand_more</span>
                     </div>
                     <div id="${id}" class="collapse-content">
             `;
@@ -1586,11 +1643,11 @@
             }
 
             let html = '<div class="cards-grid">';
-            
+
             Object.entries(obj).forEach(([key, value]) => {
                 let displayValue = value;
                 let type = 'string';
-                
+
                 if (typeof value === 'number') {
                     displayValue = formatNumber(value);
                     type = 'number';
@@ -1604,7 +1661,7 @@
                     displayValue = '{...}';
                     type = 'string';
                 }
-                
+
                 html += `
                     <div class="data-item">
                         <span class="data-label">${key}</span>
@@ -1623,7 +1680,7 @@
             }
 
             let html = '';
-            
+
             Object.entries(obj).forEach(([key, value]) => {
                 if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
                     html += `
@@ -1640,7 +1697,7 @@
                 } else {
                     let displayValue = value;
                     let type = 'string';
-                    
+
                     if (typeof value === 'number') {
                         displayValue = formatNumber(value);
                         type = 'number';
@@ -1651,7 +1708,7 @@
                         displayValue = `Array[${value.length}]`;
                         type = 'string';
                     }
-                    
+
                     html += `
                         <div class="data-item" style="margin-left: ${depth * 20}px">
                             <span class="data-label">${key}</span>
@@ -1666,7 +1723,7 @@
 
         function syntaxHighlight(json) {
             json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, 
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
                 function (match) {
                     let cls = 'json-number';
                     if (/^"/.test(match)) {
@@ -1688,7 +1745,7 @@
         function toggleCollapse(id) {
             const content = document.getElementById(id);
             const header = content.previousElementSibling;
-            
+
             if (content.classList.contains('expanded')) {
                 content.classList.remove('expanded');
                 header.classList.add('collapsed');
@@ -1737,7 +1794,7 @@
             const status = document.getElementById('status');
             status.textContent = message;
             status.className = `status ${type}`;
-            
+
             if (type === 'success' || type === 'error') {
                 setTimeout(() => {
                     status.style.display = 'none';
@@ -1746,7 +1803,7 @@
         }
 
         function updateTimestamp() {
-            document.getElementById('timestamp').textContent = 
+            document.getElementById('timestamp').textContent =
                 `Last updated: ${new Date().toLocaleString()}`;
         }
 
@@ -1754,13 +1811,13 @@
             playerData = null;
             profileData = null;
             currentProfileId = '';
-            
+
             document.getElementById('username').value = '';
             document.getElementById('profileId').value = '';
             document.getElementById('profileSelector').style.display = 'none';
             document.getElementById('mainData').style.display = 'none';
             document.getElementById('timestamp').textContent = '';
-            
+
             showStatus('Data cleared', 'success');
         }
 
@@ -1768,12 +1825,12 @@
         function saveSettings() {
             config.apiKey = document.getElementById('apiKey').value.trim();
             config.proxyUrl = document.getElementById('proxyUrl').value.trim();
-            
+
             if (!config.apiKey || !config.proxyUrl) {
                 showStatus('Please enter both API key and proxy URL', 'error');
                 return;
             }
-            
+
             localStorage.setItem('craftersmc_config', JSON.stringify(config));
             showStatus('Settings saved successfully!', 'success');
         }
@@ -1796,9 +1853,9 @@
                 showStatus('Please save settings first', 'error');
                 return;
             }
-            
+
             showStatus('Testing connection...', 'info');
-            
+
             try {
                 const proxyUrl = config.proxyUrl.replace(/\/$/, '');
                 const response = await fetch(proxyUrl, {
@@ -1807,7 +1864,7 @@
                         'Content-Type': 'application/json'
                     }
                 });
-                
+
                 if (response.ok) {
                     showStatus('✓ Connection successful!', 'success');
                 } else {
@@ -1821,15 +1878,15 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadSettings();
-            
+
             // Set default proxy URL if none
             if (!document.getElementById('proxyUrl').value) {
                 document.getElementById('proxyUrl').value = 'https://api-proxy.craftersmcguides.workers.dev';
             }
-            
+
             // Auto-focus username input
             document.getElementById('username').focus();
-            
+
             // Enter key support
             document.getElementById('username').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') fetchPlayerData();
@@ -1840,4 +1897,5 @@
         });
     </script>
 </body>
+
 </html>
