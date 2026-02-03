@@ -106,6 +106,41 @@ function buildGamesTable(games) {
     return table;
 }
 
+function populateStaticGamesTable(games) {
+    const rowsData = flattenGames(games);
+    const tbody = document.getElementById('gamesTableBody');
+    const note = document.getElementById('gamesTableNote');
+    const maxRows = tbody ? tbody.querySelectorAll('tr').length : 0;
+
+    // clear existing counts
+    if (tbody) {
+        tbody.querySelectorAll('tr').forEach(tr => {
+            const countCell = tr.querySelector('.server-count');
+            if (countCell) countCell.textContent = '—';
+        });
+    }
+
+    // fill counts in order into existing rows
+    if (tbody && rowsData.length > 0) {
+        const trs = tbody.querySelectorAll('tr');
+        for (let i = 0; i < Math.min(rowsData.length, trs.length); i++) {
+            const countCell = trs[i].querySelector('.server-count');
+            if (countCell) countCell.textContent = String(rowsData[i].value);
+        }
+    }
+
+    // show note if overflow
+    if (note) {
+        if (rowsData.length > maxRows) {
+            note.textContent = `${rowsData.length - maxRows} entries not shown.`;
+            note.style.display = 'block';
+        } else {
+            note.textContent = `Showing ${Math.min(rowsData.length, maxRows)} entries.`;
+            note.style.display = 'block';
+        }
+    }
+}
+
 function getCached() {
     const raw = localStorage.getItem(CACHE_KEY);
     if (!raw) return null;
