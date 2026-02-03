@@ -5,10 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bazaar Items - CraftersMC Guides</title>
-  <!-- <link rel="stylesheet" href="themes/minecraft/style.css"> -->
   <link rel="stylesheet" href="css/essential.css" />
   <style>
-    /* Variables replaced with values */
     body,
     html {
       height: 100%;
@@ -18,9 +16,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      background-color: #1a1a2e;
     }
 
-    /* Inventory border setup */
     .container {
       display: grid;
       grid-template-columns: 2px 2px auto 2px 2px;
@@ -33,7 +31,6 @@
         "bl-bl br-bl b bl-br br-br";
     }
 
-    /* Border effects */
     .s-br {
       box-shadow: 2px 0 0 black, 0 2px 0 black;
     }
@@ -50,12 +47,6 @@
       box-shadow: 0 -2px 0 black, -2px 0 0 black;
     }
 
-    .c {
-      background-color: #c6c6c6;
-      grid-area: c;
-    }
-
-    /* Sides */
     .corner-top {
       grid-area: t;
       box-shadow: 0 -2px 0 black;
@@ -86,7 +77,6 @@
       grid-column: inherit;
     }
 
-    /* Extra corners */
     .tl-tl {
       grid-area: tl-tl;
       background-color: #ffffff;
@@ -103,7 +93,6 @@
       left: -4px;
     }
 
-    /* Top left corner */
     .bl-tl,
     .tr-tl,
     .br-tl {
@@ -122,19 +111,16 @@
       grid-area: br-tl;
     }
 
-    /* Top right */
     .bl-tr {
       grid-area: bl-tr;
       background-color: #c6c6c6;
     }
 
-    /* Bottom left */
     .tr-bl {
       grid-area: tr-bl;
       background-color: #c6c6c6;
     }
 
-    /* Bottom right */
     .tr-br,
     .tl-br,
     .bl-br {
@@ -153,20 +139,17 @@
       grid-area: bl-br;
     }
 
-    /* Inventory layout */
     .inventory {
       padding: 0.4rem;
       display: grid;
     }
 
-    /* inner-container inventory cells */
     .inventory .inner-container,
     .hotbar-extreme-inner-container {
       display: grid;
       grid-column: inherit;
     }
 
-    /* Grid cells */
     .cell {
       box-shadow: inset 2px 2px 0 0 #373737, inset -2px -2px 0 0 #ffffff;
       background-color: #8b8b8b;
@@ -236,6 +219,16 @@
       border-top-right-radius: 5px;
       border-top-left-radius: 5px;
       padding: 20px;
+      cursor: pointer;
+    }
+
+    .cat:hover {
+      background-color: #d6d6d6;
+    }
+
+    .cat.active {
+      background-color: #a6a6a6;
+      box-shadow: inset 4px 4px 0 0 #777;
     }
 
     .cat img {
@@ -252,34 +245,28 @@
     }
 
     .item-tooltip {
-      display: none;
       position: absolute;
-      left: auto;
-      top: 110%;
+      left: 110%;
+      top: 0;
       background: #2d143b;
       color: #ffe16b;
       border: 2px solid #4b267a;
       border-radius: 6px;
-      padding: 8px 12px;
+      padding: 12px;
       z-index: 100;
-      min-width: max-content;
+      min-width: 250px;
       font-family: 'Minecraft', 'Arial', sans-serif;
-      font-size: 0rem;
-      box-shadow: 0 2px 8px #0008;
-      white-space: pre-line;
-      /* Pixelated corners */
+      font-size: 0.85rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      white-space: normal;
       box-shadow:
         0 0 0 2px #4b267a,
-        /* main border */
         -4px -4px 0 0 #fff,
-        /* top-left pixel */
         4px -4px 0 0 #fff,
-        /* top-right pixel */
         -4px 4px 0 0 #555,
-        /* bottom-left pixel */
         4px 4px 0 0 #555;
-      /* bottom-right pixel */
       font-weight: bold;
+      display: none;
     }
 
     .item-with-sub:hover .item-tooltip {
@@ -291,47 +278,151 @@
       font-weight: bold;
       font-size: 1.1rem;
       display: block;
-      width: min-content;
+      margin-bottom: 8px;
     }
 
-    .item-tooltip .item-rarity {
-      color: #4b9fff;
-      font-size: 0.95rem;
-      font-weight: bold;
-      margin-bottom: 10px;
-      display: block;
-      position: relative;
-      left: -6px;
+    .item-tooltip .item-data {
+      margin-top: 8px;
+      border-top: 1px solid #4b267a;
+      padding-top: 8px;
     }
 
-    .item-tooltip .item-desc {
-      color: #ffe16b;
-      font-size: 13px;
+    .data-row {
+      display: flex;
+      justify-content: space-between;
       margin-bottom: 4px;
-      display: block;
+      font-size: 12px;
     }
 
-    .item-tooltip .item-price {
+    .data-label {
+      color: #a3a3ff;
+    }
+
+    .data-value {
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    .price-up {
+      color: #4CAF50 !important;
+    }
+
+    .price-down {
+      color: #F44336 !important;
+    }
+
+    .loading {
       color: #ffd700;
-      font-size: 13px;
-      margin-bottom: 2px;
-      display: block;
+      font-style: italic;
+      text-align: center;
+      padding: 5px;
     }
 
-    .item-rarity .category-rarity {
-      width: 60px;
-      height: auto;
+    .error {
+      color: #ff6b6b;
+      font-size: 11px;
+      text-align: center;
+      padding: 5px;
+      border: 1px solid #ff6b6b;
+      border-radius: 3px;
+      background: rgba(255, 0, 0, 0.1);
     }
-    .item-price-container {
-  margin-bottom: 13px;
-}
+
+    .api-settings {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #1e293b;
+      border: 2px solid #3b82f6;
+      border-radius: 6px;
+      padding: 15px;
+      width: 300px;
+      z-index: 1000;
+    }
+
+    .api-input-group {
+      margin-bottom: 10px;
+    }
+
+    .api-input-group label {
+      display: block;
+      color: #cbd5e1;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .api-input-group input {
+      width: 100%;
+      padding: 8px;
+      background: #0f172a;
+      border: 1px solid #475569;
+      border-radius: 4px;
+      color: #e2e8f0;
+    }
+
+    .api-button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+    }
+
+    .sub-items-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
+    .sub-item {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 4px;
+      border-radius: 3px;
+    }
+
+    .sub-item img {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 2px;
+    }
+
+    .sub-item-name {
+      font-size: 9px;
+      color: #ccc;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   </style>
 </head>
 
 <body>
+  <!-- API Settings -->
+  <div class="api-settings">
+    <div class="api-input-group">
+      <label for="apiKey">API Key:</label>
+      <input type="password" id="apiKey" placeholder="Enter your API key">
+    </div>
+    <div class="api-input-group">
+      <label for="proxySelect">CORS Proxy:</label>
+      <select id="proxySelect">
+        <option value="https://corsproxy.io/?">corsproxy.io</option>
+        <option value="https://api.allorigins.win/raw?url=">allorigins.win</option>
+        <option value="none">No Proxy</option>
+      </select>
+    </div>
+    <button class="api-button" onclick="saveApiSettings()">Save Settings</button>
+  </div>
+
   <div class="contain">
     <div class="catnav">
-      <div id="farming" class="cat"><img src="assets/ui-icons/ui_bazaar_category_farming_active.png"></div>
+      <div id="farming" class="cat active"><img src="assets/ui-icons/ui_bazaar_category_farming_active.png"></div>
       <div id="mining" class="cat"><img src="assets/ui-icons/ui_bazaar_category_mining_active.png"></div>
       <div id="combat" class="cat"><img src="assets/ui-icons/ui_bazaar_category_combat_active.png"></div>
       <div id="foraging" class="cat"><img src="assets/ui-icons/ui_bazaar_category_foraging_active.png"></div>
@@ -354,7 +445,7 @@
       <div class="bl-br s-br"></div>
       <div class="br-br"></div>
       <div class="inventory inner-container">
-        <h3>Bazaar</h3>
+        <h3>Bazaar Market</h3>
         <div class="extreme-inner-container">
           <div class="cell"></div>
           <div class="cell"></div>
@@ -407,6 +498,7 @@
       </div>
     </div>
   </div>
+
   <script>
     // Farming items (already in object format)
     const farmingItems = [
@@ -885,107 +977,7 @@
                   { name: "Turbo-Wheat IV Enchant Book", img: "100px-Enchanted_Book.gif" },
                   { name: "Turbo-Wheat V Enchant Book", img: "100px-Enchanted_Book.gif" }
                 ]
-              },
-              {
-                name: "Turbo-Cane Enchant Book Items", img: "100px-Enchanted_Book.gif",
-                subItems: [
-                  { name: "Turbo-Cane I Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Cane II Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Cane III Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Cane IV Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Cane V Enchant Book", img: "100px-Enchanted_Book.gif" }
-                ]
-              },
-              {
-                name: "Turbo-Cane Enchant Book Items", img: "100px-Enchanted_Book.gif",
-                subItems: [
-                  { name: "Turbo-Cane I Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Cane II Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Cane III Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Cane IV Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Cane V Enchant Book", img: "100px-Enchanted_Book.gif" }
-                ]
-              },
-              {
-                name: "Turbo-Carrot Enchant Book Items", img: "100px-Enchanted_Book.gif",
-                subItems: [
-                  { name: "Turbo-Carrot I Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Carrot II Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Carrot III Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Carrot IV Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Carrot V Enchant Book", img: "100px-Enchanted_Book.gif" }
-                ]
-              },
-              {
-                name: "Turbo-Potato Enchant Book Items", img: "100px-Enchanted_Book.gif",
-                subItems: [
-                  { name: "Turbo-Potato I Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Potato II Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Potato III Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Potato IV Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Potato V Enchant Book", img: "100px-Enchanted_Book.gif" }
-                ]
-              },
-              {
-                name: "Turbo-Melon Enchant Book Items", img: "100px-Enchanted_Book.gif",
-                subItems: [
-                  { name: "Turbo-Melon I Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Melon II Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Melon III Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Melon IV Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Melon V Enchant Book", img: "100px-Enchanted_Book.gif" }
-                ]
-              },
-              {
-                name: "Turbo-Pumpkin Enchant Book Items", img: "100px-Enchanted_Book.gif",
-                subItems: [
-                  { name: "Turbo-Pumpkin I Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Pumpkin II Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Pumpkin III Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Pumpkin IV Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Pumpkin V Enchant Book", img: "100px-Enchanted_Book.gif" }
-                ]
-              },
-              {
-                name: "Turbo-Cocoa Enchant Book Items", img: "100px-Enchanted_Book.gif",
-                subItems: [
-                  { name: "Turbo-Cocoa I Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Cocoa II Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Cocoa III Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Cocoa IV Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Cocoa V Enchant Book", img: "100px-Enchanted_Book.gif" }
-                ]
-              },
-              {
-                name: "Turbo-Cactus Enchant Book Items", img: "100px-Enchanted_Book.gif",
-                subItems: [
-                  { name: "Turbo-Cactus I Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Cactus II Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Cactus III Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Cactus IV Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Cactus V Enchant Book", img: "100px-Enchanted_Book.gif" }
-                ]
-              },
-              {
-                name: "Turbo-Mushroom Enchant Book Items", img: "100px-Enchanted_Book.gif",
-                subItems: [
-                  { name: "Turbo-Mushroom I Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Mushroom II Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Mushroom III Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Mushroom IV Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Mushroom V Enchant Book", img: "100px-Enchanted_Book.gif" }
-                ]
-              },
-              {
-                name: "Turbo-Beetroot Enchant Book Items", img: "100px-Enchanted_Book.gif",
-                subItems: [
-                  { name: "Turbo-Beetroot I Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Beetroot II Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Beetroot III Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Beetroot IV Enchant Book", img: "100px-Enchanted_Book.gif" },
-                  { name: "Turbo-Beetroot V Enchant Book", img: "100px-Enchanted_Book.gif" }
-                ]
-              },
+              }
             ]
           }
         ]
@@ -1008,51 +1000,10 @@
           { name: "Titanic Experience Bottle", img: "Titanic_Experience_Bottle.webp" },
           { name: "Colossal Experience Bottle", img: "Colossal_Experience_Bottle.webp" },
         ]
-      },
-      {
-        name: "Pet Upgrades",
-        img: "Simple_Beetroot_Candy.png",
-        subItems: [
-          {
-            name: "Pet Candies", img: "Simple_Beetroot_Candy.png",
-            subItems: [
-              { name: "Simple Beetroot Candy", img: "Simple_Beetroot_Candy.png" },
-              { name: "Great Beetroot Candy", img: "Great_Beetroot_Candy.webp" },
-              { name: "Superb Beetroot Candy", img: "Superb_Beetroot_Candy.webp" },
-              { name: "Ultimate Beetroot Candy", img: "Ultimate_Beetroot_Candy.webp" }
-            ]
-          },
-          { name: "Exp Share Core", img: "Exp_Share_Core.png" },
-        ]
-      },
-      {
-        name: "Small Minion Backpack Items",
-        img: "Small_Minion_Backpack.png",
-        subItems: [
-          {
-            name: "Minion Backpack Items", img: "Small_Minion_Backpack.png",
-            subItems: [
-              { name: "Small Minion Backpack", img: "Small_Minion_Backpack.png" },
-              { name: "Medium Minion Backpack", img: "Medium_Minion_Backpack.webp" },
-              { name: "Large Minion Backpack", img: "Large_Minion_Backpack.png" },
-              { name: "Huge Minion Backpack", img: "Huge_Minion_Backpack.png" },
-              { name: "Giant Minion Backpack", img: "Giant_Minion_Backpack.png" }
-            ]
-          },
-          { name: "Compactor", img: "Compactor.webp" },
-          { name: "Super Compactor 3000", img: "Super_Compactor_3000.webp" },
-          { name: "Budget Hopper", img: "Budget_Hopper.png" },
-          { name: "Enchanted Hopper", img: "Enchanted_Hopper.png" },
-          { name: "Diamond Spreading", img: "Diamond_Spreading.png" },
-          { name: "Minion Auto Smelter", img: "Minion_Auto_Smelter.webp" },
-          { name: "Enchanted Lava Bucket", img: "Enchanted_Lava_Bucket.png" },
-          { name: "Foul Flesh", img: "Foul_Flesh.webp" },
-          { name: "Hamster Wheel", img: "Hamster_Wheel.png" }
-        ]
       }
     ];
 
-    // Minion items (no subItems for now, but you can add them)
+    // Minion items
     const minionItems = [
       { name: "Acacia Minion Tiers", img: "acacia-minion/Acacia_Log_Minion.png", subItems: [] },
       { name: "Bamboo Minion Tiers", img: "bamboo-minion/100px-Bamboo_Minion_(Tier_1).webp", subItems: [] },
@@ -1064,189 +1015,230 @@
       { name: "Chicken Minion Tiers", img: "chicken-minion/Chicken_Minion.png", subItems: [] },
       { name: "Coal Minion Tiers", img: "coal-minion/Coal_Minion.png", subItems: [] },
       { name: "Cobblestone Minion Tiers", img: "cobblestone-minion/Cobblestone_Minion.png", subItems: [] },
-      { name: "Cocoa Minion Tiers", img: "cocoa-minion/Cocoa_Beans_Minion.png", subItems: [] },
-      { name: "Cow Minion Tiers", img: "cow-minion/Cow_Minion.png", subItems: [] },
-      { name: "Creeper Minion Tiers", img: "creeper-minion/Creeper_Minion.png", subItems: [] },
-      { name: "Dark Oak Minion Tiers", img: "dark-oak-minion/Dark_Oak_Log_Minion.png", subItems: [] },
-      { name: "Diamond Minion Tiers", img: "diamond-minion/Diamond_Minion.png", subItems: [] },
-      { name: "Duck Minion Tiers", img: "duck-minion/Duck_Minion.png", subItems: [] },
-      { name: "Emerald Minion Tiers", img: "emerald-minion/Emerald_Minion.png", subItems: [] },
-      { name: "Gold Minion Tiers", img: "gold-minion/Gold_Minion.png", subItems: [] },
-      { name: "Ice Minion Tiers", img: "ice-minion/Ice_Minion.png", subItems: [] },
-      { name: "Iron Minion Tiers", img: "iron-minion/Iron_Minion.png", subItems: [] },
-      { name: "Jungle Minion Tiers", img: "jungle-minion/Jungle_Log_Minion.png", subItems: [] },
-      { name: "Lapis Minion Tiers", img: "lapis-minion/Lapis_Lazuli_Minion.png", subItems: [] },
-      { name: "Magma Minion Tiers", img: "magma-minion/Magma_Cube_Minion.png", subItems: [] },
-      { name: "Melon Minion Tiers", img: "melon-minion/Melon_Minion.png", subItems: [] },
-      { name: "Mushroom Minion Tiers", img: "mushroom-minion/Mushroom_Minion.png", subItems: [] },
-      { name: "Oak Minion Tiers", img: "oak-minion/Oak_Log_Minion.png", subItems: [] },
-      { name: "Obsidian Minion Tiers", img: "obsidian-minion/Obsidian_Minion.png", subItems: [] },
-      { name: "Potato Minion Tiers", img: "potato-minion/Potato_Minion.png", subItems: [] },
-      { name: "Pumpkin Minion Tiers", img: "pumpkin-minion/Pumpkin_Minion.png", subItems: [] },
-      { name: "Sheep Minion Tiers", img: "sheep-minion/Sheep_Minion.png", subItems: [] },
-      { name: "Pig Minion Tiers", img: "pig-minion/Pig_Minion.png", subItems: [] },
-      { name: "Rabbit Minion Tiers", img: "rabbit-minion/Rabbit_Minion.png", subItems: [] },
-      { name: "Redstone Minion Tiers", img: "redstone-minion/Redstone_Minion.png", subItems: [] },
-      { name: "Skeleton Minion Tiers", img: "skeleton-minion/Skeleton_Minion.png", subItems: [] },
-      { name: "Slime Minion Tiers", img: "slime-minion/Slime_Minion.png", subItems: [] },
-      { name: "Spider Minion Tiers", img: "spider-minion/Spider_Minion.png", subItems: [] },
-      { name: "Spruce Minion Tiers", img: "spruce-minion/Spruce_Log_Minion.png", subItems: [] },
-      { name: "Sugar Cane Minion Tiers", img: "sugarcane-minion/Sugar_Cane_Minion.png", subItems: [] },
-      { name: "Wheat Minion Tiers", img: "wheat-minion/Wheat_Minion.png", subItems: [] },
-      { name: "Zombie Minion Tiers", img: "zombie-minion/Zombie_Minion.png", subItems: [] }
+      { name: "Cocoa Minion Tiers", img: "cocoa-minion/Cocoa_Beans_Minion.png", subItems: [] }
     ];
 
-    // Utility to fetch and parse market data and prices
-    async function getItemData() {
-      // Fetch market.txt and mprices.txt
-      const [marketRes, pricesRes] = await Promise.all([
-        fetch('market/market.txt'),
-        fetch('market/mprices.txt')
-      ]);
-      const marketData = await marketRes.text();
-      const pricesData = await pricesRes.text();
+    // API Configuration
+    let apiSettings = {
+      apiKey: '',
+      proxy: 'https://corsproxy.io/?'
+    };
 
-      // Parse market.txt
-      let items = [];
-      try {
-        items = JSON.parse(marketData);
-      } catch (e) {
-        console.error("Failed to parse market.txt", e);
-        return [];
-      }
+    // Item ID mapping
+    const itemIdMap = {};
 
-      // Parse mprices.txt
-      const pricesMap = new Map();
-      const npcPricesMap = new Map();
-      pricesData.split('\n').forEach(line => {
-        const [id, arrayStr] = line.split(':').map(part => part.trim());
-        if (id && arrayStr) {
-          try {
-            const parsedArray = JSON.parse(arrayStr);
-            if (Array.isArray(parsedArray) && parsedArray.length >= 2) {
-              pricesMap.set(id, parsedArray[1]);
-              if (parsedArray.length >= 3) {
-                npcPricesMap.set(id, parsedArray[2]);
-              }
-            }
-          } catch (e) { }
-        }
-      });
+    // Cache for API responses
+    const bazaarCache = new Map();
 
-      // Attach price info to items
-      items.forEach(item => {
-        item.marketPrice = pricesMap.get(item.id) ?? item.price ?? "N/A";
-        item.npcPrice = npcPricesMap.get(item.id) ?? "N/A";
-      });
-
-      return items;
+    // Convert item name to item ID
+    function getItemId(itemName) {
+      return itemIdMap[itemName] || itemName.toLowerCase().replace(/ /g, '_');
     }
 
-    // Tooltip generator using market data
-    function getTooltipHTML(item) {
-      // If item has subItems, show images of subItems instead of price/demand
+    // Format currency
+    function formatCurrency(amount) {
+      if (amount === undefined || amount === null) return 'N/A';
+      if (amount >= 1000000) {
+        return (amount / 1000000).toFixed(2) + 'M';
+      } else if (amount >= 1000) {
+        return (amount / 1000).toFixed(1) + 'K';
+      }
+      return Math.round(amount).toLocaleString();
+    }
+
+    // Format number
+    function formatNumber(num) {
+      if (num === undefined || num === null) return 'N/A';
+      return num.toLocaleString();
+    }
+
+    // Fetch bazaar data from API
+    async function fetchBazaarData(itemId) {
+      // Check cache first
+      const cached = bazaarCache.get(itemId);
+      if (cached) {
+        return cached;
+      }
+
+      if (!apiSettings.apiKey) {
+        return null;
+      }
+
+      let url = `https://api.craftersmc.net/v1/skyblock/bazaar/${itemId}/details`;
+
+      // Add proxy if not "none"
+      if (apiSettings.proxy !== 'none') {
+        url = apiSettings.proxy + encodeURIComponent(url);
+      }
+
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'X-API-Key': apiSettings.apiKey,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        // Cache the result
+        bazaarCache.set(itemId, data);
+
+        return data;
+      } catch (error) {
+        console.error(`Error fetching bazaar data for ${itemId}:`, error);
+        return null;
+      }
+    }
+
+    // Generate tooltip HTML with API data
+    async function generateTooltipHTML(item) {
+      // If item has subItems, show sub-items grid
       if (item.subItems && item.subItems.length > 0) {
+        const subItemsGrid = item.subItems.slice(0, 6).map(sub => `
+          <div class="sub-item">
+            <img src="img/${sub.img}" alt="${sub.name}">
+            <div class="sub-item-name">${sub.name.length > 10 ? sub.name.substring(0, 8) + '...' : sub.name}</div>
+          </div>
+        `).join('');
+
         return `
           <span class="item-title">${item.name}</span>
-          <div class="sub-items-tooltip" style="display:flex;gap:4px;">
-            ${item.subItems.map(sub =>
-              `<div>
-                <img style="background: transparent; border: none;" src="img/${sub.img}" alt="${sub.name}" title="${sub.name}">
-              </div>`
-            ).join("")}
+          <div class="sub-items-grid">
+            ${subItemsGrid}
           </div>
-          <span style="color:#ffe16b;">Click to view details!</span>
+          ${item.subItems.length > 6 ? `<div style="text-align:center;color:#ccc;">+${item.subItems.length - 6} more items</div>` : ''}
         `;
       }
-      // Otherwise, show price/demand info
+
+      // For single items, fetch API data
+      const itemId = getItemId(item.name);
+      const bazaarData = await fetchBazaarData(itemId);
+
+      if (!bazaarData) {
+        return `
+          <span class="item-title">${item.name}</span>
+          <div class="item-data">
+            <div class="error">No market data available</div>
+          </div>
+        `;
+      }
+
+      const buyPrice = bazaarData.buyTopEntries?.[0]?.price || 0;
+      const sellPrice = bazaarData.sellTopEntries?.[0]?.price || 0;
+      const weeklyAvg = bazaarData.weeklyAveragePrice || 0;
+      const buyVolume = bazaarData.buyVolume || 0;
+      const sellVolume = bazaarData.sellVolume || 0;
+
+      // Calculate price difference
+      const priceDiff = sellPrice - buyPrice;
+      const diffPercent = buyPrice > 0 ? (priceDiff / buyPrice * 100) : 0;
+      const diffClass = priceDiff > 0 ? 'price-up' : priceDiff < 0 ? 'price-down' : '';
+
       return `
         <span class="item-title">${item.name}</span>
-        <span class="item-rarity"><img class="category-rarity" src="img/rarity/${item.rarity}.webp"></span>
-        <div class="item-price-container">
-          <span class="item-price"><strong>Market Price:</strong> ${item.marketPrice !== undefined ? Number(item.marketPrice).toLocaleString() : "N/A"}</span>
-          ${item.npcPrice !== undefined && item.npcPrice !== "N/A" ? `<span class="item-price"><strong>NPC Price:</strong> ${Number(item.npcPrice).toLocaleString()}</span>` : ""}
+        <div class="item-data">
+          <div class="data-row">
+            <span class="data-label">Buy Price:</span>
+            <span class="data-value">${formatCurrency(buyPrice)}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Sell Price:</span>
+            <span class="data-value">${formatCurrency(sellPrice)}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Profit:</span>
+            <span class="data-value ${diffClass}">${formatCurrency(priceDiff)} (${diffPercent.toFixed(1)}%)</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">7-Day Avg:</span>
+            <span class="data-value">${formatCurrency(weeklyAvg)}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Buy Volume:</span>
+            <span class="data-value">${formatNumber(buyVolume)}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Sell Volume:</span>
+            <span class="data-value">${formatNumber(sellVolume)}</span>
+          </div>
         </div>
-        ${item.nature ? `<span class="item-desc">${item.nature}</span>` : ""}
-        ${item.demand ? `<span class="item-desc">Demand: ${item.demand}</span>` : ""}
-        <span style="color:#ffe16b;">Click to view details!</span>
       `;
     }
 
-    // Find item by name (case-insensitive, fallback to first match)
-    function findItemByName(name, items) {
-      return items.find(i => i.name.toLowerCase() === name.toLowerCase()) || items.find(i => i.name.includes(name)) || null;
-    }
-
-    // Main fillCells function using live data
+    // Main fillCells function
     async function fillCells(itemsList) {
-      const allMarketItems = await getItemData();
       const mainCells = document.querySelectorAll(".extreme-inner-container .cell");
       const hotbarCells = document.querySelectorAll(".hotbar-extreme-inner-container .cell");
 
-      // Helper to render items recursively, supports sub-sub-items
-      function renderItem(cell, item) {
+      // Update category buttons
+      document.querySelectorAll('.cat').forEach(cat => cat.classList.remove('active'));
+
+      // Helper to render items
+      async function renderItem(cell, item) {
         if (!item) {
           cell.innerHTML = "";
           cell.onclick = null;
           return;
         }
-        // Try to get full market info for tooltip
-        const marketItem = findItemByName(item.name, allMarketItems) || item;
+
         cell.innerHTML = `
-          <div class="item-with-sub" style="cursor:pointer; position:relative;">
+          <div class="item-with-sub">
             <img src="img/${item.img}" alt="${item.name}" title="${item.name}">
             <div class="item-tooltip">
-              ${getTooltipHTML(marketItem)}
+              Loading...
             </div>
           </div>
         `;
 
-        // Tooltip position fix
         const itemDiv = cell.querySelector('.item-with-sub');
         const tooltip = itemDiv.querySelector('.item-tooltip');
-        itemDiv.onmouseenter = function () {
+
+        // Load tooltip content asynchronously
+        setTimeout(async () => {
+          try {
+            tooltip.innerHTML = await generateTooltipHTML(item);
+          } catch (error) {
+            tooltip.innerHTML = `
+              <span class="item-title">${item.name}</span>
+              <div class="error">Failed to load data</div>
+            `;
+          }
+        }, 100);
+
+        // Tooltip positioning
+        itemDiv.onmouseenter = function (e) {
           tooltip.style.display = "block";
-          setTimeout(() => {
-            const rect = tooltip.getBoundingClientRect();
-            const overflowRight = rect.right > window.innerWidth;
-            const overflowLeft = rect.left < 0;
-            const overflowBottom = rect.bottom > window.innerHeight;
-            // Default position: right and below
-            tooltip.style.left = "110%";
-            tooltip.style.right = "auto";
-            tooltip.style.top = "110%";
-            tooltip.style.bottom = "auto";
-            // If overflowing right, show to left
-            if (overflowRight && !overflowLeft) {
-              tooltip.style.left = "-224%";
-              tooltip.style.right = "auto";
-              tooltip.style.top = "110%";
-            }
-            // If overflowing left, force to right
-            if (overflowLeft && !overflowRight) {
-              tooltip.style.left = "50%";
-              tooltip.style.right = "auto";
-              tooltip.style.top = "110%";
-            }
-            // If overflowing both sides, center it
-            if (overflowLeft && overflowRight) {
-              tooltip.style.left = "50%";
-              tooltip.style.right = "auto";
-              tooltip.style.transform = "translateX(-50%)";
-              tooltip.style.top = "110%";
-            } else {
-              tooltip.style.transform = "";
-            }
-            // If overflowing bottom, show above
-            if (overflowBottom) {
-              tooltip.style.top = "auto";
-              tooltip.style.bottom = "110%";
-            }
-          }, 10);
+
+          // Position tooltip
+          const cellRect = cell.getBoundingClientRect();
+          const tooltipRect = tooltip.getBoundingClientRect();
+
+          // Default position: to the right
+          let left = cellRect.right + 5;
+          let top = cellRect.top;
+
+          // Check if tooltip would overflow right
+          if (left + tooltipRect.width > window.innerWidth) {
+            left = cellRect.left - tooltipRect.width - 5;
+          }
+
+          // Check if tooltip would overflow bottom
+          if (top + tooltipRect.height > window.innerHeight) {
+            top = window.innerHeight - tooltipRect.height - 10;
+          }
+
+          tooltip.style.left = left + 'px';
+          tooltip.style.top = top + 'px';
         };
+
         itemDiv.onmouseleave = function () {
           tooltip.style.display = "none";
-          tooltip.style.transform = "";
         };
 
         cell.onclick = () => {
@@ -1257,42 +1249,85 @@
       }
 
       // Fill main grid (36 cells)
-      mainCells.forEach((cell, i) => renderItem(cell, itemsList[i]));
+      for (let i = 0; i < mainCells.length; i++) {
+        await renderItem(mainCells[i], itemsList[i]);
+      }
+
       // Fill hotbar (9 cells) if there are more than 36 items
-      hotbarCells.forEach((cell, i) => renderItem(cell, itemsList[36 + i]));
+      for (let i = 0; i < hotbarCells.length; i++) {
+        await renderItem(hotbarCells[i], itemsList[36 + i]);
+      }
     }
 
-    document.getElementById("farming").addEventListener("click", () => fillCells(farmingItems));
-    document.getElementById("mining").addEventListener("click", () => fillCells(miningItems));
-    document.getElementById("combat").addEventListener("click", () => fillCells(combatItems));
-    document.getElementById("foraging").addEventListener("click", () => fillCells(foragingItems));
-    document.getElementById("special").addEventListener("click", () => fillCells(specialItems));
-    document.getElementById("minion").addEventListener("click", () => fillCells(minionItems));
+    // Category navigation
+    document.getElementById("farming").addEventListener("click", () => {
+      fillCells(farmingItems);
+      document.getElementById("farming").classList.add("active");
+    });
 
-    fillCells(farmingItems); // Default view is farming
+    document.getElementById("mining").addEventListener("click", () => {
+      fillCells(miningItems);
+      document.getElementById("mining").classList.add("active");
+    });
 
-    // Remove hover CSS for tooltip, keep styling for .sub-items-tooltip
-    const style = document.createElement('style');
-    style.innerHTML = `
-    .item-with-sub {
-      position: relative;
-      display: inline-block;
-      cursor: pointer;
-    }
-    .sub-items-tooltip {
-      min-width: 2rem;
-    }
-    .sub-items-tooltip img {
-      width: 1.2rem;
-      height: 1.2rem;
-      margin: 2px;
-      border: 1px solid #bbb;
-      background: #fff;
-      border-radius: 2px;
-    }
-  `;
-    document.head.appendChild(style);
+    document.getElementById("combat").addEventListener("click", () => {
+      fillCells(combatItems);
+      document.getElementById("combat").classList.add("active");
+    });
 
+    document.getElementById("foraging").addEventListener("click", () => {
+      fillCells(foragingItems);
+      document.getElementById("foraging").classList.add("active");
+    });
+
+    document.getElementById("special").addEventListener("click", () => {
+      fillCells(specialItems);
+      document.getElementById("special").classList.add("active");
+    });
+
+    document.getElementById("minion").addEventListener("click", () => {
+      fillCells(minionItems);
+      document.getElementById("minion").classList.add("active");
+    });
+
+    // API Settings Management
+    function saveApiSettings() {
+      apiSettings.apiKey = document.getElementById('apiKey').value;
+      apiSettings.proxy = document.getElementById('proxySelect').value;
+
+      // Save to localStorage
+      localStorage.setItem('bazaarApiSettings', JSON.stringify(apiSettings));
+
+      // Clear cache
+      bazaarCache.clear();
+
+      // Refresh current view
+      const activeCat = document.querySelector('.cat.active');
+      if (activeCat) {
+        activeCat.click();
+      }
+    }
+
+    function loadApiSettings() {
+      const saved = localStorage.getItem('bazaarApiSettings');
+      if (saved) {
+        try {
+          apiSettings = JSON.parse(saved);
+
+          // Update UI
+          document.getElementById('apiKey').value = apiSettings.apiKey;
+          document.getElementById('proxySelect').value = apiSettings.proxy;
+        } catch (e) {
+          console.error('Error loading API settings:', e);
+        }
+      }
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadApiSettings();
+      fillCells(farmingItems); // Default view is farming
+    });
 
   </script>
 </body>
