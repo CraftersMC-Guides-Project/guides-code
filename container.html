@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bazaar Items - CraftersMC Guides</title>
   <link rel="stylesheet" href="css/essential.css" />
   <style>
-    body,
-    html {
+    body, html {
       height: 100%;
       width: 100%;
       margin: 0;
@@ -31,123 +29,37 @@
         "bl-bl br-bl b bl-br br-br";
     }
 
-    .s-br {
-      box-shadow: 2px 0 0 black, 0 2px 0 black;
-    }
+    .s-br { box-shadow: 2px 0 0 black, 0 2px 0 black; }
+    .s-bl { box-shadow: -2px 0 0 black, 0 2px 0 black; }
+    .s-tr { box-shadow: 0 -2px 0 black, 2px 0 0 black; }
+    .s-tl { box-shadow: 0 -2px 0 black, -2px 0 0 black; }
 
-    .s-bl {
-      box-shadow: -2px 0 0 black, 0 2px 0 black;
-    }
+    .corner-top { grid-area: t; box-shadow: 0 -2px 0 black; background-color: #ffffff; }
+    .corner-left { grid-area: l; box-shadow: -2px 0 0 black; background-color: #ffffff; }
+    .corner-right { grid-area: r; box-shadow: 2px 0 0 black; background-color: #555555; }
+    .corner-bottom { grid-area: b; box-shadow: 0 2px 0 black; background-color: #555555; }
+    
+    .inner-container { background-color: #c6c6c6; grid-area: inv; grid-column: inherit; }
+    
+    .tl-tl { grid-area: tl-tl; background-color: #ffffff; position: relative; bottom: -4px; right: -4px; }
+    .br-br { grid-area: br-br; background-color: #555555; position: relative; top: -4px; left: -4px; }
+    
+    .bl-tl, .tr-tl, .br-tl { background-color: #ffffff; }
+    .bl-tl { grid-area: bl-tl; }
+    .tr-tl { grid-area: tr-tl; }
+    .br-tl { grid-area: br-tl; }
+    
+    .bl-tr { grid-area: bl-tr; background-color: #c6c6c6; }
+    .tr-bl { grid-area: tr-bl; background-color: #c6c6c6; }
+    
+    .tr-br, .tl-br, .bl-br { background-color: #555555; }
+    .tr-br { grid-area: tr-br; }
+    .tl-br { grid-area: tl-br; }
+    .bl-br { grid-area: bl-br; }
 
-    .s-tr {
-      box-shadow: 0 -2px 0 black, 2px 0 0 black;
-    }
-
-    .s-tl {
-      box-shadow: 0 -2px 0 black, -2px 0 0 black;
-    }
-
-    .corner-top {
-      grid-area: t;
-      box-shadow: 0 -2px 0 black;
-      background-color: #ffffff;
-    }
-
-    .corner-left {
-      grid-area: l;
-      box-shadow: -2px 0 0 black;
-      background-color: #ffffff;
-    }
-
-    .corner-right {
-      grid-area: r;
-      box-shadow: 2px 0 0 black;
-      background-color: #555555;
-    }
-
-    .corner-bottom {
-      grid-area: b;
-      box-shadow: 0 2px 0 black;
-      background-color: #555555;
-    }
-
-    .inner-container {
-      background-color: #c6c6c6;
-      grid-area: inv;
-      grid-column: inherit;
-    }
-
-    .tl-tl {
-      grid-area: tl-tl;
-      background-color: #ffffff;
-      position: relative;
-      bottom: -4px;
-      right: -4px;
-    }
-
-    .br-br {
-      grid-area: br-br;
-      background-color: #555555;
-      position: relative;
-      top: -4px;
-      left: -4px;
-    }
-
-    .bl-tl,
-    .tr-tl,
-    .br-tl {
-      background-color: #ffffff;
-    }
-
-    .bl-tl {
-      grid-area: bl-tl;
-    }
-
-    .tr-tl {
-      grid-area: tr-tl;
-    }
-
-    .br-tl {
-      grid-area: br-tl;
-    }
-
-    .bl-tr {
-      grid-area: bl-tr;
-      background-color: #c6c6c6;
-    }
-
-    .tr-bl {
-      grid-area: tr-bl;
-      background-color: #c6c6c6;
-    }
-
-    .tr-br,
-    .tl-br,
-    .bl-br {
-      background-color: #555555;
-    }
-
-    .tr-br {
-      grid-area: tr-br;
-    }
-
-    .tl-br {
-      grid-area: tl-br;
-    }
-
-    .bl-br {
-      grid-area: bl-br;
-    }
-
-    .inventory {
-      padding: 0.4rem;
-      display: grid;
-    }
-
-    .inventory .inner-container,
-    .hotbar-extreme-inner-container {
-      display: grid;
-      grid-column: inherit;
+    .inventory { padding: 0.4rem; display: grid; }
+    .inventory .inner-container, .hotbar-extreme-inner-container {
+      display: grid; grid-column: inherit;
     }
 
     .cell {
@@ -157,267 +69,98 @@
       width: 2rem;
       position: relative;
     }
-
-    .cell:hover {
-      background-color: #a1a1a1;
+    .cell:hover { background-color: #a1a1a1; }
+    .cell::before, .cell::after {
+      content: ""; height: 2px; width: 2px; background-color: #8b8b8b;
+      position: absolute; top: 0; right: 0;
     }
+    .cell::after { top: auto; right: auto; left: 0; bottom: 0; }
 
-    .cell::before,
-    .cell::after {
-      content: "";
-      height: 2px;
-      width: 2px;
-      background-color: #8b8b8b;
-      position: absolute;
-      top: 0;
-      right: 0;
-    }
-
-    .cell::after {
-      top: auto;
-      right: auto;
-      left: 0;
-      bottom: 0;
-    }
-
-    .extreme-inner-container,
-    .hotbar-extreme-inner-container {
-      color: #262626;
-      display: grid;
+    .extreme-inner-container, .hotbar-extreme-inner-container {
+      color: #262626; display: grid;
       grid-template-columns: repeat(9, auto);
       grid-template-rows: repeat(4, auto);
     }
+    .hotbar-extreme-inner-container { margin-top: 0.5rem; }
 
-    .hotbar-extreme-inner-container {
-      margin-top: 0.5rem;
-    }
-
-    .inner-container h3 {
-      margin: 0 auto 8px auto;
-      font-size: 1.2rem;
-      color: #333;
-    }
-
-    .extreme-inner-container p {
-      margin: 0.5rem 0;
-    }
-
-    .cell img {
-      height: 1.5rem;
-      width: 1.5rem;
-      margin: 0.25rem;
-    }
+    .inner-container h3 { margin: 0 auto 8px auto; font-size: 1.2rem; color: #333; }
+    .extreme-inner-container p { margin: 0.5rem 0; }
+    .cell img { height: 1.5rem; width: 1.5rem; margin: 0.25rem; }
 
     .cat {
-      background-color: #c6c6c6;
-      box-shadow: inset 4px 4px 0 0 #fff;
-      height: 2rem;
-      width: 2rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-top-right-radius: 5px;
-      border-top-left-radius: 5px;
-      padding: 20px;
+      background-color: #c6c6c6; box-shadow: inset 4px 4px 0 0 #fff;
+      height: 2rem; width: 2rem; display: flex; justify-content: center; align-items: center;
+      border-top-right-radius: 5px; border-top-left-radius: 5px; padding: 20px;
       cursor: pointer;
     }
+    .cat:hover { background-color: #d6d6d6; }
+    .cat.active { background-color: #a6a6a6; box-shadow: inset 4px 4px 0 0 #777; }
+    .cat img { height: 1.5rem; width: 1.5rem; margin: 0; }
+    
+    .catnav { position: relative; display: flex; gap: 0.5rem; margin-left: 4px; }
 
-    .cat:hover {
-      background-color: #d6d6d6;
+    .api-key-input {
+      position: absolute; top: 10px; right: 10px; z-index: 1000;
+      background: #1e293b; border: 2px solid #3b82f6; border-radius: 6px; padding: 10px;
+      width: 300px;
     }
-
-    .cat.active {
-      background-color: #a6a6a6;
-      box-shadow: inset 4px 4px 0 0 #777;
+    .api-key-input label { display: block; color: #cbd5e1; margin-bottom: 5px; font-size: 14px; }
+    .api-key-input input {
+      width: 100%; padding: 8px; background: #0f172a; border: 1px solid #475569;
+      border-radius: 4px; color: #e2e8f0;
     }
-
-    .cat img {
-      height: 1.5rem;
-      width: 1.5rem;
-      margin: 0;
-    }
-
-    .catnav {
-      position: relative;
-      display: flex;
-      gap: 0.5rem;
-      margin-left: 4px;
+    .api-key-input button {
+      background: #3b82f6; color: white; border: none; padding: 8px 16px;
+      border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px;
     }
 
     .item-tooltip {
-      position: absolute;
-      left: 110%;
-      top: 0;
-      background: #2d143b;
-      color: #ffe16b;
-      border: 2px solid #4b267a;
-      border-radius: 6px;
-      padding: 12px;
-      z-index: 100;
-      min-width: 250px;
-      font-family: 'Minecraft', 'Arial', sans-serif;
-      font-size: 0.85rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-      white-space: normal;
-      box-shadow:
-        0 0 0 2px #4b267a,
-        -4px -4px 0 0 #fff,
-        4px -4px 0 0 #fff,
-        -4px 4px 0 0 #555,
-        4px 4px 0 0 #555;
-      font-weight: bold;
-      display: none;
+      position: absolute; left: 110%; top: 0; background: #2d143b; color: #ffe16b;
+      border: 2px solid #4b267a; border-radius: 6px; padding: 12px; z-index: 100;
+      min-width: 250px; font-family: 'Minecraft', 'Arial', sans-serif; font-size: 0.85rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6); white-space: normal;
+      box-shadow: 0 0 0 2px #4b267a, -4px -4px 0 0 #fff, 4px -4px 0 0 #fff,
+        -4px 4px 0 0 #555, 4px 4px 0 0 #555;
+      font-weight: bold; display: none;
     }
-
-    .item-with-sub:hover .item-tooltip {
-      display: block;
-    }
-
+    .item-with-sub:hover .item-tooltip { display: block; }
     .item-tooltip .item-title {
-      color: #6d5cff;
-      font-weight: bold;
-      font-size: 1.1rem;
-      display: block;
-      margin-bottom: 8px;
+      color: #6d5cff; font-weight: bold; font-size: 1.1rem; display: block; margin-bottom: 8px;
     }
-
     .item-tooltip .item-data {
-      margin-top: 8px;
-      border-top: 1px solid #4b267a;
-      padding-top: 8px;
+      margin-top: 8px; border-top: 1px solid #4b267a; padding-top: 8px;
     }
-
     .data-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 4px;
-      font-size: 12px;
+      display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px;
     }
-
-    .data-label {
-      color: #a3a3ff;
-    }
-
-    .data-value {
-      color: #ffffff;
-      font-weight: bold;
-    }
-
-    .price-up {
-      color: #4CAF50 !important;
-    }
-
-    .price-down {
-      color: #F44336 !important;
-    }
-
-    .loading {
-      color: #ffd700;
-      font-style: italic;
-      text-align: center;
-      padding: 5px;
-    }
-
-    .error {
-      color: #ff6b6b;
-      font-size: 11px;
-      text-align: center;
-      padding: 5px;
-      border: 1px solid #ff6b6b;
-      border-radius: 3px;
-      background: rgba(255, 0, 0, 0.1);
-    }
-
-    .api-settings {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #1e293b;
-      border: 2px solid #3b82f6;
-      border-radius: 6px;
-      padding: 15px;
-      width: 300px;
-      z-index: 1000;
-    }
-
-    .api-input-group {
-      margin-bottom: 10px;
-    }
-
-    .api-input-group label {
-      display: block;
-      color: #cbd5e1;
-      margin-bottom: 5px;
-      font-size: 14px;
-    }
-
-    .api-input-group input {
-      width: 100%;
-      padding: 8px;
-      background: #0f172a;
-      border: 1px solid #475569;
-      border-radius: 4px;
-      color: #e2e8f0;
-    }
-
-    .api-button {
-      background: #3b82f6;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-      width: 100%;
+    .data-label { color: #a3a3ff; }
+    .data-value { color: #ffffff; font-weight: bold; }
+    .price-up { color: #4CAF50 !important; }
+    .price-down { color: #F44336 !important; }
+    .loading { color: #ffd700; font-style: italic; text-align: center; padding: 5px; }
+    .error { color: #ff6b6b; font-size: 11px; text-align: center; padding: 5px;
+      border: 1px solid #ff6b6b; border-radius: 3px; background: rgba(255, 0, 0, 0.1);
     }
 
     .sub-items-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 4px;
-      margin-top: 8px;
-      margin-bottom: 8px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+      margin-top: 8px; margin-bottom: 8px;
     }
-
     .sub-item {
-      text-align: center;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 4px;
-      border-radius: 3px;
+      text-align: center; background: rgba(255, 255, 255, 0.1); padding: 4px; border-radius: 3px;
     }
-
-    .sub-item img {
-      width: 24px;
-      height: 24px;
-      margin-bottom: 2px;
-    }
-
+    .sub-item img { width: 24px; height: 24px; margin-bottom: 2px; }
     .sub-item-name {
-      font-size: 9px;
-      color: #ccc;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      font-size: 9px; color: #ccc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
   </style>
 </head>
-
 <body>
-  <!-- API Settings -->
-  <div class="api-settings">
-    <div class="api-input-group">
-      <label for="apiKey">API Key:</label>
-      <input type="password" id="apiKey" placeholder="Enter your API key">
-    </div>
-    <div class="api-input-group">
-      <label for="proxySelect">CORS Proxy:</label>
-      <select id="proxySelect">
-        <option value="https://corsproxy.io/?">corsproxy.io</option>
-        <option value="https://api.allorigins.win/raw?url=">allorigins.win</option>
-        <option value="none">No Proxy</option>
-      </select>
-    </div>
-    <button class="api-button" onclick="saveApiSettings()">Save Settings</button>
+  <!-- API Key Input -->
+  <div class="api-key-input">
+    <label for="apiKey">API Key:</label>
+    <input type="password" id="apiKey" placeholder="Enter your API key">
+    <button onclick="saveApiKey()">Save API Key</button>
   </div>
 
   <div class="contain">
@@ -447,53 +190,22 @@
       <div class="inventory inner-container">
         <h3>Bazaar Market</h3>
         <div class="extreme-inner-container">
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
         </div>
         <div class="hotbar-extreme-inner-container">
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
-          <div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          <div class="cell"></div><div class="cell"></div><div class="cell"></div>
         </div>
       </div>
     </div>
@@ -1018,31 +730,18 @@
       { name: "Cocoa Minion Tiers", img: "cocoa-minion/Cocoa_Beans_Minion.png", subItems: [] }
     ];
 
-    // API Configuration
-    let apiSettings = {
-      apiKey: '',
-      proxy: 'https://corsproxy.io/?'
-    };
+    // Configuration
+    const API_BASE_URL = '/api'; // Change this to your Cloudflare Worker URL if different
+    let apiKey = '';
 
-    // Item ID mapping
+    // Item ID mapping (same as before)
     const itemIdMap = {};
-
-    // Cache for API responses
-    const bazaarCache = new Map();
-
-    // Convert item name to item ID
-    function getItemId(itemName) {
-      return itemIdMap[itemName] || itemName.toLowerCase().replace(/ /g, '_');
-    }
 
     // Format currency
     function formatCurrency(amount) {
       if (amount === undefined || amount === null) return 'N/A';
-      if (amount >= 1000000) {
-        return (amount / 1000000).toFixed(2) + 'M';
-      } else if (amount >= 1000) {
-        return (amount / 1000).toFixed(1) + 'K';
-      }
+      if (amount >= 1000000) return (amount / 1000000).toFixed(2) + 'M';
+      if (amount >= 1000) return (amount / 1000).toFixed(1) + 'K';
       return Math.round(amount).toLocaleString();
     }
 
@@ -1052,30 +751,18 @@
       return num.toLocaleString();
     }
 
-    // Fetch bazaar data from API
+    // Fetch bazaar data via Cloudflare Worker
     async function fetchBazaarData(itemId) {
-      // Check cache first
-      const cached = bazaarCache.get(itemId);
-      if (cached) {
-        return cached;
-      }
-
-      if (!apiSettings.apiKey) {
+      if (!apiKey) {
+        console.error('API key not set');
         return null;
       }
 
-      let url = `https://api.craftersmc.net/v1/skyblock/bazaar/${itemId}/details`;
-
-      // Add proxy if not "none"
-      if (apiSettings.proxy !== 'none') {
-        url = apiSettings.proxy + encodeURIComponent(url);
-      }
-
       try {
-        const response = await fetch(url, {
+        const response = await fetch(`${API_BASE_URL}/bazaar/${itemId}`, {
           method: 'GET',
           headers: {
-            'X-API-Key': apiSettings.apiKey,
+            'X-API-Key': apiKey,
             'Content-Type': 'application/json'
           }
         });
@@ -1084,21 +771,20 @@
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const data = await response.json();
-
-        // Cache the result
-        bazaarCache.set(itemId, data);
-
-        return data;
+        return await response.json();
       } catch (error) {
         console.error(`Error fetching bazaar data for ${itemId}:`, error);
         return null;
       }
     }
 
-    // Generate tooltip HTML with API data
+    // Get item ID from name
+    function getItemId(itemName) {
+      return itemIdMap[itemName] || itemName.toUpperCase().replace(/ /g, '_');
+    }
+
+    // Generate tooltip HTML with market data
     async function generateTooltipHTML(item) {
-      // If item has subItems, show sub-items grid
       if (item.subItems && item.subItems.length > 0) {
         const subItemsGrid = item.subItems.slice(0, 6).map(sub => `
           <div class="sub-item">
@@ -1106,7 +792,7 @@
             <div class="sub-item-name">${sub.name.length > 10 ? sub.name.substring(0, 8) + '...' : sub.name}</div>
           </div>
         `).join('');
-
+        
         return `
           <span class="item-title">${item.name}</span>
           <div class="sub-items-grid">
@@ -1115,31 +801,29 @@
           ${item.subItems.length > 6 ? `<div style="text-align:center;color:#ccc;">+${item.subItems.length - 6} more items</div>` : ''}
         `;
       }
-
-      // For single items, fetch API data
+      
       const itemId = getItemId(item.name);
       const bazaarData = await fetchBazaarData(itemId);
-
-      if (!bazaarData) {
+      
+      if (!bazaarData || bazaarData.error) {
         return `
           <span class="item-title">${item.name}</span>
           <div class="item-data">
-            <div class="error">No market data available</div>
+            <div class="error">${bazaarData?.error || 'No market data'}</div>
           </div>
         `;
       }
-
+      
       const buyPrice = bazaarData.buyTopEntries?.[0]?.price || 0;
       const sellPrice = bazaarData.sellTopEntries?.[0]?.price || 0;
       const weeklyAvg = bazaarData.weeklyAveragePrice || 0;
       const buyVolume = bazaarData.buyVolume || 0;
       const sellVolume = bazaarData.sellVolume || 0;
-
-      // Calculate price difference
+      
       const priceDiff = sellPrice - buyPrice;
       const diffPercent = buyPrice > 0 ? (priceDiff / buyPrice * 100) : 0;
       const diffClass = priceDiff > 0 ? 'price-up' : priceDiff < 0 ? 'price-down' : '';
-
+      
       return `
         <span class="item-title">${item.name}</span>
         <div class="item-data">
@@ -1175,31 +859,26 @@
     async function fillCells(itemsList) {
       const mainCells = document.querySelectorAll(".extreme-inner-container .cell");
       const hotbarCells = document.querySelectorAll(".hotbar-extreme-inner-container .cell");
-
-      // Update category buttons
+      
       document.querySelectorAll('.cat').forEach(cat => cat.classList.remove('active'));
-
-      // Helper to render items
+      
       async function renderItem(cell, item) {
         if (!item) {
           cell.innerHTML = "";
           cell.onclick = null;
           return;
         }
-
+        
         cell.innerHTML = `
           <div class="item-with-sub">
             <img src="img/${item.img}" alt="${item.name}" title="${item.name}">
-            <div class="item-tooltip">
-              Loading...
-            </div>
+            <div class="item-tooltip">Loading...</div>
           </div>
         `;
-
+        
         const itemDiv = cell.querySelector('.item-with-sub');
         const tooltip = itemDiv.querySelector('.item-tooltip');
-
-        // Load tooltip content asynchronously
+        
         setTimeout(async () => {
           try {
             tooltip.innerHTML = await generateTooltipHTML(item);
@@ -1210,97 +889,84 @@
             `;
           }
         }, 100);
-
-        // Tooltip positioning
+        
         itemDiv.onmouseenter = function (e) {
           tooltip.style.display = "block";
-
-          // Position tooltip
           const cellRect = cell.getBoundingClientRect();
           const tooltipRect = tooltip.getBoundingClientRect();
-
-          // Default position: to the right
+          
           let left = cellRect.right + 5;
           let top = cellRect.top;
-
-          // Check if tooltip would overflow right
+          
           if (left + tooltipRect.width > window.innerWidth) {
             left = cellRect.left - tooltipRect.width - 5;
           }
-
-          // Check if tooltip would overflow bottom
+          
           if (top + tooltipRect.height > window.innerHeight) {
             top = window.innerHeight - tooltipRect.height - 10;
           }
-
+          
           tooltip.style.left = left + 'px';
           tooltip.style.top = top + 'px';
         };
-
+        
         itemDiv.onmouseleave = function () {
           tooltip.style.display = "none";
         };
-
+        
         cell.onclick = () => {
           if (item.subItems && item.subItems.length > 0) {
             fillCells(item.subItems);
           }
         };
       }
-
-      // Fill main grid (36 cells)
+      
       for (let i = 0; i < mainCells.length; i++) {
         await renderItem(mainCells[i], itemsList[i]);
       }
-
-      // Fill hotbar (9 cells) if there are more than 36 items
+      
       for (let i = 0; i < hotbarCells.length; i++) {
         await renderItem(hotbarCells[i], itemsList[36 + i]);
       }
     }
 
-    // Category navigation
+    // Category event listeners
     document.getElementById("farming").addEventListener("click", () => {
       fillCells(farmingItems);
       document.getElementById("farming").classList.add("active");
     });
-
     document.getElementById("mining").addEventListener("click", () => {
       fillCells(miningItems);
       document.getElementById("mining").classList.add("active");
     });
-
     document.getElementById("combat").addEventListener("click", () => {
       fillCells(combatItems);
       document.getElementById("combat").classList.add("active");
     });
-
     document.getElementById("foraging").addEventListener("click", () => {
       fillCells(foragingItems);
       document.getElementById("foraging").classList.add("active");
     });
-
     document.getElementById("special").addEventListener("click", () => {
       fillCells(specialItems);
       document.getElementById("special").classList.add("active");
     });
-
     document.getElementById("minion").addEventListener("click", () => {
       fillCells(minionItems);
       document.getElementById("minion").classList.add("active");
     });
 
-    // API Settings Management
-    function saveApiSettings() {
-      apiSettings.apiKey = document.getElementById('apiKey').value;
-      apiSettings.proxy = document.getElementById('proxySelect').value;
-
-      // Save to localStorage
-      localStorage.setItem('bazaarApiSettings', JSON.stringify(apiSettings));
-
-      // Clear cache
-      bazaarCache.clear();
-
+    // API key management
+    function saveApiKey() {
+      apiKey = document.getElementById('apiKey').value.trim();
+      if (!apiKey) {
+        alert('Please enter an API key');
+        return;
+      }
+      
+      localStorage.setItem('craftersApiKey', apiKey);
+      alert('API key saved!');
+      
       // Refresh current view
       const activeCat = document.querySelector('.cat.active');
       if (activeCat) {
@@ -1308,28 +974,19 @@
       }
     }
 
-    function loadApiSettings() {
-      const saved = localStorage.getItem('bazaarApiSettings');
-      if (saved) {
-        try {
-          apiSettings = JSON.parse(saved);
-
-          // Update UI
-          document.getElementById('apiKey').value = apiSettings.apiKey;
-          document.getElementById('proxySelect').value = apiSettings.proxy;
-        } catch (e) {
-          console.error('Error loading API settings:', e);
-        }
+    function loadApiKey() {
+      const savedKey = localStorage.getItem('craftersApiKey');
+      if (savedKey) {
+        apiKey = savedKey;
+        document.getElementById('apiKey').value = savedKey;
       }
     }
 
-    // Initialize on load
+    // Initialize
     document.addEventListener('DOMContentLoaded', function() {
-      loadApiSettings();
-      fillCells(farmingItems); // Default view is farming
+      loadApiKey();
+      fillCells(farmingItems);
     });
-
   </script>
 </body>
-
 </html>
