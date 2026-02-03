@@ -624,6 +624,11 @@
                 <button class="tab active" onclick="switchTab('overview')">Overview</button>
                 <button class="tab" onclick="switchTab('player')">Player Data</button>
                 <button class="tab" onclick="switchTab('profile')">Profile Data</button>
+                <button class="tab" onclick="switchTab('playtime')">Playtime</button>
+                <button class="tab" onclick="switchTab('statistics')">Statistics</button>
+                <button class="tab" onclick="switchTab('slayers')">Slayers</button>
+                <button class="tab" onclick="switchTab('farming')">Farming</button>
+                <button class="tab" onclick="switchTab('minions')">Minions</button>
                 <button class="tab" onclick="switchTab('collections')">Collections</button>
                 <button class="tab" onclick="switchTab('inventory')">Inventory</button>
                 <button class="tab" onclick="switchTab('skills')">Skills</button>
@@ -641,6 +646,26 @@
 
             <div id="profileTab" class="tab-content">
                 <!-- Profile data content will be populated -->
+            </div>
+
+            <div id="playtimeTab" class="tab-content">
+                <!-- Playtime content will be populated -->
+            </div>
+
+            <div id="statisticsTab" class="tab-content">
+                <!-- Statistics content will be populated -->
+            </div>
+
+            <div id="slayersTab" class="tab-content">
+                <!-- Slayers content will be populated -->
+            </div>
+
+            <div id="farmingTab" class="tab-content">
+                <!-- Farming content will be populated -->
+            </div>
+
+            <div id="minionsTab" class="tab-content">
+                <!-- Minions content will be populated -->
             </div>
 
             <div id="collectionsTab" class="tab-content">
@@ -826,6 +851,11 @@
             displayPlayerData();
             displayProfileData();
             displayOverview();
+            displayPlaytime();
+            displayStatistics();
+            displaySlayerData();
+            displayFarmingData();
+            displayMinions();
             displayCollections();
             displaySkills();
             displayJSON();
@@ -906,8 +936,12 @@
                                 <span class="data-value currency">${formatCurrency(profileData.banking?.highestBalance)}</span>
                             </div>
                             <div class="data-item">
-                                <span class="data-label">Network Coins</span>
+                                <span class="data-label">Lobby Tokens</span>
                                 <span class="data-value currency">${formatCurrency(playerData.networkCoins)}</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">CraftersMC Level</span>
+                                <span class="data-value number">${formatNumber(playerData.networkExp)}</span>
                             </div>
                         </div>
                     </div>
@@ -1078,6 +1112,320 @@
 
             container.innerHTML = html;
             setupCollapseButtons();
+        }
+
+        function displayPlaytime() {
+            const container = document.getElementById('playtimeTab');
+            if (!playerData) return;
+
+            let html = '<div class="cards-grid">';
+
+            // Total Playtime
+            const totalPlaytime = playerData.totalPlaytime || 0;
+            const playtimeHours = Math.floor(totalPlaytime / 3600);
+            const playtimeDays = Math.floor(playtimeHours / 24);
+
+            html += createDataCard('fas fa-hourglass-end', 'Total Playtime', [
+                ['Minutes', formatNumber(totalPlaytime), 'number'],
+                ['Hours', formatNumber(playtimeHours), 'number'],
+                ['Days', formatNumber(playtimeDays), 'number']
+            ]);
+
+            // Playtime Per Game
+            if (playerData.playtimePerGame) {
+                const playtimeData = playerData.playtimePerGame;
+                const games = [
+                    ['Skyblock', formatNumber(Math.floor(playtimeData.SKYBLOCK / 3600)), 'number'],
+                    ['Limbo', formatNumber(Math.floor(playtimeData.LIMBO / 3600)), 'number'],
+                    ['Hub', formatNumber(Math.floor(playtimeData.HUB / 3600)), 'number']
+                ];
+                html += createDataCard('fas fa-gamepad', 'Playtime Per Game (Hours)', games);
+            }
+
+            // Voting Info
+            if (playerData.lastVoteClaimedTime) {
+                const lastVoteDate = new Date(playerData.lastVoteClaimedTime);
+                html += createDataCard('fas fa-vote-yea', 'Voting Info', [
+                    ['Last Vote Claimed', formatDate(playerData.lastVoteClaimedTime), 'date']
+                ]);
+            }
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function displayStatistics() {
+            const container = document.getElementById('statisticsTab');
+            const member = profileData?.members?.[playerData?.uuid];
+            if (!member) {
+                container.innerHTML = '<div class="loading"><i class="fas fa-chart-bar"></i><p>No statistics data available</p></div>';
+                return;
+            }
+
+            let html = '<div class="cards-grid">';
+
+            // Cakes Claimed
+            if (playerData.sbClaimedCakes) {
+                html += createDataCard('fas fa-birthday-cake', 'Cakes Claimed', [
+                    ['Total Cakes', formatNumber(playerData.sbClaimedCakes.length), 'number'],
+                    ['Cake Years', playerData.sbClaimedCakes.join(', '), 'string']
+                ]);
+            }
+
+            // Combat Stats
+            html += createDataCard('fas fa-fist-raised', 'Combat Stats', [
+                ['Max Damage', formatNumber(member.maxDamage), 'number'],
+                ['Max Crit Damage', formatNumber(member.maxCritDamage), 'number']
+            ]);
+
+            // Levels & Experience
+            html += createDataCard('fas fa-star', 'Levels & Experience', [
+                ['Level', formatNumber(member.level), 'number'],
+                ['Experience', formatNumber(member.exp), 'number']
+            ]);
+
+            // Deaths Summary
+            if (member.deaths) {
+                const totalDeaths = Object.values(member.deaths).reduce((a, b) => a + b, 0);
+                const deathCauses = Object.entries(member.deaths)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5)
+                    .map(([cause, count]) => `${cause}: ${count}`)
+                    .join(' | ');
+                
+                html += createDataCard('fas fa-skull', 'Deaths Summary', [
+                    ['Total Deaths', formatNumber(totalDeaths), 'number'],
+                    ['Top Causes', deathCauses, 'string']
+                ]);
+            }
+
+            // Kills Summary
+            if (member.kills) {
+                const totalKills = Object.values(member.kills).reduce((a, b) => a + b, 0);
+                const topKills = Object.entries(member.kills)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 3)
+                    .map(([mob, count]) => `${mob}: ${count}`)
+                    .join(' | ');
+                
+                html += createDataCard('fas fa-crosshairs', 'Kills Summary', [
+                    ['Total Kills', formatNumber(totalKills), 'number'],
+                    ['Top Kills', topKills, 'string']
+                ]);
+            }
+
+            // Fairies & Shards
+            html += createDataCard('fas fa-magic', 'Fairies & Shards', [
+                ['Fairies Collected', formatNumber(member.fairies?.length || 0), 'number'],
+                ['Fairy Exchanges', formatNumber(member.fairyExchanges), 'number'],
+                ['Total Fusions', formatNumber(member.realityShardData?.fusions || 0), 'number']
+            ]);
+
+            // Experimentation
+            if (member.experimentationData) {
+                const expData = member.experimentationData;
+                html += createDataCard('fas fa-flask', 'Experimentation Data', [
+                    ['Total Superpairs', formatNumber(expData.totalSuperpairs || 0), 'number'],
+                    ['Current Superpairs', formatNumber(expData.superpairs?.value || 0), 'number']
+                ]);
+            }
+
+            // Mining Milestone
+            html += createDataCard('fas fa-pickaxe', 'Mining', [
+                ['Mining Milestone', formatNumber(member.miningMilestone), 'number']
+            ]);
+
+            html += '</div>';
+
+            // Detailed Stats Tables
+            if (member.deaths) {
+                let deathsHtml = '<h3><i class="fas fa-skull"></i> Death Methods</h3>';
+                deathsHtml += '<div class="collapse-section">';
+                deathsHtml += '<div class="collapse-content expanded">';
+                Object.entries(member.deaths)
+                    .sort((a, b) => b[1] - a[1])
+                    .forEach(([method, count]) => {
+                        deathsHtml += `
+                            <div class="data-item">
+                                <span class="data-label">${method}</span>
+                                <span class="data-value number">${formatNumber(count)}</span>
+                            </div>
+                        `;
+                    });
+                deathsHtml += '</div></div>';
+                html += deathsHtml;
+            }
+
+            if (member.kills) {
+                let killsHtml = '<h3><i class="fas fa-crosshairs"></i> Kill Statistics</h3>';
+                killsHtml += '<div class="collapse-section">';
+                killsHtml += '<div class="collapse-content expanded">';
+                Object.entries(member.kills)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 20)
+                    .forEach(([mob, count]) => {
+                        killsHtml += `
+                            <div class="data-item">
+                                <span class="data-label">${mob}</span>
+                                <span class="data-value number">${formatNumber(count)}</span>
+                            </div>
+                        `;
+                    });
+                killsHtml += '</div></div>';
+                html += killsHtml;
+            }
+
+            container.innerHTML = html;
+            setupCollapseButtons();
+        }
+
+        function displaySlayerData() {
+            const container = document.getElementById('slayersTab');
+            const member = profileData?.members?.[playerData?.uuid];
+            if (!member?.slayerData) {
+                container.innerHTML = '<div class="loading"><i class="fas fa-dragon"></i><p>No slayer data available</p></div>';
+                return;
+            }
+
+            const slayerData = member.slayerData;
+            let html = '<div class="cards-grid">';
+
+            // Slayer Kills
+            html += createDataCard('fas fa-skull-crossbones', 'Slayer Kills', [
+                ['Zombie Killed', formatNumber(slayerData.killedZombieSlayer), 'number'],
+                ['Wolf Killed', formatNumber(slayerData.killedWolfSlayer), 'number'],
+                ['Spider Killed', formatNumber(slayerData.killedSpiderSlayer), 'number']
+            ]);
+
+            // Slayer Experience
+            html += createDataCard('fas fa-star', 'Slayer Experience', [
+                ['Zombie XP', formatNumber(slayerData.zombie || 0), 'number'],
+                ['Wolf XP', formatNumber(slayerData.wolf || 0), 'number'],
+                ['Spider XP', formatNumber(slayerData.spider || 0), 'number']
+            ]);
+
+            // Slayer Tiers
+            html += createDataCard('fas fa-layer-group', 'Slayer Tiers', [
+                ['Zombie Tier', formatNumber(slayerData.zombieTier), 'number'],
+                ['Wolf Tier', formatNumber(slayerData.wolfTier), 'number'],
+                ['Spider Tier', formatNumber(slayerData.spiderTier), 'number']
+            ]);
+
+            // Auto Slayer
+            html += createDataCard('fas fa-cog', 'Settings', [
+                ['Auto Slayer', formatBoolean(slayerData.autoSlayer), 'boolean']
+            ]);
+
+            // Claimed Tiers
+            if (slayerData.claimedTiers && slayerData.claimedTiers.length > 0) {
+                html += createDataCard('fas fa-check-circle', 'Claimed Tiers', [
+                    ['Total Claimed', formatNumber(slayerData.claimedTiers.length), 'number'],
+                    ['Tiers', slayerData.claimedTiers.join(', '), 'string']
+                ]);
+            }
+
+            // Current Quest
+            if (member.slayerQuest) {
+                const quest = member.slayerQuest;
+                html += createDataCard('fas fa-scroll', 'Current Quest', [
+                    ['Type', quest.type, 'string'],
+                    ['Tier', formatNumber(quest.tier), 'number'],
+                    ['Status', quest.status, 'string'],
+                    ['Progress', `${quest.currentExperience}/${quest.targetExperience}`, 'string']
+                ]);
+            }
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function displayFarmingData() {
+            const container = document.getElementById('farmingTab');
+            const member = profileData?.members?.[playerData?.uuid];
+            if (!member) {
+                container.innerHTML = '<div class="loading"><i class="fas fa-tractor"></i><p>No farming data available</p></div>';
+                return;
+            }
+
+            let html = '<div class="cards-grid">';
+
+            // Farming Info
+            html += createDataCard('fas fa-tractor', 'Farming Stats', [
+                ['Shiny Orbs Used', formatNumber(member.shinyOrbsUsed || 0), 'number'],
+                ['Shiny Pigs Captured', formatNumber(member.shinyPigsCaptured || 0), 'number']
+            ]);
+
+            // Farming Contest
+            if (member.farmingContestData && Object.keys(member.farmingContestData).length > 0) {
+                html += createCollapseSection('fas fa-leaf', 'Farming Contest Data', member.farmingContestData);
+            } else {
+                html += createDataCard('fas fa-leaf', 'Farming Contest', [
+                    ['Status', 'No contest data available', 'string']
+                ]);
+            }
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function displayMinions() {
+            const container = document.getElementById('minionsTab');
+            if (!profileData?.craftedMinions || profileData.craftedMinions.length === 0) {
+                container.innerHTML = '<div class="loading"><i class="fas fa-robot"></i><p>No minion data available</p></div>';
+                return;
+            }
+
+            // Parse minions and get max level for each type
+            const minionMap = {};
+            profileData.craftedMinions.forEach(minion => {
+                const match = minion.match(/^(.+?)_(\d+)$/);
+                if (match) {
+                    const type = match[1];
+                    const level = parseInt(match[2]);
+                    if (!minionMap[type] || level > minionMap[type]) {
+                        minionMap[type] = level;
+                    }
+                }
+            });
+
+            const sortedMinions = Object.entries(minionMap)
+                .sort((a, b) => b[1] - a[1])
+                .map(([type, level]) => [type, formatNumber(level), 'number']);
+
+            let html = '<div class="cards-grid">';
+            
+            // Summary Card
+            html += createDataCard('fas fa-robot', 'Minion Summary', [
+                ['Total Minion Types', formatNumber(Object.keys(minionMap).length), 'number'],
+                ['Total Minions Crafted', formatNumber(profileData.craftedMinions.length), 'number'],
+                ['Highest Minion Level', formatNumber(Math.max(...Object.values(minionMap))), 'number']
+            ]);
+
+            html += '</div>';
+
+            // Detailed Minion List
+            html += '<h3><i class="fas fa-list"></i> Minion Levels</h3>';
+            html += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">';
+            
+            sortedMinions.forEach(([type, level]) => {
+                html += `
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-robot"></i>
+                            <div class="card-title">${type}</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="data-item">
+                                <span class="data-label">Max Level</span>
+                                <span class="data-value number">${level}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
         }
 
         function displayCollections() {
