@@ -40,6 +40,40 @@ function renderKV(container, obj) {
     }
 }
 
+function flattenGames(games) {
+    const rows = [];
+    const numericKeys = ['playerCount','player_count','players','count','value','online'];
+
+    function recurse(obj) {
+        for (const [k, v] of Object.entries(obj)) {
+            if (v === null) continue;
+            if (typeof v === 'number' || (typeof v === 'string' && !isNaN(Number(v)))) {
+                rows.push({ name: k, value: Number(v) });
+                continue;
+            }
+            if (typeof v === 'object') {
+                // check for direct numeric-like properties
+                let found = null;
+                for (const nk of numericKeys) {
+                    if (nk in v && (typeof v[nk] === 'number' || (typeof v[nk] === 'string' && !isNaN(Number(v[nk]))))) {
+                        found = v[nk]; break;
+                    }
+                }
+                if (found !== null) {
+                    rows.push({ name: k, value: Number(found) });
+                } else {
+                    // dive deeper to collect leaf entries (merge across skyblock/limbo/hub)
+                    recurse(v);
+                }
+            }
+        }
+    }
+
+    recurse(games);
+
+    return rows;
+}
+
 function buildGamesTable(games) {
     const table = document.createElement('table');
     table.className = 'games-table';
@@ -49,34 +83,25 @@ function buildGamesTable(games) {
     table.appendChild(thead);
 
     const tbody = document.createElement('tbody');
-    for (const [name, val] of Object.entries(games)) {
+    const rows = flattenGames(games);
+
+    for (const r of rows) {
         const tr = document.createElement('tr');
-        const tdName = document.createElement('td'); tdName.textContent = name;
-        const tdVal = document.createElement('td');
-
-        if (val === null) {
-            tdVal.textContent = 'null';
-        } else if (typeof val === 'number' || typeof val === 'string') {
-            tdVal.textContent = String(val);
-        } else if (typeof val === 'object') {
-            const numericKeys = ['playerCount','player_count','players','count','value','online'];
-            let found = null;
-            for (const k of numericKeys) { if (k in val) { found = val[k]; break; } }
-            if (found !== null) {
-                tdVal.textContent = String(found);
-            } else {
-                const detail = document.createElement('details');
-                const s = document.createElement('summary'); s.textContent = 'Details';
-                const pre = document.createElement('pre'); pre.textContent = JSON.stringify(val, null, 2);
-                detail.appendChild(s); detail.appendChild(pre);
-                tdVal.appendChild(detail);
-            }
-        } else {
-            tdVal.textContent = String(val);
-        }
-
+        const tdName = document.createElement('td'); tdName.textContent = r.name;
+        const tdVal = document.createElement('td'); tdVal.textContent = String(r.value);
         tr.appendChild(tdName); tr.appendChild(tdVal); tbody.appendChild(tr);
     }
+
+    // if nothing usable, fall back to showing top-level keys
+    if (rows.length === 0) {
+        for (const [name, val] of Object.entries(games)) {
+            const tr = document.createElement('tr');
+            const tdName = document.createElement('td'); tdName.textContent = name;
+            const tdVal = document.createElement('td'); tdVal.textContent = typeof val === 'object' ? JSON.stringify(val) : String(val);
+            tr.appendChild(tdName); tr.appendChild(tdVal); tbody.appendChild(tr);
+        }
+    }
+
     table.appendChild(tbody);
     return table;
 }
@@ -107,8 +132,10 @@ function applyData(data, meta = { source: 'live', ts: Date.now() }) {
     setText('whitelistRank', `Whitelist: ${data.whitelistRank ?? '—'}`);
 
     if (data.games) {
-        const gameKeys = Object.keys(data.games);
-        setText('gamesSummary', `${gameKeys.length} mode(s)`);
+        const rows = flattenGames(data.games);
+        const totalPlayers = rows.reduce((s, r) => s + (Number(r.value) || 0), 0);
+        const countText = `${rows.length} entr${rows.length === 1 ? 'y' : 'ies'}`;
+        setText('gamesSummary', totalPlayers ? `${countText} • ${totalPlayers} players` : countText);
     } else {
         setText('gamesSummary', '—');
     }
