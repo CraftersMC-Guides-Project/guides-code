@@ -156,7 +156,7 @@ async function applyData(data, meta = { source: 'live', ts: Date.now() }) {
         const summary = document.createElement('summary'); summary.textContent = 'Games';
         const inner = document.createElement('div'); inner.className = 'details-content';
         inner.appendChild(table);
-        const hint = document.createElement('div'); hint.className = 'small'; hint.style.marginTop = '8px'; hint.textContent = 'Edit `network-labels.json` in the repo to set shared names for the servers.';
+        const hint = document.createElement('div'); hint.className = 'small'; hint.style.marginTop = '8px'; hint.textContent = 'Player counts for each area';
         inner.appendChild(hint);
         const raw = document.createElement('details');
         const rs = document.createElement('summary'); rs.textContent = 'Raw games data';
