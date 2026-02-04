@@ -47,7 +47,7 @@ export default {
       
       if (!apiKey) {
         return new Response(JSON.stringify({ 
-          error: 'API key not configured in Cloudflare environment variables' 
+          error: 'API key not configured in Cloudflare environment variables. Set CMC_API_KEY in wrangler.toml vars section.' 
         }), {
           status: 500,
           headers: {

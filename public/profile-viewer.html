@@ -715,12 +715,10 @@
 
     <script>
         // Configuration
-        const config = {
-            proxyUrl: 'https://craftersmc-guides.pages.dev'
-        };
+        const DEFAULT_PROXY_URL = 'https://craftersmc-guides.pages.dev';
 
         // API Client
-        let apiClient = new APIProxyClient(config.proxyUrl);
+        let apiClient = new APIProxyClient(DEFAULT_PROXY_URL);
 
         // State
         let playerData = null;
@@ -1859,12 +1857,11 @@
         function loadSettings() {
             // Settings are now hardcoded to use environment variables from Cloudflare
         }
-
         async function testConnection() {
             showStatus('Testing connection...', 'info');
 
             try {
-                const proxyUrl = config.proxyUrl.replace(/\/$/, '');
+                const proxyUrl = DEFAULT_PROXY_URL.replace(/\/$/, '');
                 const response = await fetch(proxyUrl, {
                     headers: {
                         'Content-Type': 'application/json'
