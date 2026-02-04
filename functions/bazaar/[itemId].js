@@ -3,7 +3,7 @@ export async function onRequest({ params, env }) {
     `https://api.craftersmc.net/v1/skyblock/bazaar/${params.itemId}/details`,
     {
       headers: {
-        'x-api-key': env.CMC_API_KEY || env.cmc_api_key || env['cmc-api-key']
+        'X-API-Key': env.CMC_API_KEY || env.cmc_api_key || env['cmc-api-key']
       }
     }
   )
