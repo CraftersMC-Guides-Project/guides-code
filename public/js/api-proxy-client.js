@@ -86,7 +86,7 @@ class APIProxyClient {
     if (cached) return cached;
 
     try {
-      const data = await this.makeRequest(`bazaar/${itemId}`);
+      const data = await this.makeRequest(`/bazaar/${itemId}`);
       this.setCache(itemId, data);
       return data;
     } catch (error) {
