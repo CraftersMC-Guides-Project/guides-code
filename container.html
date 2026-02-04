@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -417,7 +418,7 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    
+
     .status-badge {
       display: inline-block;
       padding: 2px 6px;
@@ -444,7 +445,7 @@
       color: #f44336;
       border: 1px solid #f44336;
     }
-    
+
     #apiStatus {
       min-height: 20px;
       margin-top: 10px;
@@ -452,26 +453,168 @@
       border-radius: 3px;
       font-size: 12px;
     }
+
+    .item-slot {
+      position: relative;
+      width: 48px;
+    }
+
+    .item-slot img {
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      image-rendering: pixelated;
+    }
+
+    /* ================= Tooltip Core ================= */
+
+    .tooltip {
+      position: absolute;
+      top: 0;
+      left: 60px;
+      width: max-content;
+      display: block;
+      z-index: 10;
+    }
+
+    .mc-frame {
+      position: relative;
+      padding: 10px;
+      background: linear-gradient(#1a0f1f, #120915);
+      color: #dcdcdc;
+      font-size: 14px;
+      line-height: 1.3;
+      width: calc(90% - 2px);
+      height: calc(90% - 2px);
+    }
+
+    .mc-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ================= Corners ================= */
+
+    .mc-corner {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      z-index: 3;
+    }
+
+    .mc-corner.tl {
+      top: 0;
+      left: 0;
+      background: #000;
+    }
+
+    .mc-corner.tr {
+      top: 0;
+      right: 0px;
+      background: #000;
+    }
+
+    .mc-corner.bl {
+      bottom: 0;
+      left: 0;
+      background: #000;
+    }
+
+    .mc-corner.br {
+      bottom: 0;
+      right: 0;
+      background: #000;
+    }
+
+    /* ================= Edges ================= */
+
+    .mc-edge {
+      position: absolute;
+      z-index: 1;
+      background: #2c0863;
+    }
+
+    .mc-edge.top {
+      top: 0;
+      left: 2px;
+      right: 4px;
+      height: 2px;
+      box-shadow: 0 -2px 0 #000;
+      width: 198.5px;
+    }
+
+    .mc-edge.bottom {
+      bottom: 2px;
+      left: 2px;
+      right: 4px;
+      height: 2px;
+      box-shadow: 0 2px 0 #000;
+      width: 198.5px;
+    }
+
+    .mc-edge.left {
+      top: 2px;
+      bottom: 4px;
+      left: 0;
+      width: 2px;
+      height: 207.5px;
+      box-shadow: -2px 0 0 #000;
+    }
+
+    .mc-edge.right {
+      top: 2px;
+      bottom: 4px;
+      right: 0px;
+      width: 2px;
+      height: 207px;
+      box-shadow: 2px 0 0 #000;
+    }
+
+    /* ================= Text Styling ================= */
+
+    .title {
+      color: #55ff55;
+      font-weight: bold;
+    }
+
+    .rarity {
+      color: #55ff55;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .row {
+      display: flex;
+      gap: 4px;
+    }
+
+    .gold {
+      color: #ffaa00;
+    }
+
+    .muted {
+      color: #aaaaaa;
+      font-size: 13px;
+      width: max-content;
+    }
+
+    .spacer {
+      height: 6px;
+    }
+
+    .cta {
+      color: #ffff55;
+      margin-top: 6px;
+      width: max-content;
+    }
+
+    .tooltip {
+      display: none;
+    }
   </style>
 </head>
-<body>
-  <!-- API Settings Panel -->
-  <div class="api-panel">
-    <div class="api-input-group">
-      <label for="apiKey">API Key:</label>
-      <input type="password" id="apiKey" placeholder="Enter your CraftersMC API key">
-    </div>
-    <div class="api-input-group">
-      <label for="proxyUrl">Cloudflare Worker URL:</label>
-      <input type="text" id="proxyUrl" placeholder="https://your-worker.workers.dev">
-      <small style="color: #94a3b8; font-size: 11px;">
-        Your Cloudflare Worker URL (created at workers.cloudflare.com)
-      </small>
-    </div>
-    <button class="api-button" onclick="saveApiSettings()">Save Settings</button>
-    <div id="apiStatus"></div>
-  </div>
 
+<body>
   <div class="contain">
     <div class="catnav">
       <div id="farming" class="cat active"><img src="assets/ui-icons/ui_bazaar_category_farming_active.png"></div>
@@ -508,19 +651,16 @@
     </div>
   </div>
 
+  <!-- API Proxy Client Library -->
+  <script src="js/api-proxy-client.js"></script>
+  
   <script>
     // ==================== CONFIGURATION ====================
     // Default proxy URL (update this after creating your Cloudflare Worker)
     const DEFAULT_PROXY_URL = 'https://api-proxy.craftersmcguides.workers.dev';
-    
+
     // Item ID mapping for API calls
     const itemIdMap = {};
-
-    // API Configuration
-    let apiSettings = {
-      apiKey: '',
-      proxyUrl: DEFAULT_PROXY_URL
-    };
 
     // Cache for API responses
     const bazaarCache = new Map();
@@ -1041,7 +1181,7 @@
       { name: "Cobblestone Minion Tiers", img: "cobblestone-minion/Cobblestone_Minion.png", subItems: [] },
       { name: "Cocoa Minion Tiers", img: "cocoa-minion/Cocoa_Beans_Minion.png", subItems: [] }
     ];
-    
+
     // ==================== CORE FUNCTIONS ====================
     // Format currency
     function formatCurrency(amount) {
@@ -1069,15 +1209,15 @@
       const seed = Array.from(itemId).reduce((acc, char) => acc + char.charCodeAt(0), 0);
       const basePrice = (seed % 500) + 50;
       const variation = Math.sin(seed) * 20;
-      
+
       return {
-        buyTopEntries: [{ 
-          price: basePrice + variation, 
-          quantity: Math.floor(Math.random() * 5000) + 1000 
+        buyTopEntries: [{
+          price: basePrice + variation,
+          quantity: Math.floor(Math.random() * 5000) + 1000
         }],
-        sellTopEntries: [{ 
-          price: basePrice + variation + (Math.random() * 10 + 5), 
-          quantity: Math.floor(Math.random() * 5000) + 1000 
+        sellTopEntries: [{
+          price: basePrice + variation + (Math.random() * 10 + 5),
+          quantity: Math.floor(Math.random() * 5000) + 1000
         }],
         weeklyAveragePrice: basePrice + variation + 5,
         buyVolume: Math.floor(Math.random() * 50000) + 10000,
@@ -1086,93 +1226,25 @@
       };
     }
 
-    // Fetch bazaar data through Cloudflare Worker - FIXED VERSION
-async function fetchBazaarData(itemName) {
-  const itemId = getItemId(itemName);
-  console.log(`Fetching data for: ${itemName} (ID: ${itemId})`);
-  
-  // Check cache first (30 second cache for live data, 5 minutes for mock)
-  const cached = bazaarCache.get(itemId);
-  if (cached) {
-    const cacheTime = cached.data._isMock ? 300000 : 30000; // 5 min vs 30 sec
-    if (Date.now() - cached.timestamp < cacheTime) {
-      console.log(`Using cached data for ${itemId}`);
-      return cached.data;
-    }
-  }
+    // Initialize API Proxy Client
+    let apiClient = new APIProxyClient(DEFAULT_PROXY_URL);
 
-  if (!apiSettings.apiKey) {
-    console.log(`No API key set, using mock data for ${itemId}`);
-    const mockData = generateMockData(itemId);
-    bazaarCache.set(itemId, { data: mockData, timestamp: Date.now() });
-    return mockData;
-  }
+    // Fetch bazaar data through Cloudflare Function
+    async function fetchBazaarData(itemName) {
+      const itemId = getItemId(itemName);
+      console.log(`Fetching data for: ${itemName} (ID: ${itemId})`);
 
-  if (!apiSettings.proxyUrl) {
-    console.log(`No proxy URL set, using mock data for ${itemId}`);
-    const mockData = generateMockData(itemId);
-    bazaarCache.set(itemId, { data: mockData, timestamp: Date.now() });
-    return mockData;
-  }
-
-  try {
-    // Build the proxy URL - FIXED: Direct /itemId path
-    const proxyUrl = apiSettings.proxyUrl.replace(/\/$/, ''); // Remove trailing slash
-    
-    // IMPORTANT: Use direct path /wheat NOT /bazaar/wheat
-    const url = `${proxyUrl}/${itemId}`;
-    
-    console.log(`Making request to: ${url}`);
-    
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'X-API-Key': apiSettings.apiKey,
-        'Content-Type': 'application/json'
-      }
-    });
-    
-    console.log(`Response status: ${response.status}`);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`HTTP ${response.status}: ${errorText}`);
-      
-      // If it's a 400 error, it might be because of wrong endpoint format
-      if (response.status === 400 && errorText.includes('Missing identifier')) {
-        console.log('Trying legacy format...');
-        throw new Error('Trying direct bazaar endpoint');
-      } else {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      try {
+        const data = await apiClient.getBazaarItem(itemId);
+        console.log(`Successfully fetched data for ${itemId}`, data);
+        return data;
+      } catch (error) {
+        console.warn(`Failed to fetch ${itemId} via Cloudflare Function, using mock data:`, error.message);
+        // Fallback to mock data
+        const mockData = generateMockData(itemId);
+        return mockData;
       }
     }
-    
-    const data = await response.json();
-    console.log(`Successfully fetched data for ${itemId}`, data);
-    
-    // Check if it's an error response from the proxy
-    if (data.error && data.error.includes('Missing identifier')) {
-      console.error(`Wrong endpoint format for ${itemId}:`, data.error);
-      throw new Error(`Endpoint format issue: ${data.error}`);
-    }
-    
-    // Cache successful response
-    bazaarCache.set(itemId, {
-      data: data,
-      timestamp: Date.now()
-    });
-    
-    return data;
-    
-  } catch (error) {
-    console.warn(`Failed to fetch ${itemId} via proxy, using mock data:`, error.message);
-    
-    // Fallback to mock data
-    const mockData = generateMockData(itemId);
-    bazaarCache.set(itemId, { data: mockData, timestamp: Date.now() });
-    return mockData;
-  }
-}
 
     // Generate tooltip HTML
     async function generateTooltipHTML(item) {
@@ -1196,74 +1268,68 @@ async function fetchBazaarData(itemName) {
 
       // For single items, fetch API data
       const bazaarData = await fetchBazaarData(item.name);
-      
+
       const isMockData = bazaarData._isMock === true;
       const hasError = bazaarData.error || !bazaarData.buyTopEntries;
-      
+
       const buyPrice = bazaarData.buyTopEntries?.[0]?.price || 0;
       const sellPrice = bazaarData.sellTopEntries?.[0]?.price || 0;
       const weeklyAvg = bazaarData.weeklyAveragePrice || 0;
       const buyVolume = bazaarData.buyVolume || 0;
       const sellVolume = bazaarData.sellVolume || 0;
-      
+
       const priceDiff = sellPrice - buyPrice;
       const diffPercent = buyPrice > 0 ? (priceDiff / buyPrice * 100) : 0;
       const diffClass = priceDiff > 0 ? 'price-up' : priceDiff < 0 ? 'price-down' : '';
-      
-      let html = `<span class="item-title">${item.name}</span>`;
-      
+
+      let html = `<span class="title">${item.name}</span><br><span class="rarity">${item.rarity}</span>`;
+
       // Status badge
-      if (hasError) {
-        html += `<div class="status-badge status-error">API Error</div>`;
-      } else if (isMockData) {
-        html += `<div class="status-badge status-mock">Mock Data</div>`;
-      } else {
-        html += `<div class="status-badge status-live">Live Data</div>`;
-      }
-      
+      // if (hasError) {
+      //   html += `<div class="status-badge status-error">API Error</div>`;
+      // } else if (isMockData) {
+      //   html += `<div class="status-badge status-mock">Mock Data</div>`;
+      // } else {
+      //   html += `<div class="status-badge status-live">Live Data</div>`;
+      // }
+
       html += `
-        <div class="item-data">
-          <div class="data-row">
-            <span class="data-label">Buy Price:</span>
-            <span class="data-value">${formatCurrency(buyPrice)}</span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">Sell Price:</span>
-            <span class="data-value">${formatCurrency(sellPrice)}</span>
-          </div>
+        <div class="spacer"></div>
+
+                <div class="row">
+                    <span>Buy price:</span>
+                    <span class="gold">${formatCurrency(buyPrice)}</span>
+                </div>
+                <div class="muted">Supply volume: ${formatNumber(sellVolume)}</div>
+
+                <div class="spacer"></div>
+
+                <div class="row">
+                    <span>Sell price:</span>
+                    <span class="gold">${formatCurrency(sellPrice)}</span>
+                </div>
+                <div class="muted">Demand volume: ${formatNumber(buyVolume)}</div>
+
+                <div class="spacer"></div>
+
+                <div class="row">
+                    <span>7d Avg. price:</span>
+                    <span class="gold">${formatCurrency(weeklyAvg)}</span>
+                </div>
+
+                <div class="cta">Click to view details!</div>
       `;
-      
-      if (!hasError) {
-        html += `
-          <div class="data-row">
-            <span class="data-label">Instant Profit:</span>
-            <span class="data-value ${diffClass}">${formatCurrency(priceDiff)} (${diffPercent.toFixed(1)}%)</span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">7-Day Average:</span>
-            <span class="data-value">${formatCurrency(weeklyAvg)}</span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">Buy Volume:</span>
-            <span class="data-value">${formatNumber(buyVolume)}</span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">Sell Volume:</span>
-            <span class="data-value">${formatNumber(sellVolume)}</span>
-          </div>
-        `;
-      }
-      
-      if (isMockData) {
-        html += `
-          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #4b267a;">
-            <div style="color: #ff9800; font-size: 10px; text-align: center;">
-              Enter API key and Cloudflare Worker URL to get live data
-            </div>
-          </div>
-        `;
-      }
-      
+
+      // if (isMockData) {
+      //   html += `
+      //     <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #4b267a;">
+      //       <div style="color: #ff9800; font-size: 10px; text-align: center;">
+      //         Enter API key and Cloudflare Worker URL to get live data
+      //       </div>
+      //     </div>
+      //   `;
+      // }
+
       html += `</div>`;
       return html;
     }
@@ -1273,29 +1339,46 @@ async function fetchBazaarData(itemName) {
     async function fillCells(itemsList) {
       const mainGrid = document.getElementById('mainGrid');
       const hotbarGrid = document.getElementById('hotbarGrid');
-      
+
       mainGrid.innerHTML = '';
       hotbarGrid.innerHTML = '';
-      
+
       // Fill main grid (36 cells)
       for (let i = 0; i < 36; i++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
-        
+
         if (i < itemsList.length) {
           const item = itemsList[i];
           cell.innerHTML = `
             <div class="item-with-sub">
               <img src="img/${item.img}" alt="${item.name}" 
                    onerror="this.src='https://via.placeholder.com/24/8b8b8b/000?text=?'">
-              <div class="item-tooltip">
-                <div class="loading">Loading...</div>
+              <div class="tooltip">
+                <div class="mc-frame">
+
+            <!-- Corners -->
+            <div class="mc-corner tl"></div>
+            <div class="mc-corner tr"></div>
+            <div class="mc-corner bl"></div>
+            <div class="mc-corner br"></div>
+
+            <!-- Edges -->
+            <div class="mc-edge top"></div>
+            <div class="mc-edge bottom"></div>
+            <div class="mc-edge left"></div>
+            <div class="mc-edge right"></div>
+
+            <!-- Content -->
+            <div class="mc-content loading">
+            </div>
+            </div>
               </div>
             </div>
           `;
-          
+
           setupTooltip(cell, item);
-          
+
           // Click handler for items with subItems
           if (item.subItems && item.subItems.length > 0) {
             cell.addEventListener('click', () => {
@@ -1303,15 +1386,15 @@ async function fetchBazaarData(itemName) {
             });
           }
         }
-        
+
         mainGrid.appendChild(cell);
       }
-      
+
       // Fill hotbar (9 cells)
       for (let i = 0; i < 9; i++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
-        
+
         const itemIndex = 36 + i;
         if (itemIndex < itemsList.length) {
           const item = itemsList[itemIndex];
@@ -1319,21 +1402,38 @@ async function fetchBazaarData(itemName) {
             <div class="item-with-sub">
               <img src="img/${item.img}" alt="${item.name}" 
                    onerror="this.src='https://via.placeholder.com/24/8b8b8b/000?text=?'">
-              <div class="item-tooltip">
-                <div class="loading">Loading...</div>
+              <div class="tooltip">
+                <div class="mc-frame">
+
+            <!-- Corners -->
+            <div class="mc-corner tl"></div>
+            <div class="mc-corner tr"></div>
+            <div class="mc-corner bl"></div>
+            <div class="mc-corner br"></div>
+
+            <!-- Edges -->
+            <div class="mc-edge top"></div>
+            <div class="mc-edge bottom"></div>
+            <div class="mc-edge left"></div>
+            <div class="mc-edge right"></div>
+
+            <!-- Content -->
+            <div class="mc-content loading">
+            </div>
+            </div>
               </div>
             </div>
           `;
-          
+
           setupTooltip(cell, item);
-          
+
           if (item.subItems && item.subItems.length > 0) {
             cell.addEventListener('click', () => {
               fillCells(item.subItems);
             });
           }
         }
-        
+
         hotbarGrid.appendChild(cell);
       }
     }
@@ -1341,72 +1441,54 @@ async function fetchBazaarData(itemName) {
     // Setup tooltip for a cell
     function setupTooltip(cell, item) {
       const itemDiv = cell.querySelector('.item-with-sub');
-      const tooltip = itemDiv.querySelector('.item-tooltip');
-      
-      let tooltipTimeout;
-      
-      itemDiv.addEventListener('mouseenter', async function(e) {
-        clearTimeout(tooltipTimeout);
-        
-        tooltipTimeout = setTimeout(async () => {
-          tooltip.innerHTML = `<div class="loading">Loading market data...</div>`;
-          tooltip.style.display = "block";
-          
-          // Load data
-          const content = await generateTooltipHTML(item);
-          tooltip.innerHTML = content;
-          
-          // Setup sub-item click handlers
-          const subItems = tooltip.querySelectorAll('.sub-item');
-          subItems.forEach(subItem => {
-            subItem.addEventListener('click', function(e) {
-              e.stopPropagation();
-              try {
-                const itemData = JSON.parse(this.getAttribute('data-item').replace(/\\'/g, "'"));
-                if (itemData.subItems && itemData.subItems.length > 0) {
-                  fillCells(itemData.subItems);
-                } else {
-                  // Show single item tooltip
-                  setupTooltip(cell, itemData);
-                }
-              } catch (error) {
-                console.error('Error parsing sub-item data:', error);
-              }
-            });
-          });
-          
-          // Position tooltip
-          positionTooltip(cell, tooltip);
-        }, 300);
+      const tooltip = itemDiv.querySelector('.tooltip');
+      const contentBox = tooltip.querySelector('.mc-content');
+
+      let timeout;
+
+      itemDiv.addEventListener('mouseenter', () => {
+        clearTimeout(timeout);
+
+        timeout = setTimeout(async () => {
+          tooltip.style.display = 'block';
+          contentBox.className = 'mc-content loading';
+          contentBox.innerHTML = 'Loading market data...';
+
+          const html = await generateTooltipHTML(item);
+
+          contentBox.className = 'mc-content';
+          contentBox.innerHTML = html;
+        }, 150);
       });
-      
-      itemDiv.addEventListener('mouseleave', function() {
-        clearTimeout(tooltipTimeout);
-        tooltip.style.display = "none";
+
+      itemDiv.addEventListener('mouseleave', () => {
+        clearTimeout(timeout);
+        tooltip.style.display = 'none';
       });
     }
+
 
     // Position tooltip
     function positionTooltip(cell, tooltip) {
       const cellRect = cell.getBoundingClientRect();
       const tooltipRect = tooltip.getBoundingClientRect();
-      
+
       let left = cellRect.right + 10;
       let top = cellRect.top;
-      
+
       // Adjust if tooltip would go off screen
       if (left + tooltipRect.width > window.innerWidth - 10) {
         left = cellRect.left - tooltipRect.width - 10;
       }
-      
+
       if (top + tooltipRect.height > window.innerHeight - 10) {
         top = window.innerHeight - tooltipRect.height - 10;
       }
-      
+
       if (top < 10) {
         top = 10;
       }
-      
+
       tooltip.style.left = (left - cellRect.left) + 'px';
       tooltip.style.top = (top - cellRect.top) + 'px';
     }
@@ -1421,7 +1503,7 @@ async function fetchBazaarData(itemName) {
         special: specialItems,
         minion: minionItems
       };
-      
+
       Object.keys(categories).forEach(categoryId => {
         document.getElementById(categoryId).addEventListener('click', () => {
           document.querySelectorAll('.cat').forEach(cat => cat.classList.remove('active'));
@@ -1431,47 +1513,12 @@ async function fetchBazaarData(itemName) {
       });
     }
 
-    // ==================== API SETTINGS MANAGEMENT ====================
-    function saveApiSettings() {
-      apiSettings.apiKey = document.getElementById('apiKey').value.trim();
-      apiSettings.proxyUrl = document.getElementById('proxyUrl').value.trim();
-      
-      if (!apiSettings.proxyUrl) {
-        apiSettings.proxyUrl = DEFAULT_PROXY_URL;
-      }
-      
-      localStorage.setItem('bazaarApiSettings', JSON.stringify(apiSettings));
-      
-      // Clear cache
-      bazaarCache.clear();
-      
-      showStatus('Settings saved! Clear cache and using new settings.', 'success');
-      
-      // Refresh current view
-      const activeCat = document.querySelector('.cat.active');
+    // ==================== PAGE INITIALIZATION ====================
+    function initializePage() {
+      // API client is pre-configured with environment variables
+      console.log('API proxy client initialized');
       if (activeCat) {
         activeCat.click();
-      }
-    }
-
-    function loadApiSettings() {
-      const saved = localStorage.getItem('bazaarApiSettings');
-      if (saved) {
-        try {
-          apiSettings = JSON.parse(saved);
-          
-          // Update UI
-          document.getElementById('apiKey').value = apiSettings.apiKey || '';
-          document.getElementById('proxyUrl').value = apiSettings.proxyUrl || DEFAULT_PROXY_URL;
-          
-          console.log('Loaded API settings:', apiSettings);
-        } catch (e) {
-          console.error('Error loading API settings:', e);
-          showStatus('Error loading saved settings', 'error');
-        }
-      } else {
-        // Set default
-        document.getElementById('proxyUrl').value = DEFAULT_PROXY_URL;
       }
     }
 
@@ -1479,7 +1526,7 @@ async function fetchBazaarData(itemName) {
       const statusDiv = document.getElementById('apiStatus');
       statusDiv.textContent = message;
       statusDiv.className = '';
-      
+
       if (type === 'error') {
         statusDiv.style.color = '#f87171';
         statusDiv.style.backgroundColor = '#fee2e2';
@@ -1493,7 +1540,7 @@ async function fetchBazaarData(itemName) {
         statusDiv.style.backgroundColor = 'transparent';
         statusDiv.style.border = 'none';
       }
-      
+
       // Auto-hide success messages after 5 seconds
       if (type === 'success') {
         setTimeout(() => {
@@ -1503,49 +1550,14 @@ async function fetchBazaarData(itemName) {
       }
     }
 
-    // Test the proxy connection
-    async function testProxyConnection() {
-      if (!apiSettings.apiKey || !apiSettings.proxyUrl) {
-        showStatus('Please enter API key and proxy URL first', 'error');
-        return;
-      }
-      
-      showStatus('Testing proxy connection...', 'info');
-      
-      try {
-        const proxyUrl = apiSettings.proxyUrl.replace(/\/$/, '');
-        const testUrl = `${proxyUrl}/wheat`;
-        
-        const response = await fetch(testUrl, {
-          method: 'GET',
-          headers: {
-            'X-API-Key': apiSettings.apiKey,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (data.error) {
-            showStatus(`Proxy error: ${data.error}`, 'error');
-          } else {
-            showStatus('✓ Proxy connection successful!', 'success');
-          }
-        } else {
-          showStatus(`Proxy error: HTTP ${response.status}`, 'error');
-        }
-      } catch (error) {
-        showStatus(`Connection failed: ${error.message}`, 'error');
-      }
-    }
-
     // ==================== INITIALIZATION ====================
-    document.addEventListener('DOMContentLoaded', function() {
-      loadApiSettings();
+    document.addEventListener('DOMContentLoaded', function () {
+      initializePage();
       setupCategoryNavigation();
       fillCells(farmingItems);
     });
-    
+
   </script>
 </body>
+
 </html>

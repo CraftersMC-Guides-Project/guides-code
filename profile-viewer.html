@@ -12,6 +12,7 @@
     <link rel="icon" href="assets/cmc-icon.png" type="image/png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="js/script.js" defer></script>
+    <script src="js/api-proxy-client.js" defer></script>
     <link rel="stylesheet" href="css/essential.css">
     <style>
         /* Dark theme overrides */
@@ -603,33 +604,6 @@
             <p>View player data, SkyBlock profiles, and bazaar market information</p>
         </div>
 
-        <!-- API Settings Panel -->
-        <div class="api-panel">
-            <h2><span class="material-icons">settings</span> API Configuration</h2>
-            <div class="input-group">
-                <div class="form-group">
-                    <label for="apiKey"><span class="material-icons"
-                            style="font-size: 1rem; vertical-align: middle;">vpn_key</span> API Key</label>
-                    <input type="password" id="apiKey" placeholder="Enter your CraftersMC API key">
-                </div>
-                <div class="form-group">
-                    <label for="proxyUrl"><span class="material-icons"
-                            style="font-size: 1rem; vertical-align: middle;">storage</span> Proxy URL</label>
-                    <input type="text" id="proxyUrl" placeholder="https://api-proxy.craftersmcguides.workers.dev"
-                        disabled>
-                </div>
-            </div>
-            <div class="btn-group">
-                <button class="btn" onclick="saveSettings()">
-                    <span class="material-icons">save</span> Save Settings
-                </button>
-                <button class="btn btn-success" onclick="testConnection()">
-                    <span class="material-icons">cable</span> Test Connection
-                </button>
-            </div>
-            <div id="status" class="status"></div>
-        </div>
-
         <!-- Search Panel -->
         <div class="data-section">
             <h2><span class="material-icons">search</span> Search</h2>
@@ -739,9 +713,11 @@
     <script>
         // Configuration
         const config = {
-            apiKey: '',
-            proxyUrl: ''
+            proxyUrl: 'https://api-proxy.craftersmcguides.workers.dev'
         };
+
+        // API Client
+        let apiClient = new APIProxyClient(config.proxyUrl);
 
         // State
         let playerData = null;
@@ -780,27 +756,9 @@
 
         // API Functions
         async function makeRequest(endpoint) {
-            if (!config.apiKey || !config.proxyUrl) {
-                showStatus('Please configure API key and proxy URL first', 'error');
-                return null;
-            }
-
-            const proxyUrl = config.proxyUrl.replace(/\/$/, '');
-            const url = `${proxyUrl}${endpoint}`;
-
             try {
-                const response = await fetch(url, {
-                    headers: {
-                        'X-API-Key': config.apiKey,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                return await response.json();
+                const response = await apiClient.makeRequest(endpoint);
+                return response;
             } catch (error) {
                 console.error('Request failed:', error);
                 showStatus(`Request failed: ${error.message}`, 'error');
@@ -1892,44 +1850,20 @@
 
         // Settings Functions
         function saveSettings() {
-            config.apiKey = document.getElementById('apiKey').value.trim();
-            config.proxyUrl = document.getElementById('proxyUrl').value.trim();
-
-            if (!config.apiKey || !config.proxyUrl) {
-                showStatus('Please enter both API key and proxy URL', 'error');
-                return;
-            }
-
-            localStorage.setItem('craftersmc_config', JSON.stringify(config));
             showStatus('Settings saved successfully!', 'success');
         }
 
         function loadSettings() {
-            const saved = localStorage.getItem('craftersmc_config');
-            if (saved) {
-                try {
-                    Object.assign(config, JSON.parse(saved));
-                    document.getElementById('apiKey').value = config.apiKey || '';
-                    document.getElementById('proxyUrl').value = config.proxyUrl || '';
-                } catch (e) {
-                    console.error('Error loading settings:', e);
-                }
-            }
+            // Settings are now hardcoded to use environment variables from Cloudflare
         }
 
         async function testConnection() {
-            if (!config.apiKey || !config.proxyUrl) {
-                showStatus('Please save settings first', 'error');
-                return;
-            }
-
             showStatus('Testing connection...', 'info');
 
             try {
                 const proxyUrl = config.proxyUrl.replace(/\/$/, '');
                 const response = await fetch(proxyUrl, {
                     headers: {
-                        'X-API-Key': config.apiKey,
                         'Content-Type': 'application/json'
                     }
                 });
@@ -1947,11 +1881,6 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadSettings();
-
-            // Set default proxy URL if none
-            if (!document.getElementById('proxyUrl').value) {
-                document.getElementById('proxyUrl').value = 'https://api-proxy.craftersmcguides.workers.dev';
-            }
 
             // Auto-focus username input
             document.getElementById('username').focus();
