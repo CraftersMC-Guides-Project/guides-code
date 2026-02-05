@@ -724,6 +724,7 @@
         let playerData = null;
         let profileData = null;
         let currentProfileId = '';
+        let selectedMemberId = '';
 
         // Format functions
         function formatNumber(num) {
@@ -823,6 +824,10 @@
             console.log('profileData.claimedNewYearCakes:', profileData?.claimedNewYearCakes);
             showStatus('Profile data loaded successfully!', 'success');
             showLoading(false);
+            
+            // Display member selector
+            displayMemberSelector();
+            
             displayAllData();
         }
 
@@ -853,6 +858,56 @@
                 btn.onclick = () => fetchProfileData(profileId);
                 selector.appendChild(btn);
             });
+        }
+
+        function displayMemberSelector() {
+            const selector = document.getElementById('profileSelector');
+            if (!profileData?.members || Object.keys(profileData.members).length === 0) {
+                return;
+            }
+
+            // Create or get member selector container
+            let memberSelector = document.getElementById('memberSelector');
+            if (!memberSelector) {
+                memberSelector = document.createElement('div');
+                memberSelector.id = 'memberSelector';
+                memberSelector.style.cssText = 'display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;';
+                selector.parentNode.insertBefore(memberSelector, selector.nextSibling);
+            }
+
+            memberSelector.innerHTML = '<label style="align-self: center; color: #e2e8f0; font-weight: 500;">Members:</label>';
+
+            Object.entries(profileData.members).forEach(([memberId, member]) => {
+                const btn = document.createElement('button');
+                btn.className = 'profile-btn';
+                btn.style.cssText = 'padding: 8px 12px; font-size: 13px;';
+                
+                if (memberId === selectedMemberId) {
+                    btn.classList.add('active');
+                }
+
+                // Try to get player name from playerData or use UUID
+                let displayName = 'Unknown';
+                if (playerData?.name && memberId === playerData.uuid.replace(/-/g, '')) {
+                    displayName = playerData.name;
+                } else if (member.nameHistory && member.nameHistory.length > 0) {
+                    displayName = member.nameHistory[0];
+                }
+
+                btn.innerHTML = `<i class="fas fa-user"></i> ${displayName}`;
+                btn.onclick = () => {
+                    selectedMemberId = memberId;
+                    displayMemberSelector();
+                    displayAllData();
+                };
+                memberSelector.appendChild(btn);
+            });
+
+            // Set default to current player if not set
+            if (!selectedMemberId && playerData?.uuid) {
+                selectedMemberId = playerData.uuid.replace(/-/g, '');
+                displayMemberSelector();
+            }
         }
 
         function displayAllData() {
@@ -1171,8 +1226,7 @@
 
         function displayStatistics() {
             const container = document.getElementById('statisticsTab');
-            const normalizedUuid = playerData?.uuid?.replace(/-/g, '');
-            const member = profileData?.members?.[normalizedUuid];
+            const member = profileData?.members?.[selectedMemberId];
             if (!member) {
                 container.innerHTML = '<div class="loading"><i class="fas fa-chart-bar"></i><p>No statistics data available</p></div>';
                 return;
@@ -1308,8 +1362,7 @@
 
         function displaySlayerData() {
             const container = document.getElementById('slayersTab');
-            const normalizedUuid = playerData?.uuid?.replace(/-/g, '');
-            const member = profileData?.members?.[normalizedUuid];
+            const member = profileData?.members?.[selectedMemberId];
             if (!member?.slayerData) {
                 container.innerHTML = '<div class="loading"><i class="fas fa-dragon"></i><p>No slayer data available</p></div>';
                 return;
@@ -1369,8 +1422,7 @@
 
         function displayFarmingData() {
             const container = document.getElementById('farmingTab');
-            const normalizedUuid = playerData?.uuid?.replace(/-/g, '');
-            const member = profileData?.members?.[normalizedUuid];
+            const member = profileData?.members?.[selectedMemberId];
             if (!member) {
                 container.innerHTML = '<div class="loading"><i class="fas fa-tractor"></i><p>No farming data available</p></div>';
                 return;
@@ -1384,9 +1436,25 @@
                 ['Shiny Pigs Captured', formatNumber(member.shinyPigsCaptured || 0), 'number']
             ]);
 
-            // Farming Contest
+            // Farming Contest - format arrays nicely
             if (member.farmingContestData && Object.keys(member.farmingContestData).length > 0) {
-                html += createCollapseSection('fas fa-leaf', 'Farming Contest Data', member.farmingContestData);
+                const contestData = {};
+                Object.entries(member.farmingContestData).forEach(([key, value]) => {
+                    if (Array.isArray(value)) {
+                        contestData[key] = value.length > 0 ? value.join(', ') : 'N/A';
+                    } else if (typeof value === 'object' && value !== null) {
+                        // Format nested objects nicely
+                        const nested = Object.entries(value).map(([k, v]) => 
+                            Array.isArray(v) ? `${k}: [${v.join(', ')}]` : `${k}: ${v}`
+                        ).join(' | ');
+                        contestData[key] = nested;
+                    } else {
+                        contestData[key] = value;
+                    }
+                });
+                
+                const contestItems = Object.entries(contestData).map(([k, v]) => [k, v, 'string']);
+                html += createDataCard('fas fa-leaf', 'Farming Contest Data', contestItems);
             } else {
                 html += createDataCard('fas fa-leaf', 'Farming Contest', [
                     ['Status', 'No contest data available', 'string']
