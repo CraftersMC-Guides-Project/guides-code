@@ -919,7 +919,15 @@
 
         function displayAllData() {
             document.getElementById('mainData').style.display = 'block';
-            console.log('displayAllData called', { playerExists: !!playerData, profileExists: !!profileData });
+            // Clear all tab contents first
+            document.getElementById('statisticsTab').innerHTML = '';
+            document.getElementById('slayersTab').innerHTML = '';
+            document.getElementById('farmingTab').innerHTML = '';
+            document.getElementById('minionsTab').innerHTML = '';
+            document.getElementById('collectionsTab').innerHTML = '';
+            document.getElementById('skillsTab').innerHTML = '';
+            
+            console.log('displayAllData called', { playerExists: !!playerData, profileExists: !!profileData, selectedMemberId });
             displayPlayerData();
             displayProfileData();
             displayOverview();
@@ -1242,23 +1250,26 @@
 
             let html = '<div class="cards-grid">';
 
-            // Cakes Claimed (use player data, fall back to profile.claimedNewYearCakes)
-            const cakesArray = (Array.isArray(playerData?.sbClaimedCakes) && playerData.sbClaimedCakes.length > 0)
-                ? playerData.sbClaimedCakes
-                : (Array.isArray(profileData?.claimedNewYearCakes) ? profileData.claimedNewYearCakes : []);
+            // Cakes Claimed - only show for owner account
+            const isOwner = selectedMemberId === playerData?.uuid?.replace(/-/g, '');
+            if (isOwner) {
+                const cakesArray = (Array.isArray(playerData?.sbClaimedCakes) && playerData.sbClaimedCakes.length > 0)
+                    ? playerData.sbClaimedCakes
+                    : (Array.isArray(profileData?.claimedNewYearCakes) ? profileData.claimedNewYearCakes : []);
 
-            console.log('displayStatistics: cakesArray =', cakesArray);
+                console.log('displayStatistics: cakesArray =', cakesArray);
 
-            if (cakesArray.length > 0) {
-                html += createDataCard('fas fa-birthday-cake', 'Cakes Claimed', [
-                    ['Total Cakes', formatNumber(cakesArray.length), 'number'],
-                    ['Cake Years', cakesArray.join(', '), 'string']
-                ]);
-            } else {
-                html += createDataCard('fas fa-birthday-cake', 'Cakes Claimed', [
-                    ['Total Cakes', '0', 'number'],
-                    ['Cake Years', 'None', 'string']
-                ]);
+                if (cakesArray.length > 0) {
+                    html += createDataCard('fas fa-birthday-cake', 'Cakes Claimed', [
+                        ['Total Cakes', formatNumber(cakesArray.length), 'number'],
+                        ['Cake Years', cakesArray.join(', '), 'string']
+                    ]);
+                } else {
+                    html += createDataCard('fas fa-birthday-cake', 'Cakes Claimed', [
+                        ['Total Cakes', '0', 'number'],
+                        ['Cake Years', 'None', 'string']
+                    ]);
+                }
             }
 
             // Combat Stats
