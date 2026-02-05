@@ -1,81 +1,82 @@
 const ctx = document.getElementById('priceChart').getContext('2d')
-let chart
+
+const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [
+            {
+                label: 'Buy Price',
+                borderColor: '#4cc9f0',
+                data: [],
+                tension: 0.25,
+                pointRadius: 3
+            },
+            {
+                label: 'Sell Price',
+                borderColor: '#f72585',
+                data: [],
+                tension: 0.25,
+                pointRadius: 3
+            },
+            {
+                label: '7d Avg',
+                borderColor: '#fca311',
+                borderDash: [5, 5],
+                data: [],
+                tension: 0.25,
+                pointRadius: 3
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        interaction: {
+            mode: 'index',
+            intersect: false
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: ctx => `${ctx.dataset.label}: ${ctx.formattedValue}`
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: { color: '#aaa' }
+            },
+            y: {
+                ticks: { color: '#aaa' }
+            }
+        }
+    }
+})
 
 async function loadItem(itemId) {
     const res = await fetch(`/api/history/${itemId}`)
-    const { history } = await res.json()
+    const data = await res.json()
 
-    const labels = history.map(p =>
-    new Date(p.fetched_at).toLocaleString()
+    const history = data.history
+    if (!history || history.length === 0) {
+        console.warn('No history for', itemId)
+        return
+    }
+
+    chart.data.labels = history.map(p =>
+    new Date(p.fetched_at).toLocaleTimeString()
     )
 
-    const buyPrices = history.map(p => p.buy_price)
-    const sellPrices = history.map(p => p.sell_price)
-    const avgPrices = history.map(p => p.avg_7d_price)
+    chart.data.datasets[0].data = history.map(p => p.buy_price)
+    chart.data.datasets[1].data = history.map(p => p.sell_price)
+    chart.data.datasets[2].data = history.map(p => p.avg_7d_price)
 
-    if (chart) chart.destroy()
-
-        chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels,
-                datasets: [
-                    {
-                        label: 'Buy Price',
-                        data: buyPrices,
-                        pointRadius: 4,
-                        pointHoverRadius: 7,
-                        tension: 0.3
-                    },
-                    {
-                        label: 'Sell Price',
-                        data: sellPrices,
-                        pointRadius: 4,
-                        pointHoverRadius: 7,
-                        tension: 0.3
-                    },
-                    {
-                        label: '7d Avg',
-                        data: avgPrices,
-                        borderDash: [6, 6],
-                        pointRadius: 0,
-                        tension: 0.3
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                interaction: {
-                    mode: 'nearest',
-                    intersect: false
-                },
-                plugins: {
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            label: (ctx) => {
-                                const price = ctx.raw.toFixed(2)
-                                return `${ctx.dataset.label}: ${price}`
-                            },
-                            title: (items) => {
-                                return `Time: ${items[0].label}`
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        ticks: { maxRotation: 45, minRotation: 45 }
-                    },
-                    y: {
-                        ticks: {
-                            callback: v => v.toFixed(0)
-                        }
-                    }
-                }
-            }
-        })
+    chart.update()
 }
 
-// initial load
-loadItem('wheat')
+document.getElementById('itemSelect').addEventListener('change', e => {
+    loadItem(e.target.value)
+})
+
+// Initial load
+loadItem(document.getElementById('itemSelect').value)
