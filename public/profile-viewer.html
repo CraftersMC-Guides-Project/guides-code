@@ -763,7 +763,12 @@
         function formatDate(timestamp) {
             if (!timestamp) return 'N/A';
             try {
-                const date = new Date(timestamp);
+                // If timestamp is less than a reasonable millisecond value, assume it's in seconds
+                let ms = timestamp;
+                if (timestamp < 10000000000) {
+                    ms = timestamp * 1000;
+                }
+                const date = new Date(ms);
                 return date.toLocaleString();
             } catch {
                 return timestamp;
@@ -1166,7 +1171,7 @@
                 ['Cute Name', profileData.cuteName, 'string'],
                 ['Game Mode', profileData.gameMode, 'string'],
                 ['Profile ID', profileData.id?.substring(0, 12) + '...', 'string'],
-                ['Created At', formatDate(profileData.createdAt * 1000), 'date']
+                ['Created At', formatDate(profileData.createdAt), 'date']
             ]);
 
             // Banking
