@@ -897,6 +897,7 @@
                 btn.innerHTML = `<i class="fas fa-user"></i> ${displayName}`;
                 btn.onclick = () => {
                     selectedMemberId = memberId;
+                    console.log('Selected member:', memberId, 'Name:', displayName, 'Member data:', member);
                     displayMemberSelector();
                     displayAllData();
                 };
@@ -906,6 +907,7 @@
             // Set default to current player if not set
             if (!selectedMemberId && playerData?.uuid) {
                 selectedMemberId = playerData.uuid.replace(/-/g, '');
+                console.log('Default selectedMemberId set to:', selectedMemberId);
                 displayMemberSelector();
             }
         }
@@ -1227,6 +1229,7 @@
         function displayStatistics() {
             const container = document.getElementById('statisticsTab');
             const member = profileData?.members?.[selectedMemberId];
+            console.log('displayStatistics: selectedMemberId =', selectedMemberId, 'member =', member);
             if (!member) {
                 container.innerHTML = '<div class="loading"><i class="fas fa-chart-bar"></i><p>No statistics data available</p></div>';
                 return;
@@ -1363,6 +1366,7 @@
         function displaySlayerData() {
             const container = document.getElementById('slayersTab');
             const member = profileData?.members?.[selectedMemberId];
+            console.log('displaySlayerData: selectedMemberId =', selectedMemberId, 'slayerData =', member?.slayerData);
             if (!member?.slayerData) {
                 container.innerHTML = '<div class="loading"><i class="fas fa-dragon"></i><p>No slayer data available</p></div>';
                 return;
@@ -1423,6 +1427,7 @@
         function displayFarmingData() {
             const container = document.getElementById('farmingTab');
             const member = profileData?.members?.[selectedMemberId];
+            console.log('displayFarmingData: selectedMemberId =', selectedMemberId, 'member =', member);
             if (!member) {
                 container.innerHTML = '<div class="loading"><i class="fas fa-tractor"></i><p>No farming data available</p></div>';
                 return;
