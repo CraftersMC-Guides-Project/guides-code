@@ -1,17 +1,21 @@
-export async function onRequest() {
+export async function onRequest({ env }) {
   const res = await fetch(
     'https://api.craftersmc.net/v1/skyblock/bazaar/items',
     {
       headers: {
         'User-Agent': 'Bazaar-Tracker/1.0',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'x-api-key': env.CMC_API_KEY
       }
     }
   )
 
   if (!res.ok) {
     return new Response(
-      JSON.stringify({ error: 'Failed to fetch item list' }),
+      JSON.stringify({
+        error: 'Failed to fetch item list',
+        status: res.status
+      }),
       { status: 500 }
     )
   }
