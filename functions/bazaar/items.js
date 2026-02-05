@@ -5,7 +5,7 @@ export async function onRequest({ env }) {
       headers: {
         'User-Agent': 'Bazaar-Tracker/1.0',
         'Accept': 'application/json',
-        'x-api-key': env.CMC_API_KEY
+        'x-api-key': env.CMC_API_KEY || env.cmc_api_key || env['cmc-api-key']
       }
     }
   )
