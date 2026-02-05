@@ -28,15 +28,33 @@
             --card-shadow-color: rgba(0, 0, 0, 0.6);
             --card-bg-hover: #0b1220;
         }
+
         body {
             background: var(--body-bg) !important;
             color: var(--main-text-color) !important;
         }
+
         /* Ensure key elements are readable on dark background */
-        #scrollToTopBtn { background-color: var(--primary-color) !important; }
-        .card, .data-section, .api-panel { background-color: var(--card-bg-color) !important; border-color: var(--border-color) !important; box-shadow: 0 6px 18px var(--card-shadow-color) !important; }
-        #loader .material-icons { color: var(--primary-color) !important; }
-        .profile-btn.active, .tab.active { background: var(--primary-color) !important; }
+        #scrollToTopBtn {
+            background-color: var(--primary-color) !important;
+        }
+
+        .card,
+        .data-section,
+        .api-panel {
+            background-color: var(--card-bg-color) !important;
+            border-color: var(--border-color) !important;
+            box-shadow: 0 6px 18px var(--card-shadow-color) !important;
+        }
+
+        #loader .material-icons {
+            color: var(--primary-color) !important;
+        }
+
+        .profile-btn.active,
+        .tab.active {
+            background: var(--primary-color) !important;
+        }
     </style>
     <style>
         body {
@@ -421,6 +439,11 @@
             white-space: pre-wrap;
             word-break: break-all;
             color: var(--main-text-color);
+        }
+
+        .stats-grid {
+            display: flex;
+            justify-content: space-evenly;
         }
 
         .json-key {
@@ -824,10 +847,10 @@
             console.log('profileData.claimedNewYearCakes:', profileData?.claimedNewYearCakes);
             showStatus('Profile data loaded successfully!', 'success');
             showLoading(false);
-            
+
             // Display member selector
             displayMemberSelector();
-            
+
             displayAllData();
         }
 
@@ -881,7 +904,7 @@
                 const btn = document.createElement('button');
                 btn.className = 'profile-btn';
                 btn.style.cssText = 'padding: 8px 12px; font-size: 13px;';
-                
+
                 if (memberId === selectedMemberId) {
                     btn.classList.add('active');
                 }
@@ -926,7 +949,7 @@
             document.getElementById('minionsTab').innerHTML = '';
             document.getElementById('collectionsTab').innerHTML = '';
             document.getElementById('skillsTab').innerHTML = '';
-            
+
             console.log('displayAllData called', { playerExists: !!playerData, profileExists: !!profileData, selectedMemberId });
             displayPlayerData();
             displayProfileData();
@@ -1464,7 +1487,7 @@
                         contestData[key] = value.length > 0 ? value.join(', ') : 'N/A';
                     } else if (typeof value === 'object' && value !== null) {
                         // Format nested objects nicely
-                        const nested = Object.entries(value).map(([k, v]) => 
+                        const nested = Object.entries(value).map(([k, v]) =>
                             Array.isArray(v) ? `${k}: [${v.join(', ')}]` : `${k}: ${v}`
                         ).join(' | ');
                         contestData[key] = nested;
@@ -1472,7 +1495,7 @@
                         contestData[key] = value;
                     }
                 });
-                
+
                 const contestItems = Object.entries(contestData).map(([k, v]) => [k, v, 'string']);
                 html += createDataCard('fas fa-leaf', 'Farming Contest Data', contestItems);
             } else {
@@ -1750,7 +1773,7 @@
             }
 
             let html = '<div class="cards-grid">';
-            
+
             const timeKeywords = ['playtime', 'time', 'duration', 'age', 'created', 'updated', 'joined', 'lastSeen', 'lastLogin', 'firstLogin', 'secondsSinceUpdate'];
             const isTimeData = Object.keys(obj).some(key => timeKeywords.some(keyword => key.toLowerCase().includes(keyword)));
 
