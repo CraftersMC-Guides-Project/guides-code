@@ -857,6 +857,7 @@
 
         function displayAllData() {
             document.getElementById('mainData').style.display = 'block';
+            console.log('displayAllData called', { playerExists: !!playerData, profileExists: !!profileData });
             displayPlayerData();
             displayProfileData();
             displayOverview();
@@ -1170,7 +1171,8 @@
 
         function displayStatistics() {
             const container = document.getElementById('statisticsTab');
-            const member = profileData?.members?.[playerData?.uuid];
+            const normalizedUuid = playerData?.uuid?.replace(/-/g, '');
+            const member = profileData?.members?.[normalizedUuid];
             if (!member) {
                 container.innerHTML = '<div class="loading"><i class="fas fa-chart-bar"></i><p>No statistics data available</p></div>';
                 return;
@@ -1182,6 +1184,8 @@
             const cakesArray = (Array.isArray(playerData?.sbClaimedCakes) && playerData.sbClaimedCakes.length > 0)
                 ? playerData.sbClaimedCakes
                 : (Array.isArray(profileData?.claimedNewYearCakes) ? profileData.claimedNewYearCakes : []);
+
+            console.log('displayStatistics: cakesArray =', cakesArray);
 
             if (cakesArray.length > 0) {
                 html += createDataCard('fas fa-birthday-cake', 'Cakes Claimed', [
@@ -1304,7 +1308,8 @@
 
         function displaySlayerData() {
             const container = document.getElementById('slayersTab');
-            const member = profileData?.members?.[playerData?.uuid];
+            const normalizedUuid = playerData?.uuid?.replace(/-/g, '');
+            const member = profileData?.members?.[normalizedUuid];
             if (!member?.slayerData) {
                 container.innerHTML = '<div class="loading"><i class="fas fa-dragon"></i><p>No slayer data available</p></div>';
                 return;
@@ -1364,7 +1369,8 @@
 
         function displayFarmingData() {
             const container = document.getElementById('farmingTab');
-            const member = profileData?.members?.[playerData?.uuid];
+            const normalizedUuid = playerData?.uuid?.replace(/-/g, '');
+            const member = profileData?.members?.[normalizedUuid];
             if (!member) {
                 container.innerHTML = '<div class="loading"><i class="fas fa-tractor"></i><p>No farming data available</p></div>';
                 return;
