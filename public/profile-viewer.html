@@ -1029,9 +1029,8 @@
             `;
 
             // Quick stats
-            if (profileData.members) {
-                const memberId = Object.keys(profileData.members)[0];
-                const member = profileData.members[memberId];
+            if (profileData.members && selectedMemberId) {
+                const member = profileData.members[selectedMemberId];
 
                 if (member) {
                     html += `
@@ -1039,7 +1038,7 @@
                             <h2><i class="fas fa-chart-line"></i> Quick Stats</h2>
                             <div class="stats-grid">
                                 <div class="stat-box">
-                                    <div class="stat-value">${formatNumber(member.slayerData?.killedSlayer || 0)}</div>
+                                    <div class="stat-value">${formatNumber(member.slayerData?.killedZombieSlayer || 0)}</div>
                                     <div class="stat-label">Slayers Killed</div>
                                 </div>
                                 <div class="stat-box">
@@ -1144,7 +1143,7 @@
                 ['Cute Name', profileData.cuteName, 'string'],
                 ['Game Mode', profileData.gameMode, 'string'],
                 ['Profile ID', profileData.id?.substring(0, 12) + '...', 'string'],
-                ['Deleted At', formatDate(profileData.deletedAt), 'date']
+                ['Created At', formatDate(profileData.createdAt * 1000), 'date']
             ]);
 
             // Banking
