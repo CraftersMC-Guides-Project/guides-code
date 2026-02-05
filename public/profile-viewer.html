@@ -784,6 +784,7 @@
             }
 
             playerData = data;
+            console.log('playerData.sbClaimedCakes:', playerData?.sbClaimedCakes);
             showStatus('Player data loaded successfully!', 'success');
 
             // Display profiles if available
@@ -819,6 +820,7 @@
             }
 
             profileData = data;
+            console.log('profileData.claimedNewYearCakes:', profileData?.claimedNewYearCakes);
             showStatus('Profile data loaded successfully!', 'success');
             showLoading(false);
             displayAllData();
@@ -1176,11 +1178,20 @@
 
             let html = '<div class="cards-grid">';
 
-            // Cakes Claimed
-            if (playerData.sbClaimedCakes) {
+            // Cakes Claimed (use player data, fall back to profile.claimedNewYearCakes)
+            const cakesArray = (Array.isArray(playerData?.sbClaimedCakes) && playerData.sbClaimedCakes.length > 0)
+                ? playerData.sbClaimedCakes
+                : (Array.isArray(profileData?.claimedNewYearCakes) ? profileData.claimedNewYearCakes : []);
+
+            if (cakesArray.length > 0) {
                 html += createDataCard('fas fa-birthday-cake', 'Cakes Claimed', [
-                    ['Total Cakes', formatNumber(playerData.sbClaimedCakes.length), 'number'],
-                    ['Cake Years', playerData.sbClaimedCakes.join(', '), 'string']
+                    ['Total Cakes', formatNumber(cakesArray.length), 'number'],
+                    ['Cake Years', cakesArray.join(', '), 'string']
+                ]);
+            } else {
+                html += createDataCard('fas fa-birthday-cake', 'Cakes Claimed', [
+                    ['Total Cakes', '0', 'number'],
+                    ['Cake Years', 'None', 'string']
                 ]);
             }
 
