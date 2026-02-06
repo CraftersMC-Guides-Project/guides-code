@@ -122,8 +122,8 @@ const collectionsData = {
             players: [
                 { rank: 1, name: "Fallen1sec", score: "1.1M+" },
                 { rank: 2, name: "HueDisNwPhn", score: "756K+" },
-                { rank: 3, name: "Aryaan045", score: "606K+" },
-                { rank: 4, name: "Taranpreet3916", score: "601K+" },
+                { rank: 3, name: "Taranpreet3916", score: "737K+" },
+                { rank: 4, name: "Aryaan045", score: "606K+" },
                 { rank: 5, name: "DRONZAR_OP", score: "305K+" },
                 { rank: 6, name: "hhhuuuhh", score: "183K+" },
                 { rank: 7, name: "Unknown", score: "N/A" },
