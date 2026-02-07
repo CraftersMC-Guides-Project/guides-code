@@ -142,7 +142,8 @@ async function applyData(data, meta = { source: 'live', ts: Date.now() }) {
 
     //setText('activePlayers', playerCount);
     document.getElementById('activePlayers').innerHTML = `<div class="glowy-glowy-circle-wooooooo"></div> ${playerCount}`;
-    setText('activePlayersSmall', `Max: ${maxPlayerCount}`);
+    document.getElementById('activePlayersSmall').innerHTML = `Max: ${maxPlayerCount}`;
+    document.querySelector(':root').style.setProperty('--online-colour', maintenance === 'Full Maintenance' ? '#dc3545' : '#28a745');
 
     setText('networkStatus', maintenance);
     setText('whitelistRank', `Whitelist: ${data.whitelistRank ?? '—'}`);
@@ -154,7 +155,7 @@ async function applyData(data, meta = { source: 'live', ts: Date.now() }) {
         const labelMap = await loadExternalLabelMap();
         const table = buildGamesTable(data.games, labelMap);
         const gamesDetails = document.createElement('details');
-        const summary = document.createElement('summary'); summary.textContent = 'Games';
+        const summary = document.createElement('summary'); summary.textContent = 'Specific player counts';
         const inner = document.createElement('div'); inner.className = 'details-content';
         inner.appendChild(table);
         const hint = document.createElement('div'); hint.className = 'small'; hint.style.margin = '12px'; hint.textContent = 'Player counts for each area';
