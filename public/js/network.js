@@ -165,9 +165,6 @@ async function applyData(data, meta = { source: 'live', ts: Date.now() }) {
         gamesDetails.appendChild(summary); gamesDetails.appendChild(inner);
         detailsContainer.appendChild(gamesDetails);
     }
-
-    const mainDetails = document.createElement('details');
-    detailsContainer.appendChild(mainDetails);
 }
 
 async function fetchData(force = false) {
