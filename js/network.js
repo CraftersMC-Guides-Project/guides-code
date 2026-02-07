@@ -158,11 +158,7 @@ async function applyData(data, meta = { source: 'live', ts: Date.now() }) {
         inner.appendChild(table);
         const hint = document.createElement('div'); hint.className = 'small'; hint.style.marginTop = '8px'; hint.textContent = 'Player counts for each area';
         inner.appendChild(hint);
-        const raw = document.createElement('details');
-        const rs = document.createElement('summary'); rs.textContent = 'Raw games data';
         const pre = document.createElement('pre'); pre.textContent = JSON.stringify(data.games, null, 2);
-        raw.appendChild(rs); raw.appendChild(pre);
-        inner.appendChild(raw);
 
         gamesDetails.appendChild(summary); gamesDetails.appendChild(inner);
         detailsContainer.appendChild(gamesDetails);
