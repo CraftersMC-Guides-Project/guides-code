@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,6 +18,10 @@
       align-items: center;
       justify-content: center;
       background-color: #1a1a2e;
+    }
+
+    .right, .left {
+      margin: 0;
     }
 
     .container {
@@ -385,17 +390,16 @@
     }
 
     .sub-items-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      display: flex;
+/*      grid-template-columns: repeat(2, 1fr);*/
       gap: 4px;
       margin-top: 8px;
       margin-bottom: 8px;
+      justify-content: start;
     }
 
     .sub-item {
       text-align: center;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 4px;
       border-radius: 3px;
       cursor: pointer;
     }
@@ -416,8 +420,9 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      display: none;
     }
-    
+
     .status-badge {
       display: inline-block;
       padding: 2px 6px;
@@ -444,7 +449,7 @@
       color: #f44336;
       border: 1px solid #f44336;
     }
-    
+
     #apiStatus {
       min-height: 20px;
       margin-top: 10px;
@@ -452,26 +457,175 @@
       border-radius: 3px;
       font-size: 12px;
     }
+
+    .item-slot {
+      position: relative;
+      width: 48px;
+    }
+
+    .item-slot img {
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      image-rendering: pixelated;
+    }
+
+    /* ================= Tooltip Core ================= */
+
+    .tooltip {
+      position: absolute;
+      top: 0;
+      left: 60px;
+      display: block;
+      z-index: 10;
+      box-sizing: content-box;
+      font-family: monospace;
+    }
+
+    .mc-frame {
+      position: relative;
+      padding: 10px;
+      background: linear-gradient(#1a0f1f, #120915);
+      color: #dcdcdc;
+      font-size: 14px;
+      line-height: 1.3;
+      width: 184px;
+      height: calc(90% - 2px);
+      box-sizing: content-box;
+      min-height: 190px;
+    }
+
+    .mc-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      height: 190px;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* ================= Corners ================= */
+
+    .mc-corner {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      z-index: 3;
+    }
+
+    .mc-corner.tl {
+      top: 0;
+      left: 0;
+      background: #000;
+    }
+
+    .mc-corner.tr {
+      top: 0;
+      right: 0px;
+      background: #000;
+    }
+
+    .mc-corner.bl {
+      bottom: 0;
+      left: 0;
+      background: #000;
+    }
+
+    .mc-corner.br {
+      bottom: 0;
+      right: 0;
+      background: #000;
+    }
+
+    /* ================= Edges ================= */
+
+    .mc-edge {
+      position: absolute;
+      z-index: 1;
+      background: #2c0863;
+    }
+
+    .mc-edge.top {
+      top: 0;
+      left: 2px;
+      right: 4px;
+      height: 2px;
+      box-shadow: 0 -2px 0 #000;
+      width: 198.5px;
+    }
+
+    .mc-edge.bottom {
+      bottom: 2px;
+      left: 2px;
+      right: 4px;
+      height: 2px;
+      box-shadow: 0 2px 0 #000;
+      width: 198.5px;
+    }
+
+    .mc-edge.left {
+      top: 2px;
+      bottom: 4px;
+      left: 0;
+      width: 2px;
+      height: 207.5px;
+      box-shadow: -2px 0 0 #000;
+    }
+
+    .mc-edge.right {
+      top: 2px;
+      bottom: 4px;
+      right: 0px;
+      width: 2px;
+      height: 207px;
+      box-shadow: 2px 0 0 #000;
+    }
+
+    /* ================= Text Styling ================= */
+
+    .title {
+      color: #55ff55;
+      font-weight: bold;
+    }
+
+    .rarity {
+      color: #55ff55;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .row {
+      display: flex;
+      gap: 4px;
+    }
+
+    .gold {
+      color: #ffaa00;
+    }
+
+    .muted {
+      color: #aaaaaa;
+      font-size: 13px;
+      width: max-content;
+    }
+
+    .spacer {
+      height: 6px;
+    }
+
+    .cta {
+      color: #ffff55;
+      margin-top: 6px;
+      width: max-content;
+    }
+
+    .tooltip {
+      display: none;
+    }
   </style>
 </head>
-<body>
-  <!-- API Settings Panel -->
-  <div class="api-panel">
-    <div class="api-input-group">
-      <label for="apiKey">API Key:</label>
-      <input type="password" id="apiKey" placeholder="Enter your CraftersMC API key">
-    </div>
-    <div class="api-input-group">
-      <label for="proxyUrl">Cloudflare Worker URL:</label>
-      <input type="text" id="proxyUrl" placeholder="https://your-worker.workers.dev">
-      <small style="color: #94a3b8; font-size: 11px;">
-        Your Cloudflare Worker URL (created at workers.cloudflare.com)
-      </small>
-    </div>
-    <button class="api-button" onclick="saveApiSettings()">Save Settings</button>
-    <div id="apiStatus"></div>
-  </div>
 
+<body>
   <div class="contain">
     <div class="catnav">
       <div id="farming" class="cat active"><img src="assets/ui-icons/ui_bazaar_category_farming_active.png"></div>
@@ -508,19 +662,16 @@
     </div>
   </div>
 
+  <!-- API Proxy Client Library -->
+  <script src="js/api-proxy-client.js"></script>
+  
   <script>
     // ==================== CONFIGURATION ====================
-    // Default proxy URL (update this after creating your Cloudflare Worker)
-    const DEFAULT_PROXY_URL = 'https://api-proxy.craftersmcguides.workers.dev';
-    
+    // Default proxy URL — use local Pages Function route (same-origin)
+    // Using `APIProxyClient` default configuration (no explicit proxy URL)
+
     // Item ID mapping for API calls
     const itemIdMap = {};
-
-    // API Configuration
-    let apiSettings = {
-      apiKey: '',
-      proxyUrl: DEFAULT_PROXY_URL
-    };
 
     // Cache for API responses
     const bazaarCache = new Map();
@@ -530,11 +681,13 @@
         name: "Wheat Items",
         img: "Wheat.webp",
         subItems: [
-          { name: "Wheat", img: "Wheat.webp" },
-          { name: "Enchanted Haybale", img: "Enchanted_Hay_Bale.webp" },
-          { name: "Wheat Seeds", img: "Wheat_Seeds.webp" },
-          { name: "Enchanted Wheat Seeds", img: "100px-Enchanted_Wheat_Seeds.webp" },
-          { name: "Box of Seeds", img: "100px-Box_of_Seeds.webp" }
+          { name: "Wheat", img: "Wheat.webp", id: "wheat" },
+          { name: "Enchanted Wheat", img: "Enchanted_Wheat.webp", id: "enchanted_wheat" },
+          { name: "Enchanted Bread", img: "Enchanted_Bread.webp", id: "enchanted_bread" },
+          { name: "Haybale", img: "Hay_Bale.webp", id: "hay_block" },
+          { name: "Enchanted Haybale", img: "Enchanted_Hay_Bale.webp", id: "enchanted_hay_bale_new" },
+          { name: "Wheat Seeds", img: "Wheat_Seeds.webp",id: "wheat_seeds" },
+          { name: "Box of Seeds", img: "100px-Box_of_Seeds.webp", id: "" }
         ]
       },
       {
@@ -578,7 +731,7 @@
         name: "Melon Items",
         img: "Melon.webp",
         subItems: [
-          { name: "Melon", img: "Melon.webp" },
+          { name: "Melon", img: "Melon.webp", id: "melon_slice" },
           { name: "Enchanted Melon", img: "Enchanted_Melon.png" },
           { name: "Melon Block", img: "Melon_Block.png" },
           { name: "Enchanted Melon Block", img: "Enchanted_Melon_Block.webp" }
@@ -591,9 +744,11 @@
           { name: "Brown Mushroom", img: "Minecraft_items_brown_mushroom.png" },
           { name: "Enchanted Brown Mushroom", img: "Enchanted_Brown_Mushroom.webp" },
           { name: "Brown Mushroom Block", img: "Brown_Mushroom_Block.png" },
+          { name: "Enchanted Brown Mushroom Block", img: "Enchanted_Brown_Mushroom_Block.png" },
           { name: "Red Mushroom", img: "Minecraft_items_red_mushroom.png" },
           { name: "Enchanted Red Mushroom", img: "Enchanted_Red_Mushroom.webp" },
-          { name: "Red Mushroom Block", img: "Red_Mushroom_Block.png" }
+          { name: "Red Mushroom Block", img: "Red_Mushroom_Block.png" },
+          { name: "Enchanted Red Mushroom Block", img: "Enchanted_Red_Mushroom_Block.webp" },
         ]
       },
       {
@@ -631,7 +786,7 @@
         subItems: [
           { name: "Leather", img: "Leather.png" },
           { name: "Enchanted Leather", img: "Enchanted_Leather.png" },
-          { name: "Raw Beef", img: "Raw_Beef.png" },
+          { name: "Raw Beef", img: "Raw_Beef.png", id: "beef" },
           { name: "Enchanted Raw Beef", img: "Enchanted_Raw_Beef.png" }
         ]
       },
@@ -639,7 +794,7 @@
         name: "Raw Porkchop Items",
         img: "Raw_Porkchop.webp",
         subItems: [
-          { name: "Raw Porkchop", img: "Raw_Porkchop.webp" },
+          { name: "Raw Porkchop", img: "Raw_Porkchop.webp", id: "porkchop" },
           { name: "Enchanted Raw Porkchop", img: "Enchanted_Raw_Porkchop.webp" },
           { name: "Enchanted Cooked Porkchop", img: "Enchanted_Cooked_Porkchop.webp" }
         ]
@@ -648,7 +803,7 @@
         name: "Raw Chicken Items",
         img: "Raw_Chicken.png",
         subItems: [
-          { name: "Raw Chicken", img: "Raw_Chicken.png" },
+          { name: "Raw Chicken", img: "Raw_Chicken.png", id: "chicken" },
           { name: "Enchanted Raw Chicken", img: "Enchanted_Raw_Chicken.webp" },
           { name: "Feather", img: "Feather.png" },
           { name: "Enchanted Feather", img: "Enchanted_Feather.webp" },
@@ -672,7 +827,7 @@
         name: "Raw Mutton Items",
         img: "Raw_Mutton.webp",
         subItems: [
-          { name: "Raw Mutton", img: "Raw_Mutton.webp" },
+          { name: "Raw Mutton", img: "Raw_Mutton.webp", id: "mutton" },
           { name: "Enchanted Raw Mutton", img: "Enchanted_Raw_Mutton.png" },
           { name: "Enchanted Cooked Mutton", img: "Enchanted_Cooked_Mutton.png" },
           { name: "White Wool", img: "Wool.png" },
@@ -684,7 +839,7 @@
         img: "Raw_Rabbit.png",
         subItems: [
           { name: "Raw Rabbit", img: "Raw_Rabbit.png" },
-          { name: "Enchanted Raw Rabbit", img: "Enchanted_Raw_Rabbit.png" },
+          { name: "Enchanted Raw Rabbit", img: "Enchanted_Raw_Rabbit.png", id: "rabbit" },
           { name: "Rabbit Foot", img: "Rabbit's_Foot_JE3_BE2.webp" },
           { name: "Enchanted Rabbit Foot", img: "Enchanted_Rabbit_Foot.png" },
           { name: "Rabbit Hide", img: "Rabbit_Hide_JE3_BE2.webp" },
@@ -728,7 +883,7 @@
         img: "Iron_Ingot.webp",
         subItems: [
           { name: "Iron Ingot", img: "Iron_Ingot.webp" },
-          { name: "Enchanted Iron", img: "Enchanted_Iron_Ingot.webp" },
+          { name: "Enchanted Iron Ingot", img: "Enchanted_Iron_Ingot.webp" },
           { name: "Enchanted Iron Block", img: "Enchanted_Iron_Block.webp" }
         ]
       },
@@ -737,7 +892,7 @@
         img: "Gold_Ingot.png",
         subItems: [
           { name: "Gold Ingot", img: "Gold_Ingot.png" },
-          { name: "Enchanted Gold", img: "Enchanted_Gold.png" },
+          { name: "Enchanted Gold Ingot", img: "Enchanted_Gold.png" },
           { name: "Enchanted Gold Block", img: "Enchanted_Gold_Block.png" }
         ]
       },
@@ -755,7 +910,7 @@
         img: "Lapis_Lazuli.webp",
         subItems: [
           { name: "Lapis Lazuli", img: "Lapis_Lazuli.webp" },
-          { name: "Enchanted Lapis", img: "Enchanted_Lapis_Lazuli.webp" },
+          { name: "Enchanted Lapis Lazuli", img: "Enchanted_Lapis_Lazuli.webp" },
           { name: "Enchanted Lapis Block", img: "Enchanted_Lapis_Block.webp" }
         ]
       },
@@ -772,8 +927,8 @@
         name: "Redstone Dust Items",
         img: "Redstone_Dust.webp",
         subItems: [
-          { name: "Redstone Dust", img: "Redstone_Dust.webp" },
-          { name: "Enchanted Redstone", img: "Enchanted_Redstone_Dust.png" },
+          { name: "Redstone", img: "Redstone_Dust.webp" },
+          { name: "Enchanted Redstone Dust", img: "Enchanted_Redstone_Dust.png" },
           { name: "Enchanted Redstone Block", img: "Enchanted_Redstone_Block.webp" }
         ]
       },
@@ -793,6 +948,14 @@
           { name: "Packed Ice", img: "Packed_Ice.png" },
           { name: "Enchanted Ice", img: "Enchanted_Ice.webp" },
           { name: "Enchanted Packed Ice", img: "Enchanted_Packed_Ice.webp" }
+        ]
+      },
+      {
+        name: "End Items",
+        img: "End_Stone.png",
+        subItems: [
+          { name: "End Stone", img: "End_Stone.png" },
+          { name: "Enchanted End Stone", img: "Enchanted_End_Stone.webp" }
         ]
       }
     ];
@@ -832,7 +995,7 @@
         subItems: [
           { name: "Gunpowder", img: "Gunpowder.webp" },
           { name: "Enchanted Gunpowder", img: "Enchanted_Gunpowder.webp" },
-          { name: "Enchanted Firework", img: "Enchanted_Firework.png" },
+          { name: "Enchanted Fireworks", img: "Enchanted_Firework.png" },
         ]
       },
       {
@@ -840,7 +1003,7 @@
         img: "Slime_Ball.webp",
         subItems: [
           { name: "Slime Ball", img: "Slime_Ball.webp" },
-          { name: "Enchanted Slime Ball", img: "Enchanted_Slime_Ball.png" },
+          { name: "Enchanted Slime Ball", img: "Enchanted_Slime_Ball.png", id: "enchanted_slimeball" },
           { name: "Enchanted Slime Block", img: "Enchanted_Slime_Block.png" }
         ]
       },
@@ -865,7 +1028,7 @@
         name: "Envoy's Horn Items",
         img: "100px-Envoy's_Horn.webp",
         subItems: [
-          { name: "Envoy's Horn", img: "100px-Envoy's_Horn.webp" },
+          { name: "Envoy's Horn", img: "100px-Envoy's_Horn.webp", id: "envoy_horns" },
           { name: "Fire Fragment", img: "Fire_Fragment.webp" }
         ]
       },
@@ -959,33 +1122,40 @@
         img: "100px-Enchanted_Book.gif",
         subItems: [
           {
+            name: "Replenish Enchant Book",
+            img: "100px-Enchanted_Book.gif",
+            id: "replenish_1",
+            subItems: []
+          },
+          {
+            name: "Delicate V Enchant Book",
+            img: "100px-Enchanted_Book.gif",
+            id: "Delicate_5",
+            subItems: []
+          },
+          {
             name: "Critical Enchant Book Items",
             img: "100px-Enchanted_Book.gif",
             subItems: [
-              { name: "Critical VI Enchant Book", img: "100px-Enchanted_Book.gif" },
-              { name: "Critical VII Enchant Book", img: "100px-Enchanted_Book.gif" }
+              { name: "Critical VI Enchant Book", img: "100px-Enchanted_Book.gif", id: "critical_6" },
+              { name: "Critical VII Enchant Book", img: "100px-Enchanted_Book.gif", id: "critical_7" }
             ]
-          },
-          {
-            name: "Replenish Enchant Book",
-            img: "100px-Enchanted_Book.gif",
-            subItems: []
           },
           {
             name: "Smite Enchant Book Items",
             img: "100px-Enchanted_Book.gif",
             subItems: [
-              { name: "Smite VI Enchant Book", img: "100px-Enchanted_Book.gif" },
-              { name: "Smite VII Enchant Book", img: "100px-Enchanted_Book.gif" }
+              { name: "Smite VI Enchant Book", img: "100px-Enchanted_Book.gif", id: "smite_6" },
+              { name: "Smite VII Enchant Book", img: "100px-Enchanted_Book.gif", id: "smite_7" }
             ]
           },
           {
             name: "Respite Enchant Book Items",
             img: "100px-Enchanted_Book.gif",
             subItems: [
-              { name: "Respite I Enchant Book", img: "100px-Enchanted_Book.gif" },
-              { name: "Respite II Enchant Book", img: "100px-Enchanted_Book.gif" },
-              { name: "Respite III Enchant Book", img: "100px-Enchanted_Book.gif" }
+              { name: "Respite I Enchant Book", img: "100px-Enchanted_Book.gif", id: "respite_1" },
+              { name: "Respite II Enchant Book", img: "100px-Enchanted_Book.gif", id: "respite_2" },
+              { name: "Respite III Enchant Book", img: "100px-Enchanted_Book.gif", id: "respite_3" }
             ]
           },
           {
@@ -1010,7 +1180,7 @@
         name: "Item Upgrades",
         img: "Hot_Potato_Book.webp",
         subItems: [
-          { name: "Hot Potato Book", img: "Hot_Potato_Book.webp" },
+          { name: "Hot Potato Book", img: "Hot_Potato_Book.webp", id: "hot_potato" },
           { name: "The Art Of War", img: "100px-The_Art_of_War.png" },
           { name: "Farming For Dummies", img: "100px-Farming_for_Dummies.webp" },
         ]
@@ -1019,7 +1189,7 @@
         name: "Bottle o' Enchanting Items",
         img: "Bottle_o'_Enchanting.webp",
         subItems: [
-          { name: "Bottle o' Enchanting", img: "Bottle_o'_Enchanting.webp" },
+          { name: "Bottle o' Enchanting", img: "Bottle_o'_Enchanting.webp", id: "experience_bottle" },
           { name: "Grand Experience Bottle", img: "Grand_Experience_Bottle.webp" },
           { name: "Titanic Experience Bottle", img: "Titanic_Experience_Bottle.webp" },
           { name: "Colossal Experience Bottle", img: "Colossal_Experience_Bottle.webp" },
@@ -1041,7 +1211,7 @@
       { name: "Cobblestone Minion Tiers", img: "cobblestone-minion/Cobblestone_Minion.png", subItems: [] },
       { name: "Cocoa Minion Tiers", img: "cocoa-minion/Cocoa_Beans_Minion.png", subItems: [] }
     ];
-    
+
     // ==================== CORE FUNCTIONS ====================
     // Format currency
     function formatCurrency(amount) {
@@ -1069,15 +1239,15 @@
       const seed = Array.from(itemId).reduce((acc, char) => acc + char.charCodeAt(0), 0);
       const basePrice = (seed % 500) + 50;
       const variation = Math.sin(seed) * 20;
-      
+
       return {
-        buyTopEntries: [{ 
-          price: basePrice + variation, 
-          quantity: Math.floor(Math.random() * 5000) + 1000 
+        buyTopEntries: [{
+          price: basePrice + variation,
+          quantity: Math.floor(Math.random() * 5000) + 1000
         }],
-        sellTopEntries: [{ 
-          price: basePrice + variation + (Math.random() * 10 + 5), 
-          quantity: Math.floor(Math.random() * 5000) + 1000 
+        sellTopEntries: [{
+          price: basePrice + variation + (Math.random() * 10 + 5),
+          quantity: Math.floor(Math.random() * 5000) + 1000
         }],
         weeklyAveragePrice: basePrice + variation + 5,
         buyVolume: Math.floor(Math.random() * 50000) + 10000,
@@ -1086,93 +1256,25 @@
       };
     }
 
-    // Fetch bazaar data through Cloudflare Worker - FIXED VERSION
-async function fetchBazaarData(itemName) {
-  const itemId = getItemId(itemName);
-  console.log(`Fetching data for: ${itemName} (ID: ${itemId})`);
-  
-  // Check cache first (30 second cache for live data, 5 minutes for mock)
-  const cached = bazaarCache.get(itemId);
-  if (cached) {
-    const cacheTime = cached.data._isMock ? 300000 : 30000; // 5 min vs 30 sec
-    if (Date.now() - cached.timestamp < cacheTime) {
-      console.log(`Using cached data for ${itemId}`);
-      return cached.data;
-    }
-  }
+    // Initialize API Proxy Client (use built-in default)
+    let apiClient = new APIProxyClient();
 
-  if (!apiSettings.apiKey) {
-    console.log(`No API key set, using mock data for ${itemId}`);
-    const mockData = generateMockData(itemId);
-    bazaarCache.set(itemId, { data: mockData, timestamp: Date.now() });
-    return mockData;
-  }
+    // Fetch bazaar data through Cloudflare Function
+    async function fetchBazaarData(itemName) {
+      const itemId = getItemId(itemName);
+      console.log(`Fetching data for: ${itemName} (ID: ${itemId})`);
 
-  if (!apiSettings.proxyUrl) {
-    console.log(`No proxy URL set, using mock data for ${itemId}`);
-    const mockData = generateMockData(itemId);
-    bazaarCache.set(itemId, { data: mockData, timestamp: Date.now() });
-    return mockData;
-  }
-
-  try {
-    // Build the proxy URL - FIXED: Direct /itemId path
-    const proxyUrl = apiSettings.proxyUrl.replace(/\/$/, ''); // Remove trailing slash
-    
-    // IMPORTANT: Use direct path /wheat NOT /bazaar/wheat
-    const url = `${proxyUrl}/${itemId}`;
-    
-    console.log(`Making request to: ${url}`);
-    
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'X-API-Key': apiSettings.apiKey,
-        'Content-Type': 'application/json'
-      }
-    });
-    
-    console.log(`Response status: ${response.status}`);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`HTTP ${response.status}: ${errorText}`);
-      
-      // If it's a 400 error, it might be because of wrong endpoint format
-      if (response.status === 400 && errorText.includes('Missing identifier')) {
-        console.log('Trying legacy format...');
-        throw new Error('Trying direct bazaar endpoint');
-      } else {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      try {
+        const data = await apiClient.getBazaarItem(itemId);
+        console.log(`Successfully fetched data for ${itemId}`, data);
+        return data;
+      } catch (error) {
+        console.warn(`Failed to fetch ${itemId} via Cloudflare Function, using mock data:`, error.message);
+        // Fallback to mock data
+        const mockData = generateMockData(itemId);
+        return mockData;
       }
     }
-    
-    const data = await response.json();
-    console.log(`Successfully fetched data for ${itemId}`, data);
-    
-    // Check if it's an error response from the proxy
-    if (data.error && data.error.includes('Missing identifier')) {
-      console.error(`Wrong endpoint format for ${itemId}:`, data.error);
-      throw new Error(`Endpoint format issue: ${data.error}`);
-    }
-    
-    // Cache successful response
-    bazaarCache.set(itemId, {
-      data: data,
-      timestamp: Date.now()
-    });
-    
-    return data;
-    
-  } catch (error) {
-    console.warn(`Failed to fetch ${itemId} via proxy, using mock data:`, error.message);
-    
-    // Fallback to mock data
-    const mockData = generateMockData(itemId);
-    bazaarCache.set(itemId, { data: mockData, timestamp: Date.now() });
-    return mockData;
-  }
-}
 
     // Generate tooltip HTML
     async function generateTooltipHTML(item) {
@@ -1186,7 +1288,7 @@ async function fetchBazaarData(itemName) {
         `).join('');
 
         return `
-          <span class="item-title">${item.name}</span>
+          <div class="title">${item.name}</div>
           <div class="sub-items-grid">
             ${subItemsGrid}
           </div>
@@ -1196,75 +1298,68 @@ async function fetchBazaarData(itemName) {
 
       // For single items, fetch API data
       const bazaarData = await fetchBazaarData(item.name);
-      
+
       const isMockData = bazaarData._isMock === true;
       const hasError = bazaarData.error || !bazaarData.buyTopEntries;
-      
+
       const buyPrice = bazaarData.buyTopEntries?.[0]?.price || 0;
       const sellPrice = bazaarData.sellTopEntries?.[0]?.price || 0;
       const weeklyAvg = bazaarData.weeklyAveragePrice || 0;
       const buyVolume = bazaarData.buyVolume || 0;
       const sellVolume = bazaarData.sellVolume || 0;
-      
+
       const priceDiff = sellPrice - buyPrice;
       const diffPercent = buyPrice > 0 ? (priceDiff / buyPrice * 100) : 0;
       const diffClass = priceDiff > 0 ? 'price-up' : priceDiff < 0 ? 'price-down' : '';
-      
-      let html = `<span class="item-title">${item.name}</span>`;
-      
+
+      let html = `<div class="title">${item.name}</div><div class="rarity">${item.rarity || ''}</div>`;
+
       // Status badge
-      if (hasError) {
-        html += `<div class="status-badge status-error">API Error</div>`;
-      } else if (isMockData) {
-        html += `<div class="status-badge status-mock">Mock Data</div>`;
-      } else {
-        html += `<div class="status-badge status-live">Live Data</div>`;
-      }
-      
+      // if (hasError) {
+      //   html += `<div class="status-badge status-error">API Error</div>`;
+      // } else if (isMockData) {
+      //   html += `<div class="status-badge status-mock">Mock Data</div>`;
+      // } else {
+      //   html += `<div class="status-badge status-live">Live Data</div>`;
+      // }
+
       html += `
-        <div class="item-data">
-          <div class="data-row">
-            <span class="data-label">Buy Price:</span>
-            <span class="data-value">${formatCurrency(buyPrice)}</span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">Sell Price:</span>
-            <span class="data-value">${formatCurrency(sellPrice)}</span>
-          </div>
+        <div class="spacer"></div>
+
+                <div class="row">
+                    <span>Buy price:</span>
+                    <span class="gold">${formatCurrency(buyPrice)}</span>
+                </div>
+                <div class="muted">Supply volume: ${formatNumber(sellVolume)}</div>
+
+                <div class="spacer"></div>
+
+                <div class="row">
+                    <span>Sell price:</span>
+                    <span class="gold">${formatCurrency(sellPrice)}</span>
+                </div>
+                <div class="muted">Demand volume: ${formatNumber(buyVolume)}</div>
+
+                <div class="spacer"></div>
+
+                <div class="row">
+                    <span>7d Avg. price:</span>
+                    <span class="gold">${formatCurrency(weeklyAvg)}</span>
+                </div>
+
+                <div class="cta">Click to view details!</div>
       `;
-      
-      if (!hasError) {
-        html += `
-          <div class="data-row">
-            <span class="data-label">Instant Profit:</span>
-            <span class="data-value ${diffClass}">${formatCurrency(priceDiff)} (${diffPercent.toFixed(1)}%)</span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">7-Day Average:</span>
-            <span class="data-value">${formatCurrency(weeklyAvg)}</span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">Buy Volume:</span>
-            <span class="data-value">${formatNumber(buyVolume)}</span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">Sell Volume:</span>
-            <span class="data-value">${formatNumber(sellVolume)}</span>
-          </div>
-        `;
-      }
-      
-      if (isMockData) {
-        html += `
-          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #4b267a;">
-            <div style="color: #ff9800; font-size: 10px; text-align: center;">
-              Enter API key and Cloudflare Worker URL to get live data
-            </div>
-          </div>
-        `;
-      }
-      
-      html += `</div>`;
+
+      // if (isMockData) {
+      //   html += `
+      //     <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #4b267a;">
+      //       <div style="color: #ff9800; font-size: 10px; text-align: center;">
+      //         Enter API key and Cloudflare Worker URL to get live data
+      //       </div>
+      //     </div>
+      //   `;
+      // }
+
       return html;
     }
 
@@ -1273,29 +1368,46 @@ async function fetchBazaarData(itemName) {
     async function fillCells(itemsList) {
       const mainGrid = document.getElementById('mainGrid');
       const hotbarGrid = document.getElementById('hotbarGrid');
-      
+
       mainGrid.innerHTML = '';
       hotbarGrid.innerHTML = '';
-      
+
       // Fill main grid (36 cells)
       for (let i = 0; i < 36; i++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
-        
+
         if (i < itemsList.length) {
           const item = itemsList[i];
           cell.innerHTML = `
             <div class="item-with-sub">
               <img src="img/${item.img}" alt="${item.name}" 
                    onerror="this.src='https://via.placeholder.com/24/8b8b8b/000?text=?'">
-              <div class="item-tooltip">
-                <div class="loading">Loading...</div>
+              <div class="tooltip">
+                <div class="mc-frame">
+
+            <!-- Corners -->
+            <div class="mc-corner tl"></div>
+            <div class="mc-corner tr"></div>
+            <div class="mc-corner bl"></div>
+            <div class="mc-corner br"></div>
+
+            <!-- Edges -->
+            <div class="mc-edge top"></div>
+            <div class="mc-edge bottom"></div>
+            <div class="mc-edge left"></div>
+            <div class="mc-edge right"></div>
+
+            <!-- Content -->
+            <div class="mc-content loading">
+            </div>
+            </div>
               </div>
             </div>
           `;
-          
+
           setupTooltip(cell, item);
-          
+
           // Click handler for items with subItems
           if (item.subItems && item.subItems.length > 0) {
             cell.addEventListener('click', () => {
@@ -1303,15 +1415,15 @@ async function fetchBazaarData(itemName) {
             });
           }
         }
-        
+
         mainGrid.appendChild(cell);
       }
-      
+
       // Fill hotbar (9 cells)
       for (let i = 0; i < 9; i++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
-        
+
         const itemIndex = 36 + i;
         if (itemIndex < itemsList.length) {
           const item = itemsList[itemIndex];
@@ -1319,21 +1431,38 @@ async function fetchBazaarData(itemName) {
             <div class="item-with-sub">
               <img src="img/${item.img}" alt="${item.name}" 
                    onerror="this.src='https://via.placeholder.com/24/8b8b8b/000?text=?'">
-              <div class="item-tooltip">
-                <div class="loading">Loading...</div>
+              <div class="tooltip">
+                <div class="mc-frame">
+
+            <!-- Corners -->
+            <div class="mc-corner tl"></div>
+            <div class="mc-corner tr"></div>
+            <div class="mc-corner bl"></div>
+            <div class="mc-corner br"></div>
+
+            <!-- Edges -->
+            <div class="mc-edge top"></div>
+            <div class="mc-edge bottom"></div>
+            <div class="mc-edge left"></div>
+            <div class="mc-edge right"></div>
+
+            <!-- Content -->
+            <div class="mc-content loading">
+            </div>
+            </div>
               </div>
             </div>
           `;
-          
+
           setupTooltip(cell, item);
-          
+
           if (item.subItems && item.subItems.length > 0) {
             cell.addEventListener('click', () => {
               fillCells(item.subItems);
             });
           }
         }
-        
+
         hotbarGrid.appendChild(cell);
       }
     }
@@ -1341,72 +1470,54 @@ async function fetchBazaarData(itemName) {
     // Setup tooltip for a cell
     function setupTooltip(cell, item) {
       const itemDiv = cell.querySelector('.item-with-sub');
-      const tooltip = itemDiv.querySelector('.item-tooltip');
-      
-      let tooltipTimeout;
-      
-      itemDiv.addEventListener('mouseenter', async function(e) {
-        clearTimeout(tooltipTimeout);
-        
-        tooltipTimeout = setTimeout(async () => {
-          tooltip.innerHTML = `<div class="loading">Loading market data...</div>`;
-          tooltip.style.display = "block";
-          
-          // Load data
-          const content = await generateTooltipHTML(item);
-          tooltip.innerHTML = content;
-          
-          // Setup sub-item click handlers
-          const subItems = tooltip.querySelectorAll('.sub-item');
-          subItems.forEach(subItem => {
-            subItem.addEventListener('click', function(e) {
-              e.stopPropagation();
-              try {
-                const itemData = JSON.parse(this.getAttribute('data-item').replace(/\\'/g, "'"));
-                if (itemData.subItems && itemData.subItems.length > 0) {
-                  fillCells(itemData.subItems);
-                } else {
-                  // Show single item tooltip
-                  setupTooltip(cell, itemData);
-                }
-              } catch (error) {
-                console.error('Error parsing sub-item data:', error);
-              }
-            });
-          });
-          
-          // Position tooltip
-          positionTooltip(cell, tooltip);
-        }, 300);
+      const tooltip = itemDiv.querySelector('.tooltip');
+      const contentBox = tooltip.querySelector('.mc-content');
+
+      let timeout;
+
+      itemDiv.addEventListener('mouseenter', () => {
+        clearTimeout(timeout);
+
+        timeout = setTimeout(async () => {
+          tooltip.style.display = 'block';
+          contentBox.className = 'mc-content loading';
+          contentBox.innerHTML = 'Loading market data...';
+
+          const html = await generateTooltipHTML(item);
+
+          contentBox.className = 'mc-content';
+          contentBox.innerHTML = html;
+        }, 150);
       });
-      
-      itemDiv.addEventListener('mouseleave', function() {
-        clearTimeout(tooltipTimeout);
-        tooltip.style.display = "none";
+
+      itemDiv.addEventListener('mouseleave', () => {
+        clearTimeout(timeout);
+        tooltip.style.display = 'none';
       });
     }
+
 
     // Position tooltip
     function positionTooltip(cell, tooltip) {
       const cellRect = cell.getBoundingClientRect();
       const tooltipRect = tooltip.getBoundingClientRect();
-      
+
       let left = cellRect.right + 10;
       let top = cellRect.top;
-      
+
       // Adjust if tooltip would go off screen
       if (left + tooltipRect.width > window.innerWidth - 10) {
         left = cellRect.left - tooltipRect.width - 10;
       }
-      
+
       if (top + tooltipRect.height > window.innerHeight - 10) {
         top = window.innerHeight - tooltipRect.height - 10;
       }
-      
+
       if (top < 10) {
         top = 10;
       }
-      
+
       tooltip.style.left = (left - cellRect.left) + 'px';
       tooltip.style.top = (top - cellRect.top) + 'px';
     }
@@ -1421,7 +1532,7 @@ async function fetchBazaarData(itemName) {
         special: specialItems,
         minion: minionItems
       };
-      
+
       Object.keys(categories).forEach(categoryId => {
         document.getElementById(categoryId).addEventListener('click', () => {
           document.querySelectorAll('.cat').forEach(cat => cat.classList.remove('active'));
@@ -1431,47 +1542,13 @@ async function fetchBazaarData(itemName) {
       });
     }
 
-    // ==================== API SETTINGS MANAGEMENT ====================
-    function saveApiSettings() {
-      apiSettings.apiKey = document.getElementById('apiKey').value.trim();
-      apiSettings.proxyUrl = document.getElementById('proxyUrl').value.trim();
-      
-      if (!apiSettings.proxyUrl) {
-        apiSettings.proxyUrl = DEFAULT_PROXY_URL;
-      }
-      
-      localStorage.setItem('bazaarApiSettings', JSON.stringify(apiSettings));
-      
-      // Clear cache
-      bazaarCache.clear();
-      
-      showStatus('Settings saved! Clear cache and using new settings.', 'success');
-      
-      // Refresh current view
+    // ==================== PAGE INITIALIZATION ====================
+    function initializePage() {
+      // API client is pre-configured with environment variables
+      console.log('API proxy client initialized');
       const activeCat = document.querySelector('.cat.active');
       if (activeCat) {
         activeCat.click();
-      }
-    }
-
-    function loadApiSettings() {
-      const saved = localStorage.getItem('bazaarApiSettings');
-      if (saved) {
-        try {
-          apiSettings = JSON.parse(saved);
-          
-          // Update UI
-          document.getElementById('apiKey').value = apiSettings.apiKey || '';
-          document.getElementById('proxyUrl').value = apiSettings.proxyUrl || DEFAULT_PROXY_URL;
-          
-          console.log('Loaded API settings:', apiSettings);
-        } catch (e) {
-          console.error('Error loading API settings:', e);
-          showStatus('Error loading saved settings', 'error');
-        }
-      } else {
-        // Set default
-        document.getElementById('proxyUrl').value = DEFAULT_PROXY_URL;
       }
     }
 
@@ -1479,7 +1556,7 @@ async function fetchBazaarData(itemName) {
       const statusDiv = document.getElementById('apiStatus');
       statusDiv.textContent = message;
       statusDiv.className = '';
-      
+
       if (type === 'error') {
         statusDiv.style.color = '#f87171';
         statusDiv.style.backgroundColor = '#fee2e2';
@@ -1493,7 +1570,7 @@ async function fetchBazaarData(itemName) {
         statusDiv.style.backgroundColor = 'transparent';
         statusDiv.style.border = 'none';
       }
-      
+
       // Auto-hide success messages after 5 seconds
       if (type === 'success') {
         setTimeout(() => {
@@ -1503,49 +1580,14 @@ async function fetchBazaarData(itemName) {
       }
     }
 
-    // Test the proxy connection
-    async function testProxyConnection() {
-      if (!apiSettings.apiKey || !apiSettings.proxyUrl) {
-        showStatus('Please enter API key and proxy URL first', 'error');
-        return;
-      }
-      
-      showStatus('Testing proxy connection...', 'info');
-      
-      try {
-        const proxyUrl = apiSettings.proxyUrl.replace(/\/$/, '');
-        const testUrl = `${proxyUrl}/wheat`;
-        
-        const response = await fetch(testUrl, {
-          method: 'GET',
-          headers: {
-            'X-API-Key': apiSettings.apiKey,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (data.error) {
-            showStatus(`Proxy error: ${data.error}`, 'error');
-          } else {
-            showStatus('✓ Proxy connection successful!', 'success');
-          }
-        } else {
-          showStatus(`Proxy error: HTTP ${response.status}`, 'error');
-        }
-      } catch (error) {
-        showStatus(`Connection failed: ${error.message}`, 'error');
-      }
-    }
-
     // ==================== INITIALIZATION ====================
-    document.addEventListener('DOMContentLoaded', function() {
-      loadApiSettings();
+    document.addEventListener('DOMContentLoaded', function () {
+      initializePage();
       setupCategoryNavigation();
       fillCells(farmingItems);
     });
-    
+
   </script>
 </body>
+
 </html>

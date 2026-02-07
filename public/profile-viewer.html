@@ -11,6 +11,7 @@
     <meta name="theme-color" content="#007bff">
     <link rel="icon" href="assets/cmc-icon.png" type="image/png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="js/api-proxy-client.js"></script>
     <script src="js/script.js" defer></script>
     <link rel="stylesheet" href="css/essential.css">
     <style>
@@ -27,15 +28,33 @@
             --card-shadow-color: rgba(0, 0, 0, 0.6);
             --card-bg-hover: #0b1220;
         }
+
         body {
             background: var(--body-bg) !important;
             color: var(--main-text-color) !important;
         }
+
         /* Ensure key elements are readable on dark background */
-        #scrollToTopBtn { background-color: var(--primary-color) !important; }
-        .card, .data-section, .api-panel { background-color: var(--card-bg-color) !important; border-color: var(--border-color) !important; box-shadow: 0 6px 18px var(--card-shadow-color) !important; }
-        #loader .material-icons { color: var(--primary-color) !important; }
-        .profile-btn.active, .tab.active { background: var(--primary-color) !important; }
+        #scrollToTopBtn {
+            background-color: var(--primary-color) !important;
+        }
+
+        .card,
+        .data-section,
+        .api-panel {
+            background-color: var(--card-bg-color) !important;
+            border-color: var(--border-color) !important;
+            box-shadow: 0 6px 18px var(--card-shadow-color) !important;
+        }
+
+        #loader .material-icons {
+            color: var(--primary-color) !important;
+        }
+
+        .profile-btn.active,
+        .tab.active {
+            background: var(--primary-color) !important;
+        }
     </style>
     <style>
         body {
@@ -422,6 +441,11 @@
             color: var(--main-text-color);
         }
 
+        .stats-grid {
+            display: flex;
+            justify-content: space-evenly;
+        }
+
         .json-key {
             color: #d19a66;
         }
@@ -603,32 +627,8 @@
             <p>View player data, SkyBlock profiles, and bazaar market information</p>
         </div>
 
-        <!-- API Settings Panel -->
-        <div class="api-panel">
-            <h2><span class="material-icons">settings</span> API Configuration</h2>
-            <div class="input-group">
-                <div class="form-group">
-                    <label for="apiKey"><span class="material-icons"
-                            style="font-size: 1rem; vertical-align: middle;">vpn_key</span> API Key</label>
-                    <input type="password" id="apiKey" placeholder="Enter your CraftersMC API key">
-                </div>
-                <div class="form-group">
-                    <label for="proxyUrl"><span class="material-icons"
-                            style="font-size: 1rem; vertical-align: middle;">storage</span> Proxy URL</label>
-                    <input type="text" id="proxyUrl" placeholder="https://api-proxy.craftersmcguides.workers.dev"
-                        disabled>
-                </div>
-            </div>
-            <div class="btn-group">
-                <button class="btn" onclick="saveSettings()">
-                    <span class="material-icons">save</span> Save Settings
-                </button>
-                <button class="btn btn-success" onclick="testConnection()">
-                    <span class="material-icons">cable</span> Test Connection
-                </button>
-            </div>
-            <div id="status" class="status"></div>
-        </div>
+        <!-- Status Messages -->
+        <div id="status" class="status"></div>
 
         <!-- Search Panel -->
         <div class="data-section">
@@ -738,15 +738,16 @@
 
     <script>
         // Configuration
-        const config = {
-            apiKey: '',
-            proxyUrl: ''
-        };
+        const DEFAULT_PROXY_URL = 'https://craftersmc-guides.pages.dev';
+
+        // API Client
+        let apiClient = new APIProxyClient(DEFAULT_PROXY_URL);
 
         // State
         let playerData = null;
         let profileData = null;
         let currentProfileId = '';
+        let selectedMemberId = '';
 
         // Format functions
         function formatNumber(num) {
@@ -762,7 +763,12 @@
         function formatDate(timestamp) {
             if (!timestamp) return 'N/A';
             try {
-                const date = new Date(timestamp);
+                // If timestamp is less than a reasonable millisecond value, assume it's in seconds
+                let ms = timestamp;
+                if (timestamp < 10000000000) {
+                    ms = timestamp * 1000;
+                }
+                const date = new Date(ms);
                 return date.toLocaleString();
             } catch {
                 return timestamp;
@@ -780,27 +786,9 @@
 
         // API Functions
         async function makeRequest(endpoint) {
-            if (!config.apiKey || !config.proxyUrl) {
-                showStatus('Please configure API key and proxy URL first', 'error');
-                return null;
-            }
-
-            const proxyUrl = config.proxyUrl.replace(/\/$/, '');
-            const url = `${proxyUrl}${endpoint}`;
-
             try {
-                const response = await fetch(url, {
-                    headers: {
-                        'X-API-Key': config.apiKey,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                return await response.json();
+                const response = await apiClient.makeRequest(endpoint);
+                return response;
             } catch (error) {
                 console.error('Request failed:', error);
                 showStatus(`Request failed: ${error.message}`, 'error');
@@ -825,6 +813,7 @@
             }
 
             playerData = data;
+            console.log('playerData.sbClaimedCakes:', playerData?.sbClaimedCakes);
             showStatus('Player data loaded successfully!', 'success');
 
             // Display profiles if available
@@ -860,8 +849,13 @@
             }
 
             profileData = data;
+            console.log('profileData.claimedNewYearCakes:', profileData?.claimedNewYearCakes);
             showStatus('Profile data loaded successfully!', 'success');
             showLoading(false);
+
+            // Display member selector
+            displayMemberSelector();
+
             displayAllData();
         }
 
@@ -894,8 +888,74 @@
             });
         }
 
+        function displayMemberSelector() {
+            const selector = document.getElementById('profileSelector');
+            if (!profileData?.members || Object.keys(profileData.members).length === 0) {
+                return;
+            }
+
+            // Create or get member selector container
+            let memberSelector = document.getElementById('memberSelector');
+            if (!memberSelector) {
+                memberSelector = document.createElement('div');
+                memberSelector.id = 'memberSelector';
+                memberSelector.style.cssText = 'display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;';
+                selector.parentNode.insertBefore(memberSelector, selector.nextSibling);
+            }
+
+            memberSelector.innerHTML = '<label style="align-self: center; color: #e2e8f0; font-weight: 500;">Members:</label>';
+
+            Object.entries(profileData.members).forEach(([memberId, member]) => {
+                const btn = document.createElement('button');
+                btn.className = 'profile-btn';
+                btn.style.cssText = 'padding: 8px 12px; font-size: 13px;';
+
+                if (memberId === selectedMemberId) {
+                    btn.classList.add('active');
+                }
+
+                // Try to get player name from playerData or use UUID
+                let displayName = 'Unknown';
+                if (playerData?.name && memberId === playerData.uuid.replace(/-/g, '')) {
+                    displayName = playerData.name;
+                } else if (member.nameHistory && member.nameHistory.length > 0) {
+                    displayName = member.nameHistory[0];
+                }
+
+                // If still unknown, show UUID
+                if (displayName === 'Unknown') {
+                    displayName = memberId.substring(0, 8) + '...';
+                }
+
+                btn.innerHTML = `<i class="fas fa-user"></i> ${displayName}`;
+                btn.onclick = () => {
+                    selectedMemberId = memberId;
+                    console.log('Selected member:', memberId, 'Name:', displayName, 'Member data:', member);
+                    displayMemberSelector();
+                    displayAllData();
+                };
+                memberSelector.appendChild(btn);
+            });
+
+            // Set default to current player if not set
+            if (!selectedMemberId && playerData?.uuid) {
+                selectedMemberId = playerData.uuid.replace(/-/g, '');
+                console.log('Default selectedMemberId set to:', selectedMemberId);
+                displayMemberSelector();
+            }
+        }
+
         function displayAllData() {
             document.getElementById('mainData').style.display = 'block';
+            // Clear all tab contents first
+            document.getElementById('statisticsTab').innerHTML = '';
+            document.getElementById('slayersTab').innerHTML = '';
+            document.getElementById('farmingTab').innerHTML = '';
+            document.getElementById('minionsTab').innerHTML = '';
+            document.getElementById('collectionsTab').innerHTML = '';
+            document.getElementById('skillsTab').innerHTML = '';
+
+            console.log('displayAllData called', { playerExists: !!playerData, profileExists: !!profileData, selectedMemberId });
             displayPlayerData();
             displayProfileData();
             displayOverview();
@@ -997,9 +1057,8 @@
             `;
 
             // Quick stats
-            if (profileData.members) {
-                const memberId = Object.keys(profileData.members)[0];
-                const member = profileData.members[memberId];
+            if (profileData.members && selectedMemberId) {
+                const member = profileData.members[selectedMemberId];
 
                 if (member) {
                     html += `
@@ -1007,7 +1066,7 @@
                             <h2><i class="fas fa-chart-line"></i> Quick Stats</h2>
                             <div class="stats-grid">
                                 <div class="stat-box">
-                                    <div class="stat-value">${formatNumber(member.slayerData?.killedSlayer || 0)}</div>
+                                    <div class="stat-value">${formatNumber(member.slayerData?.killedZombieSlayer || 0)}</div>
                                     <div class="stat-label">Slayers Killed</div>
                                 </div>
                                 <div class="stat-box">
@@ -1112,7 +1171,7 @@
                 ['Cute Name', profileData.cuteName, 'string'],
                 ['Game Mode', profileData.gameMode, 'string'],
                 ['Profile ID', profileData.id?.substring(0, 12) + '...', 'string'],
-                ['Deleted At', formatDate(profileData.deletedAt), 'date']
+                ['Created At', formatDate(profileData.createdAt), 'date']
             ]);
 
             // Banking
@@ -1209,7 +1268,8 @@
 
         function displayStatistics() {
             const container = document.getElementById('statisticsTab');
-            const member = profileData?.members?.[playerData?.uuid];
+            const member = profileData?.members?.[selectedMemberId];
+            console.log('displayStatistics: selectedMemberId =', selectedMemberId, 'member =', member);
             if (!member) {
                 container.innerHTML = '<div class="loading"><i class="fas fa-chart-bar"></i><p>No statistics data available</p></div>';
                 return;
@@ -1217,12 +1277,26 @@
 
             let html = '<div class="cards-grid">';
 
-            // Cakes Claimed
-            if (playerData.sbClaimedCakes) {
-                html += createDataCard('fas fa-birthday-cake', 'Cakes Claimed', [
-                    ['Total Cakes', formatNumber(playerData.sbClaimedCakes.length), 'number'],
-                    ['Cake Years', playerData.sbClaimedCakes.join(', '), 'string']
-                ]);
+            // Cakes Claimed - only show for owner account
+            const isOwner = selectedMemberId === playerData?.uuid?.replace(/-/g, '');
+            if (isOwner) {
+                const cakesArray = (Array.isArray(playerData?.sbClaimedCakes) && playerData.sbClaimedCakes.length > 0)
+                    ? playerData.sbClaimedCakes
+                    : (Array.isArray(profileData?.claimedNewYearCakes) ? profileData.claimedNewYearCakes : []);
+
+                console.log('displayStatistics: cakesArray =', cakesArray);
+
+                if (cakesArray.length > 0) {
+                    html += createDataCard('fas fa-birthday-cake', 'Cakes Claimed', [
+                        ['Total Cakes', formatNumber(cakesArray.length), 'number'],
+                        ['Cake Years', cakesArray.join(', '), 'string']
+                    ]);
+                } else {
+                    html += createDataCard('fas fa-birthday-cake', 'Cakes Claimed', [
+                        ['Total Cakes', '0', 'number'],
+                        ['Cake Years', 'None', 'string']
+                    ]);
+                }
             }
 
             // Combat Stats
@@ -1334,7 +1408,8 @@
 
         function displaySlayerData() {
             const container = document.getElementById('slayersTab');
-            const member = profileData?.members?.[playerData?.uuid];
+            const member = profileData?.members?.[selectedMemberId];
+            console.log('displaySlayerData: selectedMemberId =', selectedMemberId, 'slayerData =', member?.slayerData);
             if (!member?.slayerData) {
                 container.innerHTML = '<div class="loading"><i class="fas fa-dragon"></i><p>No slayer data available</p></div>';
                 return;
@@ -1394,7 +1469,8 @@
 
         function displayFarmingData() {
             const container = document.getElementById('farmingTab');
-            const member = profileData?.members?.[playerData?.uuid];
+            const member = profileData?.members?.[selectedMemberId];
+            console.log('displayFarmingData: selectedMemberId =', selectedMemberId, 'member =', member);
             if (!member) {
                 container.innerHTML = '<div class="loading"><i class="fas fa-tractor"></i><p>No farming data available</p></div>';
                 return;
@@ -1408,9 +1484,25 @@
                 ['Shiny Pigs Captured', formatNumber(member.shinyPigsCaptured || 0), 'number']
             ]);
 
-            // Farming Contest
+            // Farming Contest - format arrays nicely
             if (member.farmingContestData && Object.keys(member.farmingContestData).length > 0) {
-                html += createCollapseSection('fas fa-leaf', 'Farming Contest Data', member.farmingContestData);
+                const contestData = {};
+                Object.entries(member.farmingContestData).forEach(([key, value]) => {
+                    if (Array.isArray(value)) {
+                        contestData[key] = value.length > 0 ? value.join(', ') : 'N/A';
+                    } else if (typeof value === 'object' && value !== null) {
+                        // Format nested objects nicely
+                        const nested = Object.entries(value).map(([k, v]) =>
+                            Array.isArray(v) ? `${k}: [${v.join(', ')}]` : `${k}: ${v}`
+                        ).join(' | ');
+                        contestData[key] = nested;
+                    } else {
+                        contestData[key] = value;
+                    }
+                });
+
+                const contestItems = Object.entries(contestData).map(([k, v]) => [k, v, 'string']);
+                html += createDataCard('fas fa-leaf', 'Farming Contest Data', contestItems);
             } else {
                 html += createDataCard('fas fa-leaf', 'Farming Contest', [
                     ['Status', 'No contest data available', 'string']
@@ -1686,7 +1778,7 @@
             }
 
             let html = '<div class="cards-grid">';
-            
+
             const timeKeywords = ['playtime', 'time', 'duration', 'age', 'created', 'updated', 'joined', 'lastSeen', 'lastLogin', 'firstLogin', 'secondsSinceUpdate'];
             const isTimeData = Object.keys(obj).some(key => timeKeywords.some(keyword => key.toLowerCase().includes(keyword)));
 
@@ -1892,44 +1984,19 @@
 
         // Settings Functions
         function saveSettings() {
-            config.apiKey = document.getElementById('apiKey').value.trim();
-            config.proxyUrl = document.getElementById('proxyUrl').value.trim();
-
-            if (!config.apiKey || !config.proxyUrl) {
-                showStatus('Please enter both API key and proxy URL', 'error');
-                return;
-            }
-
-            localStorage.setItem('craftersmc_config', JSON.stringify(config));
             showStatus('Settings saved successfully!', 'success');
         }
 
         function loadSettings() {
-            const saved = localStorage.getItem('craftersmc_config');
-            if (saved) {
-                try {
-                    Object.assign(config, JSON.parse(saved));
-                    document.getElementById('apiKey').value = config.apiKey || '';
-                    document.getElementById('proxyUrl').value = config.proxyUrl || '';
-                } catch (e) {
-                    console.error('Error loading settings:', e);
-                }
-            }
+            // Settings are now hardcoded to use environment variables from Cloudflare
         }
-
         async function testConnection() {
-            if (!config.apiKey || !config.proxyUrl) {
-                showStatus('Please save settings first', 'error');
-                return;
-            }
-
             showStatus('Testing connection...', 'info');
 
             try {
-                const proxyUrl = config.proxyUrl.replace(/\/$/, '');
+                const proxyUrl = DEFAULT_PROXY_URL.replace(/\/$/, '');
                 const response = await fetch(proxyUrl, {
                     headers: {
-                        'X-API-Key': config.apiKey,
                         'Content-Type': 'application/json'
                     }
                 });
@@ -1947,11 +2014,6 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadSettings();
-
-            // Set default proxy URL if none
-            if (!document.getElementById('proxyUrl').value) {
-                document.getElementById('proxyUrl').value = 'https://api-proxy.craftersmcguides.workers.dev';
-            }
 
             // Auto-focus username input
             document.getElementById('username').focus();
