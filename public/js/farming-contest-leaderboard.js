@@ -110,9 +110,9 @@ const collectionsData = {
                 { rank: 4, name: "Fallen1sec", score: "1.4M+" },
                 { rank: 5, name: "Aryaan045", score: "1.2M+" },
                 { rank: 6, name: "DRONZAR_OP/HueDisNwPhn", score: "1M+" },
-                { rank: 7, name: "Rudra993gamer", score: "957K" },
-                { rank: 8, name: "SAAD_KING_07726", score: "553K+" },
-                { rank: 9, name: "Unknown", score: "N/A" },
+                { rank: 7, name: "MrTheAyu", score: "1M+" },
+                { rank: 8, name: "Rudra993gamer", score: "957K+" },
+                { rank: 9, name: "SAAD_KING_07726", score: "553K+" },
                 { rank: 10, name: "Unknown", score: "N/A" }
             ]
         },
@@ -158,7 +158,7 @@ const collectionsData = {
                 { rank: 4, name: "Fallen1sec", score: "498K+" },
                 { rank: 5, name: "HueDisNwPhn", score: "446K" },
                 { rank: 6, name: "Aryaan045", score: "439K+" },
-                { rank: 7, name: "Unknown", score: "N/A" },
+                { rank: 7, name: "MrTheAyu", score: "129K+" },
                 { rank: 8, name: "Unknown", score: "N/A" },
                 { rank: 9, name: "Unknown", score: "N/A" },
                 { rank: 10, name: "Unknown", score: "N/A" }
@@ -173,8 +173,8 @@ const collectionsData = {
                 { rank: 3, name: "Fallen1sec", score: "753K+" },
                 { rank: 4, name: "Taranpreet3916", score: "655K+" },
                 { rank: 5, name: "hhhuuuhh", score: "560K+" },
-                { rank: 6, name: "Gaurav_20073022", score: "277K+" },
-                { rank: 7, name: "Unknown", score: "N/A" },
+                { rank: 6, name: "MrTheAyu", score: "512K+" },
+                { rank: 7, name: "Gaurav_20073022", score: "277K+" },
                 { rank: 8, name: "Unknown", score: "N/A" },
                 { rank: 9, name: "Unknown", score: "N/A" },
                 { rank: 10, name: "Unknown", score: "N/A" }
@@ -204,7 +204,7 @@ const collectionsData = {
                 { rank: 2, name: "Fallen1sec", score: "276K+" },
                 { rank: 3, name: "HueDisNwPhn", score: "267K+" },
                 { rank: 4, name: "hhhuuuhh", score: "192K+" },
-                { rank: 5, name: "Unknown", score: "N/A" },
+                { rank: 5, name: "MrTheAyu", score: "143K+" },
                 { rank: 6, name: "Unknown", score: "N/A" },
                 { rank: 7, name: "Unknown", score: "N/A" },
                 { rank: 8, name: "Unknown", score: "N/A" },
