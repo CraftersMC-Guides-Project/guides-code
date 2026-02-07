@@ -140,7 +140,8 @@ async function applyData(data, meta = { source: 'live', ts: Date.now() }) {
     const maintenance = data.fullMaintenance === true ? 'Full Maintenance' : (data.fullMaintenance === false ? 'Online' : 'Unknown');
 
 
-    setText('activePlayers', playerCount);
+    //setText('activePlayers', playerCount);
+    document.getElementById('activePlayers').innerHTML = `<div class="glowy-glowy-circle-wooooooo"></div> ${playerCount}`;
     setText('activePlayersSmall', `Max: ${maxPlayerCount}`);
 
     setText('networkStatus', maintenance);
