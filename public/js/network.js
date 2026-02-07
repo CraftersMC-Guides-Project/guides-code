@@ -44,7 +44,7 @@ function flattenGames(games) {
     const rows = [];
     const numericKeys = ['playerCount','player_count','players','count','value','online'];
 
-    function recurse(obj, prefix = '') {
+    function scan(obj, prefix = '') {
         for (const [k, v] of Object.entries(obj)) {
             const currentKey = prefix ? `${prefix}.${k}` : k;
             if (v === null) continue;
@@ -62,14 +62,13 @@ function flattenGames(games) {
                 if (found !== null) {
                     rows.push({ key: currentKey, label: k, value: Number(found) });
                 } else {
-                    recurse(v, currentKey);
-                    console.log('recurseddd', currentKey);
+                    scan(v, currentKey);
                 }
             }
         }
     }
 
-    recurse(games);
+    scan(games);
 
     return rows;
 }
@@ -134,7 +133,7 @@ function setText(id, value) {
     if (el) el.textContent = value;
 }
 
-async function applyData(data, meta = { source: 'live', ts: Date.now() }) {
+async function loadData(data, meta = { source: 'live', ts: Date.now() }) {
     const playerCount = data.playerCount ?? (data.player_count ?? '—');
     const maxPlayerCount = data.maxPlayerCount ?? data.max_player_count ?? '—';
     const maintenance = data.fullMaintenance === true ? 'Full Maintenance' : (data.fullMaintenance === false ? 'Online' : 'Unknown');
@@ -167,7 +166,7 @@ async function applyData(data, meta = { source: 'live', ts: Date.now() }) {
     }
 }
 
-async function fetchData(force = false) {
+async function fetchInfo(force = false) {
     const refreshBtn = document.getElementById('refreshBtn');
     try {
         if (refreshBtn) { refreshBtn.disabled = true; refreshBtn.textContent = 'Refreshing...'; }
@@ -176,7 +175,7 @@ async function fetchData(force = false) {
         const data = await resp.json();
         const now = Date.now();
         localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: now, data }));
-        await applyData(data, { source: 'live', ts: now });
+        await loadData(data, { source: 'live', ts: now });
     } catch (err) {
         console.error('Fetch error:', err);
         const cached = getCached();
@@ -186,7 +185,7 @@ async function fetchData(force = false) {
         if (!cached) {
             if (detailsContainer) detailsContainer.innerHTML = `<div class="error">Error loading network status: ${err.message}</div>`;
         } else {
-            await applyData(cached.data, { source: 'cache', ts: cached.ts });
+            await loadData(cached.data, { source: 'cache', ts: cached.ts });
             const errDiv = document.createElement('div');
             errDiv.className = 'error';
             errDiv.textContent = `Error fetching latest data: ${err.message}`;
@@ -200,17 +199,17 @@ async function fetchData(force = false) {
 async function loadStatus() {
     const cached = getCached();
     if (cached) {
-        await applyData(cached.data, { source: 'cache', ts: cached.ts });
+        await loadData(cached.data, { source: 'cache', ts: cached.ts });
         if (Date.now() - cached.ts > TTL) {
-            fetchData();
+            fetchInfo();
         }
     } else {
-        fetchData();
+        fetchInfo();
     }
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
     await loadStatus();
     const refreshBtn = document.getElementById('refreshBtn');
-    if (refreshBtn) refreshBtn.addEventListener('click', () => fetchData(true));
+    if (refreshBtn) refreshBtn.addEventListener('click', () => fetchInfo(true));
 });
