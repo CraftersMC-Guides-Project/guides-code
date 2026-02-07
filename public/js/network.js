@@ -156,7 +156,7 @@ async function applyData(data, meta = { source: 'live', ts: Date.now() }) {
         const summary = document.createElement('summary'); summary.textContent = 'Games';
         const inner = document.createElement('div'); inner.className = 'details-content';
         inner.appendChild(table);
-        const hint = document.createElement('div'); hint.className = 'small'; hint.style.marginTop = '8px'; hint.textContent = 'Player counts for each area';
+        const hint = document.createElement('div'); hint.className = 'small'; hint.style.margin = '12px'; hint.textContent = 'Player counts for each area';
         inner.appendChild(hint);
         const pre = document.createElement('pre'); pre.textContent = JSON.stringify(data.games, null, 2);
 
@@ -165,10 +165,6 @@ async function applyData(data, meta = { source: 'live', ts: Date.now() }) {
     }
 
     const mainDetails = document.createElement('details');
-    const s = document.createElement('summary'); s.textContent = 'Full network data';
-    const c = document.createElement('div'); c.className = 'details-content';
-    renderKV(c, data);
-    mainDetails.appendChild(s); mainDetails.appendChild(c);
     detailsContainer.appendChild(mainDetails);
 }
 
