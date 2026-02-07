@@ -110,8 +110,8 @@ const collectionsData = {
                 { rank: 4, name: "Fallen1sec", score: "1.4M+" },
                 { rank: 5, name: "Aryaan045", score: "1.2M+" },
                 { rank: 6, name: "DRONZAR_OP/HueDisNwPhn", score: "1M+" },
-                { rank: 7, name: "SAAD_KING_07726", score: "553K+" },
-                { rank: 8, name: "Unknown", score: "N/A" },
+                { rank: 7, name: "Rudra993gamer", score: "957K" },
+                { rank: 8, name: "SAAD_KING_07726", score: "553K+" },
                 { rank: 9, name: "Unknown", score: "N/A" },
                 { rank: 10, name: "Unknown", score: "N/A" }
             ]
