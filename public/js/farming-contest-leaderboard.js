@@ -171,11 +171,11 @@ const collectionsData = {
                 { rank: 1, name: "AYUSHAKS30", score: "1.5M+" },
                 { rank: 2, name: "HueDisNwPhn", score: "850K+" },
                 { rank: 3, name: "Fallen1sec", score: "753K+" },
-                { rank: 4, name: "Taranpreet3916", score: "655K+" },
-                { rank: 5, name: "hhhuuuhh", score: "560K+" },
-                { rank: 6, name: "MrTheAyu", score: "512K+" },
-                { rank: 7, name: "Gaurav_20073022", score: "277K+" },
-                { rank: 8, name: "Unknown", score: "N/A" },
+                { rank: 4, name: "DesiringSugar39", score: "681K+" },
+                { rank: 5, name: "Taranpreet3916", score: "655K+" },
+                { rank: 6, name: "hhhuuuhh", score: "560K+" },
+                { rank: 7, name: "MrTheAyu", score: "512K+" },
+                { rank: 8, name: "Gaurav_20073022", score: "277K+" },
                 { rank: 9, name: "Unknown", score: "N/A" },
                 { rank: 10, name: "Unknown", score: "N/A" }
             ]
