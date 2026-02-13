@@ -1975,18 +1975,18 @@ const collectionsData = {
                 },
                 {
                     "rank": 2,
-                    "name": "Fahad3382",
+                    "name": "Ghosthunter4233",
                     "score": "N/A"
                 },
                 {
                     "rank": 3,
-                    "name": "TGJASSIYT (Second Profile)",
-                    "score": "67M+"
+                    "name": "Fahad3382",
+                    "score": "N/A"
                 },
                 {
                     "rank": 4,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "TGJASSIYT (Second Profile)",
+                    "score": "67M+"
                 },
                 {
                     "rank": 5,
@@ -2000,7 +2000,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 7,
-                    "name": "Ghosthunter4233",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
