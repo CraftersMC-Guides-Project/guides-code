@@ -170,8 +170,8 @@ const collectionsData = {
             players: [
                 { rank: 1, name: "AYUSHAKS30", score: "1.5M+" },
                 { rank: 2, name: "HueDisNwPhn", score: "850K+" },
-                { rank: 3, name: "Fallen1sec", score: "753K+" },
-                { rank: 4, name: "DesiringSugar39", score: "681K+" },
+                { rank: 3, name: "DesiringSugar39", score: "760K+" },
+                { rank: 4, name: "Fallen1sec", score: "753K+" },
                 { rank: 5, name: "Taranpreet3916", score: "655K+" },
                 { rank: 6, name: "hhhuuuhh", score: "560K+" },
                 { rank: 7, name: "MrTheAyu", score: "512K+" },
