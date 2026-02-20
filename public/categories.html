@@ -130,10 +130,11 @@
                       const isSkyCanvas = item.name === "Sky Canvas";
                       let privateHighlight = (!isPublic && isDevUser) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
                       
-                      // Fetch bazaar data for this item - only include if it exists in bazaar API
+                      // Fetch bazaar data for this item using item name - only include if it exists in bazaar API
                       let bazaarData = null;
                       try {
-                          bazaarData = await fetchBazaarData(item.id);
+                          // Use item name instead of numeric ID
+                          bazaarData = await fetchBazaarData(item.name);
                           // Check if item exists in bazaar API
                           // Item exists if we have valid bazaar data with buy/sell entries
                           if (!bazaarData || 
@@ -145,7 +146,7 @@
                           }
                       } catch (error) {
                           // API error means item doesn't exist in bazaar, filter it out
-                          console.log(`Item ${item.id} not found in bazaar API:`, error.message);
+                          console.log(`Item "${item.name}" not found in bazaar API:`, error.message);
                           return null;
                       }
                       
@@ -208,18 +209,95 @@
           return Math.round(amount).toLocaleString();
       }
 
-      async function fetchBazaarData(itemId) {
-          try {
-              const data = await apiClient.getBazaarItem(itemId);
-              // Check if the API returned an error or invalid data
-              if (data && data.error) {
-                  return null;
-              }
-              return data;
-          } catch (error) {
-              // Item doesn't exist in bazaar API
-              return null;
+      // Convert item name to bazaar API format (lowercase, spaces to underscores, remove special chars)
+      function getBazaarItemId(itemName) {
+          if (!itemName) return null;
+          return itemName.toLowerCase()
+              .replace(/\s+/g, '_')
+              .replace(/[^a-z0-9_]/g, '')
+              .replace(/_+/g, '_')
+              .replace(/^_|_$/g, '');
+      }
+
+      // Simple fuzzy matching - try variations of the item name
+      function getBazaarItemVariations(itemName) {
+          const baseId = getBazaarItemId(itemName);
+          if (!baseId) return [];
+          
+          const variations = [baseId];
+          
+          // Try without "enchanted_" prefix
+          if (baseId.startsWith('enchanted_')) {
+              variations.push(baseId.replace(/^enchanted_/, ''));
           }
+          
+          // Try adding "enchanted_" prefix
+          if (!baseId.startsWith('enchanted_')) {
+              variations.push('enchanted_' + baseId);
+          }
+          
+          // Try singular/plural variations
+          if (baseId.endsWith('s') && baseId.length > 1) {
+              variations.push(baseId.slice(0, -1));
+          } else {
+              variations.push(baseId + 's');
+          }
+          
+          return variations;
+      }
+
+      // Rate limiting helper
+      let lastApiCall = 0;
+      const API_DELAY = 100; // 100ms delay between API calls
+
+      async function fetchBazaarData(itemName) {
+          // Rate limiting: wait if needed
+          const now = Date.now();
+          const timeSinceLastCall = now - lastApiCall;
+          if (timeSinceLastCall < API_DELAY) {
+              await new Promise(resolve => setTimeout(resolve, API_DELAY - timeSinceLastCall));
+          }
+          lastApiCall = Date.now();
+
+          // Get variations to try
+          const variations = getBazaarItemVariations(itemName);
+          
+          // Try each variation until one works
+          for (const itemId of variations) {
+              try {
+                  const data = await apiClient.getBazaarItem(itemId);
+                  // Check if the API returned an error or invalid data
+                  if (data && data.error) {
+                      continue; // Try next variation
+                  }
+                  // Check if we have valid bazaar data
+                  if (data && data.buyTopEntries && data.sellTopEntries) {
+                      return data;
+                  }
+              } catch (error) {
+                  // Check if it's a rate limit error
+                  if (error.message && error.message.includes('429')) {
+                      // Rate limited - wait longer and retry
+                      const retryAfter = error.message.match(/retryAfter["\s:]*(\d+)/)?.[1] || 5;
+                      console.warn(`Rate limited, waiting ${retryAfter} seconds...`);
+                      await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+                      // Retry this variation
+                      try {
+                          const data = await apiClient.getBazaarItem(itemId);
+                          if (data && !data.error && data.buyTopEntries && data.sellTopEntries) {
+                              return data;
+                          }
+                      } catch (retryError) {
+                          // Still failed, continue to next variation
+                      }
+                  }
+                  // Try next variation
+                  continue;
+              }
+          }
+          
+          // None of the variations worked
+          return null;
       }
 
       document.addEventListener('DOMContentLoaded', function() {
