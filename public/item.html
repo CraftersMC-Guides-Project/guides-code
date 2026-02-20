@@ -375,19 +375,23 @@
     const expected = document.querySelector(".expected");
     const expInput = document.querySelector(".expected-input");
 
-    expected.addEventListener("click", () => {
-      expInput.classList.toggle("exp-display");
-    });
+    if (expected && expInput) {
+      expected.addEventListener("click", () => {
+        expInput.classList.toggle("exp-display");
+      });
+    }
 
     function getCookie(name) { const value = `; ${document.cookie}`; const parts = value.split(`; ${name}=`); if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift()); return ''; }
 
     async function loadUserInfo() {
       const profileCard = document.getElementById('profile-card');
+      if (!profileCard) return;
       const defaultAvatar = "https://placehold.co/110x110/dddddd/333333?text=...&font=inter";
       const avatarEl = document.getElementById('user-avatar');
       const nameEl = document.getElementById('user-name');
       const tagEl = document.getElementById('user-tag');
       const roleBtnContainer = document.getElementById('role-btn-container');
+      if (!avatarEl || !nameEl || !tagEl || !roleBtnContainer) return;
       try {
         const storedUserCookie = getCookie('discordUser');
         if (!storedUserCookie) { profileCard.style.display = 'none'; return; }
@@ -529,10 +533,15 @@
             ${item.rarity ? `<div class="item-rarity-display"><img class="item-rarity" src="img/rarity/${item.rarity}.webp"></div>` : ''}
             ${priceHTML}`;
 
-            // preload modal with values
-            document.getElementById('modal-item-name').textContent = item.name;
-            document.getElementById('modal-market-price').value = marketPrice !== "N/A" ? marketPrice : "";
-            document.getElementById('modal-npc-price').value = npcPrice ?? "";
+            // preload modal with values if modal is mounted
+            const modalItemName = document.getElementById('modal-item-name');
+            const modalMarketPrice = document.getElementById('modal-market-price');
+            const modalNpcPrice = document.getElementById('modal-npc-price');
+            if (modalItemName && modalMarketPrice && modalNpcPrice) {
+              modalItemName.textContent = item.name;
+              modalMarketPrice.value = marketPrice !== "N/A" ? marketPrice : "";
+              modalNpcPrice.value = npcPrice ?? "";
+            }
           } else {
             document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`;
           }
@@ -669,10 +678,14 @@
     }
 
     function openPriceModal() {
-      document.getElementById('price-modal').style.display = 'flex';
+      const modal = document.getElementById('price-modal');
+      if (!modal) return;
+      modal.style.display = 'flex';
     }
     function closePriceModal() {
-      document.getElementById('price-modal').style.display = 'none';
+      const modal = document.getElementById('price-modal');
+      if (!modal) return;
+      modal.style.display = 'none';
     }
 
     async function submitPriceModal() {
@@ -692,8 +705,14 @@
           return;
         }
 
-        const newPrice1 = document.getElementById('modal-market-price').value || 0;
-        const newPrice2 = document.getElementById('modal-npc-price').value || 0;
+        const marketInput = document.getElementById('modal-market-price');
+        const npcInput = document.getElementById('modal-npc-price');
+        if (!marketInput || !npcInput) {
+          showToast("Price modal is not available on this page.", "error");
+          return;
+        }
+        const newPrice1 = marketInput.value || 0;
+        const newPrice2 = npcInput.value || 0;
 
         const endpoint = `https://data-manager.roumakdatta.workers.dev/item/${discordId}/${itemId}/${newPrice1}/${newPrice2}`;
         const res = await fetch(endpoint);
@@ -716,8 +735,10 @@
       }
     }
 
-    document.getElementById("prevItemBtn").addEventListener("click", goToPrevItem);
-    document.getElementById("nextItemBtn").addEventListener("click", goToNextItem);
+    const prevItemBtn = document.getElementById("prevItemBtn");
+    const nextItemBtn = document.getElementById("nextItemBtn");
+    if (prevItemBtn) prevItemBtn.addEventListener("click", goToPrevItem);
+    if (nextItemBtn) nextItemBtn.addEventListener("click", goToNextItem);
 
     async function initializePage() {
       await loadUserInfo();
