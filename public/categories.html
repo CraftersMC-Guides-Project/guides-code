@@ -116,11 +116,13 @@
           const visibleItems = filtered.filter(item => {
               const isPublic = item.hasOwnProperty('public') ? item.public : true;
               if (!isPublic && !isDevUser) return false;
+              // Only show items that are marked as bazaarable in market.txt
+              if (!item.bazaarable) return false;
               return true;
           });
 
           if (visibleItems.length > 0) {
-              // Render items with async bazaar data fetching - only show items that exist in bazaar API
+              // Render items with async bazaar data fetching
               const renderItemsWithBazaarData = async () => {
                   // Show loading state
                   document.getElementById('categoryItems').innerHTML = '<p>Loading bazaar items...</p>';
@@ -130,27 +132,17 @@
                       const isSkyCanvas = item.name === "Sky Canvas";
                       let privateHighlight = (!isPublic && isDevUser) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
                       
-                      // Fetch bazaar data for this item using item name - only include if it exists in bazaar API
+                      // Fetch bazaar data for this item using item name
                       let bazaarData = null;
                       try {
                           // Use item name instead of numeric ID
                           bazaarData = await fetchBazaarData(item.name);
-                          // Check if item exists in bazaar API
-                          // Item exists if we have valid bazaar data with buy/sell entries
-                          if (!bazaarData || 
-                              !bazaarData.buyTopEntries || 
-                              !bazaarData.sellTopEntries ||
-                              bazaarData.error) {
-                              // Item doesn't exist in bazaar API, return null to filter it out
-                              return null;
-                          }
                       } catch (error) {
-                          // API error means item doesn't exist in bazaar, filter it out
-                          console.log(`Item "${item.name}" not found in bazaar API:`, error.message);
-                          return null;
+                          // API error – just skip bazaar pricing, item is still shown
+                          console.log(`Bazaar API error for "${item.name}":`, error.message);
                       }
                       
-                      // Item exists in bazaar API, render it
+                      // Build bazaar price HTML if data is available
                       let bazaarPriceHTML = '';
                       if (bazaarData && bazaarData.sellTopEntries && bazaarData.sellTopEntries[0]) {
                           const sellPrice = bazaarData.sellTopEntries[0].price || 0;
@@ -173,10 +165,7 @@
                       `;
                   });
                   
-                  const itemsHTMLResults = await Promise.all(itemsHTMLPromises);
-                  // Filter out null values (items that don't exist in bazaar API)
-                  const itemsHTML = itemsHTMLResults.filter(html => html !== null);
-                  
+                  const itemsHTML = await Promise.all(itemsHTMLPromises);
                   if (itemsHTML.length > 0) {
                       document.getElementById('categoryItems').innerHTML = `<div class="category-item-list">${itemsHTML.join('')}</div>`;
                   } else {

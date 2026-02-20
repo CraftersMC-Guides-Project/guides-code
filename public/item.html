@@ -317,12 +317,14 @@ expected.addEventListener("click", () => {
             const npcPrice = npcPricesMap.get(item.id);
             let privateHighlight = (isDevUser && !isPublic) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
             
-            // Fetch bazaar data from API using item name
+            // Fetch bazaar data from API using item name, but only for bazaarable items
             let bazaarData = null;
-            try {
-              bazaarData = await fetchBazaarData(item.name);
-            } catch (error) {
-              console.warn('Bazaar API fetch failed, using fallback data:', error);
+            if (item.bazaarable) {
+              try {
+                bazaarData = await fetchBazaarData(item.name);
+              } catch (error) {
+                console.warn('Bazaar API fetch failed, using fallback data:', error);
+              }
             }
 
             // Build price display HTML
