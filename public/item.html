@@ -7,6 +7,7 @@
   <title>Item Details - CraftersMC Guides</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="js/script.js"></script>
+  <script src="js/api-proxy-client.js"></script>
   <link rel="stylesheet" href="css/item.css">
   <link rel="stylesheet" href="css/essential.css">
   <style>
@@ -212,6 +213,7 @@
   <script>
     let isDevUser = false;
     let allItems = [];
+    let apiClient = new APIProxyClient();
     const expected = document.querySelector(".expected");
 const expInput = document.querySelector(".expected-input");
 
@@ -314,10 +316,46 @@ expected.addEventListener("click", () => {
             const marketPrice = pricesMap.get(item.id) ?? item.price ?? "N/A";
             const npcPrice = npcPricesMap.get(item.id);
             let privateHighlight = (isDevUser && !isPublic) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
+            
+            // Fetch bazaar data from API
+            let bazaarData = null;
+            try {
+              bazaarData = await fetchBazaarData(item.id);
+            } catch (error) {
+              console.warn('Bazaar API fetch failed, using fallback data:', error);
+            }
+
+            // Build price display HTML
+            let priceHTML = `<div class="item-price-container">`;
+            
+            // Show bazaar data if available
+            if (bazaarData && bazaarData.buyTopEntries && bazaarData.sellTopEntries) {
+              const buyPrice = bazaarData.buyTopEntries[0]?.price || 0;
+              const sellPrice = bazaarData.sellTopEntries[0]?.price || 0;
+              const weeklyAvg = bazaarData.weeklyAveragePrice || 0;
+              
+              priceHTML += `
+                <p class="item-price"><strong>Bazaar Buy Price:</strong> ${formatCurrency(sellPrice)}</p>
+                <p class="item-price"><strong>Bazaar Sell Price:</strong> ${formatCurrency(buyPrice)}</p>
+                ${weeklyAvg > 0 ? `<p class="item-price"><strong>7-Day Average:</strong> ${formatCurrency(weeklyAvg)}</p>` : ''}
+                <hr width="150px">
+              `;
+            }
+            
+            // Show market price (fallback or additional)
+            priceHTML += `<p class="item-price"><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p>`;
+            
+            // Show NPC price if available
+            if (npcPrice !== null && npcPrice !== undefined) {
+              priceHTML += `<p class="item-price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>`;
+            }
+            
+            priceHTML += `</div>`;
+
             document.getElementById('itemDetails').innerHTML = `${privateHighlight}<h1>${item.name}</h1>
             ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
             ${item.rarity ? `<div class="item-rarity-display"><img class="item-rarity" src="img/rarity/${item.rarity}.webp"></div>` : ''}
-            <p><strong class="item-strong">ID:</strong> ${item.id}</p><div class="item-price-container"><p class="item-price"><strong>Market Price:</strong> ${formatPrice(marketPrice)}</p><hr width="150px">${npcPrice !== null && npcPrice !== undefined ? `<p class="item-price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>` : ''}</div>`;
+            <p><strong class="item-strong">ID:</strong> ${item.id}</p>${priceHTML}`;
             
             // preload modal with values
             document.getElementById('modal-item-name').textContent = item.name;
@@ -345,6 +383,23 @@ expected.addEventListener("click", () => {
     function formatPrice(price) {
       if (price === "N/A" || price === "NAN" || price === null || price === undefined) { return `N/A`; }
       return `${Number(price).toLocaleString()}c`;
+    }
+
+    function formatCurrency(amount) {
+      if (amount === undefined || amount === null) return 'N/A';
+      if (amount >= 1000000) return (amount / 1000000).toFixed(2) + 'M';
+      if (amount >= 1000) return (amount / 1000).toFixed(1) + 'K';
+      return Math.round(amount).toLocaleString();
+    }
+
+    async function fetchBazaarData(itemId) {
+      try {
+        const data = await apiClient.getBazaarItem(itemId);
+        return data;
+      } catch (error) {
+        console.warn(`Failed to fetch bazaar data for ${itemId}:`, error.message);
+        return null;
+      }
     }
 
     function goToPrevItem() {

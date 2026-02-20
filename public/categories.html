@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Category Items</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="js/api-proxy-client.js"></script>
   <link rel="stylesheet" href="css/categories.css">
   <link rel="stylesheet" href="css/essential.css">
   <style>
@@ -48,6 +49,7 @@
 
   <script>
       let isDevUser = false;
+      let apiClient = new APIProxyClient();
 
       function getCookie(name) {
           const value = `; ${document.cookie}`;
@@ -118,25 +120,70 @@
           });
 
           if (visibleItems.length > 0) {
-              const itemsHTML = visibleItems.map(item => {
-                  const isPublic = item.hasOwnProperty('public') ? item.public : true;
-                  const isSkyCanvas = item.name === "Sky Canvas";
-                  let privateHighlight = (!isPublic && isDevUser) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
-                  return `
-                      <div class="category-item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
-                          ${privateHighlight}
-                          <h2>${item.name}</h2>
-                          ${item.picture ? `<div class="category-main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="category-sky-canvas-img"' : ''}>` : ''}
-                          <div class="category-main-data-val"><p><strong>ID:</strong> ${item.id}</p>
-                          ${item.description ? `<p class="category-description">${item.description}</p>` : ''}
-                          ${item.rarity ? `<p class="category-rarity-display"><img class="category-rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
-                          ${item.nature ? `<p class="category-nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
-                          ${item.demand ? `<p class="category-demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
-                          </div></div>
-                      </div>
-                  `;
-              }).join('');
-              document.getElementById('categoryItems').innerHTML = `<div class="category-item-list">${itemsHTML}</div>`;
+              // Render items with async bazaar data fetching - only show items that exist in bazaar API
+              const renderItemsWithBazaarData = async () => {
+                  // Show loading state
+                  document.getElementById('categoryItems').innerHTML = '<p>Loading bazaar items...</p>';
+                  
+                  const itemsHTMLPromises = visibleItems.map(async (item) => {
+                      const isPublic = item.hasOwnProperty('public') ? item.public : true;
+                      const isSkyCanvas = item.name === "Sky Canvas";
+                      let privateHighlight = (!isPublic && isDevUser) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
+                      
+                      // Fetch bazaar data for this item - only include if it exists in bazaar API
+                      let bazaarData = null;
+                      try {
+                          bazaarData = await fetchBazaarData(item.id);
+                          // Check if item exists in bazaar API
+                          // Item exists if we have valid bazaar data with buy/sell entries
+                          if (!bazaarData || 
+                              !bazaarData.buyTopEntries || 
+                              !bazaarData.sellTopEntries ||
+                              bazaarData.error) {
+                              // Item doesn't exist in bazaar API, return null to filter it out
+                              return null;
+                          }
+                      } catch (error) {
+                          // API error means item doesn't exist in bazaar, filter it out
+                          console.log(`Item ${item.id} not found in bazaar API:`, error.message);
+                          return null;
+                      }
+                      
+                      // Item exists in bazaar API, render it
+                      let bazaarPriceHTML = '';
+                      if (bazaarData && bazaarData.sellTopEntries && bazaarData.sellTopEntries[0]) {
+                          const sellPrice = bazaarData.sellTopEntries[0].price || 0;
+                          bazaarPriceHTML = `<p class="category-price"><strong>Bazaar Price:</strong> ${formatCurrency(sellPrice)}</p>`;
+                      }
+                      
+                      return `
+                          <div class="category-item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
+                              ${privateHighlight}
+                              <h2>${item.name}</h2>
+                              ${item.picture ? `<div class="category-main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="category-sky-canvas-img"' : ''}>` : ''}
+                              <div class="category-main-data-val"><p><strong>ID:</strong> ${item.id}</p>
+                              ${bazaarPriceHTML}
+                              ${item.description ? `<p class="category-description">${item.description}</p>` : ''}
+                              ${item.rarity ? `<p class="category-rarity-display"><img class="category-rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
+                              ${item.nature ? `<p class="category-nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
+                              ${item.demand ? `<p class="category-demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
+                              </div></div>
+                          </div>
+                      `;
+                  });
+                  
+                  const itemsHTMLResults = await Promise.all(itemsHTMLPromises);
+                  // Filter out null values (items that don't exist in bazaar API)
+                  const itemsHTML = itemsHTMLResults.filter(html => html !== null);
+                  
+                  if (itemsHTML.length > 0) {
+                      document.getElementById('categoryItems').innerHTML = `<div class="category-item-list">${itemsHTML.join('')}</div>`;
+                  } else {
+                      document.getElementById('categoryItems').innerHTML = '<p>No bazaar items found in this category.</p>';
+                  }
+              };
+              
+              renderItemsWithBazaarData();
           } else {
               document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
           }
@@ -152,6 +199,27 @@
           let demandText = demand.replace('[', ' ').toLowerCase();
           demandText = demandText.replace(']', '').replace(/_/g, ' ').trim();
           return demandText;
+      }
+
+      function formatCurrency(amount) {
+          if (amount === undefined || amount === null) return 'N/A';
+          if (amount >= 1000000) return (amount / 1000000).toFixed(2) + 'M';
+          if (amount >= 1000) return (amount / 1000).toFixed(1) + 'K';
+          return Math.round(amount).toLocaleString();
+      }
+
+      async function fetchBazaarData(itemId) {
+          try {
+              const data = await apiClient.getBazaarItem(itemId);
+              // Check if the API returned an error or invalid data
+              if (data && data.error) {
+                  return null;
+              }
+              return data;
+          } catch (error) {
+              // Item doesn't exist in bazaar API
+              return null;
+          }
       }
 
       document.addEventListener('DOMContentLoaded', function() {
