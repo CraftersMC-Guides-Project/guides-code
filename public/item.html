@@ -1,21 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <link rel="icon" href="assets/cmc-icon.png" type="image/png">
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Item Details - CraftersMC Guides</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="js/script.js"></script>
   <link rel="stylesheet" href="css/item.css">
   <link rel="stylesheet" href="css/essential.css">
   <style>
-    .login-btn { background-color: #5865F2; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 8px; }
-    .toast-notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 8px; color: white; font-weight: 500; transition: bottom 0.5s ease-in-out; z-index: 10001; white-space: pre-line; }
-    .toast-notification.show { bottom: 30px; }
-    .toast-notification.success { background-color: #2d8831; }
-    .toast-notification.error { background-color: #c62828; }
-    .private-item-highlight { border: 2px dashed #ff9800; background-color: rgba(255, 152, 0, 0.1); padding: 10px; border-radius: 10px; margin-bottom: 15px; }
+    .login-btn {
+      background-color: #5865F2;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast-notification {
+      position: fixed;
+      bottom: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 15px 25px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 500;
+      transition: bottom 0.5s ease-in-out;
+      z-index: 10001;
+      white-space: pre-line;
+    }
+
+    .toast-notification.show {
+      bottom: 30px;
+    }
+
+    .toast-notification.success {
+      background-color: #2d8831;
+    }
+
+    .toast-notification.error {
+      background-color: #c62828;
+    }
+
+    .private-item-highlight {
+      border: 2px dashed #ff9800;
+      background-color: rgba(255, 152, 0, 0.1);
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
     .profile-card {
       position: fixed;
       top: 80px;
@@ -31,27 +72,98 @@
       color: white;
       text-decoration: none;
       transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       border: 1px solid rgba(255, 255, 255, 0.15);
       animation: fade-in-down 0.5s ease-out forwards;
       min-width: 200px;
     }
-    .profile-card:hover { background-color: rgba(0, 0, 0, 0.8); transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
-    #user-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); transition: box-shadow 0.3s; }
-    #user-details { text-align: left; }
-    #user-name { font-size: 18px; font-weight: 700; line-height: 1.2; }
-    #user-tag { font-size: 12px; font-weight: 700; text-transform: uppercase; opacity: 0.9; margin-top: 3px; display: block; letter-spacing: 0.5px; }
-    .profile-card.role-dev #user-avatar { box-shadow: 0 0 15px rgba(213, 0, 0, 0.8); }
-    .profile-card.role-manager #user-avatar { box-shadow: 0 0 15px rgba(255, 193, 7, 0.8); }
-    .profile-card.role-data-manager #user-avatar { box-shadow: 0 0 15px rgba(41, 98, 255, 0.8); }
-    .profile-card.role-rank-seller #user-avatar { box-shadow: 0 0 15px rgba(0, 200, 83, 0.8); }
-    @keyframes fade-in-down { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 768px) {
-      .profile-card { top: 65px; right: 10px; padding: 8px 14px; gap: 12px; min-width: 0; }
-      #user-avatar { width: 40px; height: 40px; }
-      #user-name { font-size: 16px; }
-      #user-tag { font-size: 10px; }
+
+    .profile-card:hover {
+      background-color: rgba(0, 0, 0, 0.8);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
     }
+
+    #user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      transition: box-shadow 0.3s;
+    }
+
+    #user-details {
+      text-align: left;
+    }
+
+    #user-name {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    #user-tag {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      opacity: 0.9;
+      margin-top: 3px;
+      display: block;
+      letter-spacing: 0.5px;
+    }
+
+    .profile-card.role-dev #user-avatar {
+      box-shadow: 0 0 15px rgba(213, 0, 0, 0.8);
+    }
+
+    .profile-card.role-manager #user-avatar {
+      box-shadow: 0 0 15px rgba(255, 193, 7, 0.8);
+    }
+
+    .profile-card.role-data-manager #user-avatar {
+      box-shadow: 0 0 15px rgba(41, 98, 255, 0.8);
+    }
+
+    .profile-card.role-rank-seller #user-avatar {
+      box-shadow: 0 0 15px rgba(0, 200, 83, 0.8);
+    }
+
+    @keyframes fade-in-down {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .profile-card {
+        top: 65px;
+        right: 10px;
+        padding: 8px 14px;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      #user-avatar {
+        width: 40px;
+        height: 40px;
+      }
+
+      #user-name {
+        font-size: 16px;
+      }
+
+      #user-tag {
+        font-size: 10px;
+      }
+    }
+
     .role-action-btn {
       position: fixed;
       top: 148px;
@@ -70,36 +182,73 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
       white-space: nowrap;
       user-select: none;
     }
-    .role-action-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
-    .role-action-btn:active { transform: translateY(0); filter: brightness(.98); }
-    .role-action-btn:focus-visible { outline: none !important; box-shadow: 0 0 0 2px rgba(88,101,242,.25), 0 6px 16px rgba(0,0,0,.35); }
-    .role-action-btn .material-icons { font-size: 18px; line-height: 1; }
-    @media (max-width: 768px) {
-      .role-action-btn { top: 118px; right: 10px; padding: 8px 12px; font-size: 12px; border-radius: 8px; }
+
+    .role-action-btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.05);
     }
+
+    .role-action-btn:active {
+      transform: translateY(0);
+      filter: brightness(.98);
+    }
+
+    .role-action-btn:focus-visible {
+      outline: none !important;
+      box-shadow: 0 0 0 2px rgba(88, 101, 242, .25), 0 6px 16px rgba(0, 0, 0, .35);
+    }
+
+    .role-action-btn .material-icons {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    @media (max-width: 768px) {
+      .role-action-btn {
+        top: 118px;
+        right: 10px;
+        padding: 8px 12px;
+        font-size: 12px;
+        border-radius: 8px;
+      }
+    }
+
     #price-modal {
       display: none;
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
       z-index: 2000;
       justify-content: center;
       align-items: center;
     }
+
     #price-modal .modal-content {
       background: #222;
       padding: 20px;
       border-radius: 12px;
       width: 320px;
       color: white;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
     }
-    #price-modal h2 { margin-bottom: 15px; font-size: 20px; }
-    #price-modal label { display: block; margin: 10px 0 5px; }
+
+    #price-modal h2 {
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+
+    #price-modal label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
     #price-modal input {
       width: 100%;
       padding: 8px;
@@ -107,6 +256,7 @@
       border: none;
       margin-bottom: 10px;
     }
+
     #price-modal .btn-submit {
       width: 100%;
       padding: 10px;
@@ -117,6 +267,7 @@
       font-weight: bold;
       cursor: pointer;
     }
+
     #price-modal .btn-close {
       background: none;
       border: none;
@@ -125,16 +276,19 @@
       float: right;
       cursor: pointer;
     }
-.expected-input {
-  display: none;
-  position: absolute;
-  top: 550px;
-  right: 150px;
-  width: 20px;   /* your width */
-  height: 20px;
-  z-index: 9999;
-}
-    .expected-btn{
+
+    .expected-input {
+      display: none;
+      position: absolute;
+      top: 550px;
+      right: 150px;
+      width: 20px;
+      /* your width */
+      height: 20px;
+      z-index: 9999;
+    }
+
+    .expected-btn {
       display: none;
       position: absolute;
       top: 25px;
@@ -143,7 +297,8 @@
       width: 10px;
       height: 10px;
     }
-    .expected{
+
+    .expected {
       color: yellow;
       text-align: center;
       height: 30px;
@@ -155,13 +310,19 @@
       border-radius: 10px;
       box-shadow: 5px;
     }
-    .exp-display{
+
+    .exp-display {
       display: block;
     }
   </style>
 </head>
+
 <body>
-  <div id="loader"><div></div><div></div><div></div></div>
+  <div id="loader">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
   <div class="market-background"></div>
 
   <a href="/profile.html" class="profile-card" id="profile-card">
@@ -200,9 +361,11 @@
     <button class="btn item-filter-btn" data-nature="reset" style="padding: 12px 24px;">Reset Filter</button>
   </div>
   <div class="expected">Expected!</div>
-        <input class="expected-input" type="number">
-      <div class="expected-btn">DONE!</div>
-  <div class="item-container" id="itemDetails"><p>Loading item details...</p></div>
+  <input class="expected-input" type="number">
+  <div class="expected-btn">DONE!</div>
+  <div class="item-container" id="itemDetails">
+    <p>Loading item details...</p>
+  </div>
   <div class="item-nav-buttons">
     <button id="prevItemBtn" class="btn" type="button">&larr; Previous</button>
     <button id="nextItemBtn" class="btn" type="button">Next &rarr;</button>
@@ -213,11 +376,11 @@
     let isDevUser = false;
     let allItems = [];
     const expected = document.querySelector(".expected");
-const expInput = document.querySelector(".expected-input");
+    const expInput = document.querySelector(".expected-input");
 
-expected.addEventListener("click", () => {
-  expInput.classList.toggle("exp-display");
-});
+    expected.addEventListener("click", () => {
+      expInput.classList.toggle("exp-display");
+    });
 
     function getCookie(name) { const value = `; ${document.cookie}`; const parts = value.split(`; ${name}=`); if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift()); return ''; }
 
@@ -314,7 +477,7 @@ expected.addEventListener("click", () => {
             const marketPrice = pricesMap.get(item.id) ?? item.price ?? "N/A";
             const npcPrice = npcPricesMap.get(item.id);
             let privateHighlight = (isDevUser && !isPublic) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
-            
+
             // Fetch bazaar data from API using item name, but only for bazaarable items
             let bazaarData = null;
             if (item.bazaarable) {
@@ -327,7 +490,7 @@ expected.addEventListener("click", () => {
 
             // Build price display HTML
             let priceHTML = `<div class="item-price-container">`;
-            
+
             // Show bazaar data if available
             if (bazaarData && bazaarData.buyTopEntries && bazaarData.sellTopEntries) {
               const buyPrice = bazaarData.buyTopEntries[0]?.price || 0;
@@ -335,13 +498,19 @@ expected.addEventListener("click", () => {
               const buyVolume = bazaarData.buyVolume ?? 0;
               const sellVolume = bazaarData.sellVolume ?? 0;
               const weeklyAvg = bazaarData.weeklyAveragePrice || 0;
-              
+
               priceHTML += `
-              <div>
+              <div style="display: flex;
+  width: -webkit-fill-available;
+  width: -moz-available;
+  gap: 10px;">
                 <p class="item-price"><strong>Bazaar Buy Price:</strong> ${formatCurrency(sellPrice)}</p>
                 <p class="item-price"><strong>Bazaar Sell Price:</strong> ${formatCurrency(buyPrice)}</p>
               </div>
-              <div>
+              <div style="display: flex;
+  width: -webkit-fill-available;
+  width: -moz-available;
+  gap: 10px;">
                 <p class="item-price"><strong>Buy Volume:</strong> ${formatNumber(buyVolume)}</p>
                 <p class="item-price"><strong>Sell Volume:</strong> ${formatNumber(sellVolume)}</p>
               </div>
@@ -350,19 +519,19 @@ expected.addEventListener("click", () => {
                 
               `;
             }
-                    
+
             // Show NPC price if available
             // if (npcPrice !== null && npcPrice !== undefined) {
             //   priceHTML += `<p class="item-price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>`;
             // }
-            
+
             priceHTML += `</div>`;
 
             document.getElementById('itemDetails').innerHTML = `${privateHighlight}<h1>${item.name}</h1>
             ${item.picture ? `<img src="${item.picture}" alt="${item.name}">` : ''}
             ${item.rarity ? `<div class="item-rarity-display"><img class="item-rarity" src="img/rarity/${item.rarity}.webp"></div>` : ''}
             <p><strong class="item-strong">ID:</strong> ${item.id}</p>${priceHTML}`;
-            
+
             // preload modal with values
             document.getElementById('modal-item-name').textContent = item.name;
             document.getElementById('modal-market-price').value = marketPrice !== "N/A" ? marketPrice : "";
@@ -407,43 +576,43 @@ expected.addEventListener("click", () => {
     function getBazaarItemId(itemName) {
       if (!itemName) return null;
       return itemName.toLowerCase()
-          .replace(/\s+/g, '_')
-          .replace(/[^a-z0-9_]/g, '')
-          .replace(/_+/g, '_')
-          .replace(/^_|_$/g, '');
+        .replace(/\s+/g, '_')
+        .replace(/[^a-z0-9_]/g, '')
+        .replace(/_+/g, '_')
+        .replace(/^_|_$/g, '');
     }
 
     // Simple fuzzy matching - try variations of the item name
     function getBazaarItemVariations(itemName) {
       const baseId = getBazaarItemId(itemName);
       if (!baseId) return [];
-      
+
       const variations = [baseId];
-      
+
       // Try without "enchanted_" prefix
       if (baseId.startsWith('enchanted_')) {
-          variations.push(baseId.replace(/^enchanted_/, ''));
+        variations.push(baseId.replace(/^enchanted_/, ''));
       }
-      
+
       // Try adding "enchanted_" prefix
       if (!baseId.startsWith('enchanted_')) {
-          variations.push('enchanted_' + baseId);
+        variations.push('enchanted_' + baseId);
       }
-      
+
       // Try singular/plural variations
       if (baseId.endsWith('s') && baseId.length > 1) {
-          variations.push(baseId.slice(0, -1));
+        variations.push(baseId.slice(0, -1));
       } else {
-          variations.push(baseId + 's');
+        variations.push(baseId + 's');
       }
-      
+
       return variations;
     }
 
     async function fetchBazaarData(itemName) {
       // Get variations to try
       const variations = getBazaarItemVariations(itemName);
-      
+
       // Try each variation until one works
       for (const itemId of variations) {
         try {
@@ -465,7 +634,7 @@ expected.addEventListener("click", () => {
           continue;
         }
       }
-      
+
       // None of the variations worked
       return null;
     }
@@ -561,4 +730,5 @@ expected.addEventListener("click", () => {
     initializePage();
   </script>
 </body>
+
 </html>
