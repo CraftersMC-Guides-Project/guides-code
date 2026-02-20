@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Category Items</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <script src="js/api-proxy-client.js"></script>
   <link rel="stylesheet" href="css/categories.css">
   <link rel="stylesheet" href="css/essential.css">
   <style>
@@ -49,7 +48,7 @@
 
   <script>
       let isDevUser = false;
-      let apiClient = new APIProxyClient();
+      let latestBackupByItemId = new Map();
 
       function getCookie(name) {
           const value = `; ${document.cookie}`;
@@ -77,13 +76,18 @@
           }
 
           try {
-              const [marketRes, pricesRes] = await Promise.all([
+              const [marketRes, backupRes] = await Promise.all([
                   fetch('market/market.txt'),
-                  fetch('market/mprices.txt')
+                  fetch('/api/latest-bazaar-backup')
               ]);
 
               const marketData = await marketRes.json();
-              const pricesData = await pricesRes.text();
+              const backupData = await backupRes.json();
+
+              const backupRows = Array.isArray(backupData?.items) ? backupData.items : [];
+              latestBackupByItemId = new Map(
+                  backupRows.map((row) => [String(row.item_id || '').toLowerCase(), row])
+              );
 
               // Store all items for filtering
               window._allCategoryItems = marketData.filter(item =>
@@ -122,58 +126,38 @@
           });
 
           if (visibleItems.length > 0) {
-              // Render items with async bazaar data fetching
-              const renderItemsWithBazaarData = async () => {
-                  // Show loading state
-                  document.getElementById('categoryItems').innerHTML = '<p>Loading bazaar items...</p>';
-                  
-                  const itemsHTMLPromises = visibleItems.map(async (item) => {
-                      const isPublic = item.hasOwnProperty('public') ? item.public : true;
-                      const isSkyCanvas = item.name === "Sky Canvas";
-                      let privateHighlight = (!isPublic && isDevUser) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
-                      
-                      // Fetch bazaar data for this item using item name
-                      let bazaarData = null;
-                      try {
-                          // Use item name instead of numeric ID
-                          bazaarData = await fetchBazaarData(item.name);
-                      } catch (error) {
-                          // API error – just skip bazaar pricing, item is still shown
-                          console.log(`Bazaar API error for "${item.name}":`, error.message);
-                      }
-                      
-                      // Build bazaar price HTML if data is available
-                      let bazaarPriceHTML = '';
-                      if (bazaarData && bazaarData.sellTopEntries && bazaarData.sellTopEntries[0]) {
-                          const sellPrice = bazaarData.sellTopEntries[0].price || 0;
-                          bazaarPriceHTML = `<p class="category-price"><strong>Bazaar Price:</strong> ${formatCurrency(sellPrice)}</p>`;
-                      }
-                      
-                      return `
-                          <div class="category-item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
-                              ${privateHighlight}
-                              <h2>${item.name}</h2>
-                              ${item.picture ? `<div class="category-main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="category-sky-canvas-img"' : ''}>` : ''}
-                              <div class="category-main-data-val"><p><strong>ID:</strong> ${item.id}</p>
-                              ${bazaarPriceHTML}
-                              ${item.description ? `<p class="category-description">${item.description}</p>` : ''}
-                              ${item.rarity ? `<p class="category-rarity-display"><img class="category-rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
-                              ${item.nature ? `<p class="category-nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
-                              ${item.demand ? `<p class="category-demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
-                              </div></div>
-                          </div>
-                      `;
-                  });
-                  
-                  const itemsHTML = await Promise.all(itemsHTMLPromises);
-                  if (itemsHTML.length > 0) {
-                      document.getElementById('categoryItems').innerHTML = `<div class="category-item-list">${itemsHTML.join('')}</div>`;
-                  } else {
-                      document.getElementById('categoryItems').innerHTML = '<p>No bazaar items found in this category.</p>';
+              const itemsHTML = visibleItems.map((item) => {
+                  const isPublic = item.hasOwnProperty('public') ? item.public : true;
+                  const isSkyCanvas = item.name === "Sky Canvas";
+                  let privateHighlight = (!isPublic && isDevUser) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
+
+                  const backupRow = getLatestBackupRow(item.name);
+                  let bazaarPriceHTML = '';
+                  if (backupRow && backupRow.sell_price !== null && backupRow.sell_price !== undefined) {
+                      bazaarPriceHTML = `<p class="category-price"><strong>Bazaar Price:</strong> ${formatCurrency(backupRow.sell_price)}</p>`;
                   }
-              };
-              
-              renderItemsWithBazaarData();
+
+                  return `
+                      <div class="category-item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
+                          ${privateHighlight}
+                          <h2>${item.name}</h2>
+                          ${item.picture ? `<div class="category-main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="category-sky-canvas-img"' : ''}>` : ''}
+                          <div class="category-main-data-val"><p><strong>ID:</strong> ${item.id}</p>
+                          ${bazaarPriceHTML}
+                          ${item.description ? `<p class="category-description">${item.description}</p>` : ''}
+                          ${item.rarity ? `<p class="category-rarity-display"><img class="category-rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
+                          ${item.nature ? `<p class="category-nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
+                          ${item.demand ? `<p class="category-demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
+                          </div></div>
+                      </div>
+                  `;
+              });
+
+              if (itemsHTML.length > 0) {
+                  document.getElementById('categoryItems').innerHTML = `<div class="category-item-list">${itemsHTML.join('')}</div>`;
+              } else {
+                  document.getElementById('categoryItems').innerHTML = '<p>No bazaar items found in this category.</p>';
+              }
           } else {
               document.getElementById('categoryItems').innerHTML = '<p>No items found in this category.</p>';
           }
@@ -235,57 +219,12 @@
           return variations;
       }
 
-      // Rate limiting helper
-      let lastApiCall = 0;
-      const API_DELAY = 100; // 100ms delay between API calls
-
-      async function fetchBazaarData(itemName) {
-          // Rate limiting: wait if needed
-          const now = Date.now();
-          const timeSinceLastCall = now - lastApiCall;
-          if (timeSinceLastCall < API_DELAY) {
-              await new Promise(resolve => setTimeout(resolve, API_DELAY - timeSinceLastCall));
-          }
-          lastApiCall = Date.now();
-
-          // Get variations to try
+      function getLatestBackupRow(itemName) {
           const variations = getBazaarItemVariations(itemName);
-          
-          // Try each variation until one works
           for (const itemId of variations) {
-              try {
-                  const data = await apiClient.getBazaarItem(itemId);
-                  // Check if the API returned an error or invalid data
-                  if (data && data.error) {
-                      continue; // Try next variation
-                  }
-                  // Check if we have valid bazaar data
-                  if (data && data.buyTopEntries && data.sellTopEntries) {
-                      return data;
-                  }
-              } catch (error) {
-                  // Check if it's a rate limit error
-                  if (error.message && error.message.includes('429')) {
-                      // Rate limited - wait longer and retry
-                      const retryAfter = error.message.match(/retryAfter["\s:]*(\d+)/)?.[1] || 5;
-                      console.warn(`Rate limited, waiting ${retryAfter} seconds...`);
-                      await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
-                      // Retry this variation
-                      try {
-                          const data = await apiClient.getBazaarItem(itemId);
-                          if (data && !data.error && data.buyTopEntries && data.sellTopEntries) {
-                              return data;
-                          }
-                      } catch (retryError) {
-                          // Still failed, continue to next variation
-                      }
-                  }
-                  // Try next variation
-                  continue;
-              }
+              const row = latestBackupByItemId.get(String(itemId).toLowerCase());
+              if (row) return row;
           }
-          
-          // None of the variations worked
           return null;
       }
 

@@ -13,7 +13,7 @@ export async function onRequest({ params, env }) {
     headers: {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
-      'Cache-Control': 'public, max-age=30'
+      'Cache-Control': 'no-store'
     }
   })
 }
