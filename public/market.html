@@ -326,8 +326,104 @@
     function getRarityTag(rarity) { if (!rarity) return ''; const r = rarity.toLowerCase(); if (r === 'legendary') return '<span class="rarity-tag rarity-legendary">LEGENDARY</span>'; if (r === 'epic') return '<span class="rarity-tag rarity-epic">EPIC</span>'; if (r === 'rare') return '<span class="rarity-tag rarity-rare">RARE</span>'; if (r === 'uncommon') return '<span class="rarity-tag rarity-uncommon">UNCOMMON</span>'; if (r === 'common') return '<span class="rarity-tag rarity-common">COMMON</span>'; return '' }
     function imgOf(o) { return o.picture || o.img || o.image || o.icon || 'assets/placeholder.png' }
     function coinIcon() { return 'img/coin.png' }
-    function searchItems() { const query = document.getElementById('searchBox').value.toLowerCase(); const resultsDiv = document.getElementById('results'); resultsDiv.innerHTML = ''; if (!isDataLoaded) { resultsDiv.innerHTML = '<p>Loading items...</p>'; return } const filteredItems = items.filter(item => { const isPublic = item.hasOwnProperty("public") ? item.public : true; return (isPublic || isDevUser) && item.name.toLowerCase().includes(query) }); const filteredPets = pets.filter(pet => pet.name.toLowerCase().includes(query)); const filteredMinions = minions.filter(minion => minion.name.toLowerCase().includes(query)); if (filteredItems.length === 0 && filteredPets.length === 0 && filteredMinions.length === 0 && query.trim() !== '') { resultsDiv.innerHTML = '<p>No results found.</p>'; return } if (query.trim() === '') return; filteredItems.slice(0, 10).forEach(item => { const price = prices[item.id] || 'N/A'; const div = document.createElement('div'); div.className = 'result'; const isPublic = item.hasOwnProperty("public") ? item.public : true; let privateHighlight = (!isPublic && isDevUser) ? `<div class='private-item-highlight'>PRIVATE ITEM</div>` : ''; div.innerHTML = `${privateHighlight}<div class="market-info-head"><img src="${imgOf(item)}" alt="${item.name}" /><span>${item.name}</span><span>${price} <img src="${coinIcon()}" class="market-coin"/></span></div><div class="market-description">${item.description || ''}</div>${getRarityTag(item.rarity)}`; resultsDiv.appendChild(div) }); filteredPets.slice(0, 10).forEach(pet => { const price = petPrices[pet.id] || 'N/A'; const div = document.createElement('div'); div.className = 'result'; div.innerHTML = `<div class="market-info-head"><img src="${imgOf(pet)}" alt="${pet.name}" /><span>${pet.name}</span><span>${price} <img src="${coinIcon()}" class="market-coin"/></span></div><div class="market-description">${pet.description || ''}</div>${getRarityTag(pet.rarity)}`; resultsDiv.appendChild(div) }); filteredMinions.slice(0, 10).forEach(minion => { const price = minionPrices[minion.id] || 'N/A'; const div = document.createElement('div'); div.className = 'result'; div.innerHTML = `<div class="market-info-head"><img src="${imgOf(minion)}" alt="${minion.name}" /><span>${minion.name}</span><span>${price} <img src="${coinIcon()}" class="market-coin"/></span></div><div class="market-description">${minion.description || ''}</div>${getRarityTag(minion.rarity)}`; resultsDiv.appendChild(div) }) }
-    document.addEventListener('keydown', function (e) { const searchBox = document.getElementById('searchBox'); if (document.activeElement !== searchBox) { searchBox.focus(); searchBox.value = '' } });
+    function normalize(s) { return String(s || '').trim().toLowerCase() }
+    function scoreMatch(name, query) {
+      const n = normalize(name);
+      if (!query) return -1;
+      if (n === query) return 0;
+      if (n.startsWith(query)) return 1;
+      if (n.includes(` ${query}`)) return 2;
+      const idx = n.indexOf(query);
+      return idx >= 0 ? 3 + idx : -1;
+    }
+    function createResultCard(obj, price, isPrivate = false) {
+      const div = document.createElement('div');
+      div.className = 'result';
+      const privateHighlight = isPrivate ? `<div class='private-item-highlight'>PRIVATE ITEM</div>` : '';
+      div.innerHTML = `${privateHighlight}<div class="market-info-head"><img src="${imgOf(obj)}" alt="${obj.name}" /><span>${obj.name}</span><span>${price} <img src="${coinIcon()}" class="market-coin"/></span></div><div class="market-description">${obj.description || ''}</div>${getRarityTag(obj.rarity)}`;
+      return div;
+    }
+    function lookupPetPrice(pet) {
+      if (petPrices && typeof petPrices === 'object' && !Array.isArray(petPrices)) {
+        return petPrices[pet.id] ?? petPrices[pet.petId];
+      }
+      if (Array.isArray(petPrices)) {
+        const row = petPrices.find(p => String(p.petId ?? p.id) === String(pet.id));
+        if (!row) return undefined;
+        return row.price ?? row.common ?? row.uncommon ?? row.rare ?? row.epic ?? row.legendary;
+      }
+      return undefined;
+    }
+    function lookupMinionPrice(minion) {
+      if (minionPrices && typeof minionPrices === 'object' && !Array.isArray(minionPrices)) {
+        return minionPrices[minion.id] ?? minionPrices[minion.minionId];
+      }
+      if (Array.isArray(minionPrices)) {
+        const row = minionPrices.find(m => String(m.minionId ?? m.id) === String(minion.id));
+        if (!row) return undefined;
+        return row.price ?? row.value;
+      }
+      return undefined;
+    }
+    function searchItems() {
+      const query = normalize(document.getElementById('searchBox').value);
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+      if (!isDataLoaded) { resultsDiv.innerHTML = '<p>Loading items...</p>'; return; }
+      if (!query) return;
+
+      const itemMatches = items
+        .filter(item => {
+          const isPublic = item.hasOwnProperty("public") ? item.public : true;
+          return (isPublic || isDevUser) && scoreMatch(item.name, query) >= 0;
+        })
+        .map(item => ({ kind: 'item', data: item, score: scoreMatch(item.name, query) }))
+        .sort((a, b) => a.score - b.score || a.data.name.localeCompare(b.data.name));
+
+      const petMatches = pets
+        .filter(pet => scoreMatch(pet.name, query) >= 0)
+        .map(pet => ({ kind: 'pet', data: pet, score: scoreMatch(pet.name, query) }))
+        .sort((a, b) => a.score - b.score || a.data.name.localeCompare(b.data.name));
+
+      const minionMatches = minions
+        .filter(minion => scoreMatch(minion.name, query) >= 0)
+        .map(minion => ({ kind: 'minion', data: minion, score: scoreMatch(minion.name, query) }))
+        .sort((a, b) => a.score - b.score || a.data.name.localeCompare(b.data.name));
+
+      const combined = [...itemMatches, ...petMatches, ...minionMatches]
+        .sort((a, b) => a.score - b.score || a.data.name.localeCompare(b.data.name))
+        .slice(0, 20);
+
+      if (combined.length === 0) {
+        resultsDiv.innerHTML = '<p>No results found.</p>';
+        return;
+      }
+
+      combined.forEach(entry => {
+        if (entry.kind === 'item') {
+          const item = entry.data;
+          const price = prices[item.id] || 'N/A';
+          const isPublic = item.hasOwnProperty("public") ? item.public : true;
+          resultsDiv.appendChild(createResultCard(item, price, !isPublic && isDevUser));
+          return;
+        }
+        if (entry.kind === 'pet') {
+          const pet = entry.data;
+          const price = lookupPetPrice(pet) ?? 'N/A';
+          resultsDiv.appendChild(createResultCard(pet, price));
+          return;
+        }
+        const minion = entry.data;
+        const price = lookupMinionPrice(minion) ?? 'N/A';
+        resultsDiv.appendChild(createResultCard(minion, price));
+      });
+    }
+    document.addEventListener('keydown', function () {
+      const searchBox = document.getElementById('searchBox');
+      if (document.activeElement !== searchBox) {
+        searchBox.focus();
+      }
+    });
   </script>
 </body>
 
