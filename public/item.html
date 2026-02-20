@@ -332,11 +332,15 @@ expected.addEventListener("click", () => {
             if (bazaarData && bazaarData.buyTopEntries && bazaarData.sellTopEntries) {
               const buyPrice = bazaarData.buyTopEntries[0]?.price || 0;
               const sellPrice = bazaarData.sellTopEntries[0]?.price || 0;
+              const buyVolume = bazaarData.buyVolume ?? 0;
+              const sellVolume = bazaarData.sellVolume ?? 0;
               const weeklyAvg = bazaarData.weeklyAveragePrice || 0;
               
               priceHTML += `
                 <p class="item-price"><strong>Bazaar Buy Price:</strong> ${formatCurrency(sellPrice)}</p>
                 <p class="item-price"><strong>Bazaar Sell Price:</strong> ${formatCurrency(buyPrice)}</p>
+                <p class="item-price"><strong>Buy Volume:</strong> ${formatNumber(buyVolume)}</p>
+                <p class="item-price"><strong>Sell Volume:</strong> ${formatNumber(sellVolume)}</p>
                 ${weeklyAvg > 0 ? `<p class="item-price"><strong>7-Day Average:</strong> ${formatCurrency(weeklyAvg)}</p>` : ''}
                 <hr width="150px">
               `;
@@ -387,6 +391,11 @@ expected.addEventListener("click", () => {
       if (amount >= 1000000) return (amount / 1000000).toFixed(2) + 'M';
       if (amount >= 1000) return (amount / 1000).toFixed(1) + 'K';
       return Math.round(amount).toLocaleString();
+    }
+
+    function formatNumber(value) {
+      if (value === undefined || value === null || Number.isNaN(Number(value))) return 'N/A';
+      return Number(value).toLocaleString();
     }
 
     // Convert item name to bazaar API format

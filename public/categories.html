@@ -134,7 +134,11 @@
                   const backupRow = getLatestBackupRow(item.name);
                   let bazaarPriceHTML = '';
                   if (backupRow && backupRow.sell_price !== null && backupRow.sell_price !== undefined) {
-                      bazaarPriceHTML = `<p class="category-price"><strong>Bazaar Price:</strong> ${formatCurrency(backupRow.sell_price)}</p>`;
+                      bazaarPriceHTML = `
+                          <p class="category-price"><strong>Bazaar Price:</strong> ${formatCurrency(backupRow.sell_price)}</p>
+                          <p class="category-price"><strong>Buy Volume:</strong> ${formatNumber(backupRow.buy_volume)}</p>
+                          <p class="category-price"><strong>Sell Volume:</strong> ${formatNumber(backupRow.sell_volume)}</p>
+                      `;
                   }
 
                   return `
@@ -180,6 +184,11 @@
           if (amount >= 1000000) return (amount / 1000000).toFixed(2) + 'M';
           if (amount >= 1000) return (amount / 1000).toFixed(1) + 'K';
           return Math.round(amount).toLocaleString();
+      }
+
+      function formatNumber(value) {
+          if (value === undefined || value === null || Number.isNaN(Number(value))) return 'N/A';
+          return Number(value).toLocaleString();
       }
 
       // Convert item name to bazaar API format (lowercase, spaces to underscores, remove special chars)
