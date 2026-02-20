@@ -6,6 +6,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Item Details - CraftersMC Guides</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="js/script.js"></script>
   <link rel="stylesheet" href="css/item.css">
@@ -314,6 +315,26 @@
     .exp-display {
       display: block;
     }
+
+    .item-history-card {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.25);
+      min-height: 280px;
+    }
+
+    .item-history-title {
+      margin: 0 0 10px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .item-history-note {
+      margin: 8px 0 0;
+      font-size: 13px;
+      opacity: 0.8;
+    }
   </style>
 </head>
 
@@ -372,6 +393,7 @@
   <script>
     let isDevUser = false;
     let allItems = [];
+    let itemHistoryChart = null;
     const expected = document.querySelector(".expected");
     const expInput = document.querySelector(".expected-input");
 
@@ -441,6 +463,10 @@
       const itemId = urlParams.get('item');
       if (itemId) {
         try {
+          if (itemHistoryChart) {
+            itemHistoryChart.destroy();
+            itemHistoryChart = null;
+          }
           const storedUser = getCookie("discordUser");
           if (storedUser) {
             let devIds = [];
@@ -488,6 +514,9 @@
                 console.warn('Bazaar API fetch failed, using fallback data:', error);
               }
             }
+            const historyPayload = item.bazaarable
+              ? await fetchBazaarHistory(item.name)
+              : { itemId: null, history: [] };
 
             // Build price display HTML
             let priceHTML = `<div class="item-price-container">`;
@@ -521,6 +550,16 @@
               `;
             }
 
+            if (item.bazaarable) {
+              priceHTML += `
+                <div class="item-history-card">
+                  <h3 class="item-history-title">Price History</h3>
+                  <canvas id="itemHistoryChart" height="220"></canvas>
+                  <p id="itemHistoryNote" class="item-history-note">Loading history from D1...</p>
+                </div>
+              `;
+            }
+
             // Show NPC price if available
             // if (npcPrice !== null && npcPrice !== undefined) {
             //   priceHTML += `<p class="item-price"><strong>NPC Trade Price:</strong> ${formatPrice(npcPrice)}</p>`;
@@ -541,6 +580,9 @@
               modalItemName.textContent = item.name;
               modalMarketPrice.value = marketPrice !== "N/A" ? marketPrice : "";
               modalNpcPrice.value = npcPrice ?? "";
+            }
+            if (item.bazaarable) {
+              renderHistoryGraph(historyPayload);
             }
           } else {
             document.getElementById('itemDetails').innerHTML = `<h2 style="color:red;">Error: This item doesn't exist.</h2>`;
@@ -613,6 +655,92 @@
       }
 
       return variations;
+    }
+
+    async function fetchBazaarHistory(itemName) {
+      const variations = getBazaarItemVariations(itemName);
+      for (const itemId of variations) {
+        try {
+          const response = await fetch(`/api/history/${encodeURIComponent(itemId)}`);
+          if (!response.ok) continue;
+          const data = await response.json();
+          if (Array.isArray(data.history) && data.history.length > 0) {
+            return { itemId, history: data.history };
+          }
+        } catch (error) {
+          continue;
+        }
+      }
+      return { itemId: variations[0] || null, history: [] };
+    }
+
+    function renderHistoryGraph(historyPayload) {
+      const canvas = document.getElementById('itemHistoryChart');
+      const note = document.getElementById('itemHistoryNote');
+      if (!canvas || typeof Chart === 'undefined') return;
+
+      if (itemHistoryChart) {
+        itemHistoryChart.destroy();
+        itemHistoryChart = null;
+      }
+
+      const history = Array.isArray(historyPayload?.history) ? historyPayload.history : [];
+      if (history.length === 0) {
+        if (note) note.textContent = 'No D1 history found for this item yet.';
+        return;
+      }
+
+      const labels = history.map((p) => new Date(p.fetched_at).toLocaleString());
+      const buySeries = history.map((p) => p.buy_price ?? null);
+      const sellSeries = history.map((p) => p.sell_price ?? null);
+      const avgSeries = history.map((p) => p.avg_7d_price ?? null);
+
+      itemHistoryChart = new Chart(canvas.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Buy Price',
+              borderColor: '#4cc9f0',
+              data: buySeries,
+              tension: 0.25,
+              pointRadius: 1.8
+            },
+            {
+              label: 'Sell Price',
+              borderColor: '#f72585',
+              data: sellSeries,
+              tension: 0.25,
+              pointRadius: 1.8
+            },
+            {
+              label: '7d Avg',
+              borderColor: '#fca311',
+              borderDash: [5, 5],
+              data: avgSeries,
+              tension: 0.25,
+              pointRadius: 1.2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            x: { ticks: { color: '#aaa', maxTicksLimit: 7 } },
+            y: { ticks: { color: '#aaa' } }
+          },
+          plugins: {
+            legend: { labels: { color: '#ddd' } }
+          }
+        }
+      });
+
+      if (note) {
+        note.textContent = `Source: D1 history (${historyPayload.itemId})`;
+      }
     }
 
     async function fetchBazaarData(itemName) {
