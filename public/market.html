@@ -359,24 +359,13 @@
       const itemMatches = items
         .filter(item => {
           const isPublic = item.hasOwnProperty("public") ? item.public : true;
-          return (isPublic || isDevUser) && scoreMatch(item.name, query) >= 0;
+          const isBazaarable = item.bazaarable === true;
+          return isBazaarable && (isPublic || isDevUser) && scoreMatch(item.name, query) >= 0;
         })
         .map(item => ({ kind: 'item', data: item, score: scoreMatch(item.name, query) }))
         .sort((a, b) => a.score - b.score || a.data.name.localeCompare(b.data.name));
 
-      const petMatches = pets
-        .filter(pet => scoreMatch(pet.name, query) >= 0)
-        .map(pet => ({ kind: 'pet', data: pet, score: scoreMatch(pet.name, query) }))
-        .sort((a, b) => a.score - b.score || a.data.name.localeCompare(b.data.name));
-
-      const minionMatches = minions
-        .filter(minion => scoreMatch(minion.name, query) >= 0)
-        .map(minion => ({ kind: 'minion', data: minion, score: scoreMatch(minion.name, query) }))
-        .sort((a, b) => a.score - b.score || a.data.name.localeCompare(b.data.name));
-
-      const combined = [...itemMatches, ...petMatches, ...minionMatches]
-        .sort((a, b) => a.score - b.score || a.data.name.localeCompare(b.data.name))
-        .slice(0, 20);
+      const combined = itemMatches.slice(0, 20);
 
       if (combined.length === 0) {
         resultsDiv.innerHTML = '<p>No results found.</p>';
@@ -390,13 +379,6 @@
           resultsDiv.appendChild(createResultCard(item, !isPublic && isDevUser));
           return;
         }
-        if (entry.kind === 'pet') {
-          const pet = entry.data;
-          resultsDiv.appendChild(createResultCard(pet));
-          return;
-        }
-        const minion = entry.data;
-        resultsDiv.appendChild(createResultCard(minion));
       });
     }
     document.addEventListener('keydown', function () {
