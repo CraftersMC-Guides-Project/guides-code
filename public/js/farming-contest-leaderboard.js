@@ -108,12 +108,12 @@ const collectionsData = {
                 { rank: 2, name: "Pratham7354", score: "3.1M+" },
                 { rank: 3, name: "hhhuuuhh", score: "2.3M+" },
                 { rank: 4, name: "Fallen1sec", score: "1.4M+" },
-                { rank: 5, name: "Aryaan045", score: "1.2M+" },
-                { rank: 6, name: "DRONZAR_OP/HueDisNwPhn", score: "1M+" },
-                { rank: 7, name: "MrTheAyu", score: "1M+" },
-                { rank: 8, name: "Rudra993gamer", score: "957K+" },
-                { rank: 9, name: "SAAD_KING_07726", score: "553K+" },
-                { rank: 10, name: "Unknown", score: "N/A" }
+                { rank: 5, name: "Taranpreet3916", score: "1.4M+" },
+                { rank: 6, name: "Aryaan045", score: "1.2M+" },
+                { rank: 7, name: "DRONZAR_OP/HueDisNwPhn", score: "1M+" },
+                { rank: 8, name: "MrTheAyu", score: "1M+" },
+                { rank: 9, name: "Rudra993gamer", score: "957K+" },
+                { rank: 10, name: "SAAD_KING_07726", score: "553K+" }
             ]
         },
         {
