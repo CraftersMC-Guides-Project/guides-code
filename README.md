@@ -50,9 +50,62 @@ This project is brought to you by:
 ## **Contribute**
 We welcome contributions to improve the guide! If you notice any errors or have suggestions, feel free to open an issue or submit a pull request. *This guide is under development so do not expect it to be 100% perfect*
 
-### File tree
-- /functions (Cloudflare functions, use for APIs)
-- /public (all the web related files)
+### File Tree
+```text
+.
+├── functions/                  # Cloudflare Pages Functions (API routes)
+│   ├── api/                    # Utility/history API endpoints
+│   ├── bazaar/                 # Bazaar-related API endpoints
+│   ├── player/                 # Player lookup endpoint(s)
+│   ├── profile/                # Profile lookup endpoint(s)
+│   ├── leaderboard-submisson-api.js
+│   ├── network-status.js
+│   └── seller-api.js
+├── public/                     # Frontend source served as static files
+│   ├── assets/                 # Images, icons, media, and grouped art assets
+│   ├── css/                    # Page and component stylesheets
+│   ├── guide/                  # Guide pages
+│   ├── img/                    # Item and feature image library
+│   ├── js/                     # Client-side JavaScript
+│   ├── market/                 # Market data files
+│   ├── sellers/                # Seller profile pages/templates
+│   ├── tools/                  # Tool/calculator pages
+│   └── *.html                  # Main site pages and route entry points
+├── wrangler.toml               # Cloudflare Pages/Workers config
+├── LICENSE
+└── README.md
+```
+
+### Folder Guide
+- `functions/`: Backend API logic for Cloudflare Pages Functions.
+- `functions/api/`: General API helpers and history-related endpoints.
+- `functions/bazaar/`: Bazaar item endpoints.
+- `functions/player/` and `functions/profile/`: Player/profile fetch routes.
+- `public/`: Static site content (HTML/CSS/JS/assets) deployed to Pages.
+- `public/assets/` and `public/img/`: Media files used by pages and tools.
+- `public/css/`: Styling for pages, layouts, and UI components.
+- `public/js/`: Interactive frontend scripts and page-specific logic.
+- `public/guide/`: Written guide pages for progression/help.
+- `public/tools/`: Calculators and utility tools.
+- `public/sellers/`: Seller pages and related templates/config.
+- `public/market/`: Market data consumed by tools/pages.
+
+### How to Create an Issue
+1. Open the repository on GitHub.
+2. Go to the `Issues` tab.
+3. Click `New issue`.
+4. Choose a template (if available) or start a blank issue.
+5. Add a clear title, expected behavior, actual behavior, and screenshots/logs.
+6. Submit the issue.
+
+### How to Create a Pull Request
+1. Fork the repository (if you are not a direct contributor).
+2. Create a branch from `main` with a descriptive name.
+3. Commit your changes with clear commit messages.
+4. Push the branch to your fork/repository.
+5. Open `Pull requests` on GitHub and click `New pull request`.
+6. Set `base: main` and `compare: your-branch`.
+7. Add a summary of changes, testing notes, and linked issue(s), then create the PR.
 
 ## **Support Server**
 Join our discord server to get updates of the project and give us your feedbacks there too! Link: https://discord.gg/tbHbnvdXKR
@@ -62,4 +115,3 @@ This project is licensed under the **GNU General Public License**. See the [LICE
 
 > [!NOTE] 
 > We are not affiliated with Minecraft, Microsoft, or TEON CREATIVE.
-
