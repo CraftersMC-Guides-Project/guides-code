@@ -696,7 +696,7 @@ const collectionsData = {
                 {
                     "rank": 4,
                     "name": "Gamer_legend746",
-                    "score": "169M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 5,
@@ -721,12 +721,12 @@ const collectionsData = {
                 {
                     "rank": 9,
                     "name": "Neelu18100",
-                    "score": "118M+"
+                    "score": "N/A"
                 },
                 {
                     "rank": 10,
-                    "name": "Unknown",
-                    "score": "N/A"
+                    "name": "DesiringSugar39",
+                    "score": "200M+"
                 }
             ]
         },
