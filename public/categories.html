@@ -33,13 +33,6 @@
   <span class="material-icons" id="scrollToTopBtn">north</span>
   <div class="gap"></div>
 
-  <div id="categoryFilter" style="display: flex; gap: 12px; justify-content: center; margin: 5rem 0; flex-wrap: wrap;">
-    <button class="btn cat-filter-btn active" data-nature="all" style="padding: 12px 24px;">All</button>
-    <button class="btn cat-filter-btn" data-nature="stable" style="padding: 12px 24px;">Stable</button>
-    <button class="btn cat-filter-btn" data-nature="overpaid" style="padding: 12px 24px;">Overpaid</button>
-    <button class="btn cat-filter-btn" data-nature="underpaid" style="padding: 12px 24px;">Underpaid</button>
-  </div>
-
   <div id="categoryItems">
       <p>Loading items...</p>
   </div>
@@ -48,7 +41,6 @@
 
   <script>
       let isDevUser = false;
-      let latestBackupByItemId = new Map();
 
       function getCookie(name) {
           const value = `; ${document.cookie}`;
@@ -76,46 +68,26 @@
           }
 
           try {
-              const [marketRes, backupRes] = await Promise.all([
-                  fetch('market/market.txt'),
-                  fetch('/api/latest-bazaar-backup')
-              ]);
-
+              const marketRes = await fetch('market/market.txt');
               const marketData = await marketRes.json();
-              const backupData = await backupRes.json();
-
-              const backupRows = Array.isArray(backupData?.items) ? backupData.items : [];
-              latestBackupByItemId = new Map(
-                  backupRows.map((row) => [String(row.item_id || '').toLowerCase(), row])
-              );
 
               // Store all items for filtering
               window._allCategoryItems = marketData.filter(item =>
                   item.category && item.category.toLowerCase() === category.toLowerCase()
               );
-              renderCategoryItems('all');
+              renderCategoryItems();
           } catch (error) {
               console.error('Error loading category items:', error);
               document.getElementById('categoryItems').innerHTML = '<p>Failed to load items.</p>';
           }
       }
 
-      function renderCategoryItems(natureFilter) {
+      function renderCategoryItems() {
           const items = window._allCategoryItems || [];
-          let filtered = items;
-          if (natureFilter && natureFilter !== 'all') {
-              filtered = items.filter(item => {
-                  if (!item.nature) return false;
-                  if (natureFilter === 'stable') return item.nature.toUpperCase().includes('STABLE');
-                  if (natureFilter === 'overpaid') return item.nature.toUpperCase().includes('OVERPAID');
-                  if (natureFilter === 'underpaid') return item.nature.toUpperCase().includes('UNDERPAID');
-                  return false;
-              });
-          }
+          const filtered = items;
 
           const urlParams = new URLSearchParams(window.location.search);
           const currentCategory = urlParams.get('cat');
-          const currentNature = natureFilter || 'all';
 
           const visibleItems = filtered.filter(item => {
               const isPublic = item.hasOwnProperty('public') ? item.public : true;
@@ -131,27 +103,14 @@
                   const isSkyCanvas = item.name === "Sky Canvas";
                   let privateHighlight = (!isPublic && isDevUser) ? `<div class='private-item-highlight'>PRIVATE ITEM (Visible only to Devs)</div>` : '';
 
-                  const backupRow = getLatestBackupRow(item.name);
-                  let bazaarPriceHTML = '';
-                  if (backupRow && backupRow.sell_price !== null && backupRow.sell_price !== undefined) {
-                      bazaarPriceHTML = `
-                          <p class="category-price"><strong>Bazaar Price:</strong> ${formatCurrency(backupRow.sell_price)}</p>
-                          <p class="category-price"><strong>Buy Volume:</strong> ${formatNumber(backupRow.buy_volume)}</p>
-                          <p class="category-price"><strong>Sell Volume:</strong> ${formatNumber(backupRow.sell_volume)}</p>
-                      `;
-                  }
-
                   return `
-                      <div class="category-item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}&nature=${encodeURIComponent(currentNature)}'">
+                      <div class="category-item-card" onclick="window.location.href='item.html?item=${item.id}&cat=${encodeURIComponent(currentCategory)}'">
                           ${privateHighlight}
                           <h2>${item.name}</h2>
                           ${item.picture ? `<div class="category-main-data"><img src="${item.picture}" alt="${item.name}"${isSkyCanvas ? ' class="category-sky-canvas-img"' : ''}>` : ''}
                           <div class="category-main-data-val"><p><strong>ID:</strong> ${item.id}</p>
-                          ${bazaarPriceHTML}
                           ${item.description ? `<p class="category-description">${item.description}</p>` : ''}
                           ${item.rarity ? `<p class="category-rarity-display"><img class="category-rarity" src="img/rarity/${item.rarity}.webp"></p><br><br>` : ''}
-                          ${item.nature ? `<p class="category-nature"><strong>Nature:</strong> ${formatNature(item.nature)}</p>` : ''}
-                          ${item.demand ? `<p class="category-demand"><strong>Demand:</strong> ${formatDemand(item.demand)}</p>` : ''}
                           </div></div>
                       </div>
                   `;
@@ -167,86 +126,9 @@
           }
       }
 
-      function formatNature(nature) {
-          let natureText = nature.replace('[', ' ').toLowerCase();
-          natureText = natureText.replace(']', '').replace(/_/g, ' ').trim();
-          return natureText;
-      }
-
-      function formatDemand(demand) {
-          let demandText = demand.replace('[', ' ').toLowerCase();
-          demandText = demandText.replace(']', '').replace(/_/g, ' ').trim();
-          return demandText;
-      }
-
-      function formatCurrency(amount) {
-          if (amount === undefined || amount === null) return 'N/A';
-          if (amount >= 1000000) return (amount / 1000000).toFixed(2) + 'M';
-          if (amount >= 1000) return (amount / 1000).toFixed(1) + 'K';
-          return Math.round(amount).toLocaleString();
-      }
-
-      function formatNumber(value) {
-          if (value === undefined || value === null || Number.isNaN(Number(value))) return 'N/A';
-          return Number(value).toLocaleString();
-      }
-
-      // Convert item name to bazaar API format (lowercase, spaces to underscores, remove special chars)
-      function getBazaarItemId(itemName) {
-          if (!itemName) return null;
-          return itemName.toLowerCase()
-              .replace(/\s+/g, '_')
-              .replace(/[^a-z0-9_]/g, '')
-              .replace(/_+/g, '_')
-              .replace(/^_|_$/g, '');
-      }
-
-      // Simple fuzzy matching - try variations of the item name
-      function getBazaarItemVariations(itemName) {
-          const baseId = getBazaarItemId(itemName);
-          if (!baseId) return [];
-          
-          const variations = [baseId];
-          
-          // Try without "enchanted_" prefix
-          if (baseId.startsWith('enchanted_')) {
-              variations.push(baseId.replace(/^enchanted_/, ''));
-          }
-          
-          // Try adding "enchanted_" prefix
-          if (!baseId.startsWith('enchanted_')) {
-              variations.push('enchanted_' + baseId);
-          }
-          
-          // Try singular/plural variations
-          if (baseId.endsWith('s') && baseId.length > 1) {
-              variations.push(baseId.slice(0, -1));
-          } else {
-              variations.push(baseId + 's');
-          }
-          
-          return variations;
-      }
-
-      function getLatestBackupRow(itemName) {
-          const variations = getBazaarItemVariations(itemName);
-          for (const itemId of variations) {
-              const row = latestBackupByItemId.get(String(itemId).toLowerCase());
-              if (row) return row;
-          }
-          return null;
-      }
-
       document.addEventListener('DOMContentLoaded', function() {
           loadProfileCard();
           loadCategoryItems();
-          document.getElementById('categoryFilter').addEventListener('click', function(e) {
-              if (e.target.classList.contains('cat-filter-btn')) {
-                  document.querySelectorAll('.cat-filter-btn').forEach(btn => btn.classList.remove('active'));
-                  e.target.classList.add('active');
-                  renderCategoryItems(e.target.getAttribute('data-nature'));
-              }
-          });
       });
   </script>
 </body>
