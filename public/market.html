@@ -323,9 +323,11 @@
     function goToCategory(categoryName) { window.location.href = `categories?cat=${categoryName}` }
     function parsePrices(text) { const priceMap = {}; const lines = text.trim().split('\n'); for (const line of lines) { const parts = line.split(':'); if (parts.length < 2) continue; const id = parts[0].trim(); const arrayStr = parts.slice(1).join(':').trim(); try { const parsed = JSON.parse(arrayStr); if (Array.isArray(parsed) && parsed.length >= 2) { priceMap[id] = parsed[1] } } catch (e) { } } return priceMap }
     async function loadItems() { try { const [marketRes, priceRes, petRes, petPriceRes, minionRes, minionPriceRes] = await Promise.all([fetch('market/market.txt'), fetch('market/mprices.txt'), fetch('market/pets.txt'), fetch('market/pet-prices.txt'), fetch('market/minions.txt'), fetch('market/minion-prices.json')]); items = await marketRes.json(); prices = parsePrices(await priceRes.text()); pets = await petRes.json(); petPrices = await petPriceRes.json(); minions = await minionRes.json(); minionPrices = await minionPriceRes.json(); isDataLoaded = true; searchItems() } catch (error) { console.error("Error loading data:", error); document.getElementById('results').innerHTML = '<p>Failed to load item data.</p>' } finally { document.getElementById('loader').style.display = 'none' } }
-    function getRarityTag(rarity) { if (!rarity) return ''; const r = rarity.toLowerCase(); if (r === 'legendary') return '<span class="rarity-tag rarity-legendary">LEGENDARY</span>'; if (r === 'epic') return '<span class="rarity-tag rarity-epic">EPIC</span>'; if (r === 'rare') return '<span class="rarity-tag rarity-rare">RARE</span>'; if (r === 'uncommon') return '<span class="rarity-tag rarity-uncommon">UNCOMMON</span>'; if (r === 'common') return '<span class="rarity-tag rarity-common">COMMON</span>'; return '' }
+    function getRarityTag(rarity) {
+      if (!rarity) return '';
+      return `<p class="category-rarity-display"><img class="category-rarity" src="img/rarity/${String(rarity).toLowerCase()}.webp"></p>`;
+    }
     function imgOf(o) { return o.picture || o.img || o.image || o.icon || 'assets/placeholder.png' }
-    function coinIcon() { return 'img/coin.png' }
     function normalize(s) { return String(s || '').trim().toLowerCase() }
     function scoreMatch(name, query) {
       const n = normalize(name);
@@ -336,34 +338,12 @@
       const idx = n.indexOf(query);
       return idx >= 0 ? 3 + idx : -1;
     }
-    function createResultCard(obj, price, isPrivate = false) {
+    function createResultCard(obj, isPrivate = false) {
       const div = document.createElement('div');
       div.className = 'result';
       const privateHighlight = isPrivate ? `<div class='private-item-highlight'>PRIVATE ITEM</div>` : '';
-      div.innerHTML = `${privateHighlight}<div class="market-info-head"><img src="${imgOf(obj)}" alt="${obj.name}" /><span>${obj.name}</span><span>${price} <img src="${coinIcon()}" class="market-coin"/></span></div><div class="market-description">${obj.description || ''}</div>${getRarityTag(obj.rarity)}`;
+      div.innerHTML = `${privateHighlight}<div class="market-info-head"><img src="${imgOf(obj)}" alt="${obj.name}" /><span>${obj.name}</span></div><div class="market-description">${obj.description || ''}</div>${getRarityTag(obj.rarity)}`;
       return div;
-    }
-    function lookupPetPrice(pet) {
-      if (petPrices && typeof petPrices === 'object' && !Array.isArray(petPrices)) {
-        return petPrices[pet.id] ?? petPrices[pet.petId];
-      }
-      if (Array.isArray(petPrices)) {
-        const row = petPrices.find(p => String(p.petId ?? p.id) === String(pet.id));
-        if (!row) return undefined;
-        return row.price ?? row.common ?? row.uncommon ?? row.rare ?? row.epic ?? row.legendary;
-      }
-      return undefined;
-    }
-    function lookupMinionPrice(minion) {
-      if (minionPrices && typeof minionPrices === 'object' && !Array.isArray(minionPrices)) {
-        return minionPrices[minion.id] ?? minionPrices[minion.minionId];
-      }
-      if (Array.isArray(minionPrices)) {
-        const row = minionPrices.find(m => String(m.minionId ?? m.id) === String(minion.id));
-        if (!row) return undefined;
-        return row.price ?? row.value;
-      }
-      return undefined;
     }
     function searchItems() {
       const query = normalize(document.getElementById('searchBox').value);
@@ -402,20 +382,17 @@
       combined.forEach(entry => {
         if (entry.kind === 'item') {
           const item = entry.data;
-          const price = prices[item.id] || 'N/A';
           const isPublic = item.hasOwnProperty("public") ? item.public : true;
-          resultsDiv.appendChild(createResultCard(item, price, !isPublic && isDevUser));
+          resultsDiv.appendChild(createResultCard(item, !isPublic && isDevUser));
           return;
         }
         if (entry.kind === 'pet') {
           const pet = entry.data;
-          const price = lookupPetPrice(pet) ?? 'N/A';
-          resultsDiv.appendChild(createResultCard(pet, price));
+          resultsDiv.appendChild(createResultCard(pet));
           return;
         }
         const minion = entry.data;
-        const price = lookupMinionPrice(minion) ?? 'N/A';
-        resultsDiv.appendChild(createResultCard(minion, price));
+        resultsDiv.appendChild(createResultCard(minion));
       });
     }
     document.addEventListener('keydown', function () {
