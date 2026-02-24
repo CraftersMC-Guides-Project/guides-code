@@ -107,7 +107,7 @@ const collectionsData = [
       { "rank": 5, "name": "HeGzoStRqFe", "score": "N/A" },
       { "rank": 6, "name": "Itzomkar1232891", "score": "N/A" },
       { "rank": 7, "name": "Shakilbaby", "score": "N/A" },
-      { "rank": 8, "name": "Veldra5692", "score": "5.8M+" }
+      { "rank": 8, "name": "Veldra5692", "score": "5.8M+" },
       { "rank": 9, "name": "DRONZAR_OP", "score": "N/A" },
       { "rank": 10, "name": "Yogi_Ji_gaming", "score": "N/A" }
     ]
