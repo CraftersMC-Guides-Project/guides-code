@@ -109,7 +109,7 @@ const collectionsData = [
       { "rank": 7, "name": "Shakilbaby", "score": "N/A" },
       { "rank": 8, "name": "Veldra5692", "score": "5.8M+" }
       { "rank": 9, "name": "DRONZAR_OP", "score": "N/A" },
-      { "rank": 10, "name": "Yogi_Ji_gaming", "score": "N/A" },
+      { "rank": 10, "name": "Yogi_Ji_gaming", "score": "N/A" }
     ]
   }
 ];
