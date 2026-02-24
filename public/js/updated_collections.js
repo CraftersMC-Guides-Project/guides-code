@@ -720,13 +720,13 @@ const collectionsData = {
                 },
                 {
                     "rank": 9,
-                    "name": "Neelu18100",
-                    "score": "N/A"
+                    "name": "DesiringSugar39",
+                    "score": "220M+"
                 },
                 {
                     "rank": 10,
-                    "name": "DesiringSugar39",
-                    "score": "200M+"
+                    "name": "Neelu18100",
+                    "score": "N/A"
                 }
             ]
         },
