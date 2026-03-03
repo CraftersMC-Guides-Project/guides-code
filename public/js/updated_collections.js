@@ -562,7 +562,7 @@ const collectionsData = {
         },
         {
             "name": "End Stone",
-            "image": "assets/foraging/End_Stone.png",
+            "image": "img/End_Stone.png",
             "players": [
                 {
                     "rank": 1,
