@@ -858,23 +858,23 @@ const collectionsData = {
                 },
                 {
                     "rank": 3,
+                    "name": "MrTheAyu",
+                    "score": "400M+"
+                },
+                {
+                    "rank": 4,
                     "name": "Mrbase101",
                     "score": "N/A"
                 },
                 {
-                    "rank": 4,
+                    "rank": 5,
                     "name": "RanuTheAxo",
                     "score": "N/A"
                 },
                 {
-                    "rank": 5,
+                    "rank": 6,
                     "name": "Jeremy2075",
                     "score": "171M+"
-                },
-                {
-                    "rank": 6,
-                    "name": "Unknown",
-                    "score": "N/A"
                 },
                 {
                     "rank": 7,
