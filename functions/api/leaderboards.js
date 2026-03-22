@@ -2,9 +2,9 @@ export async function onRequest({ request }) {
   const origin = new URL(request.url).origin;
   const sources = {
     multi: "/js/multi-lb-data.js",
-    boss: "../js/boss-time-leaderboard.js",
-    farming: "../js/farming-contest-leaderboard.js",
-    collections: "../js/updated_collections.js",
+    boss: "/js/boss-time-leaderboard.js",
+    farming: "/js/farming-contest-leaderboard.js",
+    collections: "/js/updated_collections.js",
   };
 
   try {
