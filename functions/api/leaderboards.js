@@ -10,8 +10,8 @@ export async function onRequest({ request }) {
   try {
     const entries = await Promise.all(
       Object.entries(sources).map(async ([key, path]) => {
-        const res = await fetch(`${origin}${path}`);
-        if (!res.ok) throw new Error(`Failed to fetch ${path}: ${res.status}`);
+        const res = await fetch(origin + path);
+        if (!res.ok) throw new Error("Failed to fetch " + path + ": " + res.status);
         const jsText = await res.text();
         return [key, extractData(jsText)];
       })
@@ -50,12 +50,23 @@ export async function onRequest({ request }) {
 }
 
 function extractData(jsText) {
-  // Replace top-level const declarations with sandbox assignments
-  const instrumented = jsText.replace(
-    /const\s+([A-Za-z0-9_]+)\s*=\s*/g,
-    "sandbox.$1 = "
-  );
-  const sandbox = {};
-  const runner = new Function("sandbox", `${instrumented}; return sandbox;`);
-  return runner(sandbox);
+  // Parse the static data-only JS files into JSON without using eval/new Function
+  const cleaned = jsText
+    .replace(/\/\*[\s\S]*?\*\//g, "") // block comments
+    .replace(/\/\/.*$/gm, "") // line comments
+    .trim();
+
+  const declarations = cleaned
+    .replace(/const\s+([A-Za-z0-9_]+)\s*=\s*/g, '"$1": ')
+    .replace(/;\s*(?=\n|$)/g, ",");
+
+  let jsonLike = `{${declarations}}`
+    .replace(/,(\s*[}\]])/g, "$1")
+    .replace(/([{|,]\s*)([A-Za-z0-9_]+)\s*:/g, '$1"$2":');
+
+  try {
+    return JSON.parse(jsonLike);
+  } catch (err) {
+    throw new Error("Could not parse data file: " + err.message);
+  }
 }
