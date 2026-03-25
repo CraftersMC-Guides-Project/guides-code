@@ -35,7 +35,7 @@ The **CraftersMC Guides** almost covers every aspect of progression in SkyBlock,
 ## Discord Bots
 Our team has developed discord bots to further simplify(make it easy) to use directly from discord.
 
-Bazaar Bot - [Invite Link](https://discord.com/oauth2/authorize?client_id=1469280391600017580)
+Feather Bot - [Invite Link](https://discord.com/oauth2/authorize?client_id=1469280391600017580)
 <br>
 CraftersMC AI - *Coming Soon*
 
