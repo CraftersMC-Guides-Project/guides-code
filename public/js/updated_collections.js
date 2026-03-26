@@ -357,7 +357,7 @@ const collectionsData = {
                 },
                 {
                     "rank": 4,
-                    "name": "HeGzoStRqFe",
+                    "name": "Unknown",
                     "score": "N/A"
                 },
                 {
