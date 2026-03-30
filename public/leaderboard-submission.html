@@ -16,6 +16,8 @@
   <meta name="twitter:card" content="summary_large_image" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="js/script.js" defer></script>
+  <script src="js/api-proxy-client.js"></script>
+  <script src="js/leaderboards-api.js"></script>
   <link rel="stylesheet" href="css/essential.css">
   <link rel="stylesheet" href="css/event.css">
   <title>CraftersMC Guides - Leaderboards Submission Portal</title>
@@ -162,17 +164,7 @@
     <div style="margin-bottom: 12px;">
       <label>Select Leaderboard(s)</label>
       <div id="lbContainer" style="padding:8px;border:1px solid #e3e6ea;border-radius:6px;">
-        <label><input type="checkbox" name="leaderboards" value="Collection"> Collections Leaderboards</label>
-        <label><input type="checkbox" name="leaderboards" value="Slayers"> Slayers Leaderboards</label>
-        <label><input type="checkbox" name="leaderboards" value="Gems"> Gems Leaderboard</label>
-        <label><input type="checkbox" name="leaderboards" value="Playtime"> Playtime Leaderboard</label>
-        <label><input type="checkbox" name="leaderboards" value="Achievements"> Achievements Leaderboard</label>
-        <label><input type="checkbox" name="leaderboards" value="Avg Skill"> Average Skill Leaderboard</label>
-        <label><input type="checkbox" name="leaderboards" value="Crafters Lvl"> Crafters Level Leaderboard</label>
-        <label><input type="checkbox" name="leaderboards" value="Boss Time"> Boss Time Leaderboards</label>
-        <label><input type="checkbox" name="leaderboards" value="Cakes"> Cakes Leaderboard</label>
-        <label><input type="checkbox" name="leaderboards" value="Farming Contests"> Farming Contests
-          Leaderboards</label>
+        <div id="lbLoading">Loading leaderboards...</div>
       </div>
       <small class="note">Select at least one!</small>
     </div>
@@ -218,6 +210,45 @@
     const status = document.getElementById('status');
     const submitBtn = document.getElementById('submitBtn');
     const spinner = document.getElementById('spinner');
+    const lbContainer = document.getElementById('lbContainer');
+
+    function renderLeaderboardOptions(items) {
+      lbContainer.innerHTML = '';
+
+      items.forEach(item => {
+        const label = document.createElement('label');
+        const value = item.name.replace(/\s+Leaderboards?$/i, '').trim();
+        label.innerHTML = `<input type="checkbox" name="leaderboards" value="${value}"> ${item.name}`;
+        lbContainer.appendChild(label);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const payload = await leaderboardsApi.getCatalog();
+        const items = Array.isArray(payload.items) ? payload.items : [];
+
+        if (!items.length) {
+          throw new Error('No leaderboard items returned');
+        }
+
+        renderLeaderboardOptions(items);
+      } catch (error) {
+        console.error('Failed to load leaderboard catalog', error);
+        renderLeaderboardOptions([
+          { name: 'Collections Leaderboards' },
+          { name: 'Slayers Leaderboards' },
+          { name: 'Gems Leaderboard' },
+          { name: 'Playtime Leaderboard' },
+          { name: 'Achievements Leaderboard' },
+          { name: 'Average Skill Leaderboard' },
+          { name: 'Crafters Level Leaderboard' },
+          { name: 'Boss Time Leaderboards' },
+          { name: 'Cakes Leaderboard' },
+          { name: 'Farming Contests Leaderboards' }
+        ]);
+      }
+    });
 
     let uploadedFiles = [];
 
