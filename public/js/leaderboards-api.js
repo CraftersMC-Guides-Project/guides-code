@@ -10,6 +10,49 @@
     return payload;
   }
 
+  function isPlainObject(value) {
+    return value !== null && typeof value === "object" && !Array.isArray(value);
+  }
+
+  function isLeaderboardRowArray(items) {
+    if (!Array.isArray(items) || items.length === 0) {
+      return false;
+    }
+
+    return items.every(function checkItem(item) {
+      return isPlainObject(item) && !("players" in item) && !("categories" in item) && !("types" in item) && !("tiers" in item);
+    });
+  }
+
+  function withPositions(data) {
+    if (Array.isArray(data)) {
+      if (isLeaderboardRowArray(data)) {
+        return data.map(function addPosition(item, index) {
+          return {
+            ...item,
+            rank: item.rank ?? index + 1
+          };
+        });
+      }
+
+      return data.map(withPositions);
+    }
+
+    if (isPlainObject(data)) {
+      const normalized = {};
+
+      Object.entries(data).forEach(function normalizeEntry(entry) {
+        const key = entry[0];
+        const value = entry[1];
+        normalized[key] = withPositions(value);
+      });
+
+      return normalized;
+    }
+
+    return data;
+  }
+
   function getPlayerCellHtml(name) {
     if (typeof window.createPlayerCell === "function") {
       return window.createPlayerCell(name || "???");
@@ -37,10 +80,11 @@
 
     async getLeaderboard(id) {
       const payload = await apiClient.makeRequest(`/api/leaderboards/${encodeURIComponent(id)}`);
-      return getPayloadData(payload);
+      return withPositions(getPayloadData(payload));
     },
 
     getPlayerCellHtml,
-    getPlaceholderRows
+    getPlaceholderRows,
+    withPositions
   };
 })(window);
