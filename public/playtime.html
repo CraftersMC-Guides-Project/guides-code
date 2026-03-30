@@ -14,7 +14,8 @@
     <title>Playtime Leaderboard</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="js/script.js"></script>
-    <script src="js/multi-lb-data.js"></script>
+    <script src="js/api-proxy-client.js"></script>
+    <script src="js/leaderboards-api.js"></script>
     <link rel="stylesheet" href="css/essential.css">
     <link rel="stylesheet" href="css/collections-leaderboards.css">
 </head>
@@ -58,19 +59,19 @@
     </div>
     <div id="footer"></div>
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", async () => {
             const leaderboardData = document.getElementById("leaderboardData");
 
-            if (typeof playtimeData !== "undefined" && playtimeData.length > 0) {
-                leaderboardData.innerHTML = playtimeData
-                    .map(player => `<tr>
+            try {
+                const playtimeData = await leaderboardsApi.getLeaderboard("playtime");
+                leaderboardData.innerHTML = playtimeData.map(player => `<tr>
                         <td>${player.rank}</td>
                         ${createPlayerCell(player.name)}
                         <td>${player.playtime}</td>
-                    </tr>`)
-                    .join("");
-            } else {
-                leaderboardData.innerHTML = "<tr><td>1</td><td>???</td><td>???</td></tr>".repeat(10);
+                    </tr>`).join("");
+            } catch (error) {
+                console.error("Failed to load playtime leaderboard", error);
+                leaderboardData.innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
             }
         });
     </script>

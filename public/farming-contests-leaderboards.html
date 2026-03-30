@@ -16,7 +16,8 @@
     <title>Farming Contests Leaderboards</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="js/script.js"></script>
-    <script src="js/farming-contest-leaderboard.js"></script>
+    <script src="js/api-proxy-client.js"></script>
+    <script src="js/leaderboards-api.js"></script>
     <link rel="stylesheet" href="css/essential.css">
     <link rel="stylesheet" href="css/collections-leaderboards.css">
     <style>
@@ -145,9 +146,16 @@
     };
 
     let currentCategory = null;
+    let collectionsData = {};
 
-    document.addEventListener("DOMContentLoaded", () => {
-        showMainCategories();
+    document.addEventListener("DOMContentLoaded", async () => {
+        try {
+            collectionsData = await leaderboardsApi.getLeaderboard("farming-contests");
+            showMainCategories();
+        } catch (error) {
+            console.error("Failed to load farming contest leaderboards", error);
+            document.getElementById("leaderboardData").innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
+        }
     });
 
     document.getElementById("sidelid").addEventListener("click", e => e.stopPropagation());
@@ -206,33 +214,16 @@
             leaderboardData.innerHTML = item.players.map(player => `
                 <tr>
                     <td>${player.rank}</td>
-                    <td>${player.name}</td>
-                    <td>${player.score}</td>
-                </tr>
-            `).join("");
-        } else {
-            leaderboardData.innerHTML = "<tr><td colspan='3'>No data available</td></tr>";
-        }
-        window.scrollTo({ top: 400, behavior: "smooth" });
-    }
-
-    function loadLeaderboard(key) {
-        const lb = leaderboards[key];
-        document.getElementById("collectionTitle").innerText = lb ? lb.name + " Leaderboard" : "Select a Category";
-        document.getElementById("scoreHeader").innerText = lb ? lb.scoreLabel : "Score";
-        const leaderboardData = document.getElementById("leaderboardData");
-        if (lb && lb.players.length) {
-            leaderboardData.innerHTML = lb.players.map(player => `
-                <tr>
-                    <td>${player.rank}</td>
                     ${createPlayerCell(player.name)}
                     <td>${player.score}</td>
                 </tr>
             `).join("");
         } else {
-            leaderboardData.innerHTML = "<tr><td colspan='3'>No data available</td></tr>";
+            leaderboardData.innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
         }
+        window.scrollTo({ top: 400, behavior: "smooth" });
     }
+
 </script>
 </body>
 

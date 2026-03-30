@@ -13,7 +13,8 @@
     <title>Achievements Leaderboard</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="js/script.js"></script>
-    <script src="js/multi-lb-data.js"></script>
+    <script src="js/api-proxy-client.js"></script>
+    <script src="js/leaderboards-api.js"></script>
     <link rel="stylesheet" href="css/essential.css">
     <link rel="stylesheet" href="css/collections-leaderboards.css">
 </head>
@@ -55,25 +56,25 @@
 </div>
     <div id="footer"></div>
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-    const leaderboardData = document.getElementById("leaderboardData");
-    const totalAchievements = 72;
+        document.addEventListener("DOMContentLoaded", async () => {
+            const leaderboardData = document.getElementById("leaderboardData");
+            const totalAchievements = 72;
 
-    if (typeof achievementsData !== "undefined" && achievementsData.length > 0) {
-        leaderboardData.innerHTML = achievementsData
-            .map(player => {
-                const achieved = player.achievements ?? 0;
-                return `<tr>
-                    <td>${player.rank}</td>
-                    ${createPlayerCell(player.name)}
-                    <td>${achieved}/${totalAchievements}</td>
-                </tr>`;
-            })
-            .join("");
-    } else {
-        leaderboardData.innerHTML = "<tr><td>1</td><td>???</td><td>0/72</td></tr>".repeat(10);
-    }
-});
+            try {
+                const achievementsData = await leaderboardsApi.getLeaderboard("achievements");
+                leaderboardData.innerHTML = achievementsData.map(player => {
+                    const achieved = player.achievements ?? 0;
+                    return `<tr>
+                        <td>${player.rank}</td>
+                        ${createPlayerCell(player.name)}
+                        <td>${achieved}/${totalAchievements}</td>
+                    </tr>`;
+                }).join("");
+            } catch (error) {
+                console.error("Failed to load achievements leaderboard", error);
+                leaderboardData.innerHTML = leaderboardsApi.getPlaceholderRows(10, "0/72");
+            }
+        });
     </script>
 </body>
 

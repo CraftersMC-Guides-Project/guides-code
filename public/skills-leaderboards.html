@@ -13,7 +13,8 @@
     <title>Skills Leaderboards</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="js/script.js"></script>
-    <script src="js/multi-lb-data.js"></script>
+    <script src="js/api-proxy-client.js"></script>
+    <script src="js/leaderboards-api.js"></script>
     <link rel="stylesheet" href="css/essential.css">
     <link rel="stylesheet" href="css/collections-leaderboards.css">
 </head>
@@ -92,8 +93,19 @@
     <div id="footer"></div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
+        let skillsLeaderboards = {};
+
+        document.addEventListener("DOMContentLoaded", async () => {
             const collectionGrid = document.getElementById("collectionGrid");
+
+            try {
+                skillsLeaderboards = await leaderboardsApi.getLeaderboard("skills");
+            } catch (error) {
+                console.error("Failed to load skills leaderboards", error);
+                document.getElementById("leaderboardData").innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
+                return;
+            }
+
             Object.values(skillsLeaderboards).forEach(lb => {
                 const div = document.createElement("div");
                 div.className = "lb-collection-item";
@@ -113,7 +125,7 @@
                     <tr>
                         <td>${player.rank}</td>
                         ${createPlayerCell(player.name)}
-                        <td>${player.score}</td>
+                        <td>${player.score ?? player.level ?? "???"}</td>
                     </tr>
                 `).join("");
 
