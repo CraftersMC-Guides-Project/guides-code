@@ -32,13 +32,13 @@ const collectionsData = {
         },
         {
           "rank": 6,
-          "name": "NetworkPg",
-          "score": "5.8M+"
+          "name": "ieduoo",
+          "score": "40.9M+"
         },
         {
           "rank": 7,
-          "name": "Unknown",
-          "score": "N/A"
+          "name": "NetworkPg",
+          "score": "5.8M+"
         },
         {
           "rank": 8,
@@ -83,8 +83,8 @@ const collectionsData = {
         },
         {
           "rank": 5,
-          "name": "Unknown",
-          "score": "N/A"
+          "name": "ieduoo",
+          "score": "15.1K+"
         },
         {
           "rank": 6,
@@ -93,12 +93,12 @@ const collectionsData = {
         },
         {
           "rank": 7,
-          "name": "Emircanyilmaz",
+          "name": "Unknown",
           "score": "N/A"
         },
         {
           "rank": 8,
-          "name": "Unknown",
+          "name": "Emircanyilmaz",
           "score": "N/A"
         },
         {
@@ -139,32 +139,32 @@ const collectionsData = {
         },
         {
           "rank": 5,
+          "name": "ieduoo",
+          "score": "9.7M+"
+        },
+        {
+          "rank": 6,
           "name": "NetworkPg",
           "score": "677.0K+"
         },
         {
-          "rank": 6,
+          "rank": 7,
           "name": "Jrian8733",
           "score": "N/A"
         },
         {
-          "rank": 7,
+          "rank": 8,
           "name": "SphinxWraith",
           "score": "N/A"
         },
         {
-          "rank": 8,
+          "rank": 9,
           "name": "Himmu9186",
           "score": "N/A"
         },
         {
-          "rank": 9,
-          "name": "uatitan580",
-          "score": "N/A"
-        },
-        {
           "rank": 10,
-          "name": "op_moraya5598",
+          "name": "uatitan580",
           "score": "N/A"
         }
       ]
@@ -190,8 +190,8 @@ const collectionsData = {
         },
         {
           "rank": 4,
-          "name": "Unknown",
-          "score": "N/A"
+          "name": "ieduoo",
+          "score": "5.8M+"
         },
         {
           "rank": 5,
@@ -241,12 +241,12 @@ const collectionsData = {
         },
         {
           "rank": 3,
-          "name": "Senpaiyusuf",
-          "score": "N/A"
+          "name": "ieduoo",
+          "score": "2.9K+"
         },
         {
           "rank": 4,
-          "name": "Unknown",
+          "name": "Senpaiyusuf",
           "score": "N/A"
         },
         {
@@ -266,12 +266,12 @@ const collectionsData = {
         },
         {
           "rank": 8,
-          "name": "Fearstruck8500",
+          "name": "Unknown",
           "score": "N/A"
         },
         {
           "rank": 9,
-          "name": "Unknown",
+          "name": "Fearstruck8500",
           "score": "N/A"
         },
         {
@@ -297,13 +297,13 @@ const collectionsData = {
         },
         {
           "rank": 3,
-          "name": "NetworkPg",
-          "score": "2.2M+"
+          "name": "ieduoo",
+          "score": "54.2M+"
         },
         {
           "rank": 4,
-          "name": "Unknown",
-          "score": "N/A"
+          "name": "NetworkPg",
+          "score": "2.2M+"
         },
         {
           "rank": 5,
@@ -363,27 +363,27 @@ const collectionsData = {
         },
         {
           "rank": 5,
+          "name": "ieduoo",
+          "score": "16.5K+"
+        },
+        {
+          "rank": 6,
           "name": "KaosTheChaos",
           "score": "N/A"
         },
         {
-          "rank": 6,
-          "name": "Unknown",
-          "score": "N/A"
-        },
-        {
           "rank": 7,
-          "name": "Burakbu001",
+          "name": "Unknown",
           "score": "N/A"
         },
         {
           "rank": 8,
-          "name": "HeGzoStRqFe",
+          "name": "Burakbu001",
           "score": "N/A"
         },
         {
           "rank": 9,
-          "name": "Unknown",
+          "name": "HeGzoStRqFe",
           "score": "N/A"
         },
         {
@@ -465,17 +465,17 @@ const collectionsData = {
         },
         {
           "rank": 3,
+          "name": "ieduoo",
+          "score": "85.8K+"
+        },
+        {
+          "rank": 4,
           "name": "NetworkPg",
           "score": "29.8K+"
         },
         {
-          "rank": 4,
-          "name": "Icezane5011",
-          "score": "N/A"
-        },
-        {
           "rank": 5,
-          "name": "Unknown",
+          "name": "Icezane5011",
           "score": "N/A"
         },
         {
@@ -516,22 +516,22 @@ const collectionsData = {
         },
         {
           "rank": 2,
+          "name": "ieduoo",
+          "score": "281.6K+"
+        },
+        {
+          "rank": 3,
           "name": "NetworkPg",
           "score": "233.7K+"
         },
         {
-          "rank": 3,
+          "rank": 4,
           "name": "KaosTheChaos",
           "score": "N/A"
         },
         {
-          "rank": 4,
-          "name": "Copingo",
-          "score": "N/A"
-        },
-        {
           "rank": 5,
-          "name": "Unknown",
+          "name": "Copingo",
           "score": "N/A"
         },
         {
@@ -567,17 +567,17 @@ const collectionsData = {
       "players": [
         {
           "rank": 1,
+          "name": "ieduoo",
+          "score": "128.7K+"
+        },
+        {
+          "rank": 2,
           "name": "NetworkPg",
           "score": "14.5K+"
         },
         {
-          "rank": 2,
-          "name": "ItIsYeElk69",
-          "score": "N/A"
-        },
-        {
           "rank": 3,
-          "name": "Unknown",
+          "name": "ItIsYeElk69",
           "score": "N/A"
         },
         {
@@ -635,37 +635,37 @@ const collectionsData = {
         },
         {
           "rank": 3,
+          "name": "ieduoo",
+          "score": "1.1M+"
+        },
+        {
+          "rank": 4,
           "name": "NetworkPg",
           "score": "23.0K+"
         },
         {
-          "rank": 4,
+          "rank": 5,
           "name": "Troubles2Go",
           "score": "N/A"
         },
         {
-          "rank": 5,
+          "rank": 6,
           "name": "PriestlyPath870",
           "score": "N/A"
         },
         {
-          "rank": 6,
+          "rank": 7,
           "name": "Hefty6248",
           "score": "N/A"
         },
         {
-          "rank": 7,
-          "name": "Unknown",
-          "score": "N/A"
-        },
-        {
           "rank": 8,
-          "name": "TINKUGAMER1232",
+          "name": "Unknown",
           "score": "N/A"
         },
         {
           "rank": 9,
-          "name": "Unknown",
+          "name": "TINKUGAMER1232",
           "score": "N/A"
         },
         {
@@ -706,12 +706,12 @@ const collectionsData = {
         },
         {
           "rank": 6,
-          "name": "AndyGamer024",
-          "score": "N/A"
+          "name": "ieduoo",
+          "score": "3.6K+"
         },
         {
           "rank": 7,
-          "name": "Unknown",
+          "name": "AndyGamer024",
           "score": "N/A"
         },
         {
@@ -726,7 +726,7 @@ const collectionsData = {
         },
         {
           "rank": 10,
-          "name": "Hefty6248",
+          "name": "Unknown",
           "score": "N/A"
         }
       ]
@@ -762,12 +762,12 @@ const collectionsData = {
         },
         {
           "rank": 6,
-          "name": "Gamer_legend746",
-          "score": "N/A"
+          "name": "ieduoo",
+          "score": "130.4K+"
         },
         {
           "rank": 7,
-          "name": "Unknown",
+          "name": "Gamer_legend746",
           "score": "N/A"
         },
         {
@@ -818,27 +818,27 @@ const collectionsData = {
         },
         {
           "rank": 6,
+          "name": "ieduoo",
+          "score": "80.3K+"
+        },
+        {
+          "rank": 7,
           "name": "Unknown",
           "score": "N/A"
         },
         {
-          "rank": 7,
+          "rank": 8,
           "name": "aPumpkinGod2",
           "score": "N/A"
         },
         {
-          "rank": 8,
+          "rank": 9,
           "name": "GMG_games",
           "score": "N/A"
         },
         {
-          "rank": 9,
-          "name": "Parmeseanpud",
-          "score": "N/A"
-        },
-        {
           "rank": 10,
-          "name": "Sky691485",
+          "name": "Parmeseanpud",
           "score": "N/A"
         }
       ]
@@ -859,32 +859,32 @@ const collectionsData = {
         },
         {
           "rank": 3,
+          "name": "ieduoo",
+          "score": "50.1M+"
+        },
+        {
+          "rank": 4,
           "name": "NetworkPg",
           "score": "255.7K+"
         },
         {
-          "rank": 4,
+          "rank": 5,
           "name": "HeGzoStRqFe",
           "score": "N/A"
         },
         {
-          "rank": 5,
+          "rank": 6,
           "name": "Lenny1sCo0l",
           "score": "N/A"
         },
         {
-          "rank": 6,
+          "rank": 7,
           "name": "Mrbase101",
           "score": "N/A"
         },
         {
-          "rank": 7,
-          "name": "RanuTheAxo",
-          "score": "N/A"
-        },
-        {
           "rank": 8,
-          "name": "Unknown",
+          "name": "RanuTheAxo",
           "score": "N/A"
         },
         {
@@ -991,8 +991,8 @@ const collectionsData = {
         },
         {
           "rank": 7,
-          "name": "Unknown",
-          "score": "N/A"
+          "name": "ieduoo",
+          "score": "37.0K+"
         },
         {
           "rank": 8,
@@ -1022,17 +1022,17 @@ const collectionsData = {
         },
         {
           "rank": 2,
+          "name": "ieduoo",
+          "score": "523.9K+"
+        },
+        {
+          "rank": 3,
           "name": "NetworkPg",
           "score": "39.3K+"
         },
         {
-          "rank": 3,
-          "name": "AndyGamer024",
-          "score": "N/A"
-        },
-        {
           "rank": 4,
-          "name": "Unknown",
+          "name": "AndyGamer024",
           "score": "N/A"
         },
         {
@@ -1149,32 +1149,32 @@ const collectionsData = {
         },
         {
           "rank": 5,
+          "name": "ieduoo",
+          "score": "6.9M+"
+        },
+        {
+          "rank": 6,
           "name": "NetworkPg",
           "score": "347"
         },
         {
-          "rank": 6,
+          "rank": 7,
           "name": "KaosTheChaos",
           "score": "N/A"
         },
         {
-          "rank": 7,
+          "rank": 8,
           "name": "Hefty6248",
           "score": "N/A"
         },
         {
-          "rank": 8,
+          "rank": 9,
           "name": "TRIGUN2212",
           "score": "N/A"
         },
         {
-          "rank": 9,
-          "name": "JODHEMANT8975",
-          "score": "N/A"
-        },
-        {
           "rank": 10,
-          "name": "Unknown",
+          "name": "JODHEMANT8975",
           "score": "N/A"
         }
       ]
@@ -1205,13 +1205,13 @@ const collectionsData = {
         },
         {
           "rank": 5,
-          "name": "NetworkPg",
-          "score": "115.6K+"
+          "name": "ieduoo",
+          "score": "32.2M+"
         },
         {
           "rank": 6,
-          "name": "Unknown",
-          "score": "N/A"
+          "name": "NetworkPg",
+          "score": "115.6K+"
         },
         {
           "rank": 7,
@@ -1261,8 +1261,8 @@ const collectionsData = {
         },
         {
           "rank": 5,
-          "name": "Unknown",
-          "score": "N/A"
+          "name": "ieduoo",
+          "score": "54.2K+"
         },
         {
           "rank": 6,
@@ -1286,7 +1286,7 @@ const collectionsData = {
         },
         {
           "rank": 10,
-          "name": "NumberOne230564",
+          "name": "Unknown",
           "score": "N/A"
         }
       ]
@@ -1317,17 +1317,17 @@ const collectionsData = {
         },
         {
           "rank": 5,
+          "name": "ieduoo",
+          "score": "37.9K+"
+        },
+        {
+          "rank": 6,
           "name": "NetworkPg",
           "score": "16.3K+"
         },
         {
-          "rank": 6,
-          "name": "Icezane5011",
-          "score": "N/A"
-        },
-        {
           "rank": 7,
-          "name": "Unknown",
+          "name": "Icezane5011",
           "score": "N/A"
         },
         {
@@ -1373,32 +1373,32 @@ const collectionsData = {
         },
         {
           "rank": 5,
+          "name": "ieduoo",
+          "score": "87.8K+"
+        },
+        {
+          "rank": 6,
           "name": "BabiestOlive47",
           "score": "N/A"
         },
         {
-          "rank": 6,
-          "name": "Unknown",
-          "score": "N/A"
-        },
-        {
           "rank": 7,
-          "name": "NINTIN7238",
+          "name": "Unknown",
           "score": "N/A"
         },
         {
           "rank": 8,
-          "name": "lunarglow4820",
+          "name": "NINTIN7238",
           "score": "N/A"
         },
         {
           "rank": 9,
-          "name": "Unknown",
+          "name": "lunarglow4820",
           "score": "N/A"
         },
         {
           "rank": 10,
-          "name": "ItlsYeElk69",
+          "name": "Unknown",
           "score": "N/A"
         }
       ]
@@ -1409,22 +1409,22 @@ const collectionsData = {
       "players": [
         {
           "rank": 1,
+          "name": "ieduoo",
+          "score": "54.1K+"
+        },
+        {
+          "rank": 2,
           "name": "NetworkPg",
           "score": "125"
         },
         {
-          "rank": 2,
-          "name": "Unknown",
-          "score": "N/A"
-        },
-        {
           "rank": 3,
-          "name": "Hefty6248",
+          "name": "Unknown",
           "score": "N/A"
         },
         {
           "rank": 4,
-          "name": "Unknown",
+          "name": "Hefty6248",
           "score": "N/A"
         },
         {
@@ -1444,12 +1444,12 @@ const collectionsData = {
         },
         {
           "rank": 8,
-          "name": "Bosslist3256770",
+          "name": "Unknown",
           "score": "N/A"
         },
         {
           "rank": 9,
-          "name": "Unknown",
+          "name": "Bosslist3256770",
           "score": "N/A"
         },
         {
@@ -1480,8 +1480,8 @@ const collectionsData = {
         },
         {
           "rank": 4,
-          "name": "Unknown",
-          "score": "N/A"
+          "name": "ieduoo",
+          "score": "197"
         },
         {
           "rank": 5,
@@ -1521,13 +1521,13 @@ const collectionsData = {
       "players": [
         {
           "rank": 1,
-          "name": "NetworkPg",
-          "score": "21.4K+"
+          "name": "ieduoo",
+          "score": "38.6K+"
         },
         {
           "rank": 2,
-          "name": "Unknown",
-          "score": "N/A"
+          "name": "NetworkPg",
+          "score": "21.4K+"
         },
         {
           "rank": 3,
@@ -1541,12 +1541,12 @@ const collectionsData = {
         },
         {
           "rank": 5,
-          "name": "Meetgamer76",
+          "name": "Unknown",
           "score": "N/A"
         },
         {
           "rank": 6,
-          "name": "Unknown",
+          "name": "Meetgamer76",
           "score": "N/A"
         },
         {
@@ -1660,27 +1660,27 @@ const collectionsData = {
         },
         {
           "rank": 6,
+          "name": "ieduoo",
+          "score": "66.4K+"
+        },
+        {
+          "rank": 7,
           "name": "Bosslist3256770",
           "score": "N/A"
         },
         {
-          "rank": 7,
+          "rank": 8,
           "name": "Dadabhaai",
           "score": "N/A"
         },
         {
-          "rank": 8,
+          "rank": 9,
           "name": "Pranjal2389",
           "score": "N/A"
         },
         {
-          "rank": 9,
-          "name": "Neelu18100",
-          "score": "N/A"
-        },
-        {
           "rank": 10,
-          "name": "Unknown",
+          "name": "Neelu18100",
           "score": "N/A"
         }
       ]
@@ -1701,17 +1701,17 @@ const collectionsData = {
         },
         {
           "rank": 3,
+          "name": "ieduoo",
+          "score": "10.8K+"
+        },
+        {
+          "rank": 4,
           "name": "Kg_lcky_01",
           "score": "N/A"
         },
         {
-          "rank": 4,
-          "name": "HERKUL3S",
-          "score": "N/A"
-        },
-        {
           "rank": 5,
-          "name": "Unknown",
+          "name": "HERKUL3S",
           "score": "N/A"
         },
         {
@@ -1767,22 +1767,22 @@ const collectionsData = {
         },
         {
           "rank": 5,
-          "name": "Unknown",
-          "score": "N/A"
+          "name": "ieduoo",
+          "score": "50.5K+"
         },
         {
           "rank": 6,
-          "name": "MythicalPanda30",
+          "name": "Unknown",
           "score": "N/A"
         },
         {
           "rank": 7,
-          "name": "MythicRen13",
+          "name": "MythicalPanda30",
           "score": "N/A"
         },
         {
           "rank": 8,
-          "name": "Unknown",
+          "name": "MythicRen13",
           "score": "N/A"
         },
         {
@@ -1813,8 +1813,8 @@ const collectionsData = {
         },
         {
           "rank": 3,
-          "name": "Unknown",
-          "score": "N/A"
+          "name": "ieduoo",
+          "score": "35.6K+"
         },
         {
           "rank": 4,
@@ -1823,12 +1823,12 @@ const collectionsData = {
         },
         {
           "rank": 5,
-          "name": "MythicalPanda30",
+          "name": "Unknown",
           "score": "N/A"
         },
         {
           "rank": 6,
-          "name": "Unknown",
+          "name": "MythicalPanda30",
           "score": "N/A"
         },
         {
@@ -1874,8 +1874,8 @@ const collectionsData = {
         },
         {
           "rank": 4,
-          "name": "Unknown",
-          "score": "N/A"
+          "name": "ieduoo",
+          "score": "56"
         },
         {
           "rank": 5,
@@ -1945,22 +1945,22 @@ const collectionsData = {
         },
         {
           "rank": 7,
+          "name": "ieduoo",
+          "score": "455"
+        },
+        {
+          "rank": 8,
           "name": "Unknown",
           "score": "N/A"
         },
         {
-          "rank": 8,
+          "rank": 9,
           "name": "UCHIHASHERA1",
           "score": "N/A"
         },
         {
-          "rank": 9,
-          "name": "Savage_Shrey781",
-          "score": "N/A"
-        },
-        {
           "rank": 10,
-          "name": "DryerPlace39260",
+          "name": "Savage_Shrey781",
           "score": "N/A"
         }
       ]
@@ -2042,27 +2042,27 @@ const collectionsData = {
         },
         {
           "rank": 4,
-          "name": "NetworkPg",
+          "name": "ieduoo",
           "score": "6.3M+"
         },
         {
           "rank": 5,
+          "name": "NetworkPg",
+          "score": "6.3M+"
+        },
+        {
+          "rank": 6,
           "name": "Ghosthunter4233",
           "score": "N/A"
         },
         {
-          "rank": 6,
+          "rank": 7,
           "name": "Fahad3382",
           "score": "N/A"
         },
         {
-          "rank": 7,
-          "name": "BlackKeyur",
-          "score": "N/A"
-        },
-        {
           "rank": 8,
-          "name": "Unknown",
+          "name": "BlackKeyur",
           "score": "N/A"
         },
         {
@@ -2100,8 +2100,8 @@ const collectionsData = {
         },
         {
           "rank": 4,
-          "name": "Unknown",
-          "score": "N/A"
+          "name": "ieduoo",
+          "score": "1.6K+"
         },
         {
           "rank": 5,
@@ -2156,32 +2156,32 @@ const collectionsData = {
         },
         {
           "rank": 4,
+          "name": "ieduoo",
+          "score": "3.0K+"
+        },
+        {
+          "rank": 5,
           "name": "Darkshadow52195",
           "score": "N/A"
         },
         {
-          "rank": 5,
+          "rank": 6,
           "name": "TRIGUN2212",
           "score": "N/A"
         },
         {
-          "rank": 6,
+          "rank": 7,
           "name": "BoneJ5945",
           "score": "N/A"
         },
         {
-          "rank": 7,
+          "rank": 8,
           "name": "GPK4",
           "score": "N/A"
         },
         {
-          "rank": 8,
-          "name": "NumberOne230564",
-          "score": "N/A"
-        },
-        {
           "rank": 9,
-          "name": "Unknown",
+          "name": "NumberOne230564",
           "score": "N/A"
         },
         {
@@ -2212,37 +2212,37 @@ const collectionsData = {
         },
         {
           "rank": 4,
+          "name": "ieduoo",
+          "score": "1.3K+"
+        },
+        {
+          "rank": 5,
           "name": "NumberOne230564",
           "score": "N/A"
         },
         {
-          "rank": 5,
+          "rank": 6,
           "name": "TRIGUN2212",
           "score": "N/A"
         },
         {
-          "rank": 6,
-          "name": "Creepyshorts",
-          "score": "N/A"
-        },
-        {
           "rank": 7,
-          "name": "Kg_lcky_01",
+          "name": "Creepyshorts",
           "score": "N/A"
         },
         {
           "rank": 8,
-          "name": "sagnikisawesome",
+          "name": "Kg_lcky_01",
           "score": "N/A"
         },
         {
           "rank": 9,
-          "name": "Creepyshorts",
+          "name": "sagnikisawesome",
           "score": "N/A"
         },
         {
           "rank": 10,
-          "name": "Ramesh40512",
+          "name": "Creepyshorts",
           "score": "N/A"
         }
       ]
@@ -2278,27 +2278,27 @@ const collectionsData = {
         },
         {
           "rank": 6,
+          "name": "ieduoo",
+          "score": "2.6K+"
+        },
+        {
+          "rank": 7,
           "name": "Gameryash322",
           "score": "N/A"
         },
         {
-          "rank": 7,
+          "rank": 8,
           "name": "SphinxWraith",
           "score": "N/A"
         },
         {
-          "rank": 8,
+          "rank": 9,
           "name": "Iceberg899",
           "score": "N/A"
         },
         {
-          "rank": 9,
-          "name": "Hefty6248",
-          "score": "N/A"
-        },
-        {
           "rank": 10,
-          "name": "Itzomkar1232891",
+          "name": "Hefty6248",
           "score": "N/A"
         }
       ]
@@ -2329,32 +2329,32 @@ const collectionsData = {
         },
         {
           "rank": 5,
+          "name": "ieduoo",
+          "score": "71"
+        },
+        {
+          "rank": 6,
           "name": "KaosTheChaos",
           "score": "N/A"
         },
         {
-          "rank": 6,
+          "rank": 7,
           "name": "TRIGUN2212",
           "score": "N/A"
         },
         {
-          "rank": 7,
+          "rank": 8,
           "name": "ImNdricim",
           "score": "N/A"
         },
         {
-          "rank": 8,
+          "rank": 9,
           "name": "Redneck_Lineman",
           "score": "N/A"
         },
         {
-          "rank": 9,
-          "name": "AweomedudeW10",
-          "score": "N/A"
-        },
-        {
           "rank": 10,
-          "name": "Unknown",
+          "name": "AweomedudeW10",
           "score": "N/A"
         }
       ]
@@ -2385,12 +2385,12 @@ const collectionsData = {
         },
         {
           "rank": 5,
-          "name": "TRIGUN2212",
-          "score": "N/A"
+          "name": "ieduoo",
+          "score": "853"
         },
         {
           "rank": 6,
-          "name": "Unknown",
+          "name": "TRIGUN2212",
           "score": "N/A"
         },
         {
@@ -2405,12 +2405,12 @@ const collectionsData = {
         },
         {
           "rank": 9,
-          "name": "Herejefferson",
+          "name": "Unknown",
           "score": "N/A"
         },
         {
           "rank": 10,
-          "name": "Unknown",
+          "name": "Herejefferson",
           "score": "N/A"
         }
       ]
@@ -2442,7 +2442,7 @@ const collectionsData = {
         {
           "rank": 5,
           "name": "ieduoo",
-          "score": "22.1M+"
+          "score": "35.1M+"
         },
         {
           "rank": 6,
