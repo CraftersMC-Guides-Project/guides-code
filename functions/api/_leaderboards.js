@@ -5,7 +5,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Achievements",
     page: "/achievements-leaderboard.html",
     remoteId: "multi",
-    sourcePath: "/js/multi-lb-data.js",
     property: "achievementsData",
     aliases: ["achievements", "achievement", "achievements-leaderboard"]
   },
@@ -13,7 +12,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Average Skill",
     page: "/avg-skill-leaderboard.html",
     remoteId: "multi",
-    sourcePath: "/js/multi-lb-data.js",
     property: "skillData",
     aliases: ["avg-skill", "average-skill", "average-skill-leaderboard"]
   },
@@ -21,7 +19,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Cakes",
     page: "/cakes-leaderboard.html",
     remoteId: "multi",
-    sourcePath: "/js/multi-lb-data.js",
     property: "cakeData",
     aliases: ["cakes", "cake", "cakes-leaderboard"]
   },
@@ -29,7 +26,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Gems",
     page: "/gems-leaderboard.html",
     remoteId: "multi",
-    sourcePath: "/js/multi-lb-data.js",
     property: "gemsData",
     aliases: ["gems", "gems-leaderboard"]
   },
@@ -37,7 +33,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Crafters Level",
     page: "/crafters-level-leaderboard.html",
     remoteId: "multi",
-    sourcePath: "/js/multi-lb-data.js",
     property: "levelsData",
     aliases: ["crafters-level", "levels", "crafters-level-leaderboard"]
   },
@@ -45,7 +40,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Playtime",
     page: "/playtime.html",
     remoteId: "multi",
-    sourcePath: "/js/multi-lb-data.js",
     property: "playtimeData",
     aliases: ["playtime", "playtime-leaderboard"]
   },
@@ -53,7 +47,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Slayers",
     page: "/slayers-leaderboards.html",
     remoteId: "multi",
-    sourcePath: "/js/multi-lb-data.js",
     property: "collectionsData",
     aliases: ["slayers", "slayer", "slayers-leaderboards"]
   },
@@ -61,7 +54,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Damage",
     page: "/damage-leaderboard.html",
     remoteId: "multi",
-    sourcePath: "/js/multi-lb-data.js",
     property: "damageData",
     aliases: ["damage", "damage-leaderboard"]
   },
@@ -69,7 +61,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Networth",
     page: "/networth-leaderboard.html",
     remoteId: "multi",
-    sourcePath: "/js/multi-lb-data.js",
     property: "networthData",
     aliases: ["networth", "net-worth", "networth-leaderboard"]
   },
@@ -77,7 +68,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Pets",
     page: "/pets-leaderboards.html",
     remoteId: "multi",
-    sourcePath: "/js/multi-lb-data.js",
     property: "petsData",
     aliases: ["pets", "pets-leaderboards", "pet-leaderboards"]
   },
@@ -85,7 +75,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Coins",
     page: "/coins-leaderboards.html",
     remoteId: "multi",
-    sourcePath: "/js/multi-lb-data.js",
     property: "coinsData",
     aliases: ["coins", "coins-leaderboards", "coins-leaderboard"]
   },
@@ -93,7 +82,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Skills",
     page: "/skills-leaderboards.html",
     remoteId: "multi",
-    sourcePath: "/js/multi-lb-data.js",
     property: "skillsLeaderboards",
     aliases: ["skills", "skills-leaderboards", "skill-leaderboards"]
   },
@@ -101,7 +89,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Target Practice",
     page: "/target-practice-leaderboard.html",
     remoteId: "multi",
-    sourcePath: "/js/multi-lb-data.js",
     property: "targetPracticeLeaderboard",
     aliases: ["target-practice", "target-practice-leaderboard"]
   },
@@ -109,7 +96,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Arctic Cave Race",
     page: "/arctic-cave-race-leaderboard.html",
     remoteId: "multi",
-    sourcePath: "/js/multi-lb-data.js",
     property: "arcticCaveRace",
     aliases: ["arctic-cave-race", "arctic-race", "arctic-cave-race-leaderboard"]
   },
@@ -117,7 +103,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Ender Node Hunt",
     page: "/ender-node-hunt-leaderboard.html",
     remoteId: "multi",
-    sourcePath: "/js/multi-lb-data.js",
     property: "enderNodeHunt",
     aliases: ["ender-node-hunt", "ender-node-hunt-leaderboard"]
   },
@@ -125,7 +110,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Collections",
     page: "/collections-leaderboards.html",
     remoteId: "collections",
-    sourcePath: "/js/updated_collections.js",
     property: "collectionsData",
     aliases: ["collections", "collections-leaderboards", "collection-leaderboards"]
   },
@@ -133,7 +117,6 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Farming Contests",
     page: "/farming-contests-leaderboards.html",
     remoteId: "farming-contests",
-    sourcePath: "/js/farming-contest-leaderboard.js",
     property: "collectionsData",
     aliases: ["farming-contests", "farming-contests-leaderboards", "farming-contest-leaderboard"]
   },
@@ -141,13 +124,10 @@ const LEADERBOARD_DEFINITIONS = {
     name: "Boss Time",
     page: "/boss-time-leaderboards.html",
     remoteId: "boss-time",
-    sourcePath: "/js/boss-time-leaderboard.js",
     property: "collectionsData",
     aliases: ["boss-time", "boss-time-leaderboards", "boss-time-leaderboard"]
   }
 };
-
-const SOURCE_CACHE = new Map();
 
 function jsonResponse(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -162,10 +142,6 @@ function jsonResponse(body, status = 200) {
 
 function getApiKey(env = {}) {
   return env.LB_API_KEY || env.lb_api_key || env["lb-api-key"] || null;
-}
-
-function isPlainObject(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function getDefinition(id) {
@@ -214,92 +190,9 @@ async function fetchRemoteJson(path, env) {
   return json;
 }
 
-async function loadSourceData(origin, sourcePath) {
-  if (SOURCE_CACHE.has(sourcePath)) {
-    return SOURCE_CACHE.get(sourcePath);
-  }
-
-  const response = await fetch(`${origin}${sourcePath}`);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${sourcePath}: ${response.status}`);
-  }
-
-  const jsText = await response.text();
-  const parsed = extractData(jsText);
-  SOURCE_CACHE.set(sourcePath, parsed);
-  return parsed;
-}
-
-function extractData(jsText) {
-  const cleaned = jsText
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/\/\/.*$/gm, "")
-    .trim();
-
-  const declarations = cleaned
-    .replace(/const\s+([A-Za-z0-9_]+)\s*=\s*/g, "\"$1\": ")
-    .replace(/;\s*(?=\n|$)/g, ",");
-
-  const jsonLike = `{${declarations}}`
-    .replace(/,(\s*[}\]])/g, "$1")
-    .replace(/([{|,]\s*)([A-Za-z0-9_]+)\s*:/g, '$1"$2":');
-
-  return JSON.parse(jsonLike);
-}
-
-async function getLocalLeaderboard(id, request) {
-  const match = getDefinition(id);
-  if (!match) {
-    throw new Error(`Unknown leaderboard: ${id}`);
-  }
-
-  const origin = new URL(request.url).origin;
-  const sourceData = await loadSourceData(origin, match.definition.sourcePath);
-  const leaderboard = sourceData[match.definition.property];
-
-  if (typeof leaderboard === "undefined") {
-    throw new Error(`Missing property ${match.definition.property} in ${match.definition.sourcePath}`);
-  }
-
-  return {
-    id: match.id,
-    name: match.definition.name,
-    page: match.definition.page,
-    leaderboard
-  };
-}
-
 function extractRemoteData(remote, definition) {
   const payload = remote && typeof remote === "object" ? remote.data ?? remote.leaderboard ?? remote : remote;
   return definition.property ? payload?.[definition.property] ?? payload : payload;
-}
-
-function mergeLeaderboardData(localData, remoteData) {
-  if (Array.isArray(localData) && Array.isArray(remoteData)) {
-    return localData.map((localItem, index) =>
-      mergeLeaderboardData(localItem, remoteData[index] ?? {})
-    );
-  }
-
-  if (isPlainObject(localData) && isPlainObject(remoteData)) {
-    const merged = { ...localData };
-
-    for (const [key, localValue] of Object.entries(localData)) {
-      if (key in remoteData) {
-        merged[key] = mergeLeaderboardData(localValue, remoteData[key]);
-      }
-    }
-
-    for (const [key, remoteValue] of Object.entries(remoteData)) {
-      if (!(key in merged)) {
-        merged[key] = remoteValue;
-      }
-    }
-
-    return merged;
-  }
-
-  return remoteData ?? localData;
 }
 
 export async function buildLeaderboardIndex(request) {
@@ -315,21 +208,22 @@ export async function buildLeaderboardIndex(request) {
 export async function handleLeaderboardIndex({ request, env }) {
   try {
     const remote = await fetchRemoteJson("/api/leaderboards", env);
+    const items = Array.isArray(remote?.items)
+      ? remote.items
+      : await buildLeaderboardIndex(request);
+
     return jsonResponse({
       ok: true,
       source: "remote",
       generatedAt: new Date().toISOString(),
-      items: Array.isArray(remote) ? remote : remote.items || remote.leaderboards || remote.data || remote
+      items
     });
   } catch (error) {
-    const items = await buildLeaderboardIndex(request);
     return jsonResponse({
-      ok: true,
-      source: "local",
-      generatedAt: new Date().toISOString(),
-      items,
-      fallbackReason: error.message
-    });
+      ok: false,
+      error: "Failed to load leaderboards index",
+      detail: error.message
+    }, 502);
   }
 }
 
@@ -345,13 +239,11 @@ export async function handleLeaderboardDetail({ request, env, params }) {
   }
 
   try {
-    const local = await getLocalLeaderboard(match.id, request);
     const remote = await fetchRemoteJson(
       `/api/leaderboards/${encodeURIComponent(match.definition.remoteId || match.id)}`,
       env
     );
-    const remoteData = extractRemoteData(remote, match.definition);
-    const leaderboard = mergeLeaderboardData(local.leaderboard, remoteData);
+    const leaderboard = extractRemoteData(remote, match.definition);
 
     return jsonResponse({
       ok: true,
@@ -363,21 +255,10 @@ export async function handleLeaderboardDetail({ request, env, params }) {
       leaderboard
     });
   } catch (error) {
-    try {
-      const local = await getLocalLeaderboard(match.id, request);
-      return jsonResponse({
-        ok: true,
-        ...local,
-        source: "local",
-        generatedAt: new Date().toISOString(),
-        fallbackReason: error.message
-      });
-    } catch (localError) {
-      return jsonResponse({
-        ok: false,
-        error: "Failed to load leaderboard",
-        detail: localError.message
-      }, 502);
-    }
+    return jsonResponse({
+      ok: false,
+      error: "Failed to load leaderboard",
+      detail: error.message
+    }, 502);
   }
 }
