@@ -219,7 +219,7 @@
       min-width: 250px;
       font-family: 'Minecraft', 'Arial', sans-serif;
       font-size: 0.85rem;
-      box-shadow: 
+      box-shadow:
         0 0 0 2px #4b267a,
         -4px -4px 0 0 #fff,
         4px -4px 0 0 #fff,
@@ -621,36 +621,17 @@
 
     // Generate possible image paths for an item name
     function generateImagePaths(itemName) {
-      if (!itemName) return ['img/unknown_item.png'];
-      
+      if (!itemName || typeof itemName !== 'string') return ['assets/ah/search.png'];
+      const lowerName = itemName.toLowerCase().trim();
+      const slugSafe = lowerName.replace(/\s+/g, '_').replace(/[^a-z0-9_-]/g, '');
+      const slugRaw = lowerName.replace(/\s+/g, '_');
+      const firstWord = lowerName.split(/\s+/)[0];
+      const firstSafe = firstWord.replace(/[^a-z0-9_-]/g, '');
       const paths = [];
-      
-      // Sanitize the item name
-      // 1. Exact match - lowercase with underscores and only safe chars
-      const slug1 = itemName
-        .toLowerCase()
-        .replace(/\s+/g, '_')
-        .replace(/[^a-z0-9_-]/g, '');
-      paths.push(`img/${slug1}.png`);
-      
-      // 2. Keep hyphens and spaces as underscores
-      const slug2 = itemName
-        .toLowerCase()
-        .replace(/[\s-]+/g, '_')
-        .replace(/[^a-z0-9_]/g, '');
-      if (slug2 !== slug1) paths.push(`img/${slug2}.png`);
-      
-      // 3. Just lowercase, minimal processing
-      const slug3 = itemName.toLowerCase().replace(/\s+/g, '_');
-      if (slug3 !== slug1 && slug3 !== slug2) paths.push(`img/${slug3}.png`);
-      
-      // 4. First word only
-      const firstWord = itemName.split(/\s+/)[0].toLowerCase();
-      if (firstWord && firstWord !== slug1) paths.push(`img/${firstWord}.png`);
-      
-      // 5. Asset fallback
+      if (slugSafe) paths.push(`img/${slugSafe}.webp`);
+      if (slugRaw && slugRaw !== slugSafe) paths.push(`img/${slugRaw}.webp`);
+      if (firstSafe && firstSafe !== slugSafe && firstSafe !== slugRaw) paths.push(`img/${firstSafe}.webp`);
       paths.push('assets/ah/search.png');
-      
       return paths;
     }
 
@@ -658,13 +639,13 @@
     function setupImageFallback(imgElement) {
       const paths = JSON.parse(imgElement.dataset.imagePaths || '[]');
       let currentIndex = 0;
-      
+
       // Set initial src to first path
       if (paths.length > 0) {
         imgElement.src = paths[0];
         currentIndex = 1;
       }
-      
+
       imgElement.addEventListener('error', () => {
         if (currentIndex < paths.length) {
           const nextPath = paths[currentIndex];
@@ -695,7 +676,7 @@
         if (i < auctions.length) {
           const auction = auctions[i];
           const itemName = auction.item_name || 'Unknown Item';
-          
+
           // Generate image filename from item name
           // Try multiple variations to find the image
           const imagePaths = generateImagePaths(itemName);
@@ -778,7 +759,7 @@
     // Generate tooltip HTML for auction
     function generateAuctionTooltipHTML(auction) {
       console.log('[Auction] Generating tooltip for:', auction);
-      
+
       const itemName = auction.item_name || 'Unknown Item';
       const rarity = auction.tier || 'common';
       const currentBid = auction.highest_bid_amount || 0;
@@ -927,7 +908,7 @@
       try {
         const data = await apiClient.getAuctions(page);
         console.log(`[Auction] API Response:`, data);
-        
+
         if (data.auctions && Array.isArray(data.auctions)) {
           currentAuctions = data.auctions;
           currentPage = page;
