@@ -567,6 +567,14 @@
       }
     }
 
+    function processItemId(itemId) {
+      if (!itemId || typeof itemId !== 'string') return null;
+      const parts = itemId.split(':');
+      const name = parts[parts.length - 1];
+      if (!name) return null;
+      return name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+    }
+
     // Format currency
     function formatCurrency(amount) {
       if (amount === undefined || amount === null) return 'N/A';
@@ -829,44 +837,53 @@
     function generateAuctionTooltipHTML(auction) {
       const itemName = auction.item_name || 'Unknown Item';
       const rarity = (auction.tier || 'common').toUpperCase();
-      const auctionType = auction.bin ? 'BIN' : 'Auction';
-      const endTime = auction.end_time * 1000;
+      const isBin = auction.type === 'BIN';
+      const auctionType = isBin ? 'BIN' : 'Auction';
+      const endTime = auction.endsAt * 1000; // endsAt is in seconds
 
-      // Start with Minecraft frame content
       let html = `<div class="title">${itemName}</div>`;
       html += `<div class="rarity">${rarity}</div>`;
-
-      // Add item stats from NBT
-      const decoded = auction.item_nbt_decoded?.decoded;
-      if (decoded) {
-        const statsHtml = extractItemStats(decoded);
-        if (statsHtml) html += `<div class="spacer"></div>${statsHtml}`;
-
-        const enchantsHtml = formatEnchantments(decoded);
-        if (enchantsHtml) {
-          html += `<div class="spacer"></div><div class="row gold">Enchantments</div>${enchantsHtml}`;
-        }
-
-        const loreHtml = formatLore(decoded);
-        if (loreHtml) {
-          html += `<div class="spacer"></div><div class="row muted">Lore</div>${loreHtml}`;
-        }
-      }
-
-      // Auction details
       html += `<div class="spacer"></div>`;
-      html += `<div class="row"><span>Type:</span><span>${auctionType}</span></div>`;
 
-      if (auction.bin) {
-        html += `<div class="row"><span>BIN Price:</span><span class="gold">${formatCurrency(auction.bin_price)}</span></div>`;
+      if (isBin) {
+        // BIN: price is startingPrice (there is no bin_price field)
+        html += `
+          <div class="row">
+            <span>BIN Price:</span>
+            <span class="gold">${formatCurrency(auction.startingPrice)}</span>
+          </div>
+        `;
       } else {
-        html += `<div class="row"><span>Starting Bid:</span><span class="gold">${formatCurrency(auction.starting_bid)}</span></div>`;
-        html += `<div class="row"><span>Highest Bid:</span><span class="gold">${formatCurrency(auction.highest_bid_amount)}</span></div>`;
-        html += `<div class="row"><span>Bids:</span><span>${formatNumber(auction.bid_count)}</span></div>`;
+        html += `
+          <div class="row">
+            <span>Starting Bid:</span>
+            <span class="gold">${formatCurrency(auction.startingPrice)}</span>
+          </div>
+          <div class="row">
+            <span>Highest Bid:</span>
+            <span class="gold">${formatCurrency(auction.highestBidAmount || 0)}</span>
+          </div>
+          <div class="row">
+            <span>Bids:</span>
+            <span>${formatNumber(auction.bids || 0)}</span>
+          </div>
+        `;
       }
 
-      html += `<div class="row"><span>Seller:</span><span>${auction.auctioneer || 'Unknown'}</span></div>`;
-      html += `<div class="row"><span>Ends in:</span><span class="gold">${formatTimeRemaining(endTime)}</span></div>`;
+      html += `
+      <div class="row">
+        <span>Type:</span>
+        <span>${auctionType}</span>
+      </div>
+      <div class="row">
+        <span>Seller:</span>
+        <span>${auction.ownerName || 'Unknown'}</span>
+      </div>
+      <div class="row">
+        <span>Ends in:</span>
+        <span class="gold">${formatTimeRemaining(endTime)}</span>
+      </div>
+    `;
 
       return html;
     }
@@ -880,15 +897,16 @@
 
       console.log(`[Auction] Applying filters - Search: "${searchText}", Type: ${auctionType}, Rarity: ${rarity}, Sort: ${sortBy}`);
 
+      // Inside applyFilters()
       filteredAuctions = currentAuctions.filter(auction => {
         // Search filter
         if (searchText && !auction.item_name?.toLowerCase().includes(searchText)) {
           return false;
         }
 
-        // Auction type filter
-        if (auctionType === 'bin' && !auction.bin) return false;
-        if (auctionType === 'auction' && auction.bin) return false;
+        // Auction type filter: auction.type is "BIN" or "NORMAL"
+        if (auctionType === 'bin' && auction.type !== 'BIN') return false;
+        if (auctionType === 'auction' && auction.type !== 'NORMAL') return false;
 
         // Rarity filter
         if (rarity !== 'all' && auction.tier?.toLowerCase() !== rarity.toLowerCase()) {
@@ -908,32 +926,27 @@
     // Sort auctions
     function sortAuctions(auctions, sortBy) {
       console.log(`[Auction] Sorting ${auctions.length} auctions by: ${sortBy}`);
-      const now = Date.now();
-
       switch (sortBy) {
         case 'highest':
           auctions.sort((a, b) => {
-            const priceA = a.bin ? (a.bin_price || 0) : (a.highest_bid_amount || 0);
-            const priceB = b.bin ? (b.bin_price || 0) : (b.highest_bid_amount || 0);
+            // For BIN use startingPrice, for auction use highestBidAmount or startingPrice
+            const priceA = a.type === 'BIN' ? (a.startingPrice || 0) : (a.highestBidAmount || a.startingPrice || 0);
+            const priceB = b.type === 'BIN' ? (b.startingPrice || 0) : (b.highestBidAmount || b.startingPrice || 0);
             return priceB - priceA;
           });
           break;
         case 'lowest':
           auctions.sort((a, b) => {
-            const priceA = a.bin ? (a.bin_price || 0) : (a.highest_bid_amount || 0);
-            const priceB = b.bin ? (b.bin_price || 0) : (b.highest_bid_amount || 0);
+            const priceA = a.type === 'BIN' ? (a.startingPrice || 0) : (a.highestBidAmount || a.startingPrice || 0);
+            const priceB = b.type === 'BIN' ? (b.startingPrice || 0) : (b.highestBidAmount || b.startingPrice || 0);
             return priceA - priceB;
           });
           break;
         case 'ending':
-          auctions.sort((a, b) => {
-            const timeA = (a.end_time || 0) * 1000;
-            const timeB = (b.end_time || 0) * 1000;
-            return timeA - timeB;
-          });
+          auctions.sort((a, b) => (a.endsAt || 0) - (b.endsAt || 0));
           break;
         case 'bids':
-          auctions.sort((a, b) => (b.bid_count || 0) - (a.bid_count || 0));
+          auctions.sort((a, b) => (b.bids || 0) - (a.bids || 0));
           break;
         case 'rarity':
           const rarityOrder = { mythic: 7, legendary: 6, epic: 5, rare: 4, uncommon: 3, common: 2, special: 1 };
@@ -961,10 +974,25 @@
         console.log(`[Auction] API Response:`, data);
 
         if (data.auctions && Array.isArray(data.auctions)) {
-          currentAuctions = data.auctions;
+          // Normalize API fields to match frontend expectations
+          currentAuctions = data.auctions.map(auction => {
+            const isBin = auction.type === 'BIN';
+            return {
+              ...auction,  // keep original data (e.g., item_name from backend)
+              bin: isBin,
+              bin_price: isBin ? auction.startingPrice : undefined,
+              highest_bid_amount: auction.highestBidAmount,
+              starting_bid: auction.startingPrice,
+              bid_count: auction.bids,
+              auctioneer: auction.ownerName,
+              end_time: auction.endsAt,
+              uuid: auction.id,
+              // Ensure item_name exists (backend already provides it, but fallback just in case)
+              item_name: auction.item_name || (auction.itemId ? processItemId(auction.itemId) : 'Unknown Item')
+            };
+          });
           currentPage = page;
           console.log(`[Auction] Loaded ${currentAuctions.length} auctions`);
-          // Log first auction structure for debugging
           if (currentAuctions.length > 0) {
             console.log(`[Auction] First auction structure:`, currentAuctions[0]);
             console.log(`[Auction] Available fields:`, Object.keys(currentAuctions[0]));
@@ -976,7 +1004,6 @@
         }
       } catch (error) {
         console.error('[Auction] Failed to load auctions:', error);
-        // Fallback to empty grid
         fillCells([]);
       }
     }
