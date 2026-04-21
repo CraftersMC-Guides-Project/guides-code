@@ -621,17 +621,42 @@
 
     // Generate possible image paths for an item name
     function generateImagePaths(itemName) {
-      if (!itemName || typeof itemName !== 'string') return ['assets/ah/search.png'];
-      const lowerName = itemName.toLowerCase().trim();
-      const slugSafe = lowerName.replace(/\s+/g, '_').replace(/[^a-z0-9_-]/g, '');
-      const slugRaw = lowerName.replace(/\s+/g, '_');
-      const firstWord = lowerName.split(/\s+/)[0];
-      const firstSafe = firstWord.replace(/[^a-z0-9_-]/g, '');
+      if (!itemName || typeof itemName !== 'string') {
+        return ['assets/ah/search.png'];
+      }
+
       const paths = [];
-      if (slugSafe) paths.push(`img/${slugSafe}.webp`);
-      if (slugRaw && slugRaw !== slugSafe) paths.push(`img/${slugRaw}.webp`);
-      if (firstSafe && firstSafe !== slugSafe && firstSafe !== slugRaw) paths.push(`img/${firstSafe}.webp`);
+      const original = itemName.trim();
+
+      // 1. Original name with spaces → underscores (preserves case)
+      const originalSlug = original.replace(/\s+/g, '_');
+      if (originalSlug) {
+        paths.push(`img/${originalSlug}.webp`);
+        paths.push(`img/${originalSlug}.png`);
+      }
+
+      // 2. Lowercased version (your existing slug)
+      const lowerSlug = original.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_-]/g, '');
+      if (lowerSlug && lowerSlug !== originalSlug) {
+        paths.push(`img/${lowerSlug}.webp`);
+        paths.push(`img/${lowerSlug}.png`);
+      }
+
+      // 3. First word (preserving case)
+      const firstWord = original.split(/\s+/)[0];
+      if (firstWord) {
+        paths.push(`img/${firstWord}.webp`);
+        paths.push(`img/${firstWord}.png`);
+        const lowerFirst = firstWord.toLowerCase();
+        if (lowerFirst !== firstWord) {
+          paths.push(`img/${lowerFirst}.webp`);
+          paths.push(`img/${lowerFirst}.png`);
+        }
+      }
+
+      // 4. Ultimate fallback
       paths.push('assets/ah/search.png');
+
       return paths;
     }
 
