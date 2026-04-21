@@ -683,6 +683,51 @@
       }, { once: false });
     }
 
+    // Format enchantments from NBT
+    function formatEnchantments(decoded) {
+      const enchants = decoded?.tag?.Enchantments || decoded?.Enchantments;
+      if (!enchants || !Array.isArray(enchants)) return '';
+
+      return enchants.map(e => {
+        const name = e.id?.replace(/^minecraft:/, '').split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        const level = e.lvl || e.level;
+        return `<div class="row"><span>${name}</span><span class="gold">${level}</span></div>`;
+      }).join('');
+    }
+
+    // Format lore lines
+    function formatLore(decoded) {
+      const lore = decoded?.tag?.display?.Lore || decoded?.display?.Lore;
+      if (!lore || !Array.isArray(lore)) return '';
+      return lore.map(line => `<div class="row muted">${cleanMCText(line)}</div>`).join('');
+    }
+
+    // Clean Minecraft colour codes and JSON text components
+    function cleanMCText(text) {
+      if (!text) return '';
+      let cleaned = text;
+      if (cleaned.startsWith('{')) {
+        try {
+          const parsed = JSON.parse(cleaned);
+          cleaned = parsed.text || parsed.extra?.map(e => e.text).join('') || cleaned;
+        } catch (e) { }
+      }
+      return cleaned.replace(/§./g, '');
+    }
+
+    // Extract numeric stats (damage, strength, etc.) from NBT
+    function extractItemStats(decoded) {
+      const stats = [];
+      const attackDamage = decoded?.tag?.AttributeModifiers?.find(m => m.AttributeName === 'generic.attackDamage')?.Amount;
+      if (attackDamage) stats.push(`Damage: +${attackDamage}`);
+      const strength = decoded?.tag?.ExtraAttributes?.strength;
+      if (strength) stats.push(`Strength: +${strength}`);
+      const defense = decoded?.tag?.ExtraAttributes?.defense;
+      if (defense) stats.push(`Defense: +${defense}`);
+      // Add more as needed
+      return stats.map(s => `<div class="row"><span>${s}</span></div>`).join('');
+    }
+
     // Fill grid with auctions
     async function fillCells(auctions) {
       const mainGrid = document.getElementById('mainGrid');
@@ -783,65 +828,47 @@
 
     // Generate tooltip HTML for auction
     function generateAuctionTooltipHTML(auction) {
-      console.log('[Auction] Generating tooltip for:', auction);
-
       const itemName = auction.item_name || 'Unknown Item';
-      const rarity = auction.tier || 'common';
-      const currentBid = auction.highest_bid_amount || 0;
-      const startingBid = auction.starting_bid || 0;
-      const binPrice = auction.bin_price;
-      const endTime = auction.end_time * 1000; // Convert to milliseconds
-      const auctionType = getAuctionTypeLabel(auction.bin);
-      const bidCount = auction.bid_count || 0;
-      const seller = auction.auctioneer || 'Unknown Seller';
-      const uuid = auction.uuid || 'N/A';
+      const rarity = (auction.tier || 'common').toUpperCase();
+      const auctionType = auction.bin ? 'BIN' : 'Auction';
+      const endTime = auction.end_time * 1000;
 
-      console.log(`[Auction] Title: ${itemName}, Rarity: ${rarity}, Type: ${auctionType}, Seller: ${seller}`);
-
+      // Start with Minecraft frame content
       let html = `<div class="title">${itemName}</div>`;
-      html += `<div class="rarity">${rarity.toUpperCase()}</div>`;
-      html += `<div class="spacer"></div>`;
+      html += `<div class="rarity">${rarity}</div>`;
 
-      if (auction.bin) {
-        html += `
-          <div class="row">
-            <span>BIN Price:</span>
-            <span class="gold">${formatCurrency(binPrice)}</span>
-          </div>
-        `;
-      } else {
-        html += `
-          <div class="row">
-            <span>Starting Bid:</span>
-            <span class="gold">${formatCurrency(startingBid)}</span>
-          </div>
-          <div class="row">
-            <span>Highest Bid:</span>
-            <span class="gold">${formatCurrency(currentBid)}</span>
-          </div>
-          <div class="row">
-            <span>Bids:</span>
-            <span>${formatNumber(bidCount)}</span>
-          </div>
-        `;
+      // Add item stats from NBT
+      const decoded = auction.item_nbt_decoded?.decoded;
+      if (decoded) {
+        const statsHtml = extractItemStats(decoded);
+        if (statsHtml) html += `<div class="spacer"></div>${statsHtml}`;
+
+        const enchantsHtml = formatEnchantments(decoded);
+        if (enchantsHtml) {
+          html += `<div class="spacer"></div><div class="row gold">Enchantments</div>${enchantsHtml}`;
+        }
+
+        const loreHtml = formatLore(decoded);
+        if (loreHtml) {
+          html += `<div class="spacer"></div><div class="row muted">Lore</div>${loreHtml}`;
+        }
       }
 
-      html += `
-        <div class="row">
-          <span>Type:</span>
-          <span>${auctionType}</span>
-        </div>
-        <div class="row">
-          <span>Seller:</span>
-          <span>${seller}</span>
-        </div>
-        <div class="row">
-          <span>Ends in:</span>
-          <span class="gold">${formatTimeRemaining(endTime)}</span>
-        </div>
-      `;
+      // Auction details
+      html += `<div class="spacer"></div>`;
+      html += `<div class="row"><span>Type:</span><span>${auctionType}</span></div>`;
 
-      console.log(`[Auction] Tooltip HTML generated with ${Object.keys(auction).length} data fields`);
+      if (auction.bin) {
+        html += `<div class="row"><span>BIN Price:</span><span class="gold">${formatCurrency(auction.bin_price)}</span></div>`;
+      } else {
+        html += `<div class="row"><span>Starting Bid:</span><span class="gold">${formatCurrency(auction.starting_bid)}</span></div>`;
+        html += `<div class="row"><span>Highest Bid:</span><span class="gold">${formatCurrency(auction.highest_bid_amount)}</span></div>`;
+        html += `<div class="row"><span>Bids:</span><span>${formatNumber(auction.bid_count)}</span></div>`;
+      }
+
+      html += `<div class="row"><span>Seller:</span><span>${auction.auctioneer || 'Unknown'}</span></div>`;
+      html += `<div class="row"><span>Ends in:</span><span class="gold">${formatTimeRemaining(endTime)}</span></div>`;
+
       return html;
     }
 
