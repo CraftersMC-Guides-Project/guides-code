@@ -619,6 +619,64 @@
       return rarityMap[(rarity || 'common').toLowerCase()] || 'assets/ah/rarities/notier.png';
     }
 
+    // Generate possible image paths for an item name
+    function generateImagePaths(itemName) {
+      if (!itemName) return ['img/unknown_item.png'];
+      
+      const paths = [];
+      
+      // Sanitize the item name
+      // 1. Exact match - lowercase with underscores and only safe chars
+      const slug1 = itemName
+        .toLowerCase()
+        .replace(/\s+/g, '_')
+        .replace(/[^a-z0-9_-]/g, '');
+      paths.push(`img/${slug1}.png`);
+      
+      // 2. Keep hyphens and spaces as underscores
+      const slug2 = itemName
+        .toLowerCase()
+        .replace(/[\s-]+/g, '_')
+        .replace(/[^a-z0-9_]/g, '');
+      if (slug2 !== slug1) paths.push(`img/${slug2}.png`);
+      
+      // 3. Just lowercase, minimal processing
+      const slug3 = itemName.toLowerCase().replace(/\s+/g, '_');
+      if (slug3 !== slug1 && slug3 !== slug2) paths.push(`img/${slug3}.png`);
+      
+      // 4. First word only
+      const firstWord = itemName.split(/\s+/)[0].toLowerCase();
+      if (firstWord && firstWord !== slug1) paths.push(`img/${firstWord}.png`);
+      
+      // 5. Asset fallback
+      paths.push('assets/ah/search.png');
+      
+      return paths;
+    }
+
+    // Try loading next image path if previous failed
+    function setupImageFallback(imgElement) {
+      const paths = JSON.parse(imgElement.dataset.imagePaths || '[]');
+      let currentIndex = 0;
+      
+      // Set initial src to first path
+      if (paths.length > 0) {
+        imgElement.src = paths[0];
+        currentIndex = 1;
+      }
+      
+      imgElement.addEventListener('error', () => {
+        if (currentIndex < paths.length) {
+          const nextPath = paths[currentIndex];
+          console.log(`[Auction] Image failed: ${imgElement.src}, trying: ${nextPath}`);
+          imgElement.src = nextPath;
+          currentIndex++;
+        } else {
+          console.warn(`[Auction] All image paths failed for item: ${imgElement.dataset.itemName}`);
+        }
+      }, { once: false });
+    }
+
     // Fill grid with auctions
     async function fillCells(auctions) {
       const mainGrid = document.getElementById('mainGrid');
@@ -637,16 +695,21 @@
         if (i < auctions.length) {
           const auction = auctions[i];
           const itemName = auction.item_name || 'Unknown Item';
-          // Try to get item image from img/ folder, fallback to placeholder
-          const imageFileName = itemName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
-          const itemImg = `img/${imageFileName}.png`;
+          
+          // Generate image filename from item name
+          // Try multiple variations to find the image
+          const imagePaths = generateImagePaths(itemName);
+          const primaryImage = imagePaths[0];
 
           console.log(`[Auction] Added item ${i + 1}: ${itemName} (ID: ${auction.uuid})`);
+          console.log(`[Auction] Trying image paths:`, imagePaths);
 
           cell.innerHTML = `
             <div class="item-with-sub">
-              <img src="${itemImg}" alt="${itemName}" 
-                   onerror="console.warn('[Auction] Failed to load image: ${itemImg}'); this.src='assets/ah/search.png'">
+              <img src="${primaryImage}" alt="${itemName}" 
+                   class="item-img"
+                   data-item-name="${itemName}"
+                   data-image-paths='${JSON.stringify(imagePaths).replace(/'/g, "&apos;")}'>
               <div class="tooltip">
                 <div class="mc-frame">
                   <div class="mc-corner tl"></div>
@@ -675,10 +738,16 @@
       const itemDiv = cell.querySelector('.item-with-sub');
       const tooltip = itemDiv?.querySelector('.tooltip');
       const contentBox = tooltip?.querySelector('.mc-content');
+      const imgElement = itemDiv?.querySelector('.item-img');
 
       if (!itemDiv || !tooltip || !contentBox) {
         console.warn('[Auction] Failed to setup tooltip for auction:', auction.uuid);
         return;
+      }
+
+      // Setup image fallback for trying multiple paths
+      if (imgElement) {
+        setupImageFallback(imgElement);
       }
 
       let timeout;
