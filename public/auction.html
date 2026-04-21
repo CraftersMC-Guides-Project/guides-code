@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auction House - CraftersMC Guides</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <script src="js/script.js"></script>
+  <link rel="stylesheet" href="css/essential.css" />
+  <style>
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #1a1a2e;
+    }
+
+    .auction-wrapper {
+      display: flex;
+      justify-content: center;
+      padding: 24px 12px 48px;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 2px 2px auto 2px 2px;
+      grid-template-rows: 2px 2px auto 2px 2px;
+      grid-template-areas:
+        "tl-tl tr-tl t tl-tr tr-tr"
+        "bl-tl br-tl t bl-tr br-tr"
+        "l l inv r r"
+        "tl-bl tr-bl b tl-br tr-br"
+        "bl-bl br-bl b bl-br br-br";
+    }
+
+    .s-br {
+      box-shadow: 2px 0 0 black, 0 2px 0 black;
+    }
+
+    .s-bl {
+      box-shadow: -2px 0 0 black, 0 2px 0 black;
+    }
+
+    .s-tr {
+      box-shadow: 0 -2px 0 black, 2px 0 0 black;
+    }
+
+    .s-tl {
+      box-shadow: 0 -2px 0 black, -2px 0 0 black;
+    }
+
+    .corner-top {
+      grid-area: t;
+      box-shadow: 0 -2px 0 black;
+      background-color: #ffffff;
+    }
+
+    .corner-left {
+      grid-area: l;
+      box-shadow: -2px 0 0 black;
+      background-color: #ffffff;
+    }
+
+    .corner-right {
+      grid-area: r;
+      box-shadow: 2px 0 0 black;
+      background-color: #555555;
+    }
+
+    .corner-bottom {
+      grid-area: b;
+      box-shadow: 0 2px 0 black;
+      background-color: #555555;
+    }
+
+    .inner-container {
+      background-color: #c6c6c6;
+      grid-area: inv;
+      grid-column: inherit;
+    }
+
+    .tl-tl {
+      grid-area: tl-tl;
+      background-color: #ffffff;
+      position: relative;
+      bottom: -4px;
+      right: -4px;
+    }
+
+    .br-br {
+      grid-area: br-br;
+      background-color: #555555;
+      position: relative;
+      top: -4px;
+      left: -4px;
+    }
+
+    .bl-tl,
+    .tr-tl,
+    .br-tl {
+      background-color: #ffffff;
+    }
+
+    .bl-tl {
+      grid-area: bl-tl;
+    }
+
+    .tr-tl {
+      grid-area: tr-tl;
+    }
+
+    .br-tl {
+      grid-area: br-tl;
+    }
+
+    .bl-tr {
+      grid-area: bl-tr;
+      background-color: #c6c6c6;
+    }
+
+    .tr-bl {
+      grid-area: tr-bl;
+      background-color: #c6c6c6;
+    }
+
+    .tr-br,
+    .tl-br,
+    .bl-br {
+      background-color: #555555;
+    }
+
+    .tr-br {
+      grid-area: tr-br;
+    }
+
+    .tl-br {
+      grid-area: tl-br;
+    }
+
+    .bl-br {
+      grid-area: bl-br;
+    }
+
+    .inventory {
+      padding: 0.4rem;
+      display: grid;
+    }
+
+    .inventory .inner-container,
+    .hotbar-extreme-inner-container {
+      display: grid;
+      grid-column: inherit;
+    }
+
+    .inner-container h3 {
+      margin: 0 auto 8px auto;
+      font-size: 1.2rem;
+      color: #333;
+      text-align: center;
+    }
+
+    .extreme-inner-container,
+    .hotbar-extreme-inner-container {
+      color: #262626;
+      display: grid;
+      grid-template-columns: repeat(9, auto);
+      grid-template-rows: repeat(4, auto);
+    }
+
+    .hotbar-extreme-inner-container {
+      margin-top: 0.5rem;
+    }
+
+    .cell {
+      box-shadow: inset 2px 2px 0 0 #373737, inset -2px -2px 0 0 #ffffff;
+      background-color: #8b8b8b;
+      height: 2rem;
+      width: 2rem;
+      position: relative;
+    }
+
+    .cell::before,
+    .cell::after {
+      content: "";
+      height: 2px;
+      width: 2px;
+      background-color: #8b8b8b;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+    .cell::after {
+      top: auto;
+      right: auto;
+      left: 0;
+      bottom: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="loader"></div>
+
+  <!-- Top Navbar -->
+  <div class="top"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <div class="gap"></div>
+
+  <div class="auction-wrapper">
+    <div class="container">
+      <div class="corner-left"></div>
+      <div class="corner-right"></div>
+      <div class="corner-bottom"></div>
+      <div class="corner-top"></div>
+      <div class="tl-tl"></div>
+      <div class="tr-tl s-tl"></div>
+      <div class="bl-tl s-tl"></div>
+      <div class="br-tl"></div>
+      <div class="tr-bl s-bl"></div>
+      <div class="bl-tr s-tr"></div>
+      <div class="tl-br"></div>
+      <div class="tr-br s-br"></div>
+      <div class="bl-br s-br"></div>
+      <div class="br-br"></div>
+
+      <div class="inventory inner-container">
+        <h3>Auction House</h3>
+        <div class="extreme-inner-container" id="mainGrid"></div>
+        <div class="hotbar-extreme-inner-container" id="hotbarGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer"></div>
+
+  <script>
+    function fillEmptyGrid() {
+      const mainGrid = document.getElementById('mainGrid');
+      const hotbarGrid = document.getElementById('hotbarGrid');
+      if (!mainGrid || !hotbarGrid) return;
+
+      mainGrid.innerHTML = '';
+      hotbarGrid.innerHTML = '';
+
+      for (let i = 0; i < 36; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        mainGrid.appendChild(cell);
+      }
+
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        hotbarGrid.appendChild(cell);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      fillEmptyGrid();
+    });
+  </script>
+</body>
+
+</html>
