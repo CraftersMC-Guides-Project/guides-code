@@ -547,6 +547,10 @@
       background: #2c0863;
     }
 
+    .tooltip.mock .mc-edge {
+      background: #630808;
+    }
+
     .mc-edge.top {
       top: 0;
       left: 2px;
@@ -1578,13 +1582,16 @@
           </div>
         `).join('');
 
-        return `
+        return {
+          html: `
           <div class="title">${item.name}</div>
           <div class="sub-items-grid">
             ${subItemsGrid}
           </div>
           ${item.subItems.length > 6 ? `<div style="text-align:center;color:#ccc;">+${item.subItems.length - 6} more items</div>` : ''}
-        `;
+        `,
+          isMockData: false
+        };
       }
 
       // For single items, fetch API data
@@ -1651,7 +1658,7 @@
       //   `;
       // }
 
-      return html;
+      return { html, isMockData };
     }
 
     // ==================== UI FUNCTIONS ====================
@@ -1774,16 +1781,20 @@
           contentBox.className = 'mc-content loading';
           contentBox.innerHTML = 'Loading market data...';
 
-          const html = await generateTooltipHTML(item);
+          const result = await generateTooltipHTML(item);
+          const html = typeof result === 'string' ? result : result?.html;
+          const isMockData = typeof result === 'string' ? false : result?.isMockData === true;
 
           contentBox.className = 'mc-content';
           contentBox.innerHTML = html;
+          tooltip.classList.toggle('mock', isMockData);
         }, 150);
       });
 
       itemDiv.addEventListener('mouseleave', () => {
         clearTimeout(timeout);
         tooltip.style.display = 'none';
+        tooltip.classList.remove('mock');
       });
     }
 
