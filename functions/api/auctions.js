@@ -133,9 +133,72 @@ function processAuctions(auctions) {
   return auctions.map(auction => {
     const processed = { ...auction };
 
+    // Map field names if they use different formats in the API
+    // UUID/ID handling
+    if (!processed.uuid && processed.id) {
+      processed.uuid = processed.id;
+    }
+    if (!processed.uuid && processed.auction_id) {
+      processed.uuid = processed.auction_id;
+    }
+    
+    // Tier/Rarity handling
+    if (!processed.tier && processed.rarity) {
+      processed.tier = processed.rarity;
+    }
+    
+    // Bid amount handling
+    if (!processed.highest_bid_amount && processed.highest_bid) {
+      processed.highest_bid_amount = processed.highest_bid;
+    }
+    if (!processed.highest_bid_amount && processed.highestBid) {
+      processed.highest_bid_amount = processed.highestBid;
+    }
+    
+    // Starting bid handling
+    if (!processed.starting_bid && processed.startBid) {
+      processed.starting_bid = processed.startBid;
+    }
+    
+    // BIN price handling
+    if (!processed.bin_price && processed.binPrice) {
+      processed.bin_price = processed.binPrice;
+    }
+    
+    // End time handling
+    if (!processed.end_time && processed.endTime) {
+      processed.end_time = processed.endTime;
+    }
+    if (!processed.end_time && processed.ends) {
+      processed.end_time = processed.ends;
+    }
+    
+    // Auctioneer/Seller handling
+    if (!processed.auctioneer && processed.seller) {
+      processed.auctioneer = processed.seller;
+    }
+    
+    // Bid count handling
+    if (!processed.bid_count && processed.bids) {
+      processed.bid_count = processed.bids;
+    }
+
     // Decode item NBT data if present
     if (auction.item_bytes) {
       processed.item_nbt_decoded = decodeNBT(auction.item_bytes);
+      
+      // Extract item name from decoded NBT data
+      if (processed.item_nbt_decoded?.decoded) {
+        const decoded = processed.item_nbt_decoded.decoded;
+        let itemName = extractItemName(decoded);
+        
+        if (itemName) {
+          processed.item_name = itemName;
+          console.log(`[NBT] Extracted item name: ${itemName}`);
+        } else {
+          console.log(`[NBT] Could not extract item name from:`, decoded);
+        }
+      }
     }
 
     // Decode extra NBT data if present
@@ -146,6 +209,72 @@ function processAuctions(auctions) {
     return processed;
   });
 }
+
+/**
+ * Extract item name from decoded NBT data
+ */
+function extractItemName(decoded) {
+  if (!decoded) return null;
+  
+  // Try tag.display.Name (Minecraft standard)
+  let itemName = decoded?.tag?.display?.Name;
+  
+  // Try direct display.Name
+  if (!itemName) {
+    itemName = decoded?.display?.Name;
+  }
+  
+  // Try Name field
+  if (!itemName) {
+    itemName = decoded?.Name;
+  }
+  
+  // Try id field as fallback
+  if (!itemName) {
+    itemName = decoded?.id;
+  }
+  
+  // Parse JSON if it's a text component string
+  if (itemName && typeof itemName === 'string') {
+    // Remove color codes and formatting
+    itemName = cleanMCText(itemName);
+  }
+  
+  return itemName || null;
+}
+
+/**
+ * Clean Minecraft text component/formatting
+ */
+function cleanMCText(text) {
+  if (!text || typeof text !== 'string') return null;
+  
+  let cleaned = text;
+  
+  // Try to parse as JSON text component
+  if (cleaned.startsWith('{')) {
+    try {
+      const parsed = JSON.parse(cleaned);
+      // Extract text from various formats
+      if (parsed.text) {
+        cleaned = parsed.text;
+      } else if (parsed.extra?) {
+        // Concatenate extra text components
+        cleaned = (parsed.extra || [])
+          .map(e => e.text || '')
+          .join('');
+      }
+    } catch (e) {
+      // Not valid JSON, keep original
+    }
+  }
+  
+  // Remove Minecraft color codes (§c, §6, etc.)
+  cleaned = cleaned.replace(/§./g, '');
+  
+  return cleaned || null;
+}
+
 
 /**
  * Main handler function
