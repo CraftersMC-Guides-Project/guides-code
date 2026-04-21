@@ -132,6 +132,25 @@ class APIProxyClient {
   }
 
   /**
+   * Get auctions with optional page number
+   */
+  async getAuctions(page = 0) {
+    const cacheKey = `auctions_page_${page}`;
+    // Check cache first
+    const cached = this.getFromCache(cacheKey, 'bazaar');
+    if (cached) return cached;
+
+    try {
+      const data = await this.makeRequest(`/api/auctions?page=${page}`);
+      this.setCache(cacheKey, data);
+      return data;
+    } catch (error) {
+      console.error(`Failed to fetch auctions for page ${page}:`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Clear all cached data
    */
   clearCache() {

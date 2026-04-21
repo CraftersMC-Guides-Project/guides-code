@@ -150,8 +150,7 @@
       display: grid;
     }
 
-    .inventory .inner-container,
-    .hotbar-extreme-inner-container {
+    .inventory .inner-container {
       display: grid;
       grid-column: inherit;
     }
@@ -163,16 +162,19 @@
       text-align: center;
     }
 
-    .extreme-inner-container,
-    .hotbar-extreme-inner-container {
+    .extreme-inner-container {
       color: #262626;
       display: grid;
       grid-template-columns: repeat(9, auto);
       grid-template-rows: repeat(4, auto);
     }
 
-    .hotbar-extreme-inner-container {
+    .hotbar-controls {
       margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .cell {
@@ -181,6 +183,239 @@
       height: 2rem;
       width: 2rem;
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .cell img {
+      height: 1.5rem;
+      width: 1.5rem;
+      margin: 0.25rem;
+      image-rendering: pixelated;
+    }
+
+    .item-with-sub {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .tooltip {
+      position: absolute;
+      left: 110%;
+      top: 0;
+      background: #2d143b;
+      color: #ffe16b;
+      border: 2px solid #4b267a;
+      border-radius: 6px;
+      padding: 12px;
+      z-index: 100;
+      min-width: 250px;
+      font-family: 'Minecraft', 'Arial', sans-serif;
+      font-size: 0.85rem;
+      box-shadow: 
+        0 0 0 2px #4b267a,
+        -4px -4px 0 0 #fff,
+        4px -4px 0 0 #fff,
+        -4px 4px 0 0 #555,
+        4px 4px 0 0 #555;
+      font-weight: bold;
+      display: none;
+      white-space: normal;
+    }
+
+    .mc-frame {
+      position: relative;
+      padding: 10px;
+      background: linear-gradient(#1a0f1f, #120915);
+      color: #dcdcdc;
+      font-size: 14px;
+      line-height: 1.3;
+    }
+
+    .mc-corner {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #4b267a;
+    }
+
+    .mc-corner.tl {
+      top: -2px;
+      left: -2px;
+    }
+
+    .mc-corner.tr {
+      top: -2px;
+      right: -2px;
+    }
+
+    .mc-corner.bl {
+      bottom: -2px;
+      left: -2px;
+    }
+
+    .mc-corner.br {
+      bottom: -2px;
+      right: -2px;
+    }
+
+    .mc-edge {
+      position: absolute;
+      background: #4b267a;
+    }
+
+    .mc-edge.top {
+      top: -2px;
+      left: 2px;
+      right: 2px;
+      height: 2px;
+    }
+
+    .mc-edge.bottom {
+      bottom: -2px;
+      left: 2px;
+      right: 2px;
+      height: 2px;
+    }
+
+    .mc-edge.left {
+      left: -2px;
+      top: 2px;
+      bottom: 2px;
+      width: 2px;
+    }
+
+    .mc-edge.right {
+      right: -2px;
+      top: 2px;
+      bottom: 2px;
+      width: 2px;
+    }
+
+    .mc-content {
+      color: #ffe16b;
+    }
+
+    .mc-content.loading {
+      color: #ffd700;
+      font-style: italic;
+    }
+
+    .mc-content .title {
+      color: #6d5cff;
+      font-weight: bold;
+      font-size: 1.1rem;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .mc-content .rarity {
+      color: #55ff55;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    .mc-content .spacer {
+      height: 6px;
+    }
+
+    .mc-content .row {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+
+    .mc-content .gold {
+      color: #ffaa00;
+    }
+
+    .ah-search {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-sizing: border-box;
+    }
+
+    .ah-btn {
+      cursor: pointer;
+      border: 0;
+      padding: 2px;
+      font: inherit;
+      color: #262626;
+      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: none;
+    }
+
+    .ah-btn:hover {
+      box-shadow: none;
+      background: transparent;
+      transform: none;
+    }
+
+    .ah-btn:focus-visible {
+      outline: 2px solid #ffff55;
+      outline-offset: 2px;
+    }
+
+    .ah-icon {
+      width: 24px;
+      height: 24px;
+      image-rendering: pixelated;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .ah-search-input {
+      width: 240px;
+      height: 28px;
+      border: 0;
+      outline: 0;
+      background: rgba(0, 0, 0, 0.15);
+      box-shadow: inset 2px 2px 0 0 #373737, inset -2px -2px 0 0 #ffffff;
+      color: #262626;
+      font-size: 0.95rem;
+      padding: 0 8px;
+      box-sizing: border-box;
+      transition: width 120ms ease, padding 120ms ease, opacity 120ms ease;
+    }
+
+    .ah-search:not(.ah-search--open) .ah-search-input {
+      width: 0;
+      padding: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .ah-search-input::placeholder {
+      color: #3a3a3a;
+      opacity: 0.85;
+    }
+
+    .ah-badge {
+      position: absolute;
+      right: -2px;
+      bottom: -2px;
+      font-size: 10px;
+      line-height: 1;
+      padding: 2px 3px;
+      background: rgba(0, 0, 0, 0.45);
+      color: #ffffff;
+      border-radius: 2px;
+      user-select: none;
+      pointer-events: none;
     }
 
     .cell::before,
@@ -235,38 +470,487 @@
       <div class="inventory inner-container">
         <h3>Auction House</h3>
         <div class="extreme-inner-container" id="mainGrid"></div>
-        <div class="hotbar-extreme-inner-container" id="hotbarGrid"></div>
+        <div class="hotbar-controls" id="hotbarGrid" aria-label="Auction filters">
+          <div class="ah-search" id="ahSearch" title="Search - Search items by their names or descriptions">
+            <button class="ah-btn" id="ahSearchToggle" type="button" aria-label="Search" aria-expanded="false"
+              aria-controls="ahSearchInput">
+              <img class="ah-icon" src="assets/ah/search.png" alt="" />
+            </button>
+            <input class="ah-search-input" id="ahSearchInput" type="search" placeholder="Search..." autocomplete="off"
+              spellcheck="false" />
+          </div>
+
+          <button class="ah-btn" id="ahAuctionTypeBtn" type="button"
+            title="Auction Type - Buy It Now, Classic Auction, or Both" aria-label="Auction Type">
+            <img class="ah-icon" id="ahAuctionTypeIcon" src="assets/ah/auction_type/show_all.png" alt="" />
+          </button>
+
+          <button class="ah-btn" id="ahRarityBtn" type="button" title="Item Rarity - Can be switched between rarities"
+            aria-label="Item Rarity">
+            <img class="ah-icon" id="ahRarityIcon" src="assets/ah/rarities/notier.png" alt="" />
+          </button>
+
+          <button class="ah-btn" id="ahSortBtn" type="button"
+            title="Sorting - Highest/lowest bid/price, ending soon, most bids, highest rarity, random"
+            aria-label="Sorting">
+            <img class="ah-icon" src="assets/ah/sort.png" alt="" />
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
   <div id="footer"></div>
 
+  <script src="js/api-proxy-client.js"></script>
+
   <script>
-    function fillEmptyGrid() {
+    const apiClient = new APIProxyClient();
+    let auctionCache = new Map();
+    let currentAuctions = [];
+    let filteredAuctions = [];
+    let currentPage = 0;
+
+    // Cache and state management
+    function readSessionCache(auctionId) {
+      try {
+        const cached = sessionStorage.getItem(`auction_${auctionId}`);
+        return cached ? JSON.parse(cached) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function writeSessionCache(auctionId, data) {
+      try {
+        sessionStorage.setItem(`auction_${auctionId}`, JSON.stringify(data));
+      } catch (e) {
+        console.warn('Failed to write auction cache:', e);
+      }
+    }
+
+    // Format currency
+    function formatCurrency(amount) {
+      if (amount === undefined || amount === null) return 'N/A';
+      const truncated = Math.trunc(Number(amount) * 100) / 100;
+      const hasDecimals = Math.abs(truncated % 1) > Number.EPSILON;
+      return truncated.toLocaleString(undefined, {
+        minimumFractionDigits: hasDecimals ? 2 : 0,
+        maximumFractionDigits: 2
+      });
+    }
+
+    // Format number
+    function formatNumber(num) {
+      if (num === undefined || num === null) return 'N/A';
+      return num.toLocaleString();
+    }
+
+    // Format time remaining
+    function formatTimeRemaining(endTime) {
+      if (!endTime) return 'N/A';
+      const now = Date.now();
+      const diff = endTime - now;
+      if (diff <= 0) return 'Ended';
+      const mins = Math.floor(diff / 60000);
+      const hours = Math.floor(mins / 60);
+      const days = Math.floor(hours / 24);
+      if (days > 0) return `${days}d ${hours % 24}h`;
+      if (hours > 0) return `${hours}h ${mins % 60}m`;
+      return `${mins}m`;
+    }
+
+    // Get auction type label
+    function getAuctionTypeLabel(isBin) {
+      return isBin ? 'BIN' : 'Auction';
+    }
+
+    // Map rarity to icon
+    function getRarityIcon(rarity) {
+      const rarityMap = {
+        'common': 'assets/ah/rarities/common.png',
+        'uncommon': 'assets/ah/rarities/uncommon.png',
+        'rare': 'assets/ah/rarities/rare.png',
+        'epic': 'assets/ah/rarities/epic.png',
+        'legendary': 'assets/ah/rarities/legendary.png',
+        'mythic': 'assets/ah/rarities/mythic.png',
+        'special': 'assets/ah/rarities/special.png',
+        'notier': 'assets/ah/rarities/notier.png'
+      };
+      return rarityMap[(rarity || 'common').toLowerCase()] || 'assets/ah/rarities/notier.png';
+    }
+
+    // Fill grid with auctions
+    async function fillCells(auctions) {
       const mainGrid = document.getElementById('mainGrid');
-      const hotbarGrid = document.getElementById('hotbarGrid');
-      if (!mainGrid || !hotbarGrid) return;
+      if (!mainGrid) return;
 
       mainGrid.innerHTML = '';
-      hotbarGrid.innerHTML = '';
+
+      for (let i = 0; i < 36; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+
+        if (i < auctions.length) {
+          const auction = auctions[i];
+          const itemName = auction.item_name || 'Unknown Item';
+          const itemImg = 'assets/ah/search.png'; // Placeholder, could be extended
+
+          cell.innerHTML = `
+            <div class="item-with-sub">
+              <img src="${itemImg}" alt="${itemName}" 
+                   onerror="this.src='https://via.placeholder.com/24/8b8b8b/000?text=?'">
+              <div class="tooltip">
+                <div class="mc-frame">
+                  <div class="mc-corner tl"></div>
+                  <div class="mc-corner tr"></div>
+                  <div class="mc-corner bl"></div>
+                  <div class="mc-corner br"></div>
+                  <div class="mc-edge top"></div>
+                  <div class="mc-edge bottom"></div>
+                  <div class="mc-edge left"></div>
+                  <div class="mc-edge right"></div>
+                  <div class="mc-content loading">Loading auction data...</div>
+                </div>
+              </div>
+            </div>
+          `;
+
+          setupAuctionTooltip(cell, auction);
+        }
+
+        mainGrid.appendChild(cell);
+      }
+    }
+
+    // Setup tooltip for auction cell
+    function setupAuctionTooltip(cell, auction) {
+      const itemDiv = cell.querySelector('.item-with-sub');
+      const tooltip = itemDiv.querySelector('.tooltip');
+      const contentBox = tooltip.querySelector('.mc-content');
+
+      let timeout;
+
+      itemDiv.addEventListener('mouseenter', () => {
+        clearTimeout(timeout);
+
+        timeout = setTimeout(async () => {
+          tooltip.style.display = 'block';
+          contentBox.className = 'mc-content loading';
+          contentBox.innerHTML = 'Loading auction details...';
+
+          const html = generateAuctionTooltipHTML(auction);
+          contentBox.className = 'mc-content';
+          contentBox.innerHTML = html;
+        }, 150);
+      });
+
+      itemDiv.addEventListener('mouseleave', () => {
+        clearTimeout(timeout);
+        tooltip.style.display = 'none';
+      });
+    }
+
+    // Generate tooltip HTML for auction
+    function generateAuctionTooltipHTML(auction) {
+      const itemName = auction.item_name || 'Unknown Item';
+      const rarity = auction.tier || 'common';
+      const currentBid = auction.highest_bid_amount || 0;
+      const startingBid = auction.starting_bid || 0;
+      const binPrice = auction.bin_price;
+      const endTime = auction.end_time * 1000; // Convert to milliseconds
+      const auctionType = getAuctionTypeLabel(auction.bin);
+      const bidCount = auction.bid_count || 0;
+
+      let html = `<div class="title">${itemName}</div>`;
+      html += `<div class="rarity">${rarity.toUpperCase()}</div>`;
+      html += `<div class="spacer"></div>`;
+
+      if (auction.bin) {
+        html += `
+          <div class="row">
+            <span>BIN Price:</span>
+            <span class="gold">${formatCurrency(binPrice)}</span>
+          </div>
+        `;
+      } else {
+        html += `
+          <div class="row">
+            <span>Starting Bid:</span>
+            <span class="gold">${formatCurrency(startingBid)}</span>
+          </div>
+          <div class="row">
+            <span>Highest Bid:</span>
+            <span class="gold">${formatCurrency(currentBid)}</span>
+          </div>
+          <div class="row">
+            <span>Bids:</span>
+            <span>${formatNumber(bidCount)}</span>
+          </div>
+        `;
+      }
+
+      html += `
+        <div class="row">
+          <span>Type:</span>
+          <span>${auctionType}</span>
+        </div>
+        <div class="row">
+          <span>Ends in:</span>
+          <span class="gold">${formatTimeRemaining(endTime)}</span>
+        </div>
+      `;
+
+      return html;
+    }
+
+    // Apply filters to auctions
+    function applyFilters() {
+      const searchText = document.getElementById('ahSearchInput').value.toLowerCase().trim();
+      const auctionType = document.querySelector('input[name="auctionType"][checked]')?.value || 'both';
+      const rarity = document.querySelector('input[name="rarity"][checked]')?.value || 'all';
+      const sortBy = document.querySelector('input[name="sort"][checked]')?.value || 'highest';
+
+      filteredAuctions = currentAuctions.filter(auction => {
+        // Search filter
+        if (searchText && !auction.item_name?.toLowerCase().includes(searchText)) {
+          return false;
+        }
+
+        // Auction type filter
+        if (auctionType === 'bin' && !auction.bin) return false;
+        if (auctionType === 'auction' && auction.bin) return false;
+
+        // Rarity filter
+        if (rarity !== 'all' && auction.tier?.toLowerCase() !== rarity.toLowerCase()) {
+          return false;
+        }
+
+        return true;
+      });
+
+      // Apply sorting
+      sortAuctions(filteredAuctions, sortBy);
+      fillCells(filteredAuctions);
+    }
+
+    // Sort auctions
+    function sortAuctions(auctions, sortBy) {
+      const now = Date.now();
+
+      switch (sortBy) {
+        case 'highest':
+          auctions.sort((a, b) => {
+            const priceA = a.bin ? (a.bin_price || 0) : (a.highest_bid_amount || 0);
+            const priceB = b.bin ? (b.bin_price || 0) : (b.highest_bid_amount || 0);
+            return priceB - priceA;
+          });
+          break;
+        case 'lowest':
+          auctions.sort((a, b) => {
+            const priceA = a.bin ? (a.bin_price || 0) : (a.highest_bid_amount || 0);
+            const priceB = b.bin ? (b.bin_price || 0) : (b.highest_bid_amount || 0);
+            return priceA - priceB;
+          });
+          break;
+        case 'ending':
+          auctions.sort((a, b) => {
+            const timeA = (a.end_time || 0) * 1000;
+            const timeB = (b.end_time || 0) * 1000;
+            return timeA - timeB;
+          });
+          break;
+        case 'bids':
+          auctions.sort((a, b) => (b.bid_count || 0) - (a.bid_count || 0));
+          break;
+        case 'rarity':
+          const rarityOrder = { mythic: 7, legendary: 6, epic: 5, rare: 4, uncommon: 3, common: 2, special: 1 };
+          auctions.sort((a, b) => {
+            const rarityA = rarityOrder[a.tier?.toLowerCase()] || 0;
+            const rarityB = rarityOrder[b.tier?.toLowerCase()] || 0;
+            return rarityB - rarityA;
+          });
+          break;
+        case 'random':
+          for (let i = auctions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [auctions[i], auctions[j]] = [auctions[j], auctions[i]];
+          }
+          break;
+      }
+    }
+
+    // Load auctions from API
+    async function loadAuctions(page = 0) {
+      try {
+        const data = await apiClient.getAuctions(page);
+        if (data.auctions && Array.isArray(data.auctions)) {
+          currentAuctions = data.auctions;
+          currentPage = page;
+          applyFilters();
+        }
+      } catch (error) {
+        console.error('Failed to load auctions:', error);
+        // Fallback to empty grid
+        fillCells([]);
+      }
+    }
+
+    function fillEmptyGrid() {
+      const mainGrid = document.getElementById('mainGrid');
+      if (!mainGrid) return;
+
+      mainGrid.innerHTML = '';
 
       for (let i = 0; i < 36; i++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
         mainGrid.appendChild(cell);
       }
-
-      for (let i = 0; i < 9; i++) {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        hotbarGrid.appendChild(cell);
-      }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
       fillEmptyGrid();
+      loadAuctions(0);
     });
+
+    (function initAuctionFilters() {
+      const searchWrap = document.getElementById('ahSearch');
+      const searchToggle = document.getElementById('ahSearchToggle');
+      const searchInput = document.getElementById('ahSearchInput');
+      const auctionTypeBtn = document.getElementById('ahAuctionTypeBtn');
+      const auctionTypeIcon = document.getElementById('ahAuctionTypeIcon');
+      const rarityBtn = document.getElementById('ahRarityBtn');
+      const rarityIcon = document.getElementById('ahRarityIcon');
+      const sortBtn = document.getElementById('ahSortBtn');
+
+      if (!searchWrap || !searchToggle || !searchInput || !auctionTypeBtn || !auctionTypeIcon || !rarityBtn || !rarityIcon || !sortBtn) {
+        return;
+      }
+
+      const auctionTypeOptions = [
+        { key: 'both', label: 'Both', icon: 'assets/ah/auction_type/show_all.png' },
+        { key: 'bin', label: 'BIN', icon: 'assets/ah/auction_type/bin_only.png' },
+        { key: 'auction', label: 'Auc', icon: 'assets/ah/auction_type/auction_only.png' },
+      ];
+
+      const rarityOptions = [
+        { key: 'all', label: 'All', icon: 'assets/ah/rarities/notier.png' },
+        { key: 'common', label: 'Com', icon: 'assets/ah/rarities/common.png' },
+        { key: 'uncommon', label: 'Unc', icon: 'assets/ah/rarities/uncommon.png' },
+        { key: 'rare', label: 'Rare', icon: 'assets/ah/rarities/rare.png' },
+        { key: 'epic', label: 'Epic', icon: 'assets/ah/rarities/epic.png' },
+        { key: 'legendary', label: 'Leg', icon: 'assets/ah/rarities/legendary.png' },
+        { key: 'mythic', label: 'Myth', icon: 'assets/ah/rarities/mythic.png' },
+        { key: 'special', label: 'Spec', icon: 'assets/ah/rarities/special.png' },
+      ];
+
+      const sortOptions = [
+        { key: 'highest', badge: 'Hi', label: 'Highest bid/price' },
+        { key: 'lowest', badge: 'Lo', label: 'Lowest bid/price' },
+        { key: 'ending', badge: 'End', label: 'Ending soon' },
+        { key: 'bids', badge: 'Bid', label: 'Most bids' },
+        { key: 'rarity', badge: 'Rar', label: 'Highest rarity' },
+        { key: 'random', badge: 'Rnd', label: 'Random' },
+      ];
+
+      let auctionTypeIndex = 0;
+      let rarityIndex = 0;
+      let sortIndex = 0;
+      let searchText = '';
+      let searchDebounce = null;
+      let isSearchOpen = false;
+
+      function openSearch() {
+        if (isSearchOpen) return;
+        isSearchOpen = true;
+        searchWrap.classList.add('ah-search--open');
+        searchToggle.setAttribute('aria-expanded', 'true');
+        searchInput.focus();
+        if (searchInput.value) searchInput.select();
+      }
+
+      function closeSearchIfEmpty() {
+        if (!isSearchOpen) return;
+        if (String(searchInput.value || '').trim()) return;
+        isSearchOpen = false;
+        searchWrap.classList.remove('ah-search--open');
+        searchToggle.setAttribute('aria-expanded', 'false');
+      }
+
+      function applyAuctionType() {
+        const option = auctionTypeOptions[auctionTypeIndex];
+        auctionTypeIcon.src = option.icon;
+        auctionTypeBtn.title = `Auction Type - ${option.key === 'bin' ? 'Buy It Now' : option.key === 'auction' ? 'Classic Auction' : 'Both'}`;
+        applyFilters();
+      }
+
+      function applyRarity() {
+        const option = rarityOptions[rarityIndex];
+        rarityIcon.src = option.icon;
+        rarityBtn.title = `Item Rarity - ${option.key === 'all' ? 'All rarities' : option.key}`;
+        applyFilters();
+      }
+
+      function applySort() {
+        const option = sortOptions[sortIndex];
+        sortBtn.title = `Sorting - ${option.label}`;
+        applyFilters();
+      }
+
+      auctionTypeBtn.addEventListener('click', () => {
+        auctionTypeIndex = (auctionTypeIndex + 1) % auctionTypeOptions.length;
+        applyAuctionType();
+      });
+
+      rarityBtn.addEventListener('click', () => {
+        rarityIndex = (rarityIndex + 1) % rarityOptions.length;
+        applyRarity();
+      });
+
+      sortBtn.addEventListener('click', () => {
+        sortIndex = (sortIndex + 1) % sortOptions.length;
+        applySort();
+      });
+
+      searchToggle.addEventListener('click', () => {
+        openSearch();
+      });
+
+      searchWrap.addEventListener('click', (e) => {
+        if (e.target === searchToggle) return;
+        if (e.target === searchInput) return;
+        openSearch();
+      });
+
+      searchInput.addEventListener('focus', () => {
+        openSearch();
+      });
+
+      searchInput.addEventListener('input', (e) => {
+        const value = String(e.target.value || '');
+        if (searchDebounce) window.clearTimeout(searchDebounce);
+        searchDebounce = window.setTimeout(() => {
+          searchText = value.trim();
+          applyFilters();
+        }, 150);
+      });
+
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          searchInput.blur();
+          closeSearchIfEmpty();
+        }
+      });
+
+      searchInput.addEventListener('blur', () => {
+        window.setTimeout(() => closeSearchIfEmpty(), 0);
+      });
+
+      applyAuctionType();
+      applyRarity();
+      applySort();
+    })();
   </script>
 </body>
 
