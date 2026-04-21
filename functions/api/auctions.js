@@ -258,7 +258,7 @@ function cleanMCText(text) {
       // Extract text from various formats
       if (parsed.text) {
         cleaned = parsed.text;
-      } else if (parsed.extra?) {
+      } else if (parsed.extra) {
         // Concatenate extra text components
         cleaned = (parsed.extra || [])
           .map(e => e.text || '')
