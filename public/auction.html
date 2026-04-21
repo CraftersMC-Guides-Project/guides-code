@@ -890,6 +890,19 @@
     }
 
     async function loadAuctions(page = 0) {
+      let allAuctions = [];
+      let page = 0;
+      let hasMore = true;
+      while (hasMore) {
+        const data = await apiClient.getAuctions(page);
+        if (data.auctions && data.auctions.length) {
+          allAuctions.push(...data.auctions);
+          page++;
+          hasMore = page < data.totalPages;
+        } else {
+          hasMore = false;
+        }
+      }
       console.log(`[Auction] Loading auctions from page ${page}`);
       try {
         const data = await apiClient.getAuctions(page);
