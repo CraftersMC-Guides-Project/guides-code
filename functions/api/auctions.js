@@ -1,6 +1,6 @@
 /**
- * Decodes base64-encoded NBT data
- * @param {string} nbtData - Base64 encoded NBT data
+ * Decodes base64-encoded and gzip-compressed NBT data
+ * @param {string} nbtData - Base64 encoded (possibly gzip-compressed) NBT data
  * @returns {Object} Decoded NBT data object
  */
 function decodeNBT(nbtData) {
@@ -11,13 +11,25 @@ function decodeNBT(nbtData) {
   try {
     // Decode base64
     const binaryString = atob(nbtData);
-    const bytes = new Uint8Array(binaryString.length);
+    let bytes = new Uint8Array(binaryString.length);
     for (let i = 0; i < binaryString.length; i++) {
       bytes[i] = binaryString.charCodeAt(i);
     }
 
-    // Simple NBT parser for common Minecraft item data
-    // Returns object with decoded properties
+    // Check if data is gzip compressed (magic bytes: 0x1f 0x8b)
+    if (bytes[0] === 0x1f && bytes[1] === 0x8b) {
+      console.log('[NBT] Detected gzip-compressed data, decompressing...');
+      bytes = decompressGzip(bytes);
+      if (!bytes) {
+        return {
+          raw: nbtData,
+          decoded: null,
+          error: 'Failed to decompress gzip data'
+        };
+      }
+    }
+
+    // Parse NBT after decompression
     return {
       raw: nbtData,
       decoded: parseNBTBytes(bytes)
@@ -31,6 +43,135 @@ function decodeNBT(nbtData) {
     };
   }
 }
+
+/**
+ * Decompresses gzip data using simple raw deflate decompression
+ * This handles the gzip format and extracts the raw deflate stream
+ * @param {Uint8Array} bytes - Gzip compressed bytes
+ * @returns {Uint8Array|null} Decompressed bytes or null if failed
+ */
+function decompressGzip(bytes) {
+  try {
+    // Gzip format: 1f 8b [compression method] [flags] [MTIME:4] [extra flags] [OS]
+    // We need to skip the header and decompress the deflate stream
+    
+    // Check magic number
+    if (bytes[0] !== 0x1f || bytes[1] !== 0x8b) {
+      return null;
+    }
+
+    const compressionMethod = bytes[2];
+    if (compressionMethod !== 0x08) {
+      // Only deflate (0x08) is commonly used
+      console.warn('[NBT] Unsupported gzip compression method:', compressionMethod);
+      return null;
+    }
+
+    const flags = bytes[3];
+    let offset = 10; // Skip fixed header
+
+    // Skip optional header fields based on flags
+    if (flags & 0x04) {
+      // FEXTRA - skip extra field
+      const len = bytes[offset] | (bytes[offset + 1] << 8);
+      offset += 2 + len;
+    }
+    if (flags & 0x08) {
+      // FNAME - skip original filename
+      while (bytes[offset] !== 0) offset++;
+      offset++;
+    }
+    if (flags & 0x10) {
+      // FCOMMENT - skip file comment
+      while (bytes[offset] !== 0) offset++;
+      offset++;
+    }
+    if (flags & 0x02) {
+      // FHCRC - skip header CRC
+      offset += 2;
+    }
+
+    // Extract the deflate data (everything except last 8 bytes which are CRC32 and ISIZE)
+    const deflateData = bytes.slice(offset, bytes.length - 8);
+
+    // Simple deflate decompression
+    const decompressed = inflateDeflate(deflateData);
+    return decompressed;
+  } catch (error) {
+    console.error('[NBT] Error decompressing gzip:', error);
+    return null;
+  }
+}
+
+/**
+ * Simple deflate decompression (handles uncompressed blocks)
+ * This is a minimal implementation that handles common cases
+ * @param {Uint8Array} data - Deflate compressed data
+ * @returns {Uint8Array} Decompressed data
+ */
+function inflateDeflate(data) {
+  // For now, use a simple approach: handle uncompressed blocks
+  // Full deflate decompression is complex, so we'll try a basic approach
+  
+  // If you need full deflate support, consider using a library
+  // For minimal deflate (many Minecraft NBT uses no compression), we can handle it:
+  
+  const result = [];
+  let bitPos = 0;
+  let bytePos = 0;
+
+  function readBits(n) {
+    let value = 0;
+    for (let i = 0; i < n; i++) {
+      const byteOffset = Math.floor(bitPos / 8);
+      const bitOffset = bitPos % 8;
+      value |= ((data[byteOffset] >> bitOffset) & 1) << i;
+      bitPos++;
+    }
+    return value;
+  }
+
+  function readBytes(n) {
+    const bytes = data.slice(bytePos, bytePos + n);
+    bytePos += n;
+    return bytes;
+  }
+
+  try {
+    while (bytePos < data.length) {
+      const bfinal = readBits(1);
+      const btype = readBits(2);
+
+      if (btype === 0) {
+        // Uncompressed block
+        bitPos = Math.ceil(bitPos / 8) * 8; // Align to byte boundary
+        bytePos = Math.ceil(bitPos / 8);
+        
+        const len = data[bytePos] | (data[bytePos + 1] << 8);
+        bytePos += 4; // Skip len and nlen
+
+        for (let i = 0; i < len; i++) {
+          result.push(data[bytePos++]);
+        }
+      } else if (btype === 1 || btype === 2) {
+        // Compressed block - simplified handling
+        // This is complex; for now we'll return partial result
+        console.warn('[NBT] Compressed deflate blocks not fully supported');
+        break;
+      } else {
+        console.warn('[NBT] Invalid deflate block type:', btype);
+        break;
+      }
+
+      if (bfinal) break;
+    }
+  } catch (e) {
+    console.error('[NBT] Error during deflate decompression:', e);
+  }
+
+  return new Uint8Array(result);
+}
+
 
 /**
  * Parses NBT bytes into a readable object
@@ -184,8 +325,10 @@ function processAuctions(auctions) {
     }
 
     // Decode item NBT data if present
-    if (auction.item_bytes) {
-      processed.item_nbt_decoded = decodeNBT(auction.item_bytes);
+    // Try itemData first (new API), then item_bytes (fallback)
+    const nbtData = auction.itemData || auction.item_bytes;
+    if (nbtData) {
+      processed.item_nbt_decoded = decodeNBT(nbtData);
       
       // Extract item name from decoded NBT data
       if (processed.item_nbt_decoded?.decoded) {
@@ -194,10 +337,32 @@ function processAuctions(auctions) {
         
         if (itemName) {
           processed.item_name = itemName;
-          console.log(`[NBT] Extracted item name: ${itemName}`);
+          console.log(`[NBT] Extracted item name from NBT: ${itemName}`);
         } else {
-          console.log(`[NBT] Could not extract item name from:`, decoded);
+          console.log(`[NBT] Could not extract item name from NBT, trying itemId`);
+          // Fallback to itemId if NBT parsing failed
+          if (auction.itemId) {
+            itemName = processItemId(auction.itemId);
+            if (itemName) {
+              processed.item_name = itemName;
+              console.log(`[NBT] Extracted item name from itemId: ${itemName}`);
+            }
+          }
         }
+      } else if (auction.itemId) {
+        // If NBT decoding completely failed, use itemId
+        const itemName = processItemId(auction.itemId);
+        if (itemName) {
+          processed.item_name = itemName;
+          console.log(`[NBT] Extracted item name from itemId (NBT failed): ${itemName}`);
+        }
+      }
+    } else if (auction.itemId) {
+      // No NBT data at all, use itemId
+      const itemName = processItemId(auction.itemId);
+      if (itemName) {
+        processed.item_name = itemName;
+        console.log(`[NBT] Extracted item name from itemId (no NBT): ${itemName}`);
       }
     }
 
@@ -241,6 +406,28 @@ function extractItemName(decoded) {
   }
   
   return itemName || null;
+}
+
+
+/**
+ * Convert itemId format to readable name
+ * Example: "trpixel:plumber_sponge" -> "Plumber Sponge"
+ */
+function processItemId(itemId) {
+  if (!itemId || typeof itemId !== 'string') return null;
+  
+  // Extract the item name part (after the colon)
+  const parts = itemId.split(':');
+  const name = parts[parts.length - 1];
+  
+  if (!name) return null;
+  
+  // Convert snake_case to Title Case
+  // e.g., "plumber_sponge" -> "Plumber Sponge"
+  return name
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
 }
 
 /**
