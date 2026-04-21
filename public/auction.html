@@ -493,9 +493,11 @@
         <h3>Auction House</h3>
         <div class="extreme-inner-container" id="mainGrid"></div>
         <div class="hotbar-controls" id="hotbarGrid" aria-label="Auction filters">
+          <!-- Previous page button -->
           <button class="ah-pagination-btn" id="prevPageBtn" title="Previous page">
             <img id="prevPageImg" src="assets/ah/previous.png" alt="Previous" width="24" height="24" />
           </button>
+
           <div class="ah-search" id="ahSearch" title="Search - Search items by their names or descriptions">
             <button class="ah-btn" id="ahSearchToggle" type="button" aria-label="Search" aria-expanded="false"
               aria-controls="ahSearchInput">
@@ -521,7 +523,7 @@
             <img class="ah-icon" src="assets/ah/sort.png" alt="" />
           </button>
 
-          <!-- Pagination buttons -->
+          <!-- Next page button -->
           <button class="ah-pagination-btn" id="nextPageBtn" title="Next page">
             <img id="nextPageImg" src="assets/ah/next.png" alt="Next" width="24" height="24" />
           </button>
@@ -537,12 +539,10 @@
 
   <script>
     const apiClient = new APIProxyClient();
-    let auctionCache = new Map();
-    let currentAuctions = [];
-    let filteredAuctions = [];
-    let currentPage = 0;
-    let totalPages = 1;
-    let totalAuctions = 0;
+    let allAuctions = [];          // all auctions from all API pages
+    let filteredAuctions = [];     // after applying filters / sort
+    let currentDisplayPage = 0;    // 0-indexed page number for the grid
+    const ITEMS_PER_PAGE = 36;
 
     // Pagination UI elements
     let prevBtn, nextBtn, prevImg, nextImg, pageInfoSpan;
@@ -741,7 +741,7 @@
       if (!mainGrid) return;
       console.log(`[Auction] Filling grid with ${auctions.length} auctions`);
       mainGrid.innerHTML = '';
-      for (let i = 0; i < 36; i++) {
+      for (let i = 0; i < ITEMS_PER_PAGE; i++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
         if (i < auctions.length) {
@@ -820,130 +820,152 @@
       return html;
     }
 
-    function applyFilters() {
+    // Apply filters and sorting to the full list, then reset to first page and display
+    function applyFiltersAndDisplay() {
       const searchText = document.getElementById('ahSearchInput').value.toLowerCase().trim();
       const auctionTypeKey = auctionTypeOptions[auctionTypeIndex].key;
       const rarityKey = rarityOptions[rarityIndex].key;
       const sortKey = sortOptions[sortIndex].key;
+
       console.log(`[Auction] Applying filters - Search: "${searchText}", Type: ${auctionTypeKey}, Rarity: ${rarityKey}, Sort: ${sortKey}`);
-      filteredAuctions = currentAuctions.filter(auction => {
+
+      let temp = allAuctions.filter(auction => {
         if (searchText && !auction.item_name?.toLowerCase().includes(searchText)) return false;
         if (auctionTypeKey === 'bin' && auction.type !== 'BIN') return false;
         if (auctionTypeKey === 'auction' && auction.type !== 'NORMAL') return false;
         if (rarityKey !== 'all' && auction.tier?.toLowerCase() !== rarityKey.toLowerCase()) return false;
         return true;
       });
-      console.log(`[Auction] Filtered to ${filteredAuctions.length} auctions from ${currentAuctions.length} total`);
-      sortAuctions(filteredAuctions, sortKey);
-      fillCells(filteredAuctions);
-    }
 
-    function sortAuctions(auctions, sortBy) {
-      switch (sortBy) {
+      // Sort
+      switch (sortKey) {
         case 'highest':
-          auctions.sort((a, b) => {
+          temp.sort((a, b) => {
             const priceA = a.type === 'BIN' ? (a.startingPrice || 0) : (a.highestBidAmount || a.startingPrice || 0);
             const priceB = b.type === 'BIN' ? (b.startingPrice || 0) : (b.highestBidAmount || b.startingPrice || 0);
             return priceB - priceA;
           });
           break;
         case 'lowest':
-          auctions.sort((a, b) => {
+          temp.sort((a, b) => {
             const priceA = a.type === 'BIN' ? (a.startingPrice || 0) : (a.highestBidAmount || a.startingPrice || 0);
             const priceB = b.type === 'BIN' ? (b.startingPrice || 0) : (b.highestBidAmount || b.startingPrice || 0);
             return priceA - priceB;
           });
           break;
         case 'ending':
-          auctions.sort((a, b) => (a.endsAt || 0) - (b.endsAt || 0));
+          temp.sort((a, b) => (a.endsAt || 0) - (b.endsAt || 0));
           break;
         case 'bids':
-          auctions.sort((a, b) => (b.bids || 0) - (a.bids || 0));
+          temp.sort((a, b) => (b.bids || 0) - (a.bids || 0));
           break;
         case 'rarity':
           const rarityOrder = { mythic: 7, legendary: 6, epic: 5, rare: 4, uncommon: 3, common: 2, special: 1 };
-          auctions.sort((a, b) => (rarityOrder[b.tier?.toLowerCase()] || 0) - (rarityOrder[a.tier?.toLowerCase()] || 0));
+          temp.sort((a, b) => (rarityOrder[b.tier?.toLowerCase()] || 0) - (rarityOrder[a.tier?.toLowerCase()] || 0));
           break;
         case 'random':
-          for (let i = auctions.length - 1; i > 0; i--) {
+          for (let i = temp.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [auctions[i], auctions[j]] = [auctions[j], auctions[i]];
+            [temp[i], temp[j]] = [temp[j], temp[i]];
           }
           break;
       }
-      console.log(`[Auction] Sort completed, top item: ${auctions[0]?.item_name || 'N/A'}`);
+      filteredAuctions = temp;
+      currentDisplayPage = 0;
+      displayCurrentPage();
+    }
+
+    // Display the current page of filtered auctions
+    function displayCurrentPage() {
+      const start = currentDisplayPage * ITEMS_PER_PAGE;
+      const pageItems = filteredAuctions.slice(start, start + ITEMS_PER_PAGE);
+      fillCells(pageItems);
+      updatePaginationUI();
     }
 
     function updatePaginationUI() {
       if (!pageInfoSpan) return;
-      pageInfoSpan.textContent = `Page ${currentPage + 1} / ${totalPages}`;
+      const totalPages = Math.ceil(filteredAuctions.length / ITEMS_PER_PAGE);
+      pageInfoSpan.textContent = `Page ${currentDisplayPage + 1} / ${totalPages || 1}`;
       if (prevBtn) {
-        const isFirst = currentPage === 0;
+        const isFirst = currentDisplayPage === 0;
         prevBtn.classList.toggle('disabled', isFirst);
         if (prevImg) prevImg.src = isFirst ? 'assets/ah/previous_gray.png' : 'assets/ah/previous.png';
       }
       if (nextBtn) {
-        const isLast = currentPage >= totalPages - 1;
+        const isLast = currentDisplayPage >= totalPages - 1;
         nextBtn.classList.toggle('disabled', isLast);
         if (nextImg) nextImg.src = isLast ? 'assets/ah/next_gray.png' : 'assets/ah/next.png';
       }
     }
 
-    async function loadAuctions(page = 0) {
-    console.log(`[Auction] Loading auctions from page ${page}`);
-    try {
-        const data = await apiClient.getAuctions(page);
-        console.log(`[Auction] API Response:`, data);
-        if (data.auctions && Array.isArray(data.auctions)) {
-            totalPages = data.totalPages || 1;
-            totalAuctions = data.totalAuctions || 0;
-            currentPage = page;
-            updatePaginationUI();   // this will show/hide gray versions correctly
-
-            // Normalize fields
-            currentAuctions = data.auctions.map(auction => {
-                const isBin = auction.type === 'BIN';
-                return {
-                    ...auction,
-                    bin: isBin,
-                    bin_price: isBin ? auction.startingPrice : undefined,
-                    highest_bid_amount: auction.highestBidAmount,
-                    starting_bid: auction.startingPrice,
-                    bid_count: auction.bids,
-                    auctioneer: auction.ownerName,
-                    end_time: auction.endsAt,
-                    uuid: auction.id,
-                    item_name: auction.item_name || (auction.itemId ? processItemId(auction.itemId) : 'Unknown Item')
-                };
-            });
-            console.log(`[Auction] Loaded ${currentAuctions.length} auctions`);
-            if (currentAuctions.length > 0) {
-                console.log(`[Auction] First auction structure:`, currentAuctions[0]);
-            }
-            applyFilters();
-        } else {
-            console.error('[Auction] Invalid auctions response format:', data);
-            fillCells([]);
-        }
-    } catch (error) {
-        console.error('[Auction] Failed to load auctions:', error);
-        fillCells([]);
-    }
-}
-
     function goToPrevPage() {
-      if (currentPage > 0) loadAuctions(currentPage - 1);
+      if (currentDisplayPage > 0) {
+        currentDisplayPage--;
+        displayCurrentPage();
+      }
     }
 
     function goToNextPage() {
-      if (currentPage < totalPages - 1) loadAuctions(currentPage + 1);
+      const totalPages = Math.ceil(filteredAuctions.length / ITEMS_PER_PAGE);
+      if (currentDisplayPage < totalPages - 1) {
+        currentDisplayPage++;
+        displayCurrentPage();
+      }
+    }
+
+    // Load all auctions from all API pages
+    async function loadAllAuctions() {
+      console.log(`[Auction] Loading all auctions...`);
+      let tempAll = [];
+      let currentApiPage = 0;
+      let totalApiPages = 1;
+
+      try {
+        while (currentApiPage < totalApiPages) {
+          const data = await apiClient.getAuctions(currentApiPage);
+          if (data.auctions && Array.isArray(data.auctions)) {
+            tempAll.push(...data.auctions);
+            totalApiPages = data.totalPages || 1;
+            currentApiPage++;
+            console.log(`[Auction] Fetched page ${currentApiPage}/${totalApiPages}`);
+          } else {
+            break;
+          }
+        }
+
+        console.log(`[Auction] Loaded ${tempAll.length} total auctions`);
+
+        // Normalize each auction
+        allAuctions = tempAll.map(auction => {
+          const isBin = auction.type === 'BIN';
+          return {
+            ...auction,
+            bin: isBin,
+            bin_price: isBin ? auction.startingPrice : undefined,
+            highest_bid_amount: auction.highestBidAmount,
+            starting_bid: auction.startingPrice,
+            bid_count: auction.bids,
+            auctioneer: auction.ownerName,
+            end_time: auction.endsAt,
+            uuid: auction.id,
+            item_name: auction.item_name || (auction.itemId ? processItemId(auction.itemId) : 'Unknown Item')
+          };
+        });
+
+        // Initial filter and display
+        applyFiltersAndDisplay();
+      } catch (error) {
+        console.error('[Auction] Failed to load auctions:', error);
+        fillCells([]);
+      }
     }
 
     function fillEmptyGrid() {
       const mainGrid = document.getElementById('mainGrid');
       if (!mainGrid) return;
       mainGrid.innerHTML = '';
-      for (let i = 0; i < 36; i++) {
+      for (let i = 0; i < ITEMS_PER_PAGE; i++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
         mainGrid.appendChild(cell);
@@ -980,7 +1002,7 @@
         console.log(`[Auction] Auction type changed to: ${auctionTypeOptions[auctionTypeIndex].key}`);
         auctionTypeIcon.src = auctionTypeOptions[auctionTypeIndex].icon;
         auctionTypeBtn.title = `Auction Type - ${auctionTypeOptions[auctionTypeIndex].key === 'bin' ? 'Buy It Now' : auctionTypeOptions[auctionTypeIndex].key === 'auction' ? 'Classic Auction' : 'Both'}`;
-        applyFilters();
+        applyFiltersAndDisplay();
       });
 
       rarityBtn.addEventListener('click', () => {
@@ -988,14 +1010,14 @@
         console.log(`[Auction] Rarity filter changed to: ${rarityOptions[rarityIndex].key}`);
         rarityIcon.src = rarityOptions[rarityIndex].icon;
         rarityBtn.title = `Item Rarity - ${rarityOptions[rarityIndex].key === 'all' ? 'All rarities' : rarityOptions[rarityIndex].key}`;
-        applyFilters();
+        applyFiltersAndDisplay();
       });
 
       sortBtn.addEventListener('click', () => {
         sortIndex = (sortIndex + 1) % sortOptions.length;
         console.log(`[Auction] Sort changed to: ${sortOptions[sortIndex].key}`);
         sortBtn.title = `Sorting - ${sortOptions[sortIndex].label}`;
-        applyFilters();
+        applyFiltersAndDisplay();
       });
 
       // Search logic
@@ -1029,7 +1051,7 @@
         const value = String(e.target.value || '');
         if (searchDebounce) clearTimeout(searchDebounce);
         searchDebounce = setTimeout(() => {
-          applyFilters();
+          applyFiltersAndDisplay();
         }, 150);
       });
       searchInput.addEventListener('keydown', (e) => {
@@ -1052,7 +1074,7 @@
       console.log('[Auction] DOMContentLoaded - Initializing auction house');
       fillEmptyGrid();
       initAuctionFilters();
-      loadAuctions();
+      loadAllAuctions();
     });
   </script>
 </body>
