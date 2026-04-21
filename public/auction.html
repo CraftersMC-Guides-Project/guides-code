@@ -338,6 +338,45 @@
       color: #ffaa00;
     }
 
+    .mc-content {
+      color: #ffe16b;
+    }
+
+    .mc-content.loading {
+      color: #ffd700;
+      font-style: italic;
+    }
+
+    .mc-content .title {
+      color: #6d5cff;
+      font-weight: bold;
+      font-size: 1.1rem;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .mc-content .rarity {
+      color: #55ff55;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    .mc-content .spacer {
+      height: 6px;
+    }
+
+    .mc-content .row {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+
+    .mc-content .gold {
+      color: #ffaa00;
+    }
+
     .ah-search {
       display: flex;
       align-items: center;
@@ -583,8 +622,12 @@
     // Fill grid with auctions
     async function fillCells(auctions) {
       const mainGrid = document.getElementById('mainGrid');
-      if (!mainGrid) return;
+      if (!mainGrid) {
+        console.warn('[Auction] mainGrid element not found');
+        return;
+      }
 
+      console.log(`[Auction] Filling grid with ${auctions.length} auctions`);
       mainGrid.innerHTML = '';
 
       for (let i = 0; i < 36; i++) {
@@ -594,12 +637,16 @@
         if (i < auctions.length) {
           const auction = auctions[i];
           const itemName = auction.item_name || 'Unknown Item';
-          const itemImg = 'assets/ah/search.png'; // Placeholder, could be extended
+          // Try to get item image from img/ folder, fallback to placeholder
+          const imageFileName = itemName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+          const itemImg = `img/${imageFileName}.png`;
+
+          console.log(`[Auction] Added item ${i + 1}: ${itemName} (ID: ${auction.uuid})`);
 
           cell.innerHTML = `
             <div class="item-with-sub">
               <img src="${itemImg}" alt="${itemName}" 
-                   onerror="this.src='https://via.placeholder.com/24/8b8b8b/000?text=?'">
+                   onerror="console.warn('[Auction] Failed to load image: ${itemImg}'); this.src='assets/ah/search.png'">
               <div class="tooltip">
                 <div class="mc-frame">
                   <div class="mc-corner tl"></div>
@@ -626,12 +673,18 @@
     // Setup tooltip for auction cell
     function setupAuctionTooltip(cell, auction) {
       const itemDiv = cell.querySelector('.item-with-sub');
-      const tooltip = itemDiv.querySelector('.tooltip');
-      const contentBox = tooltip.querySelector('.mc-content');
+      const tooltip = itemDiv?.querySelector('.tooltip');
+      const contentBox = tooltip?.querySelector('.mc-content');
+
+      if (!itemDiv || !tooltip || !contentBox) {
+        console.warn('[Auction] Failed to setup tooltip for auction:', auction.uuid);
+        return;
+      }
 
       let timeout;
 
       itemDiv.addEventListener('mouseenter', () => {
+        console.log(`[Auction] Hover enter: ${auction.item_name}`);
         clearTimeout(timeout);
 
         timeout = setTimeout(async () => {
@@ -642,10 +695,12 @@
           const html = generateAuctionTooltipHTML(auction);
           contentBox.className = 'mc-content';
           contentBox.innerHTML = html;
+          console.log(`[Auction] Tooltip loaded for: ${auction.item_name}`);
         }, 150);
       });
 
       itemDiv.addEventListener('mouseleave', () => {
+        console.log(`[Auction] Hover leave: ${auction.item_name}`);
         clearTimeout(timeout);
         tooltip.style.display = 'none';
       });
@@ -653,6 +708,8 @@
 
     // Generate tooltip HTML for auction
     function generateAuctionTooltipHTML(auction) {
+      console.log('[Auction] Generating tooltip for:', auction);
+      
       const itemName = auction.item_name || 'Unknown Item';
       const rarity = auction.tier || 'common';
       const currentBid = auction.highest_bid_amount || 0;
@@ -661,6 +718,10 @@
       const endTime = auction.end_time * 1000; // Convert to milliseconds
       const auctionType = getAuctionTypeLabel(auction.bin);
       const bidCount = auction.bid_count || 0;
+      const seller = auction.auctioneer || 'Unknown Seller';
+      const uuid = auction.uuid || 'N/A';
+
+      console.log(`[Auction] Title: ${itemName}, Rarity: ${rarity}, Type: ${auctionType}, Seller: ${seller}`);
 
       let html = `<div class="title">${itemName}</div>`;
       html += `<div class="rarity">${rarity.toUpperCase()}</div>`;
@@ -696,11 +757,16 @@
           <span>${auctionType}</span>
         </div>
         <div class="row">
+          <span>Seller:</span>
+          <span>${seller}</span>
+        </div>
+        <div class="row">
           <span>Ends in:</span>
           <span class="gold">${formatTimeRemaining(endTime)}</span>
         </div>
       `;
 
+      console.log(`[Auction] Tooltip HTML generated with ${Object.keys(auction).length} data fields`);
       return html;
     }
 
@@ -710,6 +776,8 @@
       const auctionType = document.querySelector('input[name="auctionType"][checked]')?.value || 'both';
       const rarity = document.querySelector('input[name="rarity"][checked]')?.value || 'all';
       const sortBy = document.querySelector('input[name="sort"][checked]')?.value || 'highest';
+
+      console.log(`[Auction] Applying filters - Search: "${searchText}", Type: ${auctionType}, Rarity: ${rarity}, Sort: ${sortBy}`);
 
       filteredAuctions = currentAuctions.filter(auction => {
         // Search filter
@@ -729,6 +797,8 @@
         return true;
       });
 
+      console.log(`[Auction] Filtered to ${filteredAuctions.length} auctions from ${currentAuctions.length} total`);
+
       // Apply sorting
       sortAuctions(filteredAuctions, sortBy);
       fillCells(filteredAuctions);
@@ -736,6 +806,7 @@
 
     // Sort auctions
     function sortAuctions(auctions, sortBy) {
+      console.log(`[Auction] Sorting ${auctions.length} auctions by: ${sortBy}`);
       const now = Date.now();
 
       switch (sortBy) {
@@ -778,19 +849,27 @@
           }
           break;
       }
+      console.log(`[Auction] Sort completed, top item: ${auctions[0]?.item_name || 'N/A'}`);
     }
 
     // Load auctions from API
     async function loadAuctions(page = 0) {
+      console.log(`[Auction] Loading auctions from page ${page}`);
       try {
         const data = await apiClient.getAuctions(page);
+        console.log(`[Auction] API Response:`, data);
+        
         if (data.auctions && Array.isArray(data.auctions)) {
           currentAuctions = data.auctions;
           currentPage = page;
+          console.log(`[Auction] Loaded ${currentAuctions.length} auctions`);
           applyFilters();
+        } else {
+          console.error('[Auction] Invalid auctions response format:', data);
+          fillCells([]);
         }
       } catch (error) {
-        console.error('Failed to load auctions:', error);
+        console.error('[Auction] Failed to load auctions:', error);
         // Fallback to empty grid
         fillCells([]);
       }
@@ -810,11 +889,13 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+      console.log('[Auction] DOMContentLoaded - Initializing auction house');
       fillEmptyGrid();
       loadAuctions(0);
     });
 
     (function initAuctionFilters() {
+      console.log('[Auction] Initializing auction filters');
       const searchWrap = document.getElementById('ahSearch');
       const searchToggle = document.getElementById('ahSearchToggle');
       const searchInput = document.getElementById('ahSearchInput');
@@ -825,8 +906,11 @@
       const sortBtn = document.getElementById('ahSortBtn');
 
       if (!searchWrap || !searchToggle || !searchInput || !auctionTypeBtn || !auctionTypeIcon || !rarityBtn || !rarityIcon || !sortBtn) {
+        console.error('[Auction] Failed to find required filter elements');
         return;
       }
+
+      console.log('[Auction] Filter elements found, setting up event listeners');
 
       const auctionTypeOptions = [
         { key: 'both', label: 'Both', icon: 'assets/ah/auction_type/show_all.png' },
@@ -900,20 +984,24 @@
 
       auctionTypeBtn.addEventListener('click', () => {
         auctionTypeIndex = (auctionTypeIndex + 1) % auctionTypeOptions.length;
+        console.log(`[Auction] Auction type changed to: ${auctionTypeOptions[auctionTypeIndex].key}`);
         applyAuctionType();
       });
 
       rarityBtn.addEventListener('click', () => {
         rarityIndex = (rarityIndex + 1) % rarityOptions.length;
+        console.log(`[Auction] Rarity filter changed to: ${rarityOptions[rarityIndex].key}`);
         applyRarity();
       });
 
       sortBtn.addEventListener('click', () => {
         sortIndex = (sortIndex + 1) % sortOptions.length;
+        console.log(`[Auction] Sort changed to: ${sortOptions[sortIndex].key}`);
         applySort();
       });
 
       searchToggle.addEventListener('click', () => {
+        console.log('[Auction] Search toggle clicked');
         openSearch();
       });
 
@@ -929,6 +1017,7 @@
 
       searchInput.addEventListener('input', (e) => {
         const value = String(e.target.value || '');
+        console.log(`[Auction] Search input: "${value}"`);
         if (searchDebounce) window.clearTimeout(searchDebounce);
         searchDebounce = window.setTimeout(() => {
           searchText = value.trim();
@@ -950,6 +1039,7 @@
       applyAuctionType();
       applyRarity();
       applySort();
+      console.log('[Auction] Filter initialization complete');
     })();
   </script>
 </body>
