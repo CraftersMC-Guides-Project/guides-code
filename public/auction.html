@@ -889,53 +889,59 @@
       }
     }
 
-    async function loadAuctions(page = 0) {
+    async function loadAuctions() {
+      console.log(`[Auction] Loading all auctions...`);
       let allAuctions = [];
-      let page = 0;
-      let hasMore = true;
-      while (hasMore) {
-        const data = await apiClient.getAuctions(page);
-        if (data.auctions && data.auctions.length) {
-          allAuctions.push(...data.auctions);
-          page++;
-          hasMore = page < data.totalPages;
-        } else {
-          hasMore = false;
-        }
-      }
-      console.log(`[Auction] Loading auctions from page ${page}`);
+      let current = 0;
+      let total = 1;
+
       try {
-        const data = await apiClient.getAuctions(page);
-        console.log(`[Auction] API Response:`, data);
-        if (data.auctions && Array.isArray(data.auctions)) {
-          totalPages = data.totalPages || 1;
-          totalAuctions = data.totalAuctions || 0;
-          currentPage = page;
-          updatePaginationUI();
-          currentAuctions = data.auctions.map(auction => {
-            const isBin = auction.type === 'BIN';
-            return {
-              ...auction,
-              bin: isBin,
-              bin_price: isBin ? auction.startingPrice : undefined,
-              highest_bid_amount: auction.highestBidAmount,
-              starting_bid: auction.startingPrice,
-              bid_count: auction.bids,
-              auctioneer: auction.ownerName,
-              end_time: auction.endsAt,
-              uuid: auction.id,
-              item_name: auction.item_name || (auction.itemId ? processItemId(auction.itemId) : 'Unknown Item')
-            };
-          });
-          console.log(`[Auction] Loaded ${currentAuctions.length} auctions`);
-          if (currentAuctions.length > 0) {
-            console.log(`[Auction] First auction structure:`, currentAuctions[0]);
+        // Keep fetching until we have all pages
+        while (current < total) {
+          const data = await apiClient.getAuctions(current);
+          console.log(`[Auction] Fetched page ${current + 1}/${data.totalPages}`);
+          if (data.auctions && Array.isArray(data.auctions)) {
+            allAuctions.push(...data.auctions);
+            total = data.totalPages;  // update total pages from response
+            current++;
+          } else {
+            break;
           }
-          applyFilters();
-        } else {
-          console.error('[Auction] Invalid auctions response format:', data);
-          fillCells([]);
         }
+
+        // Now process the combined auctions
+        console.log(`[Auction] Loaded ${allAuctions.length} total auctions`);
+        totalPages = 1;          // only one "virtual" page
+        totalAuctions = allAuctions.length;
+        currentPage = 0;
+
+        // Hide pagination buttons (they are no longer needed)
+        const prevBtn = document.getElementById('prevPageBtn');
+        const nextBtn = document.getElementById('nextPageBtn');
+        const pageInfo = document.getElementById('pageInfo');
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
+        if (pageInfo) pageInfo.style.display = 'none';
+
+        // Normalize each auction (same as before)
+        currentAuctions = allAuctions.map(auction => {
+          const isBin = auction.type === 'BIN';
+          return {
+            ...auction,
+            bin: isBin,
+            bin_price: isBin ? auction.startingPrice : undefined,
+            highest_bid_amount: auction.highestBidAmount,
+            starting_bid: auction.startingPrice,
+            bid_count: auction.bids,
+            auctioneer: auction.ownerName,
+            end_time: auction.endsAt,
+            uuid: auction.id,
+            item_name: auction.item_name || (auction.itemId ? processItemId(auction.itemId) : 'Unknown Item')
+          };
+        });
+
+        applyFilters();  // display the combined list
+
       } catch (error) {
         console.error('[Auction] Failed to load auctions:', error);
         fillCells([]);
@@ -1063,7 +1069,7 @@
       console.log('[Auction] DOMContentLoaded - Initializing auction house');
       fillEmptyGrid();
       initAuctionFilters();
-      loadAuctions(0);
+      loadAuctions();
     });
   </script>
 </body>
