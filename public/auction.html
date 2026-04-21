@@ -337,45 +337,6 @@
       color: #ffaa00;
     }
 
-    .mc-content {
-      color: #ffe16b;
-    }
-
-    .mc-content.loading {
-      color: #ffd700;
-      font-style: italic;
-    }
-
-    .mc-content .title {
-      color: #6d5cff;
-      font-weight: bold;
-      font-size: 1.1rem;
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    .mc-content .rarity {
-      color: #55ff55;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-      font-size: 0.9rem;
-    }
-
-    .mc-content .spacer {
-      height: 6px;
-    }
-
-    .mc-content .row {
-      display: flex;
-      gap: 4px;
-      margin-bottom: 4px;
-      font-size: 12px;
-    }
-
-    .mc-content .gold {
-      color: #ffaa00;
-    }
-
     .ah-search {
       display: flex;
       align-items: center;
@@ -473,6 +434,29 @@
       left: 0;
       bottom: 0;
     }
+
+    /* Pagination styles */
+    .page-info {
+      color: #262626;
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin: 0 5px;
+    }
+
+    .ah-pagination-btn {
+      cursor: pointer;
+      border: 0;
+      padding: 2px;
+      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ah-pagination-btn.disabled {
+      cursor: default;
+      opacity: 0.6;
+    }
   </style>
 </head>
 
@@ -533,6 +517,15 @@
             aria-label="Sorting">
             <img class="ah-icon" src="assets/ah/sort.png" alt="" />
           </button>
+
+          <!-- Pagination buttons -->
+          <button class="ah-pagination-btn" id="prevPageBtn" title="Previous page">
+            <img id="prevPageImg" src="assets/ah/previous.png" alt="Previous" width="24" height="24" />
+          </button>
+          <span class="page-info" id="pageInfo">Page 1 / 1</span>
+          <button class="ah-pagination-btn" id="nextPageBtn" title="Next page">
+            <img id="nextPageImg" src="assets/ah/next.png" alt="Next" width="24" height="24" />
+          </button>
         </div>
       </div>
     </div>
@@ -548,8 +541,42 @@
     let currentAuctions = [];
     let filteredAuctions = [];
     let currentPage = 0;
+    let totalPages = 1;
+    let totalAuctions = 0;
 
-    // Cache and state management
+    // Pagination UI elements
+    let prevBtn, nextBtn, prevImg, nextImg, pageInfoSpan;
+
+    // Filter options (global)
+    const auctionTypeOptions = [
+      { key: 'both', label: 'Both', icon: 'assets/ah/auction_type/show_all.png' },
+      { key: 'bin', label: 'BIN', icon: 'assets/ah/auction_type/bin_only.png' },
+      { key: 'auction', label: 'Auc', icon: 'assets/ah/auction_type/auction_only.png' },
+    ];
+    const rarityOptions = [
+      { key: 'all', label: 'All', icon: 'assets/ah/rarities/notier.png' },
+      { key: 'common', label: 'Com', icon: 'assets/ah/rarities/common.png' },
+      { key: 'uncommon', label: 'Unc', icon: 'assets/ah/rarities/uncommon.png' },
+      { key: 'rare', label: 'Rare', icon: 'assets/ah/rarities/rare.png' },
+      { key: 'epic', label: 'Epic', icon: 'assets/ah/rarities/epic.png' },
+      { key: 'legendary', label: 'Leg', icon: 'assets/ah/rarities/legendary.png' },
+      { key: 'mythic', label: 'Myth', icon: 'assets/ah/rarities/mythic.png' },
+      { key: 'special', label: 'Spec', icon: 'assets/ah/rarities/special.png' },
+    ];
+    const sortOptions = [
+      { key: 'highest', badge: 'Hi', label: 'Highest bid/price' },
+      { key: 'lowest', badge: 'Lo', label: 'Lowest bid/price' },
+      { key: 'ending', badge: 'End', label: 'Ending soon' },
+      { key: 'bids', badge: 'Bid', label: 'Most bids' },
+      { key: 'rarity', badge: 'Rar', label: 'Highest rarity' },
+      { key: 'random', badge: 'Rnd', label: 'Random' },
+    ];
+
+    let auctionTypeIndex = 0;
+    let rarityIndex = 0;
+    let sortIndex = 0;
+
+    // Helper functions
     function readSessionCache(auctionId) {
       try {
         const cached = sessionStorage.getItem(`auction_${auctionId}`);
@@ -575,7 +602,6 @@
       return name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
     }
 
-    // Format currency
     function formatCurrency(amount) {
       if (amount === undefined || amount === null) return 'N/A';
       const truncated = Math.trunc(Number(amount) * 100) / 100;
@@ -586,13 +612,11 @@
       });
     }
 
-    // Format number
     function formatNumber(num) {
       if (num === undefined || num === null) return 'N/A';
       return num.toLocaleString();
     }
 
-    // Format time remaining
     function formatTimeRemaining(endTime) {
       if (!endTime) return 'N/A';
       const now = Date.now();
@@ -606,12 +630,10 @@
       return `${mins}m`;
     }
 
-    // Get auction type label
     function getAuctionTypeLabel(isBin) {
       return isBin ? 'BIN' : 'Auction';
     }
 
-    // Map rarity to icon
     function getRarityIcon(rarity) {
       const rarityMap = {
         'common': 'assets/ah/rarities/common.png',
@@ -626,30 +648,22 @@
       return rarityMap[(rarity || 'common').toLowerCase()] || 'assets/ah/rarities/notier.png';
     }
 
-    // Generate possible image paths for an item name
     function generateImagePaths(itemName) {
       if (!itemName || typeof itemName !== 'string') {
         return ['assets/ah/search.png'];
       }
-
       const paths = [];
       const original = itemName.trim();
-
-      // 1. Original name with spaces → underscores (preserves case)
       const originalSlug = original.replace(/\s+/g, '_');
       if (originalSlug) {
         paths.push(`img/${originalSlug}.webp`);
         paths.push(`img/${originalSlug}.png`);
       }
-
-      // 2. Lowercased version (your existing slug)
       const lowerSlug = original.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_-]/g, '');
       if (lowerSlug && lowerSlug !== originalSlug) {
         paths.push(`img/${lowerSlug}.webp`);
         paths.push(`img/${lowerSlug}.png`);
       }
-
-      // 3. First word (preserving case)
       const firstWord = original.split(/\s+/)[0];
       if (firstWord) {
         paths.push(`img/${firstWord}.webp`);
@@ -660,24 +674,17 @@
           paths.push(`img/${lowerFirst}.png`);
         }
       }
-
-      // 4. Ultimate fallback
       paths.push('assets/ah/search.png');
-
       return paths;
     }
 
-    // Try loading next image path if previous failed
     function setupImageFallback(imgElement) {
       const paths = JSON.parse(imgElement.dataset.imagePaths || '[]');
       let currentIndex = 0;
-
-      // Set initial src to first path
       if (paths.length > 0) {
         imgElement.src = paths[0];
         currentIndex = 1;
       }
-
       imgElement.addEventListener('error', () => {
         if (currentIndex < paths.length) {
           const nextPath = paths[currentIndex];
@@ -690,11 +697,9 @@
       }, { once: false });
     }
 
-    // Format enchantments from NBT
     function formatEnchantments(decoded) {
       const enchants = decoded?.tag?.Enchantments || decoded?.Enchantments;
       if (!enchants || !Array.isArray(enchants)) return '';
-
       return enchants.map(e => {
         const name = e.id?.replace(/^minecraft:/, '').split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         const level = e.lvl || e.level;
@@ -702,14 +707,12 @@
       }).join('');
     }
 
-    // Format lore lines
     function formatLore(decoded) {
       const lore = decoded?.tag?.display?.Lore || decoded?.display?.Lore;
       if (!lore || !Array.isArray(lore)) return '';
       return lore.map(line => `<div class="row muted">${cleanMCText(line)}</div>`).join('');
     }
 
-    // Clean Minecraft colour codes and JSON text components
     function cleanMCText(text) {
       if (!text) return '';
       let cleaned = text;
@@ -722,7 +725,6 @@
       return cleaned.replace(/§./g, '');
     }
 
-    // Extract numeric stats (damage, strength, etc.) from NBT
     function extractItemStats(decoded) {
       const stats = [];
       const attackDamage = decoded?.tag?.AttributeModifiers?.find(m => m.AttributeName === 'generic.attackDamage')?.Amount;
@@ -731,41 +733,25 @@
       if (strength) stats.push(`Strength: +${strength}`);
       const defense = decoded?.tag?.ExtraAttributes?.defense;
       if (defense) stats.push(`Defense: +${defense}`);
-      // Add more as needed
       return stats.map(s => `<div class="row"><span>${s}</span></div>`).join('');
     }
 
-    // Fill grid with auctions
     async function fillCells(auctions) {
       const mainGrid = document.getElementById('mainGrid');
-      if (!mainGrid) {
-        console.warn('[Auction] mainGrid element not found');
-        return;
-      }
-
+      if (!mainGrid) return;
       console.log(`[Auction] Filling grid with ${auctions.length} auctions`);
       mainGrid.innerHTML = '';
-
       for (let i = 0; i < 36; i++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
-
         if (i < auctions.length) {
           const auction = auctions[i];
           const itemName = auction.item_name || 'Unknown Item';
-
-          // Generate image filename from item name
-          // Try multiple variations to find the image
           const imagePaths = generateImagePaths(itemName);
           const primaryImage = imagePaths[0];
-
-          console.log(`[Auction] Added item ${i + 1}: ${itemName} (ID: ${auction.uuid})`);
-          console.log(`[Auction] Trying image paths:`, imagePaths);
-
           cell.innerHTML = `
             <div class="item-with-sub">
-              <img src="${primaryImage}" alt="${itemName}" 
-                   class="item-img"
+              <img src="${primaryImage}" alt="${itemName}" class="item-img"
                    data-item-name="${itemName}"
                    data-image-paths='${JSON.stringify(imagePaths).replace(/'/g, "&apos;")}'>
               <div class="tooltip">
@@ -783,155 +769,79 @@
               </div>
             </div>
           `;
-
           setupAuctionTooltip(cell, auction);
         }
-
         mainGrid.appendChild(cell);
       }
     }
 
-    // Setup tooltip for auction cell
     function setupAuctionTooltip(cell, auction) {
       const itemDiv = cell.querySelector('.item-with-sub');
       const tooltip = itemDiv?.querySelector('.tooltip');
       const contentBox = tooltip?.querySelector('.mc-content');
       const imgElement = itemDiv?.querySelector('.item-img');
-
-      if (!itemDiv || !tooltip || !contentBox) {
-        console.warn('[Auction] Failed to setup tooltip for auction:', auction.uuid);
-        return;
-      }
-
-      // Setup image fallback for trying multiple paths
-      if (imgElement) {
-        setupImageFallback(imgElement);
-      }
-
+      if (!itemDiv || !tooltip || !contentBox) return;
+      if (imgElement) setupImageFallback(imgElement);
       let timeout;
-
       itemDiv.addEventListener('mouseenter', () => {
-        console.log(`[Auction] Hover enter: ${auction.item_name}`);
         clearTimeout(timeout);
-
         timeout = setTimeout(async () => {
           tooltip.style.display = 'block';
           contentBox.className = 'mc-content loading';
           contentBox.innerHTML = 'Loading auction details...';
-
           const html = generateAuctionTooltipHTML(auction);
           contentBox.className = 'mc-content';
           contentBox.innerHTML = html;
-          console.log(`[Auction] Tooltip loaded for: ${auction.item_name}`);
         }, 150);
       });
-
       itemDiv.addEventListener('mouseleave', () => {
-        console.log(`[Auction] Hover leave: ${auction.item_name}`);
         clearTimeout(timeout);
         tooltip.style.display = 'none';
       });
     }
 
-    // Generate tooltip HTML for auction
     function generateAuctionTooltipHTML(auction) {
       const itemName = auction.item_name || 'Unknown Item';
       const rarity = (auction.tier || 'common').toUpperCase();
       const isBin = auction.type === 'BIN';
       const auctionType = isBin ? 'BIN' : 'Auction';
-      const endTime = auction.endsAt * 1000; // endsAt is in seconds
-
-      let html = `<div class="title">${itemName}</div>`;
-      html += `<div class="rarity">${rarity}</div>`;
-      html += `<div class="spacer"></div>`;
-
+      const endTime = auction.endsAt * 1000;
+      let html = `<div class="title">${itemName}</div><div class="rarity">${rarity}</div><div class="spacer"></div>`;
       if (isBin) {
-        // BIN: price is startingPrice (there is no bin_price field)
-        html += `
-          <div class="row">
-            <span>BIN Price:</span>
-            <span class="gold">${formatCurrency(auction.startingPrice)}</span>
-          </div>
-        `;
+        html += `<div class="row"><span>BIN Price:</span><span class="gold">${formatCurrency(auction.startingPrice)}</span></div>`;
       } else {
-        html += `
-          <div class="row">
-            <span>Starting Bid:</span>
-            <span class="gold">${formatCurrency(auction.startingPrice)}</span>
-          </div>
-          <div class="row">
-            <span>Highest Bid:</span>
-            <span class="gold">${formatCurrency(auction.highestBidAmount || 0)}</span>
-          </div>
-          <div class="row">
-            <span>Bids:</span>
-            <span>${formatNumber(auction.bids || 0)}</span>
-          </div>
-        `;
+        html += `<div class="row"><span>Starting Bid:</span><span class="gold">${formatCurrency(auction.startingPrice)}</span></div>
+                 <div class="row"><span>Highest Bid:</span><span class="gold">${formatCurrency(auction.highestBidAmount || 0)}</span></div>
+                 <div class="row"><span>Bids:</span><span>${formatNumber(auction.bids || 0)}</span></div>`;
       }
-
-      html += `
-      <div class="row">
-        <span>Type:</span>
-        <span>${auctionType}</span>
-      </div>
-      <div class="row">
-        <span>Seller:</span>
-        <span>${auction.ownerName || 'Unknown'}</span>
-      </div>
-      <div class="row">
-        <span>Ends in:</span>
-        <span class="gold">${formatTimeRemaining(endTime)}</span>
-      </div>
-    `;
-
+      html += `<div class="row"><span>Type:</span><span>${auctionType}</span></div>
+               <div class="row"><span>Seller:</span><span>${auction.ownerName || 'Unknown'}</span></div>
+               <div class="row"><span>Ends in:</span><span class="gold">${formatTimeRemaining(endTime)}</span></div>`;
       return html;
     }
 
-    // Apply filters to auctions
-    // Apply filters to auctions
     function applyFilters() {
       const searchText = document.getElementById('ahSearchInput').value.toLowerCase().trim();
-
-      // Get current filter values from the global indices
       const auctionTypeKey = auctionTypeOptions[auctionTypeIndex].key;
       const rarityKey = rarityOptions[rarityIndex].key;
       const sortKey = sortOptions[sortIndex].key;
-
       console.log(`[Auction] Applying filters - Search: "${searchText}", Type: ${auctionTypeKey}, Rarity: ${rarityKey}, Sort: ${sortKey}`);
-
       filteredAuctions = currentAuctions.filter(auction => {
-        // Search filter
-        if (searchText && !auction.item_name?.toLowerCase().includes(searchText)) {
-          return false;
-        }
-
-        // Auction type filter
+        if (searchText && !auction.item_name?.toLowerCase().includes(searchText)) return false;
         if (auctionTypeKey === 'bin' && auction.type !== 'BIN') return false;
         if (auctionTypeKey === 'auction' && auction.type !== 'NORMAL') return false;
-
-        // Rarity filter
-        if (rarityKey !== 'all' && auction.tier?.toLowerCase() !== rarityKey.toLowerCase()) {
-          return false;
-        }
-
+        if (rarityKey !== 'all' && auction.tier?.toLowerCase() !== rarityKey.toLowerCase()) return false;
         return true;
       });
-
       console.log(`[Auction] Filtered to ${filteredAuctions.length} auctions from ${currentAuctions.length} total`);
-
-      // Apply sorting
       sortAuctions(filteredAuctions, sortKey);
       fillCells(filteredAuctions);
     }
 
-    // Sort auctions
     function sortAuctions(auctions, sortBy) {
-      console.log(`[Auction] Sorting ${auctions.length} auctions by: ${sortBy}`);
       switch (sortBy) {
         case 'highest':
           auctions.sort((a, b) => {
-            // For BIN use startingPrice, for auction use highestBidAmount or startingPrice
             const priceA = a.type === 'BIN' ? (a.startingPrice || 0) : (a.highestBidAmount || a.startingPrice || 0);
             const priceB = b.type === 'BIN' ? (b.startingPrice || 0) : (b.highestBidAmount || b.startingPrice || 0);
             return priceB - priceA;
@@ -952,11 +862,7 @@
           break;
         case 'rarity':
           const rarityOrder = { mythic: 7, legendary: 6, epic: 5, rare: 4, uncommon: 3, common: 2, special: 1 };
-          auctions.sort((a, b) => {
-            const rarityA = rarityOrder[a.tier?.toLowerCase()] || 0;
-            const rarityB = rarityOrder[b.tier?.toLowerCase()] || 0;
-            return rarityB - rarityA;
-          });
+          auctions.sort((a, b) => (rarityOrder[b.tier?.toLowerCase()] || 0) - (rarityOrder[a.tier?.toLowerCase()] || 0));
           break;
         case 'random':
           for (let i = auctions.length - 1; i > 0; i--) {
@@ -968,19 +874,35 @@
       console.log(`[Auction] Sort completed, top item: ${auctions[0]?.item_name || 'N/A'}`);
     }
 
-    // Load auctions from API
+    function updatePaginationUI() {
+      if (!pageInfoSpan) return;
+      pageInfoSpan.textContent = `Page ${currentPage + 1} / ${totalPages}`;
+      if (prevBtn) {
+        const isFirst = currentPage === 0;
+        prevBtn.classList.toggle('disabled', isFirst);
+        if (prevImg) prevImg.src = isFirst ? 'assets/ah/previous_gray.png' : 'assets/ah/previous.png';
+      }
+      if (nextBtn) {
+        const isLast = currentPage >= totalPages - 1;
+        nextBtn.classList.toggle('disabled', isLast);
+        if (nextImg) nextImg.src = isLast ? 'assets/ah/next_gray.png' : 'assets/ah/next.png';
+      }
+    }
+
     async function loadAuctions(page = 0) {
       console.log(`[Auction] Loading auctions from page ${page}`);
       try {
         const data = await apiClient.getAuctions(page);
         console.log(`[Auction] API Response:`, data);
-
         if (data.auctions && Array.isArray(data.auctions)) {
-          // Normalize API fields to match frontend expectations
+          totalPages = data.totalPages || 1;
+          totalAuctions = data.totalAuctions || 0;
+          currentPage = page;
+          updatePaginationUI();
           currentAuctions = data.auctions.map(auction => {
             const isBin = auction.type === 'BIN';
             return {
-              ...auction,  // keep original data (e.g., item_name from backend)
+              ...auction,
               bin: isBin,
               bin_price: isBin ? auction.startingPrice : undefined,
               highest_bid_amount: auction.highestBidAmount,
@@ -989,15 +911,12 @@
               auctioneer: auction.ownerName,
               end_time: auction.endsAt,
               uuid: auction.id,
-              // Ensure item_name exists (backend already provides it, but fallback just in case)
               item_name: auction.item_name || (auction.itemId ? processItemId(auction.itemId) : 'Unknown Item')
             };
           });
-          currentPage = page;
           console.log(`[Auction] Loaded ${currentAuctions.length} auctions`);
           if (currentAuctions.length > 0) {
             console.log(`[Auction] First auction structure:`, currentAuctions[0]);
-            console.log(`[Auction] Available fields:`, Object.keys(currentAuctions[0]));
           }
           applyFilters();
         } else {
@@ -1010,12 +929,18 @@
       }
     }
 
+    function goToPrevPage() {
+      if (currentPage > 0) loadAuctions(currentPage - 1);
+    }
+
+    function goToNextPage() {
+      if (currentPage < totalPages - 1) loadAuctions(currentPage + 1);
+    }
+
     function fillEmptyGrid() {
       const mainGrid = document.getElementById('mainGrid');
       if (!mainGrid) return;
-
       mainGrid.innerHTML = '';
-
       for (let i = 0; i < 36; i++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
@@ -1023,13 +948,7 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-      console.log('[Auction] DOMContentLoaded - Initializing auction house');
-      fillEmptyGrid();
-      loadAuctions(0);
-    });
-
-    (function initAuctionFilters() {
+    function initAuctionFilters() {
       console.log('[Auction] Initializing auction filters');
       const searchWrap = document.getElementById('ahSearch');
       const searchToggle = document.getElementById('ahSearchToggle');
@@ -1045,38 +964,39 @@
         return;
       }
 
-      console.log('[Auction] Filter elements found, setting up event listeners');
+      prevBtn = document.getElementById('prevPageBtn');
+      nextBtn = document.getElementById('nextPageBtn');
+      prevImg = document.getElementById('prevPageImg');
+      nextImg = document.getElementById('nextPageImg');
+      pageInfoSpan = document.getElementById('pageInfo');
 
-      const auctionTypeOptions = [
-        { key: 'both', label: 'Both', icon: 'assets/ah/auction_type/show_all.png' },
-        { key: 'bin', label: 'BIN', icon: 'assets/ah/auction_type/bin_only.png' },
-        { key: 'auction', label: 'Auc', icon: 'assets/ah/auction_type/auction_only.png' },
-      ];
+      if (prevBtn) prevBtn.addEventListener('click', goToPrevPage);
+      if (nextBtn) nextBtn.addEventListener('click', goToNextPage);
 
-      const rarityOptions = [
-        { key: 'all', label: 'All', icon: 'assets/ah/rarities/notier.png' },
-        { key: 'common', label: 'Com', icon: 'assets/ah/rarities/common.png' },
-        { key: 'uncommon', label: 'Unc', icon: 'assets/ah/rarities/uncommon.png' },
-        { key: 'rare', label: 'Rare', icon: 'assets/ah/rarities/rare.png' },
-        { key: 'epic', label: 'Epic', icon: 'assets/ah/rarities/epic.png' },
-        { key: 'legendary', label: 'Leg', icon: 'assets/ah/rarities/legendary.png' },
-        { key: 'mythic', label: 'Myth', icon: 'assets/ah/rarities/mythic.png' },
-        { key: 'special', label: 'Spec', icon: 'assets/ah/rarities/special.png' },
-      ];
+      auctionTypeBtn.addEventListener('click', () => {
+        auctionTypeIndex = (auctionTypeIndex + 1) % auctionTypeOptions.length;
+        console.log(`[Auction] Auction type changed to: ${auctionTypeOptions[auctionTypeIndex].key}`);
+        auctionTypeIcon.src = auctionTypeOptions[auctionTypeIndex].icon;
+        auctionTypeBtn.title = `Auction Type - ${auctionTypeOptions[auctionTypeIndex].key === 'bin' ? 'Buy It Now' : auctionTypeOptions[auctionTypeIndex].key === 'auction' ? 'Classic Auction' : 'Both'}`;
+        applyFilters();
+      });
 
-      const sortOptions = [
-        { key: 'highest', badge: 'Hi', label: 'Highest bid/price' },
-        { key: 'lowest', badge: 'Lo', label: 'Lowest bid/price' },
-        { key: 'ending', badge: 'End', label: 'Ending soon' },
-        { key: 'bids', badge: 'Bid', label: 'Most bids' },
-        { key: 'rarity', badge: 'Rar', label: 'Highest rarity' },
-        { key: 'random', badge: 'Rnd', label: 'Random' },
-      ];
+      rarityBtn.addEventListener('click', () => {
+        rarityIndex = (rarityIndex + 1) % rarityOptions.length;
+        console.log(`[Auction] Rarity filter changed to: ${rarityOptions[rarityIndex].key}`);
+        rarityIcon.src = rarityOptions[rarityIndex].icon;
+        rarityBtn.title = `Item Rarity - ${rarityOptions[rarityIndex].key === 'all' ? 'All rarities' : rarityOptions[rarityIndex].key}`;
+        applyFilters();
+      });
 
-      let auctionTypeIndex = 0;
-      let rarityIndex = 0;
-      let sortIndex = 0;
-      let searchText = '';
+      sortBtn.addEventListener('click', () => {
+        sortIndex = (sortIndex + 1) % sortOptions.length;
+        console.log(`[Auction] Sort changed to: ${sortOptions[sortIndex].key}`);
+        sortBtn.title = `Sorting - ${sortOptions[sortIndex].label}`;
+        applyFilters();
+      });
+
+      // Search logic
       let searchDebounce = null;
       let isSearchOpen = false;
 
@@ -1097,85 +1017,41 @@
         searchToggle.setAttribute('aria-expanded', 'false');
       }
 
-      function applyAuctionType() {
-        const option = auctionTypeOptions[auctionTypeIndex];
-        auctionTypeIcon.src = option.icon;
-        auctionTypeBtn.title = `Auction Type - ${option.key === 'bin' ? 'Buy It Now' : option.key === 'auction' ? 'Classic Auction' : 'Both'}`;
-        applyFilters();
-      }
-
-      function applyRarity() {
-        const option = rarityOptions[rarityIndex];
-        rarityIcon.src = option.icon;
-        rarityBtn.title = `Item Rarity - ${option.key === 'all' ? 'All rarities' : option.key}`;
-        applyFilters();
-      }
-
-      function applySort() {
-        const option = sortOptions[sortIndex];
-        sortBtn.title = `Sorting - ${option.label}`;
-        applyFilters();
-      }
-
-      auctionTypeBtn.addEventListener('click', () => {
-        auctionTypeIndex = (auctionTypeIndex + 1) % auctionTypeOptions.length;
-        console.log(`[Auction] Auction type changed to: ${auctionTypeOptions[auctionTypeIndex].key}`);
-        applyAuctionType();
-      });
-
-      rarityBtn.addEventListener('click', () => {
-        rarityIndex = (rarityIndex + 1) % rarityOptions.length;
-        console.log(`[Auction] Rarity filter changed to: ${rarityOptions[rarityIndex].key}`);
-        applyRarity();
-      });
-
-      sortBtn.addEventListener('click', () => {
-        sortIndex = (sortIndex + 1) % sortOptions.length;
-        console.log(`[Auction] Sort changed to: ${sortOptions[sortIndex].key}`);
-        applySort();
-      });
-
-      searchToggle.addEventListener('click', () => {
-        console.log('[Auction] Search toggle clicked');
-        openSearch();
-      });
-
+      searchToggle.addEventListener('click', openSearch);
       searchWrap.addEventListener('click', (e) => {
-        if (e.target === searchToggle) return;
-        if (e.target === searchInput) return;
+        if (e.target === searchToggle || e.target === searchInput) return;
         openSearch();
       });
-
-      searchInput.addEventListener('focus', () => {
-        openSearch();
-      });
-
+      searchInput.addEventListener('focus', openSearch);
       searchInput.addEventListener('input', (e) => {
         const value = String(e.target.value || '');
-        console.log(`[Auction] Search input: "${value}"`);
-        if (searchDebounce) window.clearTimeout(searchDebounce);
-        searchDebounce = window.setTimeout(() => {
-          searchText = value.trim();
+        if (searchDebounce) clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(() => {
           applyFilters();
         }, 150);
       });
-
       searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           searchInput.blur();
           closeSearchIfEmpty();
         }
       });
-
       searchInput.addEventListener('blur', () => {
-        window.setTimeout(() => closeSearchIfEmpty(), 0);
+        setTimeout(closeSearchIfEmpty, 0);
       });
 
-      applyAuctionType();
-      applyRarity();
-      applySort();
+      // Set initial filter icons
+      auctionTypeIcon.src = auctionTypeOptions[0].icon;
+      rarityIcon.src = rarityOptions[0].icon;
       console.log('[Auction] Filter initialization complete');
-    })();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log('[Auction] DOMContentLoaded - Initializing auction house');
+      fillEmptyGrid();
+      initAuctionFilters();
+      loadAuctions(0);
+    });
   </script>
 </body>
 
