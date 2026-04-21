@@ -653,7 +653,7 @@
       <div class="bl-br s-br"></div>
       <div class="br-br"></div>
       <div class="inventory inner-container">
-        <h3>Bazaar Market</h3>
+        <h3>Bazaar</h3>
         <div class="extreme-inner-container" id="mainGrid">
           <!-- Cells will be populated by JavaScript -->
         </div>
@@ -677,6 +677,29 @@
 
     // Cache for API responses
     const bazaarCache = new Map();
+
+    // De-dupe parallel fetches for same item
+    const inflightBazaarRequests = new Map();
+
+    const SESSION_CACHE_PREFIX = 'bazaar_cache_v1:';
+
+    function readSessionCache(itemId) {
+      try {
+        const raw = sessionStorage.getItem(SESSION_CACHE_PREFIX + itemId);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function writeSessionCache(itemId, data) {
+      try {
+        sessionStorage.setItem(SESSION_CACHE_PREFIX + itemId, JSON.stringify(data));
+      } catch (e) {
+        // Ignore quota / disabled storage errors
+      }
+    }
 
     // Valid item IDs loaded from item.json (best-effort)
     let validItemIds = null;
@@ -1508,18 +1531,40 @@
     async function fetchBazaarData(item) {
       const itemName = typeof item === 'string' ? item : item?.name;
       const itemId = getItemId(item);
-      console.log(`Fetching data for: ${itemName} (ID: ${itemId})`);
 
-      try {
-        const data = await apiClient.getBazaarItem(itemId);
-        console.log(`Successfully fetched data for ${itemId}`, data);
-        return data;
-      } catch (error) {
-        console.warn(`Failed to fetch ${itemId} via Cloudflare Function, using mock data:`, error.message);
-        // Fallback to mock data
-        const mockData = generateMockData(itemId);
-        return mockData;
+      // In-memory cache
+      if (bazaarCache.has(itemId)) return bazaarCache.get(itemId);
+
+      // Session storage cache
+      const cached = readSessionCache(itemId);
+      if (cached) {
+        bazaarCache.set(itemId, cached);
+        return cached;
       }
+
+      // De-dupe inflight requests
+      if (inflightBazaarRequests.has(itemId)) return inflightBazaarRequests.get(itemId);
+
+      const promise = (async () => {
+        console.log(`Fetching data for: ${itemName} (ID: ${itemId})`);
+        try {
+          const data = await apiClient.getBazaarItem(itemId);
+          bazaarCache.set(itemId, data);
+          writeSessionCache(itemId, data);
+          return data;
+        } catch (error) {
+          console.warn(`Failed to fetch ${itemId} via Cloudflare Function, using mock data:`, error.message);
+          const mockData = generateMockData(itemId);
+          bazaarCache.set(itemId, mockData);
+          writeSessionCache(itemId, mockData);
+          return mockData;
+        } finally {
+          inflightBazaarRequests.delete(itemId);
+        }
+      })();
+
+      inflightBazaarRequests.set(itemId, promise);
+      return promise;
     }
 
     // Generate tooltip HTML
