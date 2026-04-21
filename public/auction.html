@@ -889,27 +889,29 @@
     }
 
     // Apply filters to auctions
+    // Apply filters to auctions
     function applyFilters() {
       const searchText = document.getElementById('ahSearchInput').value.toLowerCase().trim();
-      const auctionType = document.querySelector('input[name="auctionType"][checked]')?.value || 'both';
-      const rarity = document.querySelector('input[name="rarity"][checked]')?.value || 'all';
-      const sortBy = document.querySelector('input[name="sort"][checked]')?.value || 'highest';
 
-      console.log(`[Auction] Applying filters - Search: "${searchText}", Type: ${auctionType}, Rarity: ${rarity}, Sort: ${sortBy}`);
+      // Get current filter values from the global indices
+      const auctionTypeKey = auctionTypeOptions[auctionTypeIndex].key;
+      const rarityKey = rarityOptions[rarityIndex].key;
+      const sortKey = sortOptions[sortIndex].key;
 
-      // Inside applyFilters()
+      console.log(`[Auction] Applying filters - Search: "${searchText}", Type: ${auctionTypeKey}, Rarity: ${rarityKey}, Sort: ${sortKey}`);
+
       filteredAuctions = currentAuctions.filter(auction => {
         // Search filter
         if (searchText && !auction.item_name?.toLowerCase().includes(searchText)) {
           return false;
         }
 
-        // Auction type filter: auction.type is "BIN" or "NORMAL"
-        if (auctionType === 'bin' && auction.type !== 'BIN') return false;
-        if (auctionType === 'auction' && auction.type !== 'NORMAL') return false;
+        // Auction type filter
+        if (auctionTypeKey === 'bin' && auction.type !== 'BIN') return false;
+        if (auctionTypeKey === 'auction' && auction.type !== 'NORMAL') return false;
 
         // Rarity filter
-        if (rarity !== 'all' && auction.tier?.toLowerCase() !== rarity.toLowerCase()) {
+        if (rarityKey !== 'all' && auction.tier?.toLowerCase() !== rarityKey.toLowerCase()) {
           return false;
         }
 
@@ -919,7 +921,7 @@
       console.log(`[Auction] Filtered to ${filteredAuctions.length} auctions from ${currentAuctions.length} total`);
 
       // Apply sorting
-      sortAuctions(filteredAuctions, sortBy);
+      sortAuctions(filteredAuctions, sortKey);
       fillCells(filteredAuctions);
     }
 
