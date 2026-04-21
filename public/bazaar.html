@@ -1793,9 +1793,15 @@
       assignIds(foragingItems);
       assignIds(specialItems);
 
+      setupCategoryNavigation();
+
+      // Default: load farming category
+      document.querySelectorAll('.cat').forEach(cat => cat.classList.remove('active'));
+      const farmingCat = document.getElementById('farming');
+      if (farmingCat) farmingCat.classList.add('active');
+      fillCells(farmingItems);
+
       console.log('API proxy client initialized');
-      const activeCat = document.querySelector('.cat.active');
-      if (activeCat) activeCat.click();
     }
 
     function showStatus(message, type = 'info') {
@@ -1829,7 +1835,6 @@
     // ==================== INITIALIZATION ====================
     document.addEventListener('DOMContentLoaded', async function () {
       await initializePage();
-      setupCategoryNavigation();
     });
 
   </script>
