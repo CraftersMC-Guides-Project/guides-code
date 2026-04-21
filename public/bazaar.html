@@ -1409,9 +1409,13 @@
     // Format currency
     function formatCurrency(amount) {
       if (amount === undefined || amount === null) return 'N/A';
-      if (amount >= 1000000) return (amount / 1000000).toFixed(2) + 'M';
-      if (amount >= 1000) return (amount / 1000).toFixed(1) + 'K';
-      return Math.round(amount).toLocaleString();
+      // Don't round prices; truncate to 2 decimal places at most.
+      const truncated = Math.trunc(Number(amount) * 100) / 100;
+      const hasDecimals = Math.abs(truncated % 1) > Number.EPSILON;
+      return truncated.toLocaleString(undefined, {
+        minimumFractionDigits: hasDecimals ? 2 : 0,
+        maximumFractionDigits: 2
+      });
     }
 
     // Format number
