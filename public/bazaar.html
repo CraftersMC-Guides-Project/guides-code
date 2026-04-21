@@ -213,7 +213,7 @@
 
     .cat {
       background-color: #c6c6c6;
-      box-shadow: inset 4px 4px 0 0 #fff;
+      box-shadow: inset 2px 2px 0 0 #fff;
       height: 2rem;
       width: 2rem;
       display: flex;
@@ -231,7 +231,7 @@
 
     .cat.active {
       background-color: #a6a6a6;
-      box-shadow: inset 4px 4px 0 0 #777;
+      box-shadow: inset 2px 2px 0 0 #777;
     }
 
     .cat img {
@@ -390,15 +390,18 @@
     }
 
     .sub-items-grid {
-      display: flex;
-/*      grid-template-columns: repeat(2, 1fr);*/
-      gap: 4px;
-      margin-top: 8px;
-      margin-bottom: 8px;
-      justify-content: start;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
+      gap: 6px;
+      margin: 8px 0;
+      align-items: start;
     }
 
     .sub-item {
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      padding: 4px 2px;
       text-align: center;
       border-radius: 3px;
       cursor: pointer;
@@ -490,7 +493,6 @@
       font-size: 14px;
       line-height: 1.3;
       width: 184px;
-      height: calc(90% - 2px);
       box-sizing: content-box;
       min-height: 190px;
     }
@@ -499,9 +501,9 @@
       position: relative;
       z-index: 2;
       display: flex;
-      height: 190px;
+      min-height: 190px;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: flex-start;
     }
 
     /* ================= Corners ================= */
@@ -633,7 +635,7 @@
       <div id="combat" class="cat"><img src="assets/ui-icons/ui_bazaar_category_combat_active.png"></div>
       <div id="foraging" class="cat"><img src="assets/ui-icons/ui_bazaar_category_foraging_active.png"></div>
       <div id="special" class="cat"><img src="img/Magical_Encyclopedia.png"></div>
-      <div id="minion" class="cat"><img src="img/cobblestone-minion/Cobblestone_Minion.png"></div>
+      <!-- <div id="minion" class="cat"><img src="img/cobblestone-minion/Cobblestone_Minion.png"></div> -->
     </div>
     <div class="container">
       <div class="corner-left"></div>
@@ -676,6 +678,9 @@
     // Cache for API responses
     const bazaarCache = new Map();
 
+    // Valid item IDs loaded from item.json (best-effort)
+    let validItemIds = null;
+
     const farmingItems = [
       {
         name: "Wheat Items",
@@ -684,10 +689,10 @@
           { name: "Wheat", img: "Wheat.webp", id: "wheat" },
           { name: "Enchanted Wheat", img: "Enchanted_Wheat.webp", id: "enchanted_wheat" },
           { name: "Enchanted Bread", img: "Enchanted_Bread.webp", id: "enchanted_bread" },
-          { name: "Haybale", img: "Hay_Bale.webp", id: "hay_block" },
+          { name: "Haybale", img: "Hay_Bale.png", id: "hay_block" },
           { name: "Enchanted Haybale", img: "Enchanted_Hay_Bale.webp", id: "enchanted_hay_bale_new" },
           { name: "Wheat Seeds", img: "Wheat_Seeds.webp",id: "wheat_seeds" },
-          { name: "Box of Seeds", img: "100px-Box_of_Seeds.webp", id: "" }
+          { name: "Box of Seeds", img: "100px-Box_of_Seeds.webp", id: "box_of_seeds" }
         ]
       },
       {
@@ -1052,6 +1057,34 @@
           { name: "Glacial Fang", img: "100px-Glacial_Fang.webp" },
           { name: "Weak Wolf Catalyst", img: "Weak_Wolf_Catalyst.png" }
         ]
+      },
+      {
+        name: "Ender Pearl",
+        img: "Ender_Pearl.webp",
+        subItems: [
+          { name: "Ender Pearl", img: "Ender_Pearl.webp", id: "ender_pearl" },
+          { name: "Enchanted Ender Pearl", img: "Enchanted_Ender_Pearl.webp", id: "enchanted_ender_pearl" },
+          { name: "Enchanted Ender Eye", img: "Enchanted_Ender_Eye.png", id: "enchanted_ender_eye" },
+          { name: "Absolute Ender Pearl", img: "Absolute_Ender_Pearl.webp", id: "absolute_ender_pearl" },
+          { name: "Tessellated Ender Pearl", img: "Tessellated_Ender_Pearl.webp", id: "tessellated_ender_pearl" }
+        ]
+      },
+      {
+        name: "The End",
+        img: "Summoning_Eye.webp",
+        subItems: [
+          { name: "Summoning Eye", img: "Summoning_Eye.webp", id: "summoning_eye" },
+          { name: "Crystal Fragment", img: "Crystal_Fragment.webp", id: "crystal_fragment" },
+          { name: "Protector Dragon Fragment", img: "Protector_Dragon_Fragment.webp", id: "protector_dragon_fragment" },
+          { name: "Old Dragon Fragment", img: "Old_Dragon_Fragment.webp", id: "old_dragon_fragment" },
+          { name: "Strong Dragon Fragment", img: "Strong_Dragon_Fragment.png", id: "strong_dragon_fragment" },
+          { name: "Wise Dragon Fragment", img: "Wise_Dragon_Fragment.png", id: "wise_dragon_fragment" },
+          { name: "Unstable Dragon Fragment", img: "Unstable_Dragon_Fragment.png", id: "unstable_dragon_fragment" },
+          { name: "Young Dragon Fragment", img: "Young_Dragon_Fragment.png", id: "young_dragon_fragment" },
+          { name: "Superior Dragon Fragment", img: "Superior_Dragon_Fragment.webp", id: "superior_dragon_fragment" },
+          { name: "Fused Remnants", img: "Fused_Remnants.webp", id: "fused_remnants" },
+          { name: "Mite Gel", img: "Mite_Gel.png", id: "mite_gel" }
+        ]
       }
     ];
 
@@ -1130,7 +1163,7 @@
           {
             name: "Delicate V Enchant Book",
             img: "100px-Enchanted_Book.gif",
-            id: "Delicate_5",
+            id: "delicate_5",
             subItems: []
           },
           {
@@ -1171,6 +1204,96 @@
                   { name: "Turbo-Wheat IV Enchant Book", img: "100px-Enchanted_Book.gif" },
                   { name: "Turbo-Wheat V Enchant Book", img: "100px-Enchanted_Book.gif" }
                 ]
+              },
+              {
+                name: "Turbo-Carrot Enchant Book Items", img: "100px-Enchanted_Book.gif",
+                subItems: [
+                  { name: "Turbo-Carrot I Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Carrot II Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Carrot III Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Carrot IV Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Carrot V Enchant Book", img: "100px-Enchanted_Book.gif" }
+                ]
+              },
+              {
+                name: "Turbo-Beetroot Enchant Book Items", img: "100px-Enchanted_Book.gif",
+                subItems: [
+                  { name: "Turbo-Beetroot I Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Beetroot II Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Beetroot III Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Beetroot IV Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Beetroot V Enchant Book", img: "100px-Enchanted_Book.gif" }
+                ]
+              },
+              {
+                name: "Turbo-Potato Enchant Book Items", img: "100px-Enchanted_Book.gif",
+                subItems: [
+                  { name: "Turbo-Potato I Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Potato II Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Potato III Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Potato IV Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Potato V Enchant Book", img: "100px-Enchanted_Book.gif" }
+                ]
+              },
+              {
+                name: "Turbo-Melon Enchant Book Items", img: "100px-Enchanted_Book.gif",
+                subItems: [
+                  { name: "Turbo-Melon I Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Melon II Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Melon III Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Melon IV Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Melon V Enchant Book", img: "100px-Enchanted_Book.gif" }
+                ]
+              },
+              {
+                name: "Turbo-Pumpkin Enchant Book Items", img: "100px-Enchanted_Book.gif",
+                subItems: [
+                  { name: "Turbo-Pumpkin I Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Pumpkin II Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Pumpkin III Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Pumpkin IV Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Pumpkin V Enchant Book", img: "100px-Enchanted_Book.gif" }
+                ]
+              },
+              {
+                name: "Turbo-Mushroom Enchant Book Items", img: "100px-Enchanted_Book.gif",
+                subItems: [
+                  { name: "Turbo-Mushroom I Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Mushroom II Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Mushroom III Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Mushroom IV Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Mushroom V Enchant Book", img: "100px-Enchanted_Book.gif" }
+                ]
+              },
+              {
+                name: "Turbo-Cane Enchant Book Items", img: "100px-Enchanted_Book.gif",
+                subItems: [
+                  { name: "Turbo-Cane I Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Cane II Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Cane III Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Cane IV Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Cane V Enchant Book", img: "100px-Enchanted_Book.gif" }
+                ]
+              },
+              {
+                name: "Turbo-Cactus Enchant Book Items", img: "100px-Enchanted_Book.gif",
+                subItems: [
+                  { name: "Turbo-Cactus I Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Cactus II Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Cactus III Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Cactus IV Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Cactus V Enchant Book", img: "100px-Enchanted_Book.gif" }
+                ]
+              },
+              {
+                name: "Turbo-Cocoa Enchant Book Items", img: "100px-Enchanted_Book.gif",
+                subItems: [
+                  { name: "Turbo-Cocoa I Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Cocoa II Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Cocoa III Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Cocoa IV Enchant Book", img: "100px-Enchanted_Book.gif" },
+                  { name: "Turbo-Cocoa V Enchant Book", img: "100px-Enchanted_Book.gif" }
+                ]
               }
             ]
           }
@@ -1194,7 +1317,77 @@
           { name: "Titanic Experience Bottle", img: "Titanic_Experience_Bottle.webp" },
           { name: "Colossal Experience Bottle", img: "Colossal_Experience_Bottle.webp" },
         ]
-      }
+      },
+      {
+        name: "Pet Upgrades",
+        img: "Simple_Beetroot_Candy.png",
+        subItems: [
+          { name: "Pet Candies",
+            img: "Simple_Beetroot_Candy.png",
+            subItems: [
+              { name: "Simple Beetroot Candy", img: "Simple_Beetroot_Candy.png" },
+              { name: "Great Beetroot Candy", img: "Great_Beetroot_Candy.webp" },
+              { name: "Superb Beetroot Candy", img: "Superb_Beetroot_Candy.webp" },
+              { name: "Ultimate Beetroot Candy", img: "Ultimate_Beetroot_Candy.webp" }
+            ] },
+          { name: "Exp Share Core", img: "Exp_Share_Core.png" },
+        ]
+      },
+      {
+        name: "Minion Upgrades & Fuels",
+        img: "Small_Minion_Backpack.png",
+        subItems: [
+          {
+            name: "Minion Backpacks",
+            img: "Small_Minion_Backpack.png",
+            subItems: [
+              { name: "Small Minion Backpack", img: "Small_Minion_Backpack.png" },
+              { name: "Medium Minion Backpack", img: "Medium_Minion_Backpack.webp" },
+              { name: "Large Minion Backpack", img: "Large_Minion_Backpack.png" },
+              { name: "Huge Minion Backpack", img: "Huge_Minion_Backpack.png" },
+              { name: "Giant Minion Backpack", img: "Giant_Minion_Backpack.png" }
+            ]
+          },
+          { name: "Compactor", img: "Compactor.webp" },
+          { name: "Super Compactor 3000", img: "Super_Compactor_3000.webp" },
+          { name: "Budget Hopper", img: "Budget_Hopper.png" },
+          { name: "Enchanted Hopper", img: "Enchanted_Hopper.png" },
+          { name: "Diamond Spreading", img: "Diamond_Spreading.png" },
+          { name: "Minion Auto Smelter", img: "Minion_Auto_Smelter.webp" },
+          { name: "Enchanted Lava Bucket", img: "Enchanted_Lava_Bucket.png" },
+          { name: "Foul Flesh", img: "Foul_Flesh.webp" },
+          { name: "Hamster Wheel", img: "Hamster_Wheel.png" },
+          { name: "Potato Spreading", img: "Potato_Spreading.png" }
+        ]
+      },
+      {
+        name: "Ethan's Ticket",
+        img: "100px-Ethan's_Ticket.webp",
+        subItems: [
+          { name: "Ethan's Ticket", img: "100px-Ethan's_Ticket.webp" }
+        ]
+      },
+      {
+        name: "Reforge Stones",
+        img: "Dragon_Scale.webp",
+        subItems: [
+          { name: "Dragon Scale", img: "Dragon_Scale.webp" },
+          { name: "Dragon Horn", img: "Dragon_Horn.webp" },
+          { name: "End Stone Geode", img: "End_Stone_Geode.webp" },
+          { name: "Rare Diamond", img: "Rare_Diamond.webp" }
+        ]
+      },
+      {
+        name: "Power Stones",
+        img: "Obsidian_Tablet.webp",
+        subItems: [
+          { name: "Obsidian Tablet", img: "Obsidian_Tablet.webp", id: "obsidian_tablet" },
+          { name: "Ender Monocle", img: "Ender_Monocle.webp", id: "ender_monocle" },
+          { name: "End Stone Shulker", img: "End_Stone_Shulker.webp", id: "end_stone_shulker" },
+          { name: "Acacia Birdhouse", img: "Acacia_Birdhouse.webp", id: "acacia_birdhouse" },
+          { name: "Furball", img: "Furball.webp", id: "furball" }
+        ]
+      },
     ];
 
     // Minion items
@@ -1228,10 +1421,58 @@
     }
 
     // Get item ID from name
-    function getItemId(itemName) {
-      const id = itemIdMap[itemName] || itemName.toLowerCase().replace(/ /g, '_');
-      console.log(`Mapped "${itemName}" to "${id}"`);
-      return id;
+    function normalizeItemIdFromName(itemName) {
+      if (!itemName) return '';
+      return itemName
+        .toLowerCase()
+        .replace(/'/g, '')
+        .replace(/&/g, 'and')
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, '')
+        .replace(/_+/g, '_');
+    }
+
+    function getItemId(itemOrName) {
+      const itemName = typeof itemOrName === 'string' ? itemOrName : itemOrName?.name;
+      const explicitId = typeof itemOrName === 'object' ? itemOrName?.id : undefined;
+
+      if (explicitId) return explicitId;
+      const mappedId = itemIdMap[itemName];
+      if (mappedId) return mappedId;
+
+      const normalizedId = normalizeItemIdFromName(itemName);
+      if (validItemIds && validItemIds.has(normalizedId)) return normalizedId;
+
+      return normalizedId;
+    }
+
+    async function loadValidItemIds() {
+      if (validItemIds) return validItemIds;
+
+      try {
+        const resp = await fetch('item.json', { cache: 'no-cache' });
+        if (!resp.ok) throw new Error(`item.json HTTP ${resp.status}`);
+        const json = await resp.json();
+        const ids = Array.isArray(json?.items) ? json.items : Array.isArray(json?.values) ? json.values : [];
+        validItemIds = new Set(ids);
+      } catch (e) {
+        console.warn('Failed to load item.json, continuing without strict ID validation:', e.message);
+        validItemIds = new Set();
+      }
+
+      return validItemIds;
+    }
+
+    function assignIds(items) {
+      if (!Array.isArray(items)) return;
+      for (const item of items) {
+        if (!item || typeof item !== 'object') continue;
+        if (Array.isArray(item.subItems) && item.subItems.length > 0) {
+          assignIds(item.subItems);
+          continue;
+        }
+        if (!item.id) item.id = getItemId(item.name);
+      }
     }
 
     // Generate mock data for fallback
@@ -1260,8 +1501,9 @@
     let apiClient = new APIProxyClient();
 
     // Fetch bazaar data through Cloudflare Function
-    async function fetchBazaarData(itemName) {
-      const itemId = getItemId(itemName);
+    async function fetchBazaarData(item) {
+      const itemName = typeof item === 'string' ? item : item?.name;
+      const itemId = getItemId(item);
       console.log(`Fetching data for: ${itemName} (ID: ${itemId})`);
 
       try {
@@ -1297,7 +1539,7 @@
       }
 
       // For single items, fetch API data
-      const bazaarData = await fetchBazaarData(item.name);
+      const bazaarData = await fetchBazaarData(item);
 
       const isMockData = bazaarData._isMock === true;
       const hasError = bazaarData.error || !bazaarData.buyTopEntries;
@@ -1529,8 +1771,8 @@
         mining: miningItems,
         combat: combatItems,
         foraging: foragingItems,
-        special: specialItems,
-        minion: minionItems
+        special: specialItems
+//      minion: minionItems
       };
 
       Object.keys(categories).forEach(categoryId => {
@@ -1543,13 +1785,17 @@
     }
 
     // ==================== PAGE INITIALIZATION ====================
-    function initializePage() {
-      // API client is pre-configured with environment variables
+    async function initializePage() {
+      await loadValidItemIds();
+      assignIds(farmingItems);
+      assignIds(miningItems);
+      assignIds(combatItems);
+      assignIds(foragingItems);
+      assignIds(specialItems);
+
       console.log('API proxy client initialized');
       const activeCat = document.querySelector('.cat.active');
-      if (activeCat) {
-        activeCat.click();
-      }
+      if (activeCat) activeCat.click();
     }
 
     function showStatus(message, type = 'info') {
@@ -1581,10 +1827,9 @@
     }
 
     // ==================== INITIALIZATION ====================
-    document.addEventListener('DOMContentLoaded', function () {
-      initializePage();
+    document.addEventListener('DOMContentLoaded', async function () {
+      await initializePage();
       setupCategoryNavigation();
-      fillCells(farmingItems);
     });
 
   </script>
