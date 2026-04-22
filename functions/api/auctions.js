@@ -3,44 +3,40 @@
  * @param {string} nbtData - Base64 encoded (possibly gzip-compressed) NBT data
  * @returns {Object} Decoded NBT data object
  */
+
+// In functions/api/auctions.js, replace decodeNBT with this:
+import pako from 'pako';
+import nbt from 'nbt';
+
 function decodeNBT(nbtData) {
-  if (!nbtData || typeof nbtData !== 'string') {
-    return null;
-  }
+  if (!nbtData || typeof nbtData !== 'string') return null;
 
   try {
-    // Decode base64
+    // Base64 decode
     const binaryString = atob(nbtData);
     let bytes = new Uint8Array(binaryString.length);
     for (let i = 0; i < binaryString.length; i++) {
       bytes[i] = binaryString.charCodeAt(i);
     }
 
-    // Check if data is gzip compressed (magic bytes: 0x1f 0x8b)
+    // Check for gzip magic bytes
     if (bytes[0] === 0x1f && bytes[1] === 0x8b) {
-      console.log('[NBT] Detected gzip-compressed data, decompressing...');
-      bytes = decompressGzip(bytes);
-      if (!bytes) {
-        return {
-          raw: nbtData,
-          decoded: null,
-          error: 'Failed to decompress gzip data'
-        };
-      }
+      bytes = pako.inflate(bytes);
     }
 
-    // Parse NBT after decompression
+    // Parse NBT using the 'nbt' library (supports both little‑ and big‑endian)
+    const parsed = nbt.parse(bytes, (err, data) => {
+      if (err) throw err;
+      return data;
+    });
+
     return {
       raw: nbtData,
-      decoded: parseNBTBytes(bytes)
+      decoded: parsed.value || parsed
     };
   } catch (error) {
-    console.error('Error decoding NBT data:', error);
-    return {
-      raw: nbtData,
-      decoded: null,
-      error: error.message
-    };
+    console.error('[NBT] Decode error:', error);
+    return { raw: nbtData, decoded: null, error: error.message };
   }
 }
 
@@ -54,7 +50,7 @@ function decompressGzip(bytes) {
   try {
     // Gzip format: 1f 8b [compression method] [flags] [MTIME:4] [extra flags] [OS]
     // We need to skip the header and decompress the deflate stream
-    
+
     // Check magic number
     if (bytes[0] !== 0x1f || bytes[1] !== 0x8b) {
       return null;
@@ -112,10 +108,10 @@ function decompressGzip(bytes) {
 function inflateDeflate(data) {
   // For now, use a simple approach: handle uncompressed blocks
   // Full deflate decompression is complex, so we'll try a basic approach
-  
+
   // If you need full deflate support, consider using a library
   // For minimal deflate (many Minecraft NBT uses no compression), we can handle it:
-  
+
   const result = [];
   let bitPos = 0;
   let bytePos = 0;
@@ -146,7 +142,7 @@ function inflateDeflate(data) {
         // Uncompressed block
         bitPos = Math.ceil(bitPos / 8) * 8; // Align to byte boundary
         bytePos = Math.ceil(bitPos / 8);
-        
+
         const len = data[bytePos] | (data[bytePos + 1] << 8);
         bytePos += 4; // Skip len and nlen
 
@@ -239,14 +235,14 @@ function parseNBTTag(tagType, bytes, offset) {
     }
     case 0x03: { // TAG_Int
       const val = (bytes[offset] << 24) | (bytes[offset + 1] << 16) |
-                  (bytes[offset + 2] << 8) | bytes[offset + 3];
+        (bytes[offset + 2] << 8) | bytes[offset + 3];
       return { value: val, newOffset: offset + 4 };
     }
     case 0x04: { // TAG_Long
       const high = (bytes[offset] << 24) | (bytes[offset + 1] << 16) |
-                   (bytes[offset + 2] << 8) | bytes[offset + 3];
+        (bytes[offset + 2] << 8) | bytes[offset + 3];
       const low = (bytes[offset + 4] << 24) | (bytes[offset + 5] << 16) |
-                  (bytes[offset + 6] << 8) | bytes[offset + 7];
+        (bytes[offset + 6] << 8) | bytes[offset + 7];
       return { value: high * 0x100000000 + low, newOffset: offset + 8 };
     }
     case 0x08: { // TAG_String
@@ -282,12 +278,12 @@ function processAuctions(auctions) {
     if (!processed.uuid && processed.auction_id) {
       processed.uuid = processed.auction_id;
     }
-    
+
     // Tier/Rarity handling
     if (!processed.tier && processed.rarity) {
       processed.tier = processed.rarity;
     }
-    
+
     // Bid amount handling
     if (!processed.highest_bid_amount && processed.highest_bid) {
       processed.highest_bid_amount = processed.highest_bid;
@@ -295,17 +291,17 @@ function processAuctions(auctions) {
     if (!processed.highest_bid_amount && processed.highestBid) {
       processed.highest_bid_amount = processed.highestBid;
     }
-    
+
     // Starting bid handling
     if (!processed.starting_bid && processed.startBid) {
       processed.starting_bid = processed.startBid;
     }
-    
+
     // BIN price handling
     if (!processed.bin_price && processed.binPrice) {
       processed.bin_price = processed.binPrice;
     }
-    
+
     // End time handling
     if (!processed.end_time && processed.endTime) {
       processed.end_time = processed.endTime;
@@ -313,12 +309,12 @@ function processAuctions(auctions) {
     if (!processed.end_time && processed.ends) {
       processed.end_time = processed.ends;
     }
-    
+
     // Auctioneer/Seller handling
     if (!processed.auctioneer && processed.seller) {
       processed.auctioneer = processed.seller;
     }
-    
+
     // Bid count handling
     if (!processed.bid_count && processed.bids) {
       processed.bid_count = processed.bids;
@@ -329,12 +325,12 @@ function processAuctions(auctions) {
     const nbtData = auction.itemData || auction.item_bytes;
     if (nbtData) {
       processed.item_nbt_decoded = decodeNBT(nbtData);
-      
+
       // Extract item name from decoded NBT data
       if (processed.item_nbt_decoded?.decoded) {
         const decoded = processed.item_nbt_decoded.decoded;
         let itemName = extractItemName(decoded);
-        
+
         if (itemName) {
           processed.item_name = itemName;
           console.log(`[NBT] Extracted item name from NBT: ${itemName}`);
@@ -380,31 +376,31 @@ function processAuctions(auctions) {
  */
 function extractItemName(decoded) {
   if (!decoded) return null;
-  
+
   // Try tag.display.Name (Minecraft standard)
   let itemName = decoded?.tag?.display?.Name;
-  
+
   // Try direct display.Name
   if (!itemName) {
     itemName = decoded?.display?.Name;
   }
-  
+
   // Try Name field
   if (!itemName) {
     itemName = decoded?.Name;
   }
-  
+
   // Try id field as fallback
   if (!itemName) {
     itemName = decoded?.id;
   }
-  
+
   // Parse JSON if it's a text component string
   if (itemName && typeof itemName === 'string') {
     // Remove color codes and formatting
     itemName = cleanMCText(itemName);
   }
-  
+
   return itemName || null;
 }
 
@@ -415,13 +411,13 @@ function extractItemName(decoded) {
  */
 function processItemId(itemId) {
   if (!itemId || typeof itemId !== 'string') return null;
-  
+
   // Extract the item name part (after the colon)
   const parts = itemId.split(':');
   const name = parts[parts.length - 1];
-  
+
   if (!name) return null;
-  
+
   // Convert snake_case to Title Case
   // e.g., "plumber_sponge" -> "Plumber Sponge"
   return name
@@ -435,9 +431,9 @@ function processItemId(itemId) {
  */
 function cleanMCText(text) {
   if (!text || typeof text !== 'string') return null;
-  
+
   let cleaned = text;
-  
+
   // Try to parse as JSON text component
   if (cleaned.startsWith('{')) {
     try {
@@ -455,10 +451,10 @@ function cleanMCText(text) {
       // Not valid JSON, keep original
     }
   }
-  
+
   // Remove Minecraft color codes (§c, §6, etc.)
   cleaned = cleaned.replace(/§./g, '');
-  
+
   return cleaned || null;
 }
 
