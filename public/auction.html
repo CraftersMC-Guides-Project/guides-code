@@ -166,18 +166,18 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 8px;
       margin-bottom: 12px;
       padding: 4px 0;
-      border-bottom: 1px solid #555;
     }
 
     .category-btn {
       background: none;
       border: none;
       cursor: pointer;
-      padding: 2px;
       transition: transform 0.1s ease;
+      padding: 0;
+      margin: 0;
+      box-shadow: none;
     }
 
     .category-btn img {
@@ -480,11 +480,19 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      box-shadow: none;
+    }
+
+    .ah-pagination-btn:hover {
+      transform: none;
+      box-shadow: none;
+      background: transparent;
     }
 
     .ah-pagination-btn.disabled {
       cursor: default;
       opacity: 0.6;
+      box-shadow: none;
     }
   </style>
 </head>
@@ -586,16 +594,16 @@
 
     // Category definitions (API category strings)
     const categories = [
+      { key: "BLOCKS", label: "Blocks", img: "tab_blocks.png", imgSelected: "tab_blocks_selected.png" },
       { key: "WEAPONS", label: "Weapons", img: "tab_weapons.png", imgSelected: "tab_weapons_selected.png" },
       { key: "ARMORS", label: "Armors", img: "tab_armors.png", imgSelected: "tab_armors_selected.png" },
       { key: "PETS", label: "Pets", img: "tab_pets.png", imgSelected: "tab_pets_selected.png" },
-      { key: "ACCESSORIES", label: "Accessories", img: "tab_accessories.png", imgSelected: "tab_accessories_selected.png" },
-      { key: "TOOLS", label: "Tools", img: "tab_tools.png", imgSelected: "tab_tools_selected.png" },
       { key: "CONSUMABLES", label: "Consumables", img: "tab_consumables.png", imgSelected: "tab_consumables_selected.png" },
+      { key: "ACCESSORIES", label: "Accessories", img: "tab_accessories.png", imgSelected: "tab_accessories_selected.png" },
       { key: "COSMETICS", label: "Cosmetics", img: "tab_cosmetics.png", imgSelected: "tab_cosmetics_selected.png" },
+      { key: "FURNITURES", label: "Furniture", img: "tab_furnitures.png", imgSelected: "tab_furnitures_selected.png" },
+      { key: "TOOLS", label: "Tools", img: "tab_tools.png", imgSelected: "tab_tools_selected.png" },
       { key: "MISCELLANEOUS", label: "Misc", img: "tab_miscellaneous.png", imgSelected: "tab_miscellaneous_selected.png" },
-      { key: "BLOCKS", label: "Blocks", img: "tab_blocks.png", imgSelected: "tab_blocks_selected.png" },
-      { key: "FURNITURES", label: "Furniture", img: "tab_furnitures.png", imgSelected: "tab_furnitures_selected.png" }
     ];
 
     // Filter options (global)
@@ -856,17 +864,17 @@
       categoryButtons = [];
 
       // "All" button
-      const allBtn = document.createElement('button');
-      allBtn.className = 'category-btn';
-      const allImg = document.createElement('img');
-      allImg.src = 'assets/ah/categories/tab_all.png';  // You may need to create this image
-      allImg.alt = 'All';
-      allImg.style.width = '32px';
-      allImg.style.height = '32px';
-      allBtn.appendChild(allImg);
-      allBtn.addEventListener('click', () => setSelectedCategory(null));
-      nav.appendChild(allBtn);
-      categoryButtons.push({ btn: allBtn, category: null, img: allImg, defaultSrc: 'assets/ah/categories/tab_all.png', selectedSrc: 'assets/ah/categories/tab_all_selected.png' });
+      // const allBtn = document.createElement('button');
+      // allBtn.className = 'category-btn';
+      // const allImg = document.createElement('img');
+      // allImg.src = 'assets/ah/categories/tab_all.png';  // You may need to create this image
+      // allImg.alt = 'All';
+      // allImg.style.width = '32px';
+      // allImg.style.height = '32px';
+      // allBtn.appendChild(allImg);
+      // allBtn.addEventListener('click', () => setSelectedCategory(null));
+      // nav.appendChild(allBtn);
+      // categoryButtons.push({ btn: allBtn, category: null, img: allImg, defaultSrc: 'assets/ah/categories/tab_all.png', selectedSrc: 'assets/ah/categories/tab_all_selected.png' });
 
       // Category buttons
       categories.forEach(cat => {
@@ -875,8 +883,8 @@
         const img = document.createElement('img');
         img.src = `assets/ah/categories/${cat.img}`;
         img.alt = cat.label;
-        img.style.width = '32px';
-        img.style.height = '32px';
+        img.style.width = '24px';
+        img.style.height = '24px';
         btn.appendChild(img);
         btn.addEventListener('click', () => setSelectedCategory(cat.key));
         nav.appendChild(btn);
