@@ -8,6 +8,8 @@
   <title>Auction House - CraftersMC Guides</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <script src="js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismarine-nbt@1.10.2/dist/prismarine-nbt.js"></script>
   <link rel="stylesheet" href="css/essential.css" />
   <style>
     html,
@@ -247,6 +249,8 @@
       min-width: 250px;
       font-family: 'Minecraft', 'Arial', sans-serif;
       font-size: 0.85rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      white-space: normal;
       box-shadow:
         0 0 0 2px #4b267a,
         -4px -4px 0 0 #fff,
@@ -255,88 +259,13 @@
         4px 4px 0 0 #555;
       font-weight: bold;
       display: none;
-      white-space: normal;
     }
 
-    .mc-frame {
-      position: relative;
-      padding: 10px;
-      background: linear-gradient(#1a0f1f, #120915);
-      color: #dcdcdc;
-      font-size: 14px;
-      line-height: 1.3;
+    .item-with-sub:hover .tooltip {
+      display: block;
     }
 
-    .mc-corner {
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      background: #4b267a;
-    }
-
-    .mc-corner.tl {
-      top: -2px;
-      left: -2px;
-    }
-
-    .mc-corner.tr {
-      top: -2px;
-      right: -2px;
-    }
-
-    .mc-corner.bl {
-      bottom: -2px;
-      left: -2px;
-    }
-
-    .mc-corner.br {
-      bottom: -2px;
-      right: -2px;
-    }
-
-    .mc-edge {
-      position: absolute;
-      background: #4b267a;
-    }
-
-    .mc-edge.top {
-      top: -2px;
-      left: 2px;
-      right: 2px;
-      height: 2px;
-    }
-
-    .mc-edge.bottom {
-      bottom: -2px;
-      left: 2px;
-      right: 2px;
-      height: 2px;
-    }
-
-    .mc-edge.left {
-      left: -2px;
-      top: 2px;
-      bottom: 2px;
-      width: 2px;
-    }
-
-    .mc-edge.right {
-      right: -2px;
-      top: 2px;
-      bottom: 2px;
-      width: 2px;
-    }
-
-    .mc-content {
-      color: #ffe16b;
-    }
-
-    .mc-content.loading {
-      color: #ffd700;
-      font-style: italic;
-    }
-
-    .mc-content .title {
+    .tooltip .item-title {
       color: #6d5cff;
       font-weight: bold;
       font-size: 1.1rem;
@@ -344,26 +273,57 @@
       margin-bottom: 8px;
     }
 
-    .mc-content .rarity {
-      color: #55ff55;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-      font-size: 0.9rem;
+    .tooltip .item-data {
+      margin-top: 8px;
+      border-top: 1px solid #4b267a;
+      padding-top: 8px;
     }
 
-    .mc-content .spacer {
-      height: 6px;
-    }
-
-    .mc-content .row {
+    .data-row {
       display: flex;
-      gap: 4px;
+      justify-content: space-between;
       margin-bottom: 4px;
       font-size: 12px;
     }
 
-    .mc-content .gold {
+    .data-label {
+      color: #a3a3ff;
+    }
+
+    .data-value {
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    .data-value.gold {
       color: #ffaa00;
+    }
+
+    .tooltip .row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2px;
+      font-size: 11px;
+      gap: 8px;
+    }
+
+    .tooltip .row span:first-child {
+      color: #a3a3ff;
+      flex: 1;
+    }
+
+    .tooltip .row span:last-child {
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    .tooltip .row .gold {
+      color: #ffaa00;
+    }
+
+    .tooltip .row.muted {
+      color: #aaaaaa;
+      font-size: 10px;
     }
 
     .ah-search {
@@ -444,6 +404,25 @@
       border-radius: 2px;
       user-select: none;
       pointer-events: none;
+    }
+
+    .item-quantity {
+      position: absolute;
+      right: 2px;
+      bottom: 1px;
+      font-size: 14px;
+      line-height: 1;
+      padding: 0 2px;
+      color: #ffffff;
+      font-weight: bold;
+      user-select: none;
+      pointer-events: none;
+      text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+      font-family: 'Arial', sans-serif;
+    }
+
+    .item-quantity.hidden {
+      display: none;
     }
 
     .cell::before,
@@ -594,7 +573,6 @@
 
     // Category definitions (API category strings)
     const categories = [
-      { key: "BLOCKS", label: "Blocks", img: "tab_blocks.png", imgSelected: "tab_blocks_selected.png" },
       { key: "WEAPONS", label: "Weapons", img: "tab_weapons.png", imgSelected: "tab_weapons_selected.png" },
       { key: "ARMORS", label: "Armors", img: "tab_armors.png", imgSelected: "tab_armors_selected.png" },
       { key: "PETS", label: "Pets", img: "tab_pets.png", imgSelected: "tab_pets_selected.png" },
@@ -734,42 +712,198 @@
     }
 
     function formatEnchantments(decoded) {
-      const enchants = decoded?.tag?.Enchantments || decoded?.Enchantments;
-      if (!enchants || !Array.isArray(enchants)) return '';
-      return enchants.map(e => {
-        const name = e.id?.replace(/^minecraft:/, '').split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-        const level = e.lvl || e.level;
+      console.log('[Enchantments] Input decoded:', decoded);
+      
+      if (!decoded) {
+        console.log('[Enchantments] No decoded data provided');
+        return '';
+      }
+      
+      // Try multiple possible locations for enchantments
+      let enchants = decoded.tag?.Enchantments?.value || 
+                     decoded.tag?.Enchantments ||
+                     decoded.Enchantments?.value ||
+                     decoded.Enchantments;
+      
+      console.log('[Enchantments] Found enchants:', enchants);
+      
+      if (!enchants || !Array.isArray(enchants)) {
+        console.log('[Enchantments] Enchants not in array format or empty');
+        return '';
+      }
+      
+      const result = enchants.map(e => {
+        // Handle both direct object and NBT wrapper format
+        const enchantObj = e.value || e;
+        const idValue = enchantObj.id?.value || enchantObj.id;
+        const lvlValue = enchantObj.lvl?.value || enchantObj.level?.value || enchantObj.lvl || enchantObj.level;
+        
+        const name = (idValue || '').toString().replace(/^minecraft:/, '').split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        const level = lvlValue || 0;
+        
+        console.log('[Enchantments] Enchant:', { idValue, name, level });
         return `<div class="row"><span>${name}</span><span class="gold">${level}</span></div>`;
       }).join('');
+      
+      console.log('[Enchantments] Result HTML:', result);
+      return result;
     }
 
     function formatLore(decoded) {
-      const lore = decoded?.tag?.display?.Lore || decoded?.display?.Lore;
-      if (!lore || !Array.isArray(lore)) return '';
-      return lore.map(line => `<div class="row muted">${cleanMCText(line)}</div>`).join('');
+      console.log('[Lore] Input decoded:', decoded);
+      
+      if (!decoded) {
+        console.log('[Lore] No decoded data provided');
+        return '';
+      }
+      
+      // Try multiple possible locations for lore
+      let lore = decoded.tag?.display?.Lore?.value ||
+                 decoded.tag?.display?.Lore ||
+                 decoded.display?.Lore?.value ||
+                 decoded.display?.Lore;
+      
+      console.log('[Lore] Found lore:', lore);
+      
+      if (!lore || !Array.isArray(lore)) {
+        console.log('[Lore] No lore array found');
+        return '';
+      }
+      
+      return lore.map(line => {
+        const lineValue = line.value || line;
+        return `<div class="row muted">${cleanMCText(lineValue.toString())}</div>`;
+      }).join('');
     }
 
     function cleanMCText(text) {
       if (!text) return '';
-      let cleaned = text;
+      let cleaned = text.toString();
       if (cleaned.startsWith('{')) {
         try {
           const parsed = JSON.parse(cleaned);
-          cleaned = parsed.text || parsed.extra?.map(e => e.text).join('') || cleaned;
-        } catch (e) { }
+          cleaned = parsed.text || (Array.isArray(parsed.extra) ? parsed.extra.map(e => e.text).join('') : cleaned);
+        } catch (e) {
+          console.log('[cleanMCText] Could not parse as JSON:', e.message);
+        }
       }
       return cleaned.replace(/§./g, '');
     }
 
     function extractItemStats(decoded) {
+      console.log('[Stats] Input decoded:', decoded);
       const stats = [];
-      const attackDamage = decoded?.tag?.AttributeModifiers?.find(m => m.AttributeName === 'generic.attackDamage')?.Amount;
-      if (attackDamage) stats.push(`Damage: +${attackDamage}`);
-      const strength = decoded?.tag?.ExtraAttributes?.strength;
-      if (strength) stats.push(`Strength: +${strength}`);
-      const defense = decoded?.tag?.ExtraAttributes?.defense;
-      if (defense) stats.push(`Defense: +${defense}`);
+      
+      if (!decoded) {
+        console.log('[Stats] No decoded data provided');
+        return '';
+      }
+      
+      try {
+        // Look for AttributeModifiers in various formats
+        const attrMods = decoded.tag?.AttributeModifiers?.value || 
+                         decoded.tag?.AttributeModifiers ||
+                         decoded.AttributeModifiers?.value ||
+                         decoded.AttributeModifiers;
+        
+        if (Array.isArray(attrMods)) {
+          attrMods.forEach(mod => {
+            const modObj = mod.value || mod;
+            const attrName = modObj.AttributeName?.value || modObj.AttributeName;
+            const amount = modObj.Amount?.value || modObj.Amount;
+            
+            if (attrName && attrName.includes('attackDamage') && amount) {
+              stats.push(`Damage: +${amount}`);
+            }
+          });
+        }
+      } catch (e) {
+        console.log('[Stats] Error extracting attribute modifiers:', e.message);
+      }
+      
+      // Look for custom stats in ExtraAttributes
+      try {
+        const extra = decoded.tag?.ExtraAttributes?.value ||
+                      decoded.tag?.ExtraAttributes ||
+                      decoded.ExtraAttributes?.value ||
+                      decoded.ExtraAttributes;
+        
+        if (extra && typeof extra === 'object') {
+          const strength = extra.strength?.value || extra.strength;
+          if (strength) stats.push(`Strength: +${strength}`);
+          
+          const defense = extra.defense?.value || extra.defense;
+          if (defense) stats.push(`Defense: +${defense}`);
+        }
+      } catch (e) {
+        console.log('[Stats] Error extracting extra attributes:', e.message);
+      }
+      
+      console.log('[Stats] Found stats:', stats);
       return stats.map(s => `<div class="row"><span>${s}</span></div>`).join('');
+    }
+
+    function decodeItemData(base64ItemData) {
+      try {
+        if (!base64ItemData) return null;
+        console.log('[Decode] Attempting to decode itemData...');
+        
+        // Base64 decode
+        const binaryString = atob(base64ItemData);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        
+        // Gzip decompress using pako
+        const decompressed = pako.inflate(bytes);
+        console.log('[Decode] Decompressed data length:', decompressed.length);
+        
+        // Try to parse as NBT using prismarine-nbt
+        try {
+          // Use the global NBT parser if available
+          const nbtParser = window.NBT?.parse || window.nbtjs?.parse;
+          
+          if (nbtParser) {
+            const parsed = nbtParser(decompressed);
+            const decoded = parsed.value || parsed;
+            
+            console.log('[Decode] Successfully parsed NBT:', {
+              hasTag: !!decoded.tag,
+              tagKeys: decoded.tag ? Object.keys(decoded.tag) : [],
+              topLevelKeys: Object.keys(decoded)
+            });
+            
+            // Extract the tag object which contains the actual item data
+            if (decoded.tag) {
+              return decoded.tag;
+            }
+            return decoded;
+          } else {
+            console.warn('[Decode] NBT parser not available, attempting JSON fallback');
+          }
+        } catch (nbtError) {
+          console.warn('[Decode] NBT parsing attempted but failed:', nbtError.message);
+        }
+        
+        // Fallback: try direct JSON parsing
+        try {
+          const jsonStr = new TextDecoder().decode(decompressed);
+          console.log('[Decode] Attempting JSON parse on decompressed data');
+          const decoded = JSON.parse(jsonStr);
+          console.log('[Decode] Fallback JSON parse succeeded:', Object.keys(decoded));
+          return decoded;
+        } catch (jsonError) {
+          console.error('[Decode] JSON parsing failed:', jsonError.message);
+          // Last resort: try to find useful data in the decompressed string
+          const dataStr = new TextDecoder().decode(decompressed);
+          console.log('[Decode] Decompressed data (first 500 chars):', dataStr.substring(0, 500));
+          return null;
+        }
+      } catch (error) {
+        console.error('[Decode] Critical error during itemData decode:', error);
+        return null;
+      }
     }
 
     async function fillCells(auctions) {
@@ -782,27 +916,20 @@
         cell.className = 'cell';
         if (i < auctions.length) {
           const auction = auctions[i];
+          console.log(`[fillCells] Auction ${i}:`, auction);
           const itemName = auction.item_name || 'Unknown Item';
           const imagePaths = generateImagePaths(itemName);
           const primaryImage = imagePaths[0];
+          const quantity = auction.count || auction.quantity || 1;
+          const quantityDisplay = quantity > 1 ? quantity : '';
+          const quantityClass = quantity === 1 ? 'item-quantity hidden' : 'item-quantity';
           cell.innerHTML = `
             <div class="item-with-sub">
               <img src="${primaryImage}" alt="${itemName}" class="item-img"
                    data-item-name="${itemName}"
                    data-image-paths='${JSON.stringify(imagePaths).replace(/'/g, "&apos;")}'>
-              <div class="tooltip">
-                <div class="mc-frame">
-                  <div class="mc-corner tl"></div>
-                  <div class="mc-corner tr"></div>
-                  <div class="mc-corner bl"></div>
-                  <div class="mc-corner br"></div>
-                  <div class="mc-edge top"></div>
-                  <div class="mc-edge bottom"></div>
-                  <div class="mc-edge left"></div>
-                  <div class="mc-edge right"></div>
-                  <div class="mc-content loading">Loading auction data...</div>
-                </div>
-              </div>
+              <div class="${quantityClass}" data-quantity="${quantity}">${quantityDisplay}</div>
+              <div class="tooltip"></div>
             </div>
           `;
           setupAuctionTooltip(cell, auction);
@@ -814,45 +941,94 @@
     function setupAuctionTooltip(cell, auction) {
       const itemDiv = cell.querySelector('.item-with-sub');
       const tooltip = itemDiv?.querySelector('.tooltip');
-      const contentBox = tooltip?.querySelector('.mc-content');
       const imgElement = itemDiv?.querySelector('.item-img');
-      if (!itemDiv || !tooltip || !contentBox) return;
+      if (!itemDiv || !tooltip) return;
       if (imgElement) setupImageFallback(imgElement);
-      let timeout;
-      itemDiv.addEventListener('mouseenter', () => {
-        clearTimeout(timeout);
-        timeout = setTimeout(async () => {
-          tooltip.style.display = 'block';
-          contentBox.className = 'mc-content loading';
-          contentBox.innerHTML = 'Loading auction details...';
-          const html = generateAuctionTooltipHTML(auction);
-          contentBox.className = 'mc-content';
-          contentBox.innerHTML = html;
-        }, 150);
+      
+      // Decode itemData if not already decoded
+      let decodedData = auction.item_nbt_decoded?.decoded;
+      if (!decodedData && auction.itemData) {
+        console.log('[Tooltip] Decoding itemData from base64...');
+        decodedData = decodeItemData(auction.itemData);
+        // Store it for later use
+        if (decodedData) {
+          auction.decodedContent = decodedData;
+        }
+      }
+      
+      // Debug: Log auction data
+      console.log('[Auction] Tooltip auction data:', {
+        item_name: auction.item_name,
+        tier: auction.tier,
+        has_itemData: !!auction.itemData,
+        item_nbt_decoded: auction.item_nbt_decoded,
+        hasDecoded: !!decodedData,
+        decodedKeys: decodedData ? Object.keys(decodedData) : 'none'
       });
-      itemDiv.addEventListener('mouseleave', () => {
-        clearTimeout(timeout);
-        tooltip.style.display = 'none';
-      });
+      
+      // Populate tooltip content immediately
+      tooltip.innerHTML = generateAuctionTooltipHTML(auction, decodedData);
     }
 
-    function generateAuctionTooltipHTML(auction) {
+    function generateAuctionTooltipHTML(auction, decodedData) {
       const itemName = auction.item_name || 'Unknown Item';
       const rarity = (auction.tier || 'common').toUpperCase();
       const isBin = auction.type === 'BIN';
       const auctionType = isBin ? 'BIN' : 'Auction';
       const endTime = auction.endsAt * 1000;
-      let html = `<div class="title">${itemName}</div><div class="rarity">${rarity}</div><div class="spacer"></div>`;
-      if (isBin) {
-        html += `<div class="row"><span>BIN Price:</span><span class="gold">${formatCurrency(auction.startingPrice)}</span></div>`;
+      
+      let html = `<div class="item-title">${itemName} - ${rarity}</div>`;
+      html += `<div class="item-data">`;
+      
+      console.log('[Tooltip] Decoded data:', decodedData);
+      
+      // Display enchantments if available
+      if (decodedData) {
+        const enchantments = formatEnchantments(decodedData);
+        console.log('[Tooltip] Enchantments HTML:', enchantments);
+        if (enchantments) {
+          html += `<div style="margin: 4px 0; border-top: 1px solid #4b267a; padding-top: 4px;">`;
+          html += enchantments;
+          html += `</div>`;
+        }
+        
+        // Display item stats if available
+        const stats = extractItemStats(decodedData);
+        console.log('[Tooltip] Stats HTML:', stats);
+        if (stats) {
+          html += `<div style="margin: 4px 0;">`;
+          html += stats;
+          html += `</div>`;
+        }
+        
+        // Display lore if available
+        const lore = formatLore(decodedData);
+        console.log('[Tooltip] Lore HTML:', lore);
+        if (lore) {
+          html += `<div style="margin: 4px 0; border-top: 1px solid #4b267a; padding-top: 4px; font-size: 11px; color: #aaaaaa;">`;
+          html += lore;
+          html += `</div>`;
+        }
       } else {
-        html += `<div class="row"><span>Starting Bid:</span><span class="gold">${formatCurrency(auction.startingPrice)}</span></div>
-                 <div class="row"><span>Highest Bid:</span><span class="gold">${formatCurrency(auction.highestBidAmount || 0)}</span></div>
-                 <div class="row"><span>Bids:</span><span>${formatNumber(auction.bids || 0)}</span></div>`;
+        console.log('[Tooltip] No decoded NBT data available');
       }
-      html += `<div class="row"><span>Type:</span><span>${auctionType}</span></div>
-               <div class="row"><span>Seller:</span><span>${auction.ownerName || 'Unknown'}</span></div>
-               <div class="row"><span>Ends in:</span><span class="gold">${formatTimeRemaining(endTime)}</span></div>`;
+      
+      // Auction details
+      html += `<div style="border-top: 1px solid #4b267a; padding-top: 8px; margin-top: 8px;">`;
+      if (isBin) {
+        html += `<div class="data-row"><span class="data-label">BIN Price:</span><span class="data-value gold">${formatCurrency(auction.startingPrice)}</span></div>`;
+      } else {
+        html += `<div class="data-row"><span class="data-label">Starting Bid:</span><span class="data-value gold">${formatCurrency(auction.startingPrice)}</span></div>`;
+        html += `<div class="data-row"><span class="data-label">Highest Bid:</span><span class="data-value gold">${formatCurrency(auction.highestBidAmount || 0)}</span></div>`;
+        html += `<div class="data-row"><span class="data-label">Bids:</span><span class="data-value">${formatNumber(auction.bids || 0)}</span></div>`;
+      }
+      
+      html += `<div class="data-row"><span class="data-label">Type:</span><span class="data-value">${auctionType}</span></div>`;
+      html += `<div class="data-row"><span class="data-label">Seller:</span><span class="data-value">${auction.ownerName || 'Unknown'}</span></div>`;
+      html += `<div class="data-row"><span class="data-label">Ends in:</span><span class="data-value gold">${formatTimeRemaining(endTime)}</span></div>`;
+      html += `</div></div>`;
+      
+      console.log('[Tooltip] Final HTML generated');
       return html;
     }
 
@@ -1022,9 +1198,9 @@
         console.log(`[Auction] Loaded ${tempAll.length} total auctions`);
 
         // Normalize each auction
-        allAuctions = tempAll.map(auction => {
+        allAuctions = tempAll.map((auction, index) => {
           const isBin = auction.type === 'BIN';
-          return {
+          const normalized = {
             ...auction,
             bin: isBin,
             bin_price: isBin ? auction.startingPrice : undefined,
@@ -1036,6 +1212,17 @@
             uuid: auction.id,
             item_name: auction.item_name || (auction.itemId ? processItemId(auction.itemId) : 'Unknown Item')
           };
+          
+          // Debug: Log first auction's NBT data structure
+          if (index === 0) {
+            console.log('[Auction] First auction structure:', {
+              has_item_nbt_decoded: !!auction.item_nbt_decoded,
+              item_nbt_decoded: auction.item_nbt_decoded,
+              decoded_keys: auction.item_nbt_decoded?.decoded ? Object.keys(auction.item_nbt_decoded.decoded) : 'none'
+            });
+          }
+          
+          return normalized;
         });
 
         // Build category navigation and apply initial filter
