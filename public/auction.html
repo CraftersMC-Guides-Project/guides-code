@@ -162,6 +162,35 @@
       text-align: center;
     }
 
+    .category-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 4px 0;
+      border-bottom: 1px solid #555;
+    }
+
+    .category-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px;
+      transition: transform 0.1s ease;
+    }
+
+    .category-btn img {
+      width: 32px;
+      height: 32px;
+      image-rendering: pixelated;
+      display: block;
+    }
+
+    .category-btn:hover {
+      transform: scale(1.05);
+    }
+
     .extreme-inner-container {
       color: #262626;
       display: grid;
@@ -491,6 +520,10 @@
 
       <div class="inventory inner-container">
         <h3>Auction House</h3>
+
+        <!-- Category Navigation Row -->
+        <div class="category-nav" id="categoryNav"></div>
+
         <div class="extreme-inner-container" id="mainGrid"></div>
         <div class="hotbar-controls" id="hotbarGrid" aria-label="Auction filters">
           <!-- Previous page button -->
@@ -547,6 +580,24 @@
     // Pagination UI elements
     let prevBtn, nextBtn, prevImg, nextImg, pageInfoSpan;
 
+    // Category state
+    let selectedCategory = null;   // null = all categories
+    let categoryButtons = [];
+
+    // Category definitions (API category strings)
+    const categories = [
+      { key: "WEAPONS", label: "Weapons", img: "tab_weapons.png", imgSelected: "tab_weapons_selected.png" },
+      { key: "ARMORS", label: "Armors", img: "tab_armors.png", imgSelected: "tab_armors_selected.png" },
+      { key: "PETS", label: "Pets", img: "tab_pets.png", imgSelected: "tab_pets_selected.png" },
+      { key: "ACCESSORIES", label: "Accessories", img: "tab_accessories.png", imgSelected: "tab_accessories_selected.png" },
+      { key: "TOOLS", label: "Tools", img: "tab_tools.png", imgSelected: "tab_tools_selected.png" },
+      { key: "CONSUMABLES", label: "Consumables", img: "tab_consumables.png", imgSelected: "tab_consumables_selected.png" },
+      { key: "COSMETICS", label: "Cosmetics", img: "tab_cosmetics.png", imgSelected: "tab_cosmetics_selected.png" },
+      { key: "MISCELLANEOUS", label: "Misc", img: "tab_miscellaneous.png", imgSelected: "tab_miscellaneous_selected.png" },
+      { key: "BLOCKS", label: "Blocks", img: "tab_blocks.png", imgSelected: "tab_blocks_selected.png" },
+      { key: "FURNITURES", label: "Furniture", img: "tab_furnitures.png", imgSelected: "tab_furnitures_selected.png" }
+    ];
+
     // Filter options (global)
     const auctionTypeOptions = [
       { key: 'both', label: 'Both', icon: 'assets/ah/auction_type/show_all.png' },
@@ -576,24 +627,7 @@
     let rarityIndex = 0;
     let sortIndex = 0;
 
-    // Helper functions
-    function readSessionCache(auctionId) {
-      try {
-        const cached = sessionStorage.getItem(`auction_${auctionId}`);
-        return cached ? JSON.parse(cached) : null;
-      } catch {
-        return null;
-      }
-    }
-
-    function writeSessionCache(auctionId, data) {
-      try {
-        sessionStorage.setItem(`auction_${auctionId}`, JSON.stringify(data));
-      } catch (e) {
-        console.warn('Failed to write auction cache:', e);
-      }
-    }
-
+    // Helper functions (unchanged)
     function processItemId(itemId) {
       if (!itemId || typeof itemId !== 'string') return null;
       const parts = itemId.split(':');
@@ -630,10 +664,6 @@
       return `${mins}m`;
     }
 
-    function getAuctionTypeLabel(isBin) {
-      return isBin ? 'BIN' : 'Auction';
-    }
-
     function getRarityIcon(rarity) {
       const rarityMap = {
         'common': 'assets/ah/rarities/common.png',
@@ -649,9 +679,7 @@
     }
 
     function generateImagePaths(itemName) {
-      if (!itemName || typeof itemName !== 'string') {
-        return ['assets/ah/search.png'];
-      }
+      if (!itemName || typeof itemName !== 'string') return ['assets/ah/search.png'];
       const paths = [];
       const original = itemName.trim();
       const originalSlug = original.replace(/\s+/g, '_');
@@ -820,6 +848,55 @@
       return html;
     }
 
+    // Category navigation
+    function buildCategoryNav() {
+      const nav = document.getElementById('categoryNav');
+      if (!nav) return;
+      nav.innerHTML = '';
+      categoryButtons = [];
+
+      // "All" button
+      const allBtn = document.createElement('button');
+      allBtn.className = 'category-btn';
+      const allImg = document.createElement('img');
+      allImg.src = 'assets/ah/categories/tab_all.png';  // You may need to create this image
+      allImg.alt = 'All';
+      allImg.style.width = '32px';
+      allImg.style.height = '32px';
+      allBtn.appendChild(allImg);
+      allBtn.addEventListener('click', () => setSelectedCategory(null));
+      nav.appendChild(allBtn);
+      categoryButtons.push({ btn: allBtn, category: null, img: allImg, defaultSrc: 'assets/ah/categories/tab_all.png', selectedSrc: 'assets/ah/categories/tab_all_selected.png' });
+
+      // Category buttons
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'category-btn';
+        const img = document.createElement('img');
+        img.src = `assets/ah/categories/${cat.img}`;
+        img.alt = cat.label;
+        img.style.width = '32px';
+        img.style.height = '32px';
+        btn.appendChild(img);
+        btn.addEventListener('click', () => setSelectedCategory(cat.key));
+        nav.appendChild(btn);
+        categoryButtons.push({ btn, category: cat.key, img, defaultSrc: `assets/ah/categories/${cat.img}`, selectedSrc: `assets/ah/categories/${cat.imgSelected}` });
+      });
+    }
+
+    function setSelectedCategory(categoryKey) {
+      selectedCategory = categoryKey;
+      // Update button images
+      categoryButtons.forEach(item => {
+        if (item.category === categoryKey) {
+          item.img.src = item.selectedSrc;
+        } else {
+          item.img.src = item.defaultSrc;
+        }
+      });
+      applyFiltersAndDisplay();
+    }
+
     // Apply filters and sorting to the full list, then reset to first page and display
     function applyFiltersAndDisplay() {
       const searchText = document.getElementById('ahSearchInput').value.toLowerCase().trim();
@@ -827,13 +904,14 @@
       const rarityKey = rarityOptions[rarityIndex].key;
       const sortKey = sortOptions[sortIndex].key;
 
-      console.log(`[Auction] Applying filters - Search: "${searchText}", Type: ${auctionTypeKey}, Rarity: ${rarityKey}, Sort: ${sortKey}`);
+      console.log(`[Auction] Applying filters - Search: "${searchText}", Type: ${auctionTypeKey}, Rarity: ${rarityKey}, Sort: ${sortKey}, Category: ${selectedCategory || 'All'}`);
 
       let temp = allAuctions.filter(auction => {
         if (searchText && !auction.item_name?.toLowerCase().includes(searchText)) return false;
         if (auctionTypeKey === 'bin' && auction.type !== 'BIN') return false;
         if (auctionTypeKey === 'auction' && auction.type !== 'NORMAL') return false;
         if (rarityKey !== 'all' && auction.tier?.toLowerCase() !== rarityKey.toLowerCase()) return false;
+        if (selectedCategory && auction.category !== selectedCategory) return false;
         return true;
       });
 
@@ -875,7 +953,6 @@
       displayCurrentPage();
     }
 
-    // Display the current page of filtered auctions
     function displayCurrentPage() {
       const start = currentDisplayPage * ITEMS_PER_PAGE;
       const pageItems = filteredAuctions.slice(start, start + ITEMS_PER_PAGE);
@@ -953,7 +1030,8 @@
           };
         });
 
-        // Initial filter and display
+        // Build category navigation and apply initial filter
+        buildCategoryNav();
         applyFiltersAndDisplay();
       } catch (error) {
         console.error('[Auction] Failed to load auctions:', error);
