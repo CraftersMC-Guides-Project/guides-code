@@ -107,22 +107,3 @@ export async function onRequest({ request, env }) {
     );
   }
 }
-API proxy client initialized bazaar:1885:15
-Fetching data for: Polished Pumpkin (ID: polished_pumpkin) bazaar:1574:17
-Failed to fetch bazaar data for polished_pumpkin: Error: Bazaar item not found in latest snapshot: polished_pumpkin
-    getBazaarItem https://craftersmc-guides.pages.dev/js/api-proxy-client.js:123
-    promise https://craftersmc-guides.pages.dev/bazaar:1576
-    fetchBazaarData https://craftersmc-guides.pages.dev/bazaar:1589
-    generateTooltipHTML https://craftersmc-guides.pages.dev/bazaar:1619
-    timeout https://craftersmc-guides.pages.dev/bazaar:1805
-    setTimeout handler*setupTooltip/< https://craftersmc-guides.pages.dev/bazaar:1800
-    setupTooltip https://craftersmc-guides.pages.dev/bazaar:1797
-    fillCells https://craftersmc-guides.pages.dev/bazaar:1728
-    fillCells https://craftersmc-guides.pages.dev/bazaar:1733
-    fillCells https://craftersmc-guides.pages.dev/bazaar:1732
-    initializePage https://craftersmc-guides.pages.dev/bazaar:1883
-    async* https://craftersmc-guides.pages.dev/bazaar:1918
-    EventListener.handleEvent* https://craftersmc-guides.pages.dev/bazaar:1917
-api-proxy-client.js:130:15
-Failed to fetch polished_pumpkin via Cloudflare Function, using mock data: Bazaar item not found in latest snapshot: polished_pumpkin bazaar:1581:19
-
