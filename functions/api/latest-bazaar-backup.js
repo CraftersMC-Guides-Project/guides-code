@@ -1,62 +1,69 @@
 export async function onRequest({ request, env }) {
   try {
-    // Validate API key
-    const apiKey = env.CMCG_BAZAAR_KEY || env.cmcg_bazaar_key || null;
-    if (!apiKey) {
+    // Fetch latest bazaar data directly from the source API
+    const cmcApiKey = env.CMC_API_KEY_BAZAAR;
+    if (!cmcApiKey) {
       return new Response(
-        JSON.stringify({ ok: false, error: "Missing CMCG_BAZAAR_KEY secret" }),
+        JSON.stringify({ 
+          ok: false, 
+          error: "Missing CMC_API_KEY_BAZAAR configuration" 
+        }),
         {
           status: 500,
-          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+          headers: { 
+            "Content-Type": "application/json", 
+            "Access-Control-Allow-Origin": "*" 
+          }
         }
       );
     }
 
-    const incomingUrl = new URL(request.url);
-
-    // Fetch latest bazaar data from the source API
-    try {
-      const cmcApiKey = env.CMC_API_KEY_BAZAAR;
-      if (!cmcApiKey) {
-        throw new Error("Missing CMC_API_KEY_BAZAAR");
+    // Get all bazaar items
+    const itemsRes = await fetch(
+      'https://api.craftersmc.net/v1/skyblock/bazaar/items',
+      { 
+        headers: { 'X-API-Key': cmcApiKey },
+        cf: { cacheTtl: 300 }
       }
+    );
 
-      // Get all bazaar items
-      const itemsRes = await fetch(
-        'https://api.craftersmc.net/v1/skyblock/bazaar/items',
-        { headers: { 'X-API-Key': cmcApiKey } }
-      );
+    if (!itemsRes.ok) {
+      throw new Error(`Failed to fetch items: ${itemsRes.status}`);
+    }
 
-      if (!itemsRes.ok) {
-        throw new Error(`Failed to fetch items: ${itemsRes.status}`);
-      }
+    const itemsData = await itemsRes.json();
+    const itemIds = (
+      Array.isArray(itemsData)
+        ? itemsData
+        : Array.isArray(itemsData.items)
+          ? itemsData.items
+          : []
+    ).filter((id) => typeof id === 'string' && id.length > 0);
 
-      const itemsPayload = await itemsRes.json();
-      const itemIds = (
-        Array.isArray(itemsPayload)
-          ? itemsPayload
-          : Array.isArray(itemsPayload.items)
-            ? itemsPayload.items
-            : []
-      ).filter((id) => typeof id === 'string' && id.length > 0);
+    if (itemIds.length === 0) {
+      throw new Error('No items returned from bazaar API');
+    }
 
-      // Fetch details for all items in parallel
-      const detailsPromises = itemIds.map((itemId) =>
+    // Fetch details for all items concurrently (with limited concurrency to avoid throttling)
+    const batchSize = 50;
+    const backup = {};
+
+    for (let i = 0; i < itemIds.length; i += batchSize) {
+      const batch = itemIds.slice(i, i + batchSize);
+      const detailsPromises = batch.map((itemId) =>
         fetch(`https://api.craftersmc.net/v1/skyblock/bazaar/${itemId}/details`, {
-          headers: { 'X-API-Key': cmcApiKey }
+          headers: { 'X-API-Key': cmcApiKey },
+          cf: { cacheTtl: 300 }
         })
-          .then((res) => (res.ok ? res.json() : null))
+          .then((res) => (res.ok ? res.json().then(d => [itemId, d]) : null))
           .catch(() => null)
       );
 
-      const details = await Promise.all(detailsPromises);
-
-      // Build backup object
-      const backup = {};
-      for (let i = 0; i < itemIds.length; i++) {
-        const itemId = itemIds[i];
-        const detail = details[i];
-        if (detail) {
+      const results = await Promise.all(detailsPromises);
+      
+      for (const result of results) {
+        if (result) {
+          const [itemId, detail] = result;
           backup[itemId] = {
             buyPrice: detail.buyTopEntries?.[0]?.price ?? null,
             sellPrice: detail.sellTopEntries?.[0]?.price ?? null,
@@ -66,47 +73,25 @@ export async function onRequest({ request, env }) {
           };
         }
       }
-
-      return new Response(
-        JSON.stringify({
-          ok: true,
-          timestamp: Date.now(),
-          data: backup
-        }),
-        {
-          status: 200,
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-            "Cache-Control": "public, max-age=120"
-          }
-        }
-      );
-    } catch (apiErr) {
-      console.error('API fetch error:', apiErr);
-      // Fallback to upstream proxy if direct API fails
-      const upstreamUrl = new URL(
-        `/latest-bazaar-backup${incomingUrl.search}`,
-        "https://bazaar.craftersmcguides.workers.dev"
-      );
-
-      const upstreamResponse = await fetch(upstreamUrl.toString(), {
-        method: request.method,
-        headers: {
-          "X-API-Key": apiKey
-        }
-      });
-
-      const headers = new Headers(upstreamResponse.headers);
-      headers.set("Access-Control-Allow-Origin", "*");
-      headers.set("Cache-Control", "public, max-age=60");
-
-      return new Response(upstreamResponse.body, {
-        status: upstreamResponse.status,
-        headers
-      });
     }
+
+    return new Response(
+      JSON.stringify({
+        ok: true,
+        timestamp: Date.now(),
+        data: backup
+      }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control": "public, max-age=300"
+        }
+      }
+    );
   } catch (err) {
+    console.error('Bazaar backup error:', err);
     return new Response(
       JSON.stringify({
         ok: false,
@@ -114,8 +99,12 @@ export async function onRequest({ request, env }) {
       }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+        headers: { 
+          "Content-Type": "application/json", 
+          "Access-Control-Allow-Origin": "*" 
+        }
       }
     );
   }
 }
+
