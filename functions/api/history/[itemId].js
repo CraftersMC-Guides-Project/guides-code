@@ -1,4 +1,4 @@
-export async function onRequest({ request, env }) {
+export async function onRequest({ request, env, params }) {
   try {
     const apiKey = env.CMCG_BAZAAR_KEY || env.cmcg_bazaar_key || null;
     if (!apiKey) {
@@ -12,8 +12,9 @@ export async function onRequest({ request, env }) {
     }
 
     const incomingUrl = new URL(request.url);
+    const itemId = encodeURIComponent(String(params.itemId || "").trim().toLowerCase());
     const upstreamUrl = new URL(
-      `${incomingUrl.pathname}${incomingUrl.search}`,
+      `/history/${itemId}${incomingUrl.search}`,
       "https://bazaar.craftersmcguides.workers.dev"
     );
 

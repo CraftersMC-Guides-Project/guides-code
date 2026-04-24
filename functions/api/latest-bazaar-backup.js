@@ -13,7 +13,7 @@ export async function onRequest({ request, env }) {
 
     const incomingUrl = new URL(request.url);
     const upstreamUrl = new URL(
-      `${incomingUrl.pathname}${incomingUrl.search}`,
+      `/latest-bazaar-backup${incomingUrl.search}`,
       "https://bazaar.craftersmcguides.workers.dev"
     );
 
