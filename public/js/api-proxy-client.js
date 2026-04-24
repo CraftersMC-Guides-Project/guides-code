@@ -164,7 +164,7 @@ class APIProxyClient {
     if (cached) return cached;
 
     try {
-      const data = await this.makeRequest(`/api/history/${encodeURIComponent(normalizedItemId)}`);
+      const data = await this.makeRequest(`/api/items/${encodeURIComponent(normalizedItemId)}/history`);
       this.setCache(cacheKey, data);
       return data;
     } catch (error) {
