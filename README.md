@@ -90,6 +90,9 @@ We welcome contributions to improve the guide! If you notice any errors or have 
 - `public/sellers/`: Seller pages and related templates/config.
 - `public/market/`: Market data consumed by tools/pages.
 
+### Environment Variables / Secrets
+- `CMCG_BAZAAR_KEY`: API key used as `X-API-Key` when proxying Bazaar endpoints to `bazaar.craftersmcguides.workers.dev`.
+
 ### How to Create an Issue
 1. Open the repository on GitHub.
 2. Go to the `Issues` tab.

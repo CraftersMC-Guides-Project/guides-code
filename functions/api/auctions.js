@@ -4,38 +4,166 @@
  * @returns {Object} Decoded NBT data object
  */
 
-// In functions/api/auctions.js, replace decodeNBT with this:
-import pako from 'pako';
-import nbt from 'nbt';
+async function gunzip(bytes) {
+  if (typeof DecompressionStream === "undefined") return null;
 
-function decodeNBT(nbtData) {
-  if (!nbtData || typeof nbtData !== 'string') return null;
+  const stream = new Response(bytes).body.pipeThrough(new DecompressionStream("gzip"));
+  const buffer = await new Response(stream).arrayBuffer();
+  return new Uint8Array(buffer);
+}
+
+function decodeBase64ToBytes(base64) {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+}
+
+function parseNBT(bytes) {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  let offset = 0;
+
+  const readU8 = () => view.getUint8(offset++);
+  const readI8 = () => view.getInt8(offset++);
+  const readI16 = () => {
+    const v = view.getInt16(offset, false);
+    offset += 2;
+    return v;
+  };
+  const readU16 = () => {
+    const v = view.getUint16(offset, false);
+    offset += 2;
+    return v;
+  };
+  const readI32 = () => {
+    const v = view.getInt32(offset, false);
+    offset += 4;
+    return v;
+  };
+  const readI64 = () => {
+    const v = view.getBigInt64(offset, false);
+    offset += 8;
+    return v;
+  };
+  const readF32 = () => {
+    const v = view.getFloat32(offset, false);
+    offset += 4;
+    return v;
+  };
+  const readF64 = () => {
+    const v = view.getFloat64(offset, false);
+    offset += 8;
+    return v;
+  };
+  const readBytes = (len) => {
+    const out = bytes.slice(offset, offset + len);
+    offset += len;
+    return out;
+  };
+  const readString = () => {
+    const len = readU16();
+    if (len <= 0) return "";
+    return new TextDecoder().decode(readBytes(len));
+  };
+
+  const toJsNumberOrString = (bigint) => {
+    const maxSafe = BigInt(Number.MAX_SAFE_INTEGER);
+    const minSafe = BigInt(Number.MIN_SAFE_INTEGER);
+    if (bigint <= maxSafe && bigint >= minSafe) return Number(bigint);
+    return bigint.toString();
+  };
+
+  const readPayload = (tagType) => {
+    switch (tagType) {
+      case 0x01: // TAG_Byte
+        return readI8();
+      case 0x02: // TAG_Short
+        return readI16();
+      case 0x03: // TAG_Int
+        return readI32();
+      case 0x04: // TAG_Long
+        return toJsNumberOrString(readI64());
+      case 0x05: // TAG_Float
+        return readF32();
+      case 0x06: // TAG_Double
+        return readF64();
+      case 0x07: { // TAG_Byte_Array
+        const len = readI32();
+        return Array.from(readBytes(len));
+      }
+      case 0x08: // TAG_String
+        return readString();
+      case 0x09: { // TAG_List
+        const childType = readU8();
+        const len = readI32();
+        const out = new Array(len);
+        for (let i = 0; i < len; i++) out[i] = readPayload(childType);
+        return out;
+      }
+      case 0x0a: { // TAG_Compound
+        const out = {};
+        while (offset < bytes.length) {
+          const innerType = readU8();
+          if (innerType === 0x00) break; // TAG_End
+          const name = readString();
+          out[name] = readPayload(innerType);
+        }
+        return out;
+      }
+      case 0x0b: { // TAG_Int_Array
+        const len = readI32();
+        const out = new Array(len);
+        for (let i = 0; i < len; i++) out[i] = readI32();
+        return out;
+      }
+      case 0x0c: { // TAG_Long_Array
+        const len = readI32();
+        const out = new Array(len);
+        for (let i = 0; i < len; i++) out[i] = toJsNumberOrString(readI64());
+        return out;
+      }
+      default:
+        throw new Error(`Unsupported NBT tag type: ${tagType}`);
+    }
+  };
+
+  const rootType = readU8();
+  if (rootType === 0x00) return {};
+  readString(); // root name (unused)
+  return readPayload(rootType);
+}
+
+function normalizeDecodedNBT(decoded) {
+  if (!decoded || typeof decoded !== "object") return decoded;
+
+  if (Array.isArray(decoded.i) && decoded.i.length > 0 && decoded.i[0] && typeof decoded.i[0] === "object") {
+    return decoded.i[0];
+  }
+
+  return decoded;
+}
+
+async function decodeNBT(nbtData) {
+  if (!nbtData || typeof nbtData !== "string") return null;
 
   try {
-    // Base64 decode
-    const binaryString = atob(nbtData);
-    let bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
+    let bytes = decodeBase64ToBytes(nbtData);
 
-    // Check for gzip magic bytes
     if (bytes[0] === 0x1f && bytes[1] === 0x8b) {
-      bytes = pako.inflate(bytes);
+      const decompressed = await gunzip(bytes);
+      if (decompressed) bytes = decompressed;
     }
 
-    // Parse NBT using the 'nbt' library (supports both little‑ and big‑endian)
-    const parsed = nbt.parse(bytes, (err, data) => {
-      if (err) throw err;
-      return data;
-    });
+    const decoded = normalizeDecodedNBT(parseNBT(bytes));
 
     return {
       raw: nbtData,
-      decoded: parsed.value || parsed
+      decoded
     };
   } catch (error) {
-    console.error('[NBT] Decode error:', error);
+    console.error("[NBT] Decode error:", error);
     return { raw: nbtData, decoded: null, error: error.message };
   }
 }
@@ -262,12 +390,12 @@ function parseNBTTag(tagType, bytes, offset) {
  * @param {Array} auctions - Array of auction objects
  * @returns {Array} Processed auctions with decoded NBT data
  */
-function processAuctions(auctions) {
+async function processAuctions(auctions) {
   if (!Array.isArray(auctions)) {
     return auctions;
   }
 
-  return auctions.map(auction => {
+  return Promise.all(auctions.map(async (auction) => {
     const processed = { ...auction };
 
     // Map field names if they use different formats in the API
@@ -324,7 +452,7 @@ function processAuctions(auctions) {
     // Try itemData first (new API), then item_bytes (fallback)
     const nbtData = auction.itemData || auction.item_bytes;
     if (nbtData) {
-      processed.item_nbt_decoded = decodeNBT(nbtData);
+      processed.item_nbt_decoded = await decodeNBT(nbtData);
 
       // Extract item name from decoded NBT data
       if (processed.item_nbt_decoded?.decoded) {
@@ -364,11 +492,11 @@ function processAuctions(auctions) {
 
     // Decode extra NBT data if present
     if (auction.extra) {
-      processed.extra_nbt_decoded = decodeNBT(auction.extra);
+      processed.extra_nbt_decoded = await decodeNBT(auction.extra);
     }
 
     return processed;
-  });
+  }));
 }
 
 /**
@@ -513,7 +641,7 @@ export async function onRequest({ request, env }) {
 
     // Process auctions to decode NBT data
     if (data.auctions && Array.isArray(data.auctions)) {
-      data.auctions = processAuctions(data.auctions);
+      data.auctions = await processAuctions(data.auctions);
     }
 
     return new Response(JSON.stringify(data), {
