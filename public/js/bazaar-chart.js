@@ -1,5 +1,6 @@
 const ctx = document.getElementById('priceChart').getContext('2d')
 const itemSelect = document.getElementById('itemSelect')
+const apiClient = new APIProxyClient(window.location.origin)
 
 const chart = new Chart(ctx, {
   type: 'line',
@@ -50,49 +51,54 @@ function prettifyItemId(id) {
 }
 
 async function loadItems() {
-  const res = await fetch(
-    'https://craftersmc-guides.pages.dev/bazaar/items'
-  )
-  const data = await res.json()
+  try {
+    const items = await apiClient.getBazaarItems()
 
-  const items = data.values.sort()
+    itemSelect.innerHTML = ''
 
-  itemSelect.innerHTML = ''
+    for (const id of items) {
+      const option = document.createElement('option')
+      option.value = id
+      option.textContent = prettifyItemId(id)
+      itemSelect.appendChild(option)
+    }
 
-  for (const id of items) {
-    const option = document.createElement('option')
-    option.value = id
-    option.textContent = prettifyItemId(id)
-    itemSelect.appendChild(option)
-  }
-
-  // Load first item automatically
-  if (items.length > 0) {
-    loadItem(items[0])
+    if (items.length > 0) {
+      loadItem(items[0])
+    }
+  } catch (error) {
+    console.error('Failed to load bazaar items:', error)
+    itemSelect.innerHTML = '<option value="">Failed to load items</option>'
   }
 }
 
 async function loadItem(itemId) {
-  const res = await fetch(`/api/history/${itemId}`)
-  const data = await res.json()
+  try {
+    const data = await apiClient.getBazaarHistory(itemId)
+    const history = data.history
 
-  const history = data.history
-  if (!history || history.length === 0) {
+    if (!history || history.length === 0) {
+      chart.data.labels = []
+      chart.data.datasets.forEach(d => (d.data = []))
+      chart.update()
+      return
+    }
+
+    chart.data.labels = history.map(p =>
+      new Date(p.fetched_at).toLocaleTimeString()
+    )
+
+    chart.data.datasets[0].data = history.map(p => p.buy_price)
+    chart.data.datasets[1].data = history.map(p => p.sell_price)
+    chart.data.datasets[2].data = history.map(p => p.avg_7d_price)
+
+    chart.update()
+  } catch (error) {
+    console.error(`Failed to load history for ${itemId}:`, error)
     chart.data.labels = []
     chart.data.datasets.forEach(d => (d.data = []))
     chart.update()
-    return
   }
-
-  chart.data.labels = history.map(p =>
-    new Date(p.fetched_at).toLocaleTimeString()
-  )
-
-  chart.data.datasets[0].data = history.map(p => p.buy_price)
-  chart.data.datasets[1].data = history.map(p => p.sell_price)
-  chart.data.datasets[2].data = history.map(p => p.avg_7d_price)
-
-  chart.update()
 }
 
 itemSelect.addEventListener('change', e => {

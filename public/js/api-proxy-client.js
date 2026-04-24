@@ -14,6 +14,31 @@ class APIProxyClient {
     };
   }
 
+  normalizeBazaarItem(item) {
+    if (!item || typeof item !== 'object') return item;
+    if (item.buyTopEntries && item.sellTopEntries) return item;
+
+    return {
+      itemId: item.item_id || item.itemId || null,
+      fetchedAt: item.fetched_at || item.fetchedAt || null,
+      buyTopEntries: [
+        {
+          price: item.buy_price ?? 0,
+          quantity: item.buy_volume ?? 0
+        }
+      ],
+      sellTopEntries: [
+        {
+          price: item.sell_price ?? 0,
+          quantity: item.sell_volume ?? 0
+        }
+      ],
+      weeklyAveragePrice: item.avg_7d_price ?? 0,
+      buyVolume: item.buy_volume ?? 0,
+      sellVolume: item.sell_volume ?? 0
+    };
+  }
+
   /**
    * Update API configuration
    */
@@ -81,16 +106,69 @@ class APIProxyClient {
    * Get bazaar item details
    */
   async getBazaarItem(itemId) {
-    // Check cache first
-    const cached = this.getFromCache(itemId, 'bazaar');
+    const normalizedItemId = String(itemId || '').trim().toLowerCase();
+    const cacheKey = `bazaar_item_${normalizedItemId}`;
+    const cached = this.getFromCache(cacheKey, 'bazaar');
     if (cached) return cached;
 
     try {
-      const data = await this.makeRequest(`/bazaar/${itemId}`);
-      this.setCache(itemId, data);
-      return data;
+      const snapshot = await this.getLatestBazaarSnapshot();
+      const items = Array.isArray(snapshot?.items) ? snapshot.items : [];
+      const matchedItem = items.find((entry) => {
+        const entryId = String(entry?.item_id || entry?.itemId || '').trim().toLowerCase();
+        return entryId === normalizedItemId;
+      });
+
+      if (!matchedItem) {
+        throw new Error(`Bazaar item not found in latest snapshot: ${itemId}`);
+      }
+
+      const normalized = this.normalizeBazaarItem(matchedItem);
+      this.setCache(cacheKey, normalized);
+      return normalized;
     } catch (error) {
       console.error(`Failed to fetch bazaar data for ${itemId}:`, error);
+      throw error;
+    }
+  }
+
+  async getLatestBazaarSnapshot() {
+    const cacheKey = 'bazaar_latest_snapshot';
+    const cached = this.getFromCache(cacheKey, 'bazaar');
+    if (cached) return cached;
+
+    try {
+      const data = await this.makeRequest('/api/latest-bazaar-backup');
+      this.setCache(cacheKey, data);
+      return data;
+    } catch (error) {
+      console.error('Failed to fetch latest bazaar snapshot:', error);
+      throw error;
+    }
+  }
+
+  async getBazaarItems() {
+    const snapshot = await this.getLatestBazaarSnapshot();
+    const items = Array.isArray(snapshot?.items) ? snapshot.items : [];
+
+    return items
+      .map((entry) => entry?.item_id || entry?.itemId)
+      .filter(Boolean)
+      .sort((a, b) => String(a).localeCompare(String(b)));
+  }
+
+  async getBazaarHistory(itemId) {
+    const normalizedItemId = String(itemId || '').trim().toLowerCase();
+    const cacheKey = `bazaar_history_${normalizedItemId}`;
+    const cached = this.getFromCache(cacheKey, 'bazaar');
+    if (cached) return cached;
+
+    try {
+      const data = await this.makeRequest(`/api/history/${encodeURIComponent(normalizedItemId)}`);
+      this.setCache(cacheKey, data);
+      return data;
+    } catch (error) {
+      console.error(`Failed to fetch bazaar history for ${itemId}:`, error);
       throw error;
     }
   }
