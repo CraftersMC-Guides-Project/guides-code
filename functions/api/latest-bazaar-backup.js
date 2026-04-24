@@ -1,5 +1,6 @@
 export async function onRequest({ request, env }) {
   try {
+    // Validate API key
     const apiKey = env.CMCG_BAZAAR_KEY || env.cmcg_bazaar_key || null;
     if (!apiKey) {
       return new Response(
@@ -12,6 +13,8 @@ export async function onRequest({ request, env }) {
     }
 
     const incomingUrl = new URL(request.url);
+
+    // Proxy to upstream service
     const upstreamUrl = new URL(
       `/latest-bazaar-backup${incomingUrl.search}`,
       "https://bazaar.craftersmcguides.workers.dev"
