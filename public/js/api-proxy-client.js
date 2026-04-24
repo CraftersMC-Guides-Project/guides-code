@@ -113,6 +113,20 @@ class APIProxyClient {
 
     try {
       const snapshot = await this.getLatestBazaarSnapshot();
+      
+      // Handle new format: data is an object with item_id as keys
+      if (snapshot?.data && typeof snapshot.data === 'object' && !Array.isArray(snapshot.data)) {
+        const itemData = snapshot.data[normalizedItemId];
+        if (!itemData) {
+          throw new Error(`Bazaar item not found in latest snapshot: ${itemId}`);
+        }
+        
+        const normalized = this.normalizeBazaarItem(itemData);
+        this.setCache(cacheKey, normalized);
+        return normalized;
+      }
+      
+      // Handle old format: items array
       const items = Array.isArray(snapshot?.items) ? snapshot.items : [];
       const matchedItem = items.find((entry) => {
         const entryId = String(entry?.item_id || entry?.itemId || '').trim().toLowerCase();
@@ -149,8 +163,15 @@ class APIProxyClient {
 
   async getBazaarItems() {
     const snapshot = await this.getLatestBazaarSnapshot();
+    
+    // Handle new format: data is an object with item_id as keys
+    if (snapshot?.data && typeof snapshot.data === 'object' && !Array.isArray(snapshot.data)) {
+      return Object.keys(snapshot.data)
+        .sort((a, b) => String(a).localeCompare(String(b)));
+    }
+    
+    // Handle old format: items array
     const items = Array.isArray(snapshot?.items) ? snapshot.items : [];
-
     return items
       .map((entry) => entry?.item_id || entry?.itemId)
       .filter(Boolean)
