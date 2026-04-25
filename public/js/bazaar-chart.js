@@ -74,27 +74,53 @@ async function loadItems() {
 
 async function loadItem(itemId) {
   try {
-    const data = await apiClient.getBazaarHistory(itemId)
-    const history = data.history
+    console.log('=== LOADING ITEM ==');
+    console.log('Item ID:', itemId);
+    console.log('API Base URL:', apiClient.proxyUrl);
+
+    console.log('Calling getBazaarHistory()...');
+    const data = await apiClient.getBazaarHistory(itemId);
+    console.log('API Response received:', data);
+    console.log('Response type:', typeof data);
+    console.log('Response keys:', Object.keys(data || {}));
+
+    const history = data.history;
+    console.log('History data:', history);
+    console.log('History length:', history ? history.length : 'undefined');
 
     if (!history || history.length === 0) {
+      console.warn('No history data available');
       chart.data.labels = []
       chart.data.datasets.forEach(d => (d.data = []))
       chart.update()
       return
     }
 
-    chart.data.labels = history.map(p =>
-      new Date(p.fetched_at).toLocaleTimeString()
-    )
+    console.log('First history entry:', history[0]);
+    console.log('Last history entry:', history[history.length - 1]);
+
+    chart.data.labels = history.map(p => {
+      const dateStr = new Date(p.fetched_at).toLocaleTimeString();
+      console.log('Converting timestamp:', p.fetched_at, '->', dateStr);
+      return dateStr;
+    });
+
+    console.log('Buy prices:', history.map(p => p.buy_price));
+    console.log('Sell prices:', history.map(p => p.sell_price));
+    console.log('Avg 7d prices:', history.map(p => p.avg_7d_price));
 
     chart.data.datasets[0].data = history.map(p => p.buy_price)
     chart.data.datasets[1].data = history.map(p => p.sell_price)
     chart.data.datasets[2].data = history.map(p => p.avg_7d_price)
 
-    chart.update()
+    console.log('Chart updated successfully');
+    chart.update();
   } catch (error) {
-    console.error(`Failed to load history for ${itemId}:`, error)
+    console.error(`=== ERROR LOADING HISTORY FOR ${itemId} ===`);
+    console.error('Error message:', error.message);
+    console.error('Full error:', error);
+    console.error('Error stack:', error.stack);
+
     chart.data.labels = []
     chart.data.datasets.forEach(d => (d.data = []))
     chart.update()

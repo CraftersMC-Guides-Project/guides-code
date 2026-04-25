@@ -80,7 +80,14 @@ class APIProxyClient {
     const baseUrl = this.proxyUrl.replace(/\/$/, '');
     const url = `${baseUrl}${endpoint}`;
 
+    console.log('=== APIProxyClient.makeRequest ===');
+    console.log('Endpoint:', endpoint);
+    console.log('Full URL:', url);
+    console.log('Method:', options.method || 'GET');
+    console.log('Headers:', { 'Content-Type': 'application/json', ...options.headers });
+
     try {
+      console.log('Fetching...');
       const response = await fetch(url, {
         method: options.method || 'GET',
         headers: {
@@ -90,12 +97,18 @@ class APIProxyClient {
         ...options
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
       if (!response.ok) {
         const errorText = await response.text();
+        console.error('Response error text:', errorText);
         throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
       }
 
-      return await response.json();
+      const jsonData = await response.json();
+      console.log('Response JSON (first 500 chars):', JSON.stringify(jsonData).substring(0, 500));
+      return jsonData;
     } catch (error) {
       console.error(`API request failed for ${endpoint}:`, error);
       throw error;
@@ -179,14 +192,29 @@ class APIProxyClient {
   }
 
   async getBazaarHistory(itemId) {
+    console.log('=== APIProxyClient.getBazaarHistory ===');
+    console.log('Input itemId:', itemId);
+
     const normalizedItemId = String(itemId || '').trim().toLowerCase();
+    console.log('Normalized itemId:', normalizedItemId);
+
     const cacheKey = `bazaar_history_${normalizedItemId}`;
     const cached = this.getFromCache(cacheKey, 'bazaar');
-    if (cached) return cached;
+    console.log('Cache hit:', !!cached);
+    if (cached) {
+      console.log('Returning cached data');
+      return cached;
+    }
 
     try {
-      const data = await this.makeRequest(`/api/items/${encodeURIComponent(normalizedItemId)}/history`);
+      const endpoint = `/api/items/${encodeURIComponent(normalizedItemId)}/history`;
+      console.log('Requesting endpoint:', endpoint);
+
+      const data = await this.makeRequest(endpoint);
+      console.log('Data received, storing in cache with key:', cacheKey);
+
       this.setCache(cacheKey, data);
+      console.log('Cached and returning data');
       return data;
     } catch (error) {
       console.error(`Failed to fetch bazaar history for ${itemId}:`, error);
