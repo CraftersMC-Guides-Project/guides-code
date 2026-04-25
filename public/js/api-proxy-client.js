@@ -207,7 +207,7 @@ class APIProxyClient {
     }
 
     try {
-      const endpoint = `/api/items/${encodeURIComponent(normalizedItemId)}/history`;
+      const endpoint = `/api/history/${encodeURIComponent(normalizedItemId)}`;
       console.log('Requesting endpoint:', endpoint);
 
       const data = await this.makeRequest(endpoint);
