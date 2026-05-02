@@ -1,14 +1,6 @@
 export async function onRequest({ request, env, params }) {
   try {
-    console.log('=== HISTORY REQUEST ==');
-    console.log('Params:', JSON.stringify(params));
-    console.log('Request URL:', request.url);
-    console.log('Request method:', request.method);
-    console.log('Available env keys:', Object.keys(env).filter(k => k.includes('API') || k.includes('BAZAAR')));
-
     const apiKey = env.CMCG_BAZAAR_KEY || env.cmcg_bazaar_key || null;
-    console.log('API Key present:', !!apiKey);
-    console.log('API Key value (first 10 chars):', apiKey ? apiKey.substring(0, 10) + '...' : 'null');
 
     if (!apiKey) {
       console.error('ERROR: Missing CMCG_BAZAAR_KEY secret');
