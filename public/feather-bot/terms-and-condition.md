@@ -1,6 +1,6 @@
 # Terms of Service (Feather Bot)
 
-**Effective date:** 2026-04-24
+**Effective date:** 08-05-2026
 
 These Terms of Service (“Terms”) govern your access to and use of **Feather Bot** (the “bot”, “service”) on Discord. By using the bot, you agree to these Terms.
 
