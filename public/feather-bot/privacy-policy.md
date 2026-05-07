@@ -1,6 +1,6 @@
 # Privacy Policy (Feather Bot)
 
-**Effective date:** 2026-04-24
+**Effective date:** 08-05-2026
 
 This Privacy Policy explains what data **Feather Bot** (“the bot”, “we”, “us”) processes when you use it on Discord, why we process it, and what choices you have.
 
