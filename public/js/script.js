@@ -122,7 +122,7 @@ function fetchPartial(url, key) {
 function fetchAllPartials() {
   Promise.all([
     fetchPartial("../navbarv2.html", "navbarHtml"),
-    fetchPartial("../sidebar.html", "sidebarHtml"),
+    fetchPartial("../sidebar.html", "sidebarHtmlV2"),
     fetchPartial("../footer.html", "footerHtml"),
     fetchPartial("../loader.html", "loaderHtml"),
   ])
@@ -266,4 +266,3 @@ document.addEventListener("click", function(event) {
         document.querySelectorAll(".dropdown-content.show").forEach(d => d.classList.remove("show"));
     }
 });
-
