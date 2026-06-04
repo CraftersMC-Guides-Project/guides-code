@@ -34,13 +34,12 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial !important;
+    font-family: 'Courier New', Courier, monospace;
 }
 
 body {
     background: var(--body-bg);
     color: var(--main-text-color);
-    overflow-x: hidden;
     padding-bottom: calc(10px + 3rem);
     scroll-behavior: smooth;
 }
@@ -57,10 +56,14 @@ body {
 } */
 
 .hero-container {
-    overflow: hidden;
     position: relative;
-    margin-bottom: 20px;
+    min-height: calc(100vh - 60px);
+    padding-top: 60px;
     margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
 .main-container {
@@ -71,20 +74,20 @@ body {
 }
 
 .hero {
-    flex: 1;
-    direction: flex;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
     color: white;
     padding: 20px;
-    height: calc(100vh - 56px);
+    width: min(900px, 100%);
+    height: auto;
     z-index: 3;
     animation: fadeIn 1.5s ease-out;
 }
 
-.background {
+/* .background {
     background: url("../Backgrounds/IMG_4504.webp");
     background-color: #847474;
     background-blend-mode: multiply;
@@ -95,7 +98,7 @@ body {
     width: 100%;
     height: 100%;
     z-index: -1;
-}
+} */
 
 @keyframes fadeIn {
     0% {
@@ -111,7 +114,6 @@ body {
 
 .hero h1 {
     font-size: 3rem;
-    margin-top: 12rem;
     margin-bottom: 20px;
 }
 
@@ -119,6 +121,11 @@ body {
     font-family: 'Courier New', monospace;
     font-size: 1.2rem;
     margin-bottom: 30px;
+    max-width: 550px;
+}
+
+section {
+    margin-bottom: 10rem;
 }
 
 .startButton {
@@ -195,12 +202,6 @@ body {
     transition: box-shadow 0.2s ease-in;
 }
 
-.btn {
-    padding: 15px 25px; 
-    font-size: 1.3rem; 
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
 .bottom-nav {
     background: linear-gradient(90deg, #353535da, #262525da, #111111da);
     backdrop-filter: blur(8px);
@@ -237,41 +238,85 @@ body {
     font-size: 1.5rem;
 }
 
-.card-container {
+.guides-section {
+    width: 100%;
+    padding: 0 0 8px;
+    margin-top: 2rem;
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 20px 0;
+}
+
+.team-section .card-container {
+    justify-content: center;
+}
+
+.guides-heading {
+    width: min(1200px, calc(100% - 1rem));
+    margin: 0 auto 0.5rem;
+    padding: 0 1rem;
+    color: #fff;
+    font-size: 1.5rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 12px 1rem 20px;
     border-radius: 20px;
-    width: 95%;
+    width: 98%;
     height: fit-content;
     margin: auto;
     background-color: transparent;
-    gap: 8px;
+    gap: 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 1rem;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.card-container::-webkit-scrollbar {
+    display: none;
 }
 
 .card {
     position: relative;
-    width: 100%;
-    border-radius: 8px;
+    width: auto;
     overflow: hidden;
     box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
-    margin: 12px 12px;
+    margin: 0;
     padding: 24px;
     min-height: 14rem;
-    flex: 1 1 calc(20% - 10px);
-    max-width: 30vw;
-    min-width: 26vw;
-    background-color: var(--card-bg-color);
+    flex: 0 0 clamp(260px, 28vw, 360px);
+    max-width: none;
+    min-width: 260px;
     transition: transform 0.3s, box-shadow 0.3s ease;
     will-change: transform, box-shadow;
+    border: 2px solid #454545;
+    border-radius: 10px;
+    scroll-snap-align: start;
 }
 
-.card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(9, 117, 241, 0.8);
-    border: 1px solid #0974f1;
+.team-card {
+    padding-bottom: 70px;
+}
+
+.team-avatar {
+    width: 100px;
+    object-fit: cover;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    display: block;
+    margin-bottom: 14px;
 }
 
 .card.development::before {
@@ -289,42 +334,31 @@ body {
 
 @media (max-width: 900px) {
     .card {
-        flex: 1 1 100%;
+        flex-basis: min(82vw, 340px);
     }
 }
 
 @media (max-width: 425px) {
     .card {
-        min-width: -webkit-fill-available;
+        flex-basis: 84vw;
+        min-width: 84vw;
+    }
+
+    .team-avatar {
+        height: 160px;
     }
 }
 
-
-.card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.534), rgba(0, 0, 0, 0.796));
-}
-
 .card-content {
-    position: absolute;
-    bottom: 15px;
-    left: 15px;
     color: white;
     z-index: 2;
     text-align: left;
     padding: 10px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: baseline;
 }
 
 .card h3 {
@@ -339,6 +373,50 @@ body {
     opacity: 0.9;
 }
 
+.team-card .card-content {
+    justify-content: flex-start;
+}
+
+.team-card .card-content h3 {
+    margin-top: 0.15rem;
+}
+
+.team-card .card-content p {
+    line-height: 1.45;
+}
+
+.guides-dots {
+    width: min(1200px, calc(100% - 1rem));
+    margin: 0 auto;
+    padding: 0.5rem 1rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+.guide-dot {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 999px;
+    border: 1px solid #fff;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+.guide-dot.active {
+    width: 2rem;
+    background: #fff;
+}
+
+.guide-dot:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
+
 
 
 @media (max-width: 768px) {
@@ -349,15 +427,22 @@ body {
     }
 
     .card-container {
-        flex-direction: column;
-        align-items: center;
+        padding-inline: 0.75rem;
+    }
+
+    .guides-heading {
+        width: calc(100% - 1rem);
+        font-size: 1.15rem;
+    }
+
+    .guides-dots {
+        width: calc(100% - 1rem);
     }
 
     .card {
-        width: 90%;
-        max-width: 400px;
-        margin: 4px;
-    } 
+        width: auto;
+        max-width: none;
+    }
 
     .main-container {
         flex-direction: column;
@@ -367,6 +452,7 @@ body {
     #notice-board {
         margin: 10px 0 !important;
     }
+
     .notice-board {
         max-width: 30rem !important;
     }
