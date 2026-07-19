@@ -28,6 +28,7 @@ const UIController = {
             yearGo: document.getElementById('year-go'),
             nextPage: document.getElementById('next-page'),
             prevPage: document.getElementById('prev-page'),
+            pageCounter: document.getElementById('page-counter'),
             dateHeader: document.getElementById('date-top'),
             eventList: document.getElementById('events-list'),
             modal: document.getElementById('day-modal'),
@@ -159,6 +160,7 @@ const UIController = {
             if (this.elements.yearInput) this.elements.yearInput.value = page[0].year;
             this.elements.yearNum.textContent = page[0].year;
             this.elements.prevPage.disabled = this.currentPage <= 1;
+            if (this.elements.pageCounter) this.elements.pageCounter.textContent = this.currentPage;
 
             page.forEach(day => {
                 const dayCell = document.createElement('div');
