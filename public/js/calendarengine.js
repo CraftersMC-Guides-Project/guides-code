@@ -146,7 +146,7 @@ const CalendarEngine = {
             events.push({ name: "Travelling Zoo", icon: shop.legendary.icon, legendaryName: shop.legendary.name, pets: shop.pets });
         }
             if (season === this.SEASON_WINTER && dayOfSeason >= 91) {
-                events.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.webp">' });
+                events.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.png">' });
             }
     
             return { totalDays, year, season: this.SEASON_NAMES[season], dayOfSeason, events };
@@ -198,7 +198,7 @@ const CalendarEngine = {
         // cake
         let nextNewYearDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + (this.SEASON_WINTER * this.SEASON_LENGTH) + 91;
         if(time.todayInYear > (this.SEASON_WINTER * this.SEASON_LENGTH) + 91) nextNewYearDay += this.DAYS_PER_YEAR;
-        upcoming.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.webp">', nextDay: nextNewYearDay });
+        upcoming.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.png">', nextDay: nextNewYearDay });
         // zoo
         const summerStart = (this.SEASON_SUMMER * this.SEASON_LENGTH) + 1;
         const winterStart = (this.SEASON_WINTER * this.SEASON_LENGTH) + 1;
