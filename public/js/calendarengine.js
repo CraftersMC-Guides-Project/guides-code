@@ -153,7 +153,7 @@ const CalendarEngine = {
             events.push({ name: "Travelling Zoo", icon: shop.legendary.icon, legendaryName: shop.legendary.name, pets: shop.pets });
         }
         if (season === this.SEASON_AUTUMN && dayOfSeason >= 60 && dayOfSeason <= 62) {
-            events.push({ name: "Spooky Festival", icon: '<img src="assets/placeholder.jpg">' });
+            events.push({ name: "Spooky Festival", icon: '<img src="img/Terrik.webp">' });
         }
             if (season === this.SEASON_WINTER && dayOfSeason >= 91) {
                 events.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.png">' });
@@ -213,7 +213,7 @@ const CalendarEngine = {
         const spookyStartInYear = (this.SEASON_AUTUMN * this.SEASON_LENGTH) + 59; // 60th day of Autumn
         let nextSpookyDay = ((time.currentYear - 1) * this.DAYS_PER_YEAR) + spookyStartInYear;
         if (time.todayInYear > spookyStartInYear) nextSpookyDay += this.DAYS_PER_YEAR;
-        upcoming.push({ name: "Spooky Festival", icon: '<img src="assets/placeholder.jpg">', nextDay: nextSpookyDay });
+        upcoming.push({ name: "Spooky Festival", icon: '<img src="img/Terrik.webp">', nextDay: nextSpookyDay });
         // zoo
         const summerStart = (this.SEASON_SUMMER * this.SEASON_LENGTH) + 1;
         const winterStart = (this.SEASON_WINTER * this.SEASON_LENGTH) + 1;

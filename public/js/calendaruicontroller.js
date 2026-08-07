@@ -133,10 +133,14 @@ getPetEmoji(name) {
         },
 
         getEventIcon(event) {
-            if (event.name === 'Travelling Zoo' && event.legendaryName) {
-                return this.getPetEmoji(event.legendaryName);
+            if (event.name === 'Travelling Zoo') {
+                if (event.legendaryIcon) return event.legendaryIcon;
+                const nameKey = String(event.legendaryName || '').toLowerCase();
+                if (this.engine && this.engine.LEGENDARY_ICONS && this.engine.LEGENDARY_ICONS[nameKey]) return this.engine.LEGENDARY_ICONS[nameKey];
+                return event.icon || '';
             }
             return event.icon;
+
         },
 
         upcomingEvents(events) {
@@ -147,16 +151,16 @@ getPetEmoji(name) {
                 info = event.crops.map(c => this.engine.CROP_ICONS[c] || '?').join(' ');
             } else if (event.name === 'Travelling Zoo' && event.legendaryName) {
                 if (event.pets && event.pets.length) {
-                    const items = event.pets.map(p => `<li>${this.getPetEmoji(p.name)} ${capitalize(p.name)} ${this.getRarityLabel(p.rarity)}</li>`).join('');
-                    info = ` <div style="margin-top:4px;"><ul class="zoo-pet-list">${items}</ul></div>`;
+                    const items = event.pets.map(p => `<li style="font-size: 12px; font-weight: bold;">${this.getPetEmoji(p.name)} ${capitalize(p.name)} ${this.getRarityLabel(p.rarity)}</li>`).join('');
+                    info = ` <div style="margin-bottom:4px;"><ul class="zoo-pet-list" style="margin:0; padding:0;">${items}</ul></div>`;
                 } else {
-                    info = `Legendary pet: ${this.getPetEmoji(event.legendaryName)} ${capitalize(event.legendaryName)}`;
+                    info = `Legendary pet: ${this.getEventIcon(event.legendaryName)} ${capitalize(event.legendaryName)}`;
                 }
             }
             return `
                 <div class="event-timer-item" data-event-index="${idx}">
                     <div class="event-timer-info">
-                        <span class="event-icon">${this.getEventIcon(event)}</span>
+                        <span class="event-icon" style="margin-right: ${event.type === 'Travelling Zoo' ? 0 : 8}px;">${this.getEventIcon(event)}</span>
                         <div>
                             <p class="event-name">${event.name}</p>
                             <p class="event-info">${info}</p>
