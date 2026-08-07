@@ -18,6 +18,13 @@ const CalendarEngine = {
     'lion':'<img src="img/pets/300px-Lion_Pet.webp" style="height:40px;width:auto;">',
 
     'monkey':'<img src="img/pets/Monkey_Pet.webp" style="height:40px;width:auto;margin:4px;">'},
+    PET_EMOJIS: {
+        'elephant': '🐘',
+        'giraffe': '🦒',
+        'tiger': '🐯',
+        'lion': '🦁',
+        'monkey': '🐵'
+    },
     TRAVELING_ZOO_LEGENDARY_OFFSET: 2,
     pagesDataCache: new Map(),
     SEASON_NAMES: ['Spring', 'Summer', 'Autumn', 'Winter'],
@@ -145,6 +152,9 @@ const CalendarEngine = {
             const shop = this.getZooPets(totalDays) || { legendary: { name: 'Error', icon: '❌' }, pets: [] };
             events.push({ name: "Travelling Zoo", icon: shop.legendary.icon, legendaryName: shop.legendary.name, pets: shop.pets });
         }
+        if (season === this.SEASON_AUTUMN && dayOfSeason >= 60 && dayOfSeason <= 62) {
+            events.push({ name: "Spooky Festival", icon: '<img src="assets/placeholder.jpg">' });
+        }
             if (season === this.SEASON_WINTER && dayOfSeason >= 91) {
                 events.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.png">' });
             }
@@ -199,6 +209,11 @@ const CalendarEngine = {
         let nextNewYearDay = ((time.currentYear -1) * this.DAYS_PER_YEAR) + (this.SEASON_WINTER * this.SEASON_LENGTH) + 91;
         if(time.todayInYear > (this.SEASON_WINTER * this.SEASON_LENGTH) + 91) nextNewYearDay += this.DAYS_PER_YEAR;
         upcoming.push({ name: "New Year Celebration", icon: '<img src="img/Enchanted_Cake.png">', nextDay: nextNewYearDay });
+        // spooky festival
+        const spookyStartInYear = (this.SEASON_AUTUMN * this.SEASON_LENGTH) + 59; // 60th day of Autumn
+        let nextSpookyDay = ((time.currentYear - 1) * this.DAYS_PER_YEAR) + spookyStartInYear;
+        if (time.todayInYear > spookyStartInYear) nextSpookyDay += this.DAYS_PER_YEAR;
+        upcoming.push({ name: "Spooky Festival", icon: '<img src="assets/placeholder.jpg">', nextDay: nextSpookyDay });
         // zoo
         const summerStart = (this.SEASON_SUMMER * this.SEASON_LENGTH) + 1;
         const winterStart = (this.SEASON_WINTER * this.SEASON_LENGTH) + 1;
@@ -255,6 +270,18 @@ const CalendarEngine = {
             while (results.length < count) {
                 const day = ((year - 1) * this.DAYS_PER_YEAR) + (this.SEASON_WINTER * this.SEASON_LENGTH) + 91;
                 if (day >= start) pushOcc(day);
+                year++;
+            }
+        } else if (eventName === 'Spooky Festival') {
+            let year = Math.floor((start - 1) / this.DAYS_PER_YEAR) + 1;
+            const autumnStart = (this.SEASON_AUTUMN * this.SEASON_LENGTH) + 1;
+            while (results.length < count) {
+                const yearBase = ((year - 1) * this.DAYS_PER_YEAR) + autumnStart;
+                for (let offset = 59; offset <= 59 && results.length < count; offset++) {
+                    // dont question the logic it works ok
+                    const day = yearBase + offset;
+                    if (day >= start) pushOcc(day);
+                }
                 year++;
             }
         } else if (eventName === 'Season of the Pig') {
