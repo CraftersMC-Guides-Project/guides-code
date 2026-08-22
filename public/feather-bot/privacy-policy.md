@@ -1,6 +1,6 @@
 # Privacy Policy (Feather Bot)
 
-**Effective date:** 08-05-2026
+**Effective date:** 2026-08-22
 
 This Privacy Policy explains what data **Feather Bot** (“the bot”, “we”, “us”) processes when you use it on Discord, why we process it, and what choices you have.
 
@@ -32,28 +32,33 @@ Depending on the commands you use, you may provide:
 
 ### Game/profile data (fetched from third parties)
 
-When you request player, SkyBlock, auctions, bazaar, leaderboards, or similar features, the bot fetches and displays game-related data from third-party APIs (see “Third-party services”).
+When you request player, SkyBlock, auctions, bazaar, leaderboards, or similar features, the bot fetches and displays game-related data from third-party APIs and dedicated proxy API workers (see “Third-party services”).
 
 ## How we use data
 
 We use the data above to:
 
 - Execute commands and render responses inside Discord.
-- Store per-user preferences (e.g., reminders, bazaar mappings/alerts, vote tracking).
+- Store per-user preferences (e.g., reminders, bazaar mappings/alerts, auction alerts, vote tracking).
 - Support optional verification workflows linking Discord <=> Minecraft usernames.
 - Deliver scheduled reminders via DM (vote reminders, contest/zoo/new year/season notifications).
 - Allow operators to manage bot functions (operator list, verification, unlinking).
 - Generate charts for bazaar history (images).
+- Build compact auction market history from public auction listings.
 - Maintain and optionally publish leaderboard submission data.
 
-## Where data is stored
+## Where data is stored & Infrastructure
 
-The bot stores some data locally on the machine where it is hosted. In this repository, that data is persisted under `data/` (and `leaderboards/` when used), including:
+The bot is hosted on dedicated **AIC Cloud VPS (Paid)** infrastructure to run runtime bot processes, background memory sweeps, and data stores.
+
+The bot stores data locally on the VPS machine. In this repository, that data is persisted under `data/` (and `leaderboards/` when used), including:
 
 - `data/accounts.db`: Discord ID + Discord username + linked Minecraft username (verification/linking).
 - `data/notify-contest.db`: notification rules (user/guild/channel IDs and rule settings) and vote history.
 - `data/bazaar-store.json`: bazaar alias mappings and bazaar alerts.
 - `data/bazaar.db`: bazaar price snapshots by item ID (no Discord identifiers).
+- `data/auction-history.db`: compact auction observations and item market snapshots from public auction listings, including seller Minecraft names/UUIDs when supplied by the auction API.
+- `data/auction-alerts.json`: auction alert rules containing Discord user IDs, item IDs, price thresholds, and trigger direction.
 - `data/ops.json`: operator Discord IDs (and an optional `OWNER_ID` from environment).
 - `data/leaderboard-submissions.json` and files under `leaderboards/`: leaderboard submission content (Minecraft usernames/profile IDs and submitted stats/collections), depending on configuration.
 
@@ -61,18 +66,18 @@ The bot also uses an in-memory cache for interactive UI state (typically minutes
 
 ## Third-party services and sharing
 
-The bot shares data with third parties only as needed to provide features.
+The bot shares data with third parties only as needed to provide features. All external network calls in bot commands are routed centrally via `utils/api.js` for security and performance.
 
-### Network requests
+### Network requests & Proxy APIs
 
 #### Discord (platform API)
 
 - Discord API (via `discord.js`): used to register slash commands, respond to interactions, fetch users/channels/messages for bot features, and send DMs/notifications.
 - Discord webhooks (via Discord Webhook URLs): used for account verification workflows and issue reports (see below).
 
-#### CraftersMC API (`api.craftersmc.net`)
+#### CraftersMC API & Proxy Endpoints
 
-The bot uses GET requests to the CraftersMC API including:
+The bot requests player, profile, auction, and bazaar data via the CraftersMC API and dedicated worker proxy APIs (e.g. `https://proxy.craftersmcguides.workers.dev/v1/skyblock/bazaar`) to enforce proxy security, header sanitation, caching, and rate limiting:
 
 - `GET /v1/player/:username`
 - `GET /v1/skyblock/profile/:profileId`
@@ -84,8 +89,8 @@ The bot uses GET requests to the CraftersMC API including:
 
 For bazaar features specifically:
 
-- `GET /v1/skyblock/bazaar/items`
-- `GET /v1/skyblock/bazaar/:itemId/details`
+- `GET https://proxy.craftersmcguides.workers.dev/v1/skyblock/bazaar/items`
+- `GET https://proxy.craftersmcguides.workers.dev/v1/skyblock/bazaar/:itemId/details`
 
 #### CraftersMC Guides endpoints
 
@@ -99,7 +104,7 @@ For bazaar features specifically:
 
 #### CraftersMC Wiki (`craftersmc.wiki.gg`)
 
-- `GET https://craftersmc.wiki.gg/api.php` (MediaWiki API) for search and page details, including:
+- `GET https://craftersmc.wiki.gg/api.php` (MediaWiki API) routed via `utils/api.js` for search, infobox, and page details:
   - `action=query&list=search...`
   - `action=query&prop=extracts|pageimages...`
   - `action=parse&prop=wikitext...`
