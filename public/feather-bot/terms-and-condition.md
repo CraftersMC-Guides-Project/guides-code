@@ -1,6 +1,6 @@
 # Terms of Service (Feather Bot)
 
-**Effective date:** 08-05-2026
+**Effective date:** 2026-08-22
 
 These Terms of Service (“Terms”) govern your access to and use of **Feather Bot** (the “bot”, “service”) on Discord. By using the bot, you agree to these Terms.
 
@@ -8,7 +8,7 @@ If you do not agree, do not use the bot.
 
 ## 1) Who operates the bot
 
-Feather Bot is operated by its host CraftersMC Guides. The bot may be used in multiple Discord servers at the discretion of server administrators and the bot owner.
+Feather Bot is operated by its host CraftersMC Guides and is deployed on dedicated **AIC Cloud VPS (Paid)** hosting infrastructure to ensure high availability, low latency, and 24/7 continuous operation. The bot may be used in multiple Discord servers at the discretion of server administrators and the bot owner.
 
 ## 2) Eligibility
 
@@ -24,17 +24,17 @@ You agree to:
 
 ## 4) What the bot does
 
-The bot provides game-related tools and utilities (for example, player/profile lookups, bazaar tools, auctions browsing, leaderboards, reminders/notifications, and issue reporting). Some features may send you direct messages (DMs), such as reminders.
+The bot provides game-related tools and utilities (for example, player/profile lookups, bazaar tools, auctions browsing, leaderboards, reminders/notifications, and issue reporting). Some features may send you direct messages (DMs), such as reminders. All outgoing API commands and market queries are processed through centralized API modules and dedicated proxy API endpoints for performance, security, and rate-limit management.
 
 ## 5) Data and privacy
 
 The bot processes and stores certain identifiers and settings to function (for example, Discord user IDs for notifications, optional Discord <=> Minecraft linking, and local storage for alerts/rules).
 
-Details about what data is processed, where it is stored, which APIs are called, and retention are described in `PRIVACY.md`.
+Details about what data is processed, where it is stored, VPS hosting details, proxy APIs called, and retention are described in `PRIVACY.md`.
 
 ## 6) Third-party services and links
 
-The bot relies on third-party services (including Discord and external APIs) to provide features, and may present links to third-party sites (for example, voting links).
+The bot relies on third-party services (including Discord, external game/wiki APIs, and worker proxy APIs like the CraftersMC Guides proxy worker) to provide features, and may present links to third-party sites (for example, voting links).
 
 We are not responsible for third-party services, outages, changes, or their privacy practices.
 
@@ -67,7 +67,7 @@ If you are a server admin, you are responsible for how you deploy and configure 
 
 ## 10) Service availability and changes
 
-The bot is provided “as is” and may be unavailable, degraded, or changed at any time (including command behavior, endpoints used, or data formats). Features may be added, modified, or removed without notice.
+The bot is deployed on paid dedicated VPS hosting (**AIC Cloud VPS**) for maximum uptime. However, the service is provided “as is” and may be temporarily unavailable, degraded, or changed at any time due to external API maintenance, network conditions, or platform updates (including command behavior, proxy endpoints used, or data formats). Features may be added, modified, or removed without notice.
 
 ## 11) Disclaimers
 
