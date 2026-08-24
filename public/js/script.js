@@ -121,10 +121,10 @@ function fetchPartial(url, key) {
 
 function fetchAllPartials() {
   Promise.all([
-    fetchPartial("../navbarv2.html", "navbarHtml"),
-    fetchPartial("../sidebar.html", "sidebarHtmlV2"),
-    fetchPartial("../footer.html", "footerHtmlV2"),
-    fetchPartial("../loader.html", "loaderHtml"),
+    fetchPartial("/navbarv2.html", "navbarHtml"),
+    fetchPartial("/sidebar.html", "sidebarHtmlV2"),
+    fetchPartial("/footer.html", "footerHtmlV2"),
+    fetchPartial("/loader.html", "loaderHtml"),
   ])
     .then(([navbarHtml, sidebarHtml, footerHtml, loaderHtml]) => {
       document.querySelector(".top").innerHTML = navbarHtml;
@@ -152,9 +152,9 @@ function fetchAllPartials() {
 
 function fetchAllLPartials() {
   Promise.all([
-    fetch("../sidebar.html").then((res) => res.text()),
-    fetch("../footer.html").then((res) => res.text()),
-    fetch("../loader.html").then((res) => res.text()),
+    fetch("/sidebar.html").then((res) => res.text()),
+    fetch("/footer.html").then((res) => res.text()),
+    fetch("/loader.html").then((res) => res.text()),
   ])
     .then(([sidebarHtml, footerHtml, loaderHtml]) => {
       document.getElementById("sidebar").innerHTML = sidebarHtml;
