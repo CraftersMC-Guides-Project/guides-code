@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Better API Docs - CraftersMC Public API</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="In-depth, monochrome documentation webpage for CraftersMC API explaining every endpoint, response schema, parameter, status code, and data field in minute detail." />
+  <link rel="icon" href="https://craftersmc.net/data/assets/logo/newOriginal32.png" type="image/png" sizes="32x32" />
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="top-header">
+    <a href="../index.html" class="header-brand">
+      <img src="https://craftersmc.net/data/assets/logo/newOriginal512.png" alt="CraftersMC Logo" />
+      <div>
+        <span class="brand-title">Better API Docs</span>
+        <span class="version-badge" id="api-version">v1</span>
+      </div>
+    </a>
+
+    <!-- Live Search Input -->
+    <div class="search-box">
+      <span class="material-icons search-icon">search</span>
+      <input type="text" id="search-input" placeholder="Search endpoints, parameters, schemas, fields..." />
+    </div>
+
+    <!-- Header Actions -->
+    <div class="header-actions">
+      <div class="api-status-pill">
+        <span class="status-dot"></span>
+        <span>api.craftersmc.net</span>
+      </div>
+      <a href="https://api.craftersmc.net/docs" target="_blank" class="header-link">Official Spec</a>
+      <a href="../index.html" class="header-link">Guides Home</a>
+    </div>
+  </header>
+
+  <!-- Main View Layout -->
+  <div class="app-layout">
+
+    <!-- Monochrome Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-logo-group">
+        <img src="https://craftersmc.net/data/assets/logo/newOriginal512.png" alt="CraftersMC" />
+        <div class="sidebar-logo-title">CraftersMC Public API</div>
+      </div>
+
+      <div class="sidebar-section-title">Getting Started</div>
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-item"><a href="#overview"><span class="material-icons" style="font-size:0.9rem;">info</span> Overview & Auth</a></li>
+        <li class="sidebar-nav-item"><a href="#rate-limits"><span class="material-icons" style="font-size:0.9rem;">speed</span> Rate Limits & Errors</a></li>
+      </ul>
+
+      <div class="sidebar-section-title">Endpoints</div>
+      <ul class="sidebar-nav" id="sidebar-endpoints-nav">
+        <!-- Dynamically populated from OpenAPI spec -->
+      </ul>
+
+      <div class="sidebar-section-title">Data Schemas</div>
+      <ul class="sidebar-nav" id="sidebar-schemas-nav">
+        <!-- Dynamically populated from OpenAPI spec -->
+      </ul>
+
+      <div class="sidebar-section-title">Reference</div>
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-item"><a href="#section-enums"><span class="material-icons" style="font-size:0.9rem;">list</span> Enums Reference</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Documentation Content Stream -->
+    <main class="main-content">
+
+      <!-- Section: Overview & Authentication -->
+      <section class="doc-section" id="overview">
+        <div class="section-header">
+          <h2><span class="material-icons" style="font-size:1.5rem; color:#ffffff;">menu_book</span> CraftersMC API Overview</h2>
+          <p>Complete, minute reference documentation for the CraftersMC public HTTP REST API endpoints and data schemas.</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-card">
+            <h3>Base Endpoint URL</h3>
+            <div class="info-value" id="overview-base-url">https://api.craftersmc.net</div>
+          </div>
+          <div class="info-card">
+            <h3>OpenAPI Spec</h3>
+            <div class="info-value">OpenAPI 3.0.3</div>
+          </div>
+          <div class="info-card">
+            <h3>Response Format</h3>
+            <div class="info-value">JSON (application/json)</div>
+          </div>
+          <div class="info-card">
+            <h3>Authentication</h3>
+            <div class="info-value">Public / Scoped API Settings</div>
+          </div>
+        </div>
+
+        <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:20px;">
+          <h3 style="font-size:1.02rem; color:var(--text-main); margin-bottom:10px;">Authentication & Player API Scopes</h3>
+          <p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6; margin:0;">
+            Most endpoints in the CraftersMC Public API do not require traditional authorization bearer tokens. However, player profile details, inventories, and SkyBlock member data are subject to <strong>Player API Settings</strong>. If a target player has disabled specific API settings (e.g. Bank API or Inventory API), those nested fields will be omitted from the JSON payload or return a <code>403 Forbidden</code> response with error message <code>"Missing required API scope"</code>.
+          </p>
+        </div>
+      </section>
+
+      <!-- Section: Rate Limits & Errors -->
+      <section class="doc-section" id="rate-limits">
+        <div class="section-header">
+          <h2><span class="material-icons" style="font-size:1.5rem; color:#ffffff;">warning</span> Rate Limits & Error Handling</h2>
+          <p>Standard response envelopes and error handling contracts implemented across all endpoints.</p>
+        </div>
+
+        <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:20px;">
+          <h3 style="font-size:1.02rem; color:var(--text-main); margin-bottom:10px;">Standard Error Response Envelope (ApiErrorReply)</h3>
+          <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:16px;">
+            When an HTTP error occurs (e.g. <code>400</code>, <code>403</code>, <code>404</code>, <code>429</code>, or <code>503</code>), the API returns a unified error JSON envelope:
+          </p>
+
+          <div class="code-block-wrapper">
+            <div class="code-block-header">
+              <span>ApiErrorReply Schema</span>
+              <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+            </div>
+            <pre><code>{
+  <span class="json-key">"success"</span>: <span class="json-boolean">false</span>,
+  <span class="json-key">"error"</span>: <span class="json-string">"Player not found"</span>,
+  <span class="json-key">"message"</span>: <span class="json-string">"No player matching the given username or UUID could be retrieved."</span>
+}</code></pre>
+          </div>
+
+          <div class="params-table-wrapper" style="margin-top:20px;">
+            <table class="params-table">
+              <thead>
+                <tr>
+                  <th>Status Code</th>
+                  <th>Description</th>
+                  <th>Typical Cause / Mitigation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="status-badge">200 OK</span></td>
+                  <td>Successful Execution</td>
+                  <td>The request succeeded and returned the requested data payload.</td>
+                </tr>
+                <tr>
+                  <td><span class="status-badge">400 Bad Request</span></td>
+                  <td>Invalid Identifier / Parameters</td>
+                  <td>Check input formatting (e.g., UUID format, page number integers).</td>
+                </tr>
+                <tr>
+                  <td><span class="status-badge">403 Forbidden</span></td>
+                  <td>Missing API Scope</td>
+                  <td>Target player has turned off API access in their SkyBlock settings menu.</td>
+                </tr>
+                <tr>
+                  <td><span class="status-badge">404 Not Found</span></td>
+                  <td>Resource Not Found</td>
+                  <td>Auction ID, profile ID, or item ID does not exist in the database.</td>
+                </tr>
+                <tr>
+                  <td><span class="status-badge">429 Rate Limit</span></td>
+                  <td>Rate Limit Exceeded</td>
+                  <td>Too many requests sent in a short window. Implement exponential backoff.</td>
+                </tr>
+                <tr>
+                  <td><span class="status-badge">503 Service Unavailable</span></td>
+                  <td>Data Unpopulated / Cache Warming</td>
+                  <td>Data list (e.g. voters, active auctions) is warming up or syncing.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Detailed Endpoints Breakdown -->
+      <section class="doc-section" id="section-endpoints">
+        <div class="section-header">
+          <h2><span class="material-icons" style="font-size:1.5rem; color:#ffffff;">api</span> API Endpoints</h2>
+          <p>Exhaustive list of all endpoints, parameters, data types, status codes, and schemas.</p>
+        </div>
+
+        <div id="endpoints-container">
+          <!-- Dynamically populated by app.js -->
+        </div>
+      </section>
+
+      <!-- Section: Component Schemas Breakdown -->
+      <section class="doc-section" id="section-schemas">
+        <div class="section-header">
+          <h2><span class="material-icons" style="font-size:1.5rem; color:#ffffff;">account_tree</span> Component Data Schemas</h2>
+          <p>Detailed object definitions, data types, nullability, and nested properties.</p>
+        </div>
+
+        <div id="schemas-container">
+          <!-- Dynamically populated by app.js -->
+        </div>
+      </section>
+
+      <!-- Section: Enums Dictionary -->
+      <section class="doc-section" id="section-enums">
+        <div class="section-header">
+          <h2><span class="material-icons" style="font-size:1.5rem; color:#ffffff;">category</span> Enums & Constants Reference</h2>
+          <p>Complete dictionary of all enum constants used across player ranks, server types, item rarities, and profile names.</p>
+        </div>
+
+        <div class="enum-grid" id="enums-grid">
+          <!-- Dynamically populated by app.js -->
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Application Engine Script -->
+  <script src="app.js"></script>
+</body>
+</html>

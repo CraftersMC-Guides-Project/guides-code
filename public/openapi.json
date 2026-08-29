@@ -2,11 +2,11 @@
   "openapi": "3.0.3",
   "info": {
     "title": "CraftersMC Public API",
-    "version": "v1-85e8c82",
+    "version": "v1-5eb3568",
     "x-git": {
-      "commit": "85e8c82",
+      "commit": "5eb3568",
       "branch": "main",
-      "time": "2026-02-02T23:54:48+0300"
+      "time": "2026-08-23T23:24:28+0300"
     },
     "x-logo": {
       "url": "https://craftersmc.net/data/assets/logo/newOriginal512.png",
@@ -28,7 +28,27 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServerStatusResponse"
+                  "$ref": "#/components/schemas/ServerStatusReply"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing required API scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
                 }
               }
             }
@@ -38,18 +58,72 @@
         "security": []
       }
     },
-    "/v1/player/{username}": {
+    "/v1/network/voters": {
+      "get": {
+        "tags": [
+          "Network"
+        ],
+        "summary": "Vote List",
+        "description": "Returns the list of players who voted for the network this month, with their\nvote counts.\n\nThe list is refreshed periodically (every few hours) from the voting site.\nThe `fetchedAt` field is the Unix timestamp (milliseconds) of when the list was\nlast retrieved, so you can tell how fresh the data is.\n",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Vote list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VotersReply"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing required API scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Vote list has not been populated yet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/v1/player/{identifier}": {
       "get": {
         "tags": [
           "Players"
         ],
         "summary": "Player",
-        "description": "Retrieves basic profile information for a player by their username.",
+        "description": "Retrieves basic profile information for a player by their username, UUID, or Pixel ID.",
         "parameters": [
           {
-            "name": "username",
+            "name": "identifier",
             "in": "path",
-            "description": "Minecraft username (3-16 characters, alphanumeric and underscore only)",
+            "description": "Player username, UUID, or Pixel ID",
             "required": true,
             "deprecated": false,
             "allowEmptyValue": false,
@@ -64,23 +138,57 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Player"
+                  "$ref": "#/components/schemas/PlayerReply"
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid username format"
+            "description": "Invalid identifier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing required API scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Player not found"
+            "description": "Player not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
           }
         },
         "deprecated": false,
         "security": []
       }
     },
-    "/v1/skyblock/bazaar/items": {
+    "/v1/resources/skyblock/bazaar/items": {
       "get": {
         "tags": [
           "SkyBlock Bazaar"
@@ -94,13 +202,314 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BazaarItemList"
+                  "$ref": "#/components/schemas/BazaarItemListReply"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/v1/skyblock/auction/{auctionId}": {
+      "get": {
+        "tags": [
+          "SkyBlock Auctions"
+        ],
+        "summary": "Auction Details",
+        "description": "Get the details of a specific auction by its ID, including all bids placed on it.\n",
+        "parameters": [
+          {
+            "name": "auctionId",
+            "in": "path",
+            "description": "The auction ID",
+            "required": true,
+            "deprecated": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuctionReply"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid auction ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing required API scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
                 }
               }
             }
           },
           "404": {
-            "description": "Data was not populated yet"
+            "description": "Auction not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/v1/skyblock/auctions": {
+      "get": {
+        "tags": [
+          "SkyBlock Auctions"
+        ],
+        "summary": "Active Auctions",
+        "description": "Get a paginated list of all currently active auctions.\n",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number (starts at 0)",
+            "required": false,
+            "deprecated": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuctionPageReply"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid page number",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing required API scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/v1/skyblock/auctions/ended": {
+      "get": {
+        "tags": [
+          "SkyBlock Auctions"
+        ],
+        "summary": "Recently Ended Auctions",
+        "description": "Get auctions that ended within the last 60 seconds.\n",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuctionPageReply"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing required API scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    },
+    "/v1/skyblock/auctions/player/{uuid}": {
+      "get": {
+        "tags": [
+          "SkyBlock Auctions"
+        ],
+        "summary": "Player Auctions",
+        "description": "Get all auctions owned by a specific player.\n",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "description": "The player's UUID",
+            "required": true,
+            "deprecated": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "profileId",
+            "in": "query",
+            "description": "SkyBlock profile ID to filter by",
+            "required": false,
+            "deprecated": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuctionsReply"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid UUID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing required API scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
           }
         },
         "deprecated": false,
@@ -133,20 +542,57 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BazaarItemInfo"
+                  "$ref": "#/components/schemas/BazaarItemReply"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Given itemId is not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing required API scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
                 }
               }
             }
           },
           "404": {
-            "description": "Data was not populated yet"
+            "description": "Data was not populated yet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
           },
           "503": {
             "description": "Service temporarily unavailable",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/ApiErrorReply"
                 }
               }
             }
@@ -182,16 +628,50 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SkyBlockProfile"
+                  "$ref": "#/components/schemas/SkyBlockProfileReply"
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid profile ID format"
+            "description": "Invalid profile ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing required API scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Profile not found"
+            "description": "Profile not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
           }
         },
         "deprecated": false,
@@ -212,13 +692,40 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SkyBlockSettings"
+                  "$ref": "#/components/schemas/SkyBlockSettingsReply"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing required API scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
                 }
               }
             }
           },
           "404": {
-            "description": "Settings were not populated yet."
+            "description": "Settings were not populated yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorReply"
+                }
+              }
+            }
           }
         },
         "deprecated": false,
@@ -228,103 +735,6 @@
   },
   "components": {
     "schemas": {
-      "GameCount": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "modes": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        }
-      },
-      "ServerStatusResponse": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "games": {
-            "type": "object",
-            "additionalProperties": {
-              "$ref": "#/components/schemas/GameCount"
-            }
-          },
-          "playerCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "maxPlayerCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "fullMaintenance": {
-            "type": "boolean"
-          },
-          "whitelistRank": {
-            "$ref": "#/components/schemas/PlayerRank"
-          },
-          "plannedMaintenance": {
-            "$ref": "#/components/schemas/PlannedMaintenance"
-          }
-        },
-        "required": [
-          "playerCount",
-          "maxPlayerCount",
-          "fullMaintenance"
-        ]
-      },
-      "BazaarItemInfo": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "itemId": {
-            "type": "string"
-          },
-          "buyTopEntries": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TopEntry"
-            }
-          },
-          "sellTopEntries": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TopEntry"
-            }
-          },
-          "buyVolume": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "sellVolume": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "weeklyAveragePrice": {
-            "type": "number",
-            "format": "double"
-          }
-        },
-        "required": [
-          "buyVolume",
-          "sellVolume",
-          "weeklyAveragePrice"
-        ]
-      },
-      "BazaarItemList": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "values": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
       "ImagePair": {
         "type": "object",
         "additionalProperties": false,
@@ -371,17 +781,437 @@
           }
         }
       },
-      "ErrorResponse": {
+      "ApiAuctionEntry": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "itemData": {
+            "type": "string"
+          },
+          "itemId": {
+            "type": "string"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "ownerUniqueId": {
+            "type": "string"
+          },
+          "ownerProfileId": {
+            "type": "string"
+          },
+          "ownerName": {
+            "type": "string"
+          },
+          "startingPrice": {
+            "type": "number",
+            "format": "double"
+          },
+          "endsAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "highestBidAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "highestBidId": {
+            "type": "string"
+          },
+          "highestBidderName": {
+            "type": "string"
+          },
+          "bids": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "winnerUniqueId": {
+            "type": "string"
+          },
+          "winnerProfileId": {
+            "type": "string"
+          },
+          "winnerName": {
+            "type": "string"
+          },
+          "ownerClaimed": {
+            "type": "boolean"
+          },
+          "winnerClaimed": {
+            "type": "boolean"
+          },
+          "claimedBidders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bidders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "ended": {
+            "type": "boolean"
+          },
+          "cancelReason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "createdAt",
+          "quantity",
+          "startingPrice",
+          "endsAt",
+          "highestBidAmount",
+          "bids",
+          "ownerClaimed",
+          "winnerClaimed",
+          "ended"
+        ]
+      },
+      "ApiErrorReply": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
           "error": {
             "type": "string"
           },
           "message": {
             "type": "string"
           }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "AuctionBidResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "auctionId": {
+            "type": "string"
+          },
+          "bidderUniqueId": {
+            "type": "string"
+          },
+          "bidderProfileId": {
+            "type": "string"
+          },
+          "bidderName": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "amount",
+          "timestamp"
+        ]
+      },
+      "AuctionPageReply": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalAuctions": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lastUpdated": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "auctions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiAuctionEntry"
+            }
+          }
+        },
+        "required": [
+          "success",
+          "page",
+          "totalPages",
+          "totalAuctions",
+          "lastUpdated"
+        ]
+      },
+      "AuctionReply": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "auction": {
+            "$ref": "#/components/schemas/ApiAuctionEntry"
+          },
+          "bids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuctionBidResponse"
+            }
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "AuctionsReply": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "lastUpdated": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "auctions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiAuctionEntry"
+            }
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "BazaarItemListReply": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "BazaarItemReply": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "itemId": {
+            "type": "string"
+          },
+          "buyTopEntries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TopEntry"
+            }
+          },
+          "sellTopEntries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TopEntry"
+            }
+          },
+          "buyVolume": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sellVolume": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "weeklyAveragePrice": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "success",
+          "buyVolume",
+          "sellVolume",
+          "weeklyAveragePrice"
+        ]
+      },
+      "PlayerReply": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "player": {
+            "$ref": "#/components/schemas/Player"
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "ServerStatusReply": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "games": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/GameCount"
+            }
+          },
+          "playerCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxPlayerCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fullMaintenance": {
+            "type": "boolean"
+          },
+          "whitelistRank": {
+            "$ref": "#/components/schemas/PlayerRank"
+          },
+          "plannedMaintenance": {
+            "$ref": "#/components/schemas/PlannedMaintenance"
+          }
+        },
+        "required": [
+          "success",
+          "playerCount",
+          "maxPlayerCount",
+          "fullMaintenance"
+        ]
+      },
+      "GameCount": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "modes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
         }
+      },
+      "SkyBlockProfileReply": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/SkyBlockProfile"
+          },
+          "settings": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "SkyBlockSettingsReply": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/SkyBlockSettings"
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "VotersReply": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "month": {
+            "type": "string"
+          },
+          "fetchedAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "voters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Voter"
+            }
+          }
+        },
+        "required": [
+          "success",
+          "fetchedAt",
+          "count"
+        ]
       },
       "TopEntry": {
         "type": "object",
@@ -404,6 +1234,22 @@
           "price",
           "quantity",
           "orderCount"
+        ]
+      },
+      "Voter": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "nickname": {
+            "type": "string"
+          },
+          "votes": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "votes"
         ]
       },
       "AcceptedIslandVisits": {
@@ -467,6 +1313,7 @@
           "SKYBLOCK_ISLAND",
           "SKYBLOCK_MINING_1",
           "SKYBLOCK_THE_PARK",
+          "LIMBO",
           "SKYBLOCK_END"
         ]
       },
@@ -1467,13 +2314,6 @@
           },
           "newYearCakeBag": {
             "type": "string"
-          },
-          "claimedNewYearCakes": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int64"
-            }
           },
           "magicalMushroomSoupTime": {
             "type": "integer",
