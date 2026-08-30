@@ -1,7 +1,7 @@
 export async function onRequest(context) {
   const { request, env, params } = context;
   try {
-    const apiKey = env?.CMCG_BAZAAR_KEY || env?.cmcg_bazaar_key || env?.CMC_API_KEY_BAZAAR || env?.CMC_API_KEY || env?.cmc_api_key || '';
+    const apiKey = env?.CMCG_API_KEY;
     const itemId = encodeURIComponent(String(params?.itemId || "").trim().toLowerCase());
 
     if (!itemId) {

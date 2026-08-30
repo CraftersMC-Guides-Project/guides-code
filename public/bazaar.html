@@ -606,15 +606,72 @@
     async function fetchLiveItemDetails(itemId) {
       try {
         const details = await fetchFromProxy(`/bazaar/${encodeURIComponent(itemId)}`);
-        if (details && (details.buyTopEntries || details.sellTopEntries || details.buy_price)) {
+        if (details && (details.buyTopEntries || details.sellTopEntries || details.buy_price || details.buyPrice)) {
           console.log(`[Bazaar Live] ✅ Received multi-tier depth payload from Cloudflare function:`, details);
           currentItemDetails = details;
+
+          // Lowest Sell Offer = Price to buy instantly
+          const instantBuy = Number(details.sellTopEntries?.[0]?.price ?? details.sellPrice ?? details.sell_price ?? 0);
+          // Highest Buy Order = Price to sell instantly
+          const instantSell = Number(details.buyTopEntries?.[0]?.price ?? details.buyPrice ?? details.buy_price ?? 0);
+          const weeklyAvg = Number(details.weeklyAveragePrice ?? details.avg_7d_price ?? 0);
+          const buyVol = Number(details.buyVolume ?? details.buy_volume ?? 0);
+          const sellVol = Number(details.sellVolume ?? details.sell_volume ?? 0);
+          const spread = instantBuy > 0 && instantSell > 0 ? (((instantBuy - instantSell) / instantBuy) * 100).toFixed(1) : '0';
+          const margin = Math.max(0, instantBuy - instantSell);
+
+          // Update quick stat cards
+          if (instantBuy > 0) document.getElementById('statInstantBuy').textContent = formatCoins(instantBuy);
+          if (sellVol > 0) document.getElementById('statBuyVolume').textContent = `Volume: ${formatNumber(sellVol)} units`;
+
+          if (instantSell > 0) document.getElementById('statInstantSell').textContent = formatCoins(instantSell);
+          if (buyVol > 0) document.getElementById('statSellVolume').textContent = `Volume: ${formatNumber(buyVol)} units`;
+
+          if (weeklyAvg > 0) document.getElementById('statWeeklyAvg').textContent = formatCoins(weeklyAvg);
+
+          document.getElementById('statSpread').textContent = `${spread}%`;
+          document.getElementById('statMarginCoins').textContent = `Margin: ${formatNumber(margin)} coins`;
+
+          // Flips
+          document.getElementById('flipProfitUnit').textContent = `+${formatNumber(margin)} coins`;
+          document.getElementById('flipProfitStack').textContent = `+${formatNumber(margin * 64)} coins`;
+          document.getElementById('flipProfitInv').textContent = `+${formatNumber(margin * 2240)} coins`;
+
+          // Render live multi-tier order books
           renderOrderBooks(details);
+
+          // Update Raw JSON Viewer
           const rawJsonEl = document.getElementById('rawItemJson');
           if (rawJsonEl) rawJsonEl.textContent = JSON.stringify(details, null, 2);
+
+          // Update/Add into catalogItems
+          const existingIdx = catalogItems.findIndex(i => i.id === itemId);
+          const itemObj = {
+            id: itemId,
+            name: itemId.replace(/_/g, ' '),
+            instantBuy,
+            instantSell,
+            buyPrice: instantBuy,
+            sellPrice: instantSell,
+            avgPrice: weeklyAvg,
+            buyVolume: buyVol,
+            sellVolume: sellVol,
+            spread: Number(spread),
+            rawInfo: details
+          };
+
+          if (existingIdx >= 0) catalogItems[existingIdx] = itemObj;
+          else catalogItems.push(itemObj);
+
+          filteredItems = [...catalogItems];
+          sortAndRenderTable();
+          document.getElementById('catalogSubtitle').textContent = `Tracking ${catalogItems.length} active commodities`;
+
+          // Update chart baseline if no time-series history
+          if (!currentHistoryData) renderEmptyChartState('Historical price graph unavailable for this item.');
         }
       } catch (err) {
-        // Functions not yet deployed to Cloudflare Pages production; silently fallback to live snapshot data
+        // Silently handle if sub-function unavailable
       }
     }
 
@@ -703,11 +760,11 @@
           return;
         }
       } catch (err) {
-        // Fallback gracefully
+        // Handled below
       }
 
       currentHistoryData = null;
-      renderFallbackChart();
+      renderEmptyChartState('Historical price graph unavailable for this item.');
       hideStatus();
     }
 
@@ -727,11 +784,6 @@
     }
 
     function renderHistoryChart() {
-      const canvasEl = document.getElementById('bazaarChartCanvas');
-      if (!canvasEl) return;
-      const ctx = canvasEl.getContext('2d');
-      if (!ctx) return;
-
       let historyRecords = [];
       if (Array.isArray(currentHistoryData)) {
         historyRecords = currentHistoryData;
@@ -741,6 +793,24 @@
         historyRecords = currentHistoryData.data;
       }
 
+      if (historyRecords.length === 0) {
+        renderEmptyChartState('No historical price points recorded for this item yet.');
+        return;
+      }
+
+      const canvasWrapper = document.querySelector('.chart-wrapper');
+      if (!canvasWrapper) return;
+      
+      // Ensure canvas element exists
+      let canvasEl = document.getElementById('bazaarChartCanvas');
+      if (!canvasEl) {
+        canvasWrapper.innerHTML = '<canvas id="bazaarChartCanvas"></canvas>';
+        canvasEl = document.getElementById('bazaarChartCanvas');
+      }
+
+      const ctx = canvasEl.getContext('2d');
+      if (!ctx) return;
+
       // Filter by range
       const now = Date.now();
       let cutoff = 0;
@@ -749,7 +819,7 @@
       else if (currentRange === '30d') cutoff = now - (30 * 24 * 3600 * 1000);
 
       const filteredRecords = historyRecords.filter(r => {
-        const t = r.timestamp || r.time || (r.created_at ? new Date(r.created_at).getTime() : 0);
+        const t = Number(r.fetched_at || r.timestamp || r.time || (r.created_at ? new Date(r.created_at).getTime() : 0));
         return t >= cutoff;
       });
 
@@ -758,19 +828,21 @@
       }
 
       if (filteredRecords.length === 0) {
-        renderFallbackChart();
+        renderEmptyChartState('No historical price points within selected time window.');
         return;
       }
 
       const labels = filteredRecords.map(r => {
-        const t = r.timestamp || r.time || r.created_at;
+        const t = Number(r.fetched_at || r.timestamp || r.time || (r.created_at ? new Date(r.created_at).getTime() : 0));
         const d = new Date(t);
         return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
       });
 
-      const buyPrices = filteredRecords.map(r => Number(r.buy_price ?? r.buyPrice ?? r.price ?? 0));
-      const sellPrices = filteredRecords.map(r => Number(r.sell_price ?? r.sellPrice ?? 0));
-      const volumes = filteredRecords.map(r => Number(r.buy_volume ?? r.volume ?? 0));
+      // sell_price = lowest sell offer = Instant Buy
+      const buyPrices = filteredRecords.map(r => Number(r.sell_price ?? r.sellPrice ?? r.buy_price ?? r.buyPrice ?? 0));
+      // buy_price = highest buy order = Instant Sell
+      const sellPrices = filteredRecords.map(r => Number(r.buy_price ?? r.buyPrice ?? r.sell_price ?? r.sellPrice ?? 0));
+      const volumes = filteredRecords.map(r => Number(r.buy_volume ?? r.sell_volume ?? r.volume ?? 0));
 
       if (chartInstance) chartInstance.destroy();
 
@@ -828,56 +900,22 @@
       });
     }
 
-    function renderFallbackChart() {
-      const canvasEl = document.getElementById('bazaarChartCanvas');
-      if (!canvasEl) return;
-      const ctx = canvasEl.getContext('2d');
-      if (!ctx) return;
-      if (chartInstance) chartInstance.destroy();
+    function renderEmptyChartState(message = 'No historical price points recorded for this item yet.') {
+      if (chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
+      }
 
-      const itemInfo = catalogItems.find(i => i.id === currentSelectedItemId);
-      const buyPrice = itemInfo?.instantBuy || 100;
-      const sellPrice = itemInfo?.instantSell || 90;
-      const avgPrice = itemInfo?.avgPrice || (buyPrice + sellPrice) / 2;
+      const canvasWrapper = document.querySelector('.chart-wrapper');
+      if (!canvasWrapper) return;
 
-      const labels = ['6d ago', '5d ago', '4d ago', '3d ago', '2d ago', 'Yesterday', 'Today'];
-      const syntheticPoints = [
-        avgPrice * 0.97,
-        avgPrice * 0.985,
-        avgPrice * 1.01,
-        avgPrice * 0.995,
-        avgPrice * 1.008,
-        avgPrice * 1.02,
-        buyPrice
-      ];
-
-      chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Benchmark Price Trend (7D Benchmark)',
-            data: syntheticPoints,
-            borderColor: '#007bff',
-            backgroundColor: 'rgba(0, 123, 255, 0.08)',
-            fill: true,
-            tension: 0.35,
-            pointRadius: 3
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'top', labels: { boxWidth: 12 } },
-            tooltip: { callbacks: { label: (ctx) => `Price: ${formatCoins(ctx.raw)}` } }
-          },
-          scales: {
-            x: { grid: { display: false }, ticks: { font: { size: 11 } } },
-            y: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'JetBrains Mono', size: 11 }, callback: (v) => formatNumber(v) } }
-          }
-        }
-      });
+      canvasWrapper.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); text-align: center; padding: 20px;">
+          <span class="material-icons" style="font-size: 2.5rem; color: var(--border-code); margin-bottom: 8px;">query_stats</span>
+          <div style="font-weight: 600; color: var(--text-main); font-size: 0.95rem;">${message}</div>
+          <div style="font-size: 0.8rem; margin-top: 4px; color: var(--text-muted);">Real-time order book depth and live market prices are displayed above.</div>
+        </div>
+      `;
     }
 
     // Table Sorting & Rendering
