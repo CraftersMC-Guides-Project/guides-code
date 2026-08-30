@@ -20,7 +20,6 @@ export async function onRequest(context) {
 
     const headers = {
       'X-API-Key': apiKey,
-      'x-api-key': apiKey,
       'Accept': 'application/json',
       'User-Agent': 'CraftersMC-Guides/1.0'
     };

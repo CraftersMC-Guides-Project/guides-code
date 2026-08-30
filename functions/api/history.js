@@ -8,13 +8,10 @@ export async function onRequest({ request, env }) {
       });
     }
     const headers = {
+      'x-api-key': apiKey,
       'Accept': 'application/json',
       'User-Agent': 'CraftersMC-Guides/1.0'
     };
-    if (apiKey) {
-      headers['x-api-key'] = apiKey;
-      headers['X-API-Key'] = apiKey;
-    }
 
     const upstreamRes = await fetch('https://bazaar.craftersmcguides.workers.dev/api/items/history', { headers });
 
