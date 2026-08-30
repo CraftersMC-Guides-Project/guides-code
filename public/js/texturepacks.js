@@ -1,13 +1,19 @@
+/**
+ * Texture Packs Download Dialog Controller
+ */
 function showDownloadPanel(file) {
-    document.getElementById('confirmDownloadBtn').onclick = function () {
-        window.open(file, '_blank');
-        closeDownloadPanel();
+  const confirmBtn = document.getElementById('confirmDownloadBtn');
+  if (confirmBtn) {
+    confirmBtn.onclick = function () {
+      window.open(file, '_blank');
+      closeDownloadPanel();
     };
-    document.getElementById('downloadPanel').classList.add('texture-show');
-    document.getElementById('overlay').classList.add('texture-show');
+  }
+  const modal = document.getElementById('downloadModal');
+  if (modal) modal.classList.add('texture-show');
 }
 
 function closeDownloadPanel() {
-    document.getElementById('downloadPanel').classList.remove('texture-show');
-    document.getElementById('overlay').classList.remove('texture-show');
+  const modal = document.getElementById('downloadModal');
+  if (modal) modal.classList.remove('texture-show');
 }

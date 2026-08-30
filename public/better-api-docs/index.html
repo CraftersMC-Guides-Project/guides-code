@@ -1,0 +1,2320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CraftersMC Better API Docs — Professional Developer Documentation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Comprehensive developer documentation for CraftersMC Public REST API and SkyBlock Calendar Calculation Engine (calendarjs)." />
+  <link rel="icon" href="https://craftersmc.net/data/assets/logo/newOriginal32.png" type="image/png" sizes="32x32" />
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Authentic, Clean Navigation Header -->
+  <header class="top-header">
+    <div class="header-left">
+      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
+        <span class="material-icons" style="font-size:1.25rem;">menu</span>
+      </button>
+      <a href="../index.html" class="header-brand">
+        <img src="https://craftersmc.net/data/assets/logo/newOriginal512.png" alt="CraftersMC Logo" />
+        <div class="brand-text">
+          <span class="brand-title">Better API Docs</span>
+          <span class="version-badge">v1-5eb3568</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Minimal Search Box -->
+    <div class="search-box">
+      <span class="material-icons search-icon">search</span>
+      <input type="text" id="search-input" placeholder="Search endpoints, X-API-Key, parameters, schemas, code..." />
+      <span class="search-kbd-shortcut">/</span>
+    </div>
+
+    <!-- Header Links -->
+    <div class="header-actions">
+      <a href="#section-calendarjs" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">event</span> <span class="header-link-text">Calendar Engine</span></a>
+      <a href="#section-nbt-decoding" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">NBT Decoding</span></a>
+      <a href="https://github.com/CraftersMC/calendarjs" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">open_in_new</span> <span class="header-link-text">calendarjs</span></a>
+      <a href="https://api.craftersmc.net/docs" target="_blank" class="header-link">Official Redoc</a>
+      <a href="../index.html" class="header-link">Guides Home</a>
+    </div>
+  </header>
+
+  <!-- Application Layout -->
+  <div class="app-layout">
+
+    <!-- Sticky Left Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Getting Started</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="#overview"><span class="material-icons nav-icon">menu_book</span> <span>Overview &amp; Base URL</span></a></li>
+          <li class="sidebar-nav-item"><a href="#authentication"><span class="material-icons nav-icon">vpn_key</span> <span>Authentication (X-API-Key)</span></a></li>
+          <li class="sidebar-nav-item"><a href="#rate-limits"><span class="material-icons nav-icon">speed</span> <span>Rate Limits &amp; Errors</span></a></li>
+          <li class="sidebar-nav-item"><a href="#section-calendarjs"><span class="material-icons nav-icon">event</span> <span>Calendar Engine (calendarjs)</span></a></li>
+          <li class="sidebar-nav-item"><a href="#section-nbt-decoding"><span class="material-icons nav-icon">terminal</span> <span>NBT &amp; Binary Decoding</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Network Endpoints</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="#ep-get--v1-network-status"><span class="method-tag get">GET</span> <span class="sidebar-endpoint-text">Network Status</span></a></li>
+          <li class="sidebar-nav-item"><a href="#ep-get--v1-network-voters"><span class="method-tag get">GET</span> <span class="sidebar-endpoint-text">Vote List</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Players Endpoints</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="#ep-get--v1-player--identifier-"><span class="method-tag get">GET</span> <span class="sidebar-endpoint-text">Player Profile</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">SkyBlock Bazaar</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="#ep-get--v1-resources-skyblock-bazaar-items"><span class="method-tag get">GET</span> <span class="sidebar-endpoint-text">Bazaar Item List</span></a></li>
+          <li class="sidebar-nav-item"><a href="#ep-get--v1-skyblock-bazaar--itemId--details"><span class="method-tag get">GET</span> <span class="sidebar-endpoint-text">Bazaar Item Details</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">SkyBlock Auctions</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="#ep-get--v1-skyblock-auction--auctionId-"><span class="method-tag get">GET</span> <span class="sidebar-endpoint-text">Auction Details</span></a></li>
+          <li class="sidebar-nav-item"><a href="#ep-get--v1-skyblock-auctions"><span class="method-tag get">GET</span> <span class="sidebar-endpoint-text">Active Auctions</span></a></li>
+          <li class="sidebar-nav-item"><a href="#ep-get--v1-skyblock-auctions-ended"><span class="method-tag get">GET</span> <span class="sidebar-endpoint-text">Ended Auctions</span></a></li>
+          <li class="sidebar-nav-item"><a href="#ep-get--v1-skyblock-auctions-player--uuid-"><span class="method-tag get">GET</span> <span class="sidebar-endpoint-text">Player Auctions</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">SkyBlock Profiles &amp; Settings</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="#ep-get--v1-skyblock-profile--profileId-"><span class="method-tag get">GET</span> <span class="sidebar-endpoint-text">SkyBlock Profile</span></a></li>
+          <li class="sidebar-nav-item"><a href="#ep-get--v1-skyblock-settings"><span class="method-tag get">GET</span> <span class="sidebar-endpoint-text">SkyBlock Settings</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Schemas &amp; References</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="#section-item-ids"><span class="material-icons nav-icon">inventory_2</span> <span>Numerical Item IDs (1,933)</span></a></li>
+          <li class="sidebar-nav-item"><a href="#section-schemas"><span class="material-icons nav-icon">schema</span> <span>Data Schemas (12)</span></a></li>
+          <li class="sidebar-nav-item"><a href="#section-enums"><span class="material-icons nav-icon">list_alt</span> <span>Enums Dictionary</span></a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- Section: Overview -->
+      <section class="doc-section" id="overview">
+        <div class="section-hero">
+          <div class="section-title-wrap">
+            <span class="section-kicker">CraftersMC Reference</span>
+            <h1 class="main-heading">CraftersMC REST API &amp; Calendar Engine</h1>
+          </div>
+          <p class="section-intro">
+            Developer documentation for the CraftersMC Public HTTP REST API (<code>v1-5eb3568</code>) and the SkyBlock Event Timing Engine (<a href="https://github.com/CraftersMC/calendarjs" target="_blank"><code>@craftersmc/calendarjs</code></a>). <strong>All endpoints strictly require authentication via the <code>X-API-Key</code> request header.</strong>
+          </p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-card-label">Production Base URL</div>
+            <div class="info-card-value font-mono">https://api.craftersmc.net</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Authentication Header</div>
+            <div class="info-card-value font-mono" style="color:var(--accent-light);">X-API-Key: &lt;key&gt; (Mandatory)</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Payload Format</div>
+            <div class="info-card-value font-mono">JSON / Base64 GZIP NBT</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Active Endpoints</div>
+            <div class="info-card-value font-mono">11 Endpoints / 5 Tags</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Authentication -->
+      <section class="doc-section" id="authentication">
+        <div class="section-header">
+          <h2><span class="material-icons">vpn_key</span> Authentication &amp; API Key Enforcement</h2>
+          <p>How the mandatory <code>X-API-Key</code> request header and SkyBlock player privacy scopes work.</p>
+        </div>
+
+        <div class="prose-card">
+          <h3>Mandatory <code>X-API-Key</code> Header Across ALL Endpoints</h3>
+          <p>
+            <strong>Every endpoint on the CraftersMC Public REST API strictly requires the <code>X-API-Key</code> HTTP request header.</strong> Any request sent without a valid API key will immediately be rejected by the server with <strong>HTTP 401 Unauthorized</strong> or <strong>HTTP 403 Forbidden</strong>.
+          </p>
+
+          <div class="code-block-wrapper">
+            <div class="code-block-header">
+              <span>Required Authentication Header</span>
+              <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+            </div>
+            <pre><code>X-API-Key: YOUR_API_KEY</code></pre>
+          </div>
+
+          <h3 style="margin-top: 24px;">Player API Privacy Scopes</h3>
+          <p>
+            When querying detailed player profiles and SkyBlock inventories (e.g. <code>GET /v1/skyblock/profile/{profileId}</code>), data availability is further restricted by individual in-game player settings (<em>Banking API</em>, <em>Inventory API</em>, <em>Skills API</em>, <em>Collections API</em>):
+          </p>
+          <ul>
+            <li>If a player disables an API permission, the corresponding nested fields will be returned as <code>null</code> or omitted.</li>
+            <li>In strictly protected endpoints, the server responds with <code>403 Forbidden</code> and <code>{"success": false, "error": "Missing required API scope"}</code>.</li>
+          </ul>
+
+          <div class="alert-box tip">
+            <span class="material-icons alert-icon">lightbulb</span>
+            <div>
+              <strong>Production Best Practice:</strong> Always store your <code>X-API-Key</code> in environment variables (e.g. <code>process.env.CMC_API_KEY</code> or <code>os.getenv("CMC_API_KEY")</code>). Never expose secret API keys in client-side bundles or public GitHub repositories.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Rate Limits & Errors -->
+      <section class="doc-section" id="rate-limits">
+        <div class="section-header">
+          <h2><span class="material-icons">speed</span> Rate Limits &amp; Error Contracts</h2>
+          <p>Standard response envelopes, rate limiting rules, and status codes implemented across all routes.</p>
+        </div>
+
+        <div class="prose-card">
+          <h3>Unified Error Response Envelope (ApiErrorReply)</h3>
+          <p>All non-200 responses return a consistent JSON error schema:</p>
+
+          <div class="code-block-wrapper">
+            <div class="code-block-header">
+              <span>ApiErrorReply Example</span>
+              <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+            </div>
+            <pre><code>{
+  "success": false,
+  "error": "Rate limit exceeded",
+  "message": "You are making too many requests. Please slow down and respect the rate limit."
+}</code></pre>
+          </div>
+
+          <div class="params-table-wrapper" style="margin-top: 20px;">
+            <table class="params-table">
+              <thead>
+                <tr>
+                  <th>Status Code</th>
+                  <th>HTTP Reason</th>
+                  <th>Description &amp; Mitigation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="status-badge status-200">200 OK</span></td>
+                  <td>Success</td>
+                  <td>The request completed successfully and returned the requested payload envelope.</td>
+                </tr>
+                <tr>
+                  <td><span class="status-badge status-400">400 Bad Request</span></td>
+                  <td>Invalid Parameter</td>
+                  <td>Malformed identifier, invalid UUID format, or invalid pagination page index.</td>
+                </tr>
+                <tr>
+                  <td><span class="status-badge status-403">401 / 403</span></td>
+                  <td>Unauthorized / Forbidden</td>
+                  <td>Missing, invalid, or expired <code>X-API-Key</code>, or target player turned off API scope in-game.</td>
+                </tr>
+                <tr>
+                  <td><span class="status-badge status-404">404 Not Found</span></td>
+                  <td>Resource Not Found</td>
+                  <td>The requested player, profile ID, auction UUID, or bazaar item does not exist.</td>
+                </tr>
+                <tr>
+                  <td><span class="status-badge status-429">429 Rate Limit</span></td>
+                  <td>Too Many Requests</td>
+                  <td>Request threshold exceeded. Implement exponential backoff or caching.</td>
+                </tr>
+                <tr>
+                  <td><span class="status-badge status-503">503 Unavailable</span></td>
+                  <td>Service Unavailable</td>
+                  <td>Data list has not finished warming up or database sync is in progress.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: SkyBlock Calendar Engine (calendarjs) -->
+      <section class="doc-section" id="section-calendarjs">
+        <div class="section-header">
+          <h2><span class="material-icons">event</span> SkyBlock Calendar Engine &amp; Event Timings (<a href="https://github.com/CraftersMC/calendarjs" target="_blank" style="color:var(--accent-light);">CraftersMC/calendarjs</a>)</h2>
+          <p>Mathematical formulas, time conversions, and deterministic Java Random RNG algorithms used to predict server events.</p>
+        </div>
+
+        <div class="prose-card">
+          <h3>SkyBlock Time Multiplier &amp; Epoch Architecture</h3>
+          <p>
+            In CraftersMC SkyBlock, time runs <strong>72 times faster</strong> than real life. A full 24-hour SkyBlock day passes in exactly <strong>20 real-world minutes</strong> (1,200 seconds). A SkyBlock year consists of 4 seasons of 93 days each, totaling <strong>372 SkyBlock days</strong> (124 real hours = 5 days and 4 hours).
+          </p>
+
+          <div class="params-table-wrapper">
+            <table class="params-table">
+              <thead><tr><th>Constant</th><th>Value</th><th>Definition / Meaning</th></tr></thead>
+              <tbody>
+                <tr><td><code>START_OF_TIMES</code></td><td><code>1648800000</code></td><td>Unix epoch in seconds corresponding to Year 1, Spring 1, 00:00:00 (April 1, 2022 08:00:00 UTC).</td></tr>
+                <tr><td><code>TIME_MULTIPLIER</code></td><td><code>72</code></td><td>1 real second = 72 SkyBlock seconds (20 real minutes per SkyBlock day).</td></tr>
+                <tr><td><code>SEASON_LENGTH</code></td><td><code>93 days</code></td><td>Days per season (Early, Standard, and Late sub-seasons of 31 days each).</td></tr>
+                <tr><td><code>DAYS_PER_YEAR</code></td><td><code>372 days</code></td><td>Total SkyBlock days per SkyBlock year (4 seasons &times; 93 days).</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 style="margin-top: 28px;">1. Real-World Timestamp to SkyBlock Date Algorithm</h3>
+          <p>
+            To convert any real-world timestamp (or <code>Date.now()</code>) into SkyBlock Year, Season, Day, Hour, and Minute:
+          </p>
+          <div class="code-block-wrapper">
+            <div class="code-block-header">
+              <span>Timestamp to SkyBlock Date Algorithm</span>
+              <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+            </div>
+            <pre><code>// Convert real-world Unix timestamp to SkyBlock Year, Season, Day & Time
+function unixToSkyBlockTime(unixTimestampSeconds = Math.floor(Date.now() / 1000)) {
+  const START_OF_TIMES = 1648800000;
+  const TIME_MULTIPLIER = 72;
+  const SECONDS_PER_SB_DAY = 86400 / TIME_MULTIPLIER; // 1200 seconds (20 mins)
+
+  const elapsedRealSeconds = unixTimestampSeconds - START_OF_TIMES;
+  const totalDays = Math.floor(elapsedRealSeconds / SECONDS_PER_SB_DAY) + 1;
+  const totalSeasons = Math.floor((totalDays - 1) / 93);
+
+  const year = Math.floor(totalSeasons / 4) + 1;
+  const seasonIndex = totalSeasons % 4; // 0: Spring, 1: Summer, 2: Autumn, 3: Winter
+  const dayOfSeason = ((totalDays - 1) % 93) + 1;
+
+  const secondsIntoDay = elapsedRealSeconds % SECONDS_PER_SB_DAY;
+  const hour = Math.floor((secondsIntoDay / SECONDS_PER_SB_DAY) * 24);
+  const minute = Math.floor(((secondsIntoDay / SECONDS_PER_SB_DAY) * 1440) % 60);
+
+  const SEASONS = ["Spring", "Summer", "Autumn", "Winter"];
+  return {
+    totalDays,
+    year,
+    season: SEASONS[seasonIndex],
+    dayOfSeason,
+    hour,
+    minute,
+    formattedTime: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+  };
+}</code></pre>
+          </div>
+
+          <h3 style="margin-top: 28px;">2. How to Calculate the Travelling Zoo</h3>
+          <p>
+            The Travelling Zoo visits the hub <strong>twice every SkyBlock year</strong>:
+          </p>
+          <ul>
+            <li><strong>Early Summer:</strong> Summer Days 1, 2, and 3 (lasts 1 real hour = 3 SkyBlock days).</li>
+            <li><strong>Early Winter:</strong> Winter Days 1, 2, and 3 (lasts 1 real hour = 3 SkyBlock days).</li>
+          </ul>
+
+          <p>The calculation follows a 4-step deterministic pipeline:</p>
+          <ol class="ordered-step-list">
+            <li><strong>Derive the Seed:</strong> Because the zoo happens every 2 seasons, the seed is <code>Math.floor(seasonsSinceEpoch / 2)</code>.</li>
+            <li><strong>Determine Legendary Pet:</strong> The 5 pets rotate sequentially: <code>['elephant', 'giraffe', 'tiger', 'lion', 'monkey']</code>. The legendary index is <code>seed % 5</code>.</li>
+            <li><strong>Roll Remaining 2 Pets:</strong> An instance of <code>JavaRandom(seed)</code> picks 2 distinct non-legendary pets using <code>rng.nextInt(5)</code>.</li>
+            <li><strong>Assign Rarities:</strong> The legendary pet is locked to <code>LEGENDARY</code>. The other 2 pets roll a random rarity from <code>['COMMON', 'UNCOMMON', 'RARE', 'EPIC']</code> using <code>rarities[rng.nextInt(4)]</code>.</li>
+          </ol>
+
+          <div class="code-block-wrapper" style="margin-top: 14px;">
+            <div class="code-block-header">
+              <span>Travelling Zoo Calculator Implementation</span>
+              <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+            </div>
+            <pre><code>function getTravellingZooStock(totalDays) {
+  const PET_TYPES = ['elephant', 'giraffe', 'tiger', 'lion', 'monkey'];
+  const RARITIES = ['COMMON', 'UNCOMMON', 'RARE', 'EPIC'];
+
+  const daysSinceEpoch = totalDays - 1;
+  const seasonsSinceEpoch = Math.floor(daysSinceEpoch / 93);
+  const seed = Math.floor(seasonsSinceEpoch / 2);
+
+  // 1. Guaranteed Legendary Pet in Fixed Rotation
+  const legendaryIndex = seed % PET_TYPES.length;
+  const picked = [legendaryIndex];
+  const rng = new JavaRandom(seed);
+
+  // 2. Roll 2 additional distinct pets
+  while (picked.length < 3) {
+    const idx = rng.nextInt(PET_TYPES.length);
+    if (!picked.includes(idx)) picked.push(idx);
+  }
+
+  // 3. Assign rarities
+  const pets = picked.map((idx) => {
+    const name = PET_TYPES[idx];
+    const rarity = (idx === legendaryIndex) ? 'LEGENDARY' : RARITIES[rng.nextInt(RARITIES.length)];
+    return { name, rarity };
+  });
+
+  return {
+    seed,
+    legendaryPet: pets[0],
+    allPets: pets
+  };
+}</code></pre>
+          </div>
+
+          <h3 style="margin-top: 28px;">3. How to Calculate Ethan's Farming Contest Crops</h3>
+          <p>
+            Ethan's Farming Contests occur <strong>every 3 SkyBlock days</strong> (<code>daysSinceEpoch % 3 === 0</code>), which is exactly <strong>every 60 real minutes</strong> (since 1 SkyBlock day = 20 real minutes).
+          </p>
+          <ol class="ordered-step-list">
+            <li><strong>Calculate Event ID:</strong> <code>eventId = Math.floor(daysSinceEpoch / 3)</code>.</li>
+            <li><strong>Generate 48-bit Seed with Golden Ratio:</strong> The event ID is bitwise XORed with the 64-bit Golden Ratio integer <code>0x9E3779B97F4A7C15n</code> and masked to 48 bits.</li>
+            <li><strong>Fisher-Yates Shuffle over 10 Crops:</strong> The 10 available crops (<code>WHEAT</code>, <code>SUGAR_CANE</code>, <code>CARROT</code>, <code>POTATO</code>, <code>MELON</code>, <code>PUMPKIN</code>, <code>COCOA_BEANS</code>, <code>CACTUS</code>, <code>MUSHROOM</code>, <code>BEETROOT</code>) are shuffled deterministically and the top 3 are selected.</li>
+          </ol>
+
+          <div class="code-block-wrapper" style="margin-top: 14px;">
+            <div class="code-block-header">
+              <span>Ethan's Farming Contest Crops Calculator</span>
+              <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+            </div>
+            <pre><code>function getFarmingContestCrops(eventId) {
+  const CROPS = ['WHEAT', 'SUGAR_CANE', 'CARROT', 'POTATO', 'MELON', 'PUMPKIN', 'COCOA_BEANS', 'CACTUS', 'MUSHROOM', 'BEETROOT'];
+  const GOLDEN = 0x9E3779B97F4A7C15n;
+  const seed64 = (BigInt(eventId) ^ GOLDEN) & ((1n << 48n) - 1n);
+  const rng = new JavaRandom(Number(seed64));
+
+  const list = CROPS.slice();
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = rng.nextInt(i + 1);
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+  return list.slice(0, 3); // Active 3 crops for this contest
+}</code></pre>
+          </div>
+
+          <h3 style="margin-top: 28px;">4. Deterministic Java 48-bit Linear Congruential Generator (LCG)</h3>
+          <p>
+            Because Minecraft servers run on Java, random outcomes rely on <code>java.util.Random</code>. To match server-side logic in web apps or bots without backend requests, <code>calendarjs</code> replicates Java's LCG:
+          </p>
+
+          <div class="code-block-wrapper">
+            <div class="code-block-header">
+              <span>Java 48-bit LCG Random Class</span>
+              <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+            </div>
+            <pre><code>// Java Linear Congruential Generator (LCG) Random Implementation
+class JavaRandom {
+  constructor(seedVal) {
+    this.MUL = 0x5DEECE66Dn;
+    this.ADD = 0xBn;
+    this.MASK48 = (1n << 48n) - 1n;
+    this.seed = (BigInt(seedVal) ^ this.MUL) & this.MASK48;
+  }
+  next(bits) {
+    this.seed = (this.seed * this.MUL + this.ADD) & this.MASK48;
+    return Number(this.seed >> (48n - BigInt(bits)));
+  }
+  nextInt(bound) {
+    if ((bound & (bound - 1)) === 0) {
+      return Math.floor(bound * (this.next(31) / 2147483648));
+    }
+    let bits, val;
+    do {
+      bits = this.next(31);
+      val = bits % bound;
+    } while (bits - val + (bound - 1) < 0);
+    return val;
+  }
+}</code></pre>
+          </div>
+
+          <h3 style="margin-top: 28px;">5. SkyBlock Server Events Schedule Reference</h3>
+          <div class="params-table-wrapper" style="margin-top: 12px;">
+            <table class="params-table">
+              <thead>
+                <tr>
+                  <th>Event Name</th>
+                  <th>SkyBlock Calendar Date</th>
+                  <th>Real-World Recurrence &amp; Duration</th>
+                  <th>Mechanics &amp; Calculation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Travelling Zoo</strong></td>
+                  <td>Summer 1–3 &amp; Winter 1–3</td>
+                  <td>Every ~31 real hours (lasts 1 real hour)</td>
+                  <td>Seed: <code>Math.floor(seasonsSinceEpoch / 2)</code>. Fixed legendary cycle + 2 random pets.</td>
+                </tr>
+                <tr>
+                  <td><strong>Ethan's Farming Contest</strong></td>
+                  <td>Every 3rd SkyBlock Day</td>
+                  <td>Every 1 real hour (lasts 20 real minutes)</td>
+                  <td>Seed: <code>eventId ^ 0x9E3779B97F4A7C15n</code>. Shuffles 10 crops, picks top 3.</td>
+                </tr>
+                <tr>
+                  <td><strong>Spooky Festival</strong></td>
+                  <td>Autumn 60, 61, 62</td>
+                  <td>Every 124 real hours (~5.16 days), lasts 1 hr</td>
+                  <td>Triggered when <code>season === 2 &amp;&amp; dayOfSeason >= 60 &amp;&amp; dayOfSeason <= 62</code>.</td>
+                </tr>
+                <tr>
+                  <td><strong>New Year Celebration</strong></td>
+                  <td>Winter 91, 92, 93</td>
+                  <td>Every 124 real hours (~5.16 days), lasts 1 hr</td>
+                  <td>New Year Cake Bag item dispenser. Triggered when <code>season === 3 &amp;&amp; dayOfSeason >= 91</code>.</td>
+                </tr>
+                <tr>
+                  <td><strong>Season of the Pig</strong></td>
+                  <td>Spring 1–93 (every 4th SB year)</td>
+                  <td>Every ~20.6 real days (lasts 31 real hours)</td>
+                  <td>Active when <code>season === 0 &amp;&amp; (year - 1) % 4 === 0</code>.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 style="margin-top: 28px;">6. Real-Time UI Engine &amp; Lifecycle (SkyCalendar Implementation)</h3>
+          <p>
+            The live interactive SkyCalendar UI runs on a decoupled client-side architecture consisting of a pure mathematical engine and a 2-tier timer loop:
+          </p>
+
+          <ol class="ordered-step-list">
+            <li>
+              <strong>31-Day Pagination Sheets (<code>renderGrid</code>):</strong>
+              The calendar displays 31 days per page (representing Early, Mid, or Late season sheets). It pre-caches the current and next page in a memory map (<code>pagesDataCache</code>) so page flipping is instantaneous with zero re-calculation overhead.
+            </li>
+            <li>
+              <strong>1-Second Event Countdown Loop:</strong>
+              Maintains an array of target timestamps for all upcoming server events. Every 1,000ms, it computes <code>msLeft = event.targetTime - Date.now()</code> and dynamically formats countdown labels (<code>0d 0h 0m 0s</code>).
+            </li>
+            <li>
+              <strong>20-Minute Day Advance Detector:</strong>
+              Every second, the loop checks if <code>todaySkyblock !== newSkyblockDay</code>. When the 20-minute mark hits and the SkyBlock day advances, the engine automatically updates the date banner (e.g. <em>Today: Year X, Summer, Day Y</em>), flips pagination to the active page if necessary, and re-seeds upcoming events.
+            </li>
+            <li>
+              <strong>Interactive Day Modal &amp; Deep Inspection:</strong>
+              Clicking any day on the 31-day grid opens a detailed inspection modal that displays the exact countdown timer to that day, all active server events, specific Travelling Zoo pets, and Ethan's Farming Contest crops for that date.
+            </li>
+          </ol>
+
+          <div class="code-block-wrapper" style="margin-top: 14px;">
+            <div class="code-block-header">
+              <span>SkyCalendar Real-Time Event Loop Boilerplate</span>
+              <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+            </div>
+            <pre><code>// SkyCalendar Real-Time Ticker & Day Transition Engine
+class SkyCalendarController {
+  constructor() {
+    this.currentDay = 0;
+    this.upcomingEvents = [];
+  }
+
+  start() {
+    this.refreshTime();
+
+    // 1. Ticker: Update event countdowns every second
+    setInterval(() => {
+      this.upcomingEvents.forEach((ev) => {
+        const msLeft = ev.targetTime - Date.now();
+        ev.countdownText = this.formatCountdown(msLeft);
+      });
+    }, 1000);
+
+    // 2. Day Advancer: Check for 20-minute SkyBlock day rollover
+    setInterval(() => {
+      const timeData = unixToSkyBlockTime();
+      if (this.currentDay !== timeData.totalDays) {
+        this.currentDay = timeData.totalDays;
+        console.log(`SkyBlock Day Rollover: Year ${timeData.year}, ${timeData.season}, Day ${timeData.dayOfSeason}`);
+        this.refreshEvents();
+      }
+    }, 1000);
+  }
+
+  formatCountdown(ms) {
+    if (ms <= 0) return "Active Now";
+    const s = Math.floor(ms / 1000), m = Math.floor(s / 60), h = Math.floor(m / 60), d = Math.floor(h / 24);
+    return `${d}d ${h % 24}h ${m % 60}m ${s % 60}s`;
+  }
+}</code></pre>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Section: NBT & Binary Decoding Masterclass -->
+      <section class="doc-section" id="section-nbt-decoding">
+        <div class="section-header">
+          <h2><span class="material-icons">terminal</span> NBT &amp; Binary Data Decoding Guide</h2>
+          <p>Complete guide for decoding Base64 GZIP Minecraft Named Binary Tag (NBT) blobs across Node.js, Python, Java, and Go.</p>
+        </div>
+
+        <div class="prose-card">
+          <h3>Understanding CraftersMC NBT Data Storage</h3>
+          <p>
+            In CraftersMC SkyBlock, all items and storage containers are stored as <strong>Base64-encoded, GZIP-compressed Named Binary Tag (NBT) compound byte streams</strong>.
+          </p>
+          <p>
+            A typical encoded NBT string begins with the Base64 GZIP magic prefix <code>H4sI...</code>. To extract item names, lore descriptions, custom attributes, enchantments, and stats, your application must:
+          </p>
+          <ol class="ordered-step-list">
+            <li><strong>Decode Base64</strong> into a raw binary byte buffer.</li>
+            <li><strong>Decompress GZIP</strong> into an uncompressed NBT byte stream.</li>
+            <li><strong>Parse NBT Compound Tag</strong> into a structured object/dictionary.</li>
+            <li><strong>Extract ExtraAttributes</strong> (e.g. <code>enchantments</code>, <code>id</code>, <code>rarity_upgrades</code>, <code>slayer_kills</code>, <code>originTag</code>).</li>
+          </ol>
+
+          <h3 style="margin-top: 24px;">All 15 CraftersMC NBT Storage Containers</h3>
+          <p>The API exposes 15 distinct Base64 NBT compounds across member profiles and auctions:</p>
+
+          <div class="params-table-wrapper" style="margin-top: 10px; margin-bottom: 24px;">
+            <table class="params-table">
+              <thead>
+                <tr>
+                  <th>NBT Field Location</th>
+                  <th>Payload Type</th>
+                  <th>Description &amp; Contents</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><code>member.inventoryContents</code></td><td><span class="param-type">Base64 GZIP NBT</span></td><td>Player's main 36 inventory slots (hotbar + storage).</td></tr>
+                <tr><td><code>member.enderContents</code></td><td><span class="param-type">Base64 GZIP NBT</span></td><td>Ender Chest storage slots.</td></tr>
+                <tr><td><code>member.armorContents</code></td><td><span class="param-type">Base64 GZIP NBT</span></td><td>4 equipped armor slots (Helmet, Chestplate, Leggings, Boots).</td></tr>
+                <tr><td><code>member.accessoryBag</code></td><td><span class="param-type">Base64 GZIP NBT</span></td><td>Accessory / Talisman Bag storage compound.</td></tr>
+                <tr><td><code>member.quiver</code></td><td><span class="param-type">Base64 GZIP NBT</span></td><td>Quiver storage holding various arrow types and stacks.</td></tr>
+                <tr><td><code>member.newYearCakeBag</code></td><td><span class="param-type">Base64 GZIP NBT</span></td><td>New Year Cake Bag container storing numbered century cakes.</td></tr>
+                <tr><td><code>member.petInventory</code></td><td><span class="param-type">Base64 GZIP NBT</span></td><td>All player SkyBlock pets with levels, held pet items, candies, and XP.</td></tr>
+                <tr><td><code>member.otherInventories.wardrobe_inventory</code></td><td><span class="param-type">Base64 GZIP NBT</span></td><td>Wardrobe slots storing saved armor loadout sets.</td></tr>
+                <tr><td><code>member.otherInventories.extra_equipment</code></td><td><span class="param-type">Base64 GZIP NBT</span></td><td>Equipped equipment pieces (Necklace, Cloak, Belt, Gloves).</td></tr>
+                <tr><td><code>member.otherInventories.medal_inventory</code></td><td><span class="param-type">Base64 GZIP NBT</span></td><td>Ethan's Farming Contest medals storage (Bronze, Silver, Gold).</td></tr>
+                <tr><td><code>member.otherInventories.seeds_inventory</code></td><td><span class="param-type">Base64 GZIP NBT</span></td><td>Basket of Seeds item storage container.</td></tr>
+                <tr><td><code>member.otherInventories.saved_effects</code></td><td><span class="param-type">Base64 GZIP NBT</span></td><td>Active potion effects, Booster Cookie, and God Potion buffs.</td></tr>
+                <tr><td><code>member.otherInventories.trick_or_treat_bag</code></td><td><span class="param-type">Base64 GZIP NBT</span></td><td>Spooky Festival Trick or Treat Bag storing green and purple candy.</td></tr>
+                <tr><td><code>member.otherInventories.pumpkin_launcher_ammo</code></td><td><span class="param-type">Base64 GZIP NBT</span></td><td>Pumpkin Launcher ammo storage compound.</td></tr>
+                <tr><td><code>auction.itemData</code></td><td><span class="param-type">Base64 GZIP NBT</span></td><td>Full NBT compound for any active or ended Auction House listing.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="ecosystem-cards-grid">
+            <!-- Node.js / JavaScript Card -->
+            <div class="guide-ecosystem-card">
+              <div class="guide-ecosystem-header">
+                <span class="guide-lang-badge"><span class="material-icons">javascript</span> Node.js / JavaScript</span>
+                <span class="guide-pkg-cmd">npm install prismarine-nbt</span>
+              </div>
+              <div class="guide-ecosystem-desc">Uses <code>prismarine-nbt</code> and Node.js built-in <code>zlib</code>:</div>
+              <div class="code-block-wrapper">
+                <pre><code>const nbt = require('prismarine-nbt');
+const zlib = require('zlib');
+
+async function decodeNBT(base64Data) {
+  if (!base64Data) return null;
+  const buffer = Buffer.from(base64Data, 'base64');
+  const decompressed = zlib.gunzipSync(buffer);
+  const { parsed } = await nbt.parse(decompressed);
+  return nbt.simplify(parsed);
+}</code></pre>
+              </div>
+            </div>
+
+            <!-- Python Card -->
+            <div class="guide-ecosystem-card">
+              <div class="guide-ecosystem-header">
+                <span class="guide-lang-badge"><span class="material-icons">code</span> Python</span>
+                <span class="guide-pkg-cmd">pip install nbtlib</span>
+              </div>
+              <div class="guide-ecosystem-desc">Uses <code>nbtlib</code> with Python standard <code>gzip</code> and <code>base64</code>:</div>
+              <div class="code-block-wrapper">
+                <pre><code>import base64, gzip, io, nbtlib
+
+def decode_nbt(base64_str):
+    if not base64_str:
+        return None
+    raw_bytes = base64.b64decode(base64_str)
+    decompressed = gzip.decompress(raw_bytes)
+    nbt_file = nbtlib.File.parse(io.BytesIO(decompressed))
+    return nbt_file</code></pre>
+              </div>
+            </div>
+
+            <!-- Java Card -->
+            <div class="guide-ecosystem-card">
+              <div class="guide-ecosystem-header">
+                <span class="guide-lang-badge"><span class="material-icons">coffee</span> Java</span>
+                <span class="guide-pkg-cmd">implementation 'com.github.querz:nbt:6.1'</span>
+              </div>
+              <div class="guide-ecosystem-desc">Uses Querz NBT or native Minecraft NBT streams:</div>
+              <div class="code-block-wrapper">
+                <pre><code>import com.github.querz.nbt.io.NBTInputStream;
+import com.github.querz.nbt.tag.CompoundTag;
+import java.io.ByteArrayInputStream;
+import java.util.Base64;
+import java.util.zip.GZIPInputStream;
+
+public CompoundTag decodeNBT(String base64Data) throws Exception {
+    byte[] bytes = Base64.getDecoder().decode(base64Data);
+    GZIPInputStream gzip = new GZIPInputStream(new ByteArrayInputStream(bytes));
+    return (CompoundTag) new NBTInputStream(gzip).readTag(256).getTag();
+}</code></pre>
+              </div>
+            </div>
+
+            <!-- Go Card -->
+            <div class="guide-ecosystem-card">
+              <div class="guide-ecosystem-header">
+                <span class="guide-lang-badge"><span class="material-icons">bolt</span> Go (Golang)</span>
+                <span class="guide-pkg-cmd">go get github.com/THeZet/go-nbt</span>
+              </div>
+              <div class="guide-ecosystem-desc">Uses Go GZIP package with <code>go-nbt</code> parser:</div>
+              <div class="code-block-wrapper">
+                <pre><code>import (
+    "bytes"
+    "compress/gzip"
+    "encoding/base64"
+    "github.com/THeZet/go-nbt"
+)
+
+func DecodeNBT(base64Str string) (map[string]interface{}, error) {
+    data, err := base64.StdEncoding.DecodeString(base64Str)
+    if err != nil { return nil, err }
+    gzReader, err := gzip.NewReader(bytes.NewReader(data))
+    if err != nil { return nil, err }
+    return nbt.Parse(gzReader)
+}</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 32px;" id="section-item-ids">Mapping Decoded Numerical Item IDs to Vanilla Names</h3>
+          <p>
+            When you decode NBT inventory blobs (such as <code>inventoryContents</code>, <code>armorContents</code>, or <code>enderContents</code>), individual item slot objects store their base Minecraft item as a <strong>numerical ID integer / short</strong> (e.g. <code>id: 347</code>, <code>id: 1</code>, <code>id: -10</code>) per the official <a href="https://wiki.bedrock.dev/items/numerical-item-ids" target="_blank" style="color: var(--accent-color); font-weight: 600; text-decoration: underline;">Bedrock Wiki Numerical Item IDs Standard</a>:
+          </p>
+
+          <ul style="margin-bottom: 16px;">
+            <li><strong>Positive IDs (<code>1</code> to <code>828</code>):</strong> Vanilla Minecraft items and weapons (e.g. <code>347</code> = <code>diamond_sword</code>, <code>310</code> = <code>baked_potato</code>, <code>4</code> = <code>cobblestone</code>).</li>
+            <li><strong>Negative IDs (<code>-1</code> to <code>-1125</code>):</strong> Block entities and modern item definitions (e.g. <code>-10</code> = <code>stripped_oak_log</code>, <code>-159</code> = <code>turtle_egg</code>).</li>
+            <li><strong>Namespaced Enchantments (<code>tag.ench</code>):</strong> Unlike item models, enchantments are stored under <code>tag.ench</code> as namespaced string objects (e.g. <code>minecraft:sharpness</code>, <code>minecraft:protection</code>, <code>trpixel:growth</code>, <code>trpixel:telekinesis</code>) with an integer level <code>lvl</code>.</li>
+            <li><strong>Custom SkyBlock Identifiers:</strong> The custom CraftersMC item type is located inside <code>tag.ExtraAttributes.id</code> or custom tag properties (e.g. <code>PIGMAN_SWORD</code>, <code>ASPECT_OF_THE_DRAGONS</code>), while <code>id</code> provides the vanilla item base model.</li>
+          </ul>
+
+          <div class="code-block-wrapper" style="margin-top: 12px;">
+            <div class="code-block-header">
+              <span>NBT Decoded Slot Payload &amp; Mapping Helper (JavaScript)</span>
+              <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+            </div>
+            <pre><code>// Example decoded slot compound from live NBT
+const slotData = {
+  Slot: 0,
+  id: 347, // Bedrock Numerical Item ID (347 = diamond_sword)
+  Count: 1,
+  Damage: 0,
+  tag: {
+    display: {
+      Name: "§6Sharp Aspect of the Dragons",
+      Lore: ["§7Damage: §c+225", "§7Strength: §c+100"]
+    },
+    // Enchantments stored as namespaced strings with lvl
+    ench: [
+      { id: "minecraft:sharpness", lvl: 5 },
+      { id: "minecraft:fire_aspect", lvl: 2 },
+      { id: "trpixel:scavenger", lvl: 3 },
+      { id: "trpixel:critical", lvl: 5 },
+      { id: "trpixel:telekinesis", lvl: 1 }
+    ],
+    pixelReforge: "SHARP"
+  }
+};
+
+// Map numerical item ID to vanilla name while reading string enchantments
+async function mapDecodedItem(slot) {
+  const itemMap = await fetch('/better-api-docs/numerical-item-ids.json').then(r => r.json());
+  const vanillaItemName = itemMap[slot.id] || `unknown_${slot.id}`;
+  const customSkyblockId = slot.tag?.ExtraAttributes?.id || null;
+
+  return {
+    slotIndex: slot.Slot,
+    amount: slot.Count,
+    vanillaIdentifier: `minecraft:${vanillaItemName}`,
+    skyblockItemId: customSkyblockId,
+    displayName: slot.tag?.display?.Name || vanillaItemName,
+    reforge: slot.tag?.pixelReforge || null,
+    enchantments: (slot.tag?.ench || []).map(e => ({
+      identifier: e.id,
+      level: e.lvl
+    }))
+  };
+}</code></pre>
+          </div>
+
+          <!-- Interactive Search & Lookup Component -->
+          <h3 style="margin-top: 28px;">Interactive Numerical Item ID Lookup Tool</h3>
+          <p>Search over 1,900 Bedrock item and block IDs directly in this live reference table:</p>
+
+          <div class="item-id-lookup-container">
+            <div class="item-id-search-bar">
+              <input type="text" id="item-id-search-input" class="item-id-input" placeholder="Search by numerical ID (e.g. 347, -10, 1) or item name (e.g. sword, diamond, log)...">
+              <span id="item-id-count-badge" style="font-size: 0.8rem; color: var(--text-muted); align-self: center; white-space: nowrap;">1,933 IDs loaded</span>
+            </div>
+
+            <div class="item-id-results-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 140px;">Numerical ID</th>
+                    <th>Vanilla Minecraft Identifier</th>
+                    <th style="width: 130px;">Type</th>
+                  </tr>
+                </thead>
+                <tbody id="item-id-table-body">
+                  <!-- Populated dynamically by app.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Detailed Endpoints Breakdown -->
+      <section class="doc-section" id="section-endpoints">
+        <div class="section-header">
+          <h2><span class="material-icons">api</span> Complete Endpoints Reference (11 Routes)</h2>
+          <p>Exhaustive technical documentation, parameter tables, response dictionaries, and multi-language code snippets with mandatory <code>X-API-Key</code> enforcement.</p>
+        </div>
+
+        <div id="endpoints-container">
+          
+          <!-- ========================================================= -->
+          <!-- Endpoint 1: GET /v1/network/status -->
+          <!-- ========================================================= -->
+          <div class="endpoint-docs-block" id="ep-get--v1-network-status">
+            <div class="endpoint-prose-col">
+              <div class="endpoint-breadcrumbs">Network &rsaquo; GET &rsaquo; /v1/network/status</div>
+              <div class="endpoint-title-row">
+                <span class="method-tag get">GET</span>
+                <h3 class="endpoint-heading">Network Status</h3>
+              </div>
+              <div class="endpoint-path-badge">https://api.craftersmc.net/v1/network/status</div>
+              <div class="endpoint-description">
+                Returns the real-time operational status of the CraftersMC network, including total online player count, maximum network capacity, individual game instance breakdowns, and maintenance flags.
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">vpn_key</span> 1. Headers &amp; Authentication</div>
+                <div class="doc-guide-content">
+                  <div class="params-table-wrapper">
+                    <table class="params-table">
+                      <thead><tr><th>Header</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>X-API-Key</code></td><td><span class="param-type">string</span></td><td><span class="badge-required">Required</span></td><td>Your CraftersMC developer API secret key.</td></tr>
+                        <tr><td><code>Accept</code></td><td><span class="param-type">string</span></td><td><span class="badge-optional">Optional</span></td><td><code>application/json</code></td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">data_object</span> 2. Response Structure &amp; Dictionary</div>
+                <div class="doc-guide-content">
+                  Returns a <code>ServerStatusReply</code> object:
+                  <div class="params-table-wrapper" style="margin-top: 10px;">
+                    <table class="params-table">
+                      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>success</code></td><td><span class="param-type">boolean</span></td><td>Indicates if the request completed successfully (always true on 200).</td></tr>
+                        <tr><td><code>playerCount</code></td><td><span class="param-type">integer (int32)</span></td><td>Total number of players currently connected across the network.</td></tr>
+                        <tr><td><code>maxPlayerCount</code></td><td><span class="param-type">integer (int32)</span></td><td>Configured player connection limit for the entire network (e.g. <code>750</code>).</td></tr>
+                        <tr><td><code>fullMaintenance</code></td><td><span class="param-type">boolean</span></td><td>Whether the entire network is in full maintenance mode.</td></tr>
+                        <tr><td><code>plannedMaintenance</code></td><td><span class="param-type">boolean</span></td><td>Whether a scheduled maintenance window is pending.</td></tr>
+                        <tr><td><code>whitelistRank</code></td><td><span class="param-type">enum (PlayerRank)</span></td><td>Minimum rank required to join during maintenance (e.g. <code>DEFAULT</code>).</td></tr>
+                        <tr><td><code>games</code></td><td><span class="param-type">object (map)</span></td><td>Game cluster map (<code>SKYBLOCK</code>, <code>HUB</code>, <code>LIMBO</code>) with nested sub-instance counts under <code>modes</code>.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="subheading"><span class="material-icons">import_export</span> HTTP Status Codes</div>
+              <div class="responses-list">
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-200">200 OK</span> <span class="response-text">Network status retrieved successfully.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-403">401 / 403</span> <span class="response-text">Missing or invalid X-API-Key header.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-429">429 Rate Limit</span> <span class="response-text">Request quota exceeded.</span></div></div>
+              </div>
+            </div>
+
+            <!-- Full-Width Code Console Grid -->
+            <div class="endpoint-code-col">
+              <div class="code-console-grid">
+                <div class="code-block-wrapper">
+                  <div class="code-block-header">
+                    <div class="snippet-tabs">
+                      <button class="snippet-btn active" onclick="switchSnippet(this, 'ep-status-curl')">cURL</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-status-js')">JavaScript</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-status-py')">Python</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-status-java')">Java</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-status-go')">Go</button>
+                    </div>
+                    <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+                  </div>
+                  <div id="ep-status-curl" class="snippet-content"><pre><code>curl -X GET "https://api.craftersmc.net/v1/network/status" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "Accept: application/json"</code></pre></div>
+                  <div id="ep-status-js" class="snippet-content" style="display:none;"><pre><code>const res = await fetch("https://api.craftersmc.net/v1/network/status", {
+  headers: {
+    "X-API-Key": "YOUR_API_KEY",
+    "Accept": "application/json"
+  }
+});
+const data = await res.json();
+console.log(`Online Players: ${data.playerCount}/${data.maxPlayerCount}`);
+console.log(`SkyBlock Hub: ${data.games.SKYBLOCK?.modes?.hub} players`);</code></pre></div>
+                  <div id="ep-status-py" class="snippet-content" style="display:none;"><pre><code>import requests
+headers = {"X-API-Key": "YOUR_API_KEY"}
+res = requests.get("https://api.craftersmc.net/v1/network/status", headers=headers).json()
+print(f"Online: {res['playerCount']}/{res['maxPlayerCount']}")
+print(f"SkyBlock Players: {sum(res['games']['SKYBLOCK']['modes'].values())}")</code></pre></div>
+                  <div id="ep-status-java" class="snippet-content" style="display:none;"><pre><code>import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest req = HttpRequest.newBuilder()
+            .uri(URI.create("https://api.craftersmc.net/v1/network/status"))
+            .header("X-API-Key", "YOUR_API_KEY")
+            .header("Accept", "application/json")
+            .GET().build();
+        HttpResponse<String> res = client.send(req, HttpResponse.BodyHandlers.ofString());
+        System.out.println(res.body());
+    }
+}</code></pre></div>
+                  <div id="ep-status-go" class="snippet-content" style="display:none;"><pre><code>package main
+import (
+    "fmt"; "io"; "net/http"
+)
+
+func main() {
+    client := &http.Client{}
+    req, _ := http.NewRequest("GET", "https://api.craftersmc.net/v1/network/status", nil)
+    req.Header.Set("X-API-Key", "YOUR_API_KEY")
+    req.Header.Set("Accept", "application/json")
+    res, _ := client.Do(req)
+    defer res.Body.Close()
+    body, _ := io.ReadAll(res.Body)
+    fmt.Println(string(body))
+}</code></pre></div>
+                </div>
+
+                <div class="code-block-wrapper">
+                  <div class="code-block-header"><span>Response Example (200 OK)</span><button class="btn-copy" onclick="copyToClipboard(this)">Copy JSON</button></div>
+                  <pre><code>{
+  "success": true,
+  "games": {
+    "LIMBO": {
+      "modes": {
+        "limbo": 8
+      }
+    },
+    "SKYBLOCK": {
+      "modes": {
+        "hub": 53,
+        "dynamic": 80,
+        "the_park": 10,
+        "sb_the_end": 10,
+        "mining_1": 9
+      }
+    },
+    "HUB": {}
+  },
+  "playerCount": 170,
+  "maxPlayerCount": 750,
+  "fullMaintenance": false,
+  "whitelistRank": "DEFAULT",
+  "plannedMaintenance": false
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- Endpoint 2: GET /v1/network/voters -->
+          <!-- ========================================================= -->
+          <div class="endpoint-docs-block" id="ep-get--v1-network-voters">
+            <div class="endpoint-prose-col">
+              <div class="endpoint-breadcrumbs">Network &rsaquo; GET &rsaquo; /v1/network/voters</div>
+              <div class="endpoint-title-row">
+                <span class="method-tag get">GET</span>
+                <h3 class="endpoint-heading">Vote List</h3>
+              </div>
+              <div class="endpoint-path-badge">https://api.craftersmc.net/v1/network/voters</div>
+              <div class="endpoint-description">
+                Returns the list of players who voted for CraftersMC during the current month, along with their cumulative vote counts and the cache fetch timestamp.
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">vpn_key</span> 1. Headers &amp; Authentication</div>
+                <div class="doc-guide-content">
+                  <div class="params-table-wrapper">
+                    <table class="params-table">
+                      <thead><tr><th>Header</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>X-API-Key</code></td><td><span class="param-type">string</span></td><td><span class="badge-required">Required</span></td><td>Your CraftersMC developer API secret key.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">data_object</span> 2. Response Structure &amp; Dictionary</div>
+                <div class="doc-guide-content">
+                  Returns a <code>VotersReply</code> object:
+                  <div class="params-table-wrapper" style="margin-top: 10px;">
+                    <table class="params-table">
+                      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>success</code></td><td><span class="param-type">boolean</span></td><td>Request execution state.</td></tr>
+                        <tr><td><code>month</code></td><td><span class="param-type">string</span></td><td>Current tracking month code formatted as <code>YYYYMM</code> (e.g. <code>202608</code>).</td></tr>
+                        <tr><td><code>count</code></td><td><span class="param-type">integer (int32)</span></td><td>Total number of voter entries in the active leaderboard.</td></tr>
+                        <tr><td><code>fetchedAt</code></td><td><span class="param-type">integer (int64)</span></td><td>Unix epoch timestamp (ms) of the voting list cache refresh.</td></tr>
+                        <tr><td><code>voters</code></td><td><span class="param-type">array of VoterEntry</span></td><td>Array of objects containing <code>nickname</code> (string) and <code>votes</code> (int32).</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="subheading"><span class="material-icons">import_export</span> HTTP Status Codes</div>
+              <div class="responses-list">
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-200">200 OK</span> <span class="response-text">Vote list retrieved successfully.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-403">401 / 403</span> <span class="response-text">Missing or invalid X-API-Key header.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-503">503 Unavailable</span> <span class="response-text">Vote list is warming up.</span></div></div>
+              </div>
+            </div>
+
+            <!-- Full-Width Code Console Grid -->
+            <div class="endpoint-code-col">
+              <div class="code-console-grid">
+                <div class="code-block-wrapper">
+                  <div class="code-block-header">
+                    <div class="snippet-tabs">
+                      <button class="snippet-btn active" onclick="switchSnippet(this, 'ep-voters-curl')">cURL</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-voters-js')">JavaScript</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-voters-py')">Python</button>
+                    </div>
+                    <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+                  </div>
+                  <div id="ep-voters-curl" class="snippet-content"><pre><code>curl -X GET "https://api.craftersmc.net/v1/network/voters" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "Accept: application/json"</code></pre></div>
+                  <div id="ep-voters-js" class="snippet-content" style="display:none;"><pre><code>const res = await fetch("https://api.craftersmc.net/v1/network/voters", {
+  headers: { "X-API-Key": "YOUR_API_KEY" }
+});
+const { voters, month, count } = await res.json();
+console.log(`Month ${month}: ${voters.length}/${count} voters loaded`);
+console.log(`Top Voter: ${voters[0].nickname} with ${voters[0].votes} votes`);</code></pre></div>
+                  <div id="ep-voters-py" class="snippet-content" style="display:none;"><pre><code>import requests
+headers = {"X-API-Key": "YOUR_API_KEY"}
+res = requests.get("https://api.craftersmc.net/v1/network/voters", headers=headers).json()
+print(f"Top voter: {res['voters'][0]['nickname']} ({res['voters'][0]['votes']} votes)")</code></pre></div>
+                </div>
+
+                <div class="code-block-wrapper">
+                  <div class="code-block-header"><span>Response Example (200 OK)</span><button class="btn-copy" onclick="copyToClipboard(this)">Copy JSON</button></div>
+                  <pre><code>{
+  "success": true,
+  "month": "202608",
+  "fetchedAt": 1788029134683,
+  "count": 1000,
+  "voters": [
+    { "nickname": "ZoroNoman", "votes": 30 },
+    { "nickname": "AAAgamer6034", "votes": 29 },
+    { "nickname": "aamorin", "votes": 29 },
+    { "nickname": "AA_Dhruv_op", "votes": 29 },
+    { "nickname": "ZNXayush4102", "votes": 29 }
+  ]
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- Endpoint 3: GET /v1/player/{identifier} -->
+          <!-- ========================================================= -->
+          <div class="endpoint-docs-block" id="ep-get--v1-player--identifier-">
+            <div class="endpoint-prose-col">
+              <div class="endpoint-breadcrumbs">Players &rsaquo; GET &rsaquo; /v1/player/{identifier}</div>
+              <div class="endpoint-title-row">
+                <span class="method-tag get">GET</span>
+                <h3 class="endpoint-heading">Player Profile</h3>
+              </div>
+              <div class="endpoint-path-badge">https://api.craftersmc.net/v1/player/{identifier}</div>
+              <div class="endpoint-description">
+                Retrieves complete player account information by Minecraft username, 32-character hex UUID, or numeric Pixel ID. Returns ranks, total playtime, playtime breakdown, cosmetic unlocks, and privacy settings.
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">tune</span> Parameters &amp; Headers</div>
+                <div class="doc-guide-content">
+                  <div class="params-table-wrapper">
+                    <table class="params-table">
+                      <thead><tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>X-API-Key</code></td><td><span class="param-type">header</span></td><td><span class="param-type">string</span></td><td><span class="badge-required">Required</span></td><td>Your CraftersMC developer API secret key.</td></tr>
+                        <tr><td><code>identifier</code></td><td><span class="param-type">path</span></td><td><span class="param-type">string</span></td><td><span class="badge-required">Required</span></td><td>Player IGN (e.g. <code>Notch</code>), 32-hex UUID, or numeric Pixel ID.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">data_object</span> 2. Decoded Player Profile Schema Dictionary</div>
+                <div class="doc-guide-content">
+                  Returns the complete root player account object:
+                  <div class="params-table-wrapper" style="margin-top: 10px;">
+                    <table class="params-table">
+                      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>name</code></td><td><span class="param-type">string</span></td><td>Current Minecraft in-game username (IGN).</td></tr>
+                        <tr><td><code>nameHistory</code></td><td><span class="param-type">array of string</span></td><td>Previous usernames used on the network.</td></tr>
+                        <tr><td><code>pixelId</code></td><td><span class="param-type">string</span></td><td>Internal network account hex identifier (e.g. <code>a69ebe768</code>).</td></tr>
+                        <tr><td><code>uuid</code></td><td><span class="param-type">string (UUID)</span></td><td>Dashed 36-character player UUID.</td></tr>
+                        <tr><td><code>selectedRank</code></td><td><span class="param-type">enum (PlayerRank)</span></td><td>Active player rank: <code>DEFAULT</code>, <code>VOTER</code>, <code>GOLD</code>, <code>DIAMOND</code>, <code>EMERALD</code>, <code>YOUTUBER</code>, <code>ADMIN</code>, <code>OWNER</code>.</td></tr>
+                        <tr><td><code>networkExp</code></td><td><span class="param-type">integer (int64)</span></td><td>Cumulative network experience points.</td></tr>
+                        <tr><td><code>networkCoins</code></td><td><span class="param-type">integer (int64)</span></td><td>Cosmetics and arcade coins balance.</td></tr>
+                        <tr><td><code>stats.skyBlock.profileId</code></td><td><span class="param-type">string</span></td><td>32-hex UUID of the player's currently active SkyBlock profile.</td></tr>
+                        <tr><td><code>stats.skyBlock.profiles</code></td><td><span class="param-type">object (map)</span></td><td>Map of profile UUIDs to <code>{ cuteName: string, profileId: string }</code> (e.g. <code>PLUM</code>, <code>PEACH</code>, <code>KIWI</code>).</td></tr>
+                        <tr><td><code>totalPlaytime</code></td><td><span class="param-type">integer (int64)</span></td><td>Total network playtime in milliseconds.</td></tr>
+                        <tr><td><code>playtimePerGame</code></td><td><span class="param-type">object (map)</span></td><td>Playtime breakdown in ms across game types (<code>SKYBLOCK</code>, <code>HUB</code>, <code>LIMBO</code>).</td></tr>
+                        <tr><td><code>firstLogin</code> / <code>lastLogin</code></td><td><span class="param-type">string (ISO 8601)</span></td><td>ISO timestamp strings of player connection milestones.</td></tr>
+                        <tr><td><code>unlockedCollectables</code></td><td><span class="param-type">array of string</span></td><td>Array of unlocked cosmetic identifiers (pets, suits, gadgets, particle trails).</td></tr>
+                        <tr><td><code>sbClaimedCakes</code></td><td><span class="param-type">array of integer</span></td><td>List of SkyBlock New Year Cake edition numbers claimed by the player.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="subheading"><span class="material-icons">import_export</span> HTTP Status Codes</div>
+              <div class="responses-list">
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-200">200 OK</span> <span class="response-text">Player found and returned.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-403">401 / 403</span> <span class="response-text">Missing or invalid X-API-Key header.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-400">400 Bad Request</span> <span class="response-text">Malformed username or UUID format.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-404">404 Not Found</span> <span class="response-text">No player matching the given identifier exists.</span></div></div>
+              </div>
+            </div>
+
+            <!-- Full-Width Code Console Grid -->
+            <div class="endpoint-code-col">
+              <div class="code-console-grid">
+                <div class="code-block-wrapper">
+                  <div class="code-block-header">
+                    <div class="snippet-tabs">
+                      <button class="snippet-btn active" onclick="switchSnippet(this, 'ep-player-curl')">cURL</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-player-js')">JavaScript</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-player-py')">Python</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-player-java')">Java</button>
+                    </div>
+                    <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+                  </div>
+                  <div id="ep-player-curl" class="snippet-content"><pre><code>curl -X GET "https://api.craftersmc.net/v1/player/NetworkPg" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "Accept: application/json"</code></pre></div>
+                  <div id="ep-player-js" class="snippet-content" style="display:none;"><pre><code>const res = await fetch("https://api.craftersmc.net/v1/player/NetworkPg", {
+  headers: { "X-API-Key": "YOUR_API_KEY" }
+});
+const player = await res.json();
+console.log(`${player.name} [${player.selectedRank}] - ${(player.totalPlaytime / 3.6e6).toFixed(1)} hrs`);
+console.log(`Active Profile: ${player.stats.skyBlock.profiles[player.stats.skyBlock.profileId].cuteName}`);</code></pre></div>
+                  <div id="ep-player-py" class="snippet-content" style="display:none;"><pre><code>import requests
+headers = {"X-API-Key": "YOUR_API_KEY"}
+p = requests.get("https://api.craftersmc.net/v1/player/NetworkPg", headers=headers).json()
+active_id = p["stats"]["skyBlock"]["profileId"]
+cute_name = p["stats"]["skyBlock"]["profiles"][active_id]["cuteName"]
+print(f"{p['name']} ({p['selectedRank']}) - Profile: {cute_name}")</code></pre></div>
+                  <div id="ep-player-java" class="snippet-content" style="display:none;"><pre><code>import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest req = HttpRequest.newBuilder()
+            .uri(URI.create("https://api.craftersmc.net/v1/player/NetworkPg"))
+            .header("X-API-Key", "YOUR_API_KEY")
+            .header("Accept", "application/json")
+            .GET().build();
+        HttpResponse<String> res = client.send(req, HttpResponse.BodyHandlers.ofString());
+        System.out.println(res.body());
+    }
+}</code></pre></div>
+                </div>
+
+                <div class="code-block-wrapper">
+                  <div class="code-block-header"><span>Response Example (200 OK)</span><button class="btn-copy" onclick="copyToClipboard(this)">Copy JSON</button></div>
+                  <pre><code>{
+  "name": "NetworkPg",
+  "nameHistory": [],
+  "pixelId": "d34f76fd5",
+  "uuid": "ac6fca9d-0771-3960-aa85-fd21cb53f18e",
+  "selectedRank": "DEFAULT",
+  "networkExp": 60657,
+  "networkCoins": 5693,
+  "stats": {
+    "skyBlock": {
+      "profileId": "7da2465cd78141c0b0669a5eb48f250c",
+      "profiles": {
+        "7da2465cd78141c0b0669a5eb48f250c": {
+          "cuteName": "PLUM",
+          "profileId": "7da2465cd78141c0b0669a5eb48f250c"
+        }
+      }
+    }
+  },
+  "totalPlaytime": 1169586,
+  "playtimePerGame": {
+    "SKYBLOCK": 1095731,
+    "LIMBO": 67658,
+    "HUB": 5117
+  },
+  "firstLogin": "2024-02-11T10:32:12+03:00",
+  "lastLogin": "2026-08-28T13:27:27.361Z"
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- Endpoint 4: GET /v1/resources/skyblock/bazaar/items -->
+          <!-- ========================================================= -->
+          <div class="endpoint-docs-block" id="ep-get--v1-resources-skyblock-bazaar-items">
+            <div class="endpoint-prose-col">
+              <div class="endpoint-breadcrumbs">SkyBlock Bazaar &rsaquo; GET &rsaquo; /v1/resources/skyblock/bazaar/items</div>
+              <div class="endpoint-title-row">
+                <span class="method-tag get">GET</span>
+                <h3 class="endpoint-heading">Bazaar Item Catalog</h3>
+              </div>
+              <div class="endpoint-path-badge">https://api.craftersmc.net/v1/resources/skyblock/bazaar/items</div>
+              <div class="endpoint-description">
+                Returns the full catalog array of all item IDs tradeable on the CraftersMC SkyBlock Bazaar.
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">vpn_key</span> 1. Headers &amp; Authentication</div>
+                <div class="doc-guide-content">
+                  <div class="params-table-wrapper">
+                    <table class="params-table">
+                      <thead><tr><th>Header</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>X-API-Key</code></td><td><span class="param-type">string</span></td><td><span class="badge-required">Required</span></td><td>Your CraftersMC developer API secret key.</td></tr>
+                        <tr><td><code>Accept</code></td><td><span class="param-type">string</span></td><td><span class="badge-optional">Optional</span></td><td><code>application/json</code></td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">data_object</span> 2. Decoded Response Structure</div>
+                <div class="doc-guide-content">
+                  Returns a <code>BazaarItemListReply</code> object:
+                  <div class="params-table-wrapper" style="margin-top: 10px;">
+                    <table class="params-table">
+                      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>success</code></td><td><span class="param-type">boolean</span></td><td>Indicates successful execution (always true on 200).</td></tr>
+                        <tr><td><code>items</code></td><td><span class="param-type">array of string</span></td><td>List of valid item IDs (e.g. <code>ENCHANTED_PORK</code>, <code>HOT_POTATO_BOOK</code>) tradeable on the Bazaar.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="subheading"><span class="material-icons">import_export</span> HTTP Status Codes</div>
+              <div class="responses-list">
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-200">200 OK</span> <span class="response-text">Catalog retrieved successfully.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-403">401 / 403</span> <span class="response-text">Missing or invalid X-API-Key header.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-429">429 Rate Limit</span> <span class="response-text">Rate limit exceeded.</span></div></div>
+              </div>
+            </div>
+
+            <!-- Full-Width Code Console Grid -->
+            <div class="endpoint-code-col">
+              <div class="code-console-grid">
+                <div class="code-block-wrapper">
+                  <div class="code-block-header">
+                    <div class="snippet-tabs">
+                      <button class="snippet-btn active" onclick="switchSnippet(this, 'ep-bzitems-curl')">cURL</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-bzitems-js')">JavaScript</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-bzitems-py')">Python</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-bzitems-java')">Java</button>
+                    </div>
+                    <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+                  </div>
+                  <div id="ep-bzitems-curl" class="snippet-content"><pre><code>curl -X GET "https://api.craftersmc.net/v1/resources/skyblock/bazaar/items" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "Accept: application/json"</code></pre></div>
+                  <div id="ep-bzitems-js" class="snippet-content" style="display:none;"><pre><code>const res = await fetch("https://api.craftersmc.net/v1/resources/skyblock/bazaar/items", {
+  headers: { "X-API-Key": "YOUR_API_KEY" }
+});
+const { items } = await res.json();
+console.log(`Found ${items.length} tradeable Bazaar items.`);</code></pre></div>
+                  <div id="ep-bzitems-py" class="snippet-content" style="display:none;"><pre><code>import requests
+headers = {"X-API-Key": "YOUR_API_KEY"}
+res = requests.get("https://api.craftersmc.net/v1/resources/skyblock/bazaar/items", headers=headers).json()
+print(f"Total Bazaar items: {len(res.get('items', []))}")</code></pre></div>
+                  <div id="ep-bzitems-java" class="snippet-content" style="display:none;"><pre><code>import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest req = HttpRequest.newBuilder()
+            .uri(URI.create("https://api.craftersmc.net/v1/resources/skyblock/bazaar/items"))
+            .header("X-API-Key", "YOUR_API_KEY")
+            .GET().build();
+        HttpResponse<String> res = client.send(req, HttpResponse.BodyHandlers.ofString());
+        System.out.println(res.body());
+    }
+}</code></pre></div>
+                </div>
+
+                  <div class="code-block-wrapper">
+                  <div class="code-block-header"><span>Response Example (200 OK)</span><button class="btn-copy" onclick="copyToClipboard(this)">Copy JSON</button></div>
+                  <pre><code>{
+  "success": true,
+  "items": [
+    "mite_gel",
+    "enchanted_diamond",
+    "super_compactor_3000",
+    "summoning_eye",
+    "cropie",
+    "revenant_flesh",
+    "squash",
+    "fermento"
+  ]
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- Endpoint 5: GET /v1/skyblock/bazaar/{itemId}/details -->
+          <!-- ========================================================= -->
+          <div class="endpoint-docs-block" id="ep-get--v1-skyblock-bazaar--itemId--details">
+            <div class="endpoint-prose-col">
+              <div class="endpoint-breadcrumbs">SkyBlock Bazaar &rsaquo; GET &rsaquo; /v1/skyblock/bazaar/{itemId}/details</div>
+              <div class="endpoint-title-row">
+                <span class="method-tag get">GET</span>
+                <h3 class="endpoint-heading">Bazaar Item Market Depth</h3>
+              </div>
+              <div class="endpoint-path-badge">https://api.craftersmc.net/v1/skyblock/bazaar/{itemId}/details</div>
+              <div class="endpoint-description">
+                Retrieves live order book data for a single Bazaar item ID, including top buy offers, top sell orders, order counts, total buy/sell volumes, and 7-day weighted average price.
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">tune</span> Parameters &amp; Headers</div>
+                <div class="doc-guide-content">
+                  <div class="params-table-wrapper">
+                    <table class="params-table">
+                      <thead><tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>X-API-Key</code></td><td><span class="param-type">header</span></td><td><span class="param-type">string</span></td><td><span class="badge-required">Required</span></td><td>Your CraftersMC developer API secret key.</td></tr>
+                        <tr><td><code>itemId</code></td><td><span class="param-type">path</span></td><td><span class="param-type">string</span></td><td><span class="badge-required">Required</span></td><td>Target Bazaar item ID (e.g. <code>enchanted_diamond</code>, <code>super_compactor_3000</code>).</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">data_object</span> 2. Decoded Response Structure</div>
+                <div class="doc-guide-content">
+                  Returns a <code>BazaarItemReply</code> object:
+                  <div class="params-table-wrapper" style="margin-top: 10px;">
+                    <table class="params-table">
+                      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>success</code></td><td><span class="param-type">boolean</span></td><td>Request success status.</td></tr>
+                        <tr><td><code>itemId</code></td><td><span class="param-type">string</span></td><td>The unique item ID identifier.</td></tr>
+                        <tr><td><code>buyVolume</code></td><td><span class="param-type">integer (int64)</span></td><td>Total quantity of items requested in active buy orders (Instant Sell demand).</td></tr>
+                        <tr><td><code>sellVolume</code></td><td><span class="param-type">integer (int64)</span></td><td>Total quantity of items listed in active sell offers (Instant Buy supply).</td></tr>
+                        <tr><td><code>weeklyAveragePrice</code></td><td><span class="param-type">number (double)</span></td><td>Volume-weighted moving average price over the last 7 days.</td></tr>
+                        <tr><td><code>buyTopEntries</code></td><td><span class="param-type">array of BazaarEntry</span></td><td>Top buy offers (highest price first): array of <code>{ price: number, quantity: integer, orderCount: integer }</code>.</td></tr>
+                        <tr><td><code>sellTopEntries</code></td><td><span class="param-type">array of BazaarEntry</span></td><td>Top sell offers (lowest price first): array of <code>{ price: number, quantity: integer, orderCount: integer }</code>.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="subheading"><span class="material-icons">import_export</span> HTTP Status Codes</div>
+              <div class="responses-list">
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-200">200 OK</span> <span class="response-text">Item market depth retrieved.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-403">401 / 403</span> <span class="response-text">Missing or invalid X-API-Key header.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-400">400 Bad Request</span> <span class="response-text">Invalid item ID format.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-404">404 Not Found</span> <span class="response-text">Item not populated in Bazaar database.</span></div></div>
+              </div>
+            </div>
+
+            <!-- Full-Width Code Console Grid -->
+            <div class="endpoint-code-col">
+              <div class="code-console-grid">
+                <div class="code-block-wrapper">
+                  <div class="code-block-header">
+                    <div class="snippet-tabs">
+                      <button class="snippet-btn active" onclick="switchSnippet(this, 'ep-bzdet-curl')">cURL</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-bzdet-js')">JavaScript</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-bzdet-py')">Python</button>
+                    </div>
+                    <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+                  </div>
+                  <div id="ep-bzdet-curl" class="snippet-content"><pre><code>curl -X GET "https://api.craftersmc.net/v1/skyblock/bazaar/enchanted_diamond/details" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "Accept: application/json"</code></pre></div>
+                  <div id="ep-bzdet-js" class="snippet-content" style="display:none;"><pre><code>const res = await fetch("https://api.craftersmc.net/v1/skyblock/bazaar/enchanted_diamond/details", {
+  headers: { "X-API-Key": "YOUR_API_KEY" }
+});
+const data = await res.json();
+console.log(`Instant Buy: ${data.sellTopEntries[0]?.price} | Instant Sell: ${data.buyTopEntries[0]?.price}`);</code></pre></div>
+                  <div id="ep-bzdet-py" class="snippet-content" style="display:none;"><pre><code>import requests
+headers = {"X-API-Key": "YOUR_API_KEY"}
+res = requests.get("https://api.craftersmc.net/v1/skyblock/bazaar/enchanted_diamond/details", headers=headers).json()
+print(f"Top Buy Offer: {res['buyTopEntries'][0]['price']} coins ({res['buyTopEntries'][0]['quantity']} units)")</code></pre></div>
+                </div>
+
+                <div class="code-block-wrapper">
+                  <div class="code-block-header"><span>Response Example (200 OK)</span><button class="btn-copy" onclick="copyToClipboard(this)">Copy JSON</button></div>
+                  <pre><code>{
+  "success": true,
+  "itemId": "enchanted_diamond",
+  "buyVolume": 105634,
+  "sellVolume": 78200,
+  "weeklyAveragePrice": 1248.5,
+  "buyTopEntries": [
+    { "price": 1251.8, "quantity": 1425, "orderCount": 1 },
+    { "price": 1251.7, "quantity": 5907, "orderCount": 1 }
+  ],
+  "sellTopEntries": [
+    { "price": 1253.2, "quantity": 1024, "orderCount": 1 },
+    { "price": 1253.3, "quantity": 256, "orderCount": 1 }
+  ]
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- Endpoint 6: GET /v1/skyblock/auction/{auctionId} -->
+          <!-- ========================================================= -->
+          <div class="endpoint-docs-block" id="ep-get--v1-skyblock-auction--auctionId-">
+            <div class="endpoint-prose-col">
+              <div class="endpoint-breadcrumbs">SkyBlock Auctions &rsaquo; GET &rsaquo; /v1/skyblock/auction/{auctionId}</div>
+              <div class="endpoint-title-row">
+                <span class="method-tag get">GET</span>
+                <h3 class="endpoint-heading">Auction Details &amp; NBT</h3>
+              </div>
+              <div class="endpoint-path-badge">https://api.craftersmc.net/v1/skyblock/auction/{auctionId}</div>
+              <div class="endpoint-description">
+                Retrieves complete details for a single SkyBlock auction by its 32-hex UUID, including bid history, starting price, highest bid, seller profile, and Base64 GZIP NBT item binary.
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">tune</span> Parameters &amp; Headers</div>
+                <div class="doc-guide-content">
+                  <div class="params-table-wrapper">
+                    <table class="params-table">
+                      <thead><tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>X-API-Key</code></td><td><span class="param-type">header</span></td><td><span class="param-type">string</span></td><td><span class="badge-required">Required</span></td><td>Your CraftersMC developer API secret key.</td></tr>
+                        <tr><td><code>auctionId</code></td><td><span class="param-type">path</span></td><td><span class="param-type">string</span></td><td><span class="badge-required">Required</span></td><td>32-hex character auction UUID (no dashes).</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">data_object</span> 2. Decoded ApiAuctionEntry &amp; ApiBidEntry Fields</div>
+                <div class="doc-guide-content">
+                  Returns an <code>AuctionReply</code> wrapping <code>auction</code> (ApiAuctionEntry) and <code>bids</code> (array of ApiBidEntry):
+                  <div class="params-table-wrapper" style="margin-top: 10px;">
+                    <table class="params-table">
+                      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>auction.id</code></td><td><span class="param-type">string</span></td><td>32-hex unique auction UUID.</td></tr>
+                        <tr><td><code>auction.createdAt</code></td><td><span class="param-type">integer (int64)</span></td><td>Creation epoch timestamp in milliseconds.</td></tr>
+                        <tr><td><code>auction.endsAt</code></td><td><span class="param-type">integer (int64)</span></td><td>Auction expiration epoch timestamp in milliseconds.</td></tr>
+                        <tr><td><code>auction.itemData</code></td><td><span class="param-type">string (Base64 NBT)</span></td><td>Base64 GZIP-compressed NBT compound containing item enchantments, lore, and extra attributes.</td></tr>
+                        <tr><td><code>auction.itemId</code></td><td><span class="param-type">string</span></td><td>Item identifier (e.g. <code>PIGMAN_SWORD</code>, <code>ASPECT_OF_THE_DRAGONS</code>, <code>trpixel:obsidian_chestplate</code>).</td></tr>
+                        <tr><td><code>auction.tier</code></td><td><span class="param-type">enum (ItemRarity)</span></td><td>Rarity tier: <code>COMMON</code>, <code>UNCOMMON</code>, <code>RARE</code>, <code>EPIC</code>, <code>LEGENDARY</code>, <code>MYTHIC</code>, <code>SPECIAL</code>, <code>VERY SPECIAL</code>.</td></tr>
+                        <tr><td><code>auction.category</code></td><td><span class="param-type">enum (AuctionCategory)</span></td><td>Category: <code>WEAPONS</code>, <code>ARMORS</code>, <code>ACCESSORIES</code>, <code>CONSUMABLES</code>, <code>PETS</code>, <code>TOOLS</code>, <code>COSMETICS</code>, <code>MISCELLANEOUS</code>.</td></tr>
+                        <tr><td><code>auction.ownerUniqueId</code> / <code>ownerName</code></td><td><span class="param-type">string</span></td><td>Seller's 32-hex player UUID and Minecraft username.</td></tr>
+                        <tr><td><code>auction.startingPrice</code></td><td><span class="param-type">number (double)</span></td><td>Starting bid amount in coins.</td></tr>
+                        <tr><td><code>auction.highestBidAmount</code></td><td><span class="param-type">number (double)</span></td><td>Current winning bid in coins (or 0 if no bids placed).</td></tr>
+                        <tr><td><code>auction.bids</code></td><td><span class="param-type">integer (int32)</span></td><td>Total number of bids placed.</td></tr>
+                        <tr><td><code>auction.ended</code></td><td><span class="param-type">boolean</span></td><td>Whether the auction timer has finished or was buyout completed.</td></tr>
+                        <tr><td><code>bids[].bidderUuid</code></td><td><span class="param-type">string</span></td><td>32-hex UUID of the bidder.</td></tr>
+                        <tr><td><code>bids[].amount</code></td><td><span class="param-type">number (double)</span></td><td>Bid amount placed in coins.</td></tr>
+                        <tr><td><code>bids[].timestamp</code></td><td><span class="param-type">integer (int64)</span></td><td>Epoch timestamp (ms) when the bid was registered.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="subheading"><span class="material-icons">import_export</span> HTTP Status Codes</div>
+              <div class="responses-list">
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-200">200 OK</span> <span class="response-text">Auction retrieved.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-403">401 / 403</span> <span class="response-text">Missing or invalid X-API-Key header.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-404">404 Not Found</span> <span class="response-text">Auction not found or expired.</span></div></div>
+              </div>
+            </div>
+
+            <!-- Full-Width Code Console Grid -->
+            <div class="endpoint-code-col">
+              <div class="code-console-grid">
+                <div class="code-block-wrapper">
+                  <div class="code-block-header">
+                    <div class="snippet-tabs">
+                      <button class="snippet-btn active" onclick="switchSnippet(this, 'ep-aucid-curl')">cURL</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-aucid-js')">JavaScript</button>
+                    </div>
+                    <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+                  </div>
+                  <div id="ep-aucid-curl" class="snippet-content"><pre><code>curl -X GET "https://api.craftersmc.net/v1/skyblock/auction/6a9093c7145fed4df1832fbc" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "Accept: application/json"</code></pre></div>
+                  <div id="ep-aucid-js" class="snippet-content" style="display:none;"><pre><code>const res = await fetch("https://api.craftersmc.net/v1/skyblock/auction/6a9093c7145fed4df1832fbc", {
+  headers: { "X-API-Key": "YOUR_API_KEY" }
+});
+const { auction, bids } = await res.json();
+console.log(`Auction ${auction.id}: ${auction.itemId} by ${auction.ownerName} (${auction.startingPrice} coins)`);</code></pre></div>
+                </div>
+
+                <div class="code-block-wrapper">
+                  <div class="code-block-header"><span>Response Example (200 OK)</span><button class="btn-copy" onclick="copyToClipboard(this)">Copy JSON</button></div>
+                  <pre><code>{
+  "success": true,
+  "auction": {
+    "id": "6a9093c7145fed4df1832fbc",
+    "createdAt": 1787859911,
+    "endsAt": 1788032711,
+    "quantity": 1,
+    "itemData": "H4sICAAA...",
+    "itemId": "trpixel:obsidian_chestplate",
+    "tier": "EPIC",
+    "category": "ARMORS",
+    "type": "NORMAL",
+    "ownerUniqueId": "7b5183d0-3649-3bf8-b3fe-54752ca28665",
+    "ownerProfileId": "e526b6e994d04268b689990d58448260",
+    "ownerName": "EdgyHarmony2986",
+    "startingPrice": 120000,
+    "highestBidAmount": 0,
+    "bids": 0,
+    "ended": false
+  },
+  "bids": []
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- Endpoint 7: GET /v1/skyblock/auctions -->
+          <!-- ========================================================= -->
+          <div class="endpoint-docs-block" id="ep-get--v1-skyblock-auctions">
+            <div class="endpoint-prose-col">
+              <div class="endpoint-breadcrumbs">SkyBlock Auctions &rsaquo; GET &rsaquo; /v1/skyblock/auctions</div>
+              <div class="endpoint-title-row">
+                <span class="method-tag get">GET</span>
+                <h3 class="endpoint-heading">Active Auctions (Paginated)</h3>
+              </div>
+              <div class="endpoint-path-badge">https://api.craftersmc.net/v1/skyblock/auctions?page={page}</div>
+              <div class="endpoint-description">
+                Retrieves a paginated list of all active SkyBlock auctions currently listed on the server.
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">tune</span> Query Parameters &amp; Headers</div>
+                <div class="doc-guide-content">
+                  <div class="params-table-wrapper">
+                    <table class="params-table">
+                      <thead><tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>X-API-Key</code></td><td><span class="param-type">header</span></td><td><span class="param-type">string</span></td><td><span class="badge-required">Required</span></td><td>-</td><td>Your CraftersMC developer API secret key.</td></tr>
+                        <tr><td><code>page</code></td><td><span class="param-type">query</span></td><td><span class="param-type">integer (int32)</span></td><td><span class="badge-optional">Optional</span></td><td><code>0</code></td><td>Zero-indexed page number (0 to <code>totalPages - 1</code>).</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">data_object</span> 2. Decoded Response Structure</div>
+                <div class="doc-guide-content">
+                  Returns an <code>AuctionPageReply</code> object:
+                  <div class="params-table-wrapper" style="margin-top: 10px;">
+                    <table class="params-table">
+                      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>success</code></td><td><span class="param-type">boolean</span></td><td>Request execution state.</td></tr>
+                        <tr><td><code>page</code></td><td><span class="param-type">integer (int32)</span></td><td>Current zero-indexed page number returned.</td></tr>
+                        <tr><td><code>totalPages</code></td><td><span class="param-type">integer (int32)</span></td><td>Total available pages for active listings.</td></tr>
+                        <tr><td><code>totalAuctions</code></td><td><span class="param-type">integer (int32)</span></td><td>Total number of active auctions across all pages.</td></tr>
+                        <tr><td><code>lastUpdated</code></td><td><span class="param-type">integer (int64)</span></td><td>Unix epoch timestamp (ms) of the cache refresh.</td></tr>
+                        <tr><td><code>auctions</code></td><td><span class="param-type">array of ApiAuctionEntry</span></td><td>Array of active auction objects containing full item metadata and NBT strings.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="subheading"><span class="material-icons">import_export</span> HTTP Status Codes</div>
+              <div class="responses-list">
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-200">200 OK</span> <span class="response-text">Page retrieved successfully.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-403">401 / 403</span> <span class="response-text">Missing or invalid X-API-Key header.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-400">400 Bad Request</span> <span class="response-text">Negative or non-integer page index.</span></div></div>
+              </div>
+            </div>
+
+            <!-- Full-Width Code Console Grid -->
+            <div class="endpoint-code-col">
+              <div class="code-console-grid">
+                <div class="code-block-wrapper">
+                  <div class="code-block-header">
+                    <div class="snippet-tabs">
+                      <button class="snippet-btn active" onclick="switchSnippet(this, 'ep-aucs-curl')">cURL</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-aucs-js')">JavaScript</button>
+                    </div>
+                    <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+                  </div>
+                  <div id="ep-aucs-curl" class="snippet-content"><pre><code>curl -X GET "https://api.craftersmc.net/v1/skyblock/auctions?page=0" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "Accept: application/json"</code></pre></div>
+                  <div id="ep-aucs-js" class="snippet-content" style="display:none;"><pre><code>const res = await fetch("https://api.craftersmc.net/v1/skyblock/auctions?page=0", {
+  headers: { "X-API-Key": "YOUR_API_KEY" }
+});
+const { page, totalPages, totalAuctions, auctions } = await res.json();
+console.log(`Page ${page + 1}/${totalPages} (${totalAuctions} total listings)`);</code></pre></div>
+                </div>
+
+                <div class="code-block-wrapper">
+                  <div class="code-block-header"><span>Response Example (200 OK)</span><button class="btn-copy" onclick="copyToClipboard(this)">Copy JSON</button></div>
+                  <pre><code>{
+  "success": true,
+  "page": 0,
+  "totalPages": 2,
+  "totalAuctions": 1154,
+  "lastUpdated": 1788032079008,
+  "auctions": [
+    {
+      "id": "6a9093c7145fed4df1832fbc",
+      "createdAt": 1787859911,
+      "endsAt": 1788032711,
+      "itemId": "trpixel:obsidian_chestplate",
+      "tier": "EPIC",
+      "category": "ARMORS",
+      "startingPrice": 120000,
+      "highestBidAmount": 0,
+      "ownerName": "EdgyHarmony2986",
+      "itemData": "H4sICAAA...",
+      "ended": false
+    }
+  ]
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- Endpoint 8: GET /v1/skyblock/auctions/ended -->
+          <!-- ========================================================= -->
+          <div class="endpoint-docs-block" id="ep-get--v1-skyblock-auctions-ended">
+            <div class="endpoint-prose-col">
+              <div class="endpoint-breadcrumbs">SkyBlock Auctions &rsaquo; GET &rsaquo; /v1/skyblock/auctions/ended</div>
+              <div class="endpoint-title-row">
+                <span class="method-tag get">GET</span>
+                <h3 class="endpoint-heading">Recently Ended Auctions</h3>
+              </div>
+              <div class="endpoint-path-badge">https://api.craftersmc.net/v1/skyblock/auctions/ended</div>
+              <div class="endpoint-description">
+                Returns auctions that completed or expired within the last 60 seconds. Essential for historical market pricing, trade logs, and sniper notifications.
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">vpn_key</span> 1. Headers &amp; Authentication</div>
+                <div class="doc-guide-content">
+                  <div class="params-table-wrapper">
+                    <table class="params-table">
+                      <thead><tr><th>Header</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>X-API-Key</code></td><td><span class="param-type">string</span></td><td><span class="badge-required">Required</span></td><td>Your CraftersMC developer API secret key.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">data_object</span> 2. Decoded Response Structure</div>
+                <div class="doc-guide-content">
+                  Returns an <code>AuctionPageReply</code> object:
+                  <div class="params-table-wrapper" style="margin-top: 10px;">
+                    <table class="params-table">
+                      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>success</code></td><td><span class="param-type">boolean</span></td><td>Request execution state.</td></tr>
+                        <tr><td><code>lastUpdated</code></td><td><span class="param-type">integer (int64)</span></td><td>Timestamp when ended auctions cache was generated.</td></tr>
+                        <tr><td><code>auctions</code></td><td><span class="param-type">array of ApiAuctionEntry</span></td><td>Auctions finalized in the last 60s, including <code>highestBidAmount</code>, <code>ownerName</code>, <code>cancelReason</code>, and <code>itemData</code>.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="subheading"><span class="material-icons">import_export</span> HTTP Status Codes</div>
+              <div class="responses-list">
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-200">200 OK</span> <span class="response-text">Ended auctions retrieved.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-403">401 / 403</span> <span class="response-text">Missing or invalid X-API-Key header.</span></div></div>
+              </div>
+            </div>
+
+            <!-- Full-Width Code Console Grid -->
+            <div class="endpoint-code-col">
+              <div class="code-console-grid">
+                <div class="code-block-wrapper">
+                  <div class="code-block-header">
+                    <div class="snippet-tabs">
+                      <button class="snippet-btn active" onclick="switchSnippet(this, 'ep-ended-curl')">cURL</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-ended-js')">JavaScript</button>
+                    </div>
+                    <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+                  </div>
+                  <div id="ep-ended-curl" class="snippet-content"><pre><code>curl -X GET "https://api.craftersmc.net/v1/skyblock/auctions/ended" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "Accept: application/json"</code></pre></div>
+                  <div id="ep-ended-js" class="snippet-content" style="display:none;"><pre><code>const res = await fetch("https://api.craftersmc.net/v1/skyblock/auctions/ended", {
+  headers: { "X-API-Key": "YOUR_API_KEY" }
+});
+const { auctions } = await res.json();
+console.log(`Found ${auctions.length} auctions ended in last 60 seconds.`);</code></pre></div>
+                </div>
+
+                <div class="code-block-wrapper">
+                  <div class="code-block-header"><span>Response Example (200 OK)</span><button class="btn-copy" onclick="copyToClipboard(this)">Copy JSON</button></div>
+                  <pre><code>{
+  "success": true,
+  "lastUpdated": 1788032084999,
+  "auctions": [
+    {
+      "id": "6a92f249558a95b32b7f8a5d",
+      "itemId": "trpixel:pigman_sword",
+      "tier": "LEGENDARY",
+      "category": "WEAPONS",
+      "type": "BIN",
+      "ownerName": "Darkness44121",
+      "startingPrice": 7000000,
+      "highestBidAmount": 0,
+      "ended": true,
+      "cancelReason": "OWNER"
+    }
+  ]
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- Endpoint 9: GET /v1/skyblock/auctions/player/{uuid} -->
+          <!-- ========================================================= -->
+          <div class="endpoint-docs-block" id="ep-get--v1-skyblock-auctions-player--uuid-">
+            <div class="endpoint-prose-col">
+              <div class="endpoint-breadcrumbs">SkyBlock Auctions &rsaquo; GET &rsaquo; /v1/skyblock/auctions/player/{uuid}</div>
+              <div class="endpoint-title-row">
+                <span class="method-tag get">GET</span>
+                <h3 class="endpoint-heading">Player Auction Listings</h3>
+              </div>
+              <div class="endpoint-path-badge">https://api.craftersmc.net/v1/skyblock/auctions/player/{uuid}</div>
+              <div class="endpoint-description">
+                Retrieves all active and uncollected auction house listings owned by a specific player UUID, with optional filtering by SkyBlock profile ID.
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">tune</span> Parameters &amp; Headers</div>
+                <div class="doc-guide-content">
+                  <div class="params-table-wrapper">
+                    <table class="params-table">
+                      <thead><tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>X-API-Key</code></td><td><span class="param-type">header</span></td><td><span class="param-type">string</span></td><td><span class="badge-required">Required</span></td><td>Your CraftersMC developer API secret key.</td></tr>
+                        <tr><td><code>uuid</code></td><td><span class="param-type">path</span></td><td><span class="param-type">string</span></td><td><span class="badge-required">Required</span></td><td>Target player's 32-hex UUID.</td></tr>
+                        <tr><td><code>profileId</code></td><td><span class="param-type">query</span></td><td><span class="param-type">string</span></td><td><span class="badge-optional">Optional</span></td><td>Filter auctions to a specific SkyBlock profile.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">data_object</span> 2. Decoded Response Structure</div>
+                <div class="doc-guide-content">
+                  Returns an <code>AuctionsReply</code> object:
+                  <div class="params-table-wrapper" style="margin-top: 10px;">
+                    <table class="params-table">
+                      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>success</code></td><td><span class="param-type">boolean</span></td><td>Request execution state.</td></tr>
+                        <tr><td><code>auctions</code></td><td><span class="param-type">array of ApiAuctionEntry</span></td><td>All active and completed listings created by the specified player UUID.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="subheading"><span class="material-icons">import_export</span> HTTP Status Codes</div>
+              <div class="responses-list">
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-200">200 OK</span> <span class="response-text">Player auctions retrieved.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-403">401 / 403</span> <span class="response-text">Missing or invalid X-API-Key header.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-400">400 Bad Request</span> <span class="response-text">Invalid UUID format.</span></div></div>
+              </div>
+            </div>
+
+            <!-- Full-Width Code Console Grid -->
+            <div class="endpoint-code-col">
+              <div class="code-console-grid">
+                <div class="code-block-wrapper">
+                  <div class="code-block-header">
+                    <div class="snippet-tabs">
+                      <button class="snippet-btn active" onclick="switchSnippet(this, 'ep-plrauc-curl')">cURL</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-plrauc-js')">JavaScript</button>
+                    </div>
+                    <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+                  </div>
+                  <div id="ep-plrauc-curl" class="snippet-content"><pre><code>curl -X GET "https://api.craftersmc.net/v1/skyblock/auctions/player/7b5183d0-3649-3bf8-b3fe-54752ca28665" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "Accept: application/json"</code></pre></div>
+                  <div id="ep-plrauc-js" class="snippet-content" style="display:none;"><pre><code>const res = await fetch("https://api.craftersmc.net/v1/skyblock/auctions/player/7b5183d0-3649-3bf8-b3fe-54752ca28665", {
+  headers: { "X-API-Key": "YOUR_API_KEY" }
+});
+const { auctions } = await res.json();
+console.log(`Player has ${auctions.length} active listings.`);</code></pre></div>
+                </div>
+
+                <div class="code-block-wrapper">
+                  <div class="code-block-header"><span>Response Example (200 OK)</span><button class="btn-copy" onclick="copyToClipboard(this)">Copy JSON</button></div>
+                  <pre><code>{
+  "success": true,
+  "auctions": [
+    {
+      "id": "6a9093c7145fed4df1832fbc",
+      "itemId": "trpixel:obsidian_chestplate",
+      "startingPrice": 120000,
+      "highestBidAmount": 0,
+      "ended": false
+    }
+  ]
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- Endpoint 10: GET /v1/skyblock/profile/{profileId} -->
+          <!-- ========================================================= -->
+          <div class="endpoint-docs-block" id="ep-get--v1-skyblock-profile--profileId-">
+            <div class="endpoint-prose-col">
+              <div class="endpoint-breadcrumbs">SkyBlock Profile &rsaquo; GET &rsaquo; /v1/skyblock/profile/{profileId}</div>
+              <div class="endpoint-title-row">
+                <span class="method-tag get">GET</span>
+                <h3 class="endpoint-heading">SkyBlock Profile &amp; Member Data</h3>
+              </div>
+              <div class="endpoint-path-badge">https://api.craftersmc.net/v1/skyblock/profile/{profileId}</div>
+              <div class="endpoint-description">
+                Retrieves complete SkyBlock profile data including co-op members, banking balance, skill experience, slayer progression, minion crafts, collections, and Base64 NBT inventory blobs.
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">tune</span> Parameters &amp; Headers</div>
+                <div class="doc-guide-content">
+                  <div class="params-table-wrapper">
+                    <table class="params-table">
+                      <thead><tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>X-API-Key</code></td><td><span class="param-type">header</span></td><td><span class="param-type">string</span></td><td><span class="badge-required">Required</span></td><td>Your CraftersMC developer API secret key.</td></tr>
+                        <tr><td><code>profileId</code></td><td><span class="param-type">path</span></td><td><span class="param-type">string</span></td><td><span class="badge-required">Required</span></td><td>32-hex character SkyBlock profile UUID (no dashes).</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">data_object</span> 2. Decoded Profile &amp; Member Schema Dictionary</div>
+                <div class="doc-guide-content">
+                  Returns a <code>SkyBlockProfileReply</code> wrapping a <code>profile</code> object:
+                  <div class="params-table-wrapper" style="margin-top: 10px;">
+                    <table class="params-table">
+                      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>profile.id</code></td><td><span class="param-type">string</span></td><td>32-hex unique profile UUID.</td></tr>
+                        <tr><td><code>profile.createdAt</code></td><td><span class="param-type">integer (int64)</span></td><td>Creation epoch timestamp in seconds.</td></tr>
+                        <tr><td><code>profile.ownerUniqueId</code></td><td><span class="param-type">string</span></td><td>32-hex player UUID of the profile leader.</td></tr>
+                        <tr><td><code>profile.ownerLastName</code> / <code>ownerLastRank</code></td><td><span class="param-type">string</span></td><td>Username and rank of profile owner (e.g. <code>KaosTheChaos</code>, <code>EMERALD</code>).</td></tr>
+                        <tr><td><code>profile.banking.balance</code></td><td><span class="param-type">number (double)</span></td><td>Co-op bank coin balance.</td></tr>
+                        <tr><td><code>profile.banking.highestBalance</code> / <code>tier</code></td><td><span class="param-type">number / string</span></td><td>Bank capacity ceiling and tier badge (e.g. <code>ELITE</code>).</td></tr>
+                        <tr><td><code>profile.members[uuid].coinPurse</code></td><td><span class="param-type">number (double)</span></td><td>Member's purse coin balance.</td></tr>
+                        <tr><td><code>profile.members[uuid].skills</code></td><td><span class="param-type">object (map)</span></td><td>Key-value map of skill XP numbers (<code>combat</code>, <code>farming</code>, <code>mining</code>, <code>foraging</code>, <code>fishing</code>, <code>enchanting</code>, <code>alchemy</code>, <code>taming</code>, <code>carpentry</code>, <code>runecrafting</code>, <code>social</code>).</td></tr>
+                        <tr><td><code>profile.members[uuid].slayerData</code></td><td><span class="param-type">object</span></td><td>Slayer boss XP and tier levels for <code>zombie</code>, <code>spider</code>, and <code>wolf</code>.</td></tr>
+                        <tr><td><code>profile.members[uuid].visitedZones</code></td><td><span class="param-type">array of string</span></td><td>Island areas discovered (e.g. <code>the_park.acacia</code>, <code>end.dragons_nest</code>).</td></tr>
+                        <tr><td><code>profile.members[uuid].deaths</code> / <code>kills</code></td><td><span class="param-type">object (map)</span></td><td>Lifetime death and kill counters by mob and damage type.</td></tr>
+                        <tr><td><code>profile.members[uuid].inventoryContents</code></td><td><span class="param-type">string (Base64 NBT)</span></td><td>36 player inventory slots as a GZIP NBT compound blob.</td></tr>
+                        <tr><td><code>profile.members[uuid].enderContents</code></td><td><span class="param-type">string (Base64 NBT)</span></td><td>Ender chest item storage as a GZIP NBT compound blob.</td></tr>
+                        <tr><td><code>profile.members[uuid].armorContents</code></td><td><span class="param-type">string (Base64 NBT)</span></td><td>4 equipped armor slots (Helmet, Chestplate, Leggings, Boots).</td></tr>
+                        <tr><td><code>profile.members[uuid].accessoryBag</code></td><td><span class="param-type">string (Base64 NBT)</span></td><td>Accessory / Talisman Bag storage compound.</td></tr>
+                        <tr><td><code>profile.members[uuid].quiver</code></td><td><span class="param-type">string (Base64 NBT)</span></td><td>Quiver storage holding various arrow types and stacks.</td></tr>
+                        <tr><td><code>profile.members[uuid].newYearCakeBag</code></td><td><span class="param-type">string (Base64 NBT)</span></td><td>Stored New Year Cakes in the player's cake bag.</td></tr>
+                        <tr><td><code>profile.members[uuid].petInventory</code></td><td><span class="param-type">string (Base64 NBT)</span></td><td>All SkyBlock pets with levels, held pet items, candies, and XP.</td></tr>
+                        <tr><td><code>profile.members[uuid].otherInventories</code></td><td><span class="param-type">object (map of NBT)</span></td><td>Map of sub-inventories: <code>wardrobe_inventory</code>, <code>extra_equipment</code>, <code>medal_inventory</code>, <code>seeds_inventory</code>, <code>saved_effects</code>, <code>trick_or_treat_bag</code>, and <code>pumpkin_launcher_ammo</code> (all Base64 GZIP NBT).</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="subheading"><span class="material-icons">import_export</span> HTTP Status Codes</div>
+              <div class="responses-list">
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-200">200 OK</span> <span class="response-text">Profile retrieved.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-403">401 / 403</span> <span class="response-text">Missing or invalid X-API-Key, or player turned off API scope in SkyBlock settings.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-400">400 Bad Request</span> <span class="response-text">Invalid profile UUID.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-404">404 Not Found</span> <span class="response-text">Profile does not exist.</span></div></div>
+              </div>
+            </div>
+
+            <!-- Full-Width Code Console Grid -->
+            <div class="endpoint-code-col">
+              <div class="code-console-grid">
+                <div class="code-block-wrapper">
+                  <div class="code-block-header">
+                    <div class="snippet-tabs">
+                      <button class="snippet-btn active" onclick="switchSnippet(this, 'ep-prof-curl')">cURL</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-prof-js')">JavaScript</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-prof-py')">Python</button>
+                    </div>
+                    <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+                  </div>
+                  <div id="ep-prof-curl" class="snippet-content"><pre><code>curl -X GET "https://api.craftersmc.net/v1/skyblock/profile/7da2465cd78141c0b0669a5eb48f250c" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "Accept: application/json"</code></pre></div>
+                  <div id="ep-prof-js" class="snippet-content" style="display:none;"><pre><code>const res = await fetch("https://api.craftersmc.net/v1/skyblock/profile/7da2465cd78141c0b0669a5eb48f250c", {
+  headers: { "X-API-Key": "YOUR_API_KEY" }
+});
+const { profile } = await res.json();
+console.log(`Profile: ${profile.ownerLastName} (Bank: ${profile.banking?.balance?.toLocaleString()} coins)`);</code></pre></div>
+                  <div id="ep-prof-py" class="snippet-content" style="display:none;"><pre><code>import requests
+headers = {"X-API-Key": "YOUR_API_KEY"}
+res = requests.get("https://api.craftersmc.net/v1/skyblock/profile/7da2465cd78141c0b0669a5eb48f250c", headers=headers).json()
+p = res["profile"]
+print(f"Leader: {p['ownerLastName']} | Bank: {p['banking']['balance']:,.2f} coins")</code></pre></div>
+                </div>
+
+                <div class="code-block-wrapper">
+                  <div class="code-block-header"><span>Response Example (200 OK)</span><button class="btn-copy" onclick="copyToClipboard(this)">Copy JSON</button></div>
+                  <pre><code>{
+  "success": true,
+  "profile": {
+    "id": "7da2465cd78141c0b0669a5eb48f250c",
+    "createdAt": 1707641453,
+    "ownerUniqueId": "ac6fca9d07713960aa85fd21cb53f18e",
+    "ownerLastName": "NetworkPg",
+    "ownerLastRank": "VOTER",
+    "banking": {
+      "balance": 35950322.53,
+      "highestBalance": 50000000,
+      "tier": "BASIC"
+    },
+    "members": {
+      "ac6fca9d07713960aa85fd21cb53f18e": {
+        "coinPurse": 6203650.72,
+        "skills": {
+          "farming": 1508242.97,
+          "mining": 8148856.46,
+          "combat": 11442420.02,
+          "foraging": 578625.55,
+          "enchanting": 25839701.03,
+          "taming": 5261734.76
+        },
+        "slayerData": {
+          "zombie": 86220,
+          "wolf": 6230,
+          "zombieTier": 4,
+          "wolfTier": 4
+        },
+        "accessoryBag": "H4sICAAA...",
+        "armorContents": "H4sICAAA...",
+        "inventoryContents": "H4sICAAA...",
+        "quiver": "H4sICAAA...",
+        "petInventory": "H4sICAAA...",
+        "otherInventories": {
+          "medal_inventory": "H4sICAAA...",
+          "wardrobe_inventory": "H4sICAAA..."
+        }
+      }
+    }
+  }
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- Endpoint 11: GET /v1/skyblock/settings -->
+          <!-- ========================================================= -->
+          <div class="endpoint-docs-block" id="ep-get--v1-skyblock-settings">
+            <div class="endpoint-prose-col">
+              <div class="endpoint-breadcrumbs">SkyBlock Settings &rsaquo; GET &rsaquo; /v1/skyblock/settings</div>
+              <div class="endpoint-title-row">
+                <span class="method-tag get">GET</span>
+                <h3 class="endpoint-heading">SkyBlock Global Settings &amp; Banners</h3>
+              </div>
+              <div class="endpoint-path-badge">https://api.craftersmc.net/v1/skyblock/settings</div>
+              <div class="endpoint-description">
+                Retrieves global server settings and the banner image queue for the in-game SkyBlock Menu. Only active, non-expired banners are rendered.
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">vpn_key</span> 1. Headers &amp; Authentication</div>
+                <div class="doc-guide-content">
+                  <div class="params-table-wrapper">
+                    <table class="params-table">
+                      <thead><tr><th>Header</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>X-API-Key</code></td><td><span class="param-type">string</span></td><td><span class="badge-required">Required</span></td><td>Your CraftersMC developer API secret key.</td></tr>
+                        <tr><td><code>Accept</code></td><td><span class="param-type">string</span></td><td><span class="badge-optional">Optional</span></td><td><code>application/json</code></td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="doc-guide-section">
+                <div class="doc-guide-title"><span class="material-icons">data_object</span> 2. Decoded Response Structure</div>
+                <div class="doc-guide-content">
+                  Returns a <code>SkyBlockSettingsReply</code> object containing active and evergreen banner queues:
+                  <div class="params-table-wrapper" style="margin-top: 10px;">
+                    <table class="params-table">
+                      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                      <tbody>
+                        <tr><td><code>success</code></td><td><span class="param-type">boolean</span></td><td>Request execution status (always true on 200).</td></tr>
+                        <tr><td><code>settings.menuBannerQueue</code></td><td><span class="param-type">array of MenuBanner</span></td><td>Ordered list of promotional banner image objects displayed at the top of the in-game SkyBlock Menu.</td></tr>
+                        <tr><td><code>menuBannerQueue[].expireAt</code></td><td><span class="param-type">integer (int64)</span></td><td>Unix epoch timestamp in seconds when the banner expires. A value of <code>0</code> signifies an evergreen fallback banner.</td></tr>
+                        <tr><td><code>menuBannerQueue[].images</code></td><td><span class="param-type">object (map)</span></td><td>Key-value map of language codes (<code>english</code>, <code>german</code>, <code>spanish</code>, <code>turkish</code>, <code>french</code>) to image descriptor objects.</td></tr>
+                        <tr><td><code>images[locale].type</code></td><td><span class="param-type">string</span></td><td>Resource type identifier (e.g. <code>URL</code>).</td></tr>
+                        <tr><td><code>images[locale].path</code></td><td><span class="param-type">string (URL)</span></td><td>Direct CDN link to the localized promotional PNG banner (hosted on <code>cdn.craftersmc.net</code>).</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="subheading"><span class="material-icons">import_export</span> HTTP Status Codes</div>
+              <div class="responses-list">
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-200">200 OK</span> <span class="response-text">Global settings returned.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-403">401 / 403</span> <span class="response-text">Missing or invalid X-API-Key header.</span></div></div>
+                <div class="response-item"><div class="response-item-header"><span class="status-badge status-404">404 Not Found</span> <span class="response-text">Settings queue unpopulated.</span></div></div>
+              </div>
+            </div>
+
+            <!-- Full-Width Code Console Grid -->
+            <div class="endpoint-code-col">
+              <div class="code-console-grid">
+                <div class="code-block-wrapper">
+                  <div class="code-block-header">
+                    <div class="snippet-tabs">
+                      <button class="snippet-btn active" onclick="switchSnippet(this, 'ep-set-curl')">cURL</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-set-js')">JavaScript</button>
+                      <button class="snippet-btn" onclick="switchSnippet(this, 'ep-set-py')">Python</button>
+                    </div>
+                    <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+                  </div>
+                  <div id="ep-set-curl" class="snippet-content"><pre><code>curl -X GET "https://api.craftersmc.net/v1/skyblock/settings" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "Accept: application/json"</code></pre></div>
+                  <div id="ep-set-js" class="snippet-content" style="display:none;"><pre><code>const res = await fetch("https://api.craftersmc.net/v1/skyblock/settings", {
+  headers: { "X-API-Key": "YOUR_API_KEY" }
+});
+const { settings } = await res.json();
+const activeBanner = settings.menuBannerQueue[0];
+console.log(`Active English Banner: ${activeBanner.images.english.path}`);</code></pre></div>
+                  <div id="ep-set-py" class="snippet-content" style="display:none;"><pre><code>import requests
+headers = {"X-API-Key": "YOUR_API_KEY"}
+res = requests.get("https://api.craftersmc.net/v1/skyblock/settings", headers=headers).json()
+banner = res["settings"]["menuBannerQueue"][0]
+print(f"Banner URL: {banner['images']['english']['path']}")</code></pre></div>
+                </div>
+
+                <div class="code-block-wrapper">
+                  <div class="code-block-header"><span>Response Example (200 OK)</span><button class="btn-copy" onclick="copyToClipboard(this)">Copy JSON</button></div>
+                  <pre><code>{
+  "success": true,
+  "settings": {
+    "menuBannerQueue": [
+      {
+        "images": {
+          "english": {
+            "type": "URL",
+            "path": "https://cdn.craftersmc.net/h/skyblock/skyblock_menu/banner/summer_sale_2026/english.png"
+          },
+          "german": {
+            "type": "URL",
+            "path": "https://cdn.craftersmc.net/h/skyblock/skyblock_menu/banner/summer_sale_2026/german.png"
+          },
+          "spanish": {
+            "type": "URL",
+            "path": "https://cdn.craftersmc.net/h/skyblock/skyblock_menu/banner/summer_sale_2026/spanish.png"
+          },
+          "turkish": {
+            "type": "URL",
+            "path": "https://cdn.craftersmc.net/h/skyblock/skyblock_menu/banner/summer_sale_2026/turkish.png"
+          },
+          "french": {
+            "type": "URL",
+            "path": "https://cdn.craftersmc.net/h/skyblock/skyblock_menu/banner/summer_sale_2026/french.png"
+          }
+        },
+        "expireAt": 1787346000
+      },
+      {
+        "images": {
+          "english": {
+            "type": "URL",
+            "path": "https://cdn.craftersmc.net/h/skyblock/skyblock_menu/banner/v051/english.png"
+          },
+          "german": {
+            "type": "URL",
+            "path": "https://cdn.craftersmc.net/h/skyblock/skyblock_menu/banner/v051/german.png"
+          },
+          "spanish": {
+            "type": "URL",
+            "path": "https://cdn.craftersmc.net/h/skyblock/skyblock_menu/banner/v051/spanish.png"
+          },
+          "turkish": {
+            "type": "URL",
+            "path": "https://cdn.craftersmc.net/h/skyblock/skyblock_menu/banner/v051/turkish.png"
+          },
+          "french": {
+            "type": "URL",
+            "path": "https://cdn.craftersmc.net/h/skyblock/skyblock_menu/banner/v051/french.png"
+          }
+        },
+        "expireAt": 0
+      }
+    ]
+  }
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Section: Schemas -->
+      <section class="doc-section" id="section-schemas">
+        <div class="section-header">
+          <h2><span class="material-icons">schema</span> Data Schemas &amp; Models</h2>
+          <p>Complete JSON schema definitions for all core data models.</p>
+        </div>
+
+        <div class="schema-cards-grid">
+          <div class="schema-card" id="schema-ServerStatusReply">
+            <div class="schema-name">ServerStatusReply</div>
+            <div class="schema-desc">Object schema returned by <code>GET /v1/network/status</code></div>
+            <div class="code-block-wrapper">
+              <pre><code>{
+  "success": true,
+  "games": {
+    "SKYBLOCK": { "modes": { "hub": 53, "dynamic": 80, "the_park": 10 } },
+    "LIMBO": { "modes": { "limbo": 8 } }
+  },
+  "playerCount": 170,
+  "maxPlayerCount": 750,
+  "fullMaintenance": false,
+  "whitelistRank": "DEFAULT",
+  "plannedMaintenance": false
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="schema-card" id="schema-PlayerReply">
+            <div class="schema-name">Player Account Object</div>
+            <div class="schema-desc">Root object schema returned by <code>GET /v1/player/{identifier}</code></div>
+            <div class="code-block-wrapper">
+              <pre><code>{
+  "name": "NetworkPg",
+  "pixelId": "d34f76fd5",
+  "uuid": "ac6fca9d-0771-3960-aa85-fd21cb53f18e",
+  "selectedRank": "DEFAULT",
+  "networkExp": 60657,
+  "networkCoins": 5693,
+  "stats": {
+    "skyBlock": {
+      "profileId": "7da2465cd78141c0b0669a5eb48f250c",
+      "profiles": { "7da2465cd78141c0b0669a5eb48f250c": { "cuteName": "PLUM" } }
+    }
+  },
+  "totalPlaytime": 1169586
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="schema-card" id="schema-BazaarItemReply">
+            <div class="schema-name">BazaarItemReply</div>
+            <div class="schema-desc">Market depth schema returned by <code>GET /v1/skyblock/bazaar/{itemId}/details</code></div>
+            <div class="code-block-wrapper">
+              <pre><code>{
+  "success": true,
+  "itemId": "enchanted_diamond",
+  "buyVolume": 105634,
+  "sellVolume": 78200,
+  "weeklyAveragePrice": 1248.5,
+  "buyTopEntries": [{ "price": 1251.8, "quantity": 1425, "orderCount": 1 }],
+  "sellTopEntries": [{ "price": 1253.2, "quantity": 1024, "orderCount": 1 }]
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="schema-card" id="schema-AuctionReply">
+            <div class="schema-name">AuctionReply &rsaquo; ApiAuctionEntry</div>
+            <div class="schema-desc">Auction object schema returned by <code>GET /v1/skyblock/auction/{auctionId}</code></div>
+            <div class="code-block-wrapper">
+              <pre><code>{
+  "success": true,
+  "auction": {
+    "id": "6a9093c7145fed4df1832fbc",
+    "createdAt": 1787859911,
+    "endsAt": 1788032711,
+    "itemId": "trpixel:obsidian_chestplate",
+    "tier": "EPIC",
+    "category": "ARMORS",
+    "startingPrice": 120000,
+    "highestBidAmount": 0,
+    "ownerName": "EdgyHarmony2986",
+    "itemData": "H4sICAAA...",
+    "ended": false
+  },
+  "bids": []
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Enums -->
+      <section class="doc-section" id="section-enums">
+        <div class="section-header">
+          <h2><span class="material-icons">list_alt</span> Enums Reference Dictionary</h2>
+          <p>Comprehensive enumeration constant sets across player ranks, item rarities, server types, and profile modes.</p>
+        </div>
+
+        <div class="enum-grid">
+          <div class="enum-card">
+            <div class="enum-title">PlayerRank</div>
+            <div class="enum-values">
+              <span class="enum-pill">DEFAULT</span>
+              <span class="enum-pill">VOTER</span>
+              <span class="enum-pill">GOLD</span>
+              <span class="enum-pill">DIAMOND</span>
+              <span class="enum-pill">EMERALD</span>
+              <span class="enum-pill">YOUTUBER</span>
+              <span class="enum-pill">ADMIN</span>
+              <span class="enum-pill">OWNER</span>
+            </div>
+          </div>
+
+          <div class="enum-card">
+            <div class="enum-title">ItemRarity</div>
+            <div class="enum-values">
+              <span class="enum-pill">COMMON</span>
+              <span class="enum-pill">UNCOMMON</span>
+              <span class="enum-pill">RARE</span>
+              <span class="enum-pill">EPIC</span>
+              <span class="enum-pill">LEGENDARY</span>
+              <span class="enum-pill">MYTHIC</span>
+              <span class="enum-pill">SPECIAL</span>
+              <span class="enum-pill">VERY SPECIAL</span>
+            </div>
+          </div>
+
+          <div class="enum-card">
+            <div class="enum-title">ProfileGameMode</div>
+            <div class="enum-values">
+              <span class="enum-pill">REGULAR</span>
+              <span class="enum-pill">IRONMAN</span>
+              <span class="enum-pill">STRANDED</span>
+              <span class="enum-pill">BINGO</span>
+            </div>
+          </div>
+
+          <div class="enum-card">
+            <div class="enum-title">AuctionCategory</div>
+            <div class="enum-values">
+              <span class="enum-pill">WEAPONS</span>
+              <span class="enum-pill">ARMORS</span>
+              <span class="enum-pill">ACCESSORIES</span>
+              <span class="enum-pill">CONSUMABLES</span>
+              <span class="enum-pill">PETS</span>
+              <span class="enum-pill">TOOLS</span>
+              <span class="enum-pill">COSMETICS</span>
+              <span class="enum-pill">MISCELLANEOUS</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Application Engine Script -->
+  <script src="app.js"></script>
+</body>
+</html>

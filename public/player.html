@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>CraftersMC Player &amp; Profile Viewer — CraftersMC Guides</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Search and inspect live CraftersMC player profiles, SkyBlock stats, skill progression, slayers, minions, collections, and playtime.">
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+  <link rel="icon" href="assets/cmc-guides.png" type="image/png">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="better-api-docs/style.css">
+  <link rel="stylesheet" href="css/player.css">
+
+  <!-- Scripts -->
+  <script src="js/api-proxy-client.js"></script>
+  <script src="better-api-docs/app.js" defer></script>
+</head>
+
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="top-header">
+    <div class="header-left">
+      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
+        <span class="material-icons" style="font-size:1.25rem;">menu</span>
+      </button>
+      <a href="index.html" class="header-brand">
+        <img src="assets/cmc-guides.png" alt="CraftersMC Logo">
+        <div class="brand-text">
+          <span class="brand-title">CraftersMC Guides</span>
+          <span class="version-badge">Player Viewer</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Search Box -->
+    <div class="search-box">
+      <span class="material-icons search-icon">search</span>
+      <input type="text" id="search-input" placeholder="Search guides, tools, API...">
+      <span class="search-kbd-shortcut">/</span>
+    </div>
+
+    <!-- Header Utility Links -->
+    <div class="header-actions">
+      <a href="bazaar.html" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">storefront</span> <span class="header-link-text">Bazaar</span></a>
+      <a href="better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
+      <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
+    </div>
+  </header>
+
+  <!-- Application Layout -->
+  <div class="app-layout">
+
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Getting Started</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="index.html#overview"><span class="material-icons nav-icon">home</span> <span>Overview</span></a></li>
+          <li class="sidebar-nav-item"><a href="index.html#section-guides"><span class="material-icons nav-icon">menu_book</span> <span>Progression Guides</span></a></li>
+          <li class="sidebar-nav-item"><a href="index.html#section-tools"><span class="material-icons nav-icon">build</span> <span>Live Tools</span></a></li>
+          <li class="sidebar-nav-item"><a href="index.html#section-api"><span class="material-icons nav-icon">code</span> <span>Developer &amp; API</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Live Tools &amp; Trackers</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item active"><a href="player.html" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons nav-icon" style="color: var(--accent-color);">person_search</span> <span>Player Viewer</span></a></li>
+          <li class="sidebar-nav-item"><a href="bazaar.html"><span class="material-icons nav-icon">storefront</span> <span>Bazaar Market</span></a></li>
+          <li class="sidebar-nav-item"><a href="skycalendar.html"><span class="material-icons nav-icon">event</span> <span>SkyCalendar (Events)</span></a></li>
+          <li class="sidebar-nav-item"><a href="rank-sellers.html"><span class="material-icons nav-icon">card_giftcard</span> <span>Rank &amp; Gems Sellers</span></a></li>
+          <li class="sidebar-nav-item"><a href="leaderboards.html"><span class="material-icons nav-icon">leaderboard</span> <span>Leaderboards</span></a></li>
+          <li class="sidebar-nav-item"><a href="texture-packs.html"><span class="material-icons nav-icon">palette</span> <span>Texture Packs</span></a></li>
+          <li class="sidebar-nav-item"><a href="tools.html"><span class="material-icons nav-icon">calculate</span> <span>Calculators</span></a></li>
+          <li class="sidebar-nav-item"><a href="feather-bot/index.html"><span class="material-icons nav-icon">smart_toy</span> <span>Feather Bot Guide</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Progression Guides</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="guide/starter-guide.html"><span class="material-icons nav-icon">play_circle</span> <span>Starter Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/intermediate-guide.html"><span class="material-icons nav-icon">trending_up</span> <span>Intermediate Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/intermediate-guide2.html"><span class="material-icons nav-icon">shield</span> <span>Slayers Edition</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/advanced-guide.html"><span class="material-icons nav-icon">military_tech</span> <span>Advanced Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/accessories-guide.html"><span class="material-icons nav-icon">auto_awesome</span> <span>Accessories &amp; Reforges</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/bazaar-guide.html"><span class="material-icons nav-icon">storefront</span> <span>Bazaar Trading</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/queries.html"><span class="material-icons nav-icon">help_outline</span> <span>Common Queries &amp; FAQ</span></a></li>
+          <li class="sidebar-nav-item"><a href="unicode.html"><span class="material-icons nav-icon">format_shapes</span> <span>Unicode &amp; Formatting</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Developer &amp; API</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="better-api-docs/index.html"><span class="material-icons nav-icon">code</span> <span>REST API v1 Reference</span></a></li>
+          <li class="sidebar-nav-item"><a href="better-api-docs/index.html#section-nbt-decoding"><span class="material-icons nav-icon">memory</span> <span>15 NBT Storage Blobs</span></a></li>
+          <li class="sidebar-nav-item"><a href="better-api-docs/index.html#section-item-ids"><span class="material-icons nav-icon">list_alt</span> <span>Numerical Item IDs (1,933)</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Community &amp; Source</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="https://craftersmc.net/" target="_blank"><span class="material-icons nav-icon">language</span> <span>Server Website</span></a></li>
+          <li class="sidebar-nav-item"><a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank"><span class="material-icons nav-icon">code</span> <span>GitHub Repository</span></a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- Section Header -->
+      <section class="doc-section">
+        <div class="section-header">
+          <h1>CraftersMC Player &amp; Profile Viewer</h1>
+          <p>Inspect real-time player data, SkyBlock profiles, skills, slayer tiers, collections, and playtime via the CraftersMC REST API.</p>
+        </div>
+
+        <!-- Status Message Alert -->
+        <div id="statusAlert" class="player-status-alert">
+          <span class="material-icons" id="statusIcon" style="font-size: 1.15rem;">info</span>
+          <span id="statusText"></span>
+        </div>
+
+        <!-- Search Form Card -->
+        <div class="player-search-card">
+          <div class="search-form-grid">
+            <div class="input-field-group">
+              <label class="input-label" for="username"><span class="material-icons" style="font-size: 0.95rem;">person</span> Minecraft Username</label>
+              <input type="text" id="username" class="player-input" placeholder="Enter username (e.g. Tekkxz, NetworkPg)" autocomplete="off">
+            </div>
+            <div class="input-field-group">
+              <label class="input-label" for="profileId"><span class="material-icons" style="font-size: 0.95rem;">badge</span> Profile ID (Optional)</label>
+              <input type="text" id="profileId" class="player-input" placeholder="Profile ID or cute name" autocomplete="off">
+            </div>
+            <button type="button" class="btn-fetch" onclick="fetchPlayerData()">
+              <span class="material-icons" style="font-size: 1.1rem;">search</span> Fetch Player
+            </button>
+            <button type="button" class="btn-secondary-action" onclick="fetchRandomPlayer()" title="Test with sample player">
+              <span class="material-icons" style="font-size: 1.1rem;">shuffle</span> Example
+            </button>
+            <button type="button" class="btn-secondary-action" onclick="clearData()">
+              <span class="material-icons" style="font-size: 1.1rem;">clear</span> Clear
+            </button>
+          </div>
+        </div>
+
+        <!-- Profile Selector Pills -->
+        <div id="profileSelector" class="profile-pill-container" style="display: none;">
+          <span class="profile-pill-title">SkyBlock Profiles:</span>
+          <div id="profilePills" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+        </div>
+
+        <!-- Co-op Member Selector Pills -->
+        <div id="memberSelector" class="profile-pill-container" style="display: none; background: #f8fafc;">
+          <span class="profile-pill-title">Co-op Members:</span>
+          <div id="memberPills" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+        </div>
+
+        <!-- Main Data Display Container -->
+        <div id="mainData" style="display: none;">
+
+          <div class="player-view-container">
+
+            <!-- Sub Navigation Side Panel -->
+            <aside class="player-subpanel">
+              <div class="player-subpanel-group">
+                <div class="player-subpanel-title">General</div>
+                <div class="player-subpanel-nav">
+                  <button class="player-subpanel-btn active" onclick="switchTab('overview')"><span class="material-icons">dashboard</span> Overview</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('skills')"><span class="material-icons">auto_awesome</span> Skills</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('slayers')"><span class="material-icons">shield</span> Slayers</button>
+                </div>
+              </div>
+
+              <div class="player-subpanel-group">
+                <div class="player-subpanel-title">Progression</div>
+                <div class="player-subpanel-nav">
+                  <button class="player-subpanel-btn" onclick="switchTab('combat')"><span class="material-icons">sports_martial_arts</span> Combat &amp; Bosses</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('farming')"><span class="material-icons">agriculture</span> Farming</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('minions')"><span class="material-icons">precision_manufacturing</span> Minions</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('collections')"><span class="material-icons">inventory_2</span> Collections</button>
+                </div>
+              </div>
+
+              <div class="player-subpanel-group">
+                <div class="player-subpanel-title">Advanced</div>
+                <div class="player-subpanel-nav">
+                  <button class="player-subpanel-btn" onclick="switchTab('extras')"><span class="material-icons">extension</span> Shards &amp; Extras</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('player')"><span class="material-icons">badge</span> Account Details</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('playtime')"><span class="material-icons">schedule</span> Playtime</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('json')"><span class="material-icons">code</span> Raw JSON</button>
+                </div>
+              </div>
+            </aside>
+
+            <!-- Tab Contents Area -->
+            <div class="player-tab-content-wrapper">
+              <div id="overviewTab" class="tab-content active"></div>
+              <div id="skillsTab" class="tab-content" style="display: none;"></div>
+              <div id="slayersTab" class="tab-content" style="display: none;"></div>
+              <div id="combatTab" class="tab-content" style="display: none;"></div>
+              <div id="farmingTab" class="tab-content" style="display: none;"></div>
+              <div id="minionsTab" class="tab-content" style="display: none;"></div>
+              <div id="collectionsTab" class="tab-content" style="display: none;"></div>
+              <div id="extrasTab" class="tab-content" style="display: none;"></div>
+              <div id="playerTab" class="tab-content" style="display: none;"></div>
+              <div id="playtimeTab" class="tab-content" style="display: none;"></div>
+              <div id="jsonTab" class="tab-content" style="display: none;"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
+        <div class="site-footer-right">
+          <a href="feather-bot/privacy-policy.html">Privacy Policy</a> &bull;
+          <a href="feather-bot/terms-and-conditions.html">Terms of Service</a> &bull;
+          <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+  <!-- Player Viewer Logic -->
+  <script>
+    let playerData = null;
+    let profileData = null;
+    let currentProfileId = '';
+    let selectedMemberId = '';
+
+    function showStatus(message, type = 'info') {
+      const alert = document.getElementById('statusAlert');
+      const text = document.getElementById('statusText');
+      const icon = document.getElementById('statusIcon');
+
+      alert.className = `player-status-alert ${type}`;
+      text.textContent = message;
+
+      if (type === 'error') icon.textContent = 'error_outline';
+      else if (type === 'success') icon.textContent = 'check_circle';
+      else icon.textContent = 'info';
+
+      alert.style.display = 'flex';
+    }
+
+    function hideStatus() {
+      document.getElementById('statusAlert').style.display = 'none';
+    }
+
+    function formatNumber(num) {
+      if (num === null || num === undefined) return '0';
+      if (typeof num === 'number') {
+        if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2) + 'B';
+        if (num >= 1_000_000) return (num / 1_000_000).toFixed(2) + 'M';
+        if (num >= 1_000) return (num / 1_000).toFixed(1) + 'K';
+        return num.toLocaleString();
+      }
+      return num;
+    }
+
+    function formatDate(val) {
+      if (!val) return 'N/A';
+      try {
+        const d = new Date(val);
+        return isNaN(d.getTime()) ? val : d.toLocaleString();
+      } catch {
+        return val;
+      }
+    }
+
+    async function fetchFromProxy(endpoint) {
+      const PROXY_ORIGIN = 'https://craftersmc-guides.pages.dev';
+
+      if (window.location.origin === PROXY_ORIGIN) {
+        try {
+          const res = await fetch(endpoint);
+          if (res.ok) return await res.json();
+        } catch (e) {}
+      }
+
+      try {
+        const res = await fetch(`${PROXY_ORIGIN}${endpoint}`);
+        if (res.ok) {
+          return await res.json();
+        }
+        if (res.status === 404) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.message || 'Player or profile not found');
+        }
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(`HTTP ${res.status}: ${errData.message || errData.error || 'Failed to fetch from proxy'}`);
+      } catch (err) {
+        if (!err.message?.includes('not found')) {
+          try {
+            const fallbackRes = await fetch(endpoint);
+            if (fallbackRes.ok) return await fallbackRes.json();
+          } catch (e) {}
+        }
+        throw err;
+      }
+    }
+
+    async function fetchPlayerData() {
+      const usernameInput = document.getElementById('username');
+      const username = usernameInput.value.trim();
+      if (!username) {
+        showStatus('Please enter a Minecraft username.', 'error');
+        return;
+      }
+
+      showStatus(`Fetching player data for ${username}...`, 'info');
+      document.getElementById('mainData').style.display = 'none';
+
+      try {
+        const data = await fetchFromProxy(`/player/${encodeURIComponent(username)}`);
+        playerData = data.player || data;
+
+        showStatus(`Loaded player data for ${playerData.name || playerData.username || username}`, 'success');
+
+        const profiles = playerData.stats?.skyBlock?.profiles;
+        if (profiles && Object.keys(profiles).length > 0) {
+          displayProfiles(profiles);
+          const firstProfileId = Object.keys(profiles)[0];
+          await fetchProfileData(firstProfileId);
+        } else {
+          document.getElementById('profileSelector').style.display = 'none';
+          document.getElementById('memberSelector').style.display = 'none';
+          displayAllData();
+        }
+      } catch (err) {
+        console.error('Fetch error:', err);
+        showStatus(`Error: ${err.message}`, 'error');
+      }
+    }
+
+
+
+    async function fetchProfileData(profileId) {
+      currentProfileId = profileId;
+      showStatus(`Fetching profile data (${profileId.substring(0, 8)}...)...`, 'info');
+
+      try {
+        const data = await fetchFromProxy(`/profile/${encodeURIComponent(profileId)}`);
+        profileData = data.profile || data;
+
+        // Accurately resolve selectedMemberId matching profile.members keys
+        if (profileData?.members && typeof profileData.members === 'object') {
+          const memberKeys = Object.keys(profileData.members);
+          const cleanPlayerUuid = (playerData?.uuid || '').replace(/-/g, '').toLowerCase();
+          const match = memberKeys.find(m => m.toLowerCase() === cleanPlayerUuid);
+          selectedMemberId = match || memberKeys[0] || '';
+        }
+
+        showStatus(`Profile data loaded successfully!`, 'success');
+      } catch (err) {
+        console.warn('Profile fetch error:', err);
+        profileData = null;
+      }
+
+      displayMemberSelector();
+      displayAllData();
+    }
+
+    function displayProfiles(profiles) {
+      const selector = document.getElementById('profileSelector');
+      const pillsContainer = document.getElementById('profilePills');
+      pillsContainer.innerHTML = '';
+
+      if (!profiles || Object.keys(profiles).length === 0) {
+        selector.style.display = 'none';
+        return;
+      }
+
+      selector.style.display = 'flex';
+
+      Object.entries(profiles).forEach(([profId, prof]) => {
+        const btn = document.createElement('button');
+        btn.className = `profile-pill ${profId === currentProfileId ? 'active' : ''}`;
+        btn.innerHTML = `<span class="material-icons" style="font-size:0.9rem;">badge</span> ${prof.cuteName || prof.cute_name || 'Profile'} (${profId.substring(0, 6)})`;
+        btn.onclick = () => {
+          document.querySelectorAll('.profile-pill').forEach(p => p.classList.remove('active'));
+          btn.classList.add('active');
+          fetchProfileData(profId);
+        };
+        pillsContainer.appendChild(btn);
+      });
+    }
+
+    function displayMemberSelector() {
+      const container = document.getElementById('memberSelector');
+      const pillsContainer = document.getElementById('memberPills');
+      pillsContainer.innerHTML = '';
+
+      if (!profileData?.members || Object.keys(profileData.members).length === 0) {
+        container.style.display = 'none';
+        return;
+      }
+
+      container.style.display = 'flex';
+
+      const members = Object.keys(profileData.members);
+      if (!selectedMemberId || !profileData.members[selectedMemberId]) {
+        const playerCleanUuid = (playerData?.uuid || '').replace(/-/g, '').toLowerCase();
+        const ownerMatch = members.find(m => m.toLowerCase() === playerCleanUuid);
+        selectedMemberId = ownerMatch || members[0];
+      }
+
+      members.forEach((memUuid) => {
+        const btn = document.createElement('button');
+        btn.className = `profile-pill ${memUuid === selectedMemberId ? 'active' : ''}`;
+        
+        let label = memUuid.substring(0, 8);
+        if (playerData?.uuid && memUuid.toLowerCase() === playerData.uuid.replace(/-/g, '').toLowerCase()) {
+          label = `${playerData.name || playerData.username || 'You'} (Owner)`;
+        }
+
+        btn.innerHTML = `<span class="material-icons" style="font-size:0.9rem;">person</span> ${label}`;
+        btn.onclick = () => {
+          selectedMemberId = memUuid;
+          displayMemberSelector();
+          displayAllData();
+        };
+        pillsContainer.appendChild(btn);
+      });
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.player-subpanel-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => {
+        c.classList.remove('active');
+        c.style.display = 'none';
+      });
+
+      const targetBtn = Array.from(document.querySelectorAll('.player-subpanel-btn')).find(b => b.getAttribute('onclick')?.includes(tabId));
+      if (targetBtn) targetBtn.classList.add('active');
+
+      const targetTab = document.getElementById(`${tabId}Tab`);
+      if (targetTab) {
+        targetTab.classList.add('active');
+        targetTab.style.display = 'block';
+      }
+    }
+
+    function displayAllData() {
+      document.getElementById('mainData').style.display = 'block';
+      renderOverview();
+      renderSkills();
+      renderSlayers();
+      renderCombat();
+      renderFarming();
+      renderMinions();
+      renderCollections();
+      renderExtras();
+      renderPlayerStats();
+      renderPlaytime();
+      renderJSON();
+    }
+
+    // Feather Bot Skill Math & Level Curves
+    const SKILL_XP_PER_LEVEL = [
+      50, 125, 200, 300, 500, 750, 1000, 1500, 2000, 3500,
+      5000, 7500, 10000, 15000, 20000, 30000, 50000, 75000, 100000, 200000,
+      300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000, 1100000, 1200000,
+      1300000, 1400000, 1500000, 1600000, 1700000, 1800000, 1900000, 2000000, 2100000, 2200000,
+      2300000, 2400000, 2500000, 2600000, 2750000, 2900000, 3100000, 3400000, 3700000, 4000000,
+      4300000, 4600000, 4900000, 5200000, 5500000, 5800000, 6100000, 6400000, 6700000, 7000000,
+    ];
+
+    const SKILL_CAPS = {
+      farming: 60,
+      mining: 50,
+      combat: 50,
+      foraging: 50,
+      fishing: 50,
+      enchanting: 50,
+      alchemy: 50,
+      taming: 50,
+      carpentry: 50,
+      runecrafting: 25,
+      social: 25
+    };
+
+    function getSkillLevelFromXp(skillName, totalXpInput) {
+      const cap = SKILL_CAPS[skillName] || 50;
+      const totalXp = Math.max(0, Number(totalXpInput) || 0);
+      let level = 0;
+      let cumulativeAtLevelStart = 0;
+
+      for (let nextLevel = 1; nextLevel <= cap; nextLevel += 1) {
+        const required = SKILL_XP_PER_LEVEL[nextLevel - 1] || 7000000;
+        if (totalXp >= cumulativeAtLevelStart + required) {
+          cumulativeAtLevelStart += required;
+          level = nextLevel;
+          continue;
+        }
+        break;
+      }
+
+      if (level >= cap) {
+        return {
+          level: cap,
+          cap,
+          xpIntoLevel: 0,
+          xpForNextLevel: 0,
+          xpToNextLevel: 0,
+          progressPercent: 100,
+        };
+      }
+
+      const xpForNextLevel = SKILL_XP_PER_LEVEL[level] || 1;
+      const xpIntoLevel = Math.max(0, totalXp - cumulativeAtLevelStart);
+      const xpToNextLevel = Math.max(0, xpForNextLevel - xpIntoLevel);
+      const progressPercent = xpForNextLevel > 0 ? Math.min(100, Math.round((xpIntoLevel / xpForNextLevel) * 100)) : 100;
+
+      return {
+        level,
+        cap,
+        xpIntoLevel: Math.floor(xpIntoLevel),
+        xpForNextLevel: Math.floor(xpForNextLevel),
+        xpToNextLevel: Math.floor(xpToNextLevel),
+        progressPercent,
+      };
+    }
+
+    // Network Level Calculations (Feather Bot Formula)
+    function getLevelFromXP(xp) {
+      return xp <= 0 ? 1 : Math.floor(-3.5 + Math.sqrt(20.25 + 0.002 * xp));
+    }
+    function getTotalExpForLevel(level) {
+      return level <= 1 ? 0 : (500 * (level - 2) + 5000) * (level - 1);
+    }
+    function getRemainingXP(xp) {
+      const currentLevel = getLevelFromXP(xp);
+      const xpForCurrentLevel = getTotalExpForLevel(currentLevel);
+      return xp - xpForCurrentLevel;
+    }
+    function getExpFromLevelToNext(level) {
+      return level < 1 ? 5000 : 1000 * (level - 1) + 5000;
+    }
+    function getNetworkLevelProgress(xp) {
+      const totalXp = Number(xp) || 0;
+      const currentLevel = getLevelFromXP(totalXp);
+      const remainingXP = getRemainingXP(totalXp);
+      const xpToNextLevel = getExpFromLevelToNext(currentLevel);
+      return `Level ${currentLevel} (${formatNumber(remainingXP)} / ${formatNumber(xpToNextLevel)} XP)`;
+    }
+
+    function formatPlaytime(seconds) {
+      if (!seconds) return '0s';
+      const hrs = Math.floor(seconds / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
+      if (hrs >= 24) {
+        const days = (hrs / 24).toFixed(1);
+        return `${hrs}h ${mins}m (${days} days)`;
+      }
+      return `${hrs}h ${mins}m`;
+    }
+
+    const FARMING_BRACKET_NAMES = {
+      '-1': 'Participated',
+      '0': 'Bronze',
+      '1': 'Silver',
+      '2': 'Gold',
+      '3': 'Platinum',
+      '4': 'Diamond'
+    };
+
+    function renderOverview() {
+      const container = document.getElementById('overviewTab');
+      if (!playerData) {
+        container.innerHTML = '<p style="color:var(--text-muted);">No player data loaded.</p>';
+        return;
+      }
+
+      const member = profileData?.members?.[selectedMemberId] || {};
+      const purseCoins = member.coinPurse ?? member.coin_purse ?? 0;
+      const bankBalance = profileData?.banking?.balance ?? 0;
+      const cuteName = profileData?.cuteName || profileData?.cute_name || 'N/A';
+      const gameMode = profileData?.gameMode || profileData?.game_mode || 'Normal';
+      const profileIdStr = profileData?.id || profileData?.profile_id || currentProfileId;
+      const fairySouls = Array.isArray(member.fairies) ? member.fairies.length : (member.fairyExchanges || 0);
+      const visitedZonesCount = Array.isArray(member.visitedZones) ? member.visitedZones.length : 0;
+      const memberLevel = member.level ?? 'N/A';
+      const memberExp = member.exp ?? 'N/A';
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header">
+              <span class="material-icons" style="color:var(--accent-color);">person</span>
+              <span class="card-title">Identity &amp; Network</span>
+            </div>
+            <div class="data-item"><span class="data-label">Username</span><span class="data-value string">${playerData.name || playerData.username || 'N/A'}</span></div>
+            <div class="data-item"><span class="data-label">Selected Rank</span><span class="data-value string">${playerData.selectedRank || 'DEFAULT'}</span></div>
+            <div class="data-item"><span class="data-label">Network Level</span><span class="data-value string" style="color:var(--accent-color); font-weight:700;">${getNetworkLevelProgress(playerData.networkExp)}</span></div>
+            <div class="data-item"><span class="data-label">Network Exp</span><span class="data-value number">${formatNumber(playerData.networkExp || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Network Coins</span><span class="data-value number">${formatNumber(playerData.networkCoins || 0)}</span></div>
+            <div class="data-item"><span class="data-label">UUID</span><span class="data-value string" style="font-size:0.75rem;">${playerData.uuid || 'N/A'}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="material-icons" style="color:#16a34a;">account_balance_wallet</span>
+              <span class="card-title">Economy &amp; Profile</span>
+            </div>
+            <div class="data-item"><span class="data-label">Profile Cute Name</span><span class="data-value string" style="color:var(--accent-color); font-weight:700;">${cuteName}</span></div>
+            <div class="data-item"><span class="data-label">SkyBlock Level</span><span class="data-value string" style="color:#16a34a; font-weight:700;">Level ${memberLevel} (${formatNumber(memberExp)} XP)</span></div>
+            <div class="data-item"><span class="data-label">Coin Purse</span><span class="data-value number">${formatNumber(purseCoins)} coins</span></div>
+            <div class="data-item"><span class="data-label">Bank Balance</span><span class="data-value number">${formatNumber(bankBalance)} coins</span></div>
+            <div class="data-item"><span class="data-label">Gamemode</span><span class="data-value string">${gameMode}</span></div>
+            <div class="data-item"><span class="data-label">Fairy Souls Found</span><span class="data-value number">${fairySouls}</span></div>
+            <div class="data-item"><span class="data-label">Visited Zones</span><span class="data-value number">${visitedZonesCount}</span></div>
+            <div class="data-item"><span class="data-label">Pinned Quest</span><span class="data-value string">${member.pinnedQuest ? member.pinnedQuest.replace(/_/g, ' ') : 'None'}</span></div>
+            <div class="data-item"><span class="data-label">Profile ID</span><span class="data-value string" style="font-size:0.75rem;">${profileIdStr || 'N/A'}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="material-icons" style="color:#ea580c;">history</span>
+              <span class="card-title">Activity &amp; Timestamps</span>
+            </div>
+            <div class="data-item"><span class="data-label">First Login</span><span class="data-value date">${formatDate(playerData.firstLogin)}</span></div>
+            <div class="data-item"><span class="data-label">Last Login</span><span class="data-value date">${formatDate(playerData.lastLogin)}</span></div>
+            <div class="data-item"><span class="data-label">Last Server</span><span class="data-value string">${playerData.lastServer || 'HUB'}</span></div>
+            <div class="data-item"><span class="data-label">Total Playtime</span><span class="data-value string">${formatPlaytime(playerData.totalPlaytime)}</span></div>
+            <div class="data-item"><span class="data-label">Profile Created</span><span class="data-value date">${profileData?.createdAt ? formatDate(profileData.createdAt * 1000) : 'N/A'}</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSkills() {
+      const container = document.getElementById('skillsTab');
+      const member = profileData?.members?.[selectedMemberId] || {};
+      const skillsObj = member.skills || {};
+
+      const skillTypes = [
+        { key: 'farming', fallbackKey: 'experience_skill_farming', name: 'Farming', icon: 'agriculture' },
+        { key: 'mining', fallbackKey: 'experience_skill_mining', name: 'Mining', icon: 'construction' },
+        { key: 'combat', fallbackKey: 'experience_skill_combat', name: 'Combat', icon: 'sports_martial_arts' },
+        { key: 'foraging', fallbackKey: 'experience_skill_foraging', name: 'Foraging', icon: 'park' },
+        { key: 'fishing', fallbackKey: 'experience_skill_fishing', name: 'Fishing', icon: 'phishing' },
+        { key: 'enchanting', fallbackKey: 'experience_skill_enchanting', name: 'Enchanting', icon: 'auto_fix_high' },
+        { key: 'alchemy', fallbackKey: 'experience_skill_alchemy', name: 'Alchemy', icon: 'science' },
+        { key: 'taming', fallbackKey: 'experience_skill_taming', name: 'Taming', icon: 'pets' },
+        { key: 'carpentry', fallbackKey: 'experience_skill_carpentry', name: 'Carpentry', icon: 'handyman' },
+        { key: 'runecrafting', fallbackKey: 'experience_skill_runecrafting', name: 'Runecrafting', icon: 'blur_on' },
+        { key: 'social', fallbackKey: 'experience_skill_social', name: 'Social', icon: 'groups' }
+      ];
+
+      let totalLevels = 0;
+      let countedSkills = 0;
+
+      const cardsHtml = skillTypes.map(s => {
+        const xp = typeof skillsObj[s.key] === 'number' ? skillsObj[s.key] : (member[s.fallbackKey] || 0);
+        const calc = getSkillLevelFromXp(s.key, xp);
+        const level = calc?.level ?? 0;
+        const cap = calc?.cap ?? 50;
+        const progress = calc?.progressPercent ?? 0;
+
+        if (s.key !== 'runecrafting' && s.key !== 'social' && s.key !== 'carpentry') {
+          totalLevels += level;
+          countedSkills++;
+        }
+
+        const isMax = level >= cap;
+        const subtext = isMax ? 'MAX LEVEL REACHED' : `${formatNumber(calc?.xpIntoLevel || 0)} / ${formatNumber(calc?.xpForNextLevel || 0)} XP (${progress}%)`;
+
+        return `
+          <div class="skill-card">
+            <div class="skill-header">
+              <span class="skill-name"><span class="material-icons" style="font-size:1rem; vertical-align:middle; color:var(--accent-color);">${s.icon}</span> ${s.name}</span>
+              <span class="skill-lvl" style="${isMax ? 'color:#16a34a;' : ''}">Lv ${level} / ${cap}</span>
+            </div>
+            <div class="skill-bar-bg">
+              <div class="skill-bar-fill" style="width: ${progress}%; ${isMax ? 'background:#16a34a;' : ''}"></div>
+            </div>
+            <div class="skill-xp-text">${formatNumber(xp)} Total XP &bull; ${subtext}</div>
+          </div>
+        `;
+      }).join('');
+
+      const skillAvg = countedSkills > 0 ? (totalLevels / countedSkills).toFixed(2) : '0';
+
+      container.innerHTML = `
+        <div style="margin-bottom: 16px; padding: 12px 18px; background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="font-weight: 700; color: var(--text-bright);">True Skill Average:</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 8px;">(Farming, Mining, Combat, Foraging, Fishing, Enchanting, Alchemy, Taming)</span>
+          </div>
+          <span style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; color: var(--accent-color);">${skillAvg}</span>
+        </div>
+        <div class="cards-grid">${cardsHtml}</div>
+      `;
+    }
+
+    function renderSlayers() {
+      const container = document.getElementById('slayersTab');
+      const member = profileData?.members?.[selectedMemberId] || {};
+      const slayerData = member.slayerData || member.slayer_bosses || {};
+      const quest = member.slayerQuest || {};
+
+      const zombieXp = slayerData.zombie?.xp ?? slayerData.zombie ?? 0;
+      const zombieTier = slayerData.zombieTier ?? 0;
+      const zombieKills = slayerData.killedZombieSlayer ?? 0;
+
+      const spiderXp = slayerData.spider?.xp ?? slayerData.spider ?? 0;
+      const spiderTier = slayerData.spiderTier ?? 0;
+      const spiderKills = slayerData.killedSpiderSlayer ?? 0;
+
+      const wolfXp = slayerData.wolf?.xp ?? slayerData.wolf ?? 0;
+      const wolfTier = slayerData.wolfTier ?? 0;
+      const wolfKills = slayerData.killedWolfSlayer ?? 0;
+
+      const claimedTiers = Array.isArray(slayerData.claimedTiers) ? slayerData.claimedTiers : [];
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#dc2626;">coronavirus</span><span class="card-title">Revenant Horror (Zombie)</span></div>
+            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(zombieXp)} XP</span></div>
+            <div class="data-item"><span class="data-label">Highest Tier Defeated</span><span class="data-value string">Tier ${zombieTier}</span></div>
+            <div class="data-item"><span class="data-label">Boss Kills</span><span class="data-value number">${formatNumber(zombieKills)}</span></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#d97706;">pest_control</span><span class="card-title">Tarantula Broodfather (Spider)</span></div>
+            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(spiderXp)} XP</span></div>
+            <div class="data-item"><span class="data-label">Highest Tier Defeated</span><span class="data-value string">Tier ${spiderTier}</span></div>
+            <div class="data-item"><span class="data-label">Boss Kills</span><span class="data-value number">${formatNumber(spiderKills)}</span></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#2563eb;">pets</span><span class="card-title">Sven Packmaster (Wolf)</span></div>
+            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(wolfXp)} XP</span></div>
+            <div class="data-item"><span class="data-label">Highest Tier Defeated</span><span class="data-value string">Tier ${wolfTier}</span></div>
+            <div class="data-item"><span class="data-label">Boss Kills</span><span class="data-value number">${formatNumber(wolfKills)}</span></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 16px;">
+          <div class="card-header"><span class="material-icons">task_alt</span><span class="card-title">Active Quest &amp; Rewards</span></div>
+          <div class="data-item"><span class="data-label">Auto Slayer</span><span class="data-value boolean">${slayerData.autoSlayer ? 'Enabled' : 'Disabled'}</span></div>
+          <div class="data-item"><span class="data-label">Active Quest</span><span class="data-value string">${quest.type ? `${quest.type.toUpperCase()} (Tier ${quest.tier || 1})` : 'None active'}</span></div>
+          <div class="data-item"><span class="data-label">Quest Progress</span><span class="data-value number">${formatNumber(quest.currentExperience || 0)} / ${formatNumber(quest.targetExperience || 0)} XP</span></div>
+          <div style="margin-top: 14px;">
+            <div class="data-label" style="margin-bottom: 8px;">Claimed Level Rewards (${claimedTiers.length}):</div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              ${claimedTiers.length > 0 ? claimedTiers.map(t => `<span class="profile-pill" style="font-size:0.75rem;">${t.replace(/_/g, ' ')}</span>`).join('') : '<span style="color:var(--text-muted); font-size:0.85rem;">None claimed</span>'}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCombat() {
+      const container = document.getElementById('combatTab');
+      const member = profileData?.members?.[selectedMemberId] || {};
+
+      const kills = member.kills || {};
+      const deaths = member.deaths || {};
+      const totalKills = Object.values(kills).reduce((a, b) => a + (b || 0), 0);
+      const totalDeaths = Object.values(deaths).reduce((a, b) => a + (b || 0), 0);
+
+      const topKills = Object.entries(kills).sort((a, b) => (b[1] || 0) - (a[1] || 0)).slice(0, 10);
+      const topDeaths = Object.entries(deaths).sort((a, b) => (b[1] || 0) - (a[1] || 0)).slice(0, 10);
+
+      const bossDamages = Object.entries(member.maxTotalDamageToBosses || {}).sort((a, b) => (b[1] || 0) - (a[1] || 0)).slice(0, 8);
+      const bossKills = Object.entries(member.bossKillCounts || {}).sort((a, b) => (b[1] || 0) - (a[1] || 0)).slice(0, 8);
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#ef4444;">flash_on</span><span class="card-title">Damage Records</span></div>
+            <div class="data-item"><span class="data-label">Max Damage</span><span class="data-value number">${formatNumber(member.maxDamage || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Max Critical Damage</span><span class="data-value number">${formatNumber(member.maxCritDamage || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Total Mob Kills</span><span class="data-value number">${formatNumber(totalKills)}</span></div>
+            <div class="data-item"><span class="data-label">Total Deaths</span><span class="data-value number">${formatNumber(totalDeaths)}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#8b5cf6;">military_tech</span><span class="card-title">End &amp; Dragon Stats</span></div>
+            <div class="data-item"><span class="data-label">Zealots Contribution</span><span class="data-value number">${formatNumber(member.zealotsContribution?.['trpixel:end_stone_protector'] || Object.values(member.zealotsContribution || {})[0] || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Summoning Eyes Placed</span><span class="data-value number">${formatNumber(Object.values(member.summoningEyeContribution || {}).reduce((a, b) => a + (b || 0), 0))}</span></div>
+          </div>
+        </div>
+
+        <div class="cards-grid" style="margin-top: 16px;">
+          <div class="card">
+            <div class="card-header"><span class="material-icons">colorize</span><span class="card-title">Top Mob Kills</span></div>
+            ${topKills.map(([mob, count]) => `<div class="data-item"><span class="data-label">${mob.replace(/_/g, ' ')}</span><span class="data-value number">${formatNumber(count)}</span></div>`).join('')}
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons">sentiment_very_dissatisfied</span><span class="card-title">Top Deaths</span></div>
+            ${topDeaths.map(([cause, count]) => `<div class="data-item"><span class="data-label">${cause.replace(/_/g, ' ')}</span><span class="data-value number">${formatNumber(count)}</span></div>`).join('')}
+          </div>
+        </div>
+
+        ${bossDamages.length > 0 ? `
+          <div class="card" style="margin-top: 16px;">
+            <div class="card-header"><span class="material-icons" style="color:#f59e0b;">shield</span><span class="card-title">Highest Damage To Bosses</span></div>
+            <div class="cards-grid">
+              ${bossDamages.map(([boss, dmg]) => `
+                <div class="data-item" style="padding: 8px 12px; background: #f8fafc; border-radius: var(--radius-sm);">
+                  <span class="data-label">${boss.replace(/^trpixel:/i, '').replace(/_/g, ' ')}</span>
+                  <span class="data-value number">${formatNumber(Math.floor(dmg))}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function renderFarming() {
+      const container = document.getElementById('farmingTab');
+      const member = profileData?.members?.[selectedMemberId] || {};
+      const data = member.farmingContestData || {};
+      const personalBests = data.personalBests || {};
+      const highestBrackets = data.highestBrackets || {};
+      const bracketHits = data.bracketHits || {};
+
+      let diamond = 0, platinum = 0, gold = 0, silver = 0, bronze = 0, participated = 0;
+      Object.values(bracketHits).forEach(hits => {
+        if (Array.isArray(hits)) {
+          hits.forEach(b => {
+            if (b === 4) diamond++;
+            else if (b === 3) platinum++;
+            else if (b === 2) gold++;
+            else if (b === 1) silver++;
+            else if (b === 0) bronze++;
+            else participated++;
+          });
+        }
+      });
+
+      const totalContests = diamond + platinum + gold + silver + bronze + participated;
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#16a34a;">military_tech</span><span class="card-title">Jacob's Contest Medals</span></div>
+            <div class="data-item"><span class="data-label">Gold Medals</span><span class="data-value number" style="color:#eab308; font-weight:700;">${gold}</span></div>
+            <div class="data-item"><span class="data-label">Silver Medals</span><span class="data-value number" style="color:#94a3b8; font-weight:700;">${silver}</span></div>
+            <div class="data-item"><span class="data-label">Bronze Medals</span><span class="data-value number" style="color:#b45309; font-weight:700;">${bronze}</span></div>
+            <div class="data-item"><span class="data-label">Diamond / Platinum</span><span class="data-value number">${diamond + platinum}</span></div>
+            <div class="data-item"><span class="data-label">Total Participations</span><span class="data-value number">${totalContests}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#16a34a;">eco</span><span class="card-title">Highest Bracket Per Crop</span></div>
+            ${Object.keys(highestBrackets).length > 0 ? Object.entries(highestBrackets).map(([crop, bracket]) => `
+              <div class="data-item">
+                <span class="data-label">${crop.replace(/_/g, ' ')}</span>
+                <span class="data-value string" style="color:var(--accent-color); font-weight:600;">${FARMING_BRACKET_NAMES[String(bracket)] || bracket}</span>
+              </div>
+            `).join('') : '<p style="color:var(--text-muted); font-size:0.85rem;">No contest entries recorded yet.</p>'}
+          </div>
+        </div>
+
+        ${Object.keys(personalBests).length > 0 ? `
+          <div class="card" style="margin-top: 16px;">
+            <div class="card-header"><span class="material-icons">grass</span><span class="card-title">Personal Crop Bests in Contests</span></div>
+            <div class="cards-grid">
+              ${Object.entries(personalBests).map(([crop, amt]) => `
+                <div class="data-item" style="padding: 8px 12px; background: #f8fafc; border-radius: var(--radius-sm);">
+                  <span class="data-label">${crop.replace(/_/g, ' ')}</span>
+                  <span class="data-value number">${formatNumber(amt)}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function renderMinions() {
+      const container = document.getElementById('minionsTab');
+      const craftedMinions = profileData?.craftedMinions || [];
+
+      const maxByType = new Map();
+      for (const entry of craftedMinions) {
+        const match = /^(.+)_([0-9]+)$/.exec(String(entry || ''));
+        if (!match) continue;
+        const type = match[1].replace(/_/g, ' ');
+        const tier = Number(match[2]);
+        const current = maxByType.get(type) || 0;
+        if (tier > current) maxByType.set(type, tier);
+      }
+
+      const entries = Array.from(maxByType.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+
+      container.innerHTML = `
+        <div class="card">
+          <div class="card-header"><span class="material-icons" style="color:#0284c7;">precision_manufacturing</span><span class="card-title">Crafted Minion Tiers (${craftedMinions.length} total crafted entries)</span></div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:16px;">Unique generator types crafted and highest unlocked tier:</p>
+          <div class="cards-grid">
+            ${entries.map(([type, maxTier]) => `
+              <div class="data-item" style="padding: 10px 14px; background: #f8fafc; border-radius: var(--radius-sm);">
+                <span class="data-label" style="font-weight: 600; text-transform: capitalize;">${type}</span>
+                <span class="data-value string" style="color: var(--accent-color); font-weight: 700;">Tier ${maxTier}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCollections() {
+      const container = document.getElementById('collectionsTab');
+      const coll = profileData?.collections || {};
+      const memberContr = profileData?.collectionContributions?.[selectedMemberId] || {};
+
+      const entries = Object.entries(coll).sort((a, b) => (b[1] || 0) - (a[1] || 0));
+
+      if (entries.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted);">Collections API is either disabled or no collection items found.</p>';
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          ${entries.map(([item, total]) => {
+            const userPart = memberContr[item] || 0;
+            return `
+              <div class="card" style="padding:14px 18px;">
+                <div style="font-weight: 700; color: var(--text-bright); margin-bottom: 6px; text-transform: capitalize;">${item.replace(/_/g, ' ').toLowerCase()}</div>
+                <div class="data-item" style="border:none; padding: 2px 0;">
+                  <span class="data-label">Profile Total</span>
+                  <span class="data-value number">${formatNumber(total)}</span>
+                </div>
+                ${userPart > 0 ? `
+                  <div class="data-item" style="border:none; padding: 2px 0;">
+                    <span class="data-label">Your Contribution</span>
+                    <span class="data-value string" style="color: var(--accent-color); font-size: 0.8rem; font-weight:600;">${formatNumber(userPart)}</span>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderExtras() {
+      const container = document.getElementById('extrasTab');
+      const member = profileData?.members?.[selectedMemberId] || {};
+      const reality = member.realityShardData || {};
+      const exp = member.experimentationData || {};
+      const relationships = member.relationshipData?.experiences || {};
+      const stones = member.unlockedPowerStones || [];
+      const quests = member.quests || {};
+
+      const completedQuests = Object.values(quests).filter(q => q?.status === 'COMPLETE').length;
+      const activeQuests = Object.entries(quests).filter(([, q]) => q?.status === 'ACTIVE');
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#06b6d4;">diamond</span><span class="card-title">Reality Shards</span></div>
+            <div class="data-item"><span class="data-label">Collected Shards</span><span class="data-value number">${reality.collectedShards ? reality.collectedShards.length : 0}</span></div>
+            <div class="data-item"><span class="data-label">Fusions Completed</span><span class="data-value number">${formatNumber(reality.fusions || 0)}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#eab308;">bolt</span><span class="card-title">Power Stones &amp; Events</span></div>
+            <div class="data-item"><span class="data-label">Power Stones Unlocked</span><span class="data-value string">${stones.length > 0 ? stones.join(', ') : 'None'}</span></div>
+            <div class="data-item"><span class="data-label">Shiny Pigs Captured</span><span class="data-value number">${formatNumber(member.shinyPigsCaptured || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Shiny Orbs Used</span><span class="data-value number">${formatNumber(member.shinyOrbsUsed || 0)}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#a855f7;">auto_fix_normal</span><span class="card-title">Experimentation Table</span></div>
+            <div class="data-item"><span class="data-label">Superpairs Count</span><span class="data-value number">${formatNumber(exp.superpairs?.value || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Superpair Resets</span><span class="data-value number">${formatNumber(exp.superpairResets?.value || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Total Superpairs</span><span class="data-value number">${formatNumber(exp.totalSuperpairs || 0)}</span></div>
+          </div>
+        </div>
+
+        <div class="cards-grid" style="margin-top: 16px;">
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#10b981;">task</span><span class="card-title">Quests Summary</span></div>
+            <div class="data-item"><span class="data-label">Total Quests Tracked</span><span class="data-value number">${Object.keys(quests).length}</span></div>
+            <div class="data-item"><span class="data-label">Completed Quests</span><span class="data-value number" style="color:#16a34a; font-weight:700;">${completedQuests}</span></div>
+            <div class="data-item"><span class="data-label">Active Quests</span><span class="data-value number">${activeQuests.length}</span></div>
+            ${activeQuests.length > 0 ? `
+              <div style="margin-top: 8px;">
+                <div class="data-label" style="margin-bottom: 4px;">Active:</div>
+                ${activeQuests.map(([qName]) => `<div style="font-size:0.83rem; color:var(--text-bright);">&bull; ${qName.replace(/_/g, ' ')}</div>`).join('')}
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#ec4899;">favorite</span><span class="card-title">NPC Relationship Levels</span></div>
+            ${Object.keys(relationships).length > 0 ? Object.entries(relationships).map(([npc, xp]) => `
+              <div class="data-item">
+                <span class="data-label" style="text-transform: capitalize;">${npc.replace(/_/g, ' ')}</span>
+                <span class="data-value number">${formatNumber(xp)} XP</span>
+              </div>
+            `).join('') : '<p style="color:var(--text-muted); font-size:0.85rem;">No relationship data found.</p>'}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPlayerStats() {
+      const container = document.getElementById('playerTab');
+      if (!playerData) return;
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><span class="material-icons">badge</span><span class="card-title">Account Details</span></div>
+            <div class="data-item"><span class="data-label">Pixel ID</span><span class="data-value string">${playerData.pixelId || 'N/A'}</span></div>
+            <div class="data-item"><span class="data-label">Language</span><span class="data-value string">${playerData.language || 'english'}</span></div>
+            <div class="data-item"><span class="data-label">Private Messages</span><span class="data-value string">${playerData.privateMessages || 'ALL'}</span></div>
+            <div class="data-item"><span class="data-label">Friend Requests</span><span class="data-value string">${playerData.friendRequests || 'ALL'}</span></div>
+            <div class="data-item"><span class="data-label">Chat Hidden in Hubs</span><span class="data-value boolean">${playerData.isChatHiddenInHubs ? 'Yes' : 'No'}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons">music_note</span><span class="card-title">Music &amp; Jukebox</span></div>
+            <div class="data-item"><span class="data-label">Now Playing</span><span class="data-value string">${playerData.playingMusic || 'None'}</span></div>
+            <div class="data-item"><span class="data-label">Shuffle</span><span class="data-value boolean">${playerData.musicShuffle ? 'Enabled' : 'Disabled'}</span></div>
+            <div class="data-item"><span class="data-label">Queued Songs</span><span class="data-value number">${playerData.musicQueue ? playerData.musicQueue.length : 0}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons">category</span><span class="card-title">Cosmetics &amp; Collectibles</span></div>
+            <div class="data-item"><span class="data-label">Unlocked Cosmetics</span><span class="data-value number">${playerData.unlockedCollectables ? playerData.unlockedCollectables.length : 0}</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPlaytime() {
+      const container = document.getElementById('playtimeTab');
+      const memberPlaytimeSec = profileData?.playtimes?.[selectedMemberId] || 0;
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#ea580c;">timer</span><span class="card-title">SkyBlock Profile Playtime</span></div>
+            <div class="data-item"><span class="data-label">Active Time on This Profile</span><span class="data-value string" style="color:var(--accent-color); font-weight:700;">${formatPlaytime(memberPlaytimeSec)}</span></div>
+            <div class="data-item"><span class="data-label">Raw Seconds</span><span class="data-value number">${formatNumber(memberPlaytimeSec)} sec</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#0284c7;">schedule</span><span class="card-title">Total Network Playtime</span></div>
+            <div class="data-item"><span class="data-label">All Server Playtime</span><span class="data-value string" style="color:#0284c7; font-weight:700;">${formatPlaytime(playerData?.totalPlaytime || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Raw Seconds</span><span class="data-value number">${formatNumber(playerData?.totalPlaytime || 0)} sec</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderJSON() {
+      const container = document.getElementById('jsonTab');
+      const fullPayload = { player: playerData, profile: profileData };
+      container.innerHTML = `
+        <pre class="json-pre-box"><code>${JSON.stringify(fullPayload, null, 2)}</code></pre>
+      `;
+    }
+
+    function clearData() {
+      document.getElementById('username').value = '';
+      document.getElementById('profileId').value = '';
+      document.getElementById('mainData').style.display = 'none';
+      document.getElementById('profileSelector').style.display = 'none';
+      document.getElementById('memberSelector').style.display = 'none';
+      hideStatus();
+      playerData = null;
+      profileData = null;
+    }
+
+    function fetchRandomPlayer() {
+      const samplePlayers = ['Tekkxz', 'NetworkPg', 'Lord_Gooey'];
+      const pick = samplePlayers[Math.floor(Math.random() * samplePlayers.length)];
+      document.getElementById('username').value = pick;
+      fetchPlayerData();
+    }
+
+    // Auto-search from URL param
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const user = params.get('u') || params.get('username') || params.get('player');
+      if (user) {
+        document.getElementById('username').value = user;
+        fetchPlayerData();
+      }
+
+      document.getElementById('username')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') fetchPlayerData();
+      });
+    });
+  </script>
+
+</body>
+</html>

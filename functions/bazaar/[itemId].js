@@ -1,37 +1,57 @@
-export async function onRequest({ request, env, params }) {
+export async function onRequest(context) {
+  const { request, env, params } = context;
   try {
-    const apiKey = env.CMCG_BAZAAR_KEY || env.cmcg_bazaar_key || null;
-    if (!apiKey) {
-      return new Response(
-        JSON.stringify({ ok: false, error: "Missing CMCG_BAZAAR_KEY secret" }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
-        }
-      );
+    const cmcApiKey = env?.CMC_API_KEY_BAZAAR || env?.CMC_API_KEY || env?.cmc_api_key || null;
+    const workerApiKey = env?.CMCG_BAZAAR_KEY || env?.cmcg_bazaar_key || null;
+    const itemId = encodeURIComponent(String(params?.itemId || "").trim().toLowerCase());
+
+    if (!itemId) {
+      return new Response(JSON.stringify({ ok: false, error: "Missing itemId" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+      });
     }
 
-    const incomingUrl = new URL(request.url);
-    const itemId = encodeURIComponent(String(params.itemId || "").trim().toLowerCase());
-    const upstreamUrl = new URL(
-      `/${itemId}${incomingUrl.search}`,
-      "https://bazaar.craftersmcguides.workers.dev"
-    );
+    // Try primary CraftersMC details endpoint
+    if (cmcApiKey) {
+      try {
+        const directRes = await fetch(`https://api.craftersmc.net/v1/skyblock/bazaar/${itemId}/details`, {
+          headers: {
+            'X-API-Key': cmcApiKey,
+            'User-Agent': 'CraftersMC-Guides/1.0'
+          }
+        });
+        if (directRes.ok) {
+          const directData = await directRes.json();
+          return new Response(JSON.stringify(directData), {
+            status: 200,
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+              "Cache-Control": "public, max-age=60"
+            }
+          });
+        }
+      } catch (e) {}
+    }
 
-    const upstreamResponse = await fetch(upstreamUrl.toString(), {
+    // Fallback to bazaar worker proxy
+    const upstreamUrl = `https://bazaar.craftersmcguides.workers.dev/${itemId}`;
+    const headers = { 'User-Agent': 'CraftersMC-Guides/1.0' };
+    if (workerApiKey) headers['X-API-Key'] = workerApiKey;
+
+    const upstreamResponse = await fetch(upstreamUrl, {
       method: request.method,
-      headers: {
-        "X-API-Key": apiKey
-      }
+      headers
     });
 
-    const headers = new Headers(upstreamResponse.headers);
-    headers.set("Access-Control-Allow-Origin", "*");
-    headers.set("Cache-Control", "no-store");
+    const resHeaders = new Headers(upstreamResponse.headers);
+    resHeaders.set("Access-Control-Allow-Origin", "*");
+    resHeaders.set("Cache-Control", "public, max-age=60");
 
     return new Response(upstreamResponse.body, {
       status: upstreamResponse.status,
-      headers
+      headers: resHeaders
     });
   } catch (err) {
     return new Response(

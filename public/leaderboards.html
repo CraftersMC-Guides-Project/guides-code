@@ -2,142 +2,281 @@
 <html lang="en">
 
 <head>
-    <link rel="icon" href="assets/cmc-icon.png" type="image/png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="CraftersMC Leaderboards">
-    <meta property="og:description"
-        content="Explore all types of leaderboards here! Whether you want to find out positions or collections, all data is available here!">
-    <meta property="og:image" content="https://cdn.discordapp.com/attachments/1416722412032229457/1423270231740256256/Screenshot_20250524-2112033.png?ex=68dfb332&is=68de61b2&hm=809b90de9e5b77d767b558b836bb6b6f1cf3bf58f6e45a168400aa8654409a4c&">
-    <meta property="og:url" content="https://craftersmc-guides.pages.dev/leaderboards">
-    <meta property="og:type" content="website">
-    <meta name="theme-color" content="#007bff">
-    <meta name="twitter:card" content="summary_large_image"/>
-    <title>CraftersMC Leaderboards</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="js/script.js" defer></script>
-    <link rel="stylesheet" href="css/essential.css">
-    <link rel="stylesheet" href="css/event.css">
+  <meta charset="UTF-8">
+  <title>Network &amp; SkyBlock Leaderboards — CraftersMC Guides</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore CraftersMC SkyBlock rankings for skills, collections, slayers, economy, and seasonal events.">
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+  <link rel="icon" href="assets/cmc-guides.png" type="image/png">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="better-api-docs/style.css">
+
+  <!-- Scripts -->
+  <script src="better-api-docs/app.js" defer></script>
 </head>
 
 <body>
-    <div id="loader">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-    
-    <!-- This is the main selection view, shown on first visit -->
-    <div id="main-selection-view">
-        <div class="leaderboard-interface-background"></div>
-        <div class="top"></div>
-        <div class="sidebar" id="sidebar"></div>
-        <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-        <span class="material-icons" id="scrollToTopBtn">north</span>
-        <div class="gap"></div>
-        <div class="event-log-card-container">
-            <div class="event-log-card">
-                <img src="Backgrounds/trophies-minecraft.png" alt="Achievements Leaderboard"
-                    onerror="this.onerror=null;this.src='https://placehold.co/600x400/222/fff?text=Collections';">
-                <div class="event-log-card-content">
-                    <h3>Achievements Leaderboard</h3>
-                    <p>See who has the most achievements in CraftersMC Minecraft server!</p>
-                    <button onclick="window.location.href = '/achievements-leaderboard.html';">View</button>
-                </div>
-            </div>
-            <div class="event-log-card">
-                <img src="Backgrounds/AvgSkillBG.jpg" alt="Average Skill Leaderboard"
-                    onerror="this.onerror=null;this.src='https://placehold.co/600x400/222/fff?text=Collections';">
-                <div class="event-log-card-content">
-                    <h3>Average Skill Leaderboard</h3>
-                    <p>Discover the top players with the highest average skill level across all skills in the CraftersMC Skyblock server!</p>
-                    <button onclick="window.location.href = '/avg-skill-leaderboard.html';">View</button>
-                </div>
-            </div>
-            <div class="event-log-card">
-                <img src="Backgrounds/IMG_4504.webp" alt="Collections Leaderboards"
-                    onerror="this.onerror=null;this.src='https://placehold.co/600x400/222/fff?text=Collections';">
-                <div class="event-log-card-content">
-                    <h3>Collections Leaderboards</h3>
-                    <p>Find out who is at what ranking and how much collection they have!</p>
-                    <button onclick="window.location.href = '/collections-leaderboards.html';">View</button>
-                </div>
-            </div>
-            <div class="event-log-card">
-                <img src="Backgrounds/craftersmc-sb.jpeg" alt="Crafters Level Leaderboard"
-                    onerror="this.onerror=null;this.src='https://placehold.co/600x400/222/fff?text=Collections';">
-                <div class="event-log-card-content">
-                    <h3>Crafters Level Leaderboard</h3>
-                    <p>Check out the top players with the highest levels on the entire CraftersMC Minecraft server!</p>
-                    <button onclick="window.location.href = '/crafters-level-leaderboard.html';">View</button>
-                </div>
-            </div>
-            <div class="event-log-card">
-                <img src="Backgrounds/img55hfw.webp" alt="Gems Leaderboard"
-                    onerror="this.onerror=null;this.src='https://placehold.co/600x400/222/fff?text=Collections';">
-                <div class="event-log-card-content">
-                    <h3>Gems Leaderboard</h3>
-                    <p>Check out the top players who had the most gems at a single time in the CraftersMC Skyblock server!</p>
-                    <button onclick="window.location.href = '/gems-leaderboard.html';">View</button>
-                </div>
-            </div>
-            <div class="event-log-card">
-                <img src="Backgrounds/lobby.webp" alt="Playtime Leaderboard"
-                    onerror="this.onerror=null;this.src='https://placehold.co/600x400/222/fff?text=Playtime';">
-                <div class="event-log-card-content">
-                    <h3>Playtime Leaderboard</h3>
-                    <p>Find out who has played the most on CraftersMC Network!</p>
-                    <button onclick="window.location.href = '/playtime.html';">View</button>
-                </div>
-            </div>
-            <div class="event-log-card">
-                <img src="Backgrounds/image9489.webp" alt="Slayers Leaderboards"
-                    onerror="this.onerror=null;this.src='https://placehold.co/600x400/222/fff?text=Slayers';">
-                <div class="event-log-card-content">
-                    <h3>Slayers Leaderboards</h3>
-                    <p>Find out who is at what position and how much experience they have!</p>
-                    <button onclick="window.location.href = '/slayers-leaderboards.html';">View</button>
-                </div>
-            </div>
-            <div class="event-log-card">
-                <img src="Backgrounds/image8297.webp" alt="Boss time Leaderboards"
-                    onerror="this.onerror=null;this.src='https://placehold.co/600x400/222/fff?text=Boss_TIme';">
-                <div class="event-log-card-content">
-                    <h3>Boss Time Leaderboards</h3>
-                    <p>See who leads in boss spawn and kill times on CraftersMC.</p>
-                    <button onclick="window.location.href = '/boss-time-leaderboards.html';">View</button>
-                </div>
-            </div>
-            <div class="event-log-card">
-                <img src="Backgrounds/4.webp" alt="Farming Contest Leaderboards"
-                    onerror="this.onerror=null;this.src='https://placehold.co/600x400/222/fff?text=Farming_Contest';">
-                <div class="event-log-card-content">
-                    <h3>Farming Contests Leaderboards</h3>
-                    <p>See who leads in farming contests, medals, and personal bests on CraftersMC.</p>
-                    <button onclick="window.location.href = '/farming-contests-leaderboards.html';">View</button>
-                </div>
-            </div>
-            <div class="event-log-card">
-                <img src="Backgrounds/imag38606-003424.webp" alt="cakes Leaderboard"
-                    onerror="this.onerror=null;this.src='https://placehold.co/600x400/222/fff?text=cakes';">
-                <div class="event-log-card-content">
-                    <h3>Cakes Leaderboard</h3>
-                    <p>Discover the top players with the highest cakes collected across the entire CraftersMC Skyblock!</p>
-                    <button onclick="window.location.href = '/cakes-leaderboard.html';">View</button>
-                </div>
-            </div>
-            <div class="event-log-card">
-                <img src="Backgrounds/2026_april_fools_melon_event.png" alt="2026 April Fools Melon Event Leaderboard"
-                    onerror="this.onerror=null;this.src='https://placehold.co/600x400/73b545/fff?text=Melon+Event';">
-                <div class="event-log-card-content">
-                    <h3>2026 April Fools Melon Event</h3>
-                    <p>View the leaderboard for the 2026 April Fools Melon Event on CraftersMC Skyblock.</p>
-                    <button onclick="window.location.href = '/april-fools-melon-event-leaderboard.html';">View</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="footer"></div>
-</body>
 
+  <!-- Top Header Navigation -->
+  <header class="top-header">
+    <div class="header-left">
+      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
+        <span class="material-icons" style="font-size:1.25rem;">menu</span>
+      </button>
+      <a href="index.html" class="header-brand">
+        <img src="assets/cmc-guides.png" alt="CraftersMC Logo">
+        <div class="brand-text">
+          <span class="brand-title">CraftersMC Guides</span>
+          <span class="version-badge">Leaderboards</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Search Box -->
+    <div class="search-box">
+      <span class="material-icons search-icon">search</span>
+      <input type="text" id="search-input" placeholder="Search leaderboards, skills, slayers...">
+      <span class="search-kbd-shortcut">/</span>
+    </div>
+
+    <!-- Header Utility Links -->
+    <div class="header-actions">
+      <a href="better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
+      <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
+    </div>
+  </header>
+
+  <!-- Application Layout -->
+  <div class="app-layout">
+
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Getting Started</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="index.html#overview"><span class="material-icons nav-icon">home</span> <span>Overview</span></a></li>
+          <li class="sidebar-nav-item"><a href="index.html#section-guides"><span class="material-icons nav-icon">menu_book</span> <span>Progression Guides</span></a></li>
+          <li class="sidebar-nav-item"><a href="index.html#section-tools"><span class="material-icons nav-icon">build</span> <span>Live Tools</span></a></li>
+          <li class="sidebar-nav-item"><a href="index.html#section-api"><span class="material-icons nav-icon">code</span> <span>Developer &amp; API</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Live Tools &amp; Trackers</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="player.html"><span class="material-icons nav-icon">person_search</span> <span>Player Viewer</span></a></li>
+          <li class="sidebar-nav-item"><a href="skycalendar.html"><span class="material-icons nav-icon">event</span> <span>SkyCalendar (Events)</span></a></li>
+          <li class="sidebar-nav-item"><a href="rank-sellers.html"><span class="material-icons nav-icon">card_giftcard</span> <span>Rank &amp; Gems Sellers</span></a></li>
+          <li class="sidebar-nav-item active"><a href="leaderboards.html" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons nav-icon" style="color: var(--accent-color);">leaderboard</span> <span>Leaderboards</span></a></li>
+          <li class="sidebar-nav-item"><a href="texture-packs.html"><span class="material-icons nav-icon">palette</span> <span>Texture Packs</span></a></li>
+          <li class="sidebar-nav-item"><a href="tools.html"><span class="material-icons nav-icon">calculate</span> <span>Calculators</span></a></li>
+          <li class="sidebar-nav-item"><a href="feather-bot/index.html"><span class="material-icons nav-icon">smart_toy</span> <span>Feather Bot Guide</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Progression Guides</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="guide/starter-guide.html"><span class="material-icons nav-icon">play_circle</span> <span>Starter Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/intermediate-guide.html"><span class="material-icons nav-icon">trending_up</span> <span>Intermediate Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/intermediate-guide2.html"><span class="material-icons nav-icon">shield</span> <span>Slayers Edition</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/advanced-guide.html"><span class="material-icons nav-icon">military_tech</span> <span>Advanced Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/accessories-guide.html"><span class="material-icons nav-icon">auto_awesome</span> <span>Accessories &amp; Reforges</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/bazaar-guide.html"><span class="material-icons nav-icon">storefront</span> <span>Bazaar Trading</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/queries.html"><span class="material-icons nav-icon">help_outline</span> <span>Common Queries &amp; FAQ</span></a></li>
+          <li class="sidebar-nav-item"><a href="unicode.html"><span class="material-icons nav-icon">format_shapes</span> <span>Unicode &amp; Formatting</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Developer &amp; API</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="better-api-docs/index.html"><span class="material-icons nav-icon">code</span> <span>REST API v1 Reference</span></a></li>
+          <li class="sidebar-nav-item"><a href="better-api-docs/index.html#section-nbt-decoding"><span class="material-icons nav-icon">memory</span> <span>15 NBT Storage Blobs</span></a></li>
+          <li class="sidebar-nav-item"><a href="better-api-docs/index.html#section-item-ids"><span class="material-icons nav-icon">list_alt</span> <span>Numerical Item IDs (1,933)</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Community &amp; Source</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="https://craftersmc.net/" target="_blank"><span class="material-icons nav-icon">language</span> <span>Server Website</span></a></li>
+          <li class="sidebar-nav-item"><a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank"><span class="material-icons nav-icon">code</span> <span>GitHub Repository</span></a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- Section Header -->
+      <section class="doc-section">
+        <div class="section-header">
+          <h1>CraftersMC Leaderboards Directory</h1>
+          <p>Browse verified player placements across skills, collections, slayers, economy, and seasonal events.</p>
+        </div>
+
+        <!-- Category: Skills & Progression -->
+        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
+          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: var(--accent-color);">trending_up</span> Skills &amp; Progression</h2>
+        </div>
+
+        <div class="schema-cards-grid" style="margin-bottom: 28px;">
+          <div class="schema-card">
+            <div class="schema-name"><a href="avg-skill-leaderboard.html">Average Skill Leaderboard</a></div>
+            <div class="schema-desc">Top players with the highest average skill level across all skills on the SkyBlock server.</div>
+            <div style="margin-top: auto;"><a href="avg-skill-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="skills-leaderboards.html">Individual Skills Leaderboard</a></div>
+            <div class="schema-desc">Detailed rankings for Combat, Mining, Farming, Foraging, Enchanting, Alchemy, and Fishing.</div>
+            <div style="margin-top: auto;"><a href="skills-leaderboards.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="collections-leaderboards.html">Collections Leaderboards</a></div>
+            <div class="schema-desc">Check who holds the top collection rankings and highest item counts for all materials.</div>
+            <div style="margin-top: auto;"><a href="collections-leaderboards.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="crafters-level-leaderboard.html">Crafters Level Leaderboard</a></div>
+            <div class="schema-desc">Highest network and SkyBlock profile levels on the CraftersMC server.</div>
+            <div style="margin-top: auto;"><a href="crafters-level-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="achievements-leaderboard.html">Achievements Leaderboard</a></div>
+            <div class="schema-desc">Players with the most completed server achievements and quest milestones.</div>
+            <div style="margin-top: auto;"><a href="achievements-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="playtime.html">Playtime Leaderboard</a></div>
+            <div class="schema-desc">See who has the most total active playtime logged on the CraftersMC Network.</div>
+            <div style="margin-top: auto;"><a href="playtime.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+        </div>
+
+        <!-- Category: Combat & Slayers -->
+        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
+          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #9333ea;">shield</span> Combat &amp; Slayers</h2>
+        </div>
+
+        <div class="schema-cards-grid" style="margin-bottom: 28px;">
+          <div class="schema-card">
+            <div class="schema-name"><a href="slayers-leaderboards.html">Slayers Leaderboards</a></div>
+            <div class="schema-desc">Top placements for Revenant Horror, Tarantula Broodfather, and Sven Packmaster XP.</div>
+            <div style="margin-top: auto;"><a href="slayers-leaderboards.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="boss-time-leaderboards.html">Boss Time Leaderboards</a></div>
+            <div class="schema-desc">Fastest boss spawn times and kill records across all slayer tiers.</div>
+            <div style="margin-top: auto;"><a href="boss-time-leaderboards.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="damage-leaderboard.html">Damage Leaderboard</a></div>
+            <div class="schema-desc">Highest single-hit damage records achieved on CraftersMC SkyBlock.</div>
+            <div style="margin-top: auto;"><a href="damage-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="pets-leaderboards.html">Pets Leaderboard</a></div>
+            <div class="schema-desc">Players with the highest pet score, total level 100 pets, and rarest pet collections.</div>
+            <div style="margin-top: auto;"><a href="pets-leaderboards.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+        </div>
+
+        <!-- Category: Economy & Networth -->
+        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
+          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #16a34a;">payments</span> Economy &amp; Wealth</h2>
+        </div>
+
+        <div class="schema-cards-grid" style="margin-bottom: 28px;">
+          <div class="schema-card">
+            <div class="schema-name"><a href="coins-leaderboards.html">Bank Coins Leaderboard</a></div>
+            <div class="schema-desc">Top player balances in personal and co-op bank accounts.</div>
+            <div style="margin-top: auto;"><a href="coins-leaderboards.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="networth-leaderboard.html">Networth Leaderboard</a></div>
+            <div class="schema-desc">Total profile networth including bank balance, equipped items, wardrobe, and storage.</div>
+            <div style="margin-top: auto;"><a href="networth-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="gems-leaderboard.html">Gems Leaderboard</a></div>
+            <div class="schema-desc">Top players holding the highest recorded gems balance on CraftersMC.</div>
+            <div style="margin-top: auto;"><a href="gems-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="cakes-leaderboard.html">Cakes Leaderboard</a></div>
+            <div class="schema-desc">Discover the top players with the highest number of New Year cakes collected.</div>
+            <div style="margin-top: auto;"><a href="cakes-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+        </div>
+
+        <!-- Category: Seasonal Events & Minigames -->
+        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
+          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #ea580c;">celebration</span> Events &amp; Minigames</h2>
+        </div>
+
+        <div class="schema-cards-grid" style="margin-bottom: 28px;">
+          <div class="schema-card">
+            <div class="schema-name"><a href="farming-contests-leaderboards.html">Farming Contests Leaderboards</a></div>
+            <div class="schema-desc">Records for Jacob/Ethan's farming contests, gold medals, and individual crop personal bests.</div>
+            <div style="margin-top: auto;"><a href="farming-contests-leaderboards.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="ender-node-hunt-leaderboard.html">Ender Node Hunt Leaderboard</a></div>
+            <div class="schema-desc">Rankings for the most ender nodes mined and highest rare drops obtained.</div>
+            <div style="margin-top: auto;"><a href="ender-node-hunt-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="arctic-cave-race-leaderboard.html">Arctic Cave Race Leaderboard</a></div>
+            <div class="schema-desc">Fastest completion times and course records for the Arctic Cave obstacle course.</div>
+            <div style="margin-top: auto;"><a href="arctic-cave-race-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="target-practice-leaderboard.html">Target Practice Leaderboard</a></div>
+            <div class="schema-desc">Top scores and accuracy records in the Target Practice minigame range.</div>
+            <div style="margin-top: auto;"><a href="target-practice-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="april-fools-melon-event-leaderboard.html">2026 April Fools Melon Event</a></div>
+            <div class="schema-desc">Event leaderboard and placements for the 2026 April Fools Melon Event.</div>
+            <div style="margin-top: auto;"><a href="april-fools-melon-event-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
+        <div class="site-footer-right">
+          <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+</body>
 </html>
