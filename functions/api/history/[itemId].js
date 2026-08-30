@@ -30,6 +30,21 @@ export async function onRequest(context) {
     // Fetch single item history from valid endpoint
     const upstreamRes = await fetch(`https://bazaar.craftersmcguides.workers.dev/api/items/${itemId}/history`, { headers });
 
+    if (!upstreamRes.ok) {
+      let errBody = null;
+      try { errBody = await upstreamRes.json(); } catch (e) { errBody = await upstreamRes.text(); }
+      return new Response(JSON.stringify({
+        ok: false,
+        status: upstreamRes.status,
+        upstream_error: errBody,
+        debug_used_key: apiKey || "UNDEFINED",
+        debug_available_env_keys: Object.keys(env || {})
+      }), {
+        status: upstreamRes.status,
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+      });
+    }
+
     return new Response(upstreamRes.body, {
       status: upstreamRes.status,
       headers: {
