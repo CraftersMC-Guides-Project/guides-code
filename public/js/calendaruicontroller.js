@@ -128,8 +128,12 @@ getPetEmoji(name) {
 
         getRarityLabel(rarity) {
             if (!rarity) return '';
+            const upper = String(rarity).toUpperCase();
             const key = String(rarity).toLowerCase();
-            return `<span class="zoo-pet-rarity rarity-${key}">${capitalize(key)}</span>`;
+            if (this.engine && this.engine.RARITIES_ICONS && this.engine.RARITIES_ICONS[upper]) {
+                return this.engine.RARITIES_ICONS[upper];
+            }
+            return `<img src="assets/rarity/${key}.webp" class="rarity-icon" alt="${capitalize(key)}">`;
         },
 
         getEventIcon(event) {
