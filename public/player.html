@@ -437,6 +437,42 @@
       renderJSON();
     }
 
+    const SKILL_XP_TABLE = [
+      0, 50, 175, 375, 675, 1175, 1925, 2925, 4425, 6425,
+      9925, 14925, 22425, 32425, 47425, 67425, 97425, 147425, 222425, 322425,
+      522425, 822425, 1222425, 1722425, 2322425, 3022425, 3822425, 4722425, 5722425, 6822425,
+      8022425, 9322425, 10722425, 12222425, 13822425, 15522425, 17322425, 19222425, 21222425, 23322425,
+      25522425, 27822425, 30222425, 32722425, 35322425, 38072425, 40972425, 44072425, 47472425, 51172425,
+      55172425, 59472425, 64072425, 68972425, 74172425, 79672425, 85472425, 91572425, 97972425, 104672425
+    ];
+
+    function getSkillLevel(xp) {
+      if (!xp || xp <= 0) return { level: 0, progress: 0, currentXp: 0, nextXp: 50 };
+      let level = 0;
+      for (let i = 0; i < SKILL_XP_TABLE.length; i++) {
+        if (xp >= SKILL_XP_TABLE[i]) {
+          level = i;
+        } else {
+          break;
+        }
+      }
+      const currentXp = Math.floor(xp - (SKILL_XP_TABLE[level] || 0));
+      const nextXp = (SKILL_XP_TABLE[level + 1] ? (SKILL_XP_TABLE[level + 1] - SKILL_XP_TABLE[level]) : 1);
+      const progress = Math.min(100, Math.round((currentXp / nextXp) * 100));
+      return { level, progress, currentXp, nextXp };
+    }
+
+    function formatPlaytime(seconds) {
+      if (!seconds) return '0 hrs';
+      const hrs = Math.floor(seconds / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
+      if (hrs >= 24) {
+        const days = (hrs / 24).toFixed(1);
+        return `${hrs} hrs (${days} days)`;
+      }
+      return `${hrs} hrs ${mins} mins`;
+    }
+
     function renderOverview() {
       const container = document.getElementById('overviewTab');
       if (!playerData) {
@@ -445,6 +481,11 @@
       }
 
       const member = profileData?.members?.[selectedMemberId] || {};
+      const purseCoins = member.coinPurse ?? member.coin_purse ?? 0;
+      const bankBalance = profileData?.banking?.balance ?? 0;
+      const cuteName = profileData?.cuteName || profileData?.cute_name || 'N/A';
+      const gameMode = profileData?.gameMode || profileData?.game_mode || 'Normal';
+      const profileIdStr = profileData?.id || profileData?.profile_id || currentProfileId;
 
       container.innerHTML = `
         <div class="cards-grid">
@@ -465,10 +506,11 @@
               <span class="material-icons" style="color:#16a34a;">account_balance_wallet</span>
               <span class="card-title">Economy &amp; Profile</span>
             </div>
-            <div class="data-item"><span class="data-label">Coin Purse</span><span class="data-value number">${formatNumber(member.coin_purse || 0)} coins</span></div>
-            <div class="data-item"><span class="data-label">Bank Balance</span><span class="data-value number">${formatNumber(profileData?.banking?.balance || 0)} coins</span></div>
-            <div class="data-item"><span class="data-label">Gamemode</span><span class="data-value string">${profileData?.game_mode || 'Normal'}</span></div>
-            <div class="data-item"><span class="data-label">Profile ID</span><span class="data-value string" style="font-size:0.75rem;">${currentProfileId || 'N/A'}</span></div>
+            <div class="data-item"><span class="data-label">Profile Cute Name</span><span class="data-value string" style="color:var(--accent-color);">${cuteName}</span></div>
+            <div class="data-item"><span class="data-label">Coin Purse</span><span class="data-value number">${formatNumber(purseCoins)} coins</span></div>
+            <div class="data-item"><span class="data-label">Bank Balance</span><span class="data-value number">${formatNumber(bankBalance)} coins</span></div>
+            <div class="data-item"><span class="data-label">Gamemode</span><span class="data-value string">${gameMode}</span></div>
+            <div class="data-item"><span class="data-label">Profile ID</span><span class="data-value string" style="font-size:0.75rem;">${profileIdStr || 'N/A'}</span></div>
           </div>
 
           <div class="card">
@@ -520,20 +562,28 @@
         return;
       }
 
+      const cuteName = profileData.cuteName || profileData.cute_name || 'N/A';
+      const gameMode = profileData.gameMode || profileData.game_mode || 'Normal';
+      const ownerName = profileData.ownerLastName || 'Unknown';
+      const membersCount = Object.keys(profileData.members || {}).length;
+
       container.innerHTML = `
         <div class="cards-grid">
           <div class="card">
             <div class="card-header"><span class="material-icons">info</span><span class="card-title">Profile Metadata</span></div>
-            <div class="data-item"><span class="data-label">Profile ID</span><span class="data-value string" style="font-size:0.75rem;">${profileData.profile_id || currentProfileId}</span></div>
-            <div class="data-item"><span class="data-label">Cute Name</span><span class="data-value string">${profileData.cute_name || 'N/A'}</span></div>
-            <div class="data-item"><span class="data-label">Gamemode</span><span class="data-value string">${profileData.game_mode || 'Normal'}</span></div>
-            <div class="data-item"><span class="data-label">Total Members</span><span class="data-value number">${Object.keys(profileData.members || {}).length}</span></div>
+            <div class="data-item"><span class="data-label">Profile Cute Name</span><span class="data-value string" style="color:var(--accent-color);">${cuteName}</span></div>
+            <div class="data-item"><span class="data-label">Profile ID</span><span class="data-value string" style="font-size:0.75rem;">${profileData.id || profileData.profile_id || currentProfileId}</span></div>
+            <div class="data-item"><span class="data-label">Owner</span><span class="data-value string">${ownerName}</span></div>
+            <div class="data-item"><span class="data-label">Created Date</span><span class="data-value date">${formatDate(profileData.createdAt ? profileData.createdAt * 1000 : null)}</span></div>
+            <div class="data-item"><span class="data-label">Gamemode</span><span class="data-value string">${gameMode}</span></div>
+            <div class="data-item"><span class="data-label">Total Members</span><span class="data-value number">${membersCount}</span></div>
           </div>
 
           <div class="card">
             <div class="card-header"><span class="material-icons">account_balance</span><span class="card-title">Co-op Banking</span></div>
             <div class="data-item"><span class="data-label">Bank Balance</span><span class="data-value number">${formatNumber(profileData.banking?.balance || 0)} coins</span></div>
-            <div class="data-item"><span class="data-label">Transactions</span><span class="data-value number">${profileData.banking?.transactions ? profileData.banking.transactions.length : 0} recorded</span></div>
+            <div class="data-item"><span class="data-label">Bank Tier</span><span class="data-value string">${profileData.banking?.tier || 'DEFAULT'}</span></div>
+            <div class="data-item"><span class="data-label">Highest Balance</span><span class="data-value number">${formatNumber(profileData.banking?.highestBalance || 0)} coins</span></div>
           </div>
         </div>
       `;
@@ -542,34 +592,37 @@
     function renderSkills() {
       const container = document.getElementById('skillsTab');
       const member = profileData?.members?.[selectedMemberId] || {};
+      const skillsObj = member.skills || {};
 
       const skillTypes = [
-        { key: 'experience_skill_combat', name: 'Combat', icon: 'sports_martial_arts' },
-        { key: 'experience_skill_mining', name: 'Mining', icon: 'construction' },
-        { key: 'experience_skill_farming', name: 'Farming', icon: 'agriculture' },
-        { key: 'experience_skill_foraging', name: 'Foraging', icon: 'park' },
-        { key: 'experience_skill_enchanting', name: 'Enchanting', icon: 'auto_fix_high' },
-        { key: 'experience_skill_alchemy', name: 'Alchemy', icon: 'science' },
-        { key: 'experience_skill_fishing', name: 'Fishing', icon: 'phishing' },
-        { key: 'experience_skill_taming', name: 'Taming', icon: 'pets' },
-        { key: 'experience_skill_carpentry', name: 'Carpentry', icon: 'handyman' },
-        { key: 'experience_skill_runecrafting', name: 'Runecrafting', icon: 'blur_on' },
-        { key: 'experience_skill_social', name: 'Social', icon: 'groups' }
+        { key: 'combat', fallbackKey: 'experience_skill_combat', name: 'Combat', icon: 'sports_martial_arts' },
+        { key: 'mining', fallbackKey: 'experience_skill_mining', name: 'Mining', icon: 'construction' },
+        { key: 'farming', fallbackKey: 'experience_skill_farming', name: 'Farming', icon: 'agriculture' },
+        { key: 'foraging', fallbackKey: 'experience_skill_foraging', name: 'Foraging', icon: 'park' },
+        { key: 'enchanting', fallbackKey: 'experience_skill_enchanting', name: 'Enchanting', icon: 'auto_fix_high' },
+        { key: 'alchemy', fallbackKey: 'experience_skill_alchemy', name: 'Alchemy', icon: 'science' },
+        { key: 'fishing', fallbackKey: 'experience_skill_fishing', name: 'Fishing', icon: 'phishing' },
+        { key: 'taming', fallbackKey: 'experience_skill_taming', name: 'Taming', icon: 'pets' },
+        { key: 'carpentry', fallbackKey: 'experience_skill_carpentry', name: 'Carpentry', icon: 'handyman' },
+        { key: 'runecrafting', fallbackKey: 'experience_skill_runecrafting', name: 'Runecrafting', icon: 'blur_on' },
+        { key: 'social', fallbackKey: 'experience_skill_social', name: 'Social', icon: 'groups' }
       ];
 
       let html = '<div class="cards-grid">';
       skillTypes.forEach(s => {
-        const xp = member[s.key] || 0;
+        const xp = typeof skillsObj[s.key] === 'number' ? skillsObj[s.key] : (member[s.fallbackKey] || 0);
+        const { level, progress, currentXp, nextXp } = getSkillLevel(xp);
+
         html += `
-          <div class="card">
-            <div class="card-header">
-              <span class="material-icons" style="color:var(--accent-color);">${s.icon}</span>
-              <span class="card-title">${s.name}</span>
+          <div class="skill-card">
+            <div class="skill-header">
+              <span class="skill-name"><span class="material-icons" style="font-size:1rem; vertical-align:middle; color:var(--accent-color);">${s.icon}</span> ${s.name}</span>
+              <span class="skill-lvl">Lvl ${level}</span>
             </div>
-            <div class="data-item">
-              <span class="data-label">Total Experience</span>
-              <span class="data-value number">${formatNumber(xp)} XP</span>
+            <div class="skill-bar-bg">
+              <div class="skill-bar-fill" style="width: ${progress}%;"></div>
             </div>
+            <div class="skill-xp-text">${formatNumber(xp)} Total XP &bull; ${progress}% to Lvl ${level + 1}</div>
           </div>
         `;
       });
@@ -580,21 +633,39 @@
     function renderSlayers() {
       const container = document.getElementById('slayersTab');
       const member = profileData?.members?.[selectedMemberId] || {};
-      const slayers = member.slayer_bosses || {};
+      const slayerData = member.slayerData || member.slayer_bosses || {};
+
+      const zombieXp = slayerData.zombie?.xp ?? slayerData.zombie ?? 0;
+      const zombieTier = slayerData.zombieTier ?? 0;
+      const zombieKills = slayerData.killedZombieSlayer ?? 0;
+
+      const spiderXp = slayerData.spider?.xp ?? slayerData.spider ?? 0;
+      const spiderTier = slayerData.spiderTier ?? 0;
+      const spiderKills = slayerData.killedSpiderSlayer ?? 0;
+
+      const wolfXp = slayerData.wolf?.xp ?? slayerData.wolf ?? 0;
+      const wolfTier = slayerData.wolfTier ?? 0;
+      const wolfKills = slayerData.killedWolfSlayer ?? 0;
 
       container.innerHTML = `
         <div class="cards-grid">
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#dc2626;">coronavirus</span><span class="card-title">Revenant Horror (Zombie)</span></div>
-            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(slayers.zombie?.xp || 0)} XP</span></div>
+            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(zombieXp)} XP</span></div>
+            <div class="data-item"><span class="data-label">Highest Tier Defeated</span><span class="data-value string">Tier ${zombieTier}</span></div>
+            <div class="data-item"><span class="data-label">Boss Kills</span><span class="data-value number">${formatNumber(zombieKills)}</span></div>
           </div>
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#d97706;">pest_control</span><span class="card-title">Tarantula Broodfather (Spider)</span></div>
-            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(slayers.spider?.xp || 0)} XP</span></div>
+            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(spiderXp)} XP</span></div>
+            <div class="data-item"><span class="data-label">Highest Tier Defeated</span><span class="data-value string">Tier ${spiderTier}</span></div>
+            <div class="data-item"><span class="data-label">Boss Kills</span><span class="data-value number">${formatNumber(spiderKills)}</span></div>
           </div>
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#2563eb;">pets</span><span class="card-title">Sven Packmaster (Wolf)</span></div>
-            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(slayers.wolf?.xp || 0)} XP</span></div>
+            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(wolfXp)} XP</span></div>
+            <div class="data-item"><span class="data-label">Highest Tier Defeated</span><span class="data-value string">Tier ${wolfTier}</span></div>
+            <div class="data-item"><span class="data-label">Boss Kills</span><span class="data-value number">${formatNumber(wolfKills)}</span></div>
           </div>
         </div>
       `;
@@ -603,15 +674,15 @@
     function renderFarming() {
       const container = document.getElementById('farmingTab');
       const member = profileData?.members?.[selectedMemberId] || {};
-      const contests = member.jacob2 || {};
+      const contests = member.farmingContestData || member.jacob2 || {};
 
       container.innerHTML = `
         <div class="cards-grid">
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#16a34a;">military_tech</span><span class="card-title">Contest Medals</span></div>
-            <div class="data-item"><span class="data-label">Gold Medals</span><span class="data-value number">${contests.medals_inv?.gold || 0}</span></div>
-            <div class="data-item"><span class="data-label">Silver Medals</span><span class="data-value number">${contests.medals_inv?.silver || 0}</span></div>
-            <div class="data-item"><span class="data-label">Bronze Medals</span><span class="data-value number">${contests.medals_inv?.bronze || 0}</span></div>
+            <div class="data-item"><span class="data-label">Gold Medals</span><span class="data-value number">${contests.medals_inv?.gold || contests.goldMedals || 0}</span></div>
+            <div class="data-item"><span class="data-label">Silver Medals</span><span class="data-value number">${contests.medals_inv?.silver || contests.silverMedals || 0}</span></div>
+            <div class="data-item"><span class="data-label">Bronze Medals</span><span class="data-value number">${contests.medals_inv?.bronze || contests.bronzeMedals || 0}</span></div>
           </div>
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#16a34a;">grass</span><span class="card-title">Pelts &amp; Perks</span></div>
@@ -623,14 +694,14 @@
 
     function renderMinions() {
       const container = document.getElementById('minionsTab');
-      const craftedGenerators = profileData?.community_upgrades?.crafted_generators || [];
+      const craftedGenerators = profileData?.craftedMinions || profileData?.community_upgrades?.crafted_generators || [];
 
       container.innerHTML = `
         <div class="card">
           <div class="card-header"><span class="material-icons" style="color:#0284c7;">precision_manufacturing</span><span class="card-title">Crafted Minion Tiers</span></div>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">Total unique minion types and tiers crafted on this profile: <strong>${craftedGenerators.length}</strong></p>
           <div style="display:flex; flex-wrap:wrap; gap:6px;">
-            ${craftedGenerators.map(m => `<span class="profile-pill" style="font-size:0.75rem;">${m}</span>`).join('')}
+            ${craftedGenerators.map(m => `<span class="profile-pill" style="font-size:0.75rem;">${m.replace(/_/g, ' ')}</span>`).join('')}
           </div>
         </div>
       `;
@@ -638,17 +709,16 @@
 
     function renderCollections() {
       const container = document.getElementById('collectionsTab');
-      const member = profileData?.members?.[selectedMemberId] || {};
-      const coll = member.collection || {};
+      const coll = profileData?.collections || profileData?.members?.[selectedMemberId]?.collection || {};
 
-      let html = '<div class="cards-grid">';
-      const entries = Object.entries(coll);
+      const entries = Object.entries(coll).sort((a, b) => (b[1] || 0) - (a[1] || 0));
 
       if (entries.length === 0) {
         container.innerHTML = '<p style="color:var(--text-muted);">Collections API is either disabled or no collection items found.</p>';
         return;
       }
 
+      let html = '<div class="cards-grid">';
       entries.forEach(([item, amount]) => {
         html += `
           <div class="card" style="padding:14px 18px;">
@@ -665,14 +735,15 @@
 
     function renderPlaytime() {
       const container = document.getElementById('playtimeTab');
+      const memberPlaytimeSec = profileData?.playtimes?.[selectedMemberId] || 0;
       const stats = playerData?.stats || {};
 
       container.innerHTML = `
         <div class="cards-grid">
           <div class="card">
-            <div class="card-header"><span class="material-icons" style="color:#ea580c;">timer</span><span class="card-title">Playtime Breakdown</span></div>
-            <div class="data-item"><span class="data-label">Total Network Sessions</span><span class="data-value number">${stats.total_sessions || 'N/A'}</span></div>
-            <div class="data-item"><span class="data-label">AFK Time</span><span class="data-value date">${stats.afk_time || '0h'}</span></div>
+            <div class="card-header"><span class="material-icons" style="color:#ea580c;">timer</span><span class="card-title">SkyBlock Profile Playtime</span></div>
+            <div class="data-item"><span class="data-label">Active Time on Profile</span><span class="data-value string" style="color:var(--accent-color);">${formatPlaytime(memberPlaytimeSec)}</span></div>
+            <div class="data-item"><span class="data-label">Raw Seconds</span><span class="data-value number">${formatNumber(memberPlaytimeSec)} sec</span></div>
           </div>
         </div>
       `;
