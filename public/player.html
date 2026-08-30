@@ -169,31 +169,56 @@
         <!-- Main Data Display Container -->
         <div id="mainData" style="display: none;">
 
-          <!-- Tabs Navigation -->
-          <div class="player-tabs-bar">
-            <button class="player-tab-btn active" onclick="switchTab('overview')"><span class="material-icons" style="font-size: 1rem;">dashboard</span> Overview</button>
-            <button class="player-tab-btn" onclick="switchTab('player')"><span class="material-icons" style="font-size: 1rem;">badge</span> Player Stats</button>
-            <button class="player-tab-btn" onclick="switchTab('profile')"><span class="material-icons" style="font-size: 1rem;">account_balance</span> Profile Data</button>
-            <button class="player-tab-btn" onclick="switchTab('skills')"><span class="material-icons" style="font-size: 1rem;">auto_awesome</span> Skills</button>
-            <button class="player-tab-btn" onclick="switchTab('slayers')"><span class="material-icons" style="font-size: 1rem;">shield</span> Slayers</button>
-            <button class="player-tab-btn" onclick="switchTab('farming')"><span class="material-icons" style="font-size: 1rem;">agriculture</span> Farming</button>
-            <button class="player-tab-btn" onclick="switchTab('minions')"><span class="material-icons" style="font-size: 1rem;">precision_manufacturing</span> Minions</button>
-            <button class="player-tab-btn" onclick="switchTab('collections')"><span class="material-icons" style="font-size: 1rem;">inventory_2</span> Collections</button>
-            <button class="player-tab-btn" onclick="switchTab('playtime')"><span class="material-icons" style="font-size: 1rem;">schedule</span> Playtime</button>
-            <button class="player-tab-btn" onclick="switchTab('json')"><span class="material-icons" style="font-size: 1rem;">code</span> Raw JSON</button>
-          </div>
+          <div class="player-view-container">
 
-          <!-- Tab Contents -->
-          <div id="overviewTab" class="tab-content active"></div>
-          <div id="playerTab" class="tab-content" style="display: none;"></div>
-          <div id="profileTab" class="tab-content" style="display: none;"></div>
-          <div id="skillsTab" class="tab-content" style="display: none;"></div>
-          <div id="slayersTab" class="tab-content" style="display: none;"></div>
-          <div id="farmingTab" class="tab-content" style="display: none;"></div>
-          <div id="minionsTab" class="tab-content" style="display: none;"></div>
-          <div id="collectionsTab" class="tab-content" style="display: none;"></div>
-          <div id="playtimeTab" class="tab-content" style="display: none;"></div>
-          <div id="jsonTab" class="tab-content" style="display: none;"></div>
+            <!-- Sub Navigation Side Panel -->
+            <aside class="player-subpanel">
+              <div class="player-subpanel-group">
+                <div class="player-subpanel-title">General</div>
+                <div class="player-subpanel-nav">
+                  <button class="player-subpanel-btn active" onclick="switchTab('overview')"><span class="material-icons">dashboard</span> Overview</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('skills')"><span class="material-icons">auto_awesome</span> Skills</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('slayers')"><span class="material-icons">shield</span> Slayers</button>
+                </div>
+              </div>
+
+              <div class="player-subpanel-group">
+                <div class="player-subpanel-title">Progression</div>
+                <div class="player-subpanel-nav">
+                  <button class="player-subpanel-btn" onclick="switchTab('combat')"><span class="material-icons">sports_martial_arts</span> Combat &amp; Bosses</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('farming')"><span class="material-icons">agriculture</span> Farming</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('minions')"><span class="material-icons">precision_manufacturing</span> Minions</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('collections')"><span class="material-icons">inventory_2</span> Collections</button>
+                </div>
+              </div>
+
+              <div class="player-subpanel-group">
+                <div class="player-subpanel-title">Advanced</div>
+                <div class="player-subpanel-nav">
+                  <button class="player-subpanel-btn" onclick="switchTab('extras')"><span class="material-icons">extension</span> Shards &amp; Extras</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('player')"><span class="material-icons">badge</span> Account Details</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('playtime')"><span class="material-icons">schedule</span> Playtime</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('json')"><span class="material-icons">code</span> Raw JSON</button>
+                </div>
+              </div>
+            </aside>
+
+            <!-- Tab Contents Area -->
+            <div class="player-tab-content-wrapper">
+              <div id="overviewTab" class="tab-content active"></div>
+              <div id="skillsTab" class="tab-content" style="display: none;"></div>
+              <div id="slayersTab" class="tab-content" style="display: none;"></div>
+              <div id="combatTab" class="tab-content" style="display: none;"></div>
+              <div id="farmingTab" class="tab-content" style="display: none;"></div>
+              <div id="minionsTab" class="tab-content" style="display: none;"></div>
+              <div id="collectionsTab" class="tab-content" style="display: none;"></div>
+              <div id="extrasTab" class="tab-content" style="display: none;"></div>
+              <div id="playerTab" class="tab-content" style="display: none;"></div>
+              <div id="playtimeTab" class="tab-content" style="display: none;"></div>
+              <div id="jsonTab" class="tab-content" style="display: none;"></div>
+            </div>
+
+          </div>
 
         </div>
 
@@ -262,7 +287,6 @@
     async function fetchFromProxy(endpoint) {
       const PROXY_ORIGIN = 'https://craftersmc-guides.pages.dev';
 
-      // 1. If running on the main production domain, use relative fetch
       if (window.location.origin === PROXY_ORIGIN) {
         try {
           const res = await fetch(endpoint);
@@ -270,7 +294,6 @@
         } catch (e) {}
       }
 
-      // 2. On preview branches or local dev, fetch directly from authenticated production proxy
       try {
         const res = await fetch(`${PROXY_ORIGIN}${endpoint}`);
         if (res.ok) {
@@ -283,7 +306,6 @@
         const errData = await res.json().catch(() => ({}));
         throw new Error(`HTTP ${res.status}: ${errData.message || errData.error || 'Failed to fetch from proxy'}`);
       } catch (err) {
-        // 3. Fallback to relative endpoint if external fetch failed
         if (!err.message?.includes('not found')) {
           try {
             const fallbackRes = await fetch(endpoint);
@@ -311,7 +333,6 @@
 
         showStatus(`Loaded player data for ${playerData.name || playerData.username || username}`, 'success');
 
-        // Check for SkyBlock profiles
         const profiles = playerData.stats?.skyBlock?.profiles;
         if (profiles && Object.keys(profiles).length > 0) {
           displayProfiles(profiles);
@@ -384,7 +405,9 @@
 
       const members = Object.keys(profileData.members);
       if (!selectedMemberId || !profileData.members[selectedMemberId]) {
-        selectedMemberId = members[0];
+        const playerCleanUuid = (playerData?.uuid || '').replace(/-/g, '').toLowerCase();
+        const ownerMatch = members.find(m => m.toLowerCase() === playerCleanUuid);
+        selectedMemberId = ownerMatch || members[0];
       }
 
       members.forEach((memUuid) => {
@@ -392,7 +415,7 @@
         btn.className = `profile-pill ${memUuid === selectedMemberId ? 'active' : ''}`;
         
         let label = memUuid.substring(0, 8);
-        if (playerData?.uuid && memUuid === playerData.uuid.replace(/-/g, '')) {
+        if (playerData?.uuid && memUuid.toLowerCase() === playerData.uuid.replace(/-/g, '').toLowerCase()) {
           label = `${playerData.name || playerData.username || 'You'} (Owner)`;
         }
 
@@ -407,13 +430,13 @@
     }
 
     function switchTab(tabId) {
-      document.querySelectorAll('.player-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.player-subpanel-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => {
         c.classList.remove('active');
         c.style.display = 'none';
       });
 
-      const targetBtn = Array.from(document.querySelectorAll('.player-tab-btn')).find(b => b.getAttribute('onclick')?.includes(tabId));
+      const targetBtn = Array.from(document.querySelectorAll('.player-subpanel-btn')).find(b => b.getAttribute('onclick')?.includes(tabId));
       if (targetBtn) targetBtn.classList.add('active');
 
       const targetTab = document.getElementById(`${tabId}Tab`);
@@ -426,13 +449,14 @@
     function displayAllData() {
       document.getElementById('mainData').style.display = 'block';
       renderOverview();
-      renderPlayerStats();
-      renderProfileStats();
       renderSkills();
       renderSlayers();
+      renderCombat();
       renderFarming();
       renderMinions();
       renderCollections();
+      renderExtras();
+      renderPlayerStats();
       renderPlaytime();
       renderJSON();
     }
@@ -486,6 +510,7 @@
       const cuteName = profileData?.cuteName || profileData?.cute_name || 'N/A';
       const gameMode = profileData?.gameMode || profileData?.game_mode || 'Normal';
       const profileIdStr = profileData?.id || profileData?.profile_id || currentProfileId;
+      const fairySouls = member.fairies ? Object.keys(member.fairies).length : (member.fairyExchanges || 0);
 
       container.innerHTML = `
         <div class="cards-grid">
@@ -506,10 +531,11 @@
               <span class="material-icons" style="color:#16a34a;">account_balance_wallet</span>
               <span class="card-title">Economy &amp; Profile</span>
             </div>
-            <div class="data-item"><span class="data-label">Profile Cute Name</span><span class="data-value string" style="color:var(--accent-color);">${cuteName}</span></div>
+            <div class="data-item"><span class="data-label">Profile Cute Name</span><span class="data-value string" style="color:var(--accent-color); font-weight:700;">${cuteName}</span></div>
             <div class="data-item"><span class="data-label">Coin Purse</span><span class="data-value number">${formatNumber(purseCoins)} coins</span></div>
             <div class="data-item"><span class="data-label">Bank Balance</span><span class="data-value number">${formatNumber(bankBalance)} coins</span></div>
             <div class="data-item"><span class="data-label">Gamemode</span><span class="data-value string">${gameMode}</span></div>
+            <div class="data-item"><span class="data-label">Fairy Souls</span><span class="data-value number">${formatNumber(fairySouls)}</span></div>
             <div class="data-item"><span class="data-label">Profile ID</span><span class="data-value string" style="font-size:0.75rem;">${profileIdStr || 'N/A'}</span></div>
           </div>
 
@@ -521,6 +547,292 @@
             <div class="data-item"><span class="data-label">First Login</span><span class="data-value date">${formatDate(playerData.firstLogin)}</span></div>
             <div class="data-item"><span class="data-label">Last Login</span><span class="data-value date">${formatDate(playerData.lastLogin)}</span></div>
             <div class="data-item"><span class="data-label">Last Server</span><span class="data-value string">${playerData.lastServer || 'HUB'}</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSkills() {
+      const container = document.getElementById('skillsTab');
+      const member = profileData?.members?.[selectedMemberId] || {};
+      const skillsObj = member.skills || {};
+
+      const skillTypes = [
+        { key: 'combat', fallbackKey: 'experience_skill_combat', name: 'Combat', icon: 'sports_martial_arts' },
+        { key: 'mining', fallbackKey: 'experience_skill_mining', name: 'Mining', icon: 'construction' },
+        { key: 'farming', fallbackKey: 'experience_skill_farming', name: 'Farming', icon: 'agriculture' },
+        { key: 'foraging', fallbackKey: 'experience_skill_foraging', name: 'Foraging', icon: 'park' },
+        { key: 'enchanting', fallbackKey: 'experience_skill_enchanting', name: 'Enchanting', icon: 'auto_fix_high' },
+        { key: 'alchemy', fallbackKey: 'experience_skill_alchemy', name: 'Alchemy', icon: 'science' },
+        { key: 'fishing', fallbackKey: 'experience_skill_fishing', name: 'Fishing', icon: 'phishing' },
+        { key: 'taming', fallbackKey: 'experience_skill_taming', name: 'Taming', icon: 'pets' },
+        { key: 'carpentry', fallbackKey: 'experience_skill_carpentry', name: 'Carpentry', icon: 'handyman' },
+        { key: 'runecrafting', fallbackKey: 'experience_skill_runecrafting', name: 'Runecrafting', icon: 'blur_on' },
+        { key: 'social', fallbackKey: 'experience_skill_social', name: 'Social', icon: 'groups' }
+      ];
+
+      let totalLevels = 0;
+      let countedSkills = 0;
+
+      const cardsHtml = skillTypes.map(s => {
+        const xp = typeof skillsObj[s.key] === 'number' ? skillsObj[s.key] : (member[s.fallbackKey] || 0);
+        const { level, progress } = getSkillLevel(xp);
+        if (s.key !== 'runecrafting' && s.key !== 'social' && s.key !== 'carpentry') {
+          totalLevels += level;
+          countedSkills++;
+        }
+
+        return `
+          <div class="skill-card">
+            <div class="skill-header">
+              <span class="skill-name"><span class="material-icons" style="font-size:1rem; vertical-align:middle; color:var(--accent-color);">${s.icon}</span> ${s.name}</span>
+              <span class="skill-lvl">Lvl ${level}</span>
+            </div>
+            <div class="skill-bar-bg">
+              <div class="skill-bar-fill" style="width: ${progress}%;"></div>
+            </div>
+            <div class="skill-xp-text">${formatNumber(xp)} Total XP &bull; ${progress}% to Lvl ${level + 1}</div>
+          </div>
+        `;
+      }).join('');
+
+      const skillAvg = countedSkills > 0 ? (totalLevels / countedSkills).toFixed(2) : '0';
+
+      container.innerHTML = `
+        <div style="margin-bottom: 16px; padding: 12px 18px; background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: 700; color: var(--text-bright);">Skill Average (Non-Cosmetic):</span>
+          <span style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 700; color: var(--accent-color);">${skillAvg}</span>
+        </div>
+        <div class="cards-grid">${cardsHtml}</div>
+      `;
+    }
+
+    function renderSlayers() {
+      const container = document.getElementById('slayersTab');
+      const member = profileData?.members?.[selectedMemberId] || {};
+      const slayerData = member.slayerData || member.slayer_bosses || {};
+      const quest = member.slayerQuest || {};
+
+      const zombieXp = slayerData.zombie?.xp ?? slayerData.zombie ?? 0;
+      const zombieTier = slayerData.zombieTier ?? 0;
+      const zombieKills = slayerData.killedZombieSlayer ?? 0;
+
+      const spiderXp = slayerData.spider?.xp ?? slayerData.spider ?? 0;
+      const spiderTier = slayerData.spiderTier ?? 0;
+      const spiderKills = slayerData.killedSpiderSlayer ?? 0;
+
+      const wolfXp = slayerData.wolf?.xp ?? slayerData.wolf ?? 0;
+      const wolfTier = slayerData.wolfTier ?? 0;
+      const wolfKills = slayerData.killedWolfSlayer ?? 0;
+
+      const claimedTiers = Array.isArray(slayerData.claimedTiers) ? slayerData.claimedTiers : [];
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#dc2626;">coronavirus</span><span class="card-title">Revenant Horror (Zombie)</span></div>
+            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(zombieXp)} XP</span></div>
+            <div class="data-item"><span class="data-label">Highest Tier Defeated</span><span class="data-value string">Tier ${zombieTier}</span></div>
+            <div class="data-item"><span class="data-label">Boss Kills</span><span class="data-value number">${formatNumber(zombieKills)}</span></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#d97706;">pest_control</span><span class="card-title">Tarantula Broodfather (Spider)</span></div>
+            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(spiderXp)} XP</span></div>
+            <div class="data-item"><span class="data-label">Highest Tier Defeated</span><span class="data-value string">Tier ${spiderTier}</span></div>
+            <div class="data-item"><span class="data-label">Boss Kills</span><span class="data-value number">${formatNumber(spiderKills)}</span></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#2563eb;">pets</span><span class="card-title">Sven Packmaster (Wolf)</span></div>
+            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(wolfXp)} XP</span></div>
+            <div class="data-item"><span class="data-label">Highest Tier Defeated</span><span class="data-value string">Tier ${wolfTier}</span></div>
+            <div class="data-item"><span class="data-label">Boss Kills</span><span class="data-value number">${formatNumber(wolfKills)}</span></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 16px;">
+          <div class="card-header"><span class="material-icons">task_alt</span><span class="card-title">Active Quest &amp; Claimed Rewards</span></div>
+          <div class="data-item"><span class="data-label">Auto Slayer</span><span class="data-value boolean">${slayerData.autoSlayer ? 'Enabled' : 'Disabled'}</span></div>
+          <div class="data-item"><span class="data-label">Active Quest Type</span><span class="data-value string">${quest.type || 'None'} ${quest.tier ? `(Tier ${quest.tier})` : ''}</span></div>
+          <div class="data-item"><span class="data-label">Quest Progress</span><span class="data-value number">${formatNumber(quest.currentExperience || 0)} / ${formatNumber(quest.targetExperience || 0)} XP</span></div>
+          <div style="margin-top: 12px;">
+            <div class="data-label" style="margin-bottom: 6px;">Claimed Level Rewards (${claimedTiers.length}):</div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              ${claimedTiers.map(t => `<span class="profile-pill" style="font-size:0.75rem;">${t}</span>`).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCombat() {
+      const container = document.getElementById('combatTab');
+      const member = profileData?.members?.[selectedMemberId] || {};
+
+      const kills = member.kills || {};
+      const deaths = member.deaths || {};
+      const totalKills = Object.values(kills).reduce((a, b) => a + (b || 0), 0);
+      const totalDeaths = Object.values(deaths).reduce((a, b) => a + (b || 0), 0);
+
+      const topKills = Object.entries(kills).sort((a, b) => (b[1] || 0) - (a[1] || 0)).slice(0, 10);
+      const topDeaths = Object.entries(deaths).sort((a, b) => (b[1] || 0) - (a[1] || 0)).slice(0, 10);
+
+      const bossKillCounts = Object.entries(member.bossKillCounts || {}).sort((a, b) => (b[1] || 0) - (a[1] || 0));
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#ef4444;">flash_on</span><span class="card-title">Damage Records</span></div>
+            <div class="data-item"><span class="data-label">Max Damage</span><span class="data-value number">${formatNumber(member.maxDamage || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Max Critical Damage</span><span class="data-value number">${formatNumber(member.maxCritDamage || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Total Mob Kills</span><span class="data-value number">${formatNumber(totalKills)}</span></div>
+            <div class="data-item"><span class="data-label">Total Deaths</span><span class="data-value number">${formatNumber(totalDeaths)}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#8b5cf6;">military_tech</span><span class="card-title">Boss Damage &amp; Summons</span></div>
+            <div class="data-item"><span class="data-label">Summoning Eyes Placed</span><span class="data-value number">${formatNumber(member.summoningEyeContribution?.total || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Zealots Contribution</span><span class="data-value number">${formatNumber(member.zealotsContribution || 0)}</span></div>
+          </div>
+        </div>
+
+        <div class="cards-grid" style="margin-top: 16px;">
+          <div class="card">
+            <div class="card-header"><span class="material-icons">colorize</span><span class="card-title">Top Kills</span></div>
+            ${topKills.map(([mob, count]) => `<div class="data-item"><span class="data-label">${mob.replace(/_/g, ' ')}</span><span class="data-value number">${formatNumber(count)}</span></div>`).join('')}
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons">sentiment_very_dissatisfied</span><span class="card-title">Top Deaths</span></div>
+            ${topDeaths.map(([cause, count]) => `<div class="data-item"><span class="data-label">${cause.replace(/_/g, ' ')}</span><span class="data-value number">${formatNumber(count)}</span></div>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderFarming() {
+      const container = document.getElementById('farmingTab');
+      const member = profileData?.members?.[selectedMemberId] || {};
+      const data = member.farmingContestData || {};
+      const personalBests = data.personalBests || {};
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#16a34a;">military_tech</span><span class="card-title">Contest Medals &amp; Pelts</span></div>
+            <div class="data-item"><span class="data-label">Collected Pelts</span><span class="data-value number">${formatNumber(data.pelts || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Contests Participated</span><span class="data-value number">${Object.keys(data.bracketHits || {}).length}</span></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 16px;">
+          <div class="card-header"><span class="material-icons">eco</span><span class="card-title">Personal Crop Bests in Contests</span></div>
+          <div class="cards-grid">
+            ${Object.entries(personalBests).map(([crop, amt]) => `
+              <div class="data-item" style="padding: 8px 12px; background: #f8fafc; border-radius: var(--radius-sm);">
+                <span class="data-label">${crop.replace(/_/g, ' ')}</span>
+                <span class="data-value number">${formatNumber(amt)}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMinions() {
+      const container = document.getElementById('minionsTab');
+      const craftedMinions = profileData?.craftedMinions || [];
+
+      const maxByType = new Map();
+      for (const entry of craftedMinions) {
+        const match = /^(.+)_([0-9]+)$/.exec(String(entry || ''));
+        if (!match) continue;
+        const type = match[1].replace(/_/g, ' ');
+        const tier = Number(match[2]);
+        const current = maxByType.get(type) || 0;
+        if (tier > current) maxByType.set(type, tier);
+      }
+
+      const entries = Array.from(maxByType.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+
+      container.innerHTML = `
+        <div class="card">
+          <div class="card-header"><span class="material-icons" style="color:#0284c7;">precision_manufacturing</span><span class="card-title">Crafted Minion Tiers (${craftedMinions.length} total tiers crafted)</span></div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:16px;">Highest unlocked tier per minion generator:</p>
+          <div class="cards-grid">
+            ${entries.map(([type, maxTier]) => `
+              <div class="data-item" style="padding: 10px 14px; background: #f8fafc; border-radius: var(--radius-sm);">
+                <span class="data-label" style="font-weight: 600;">${type}</span>
+                <span class="data-value string" style="color: var(--accent-color); font-weight: 700;">Tier ${maxTier}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCollections() {
+      const container = document.getElementById('collectionsTab');
+      const coll = profileData?.collections || {};
+      const memberContr = profileData?.collectionContributions?.[selectedMemberId] || {};
+
+      const entries = Object.entries(coll).sort((a, b) => (b[1] || 0) - (a[1] || 0));
+
+      if (entries.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted);">Collections API is either disabled or no collection items found.</p>';
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          ${entries.map(([item, total]) => {
+            const userPart = memberContr[item] || 0;
+            return `
+              <div class="card" style="padding:14px 18px;">
+                <div style="font-weight: 700; color: var(--text-bright); margin-bottom: 6px;">${item.replace(/_/g, ' ')}</div>
+                <div class="data-item" style="border:none; padding: 2px 0;">
+                  <span class="data-label">Profile Total</span>
+                  <span class="data-value number">${formatNumber(total)}</span>
+                </div>
+                ${userPart > 0 ? `
+                  <div class="data-item" style="border:none; padding: 2px 0;">
+                    <span class="data-label">Your Contribution</span>
+                    <span class="data-value string" style="color: var(--accent-color); font-size: 0.8rem;">${formatNumber(userPart)}</span>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderExtras() {
+      const container = document.getElementById('extrasTab');
+      const member = profileData?.members?.[selectedMemberId] || {};
+      const reality = member.realityShardData || {};
+      const exp = member.experimentationData || {};
+      const stones = member.unlockedPowerStones || [];
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#06b6d4;">diamond</span><span class="card-title">Reality Shards</span></div>
+            <div class="data-item"><span class="data-label">Collected Shards</span><span class="data-value number">${reality.collectedShards ? reality.collectedShards.length : 0}</span></div>
+            <div class="data-item"><span class="data-label">Fusions Completed</span><span class="data-value number">${formatNumber(reality.fusions || 0)}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#eab308;">bolt</span><span class="card-title">Power Stones &amp; Shiny Events</span></div>
+            <div class="data-item"><span class="data-label">Power Stones Unlocked</span><span class="data-value number">${stones.length}</span></div>
+            <div class="data-item"><span class="data-label">Shiny Pigs Captured</span><span class="data-value number">${formatNumber(member.shinyPigsCaptured || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Shiny Orbs Used</span><span class="data-value number">${formatNumber(member.shinyOrbsUsed || 0)}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#a855f7;">auto_fix_normal</span><span class="card-title">Experimentation Table</span></div>
+            <div class="data-item"><span class="data-label">Superpairs Pairs Found</span><span class="data-value number">${formatNumber(exp.pairsFound || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Chronomatron Best</span><span class="data-value number">${formatNumber(exp.chronomatronHighestRound || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Ultrasequencer Best</span><span class="data-value number">${formatNumber(exp.ultrasequencerHighestRound || 0)}</span></div>
           </div>
         </div>
       `;
@@ -555,194 +867,15 @@
       `;
     }
 
-    function renderProfileStats() {
-      const container = document.getElementById('profileTab');
-      if (!profileData) {
-        container.innerHTML = '<p style="color:var(--text-muted);">No active SkyBlock profile data available.</p>';
-        return;
-      }
-
-      const cuteName = profileData.cuteName || profileData.cute_name || 'N/A';
-      const gameMode = profileData.gameMode || profileData.game_mode || 'Normal';
-      const ownerName = profileData.ownerLastName || 'Unknown';
-      const membersCount = Object.keys(profileData.members || {}).length;
-
-      container.innerHTML = `
-        <div class="cards-grid">
-          <div class="card">
-            <div class="card-header"><span class="material-icons">info</span><span class="card-title">Profile Metadata</span></div>
-            <div class="data-item"><span class="data-label">Profile Cute Name</span><span class="data-value string" style="color:var(--accent-color);">${cuteName}</span></div>
-            <div class="data-item"><span class="data-label">Profile ID</span><span class="data-value string" style="font-size:0.75rem;">${profileData.id || profileData.profile_id || currentProfileId}</span></div>
-            <div class="data-item"><span class="data-label">Owner</span><span class="data-value string">${ownerName}</span></div>
-            <div class="data-item"><span class="data-label">Created Date</span><span class="data-value date">${formatDate(profileData.createdAt ? profileData.createdAt * 1000 : null)}</span></div>
-            <div class="data-item"><span class="data-label">Gamemode</span><span class="data-value string">${gameMode}</span></div>
-            <div class="data-item"><span class="data-label">Total Members</span><span class="data-value number">${membersCount}</span></div>
-          </div>
-
-          <div class="card">
-            <div class="card-header"><span class="material-icons">account_balance</span><span class="card-title">Co-op Banking</span></div>
-            <div class="data-item"><span class="data-label">Bank Balance</span><span class="data-value number">${formatNumber(profileData.banking?.balance || 0)} coins</span></div>
-            <div class="data-item"><span class="data-label">Bank Tier</span><span class="data-value string">${profileData.banking?.tier || 'DEFAULT'}</span></div>
-            <div class="data-item"><span class="data-label">Highest Balance</span><span class="data-value number">${formatNumber(profileData.banking?.highestBalance || 0)} coins</span></div>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderSkills() {
-      const container = document.getElementById('skillsTab');
-      const member = profileData?.members?.[selectedMemberId] || {};
-      const skillsObj = member.skills || {};
-
-      const skillTypes = [
-        { key: 'combat', fallbackKey: 'experience_skill_combat', name: 'Combat', icon: 'sports_martial_arts' },
-        { key: 'mining', fallbackKey: 'experience_skill_mining', name: 'Mining', icon: 'construction' },
-        { key: 'farming', fallbackKey: 'experience_skill_farming', name: 'Farming', icon: 'agriculture' },
-        { key: 'foraging', fallbackKey: 'experience_skill_foraging', name: 'Foraging', icon: 'park' },
-        { key: 'enchanting', fallbackKey: 'experience_skill_enchanting', name: 'Enchanting', icon: 'auto_fix_high' },
-        { key: 'alchemy', fallbackKey: 'experience_skill_alchemy', name: 'Alchemy', icon: 'science' },
-        { key: 'fishing', fallbackKey: 'experience_skill_fishing', name: 'Fishing', icon: 'phishing' },
-        { key: 'taming', fallbackKey: 'experience_skill_taming', name: 'Taming', icon: 'pets' },
-        { key: 'carpentry', fallbackKey: 'experience_skill_carpentry', name: 'Carpentry', icon: 'handyman' },
-        { key: 'runecrafting', fallbackKey: 'experience_skill_runecrafting', name: 'Runecrafting', icon: 'blur_on' },
-        { key: 'social', fallbackKey: 'experience_skill_social', name: 'Social', icon: 'groups' }
-      ];
-
-      let html = '<div class="cards-grid">';
-      skillTypes.forEach(s => {
-        const xp = typeof skillsObj[s.key] === 'number' ? skillsObj[s.key] : (member[s.fallbackKey] || 0);
-        const { level, progress, currentXp, nextXp } = getSkillLevel(xp);
-
-        html += `
-          <div class="skill-card">
-            <div class="skill-header">
-              <span class="skill-name"><span class="material-icons" style="font-size:1rem; vertical-align:middle; color:var(--accent-color);">${s.icon}</span> ${s.name}</span>
-              <span class="skill-lvl">Lvl ${level}</span>
-            </div>
-            <div class="skill-bar-bg">
-              <div class="skill-bar-fill" style="width: ${progress}%;"></div>
-            </div>
-            <div class="skill-xp-text">${formatNumber(xp)} Total XP &bull; ${progress}% to Lvl ${level + 1}</div>
-          </div>
-        `;
-      });
-      html += '</div>';
-      container.innerHTML = html;
-    }
-
-    function renderSlayers() {
-      const container = document.getElementById('slayersTab');
-      const member = profileData?.members?.[selectedMemberId] || {};
-      const slayerData = member.slayerData || member.slayer_bosses || {};
-
-      const zombieXp = slayerData.zombie?.xp ?? slayerData.zombie ?? 0;
-      const zombieTier = slayerData.zombieTier ?? 0;
-      const zombieKills = slayerData.killedZombieSlayer ?? 0;
-
-      const spiderXp = slayerData.spider?.xp ?? slayerData.spider ?? 0;
-      const spiderTier = slayerData.spiderTier ?? 0;
-      const spiderKills = slayerData.killedSpiderSlayer ?? 0;
-
-      const wolfXp = slayerData.wolf?.xp ?? slayerData.wolf ?? 0;
-      const wolfTier = slayerData.wolfTier ?? 0;
-      const wolfKills = slayerData.killedWolfSlayer ?? 0;
-
-      container.innerHTML = `
-        <div class="cards-grid">
-          <div class="card">
-            <div class="card-header"><span class="material-icons" style="color:#dc2626;">coronavirus</span><span class="card-title">Revenant Horror (Zombie)</span></div>
-            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(zombieXp)} XP</span></div>
-            <div class="data-item"><span class="data-label">Highest Tier Defeated</span><span class="data-value string">Tier ${zombieTier}</span></div>
-            <div class="data-item"><span class="data-label">Boss Kills</span><span class="data-value number">${formatNumber(zombieKills)}</span></div>
-          </div>
-          <div class="card">
-            <div class="card-header"><span class="material-icons" style="color:#d97706;">pest_control</span><span class="card-title">Tarantula Broodfather (Spider)</span></div>
-            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(spiderXp)} XP</span></div>
-            <div class="data-item"><span class="data-label">Highest Tier Defeated</span><span class="data-value string">Tier ${spiderTier}</span></div>
-            <div class="data-item"><span class="data-label">Boss Kills</span><span class="data-value number">${formatNumber(spiderKills)}</span></div>
-          </div>
-          <div class="card">
-            <div class="card-header"><span class="material-icons" style="color:#2563eb;">pets</span><span class="card-title">Sven Packmaster (Wolf)</span></div>
-            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(wolfXp)} XP</span></div>
-            <div class="data-item"><span class="data-label">Highest Tier Defeated</span><span class="data-value string">Tier ${wolfTier}</span></div>
-            <div class="data-item"><span class="data-label">Boss Kills</span><span class="data-value number">${formatNumber(wolfKills)}</span></div>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderFarming() {
-      const container = document.getElementById('farmingTab');
-      const member = profileData?.members?.[selectedMemberId] || {};
-      const contests = member.farmingContestData || member.jacob2 || {};
-
-      container.innerHTML = `
-        <div class="cards-grid">
-          <div class="card">
-            <div class="card-header"><span class="material-icons" style="color:#16a34a;">military_tech</span><span class="card-title">Contest Medals</span></div>
-            <div class="data-item"><span class="data-label">Gold Medals</span><span class="data-value number">${contests.medals_inv?.gold || contests.goldMedals || 0}</span></div>
-            <div class="data-item"><span class="data-label">Silver Medals</span><span class="data-value number">${contests.medals_inv?.silver || contests.silverMedals || 0}</span></div>
-            <div class="data-item"><span class="data-label">Bronze Medals</span><span class="data-value number">${contests.medals_inv?.bronze || contests.bronzeMedals || 0}</span></div>
-          </div>
-          <div class="card">
-            <div class="card-header"><span class="material-icons" style="color:#16a34a;">grass</span><span class="card-title">Pelts &amp; Perks</span></div>
-            <div class="data-item"><span class="data-label">Pelts Collected</span><span class="data-value number">${contests.pelts || 0}</span></div>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderMinions() {
-      const container = document.getElementById('minionsTab');
-      const craftedGenerators = profileData?.craftedMinions || profileData?.community_upgrades?.crafted_generators || [];
-
-      container.innerHTML = `
-        <div class="card">
-          <div class="card-header"><span class="material-icons" style="color:#0284c7;">precision_manufacturing</span><span class="card-title">Crafted Minion Tiers</span></div>
-          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">Total unique minion types and tiers crafted on this profile: <strong>${craftedGenerators.length}</strong></p>
-          <div style="display:flex; flex-wrap:wrap; gap:6px;">
-            ${craftedGenerators.map(m => `<span class="profile-pill" style="font-size:0.75rem;">${m.replace(/_/g, ' ')}</span>`).join('')}
-          </div>
-        </div>
-      `;
-    }
-
-    function renderCollections() {
-      const container = document.getElementById('collectionsTab');
-      const coll = profileData?.collections || profileData?.members?.[selectedMemberId]?.collection || {};
-
-      const entries = Object.entries(coll).sort((a, b) => (b[1] || 0) - (a[1] || 0));
-
-      if (entries.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted);">Collections API is either disabled or no collection items found.</p>';
-        return;
-      }
-
-      let html = '<div class="cards-grid">';
-      entries.forEach(([item, amount]) => {
-        html += `
-          <div class="card" style="padding:14px 18px;">
-            <div class="data-item" style="border:none; padding:0;">
-              <span class="data-label">${item.replace(/_/g, ' ')}</span>
-              <span class="data-value number">${formatNumber(amount)}</span>
-            </div>
-          </div>
-        `;
-      });
-      html += '</div>';
-      container.innerHTML = html;
-    }
-
     function renderPlaytime() {
       const container = document.getElementById('playtimeTab');
       const memberPlaytimeSec = profileData?.playtimes?.[selectedMemberId] || 0;
-      const stats = playerData?.stats || {};
 
       container.innerHTML = `
         <div class="cards-grid">
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#ea580c;">timer</span><span class="card-title">SkyBlock Profile Playtime</span></div>
-            <div class="data-item"><span class="data-label">Active Time on Profile</span><span class="data-value string" style="color:var(--accent-color);">${formatPlaytime(memberPlaytimeSec)}</span></div>
+            <div class="data-item"><span class="data-label">Active Time on Profile</span><span class="data-value string" style="color:var(--accent-color); font-weight:700;">${formatPlaytime(memberPlaytimeSec)}</span></div>
             <div class="data-item"><span class="data-label">Raw Seconds</span><span class="data-value number">${formatNumber(memberPlaytimeSec)} sec</span></div>
           </div>
         </div>

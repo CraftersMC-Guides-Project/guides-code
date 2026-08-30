@@ -183,41 +183,127 @@
   border-color: var(--accent-color);
 }
 
-/* Navigation Tabs */
-.player-tabs-bar {
+/* Player Viewer 2-Column Side Panel Layout */
+.player-view-container {
   display: flex;
-  gap: 4px;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 24px;
-  overflow-x: auto;
-  white-space: nowrap;
-  padding-bottom: 2px;
+  gap: 24px;
+  align-items: flex-start;
+  margin-top: 10px;
 }
 
-.player-tab-btn {
-  padding: 10px 16px;
+.player-subpanel {
+  width: 220px;
+  flex-shrink: 0;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  position: sticky;
+  top: 76px;
+}
+
+.player-subpanel-group {
+  margin-bottom: 16px;
+}
+
+.player-subpanel-group:last-child {
+  margin-bottom: 0;
+}
+
+.player-subpanel-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-color);
+  margin: 0 0 6px 8px;
+}
+
+.player-subpanel-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.player-subpanel-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
   background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--text-muted);
-  font-size: 0.88rem;
-  font-weight: 600;
+  border: 1px solid transparent;
+  color: var(--text-main);
+  font-size: 0.83rem;
+  font-weight: 500;
+  text-align: left;
   cursor: pointer;
   transition: all 0.15s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
 }
 
-.player-tab-btn:hover {
-  color: var(--text-bright);
+.player-subpanel-btn:hover {
   background: #f8fafc;
+  color: var(--accent-color);
+  border-color: var(--border-color);
 }
 
-.player-tab-btn.active {
+.player-subpanel-btn.active {
+  background: rgba(0, 123, 255, 0.08);
   color: var(--accent-color);
-  border-bottom-color: var(--accent-color);
-  background: transparent;
+  font-weight: 700;
+  border-left: 3px solid var(--accent-color);
+  border-color: rgba(0, 123, 255, 0.2);
+}
+
+.player-subpanel-btn .material-icons {
+  font-size: 1.05rem;
+  color: var(--text-dim);
+  transition: color 0.15s ease;
+}
+
+.player-subpanel-btn:hover .material-icons,
+.player-subpanel-btn.active .material-icons {
+  color: var(--accent-color);
+}
+
+.player-tab-content-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .player-view-container {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .player-subpanel {
+    width: 100%;
+    position: static;
+    padding: 12px;
+  }
+
+  .player-subpanel-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .player-subpanel-btn {
+    width: auto;
+    padding: 6px 12px;
+    background: #f8fafc;
+    border-color: var(--border-color);
+  }
+
+  .player-subpanel-group {
+    margin-bottom: 10px;
+  }
 }
 
 /* Cards Grid */
