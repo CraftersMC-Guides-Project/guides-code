@@ -443,15 +443,46 @@
       showStatus('Loading live Bazaar market snapshot...', 'info');
 
       try {
-        const data = await fetchFromProxy('/api/latest-bazaar-backup');
-        const itemsMap = data.data || data.items || data;
+        let data = null;
+        try {
+          data = await fetchFromProxy('/api/history');
+        } catch (e) {
+          data = await fetchFromProxy('/api/latest-bazaar-backup');
+        }
+
+        const itemsRaw = data.items || data.data || data;
 
         catalogItems = [];
-        if (itemsMap && typeof itemsMap === 'object' && !Array.isArray(itemsMap)) {
-          Object.entries(itemsMap).forEach(([id, info]) => {
-            // detail.sellTopEntries[0].price = Lowest Sell Offer (User buys instantly)
+        if (Array.isArray(itemsRaw)) {
+          // Format from https://bazaar.craftersmcguides.workers.dev/api/items/history
+          itemsRaw.forEach(info => {
+            const id = info.item_id || info.id;
+            if (!id) return;
+            const instantBuy = Number(info.sell_price ?? info.sellPrice ?? 0);
+            const instantSell = Number(info.buy_price ?? info.buyPrice ?? 0);
+            const avgPrice = Number(info.avg_7d_price ?? info.weeklyAveragePrice ?? 0);
+            const buyVolume = Number(info.buy_volume ?? info.buyVolume ?? 0);
+            const sellVolume = Number(info.sell_volume ?? info.sellVolume ?? 0);
+            const spread = instantBuy > 0 && instantSell > 0 ? (((instantBuy - instantSell) / instantBuy) * 100).toFixed(1) : '0';
+
+            catalogItems.push({
+              id,
+              name: id.replace(/_/g, ' '),
+              instantBuy,
+              instantSell,
+              buyPrice: instantBuy,
+              sellPrice: instantSell,
+              avgPrice,
+              buyVolume,
+              sellVolume,
+              spread: Number(spread),
+              rawInfo: info
+            });
+          });
+        } else if (itemsRaw && typeof itemsRaw === 'object') {
+          // Format from backup object
+          Object.entries(itemsRaw).forEach(([id, info]) => {
             const instantBuy = Number(info.sellPrice ?? info.sell_price ?? 0);
-            // detail.buyTopEntries[0].price = Highest Buy Order (User sells instantly)
             const instantSell = Number(info.buyPrice ?? info.buy_price ?? 0);
             const avgPrice = Number(info.weeklyAveragePrice ?? info.avg_7d_price ?? 0);
             const buyVolume = Number(info.buyVolume ?? info.buy_volume ?? 0);

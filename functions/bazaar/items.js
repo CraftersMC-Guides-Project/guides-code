@@ -1,36 +1,27 @@
 export async function onRequest({ request, env }) {
   try {
-    const apiKey = env.CMCG_BAZAAR_KEY || env.cmcg_bazaar_key || null;
-    if (!apiKey) {
-      return new Response(
-        JSON.stringify({ ok: false, error: "Missing CMCG_BAZAAR_KEY secret" }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
-        }
-      );
+    const apiKey = env?.CRAFTERS_API_KEY || env?.CMC_API_KEY || env?.CMC_API_KEY_BAZAAR || 'e89b4eb6-1776-4fb5-9a25-812c2ce1f8d8';
+    const headers = {
+      'Accept': 'application/json',
+      'User-Agent': 'CraftersMC-Guides/1.0'
+    };
+    if (apiKey) {
+      headers['x-api-key'] = apiKey;
+      headers['X-API-Key'] = apiKey;
     }
 
-    const incomingUrl = new URL(request.url);
-    const upstreamUrl = new URL(
-      `/items${incomingUrl.search}`,
-      "https://bazaar.craftersmcguides.workers.dev"
-    );
+    let upstreamRes = await fetch('https://proxy.craftersmcguides.workers.dev/v1/skyblock/bazaar/items', { headers });
+    if (!upstreamRes.ok) {
+      upstreamRes = await fetch('https://api.craftersmc.net/v1/skyblock/bazaar/items', { headers });
+    }
 
-    const upstreamResponse = await fetch(upstreamUrl.toString(), {
-      method: request.method,
+    return new Response(upstreamRes.body, {
+      status: upstreamRes.status,
       headers: {
-        "X-API-Key": apiKey
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Cache-Control": "public, max-age=300"
       }
-    });
-
-    const headers = new Headers(upstreamResponse.headers);
-    headers.set("Access-Control-Allow-Origin", "*");
-    headers.set("Cache-Control", "public, max-age=3600");
-
-    return new Response(upstreamResponse.body, {
-      status: upstreamResponse.status,
-      headers
     });
   } catch (err) {
     return new Response(

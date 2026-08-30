@@ -1,8 +1,7 @@
 export async function onRequest(context) {
   const { request, env, params } = context;
   try {
-    const cmcApiKey = env?.CMC_API_KEY_BAZAAR || env?.CMC_API_KEY || env?.cmc_api_key || null;
-    const workerApiKey = env?.CMCG_BAZAAR_KEY || env?.cmcg_bazaar_key || null;
+    const apiKey = env?.CRAFTERS_API_KEY || env?.CMC_API_KEY || env?.CMC_API_KEY_BAZAAR || 'e89b4eb6-1776-4fb5-9a25-812c2ce1f8d8';
     const itemId = encodeURIComponent(String(params?.itemId || "").trim().toLowerCase());
 
     if (!itemId) {
@@ -12,46 +11,30 @@ export async function onRequest(context) {
       });
     }
 
-    // Try primary CraftersMC details endpoint
-    if (cmcApiKey) {
-      try {
-        const directRes = await fetch(`https://api.craftersmc.net/v1/skyblock/bazaar/${itemId}/details`, {
-          headers: {
-            'X-API-Key': cmcApiKey,
-            'User-Agent': 'CraftersMC-Guides/1.0'
-          }
-        });
-        if (directRes.ok) {
-          const directData = await directRes.json();
-          return new Response(JSON.stringify(directData), {
-            status: 200,
-            headers: {
-              "Content-Type": "application/json",
-              "Access-Control-Allow-Origin": "*",
-              "Cache-Control": "public, max-age=60"
-            }
-          });
-        }
-      } catch (e) {}
+    const headers = {
+      'Accept': 'application/json',
+      'User-Agent': 'CraftersMC-Guides/1.0'
+    };
+    if (apiKey) {
+      headers['x-api-key'] = apiKey;
+      headers['X-API-Key'] = apiKey;
     }
 
-    // Fallback to bazaar worker proxy
-    const upstreamUrl = `https://bazaar.craftersmcguides.workers.dev/${itemId}`;
-    const headers = { 'User-Agent': 'CraftersMC-Guides/1.0' };
-    if (workerApiKey) headers['X-API-Key'] = workerApiKey;
+    // Call live item details endpoint
+    let upstreamRes = await fetch(`https://proxy.craftersmcguides.workers.dev/v1/skyblock/bazaar/${itemId}/details`, { headers });
+    
+    // Direct fallback if proxy fails
+    if (!upstreamRes.ok) {
+      upstreamRes = await fetch(`https://api.craftersmc.net/v1/skyblock/bazaar/${itemId}/details`, { headers });
+    }
 
-    const upstreamResponse = await fetch(upstreamUrl, {
-      method: request.method,
-      headers
-    });
-
-    const resHeaders = new Headers(upstreamResponse.headers);
-    resHeaders.set("Access-Control-Allow-Origin", "*");
-    resHeaders.set("Cache-Control", "public, max-age=60");
-
-    return new Response(upstreamResponse.body, {
-      status: upstreamResponse.status,
-      headers: resHeaders
+    return new Response(upstreamRes.body, {
+      status: upstreamRes.status,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Cache-Control": "public, max-age=30"
+      }
     });
   } catch (err) {
     return new Response(
