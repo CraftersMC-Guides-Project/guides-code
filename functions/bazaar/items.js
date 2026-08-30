@@ -1,6 +1,6 @@
 export async function onRequest({ request, env }) {
   try {
-    const apiKey = env?.CRAFTERS_API_KEY || env?.CMC_API_KEY || env?.CMC_API_KEY_BAZAAR || null;
+    const apiKey = env?.CRAFTERS_API_KEY;
     if (!apiKey) {
       return new Response(JSON.stringify({ ok: false, error: "Missing CRAFTERS_API_KEY environment variable in Cloudflare Pages settings" }), {
         status: 500,

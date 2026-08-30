@@ -1,6 +1,6 @@
 export async function onRequest({ request, env }) {
   try {
-    const apiKey = env?.CMCG_API_KEY || env?.CMCG_BAZAAR_KEY || env?.CMC_API_KEY || null;
+    const apiKey = env?.CMCG_API_KEY;
     if (!apiKey) {
       return new Response(JSON.stringify({ ok: false, error: "Missing CMCG_API_KEY environment variable in Cloudflare Pages settings" }), {
         status: 500,
