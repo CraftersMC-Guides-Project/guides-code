@@ -1,409 +1,1065 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
+  <title>Feather Bot Command Reference — CraftersMC Guides</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta property="og:title" content="Feather Bot - Command Guide">
-  <meta property="og:description" content="Quick reference for every Feather Bot slash command with glasmorphism look inspired by SkyCalendar." />
-  <meta property="og:type" content="website">
-  <title>Feather Bot - Guide</title>
-  <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+  <meta name="description" content="Comprehensive slash command directory for Feather Bot v3.2.0: player profile inspecting, valuation, crafting, bazaar alerts, minion calculators, and event notifications.">
+  <link rel="icon" href="../assets/cmc-icon.png" type="image/png">
+  <link rel="icon" href="../assets/cmc-guides.png" type="image/png">
+
+  <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="../css/essential.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../better-api-docs/style.css">
   <link rel="stylesheet" href="../css/featherbot.css">
-  <script src="../js/script.js" defer></script>
+
+  <!-- Scripts -->
+  <script src="../better-api-docs/app.js" defer></script>
 </head>
+
 <body>
-  <div id="loader"></div>
-  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-  <div class="top"></div>
-  <div id="spacer" style="margin-top: 5rem"></div>
-  <div class="sidebar" id="sidebar"></div>
-  <main class="page">
-    <div class="header">
-      <div class="hero">
-        <h1>Feather Bot</h1>
-        <p>Concise, copy-ready slash commands for CraftersMC. Styled with the same glassy vibe as SkyCalendar so it feels native to your existing guides.</p>
-      </div>
-      <div class="quick-links">
-        <a class="secondary" href="https://discord.com/oauth2/authorize?client_id=1469280391600017580" target="_blank" rel="noopener">Invite Feather Bot</a>
-        <a class="secondary" href="https://github.com/CraftersMC-Guides-Project/" target="_blank" rel="noopener">Github Organisation</a>
-        <a class="secondary" href="https://discord.gg/4CkKST3UAN" target="_blank" rel="noopener">Need help? Join our discord server.</a>
 
-
-      </div>
-    </div>
-
-    <div class="filters">
-      <input id="search" class="search" type="search" placeholder="Filter by command, purpose, or tag…" aria-label="Filter commands">
-    </div>
-
-    <section>
-      <div class="section-title">Accounts & Identity</div>
-      <div class="grid">
-        <article class="card" data-tags="account general">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/account</h3>
-          <p>Returns the Discord and Minecraft ID if linked.</p>
-          <div class="code-line">/account</div>
-        </article>
-        <article class="card" data-tags="verify operator link">
-          <div class="meta"><span class="badge operator">operator</span></div>
-          <h3>/verify</h3>
-          <p>Operator-only: links a Discord user to a Minecraft IGN. Use optional raw Discord ID if mentions are off.</p>
-          <div class="code-line">/verify minecraft:&lt;mc&gt; user:&lt;discord&gt; [discord:&lt;id&gt;]</div>
-        </article>
-        <article class="card" data-tags="unlink operator link">
-          <div class="meta"><span class="badge operator">operator</span></div>
-          <h3>/unlink</h3>
-          <p>Operator-only: removes the Discord ↔ Minecraft association. Supply mention or numeric ID to avoid mistakes.</p>
-          <div class="code-line">/unlink user:&lt;discord&gt; [discord:&lt;id&gt;]</div>
-        </article>
-        <article class="card" data-tags="addop owner permissions">
-          <div class="meta"><span class="badge owner">owner</span></div>
-          <h3>/addop</h3>
-          <p>Owner-only: grants operator permissions inside Feather Bot, unlocking all mod tools. Use sparingly.</p>
-          <div class="code-line">/addop user:&lt;discord&gt;</div>
-        </article>
-      </div>
-    </section>
-
-    <section>
-      <div class="section-title">Player Intel</div>
-      <div class="grid">
-        <article class="card" data-tags="player profile general">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/player</h3>
-          <p>Full profile snapshot: rank, stats, and identifiers for any player. Use exact IGN spelling.</p>
-          <div class="code-line">/player username:&lt;mc&gt;</div>
-        </article>
-        <article class="card" data-tags="playtime general">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/playtime</h3>
-          <p>Shows total hours plus per-mode breakdown, helpful for activity checks or ban appeals context.</p>
-          <div class="code-line">/playtime username:&lt;mc&gt;</div>
-        </article>
-        <article class="card" data-tags="rankhistory general">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/rankhistory</h3>
-          <p>Timeline of rank upgrades and downgrades for transparency during reports or trades.</p>
-          <div class="code-line">/rankhistory username:&lt;mc&gt;</div>
-        </article>
-        <article class="card" data-tags="music general">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/music</h3>
-          <p>Displays music-related cosmetics or stats tied to the player’s profile.</p>
-          <div class="code-line">/music username:&lt;mc&gt;</div>
-        </article>
-        <article class="card" data-tags="accessories checklist general">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/accessories</h3>
-          <p>Shows accessory bag contents and highlights missing talismans for fast min-maxing.</p>
-          <div class="code-line">/accessories username:&lt;mc&gt;</div>
-        </article>
-        <article class="card" data-tags="cosmetics general">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/cosmetics</h3>
-          <p>Lists owned cosmetics (aesthetics, pets, effects) so you can flex or audit collection progress.</p>
-          <div class="code-line">/cosmetics username:&lt;mc&gt;</div>
-        </article>
-        <article class="card" data-tags="cakes general">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/cakes</h3>
-          <p>Lists claimed SkyBlock cakes to track yearly milestones or missing rewards.</p>
-          <div class="code-line">/cakes username:&lt;mc&gt;</div>
-        </article>
-        <article class="card" data-tags="status network general">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/status</h3>
-          <p>Live network health: pings key endpoints so you can confirm outages before opening tickets.</p>
-          <div class="code-line">/status</div>
-        </article>
-      </div>
-    </section>
-
-    <section>
-      <div class="section-title">Economy & Market</div>
-      <div class="grid">
-        <article class="card wide" data-tags="bazaar prices live">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/bz item</h3>
-          <p>Shows live buy/sell price, volume, and spread for a single bazaar item. Use exact internal ID (e.g., <code>ENCHANTED_PAPER</code>).</p>
-          <div class="code-line">/bz item item:&lt;id&gt;</div>
-        </article>
-        <article class="card wide" data-tags="bazaar graph history">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/bz graph</h3>
-          <p>Price history chart for any item; pick a window between 1–180 days. Optional from/to dates let you isolate a patch period.</p>
-          <div class="code-line">/bz graph item:&lt;id&gt; [days:1-180] [from_date:YYYY-MM-DD] [to_date:YYYY-MM-DD]</div>
-        </article>
-        <article class="card" data-tags="bazaar flip profit">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/bz flip</h3>
-          <p>Generates a flip suggestion for the chosen item, estimating margin after fees so you can decide quantity and risk.</p>
-          <div class="code-line">/bz flip item:&lt;id&gt;</div>
-        </article>
-        <article class="card" data-tags="bazaar leaderboard">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/bz top</h3>
-          <p>Ranks bazaar items by profit, volume, or spread—quick scan to pick today’s best flips.</p>
-          <div class="code-line">/bz top category:&lt;profit|volume|spread&gt;</div>
-        </article>
-        <article class="card" data-tags="bazaar alias mapping">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/bz mapping</h3>
-          <p>Create personal or global aliases so you can type short names instead of full item IDs.</p>
-          <div class="code-line">/bz mapping mapping-action:&lt;list|add|remove&gt; scope:&lt;personal|global&gt; [alias:&lt;name&gt;] [item:&lt;id&gt;]</div>
-        </article>
-        <article class="card" data-tags="bazaar alert dm">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/bz alert</h3>
-          <p>Sets, lists, or removes price alerts that DM you when an item crosses a threshold.</p>
-          <div class="code-line">/bz alert alert-action:&lt;list|add|remove&gt; [item:&lt;id&gt;] [price:&lt;number&gt;] [direction:&lt;above|below&gt;] [alert-id:&lt;id&gt;]</div>
-        </article>
-        <article class="card" data-tags="auctions market">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/auctions</h3>
-          <p>Interactive auction browser with category, price, and search filters; drill into item details or player listings.</p>
-          <div class="code-line">/auctions category:&lt;CATEGORY&gt;</div>
-        </article>
-        <article class="card" data-tags="playerauctions market">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/playerauctions</h3>
-          <p>Lists every active auction from a player—great for scam checks or bulk buying.</p>
-          <div class="code-line">/playerauctions username:&lt;mc&gt;</div>
-        </article>
-      </div>
-    </section>
-
-    <section>
-      <div class="section-title">Skills, XP & Calculators</div>
-      <div class="grid">
-        <article class="card" data-tags="skyblock xp level">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/skyblock lvl</h3>
-          <p>Estimates total SkyBlock XP for a chosen profile; include profile name or ID for multi-profile players.</p>
-          <div class="code-line">/skyblock lvl username:&lt;mc&gt; [profile:&lt;cute name|id&gt;]</div>
-        </article>
-        <article class="card" data-tags="xp calculator enchanting">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/xp calculator</h3>
-          <p>Shows XP needed between two levels; optional enchanting level refines cost estimates.</p>
-          <div class="code-line">/xp calculator current-level:&lt;0-99&gt; target-level:&lt;1-100&gt; [enchanting-level:&lt;0-50&gt;]</div>
-        </article>
-        <article class="card" data-tags="xp skill">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/xp skill</h3>
-          <p>Converts total XP into skill level progress for a chosen skill, clarifying grind goals.</p>
-          <div class="code-line">/xp skill skill:&lt;mining|combat|...&gt; xp:&lt;total xp&gt;</div>
-        </article>
-        <article class="card" data-tags="pet exp">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/pet exp-calculator</h3>
-          <p>Calculates XP required to move a pet from current to target level, accounting for rarity scaling.</p>
-          <div class="code-line">/pet exp-calculator rarity:&lt;common-legendary&gt; current-level:&lt;1-99&gt; current-xp:&lt;0+&gt; target-level:&lt;2-100&gt;</div>
-        </article>
-        <article class="card" data-tags="minion calculator production">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/minion calculator</h3>
-          <p>Interactive 24h production estimator that factors upgrades, fuels, and minion type.</p>
-          <div class="code-line">/minion calculator</div>
-        </article>
-        <article class="card" data-tags="farming contest">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/farming contest</h3>
-          <p>Predicts current and upcoming contests; set count to see multiple future slots at once.</p>
-          <div class="code-line">/farming contest count:&lt;1-10&gt;</div>
-        </article>
-      </div>
-    </section>
-
-    <section>
-      <div class="section-title">Events, Alerts & Calendar</div>
-      <div class="grid">
-        <article class="card" data-tags="notify alerts events">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/notify</h3>
-          <p>Creates reminders for server events (new year, zoo, farming contests). List, add, or remove alerts so you never miss profit windows.</p>
-          <div class="code-line">/notify list · /notify remove id:&lt;id&gt; · /notify farming contest crop:&lt;crop&gt; minutes_before:&lt;n&gt; occurrences:&lt;n&gt;</div>
-        </article>
-        <article class="card" data-tags="skycalender calendar events">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/skycalender</h3>
-          <p>Shows predicted SkyBlock day-by-day schedule; filter to a specific event and choose how many occurrences to return.</p>
-          <div class="code-line">/skycalender [event:&lt;name&gt;] [count:&lt;1-10&gt;]</div>
-        </article>
-        <article class="card" data-tags="travelling zoo events">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/travelling zoo</h3>
-          <p>Shows current and next Travelling Zoo pets; adjust count to preview multiple rotations.</p>
-          <div class="code-line">/travelling zoo pets:&lt;count&gt;</div>
-        </article>
-        <article class="card" data-tags="vote reminders">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/vote</h3>
-          <p>Provides the vote link, tracks streak days, and can remind you so you never break the chain.</p>
-          <div class="code-line">/vote</div>
-        </article>
-        <article class="card" data-tags="report support">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/report</h3>
-          <p>Submit issues to staff with steps, screenshots, or clips—use clear repro steps for faster fixes.</p>
-          <div class="code-line">/report issue:&lt;text&gt; [steps:&lt;text&gt;] [screenshot] [video]</div>
-        </article>
-      </div>
-    </section>
-
-    <section>
-      <div class="section-title">Leaderboards & Submissions</div>
-      <div class="grid">
-        <article class="card" data-tags="leaderboards">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/leaderboards</h3>
-          <p>Opens the in-bot leaderboards browser (collections, boss time, farming, more) with dropdown navigation.</p>
-          <div class="code-line">/leaderboards</div>
-        </article>
-        <article class="card" data-tags="submitlb submissions">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/submitlb</h3>
-          <p>Send your profile data for collections or highest coins leaderboards; use exact profile cute name or ID.</p>
-          <div class="code-line">/submitlb profile:&lt;cute name|profile id&gt;</div>
-        </article>
-      </div>
-    </section>
-
-    <section>
-      <div class="section-title">Search & Utilities</div>
-      <div class="grid">
-        <article class="card" data-tags="help general">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/help</h3>
-          <p>Paginated index of every command with inline descriptions; start here if you’re unsure of syntax.</p>
-          <div class="code-line">/help</div>
-        </article>
-        <article class="card" data-tags="info general">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/info</h3>
-          <p>Shows Feather Bot version, uptime, and key features so you can confirm the bot is current.</p>
-          <div class="code-line">/info</div>
-        </article>
-        <article class="card" data-tags="emojis general">
-          <div class="meta"><span class="badge operator">operator</span></div>
-          <h3>/emojis</h3>
-          <p>Lists every emoji available to the bot for reactions or embeds—useful when styling responses.</p>
-          <div class="code-line">/emojis</div>
-        </article>
-        <article class="card" data-tags="search wiki">
-          <div class="meta"><span class="badge general">general</span></div>
-          <h3>/search</h3>
-          <p>Queries the CraftersMC Wiki for any item or page; accepts partial names for quick lookups.</p>
-          <div class="code-line">/search query:&lt;text&gt;</div>
-        </article>
-        <article class="card" data-tags="message operator dm">
-          <div class="meta"><span class="badge operator">operator</span></div>
-          <h3>/message</h3>
-          <p>Operator DM tool: contact users directly from the bot; supports up to four file attachments.</p>
-          <div class="code-line">/message target:&lt;user&gt; message:&lt;text&gt; [attachment1-4]</div>
-        </article>
-      </div>
-    </section>
-
-  </main>
-  <div id="footer"></div>
-
-  <script>
-    // Modal setup
-    const modalBackdrop = document.createElement('div');
-    modalBackdrop.className = 'modal-backdrop';
-    modalBackdrop.id = 'card-modal';
-    modalBackdrop.innerHTML = `
-      <div class="modal-card">
-        <img class="modal-media" id="modal-img" src="https://placehold.co/900x400/0b1624/FFFFFF?text=Feather+Bot" alt="Command visual placeholder">
-        <div class="modal-close" id="modal-close" aria-label="Close">✕</div>
-        <div class="modal-body">
-          <div class="modal-badges" id="modal-badges"></div>
-          <h3 class="modal-title" id="modal-title"></h3>
-          <p class="modal-text" id="modal-text"></p>
-          <div class="modal-code" id="modal-code"></div>
+  <!-- Top Header Navigation -->
+  <header class="top-header">
+    <div class="header-left">
+      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
+        <span class="material-icons" style="font-size:1.25rem;">menu</span>
+      </button>
+      <a href="../index.html" class="header-brand">
+        <img src="../assets/cmc-guides.png" alt="CraftersMC Logo">
+        <div class="brand-text">
+          <span class="brand-title">CraftersMC Guides</span>
+          <span class="version-badge">Feather Bot v3.2</span>
         </div>
-      </div>`;
-    document.body.appendChild(modalBackdrop);
+      </a>
+    </div>
 
-    const modalImg = document.getElementById('modal-img');
-    const modalTitle = document.getElementById('modal-title');
-    const modalText = document.getElementById('modal-text');
-    const modalCode = document.getElementById('modal-code');
-    const modalBadges = document.getElementById('modal-badges');
-    const modalClose = document.getElementById('modal-close');
+    <!-- Search Box -->
+    <div class="search-box">
+      <span class="material-icons search-icon">search</span>
+      <input type="text" id="search-input" placeholder="Search commands, syntax, tags...">
+      <span class="search-kbd-shortcut">/</span>
+    </div>
 
-    const placeholderImage = 'https://placehold.co/900x400/0b1624/FFFFFF?text=Feather+Bot';
+    <!-- Header Utility Links -->
+    <div class="header-actions">
+      <a href="../better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
+      <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
+    </div>
+  </header>
 
-    function openModal(card) {
-      const title = card.querySelector('h3')?.textContent || '';
-      const desc = card.querySelector('p')?.textContent || '';
-      const code = card.querySelector('.code-line')?.textContent || '';
-      const badges = Array.from(card.querySelectorAll('.badge')).map(b => b.cloneNode(true));
+  <!-- Application Layout -->
+  <div class="app-layout">
 
-      modalTitle.textContent = title;
-      modalText.textContent = desc;
-      modalCode.textContent = code;
-      modalImg.src = placeholderImage;
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Getting Started</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="../index.html#overview"><span class="material-icons nav-icon">home</span> <span>Overview</span></a></li>
+          <li class="sidebar-nav-item"><a href="../index.html#section-guides"><span class="material-icons nav-icon">menu_book</span> <span>Progression Guides</span></a></li>
+          <li class="sidebar-nav-item"><a href="../index.html#section-tools"><span class="material-icons nav-icon">build</span> <span>Live Tools</span></a></li>
+          <li class="sidebar-nav-item"><a href="../index.html#section-api"><span class="material-icons nav-icon">code</span> <span>Developer &amp; API</span></a></li>
+        </ul>
+      </div>
 
-      modalBadges.innerHTML = '';
-      badges.forEach(b => modalBadges.appendChild(b));
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Feather Bot</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item active"><a href="index.html" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons nav-icon" style="color: var(--accent-color);">smart_toy</span> <span>Command Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="changelogs.html"><span class="material-icons nav-icon">history</span> <span>Changelogs</span></a></li>
+          <li class="sidebar-nav-item"><a href="privacy-policy.html"><span class="material-icons nav-icon">policy</span> <span>Privacy Policy</span></a></li>
+          <li class="sidebar-nav-item"><a href="terms-and-conditions.html"><span class="material-icons nav-icon">gavel</span> <span>Terms &amp; Conditions</span></a></li>
+        </ul>
+      </div>
 
-      modalBackdrop.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Live Tools &amp; Trackers</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="../skycalendar.html"><span class="material-icons nav-icon">event</span> <span>SkyCalendar (Events)</span></a></li>
+          <li class="sidebar-nav-item"><a href="../rank-sellers.html"><span class="material-icons nav-icon">card_giftcard</span> <span>Rank &amp; Gems Sellers</span></a></li>
+          <li class="sidebar-nav-item"><a href="../leaderboards.html"><span class="material-icons nav-icon">leaderboard</span> <span>Leaderboards</span></a></li>
+          <li class="sidebar-nav-item"><a href="../texture-packs.html"><span class="material-icons nav-icon">palette</span> <span>Texture Packs</span></a></li>
+          <li class="sidebar-nav-item"><a href="../tools.html"><span class="material-icons nav-icon">calculate</span> <span>Calculators</span></a></li>
+        </ul>
+      </div>
 
-    function closeModal() {
-      modalBackdrop.classList.remove('active');
-      document.body.style.overflow = '';
-    }
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Progression Guides</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="../guide/starter-guide.html"><span class="material-icons nav-icon">play_circle</span> <span>Starter Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="../guide/intermediate-guide.html"><span class="material-icons nav-icon">trending_up</span> <span>Intermediate Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="../guide/intermediate-guide2.html"><span class="material-icons nav-icon">shield</span> <span>Slayers Edition</span></a></li>
+          <li class="sidebar-nav-item"><a href="../guide/advanced-guide.html"><span class="material-icons nav-icon">military_tech</span> <span>Advanced Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="../guide/accessories-guide.html"><span class="material-icons nav-icon">auto_awesome</span> <span>Accessories &amp; Reforges</span></a></li>
+          <li class="sidebar-nav-item"><a href="../guide/bazaar-guide.html"><span class="material-icons nav-icon">storefront</span> <span>Bazaar Trading</span></a></li>
+          <li class="sidebar-nav-item"><a href="../guide/queries.html"><span class="material-icons nav-icon">help_outline</span> <span>Common Queries &amp; FAQ</span></a></li>
+          <li class="sidebar-nav-item"><a href="../unicode.html"><span class="material-icons nav-icon">format_shapes</span> <span>Unicode &amp; Formatting</span></a></li>
+        </ul>
+      </div>
 
-    document.querySelectorAll('.card').forEach(card => {
-      card.addEventListener('click', () => openModal(card));
-    });
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Developer &amp; API</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="../better-api-docs/index.html"><span class="material-icons nav-icon">code</span> <span>REST API v1 Reference</span></a></li>
+          <li class="sidebar-nav-item"><a href="../better-api-docs/index.html#section-nbt-decoding"><span class="material-icons nav-icon">memory</span> <span>15 NBT Storage Blobs</span></a></li>
+          <li class="sidebar-nav-item"><a href="../better-api-docs/index.html#section-item-ids"><span class="material-icons nav-icon">list_alt</span> <span>Numerical Item IDs (1,933)</span></a></li>
+        </ul>
+      </div>
 
-    modalBackdrop.addEventListener('click', (e) => {
-      if (e.target === modalBackdrop) closeModal();
-    });
-    modalClose.addEventListener('click', closeModal);
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Community &amp; Source</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="https://craftersmc.net/" target="_blank"><span class="material-icons nav-icon">language</span> <span>Server Website</span></a></li>
+          <li class="sidebar-nav-item"><a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank"><span class="material-icons nav-icon">code</span> <span>GitHub Repository</span></a></li>
+        </ul>
+      </div>
+    </aside>
 
-    const input = document.getElementById('search');
-    const cards = Array.from(document.querySelectorAll('.card'));
+    <!-- Main Content Area -->
+    <main class="main-content">
 
-    input.addEventListener('input', () => {
-      const term = input.value.toLowerCase();
-      cards.forEach(card => {
-        const hay = (card.textContent + ' ' + (card.dataset.tags || '')).toLowerCase();
-        card.style.display = hay.includes(term) ? '' : 'none';
-      });
-    });
+      <!-- Section Header -->
+      <section class="doc-section">
+        <div class="section-header">
+          <h1>Feather Bot Slash Command Directory</h1>
+          <p>Complete documentation for all 61 Feather Bot slash commands across valuation, profile inspection, economy, and server automation.</p>
+        </div>
 
-    // Auto-expand cards whose command line is long (desktop only)
-    function markWideCards() {
-      const isMobile = window.matchMedia('(max-width: 720px)').matches;
-      cards.forEach(card => {
-        const code = card.querySelector('.code-line');
-        if (!code) return;
-        card.classList.remove('wide', 'xwide');
+        <!-- Action Links -->
+        <div class="fb-actions">
+          <a class="fb-btn primary" href="https://discord.com/oauth2/authorize?client_id=1469280391600017580" target="_blank" rel="noopener">
+            <span class="material-icons" style="font-size:1.1rem;">add</span> Invite Feather Bot
+          </a>
+          <a class="fb-btn secondary" href="changelogs.html">
+            <span class="material-icons" style="font-size:1.1rem;">history</span> Changelogs
+          </a>
+          <a class="fb-btn secondary" href="privacy-policy.html">
+            <span class="material-icons" style="font-size:1.1rem;">policy</span> Privacy Policy
+          </a>
+          <a class="fb-btn secondary" href="terms-and-conditions.html">
+            <span class="material-icons" style="font-size:1.1rem;">gavel</span> Terms of Service
+          </a>
+          <a class="fb-btn secondary" href="https://discord.gg/4CkKST3UAN" target="_blank" rel="noopener">
+            <span class="material-icons" style="font-size:1.1rem;">forum</span> Discord Support Server
+          </a>
+          <a class="fb-btn secondary" href="https://github.com/CraftersMC-Guides-Project/" target="_blank" rel="noopener">
+            <span class="material-icons" style="font-size:1.1rem;">code</span> GitHub Organization
+          </a>
+        </div>
 
-        if (isMobile) return;
+        <!-- Filter Bar -->
+        <div class="fb-filter-bar">
+          <input id="cmdSearch" class="fb-search-input" type="search" placeholder="Filter commands by name, syntax, or tag..." autocomplete="off">
+        </div>
 
-        const textLen = code.textContent.trim().length;
-        if (textLen > 150) {
-          card.classList.add('xwide');
-        } else if (textLen > 90) {
-          card.classList.add('wide');
+        <!-- Category: Valuation & Item Pricing -->
+        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
+          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #0284c7;">price_check</span> Valuation &amp; Market Pricing</h2>
+        </div>
+
+        <div class="cmd-grid">
+          <article class="cmd-card" data-tags="networth profile valuation purse bank armor storage inventory">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/networth</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Total profile networth breakdown: purse, bank, inventory, armor, wardrobe, accessories, pets, and storage chests.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/networth username:<mc> [profile:<name>]')">
+              <span class="cmd-syntax-text">/networth username:&lt;mc&gt; [profile:&lt;name&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="item price auction bazaar pets valuation unified">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/item price</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Unified multi-market price lookup across Auction 14d averages, lowest BIN, Bazaar recipes, and NPC merchants.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/item price type:<auction|pets|bazaar> item:<name> [rarity] [level] [candy]')">
+              <span class="cmd-syntax-text">/item price type:&lt;type&gt; item:&lt;name&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="craft recipe profit cost margin calculate">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/craft</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Recursive crafting cost evaluator: calculates raw ingredient costs vs finished market value and net profit margins.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/craft item:<id>')">
+              <span class="cmd-syntax-text">/craft item:&lt;id&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="recipe tree ingredients subcraft drilldown">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/recipe</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Interactive multi-tier recipe tree viewer with full sub-ingredient drill-down up to 10 layers deep.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/recipe item:<id>')">
+              <span class="cmd-syntax-text">/recipe item:&lt;id&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="auction avg price historical bin 14d">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/auction avg price</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">14-day historical average auction prices, lowest active BIN, and total verified transaction volume.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/auction avg price item:<name>')">
+              <span class="cmd-syntax-text">/auction avg price item:&lt;name&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="cake price new year decay year">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/cake price</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Calculates market price and decay formula valuation for any New Year Cake (Years 1–300).</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/cake price year:<year>')">
+              <span class="cmd-syntax-text">/cake price year:&lt;year&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="pet price skins candy level valuation">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/pet price</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Dynamic pet valuation factoring level curves, candy penalties, held pet items, and cosmetic skins.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/pet price pet:<name> [rarity] [level] [candy] [skin]')">
+              <span class="cmd-syntax-text">/pet price pet:&lt;name&gt; [rarity] [level]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+        </div>
+
+        <!-- Category: Economy & Bazaar -->
+        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
+          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #16a34a;">storefront</span> Economy, Bazaar &amp; Auctions</h2>
+        </div>
+
+        <div class="cmd-grid">
+          <article class="cmd-card" data-tags="bazaar prices live buy sell volume">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/bz item</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Live buy/sell orders, instant buy/sell, 7d moving volume, and bid-ask spread for any bazaar item.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/bz item item:<id>')">
+              <span class="cmd-syntax-text">/bz item item:&lt;id&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="bazaar graph history trend">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/bz graph</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Price history trend chart for any item over 1 to 180 days with optional date ranges.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/bz graph item:<id> [days:1-180] [from_date] [to_date]')">
+              <span class="cmd-syntax-text">/bz graph item:&lt;id&gt; [days:1-180]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="bazaar flip profit tax">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/bz flip</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Generates live flip suggestions estimating net profit margins after tax fees.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/bz flip item:<id>')">
+              <span class="cmd-syntax-text">/bz flip item:&lt;id&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="bazaar top profit volume spread">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/bz top</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Ranks bazaar items by profit margin, trading volume, or percentage spread.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/bz top category:<profit|volume|spread>')">
+              <span class="cmd-syntax-text">/bz top category:&lt;profit|volume|spread&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="bazaar mapping alias short">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/bz mapping</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Create personal or global aliases so you can type short names instead of full item IDs.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/bz mapping mapping-action:<list|add|remove> scope:<personal|global> [alias] [item]')">
+              <span class="cmd-syntax-text">/bz mapping mapping-action:&lt;action&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="bazaar alert dm threshold">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/bz alert</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Sets automated price alerts that DM you when an item crosses a target threshold.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/bz alert alert-action:<list|add|remove> [item:<id>] [price:<number>] [direction:<above|below>]')">
+              <span class="cmd-syntax-text">/bz alert alert-action:&lt;action&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="auctions browser search filter">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/auctions</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Interactive auction browser filtered by item category, price, and rarity.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/auctions category:<CATEGORY>')">
+              <span class="cmd-syntax-text">/auctions category:&lt;category&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="playerauctions player listings">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/playerauctions</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Lists every active auction from a specific player—useful for scam checks and bulk trading.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/playerauctions username:<mc>')">
+              <span class="cmd-syntax-text">/playerauctions username:&lt;mc&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="rankmarket marketplace sellers gems">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/rankmarket</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Displays active, verified CraftersMC SkyBlock rank and gems sellers and coin exchange rates.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/rankmarket')">
+              <span class="cmd-syntax-text">/rankmarket</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+        </div>
+
+        <!-- Category: Player Deep Inspection -->
+        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
+          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #9333ea;">person_search</span> Player Profiles &amp; Deep Inspection</h2>
+        </div>
+
+        <div class="cmd-grid">
+          <article class="cmd-card" data-tags="player profile snapshot rank stats">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/player</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Full profile snapshot: rank, balance, slayer XP, active armor, and identifiers.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/player username:<mc>')">
+              <span class="cmd-syntax-text">/player username:&lt;mc&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="inventory inspect contents player">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/inventory</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Direct inspection of any player's SkyBlock main inventory slots, hotbar, and item NBT tags.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/inventory username:<mc> [profile:<name>]')">
+              <span class="cmd-syntax-text">/inventory username:&lt;mc&gt; [profile:&lt;name&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="wardrobe armor sets inspect">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/wardrobe</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Inspect all wardrobe armor slots, equipped armor sets, and reforge modifiers.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/wardrobe username:<mc> [profile:<name>]')">
+              <span class="cmd-syntax-text">/wardrobe username:&lt;mc&gt; [profile:&lt;name&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="skills levels progression player">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/skills</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Detailed skill levels breakdown (Combat, Mining, Farming, Foraging, Enchanting, Alchemy, Fishing).</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/skills username:<mc> [profile:<name>]')">
+              <span class="cmd-syntax-text">/skills username:&lt;mc&gt; [profile:&lt;name&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="slayer xp bosses rev tara sven">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/slayer</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Complete slayer breakdown: Revenant Horror, Tarantula Broodfather, and Sven Packmaster XP &amp; tiers.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/slayer username:<mc> [profile:<name>]')">
+              <span class="cmd-syntax-text">/slayer username:&lt;mc&gt; [profile:&lt;name&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="collections items mined gathered player">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/collections</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Inspect raw item collection tiers and counts across Farming, Mining, Combat, Foraging, and Fishing.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/collections username:<mc> [profile:<name>]')">
+              <span class="cmd-syntax-text">/collections username:&lt;mc&gt; [profile:&lt;name&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="combat stats damage critical stats">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/combat</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Inspect active combat stats: Strength, Crit Chance, Crit Damage, Attack Speed, and Damage formulas.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/combat username:<mc> [profile:<name>]')">
+              <span class="cmd-syntax-text">/combat username:&lt;mc&gt; [profile:&lt;name&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="bosses spawn kill times records">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/bosses</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Inspect personal best boss spawn times, kill times, and total completions across all slayer tiers.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/bosses username:<mc> [profile:<name>]')">
+              <span class="cmd-syntax-text">/bosses username:&lt;mc&gt; [profile:&lt;name&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="quests milestones completed">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/quests</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Inspect player completed quests, server milestones, and storyline progression achievements.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/quests username:<mc> [profile:<name>]')">
+              <span class="cmd-syntax-text">/quests username:&lt;mc&gt; [profile:&lt;name&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="experiments enchanting table chronomatron superpairs">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/experiments</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Inspect enchanting table experimentation scores, Superpairs clicks, and Chronomatron streaks.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/experiments username:<mc> [profile:<name>]')">
+              <span class="cmd-syntax-text">/experiments username:&lt;mc&gt; [profile:&lt;name&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="perks unlocked profile bonuses">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/perks</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Inspect unlocked profile perks, permanent stat buffs, and essence upgrades.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/perks username:<mc> [profile:<name>]')">
+              <span class="cmd-syntax-text">/perks username:&lt;mc&gt; [profile:&lt;name&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="reality shards coordinates claims remaining">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/reality</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Reality Shards hunter: inspect claimed shards, remaining uncollected shards, and exact coordinates.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/reality username:<mc>')">
+              <span class="cmd-syntax-text">/reality username:&lt;mc&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="playtime hours activity mode">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/playtime</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Total network hours plus per-mode activity breakdown for activity checks and audit context.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/playtime username:<mc>')">
+              <span class="cmd-syntax-text">/playtime username:&lt;mc&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="rankhistory timeline upgrades trades">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/rankhistory</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Timeline of rank upgrades and changes for trade verification and security auditing.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/rankhistory username:<mc>')">
+              <span class="cmd-syntax-text">/rankhistory username:&lt;mc&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="claimed cakes century collection">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/claimed cakes</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Lists claimed SkyBlock New Year cakes to track missing numbers in your Century Cake Bag.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/claimed cakes username:<name>')">
+              <span class="cmd-syntax-text">/claimed cakes username:&lt;name&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="accessories bag checklist missing magical power">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/accessories</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Inspect accessory bag contents and highlight missing talismans for magical power min-maxing.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/accessories username:<mc>')">
+              <span class="cmd-syntax-text">/accessories username:&lt;mc&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+        </div>
+
+        <!-- Category: Co-op & Profile Metadata -->
+        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
+          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #6366f1;">group</span> Co-op &amp; Profile Metadata</h2>
+        </div>
+
+        <div class="cmd-grid">
+          <article class="cmd-card" data-tags="profilemeta profile info created mode cute name">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/profilemeta</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Inspect profile creation timestamp, cute name, profile ID, gamemode (Standard, Ironman), and members count.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/profilemeta username:<mc> [profile:<name>]')">
+              <span class="cmd-syntax-text">/profilemeta username:&lt;mc&gt; [profile:&lt;name&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="relationships coop members shared island">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/relationships</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Inspect co-op relationships, active co-op partners, and shared island connections.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/relationships username:<mc> [profile:<name>]')">
+              <span class="cmd-syntax-text">/relationships username:&lt;mc&gt; [profile:&lt;name&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="formermembers kicked left coop history">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/formermembers</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Inspect past former members who have left or been kicked from the player's co-op profile.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/formermembers username:<mc> [profile:<name>]')">
+              <span class="cmd-syntax-text">/formermembers username:&lt;mc&gt; [profile:&lt;name&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="apisettings privacy banking inventory skills api">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/apisettings</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Show profile API permissions status: Banking API, Skills API, Collections API, and Inventory API.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/apisettings username:<mc> [profile:<name>]')">
+              <span class="cmd-syntax-text">/apisettings username:&lt;mc&gt; [profile:&lt;name&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+        </div>
+
+        <!-- Category: Skills, XP & Calculators -->
+        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
+          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #ea580c;">calculate</span> Skills, XP &amp; Automation</h2>
+        </div>
+
+        <div class="cmd-grid">
+          <article class="cmd-card" data-tags="skyblock lvl level profile xp">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/skyblock lvl</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Estimates total profile SkyBlock level and detailed XP progression breakdown.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/skyblock lvl username:<mc> [profile:<name>]')">
+              <span class="cmd-syntax-text">/skyblock lvl username:&lt;mc&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="minion calculator upgrades production tier">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/minion</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">24h minion profit modeling, tier upgrade materials, shipping unit yields, and copyable upgrade codes.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/minion calculator')">
+              <span class="cmd-syntax-text">/minion calculator &bull; /minion upgrades</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="xp calculator enchanting levels">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/xp calculator</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Calculates experience required between two skill or enchantment levels.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/xp calculator current-level:<0-99> target-level:<1-100> [enchanting-level:<0-50>]')">
+              <span class="cmd-syntax-text">/xp calculator current-level:&lt;n&gt; target-level:&lt;n&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="xp skill progress raw">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/xp skill</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Converts raw total XP into exact skill level progression for mining, combat, farming, etc.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/xp skill skill:<mining|combat|...> xp:<total_xp>')">
+              <span class="cmd-syntax-text">/xp skill skill:&lt;skill&gt; xp:&lt;total_xp&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="pet exp calculator leveling rarity">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/pet exp-calculator</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Calculates exact XP required to move a pet from current to target level based on rarity.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/pet exp-calculator rarity:<common-legendary> current-level:<1-99> current-xp:<n> target-level:<2-100>')">
+              <span class="cmd-syntax-text">/pet exp-calculator rarity:&lt;rarity&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="farming contest jacob ethan crops">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/farming contest</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Predicts current and upcoming farming contest schedules, crop combinations, and start times.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/farming contest [count:1-10]')">
+              <span class="cmd-syntax-text">/farming contest [count:&lt;1-10&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+        </div>
+
+        <!-- Category: Events & Alerts -->
+        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
+          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #ea580c;">celebration</span> Events &amp; Notifications</h2>
+        </div>
+
+        <div class="cmd-grid">
+          <article class="cmd-card" data-tags="notify alerts events reminders">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/notify</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Configures automated Discord DM alerts for Zoo, Contests, Spooky Festival, and New Year.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/notify farming contest crop:<crop> minutes_before:<n>')">
+              <span class="cmd-syntax-text">/notify list &bull; /notify remove &bull; /notify add</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="skycalender calendar schedule events">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/skycalender</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Displays upcoming SkyBlock event times with countdown timers and occurrence counts.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/skycalender [event:<name>] [count:1-10]')">
+              <span class="cmd-syntax-text">/skycalender [event:&lt;name&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="travelling zoo pets rotation">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/travelling zoo</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Shows current and future Travelling Zoo pet rotations and vendor spawn times.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/travelling zoo pets:<count>')">
+              <span class="cmd-syntax-text">/travelling zoo pets:&lt;count&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="vote rewards streak link">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/vote</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Provides the server vote link and tracks your active voting streak days.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/vote')">
+              <span class="cmd-syntax-text">/vote</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="report issue bugs feedback">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/report</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Submit bug reports or issues to staff with reproduction steps and screenshot attachments.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/report issue:<text> [steps:<text>] [screenshot] [video]')">
+              <span class="cmd-syntax-text">/report issue:&lt;text&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+        </div>
+
+        <!-- Category: Leaderboards & Submissions -->
+        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
+          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #2563eb;">leaderboard</span> Leaderboards &amp; Submissions</h2>
+        </div>
+
+        <div class="cmd-grid">
+          <article class="cmd-card" data-tags="leaderboards rankings scores browser">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/leaderboards</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Opens the in-bot leaderboards browser (collections, boss time, farming, skills) with dropdowns.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/leaderboards')">
+              <span class="cmd-syntax-text">/leaderboards</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="submitlb submission scores upload">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/submitlb</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Submit profile data for collections or coins leaderboards using profile cute name or ID.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/submitlb profile:<cute_name|profile_id>')">
+              <span class="cmd-syntax-text">/submitlb profile:&lt;profile&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="top category placements">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/top</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Queries top player rankings for a specific leaderboard category.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/top category:<category>')">
+              <span class="cmd-syntax-text">/top category:&lt;category&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+        </div>
+
+        <!-- Category: Administration, Server Setup & Utilities -->
+        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
+          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #64748b;">admin_panel_settings</span> Server Setup &amp; Administration</h2>
+        </div>
+
+        <div class="cmd-grid">
+          <article class="cmd-card" data-tags="set auto-calendar channel admin">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/set auto-calendar</span>
+              <span class="cmd-badge operator">Admin</span>
+            </div>
+            <div class="cmd-desc">Server Admin: configure an auto-updating live SkyCalendar event schedule message in a designated channel.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/set auto-calendar channel:<channel>')">
+              <span class="cmd-syntax-text">/set auto-calendar channel:&lt;channel&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="account linked discord ign">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/account</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Returns your linked Discord account and Minecraft IGN associations.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/account')">
+              <span class="cmd-syntax-text">/account</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="verify operator link staff">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/verify</span>
+              <span class="cmd-badge operator">Operator</span>
+            </div>
+            <div class="cmd-desc">Operator tool: manually link a Discord user to a Minecraft IGN.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/verify minecraft:<mc> user:<discord> [discord:<id>]')">
+              <span class="cmd-syntax-text">/verify minecraft:&lt;mc&gt; user:&lt;discord&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="unlink operator link remove">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/unlink</span>
+              <span class="cmd-badge operator">Operator</span>
+            </div>
+            <div class="cmd-desc">Operator tool: removes Discord &harr; Minecraft link associations.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/unlink user:<discord> [discord:<id>]')">
+              <span class="cmd-syntax-text">/unlink user:&lt;discord&gt; [discord:&lt;id&gt;]</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="custom prices static npc overrides op">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/custom</span>
+              <span class="cmd-badge operator">Operator</span>
+            </div>
+            <div class="cmd-desc">Operator tool: manage custom static item prices, price overrides, and NPC merchant buy/sell values.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/custom action:<list|set|delete> [item:<id>] [price:<number>]')">
+              <span class="cmd-syntax-text">/custom action:&lt;list|set|delete&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="addop owner permissions admin">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/addop</span>
+              <span class="cmd-badge owner">Owner</span>
+            </div>
+            <div class="cmd-desc">Owner tool: grants operator permissions inside Feather Bot, unlocking all moderation utilities.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/addop user:<discord>')">
+              <span class="cmd-syntax-text">/addop user:&lt;discord&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="logs admin diagnostics emojis">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/logs</span>
+              <span class="cmd-badge operator">Admin</span>
+            </div>
+            <div class="cmd-desc">Admin tool: inspect runtime unmapped item emoji logs or clear the unmapped list.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/logs action:<view|clear>')">
+              <span class="cmd-syntax-text">/logs action:&lt;view|clear&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="ping latency health memory uptime">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/ping</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Show real-time bot WebSocket latency, AIC VPS memory heap RSS, process CPU%, and storage metrics.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/ping')">
+              <span class="cmd-syntax-text">/ping</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="help commands index paginated">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/help</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Paginated in-bot index of every slash command with inline parameter descriptions.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/help')">
+              <span class="cmd-syntax-text">/help</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="info version uptime hosting memory">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/info</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Displays Feather Bot version (v3.2.0), VPS uptime, RAM footprint, and features.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/info')">
+              <span class="cmd-syntax-text">/info</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="search wiki craftersmc articles">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/search</span>
+              <span class="cmd-badge general">General</span>
+            </div>
+            <div class="cmd-desc">Direct query against the CraftersMC Wiki for items, mechanics, and guides.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/search query:<text>')">
+              <span class="cmd-syntax-text">/search query:&lt;text&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="emojis operator reactions embeds">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/emojis</span>
+              <span class="cmd-badge operator">Operator</span>
+            </div>
+            <div class="cmd-desc">Lists 500+ SkyBlock custom item emojis available to the bot for embeds.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/emojis')">
+              <span class="cmd-syntax-text">/emojis</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+
+          <article class="cmd-card" data-tags="message operator dm staff">
+            <div class="cmd-card-top">
+              <span class="cmd-name">/message</span>
+              <span class="cmd-badge operator">Operator</span>
+            </div>
+            <div class="cmd-desc">Operator DM tool: contact users directly from the bot with up to 4 file attachments.</div>
+            <div class="cmd-syntax-box" onclick="copyCmd(this, '/message target:<user> message:<text> [attachment1-4]')">
+              <span class="cmd-syntax-text">/message target:&lt;user&gt; message:&lt;text&gt;</span>
+              <span class="material-icons cmd-copy-icon">content_copy</span>
+            </div>
+          </article>
+        </div>
+
+      </section>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
+        <div class="site-footer-right">
+          <a href="privacy-policy.html">Privacy Policy</a> &bull;
+          <a href="terms-and-conditions.html">Terms of Service</a> &bull;
+          <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+  <!-- Command Details Modal -->
+  <div id="cmdModal" class="modal-overlay" onclick="closeModal()">
+    <div class="modal-dialog" onclick="event.stopPropagation();">
+      <button type="button" class="modal-close-btn" onclick="closeModal()">
+        <span class="material-icons">close</span>
+      </button>
+      <div id="modalBadges" style="margin-bottom: 8px;"></div>
+      <h3 id="modalTitle" style="font-family: var(--font-mono); margin-bottom: 8px;"></h3>
+      <p id="modalDesc" style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; margin-bottom: 16px;"></p>
+      <div id="modalSyntax" class="cmd-syntax-box" style="padding: 10px 14px; font-size: 0.85rem; cursor: pointer;">
+        <span id="modalSyntaxText"></span>
+        <span class="material-icons cmd-copy-icon">content_copy</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client-side Search & Copy Script -->
+  <script>
+    function copyCmd(el, text) {
+      if (window.event) window.event.stopPropagation();
+      navigator.clipboard.writeText(text).then(() => {
+        const icon = el.querySelector('.cmd-copy-icon');
+        if (icon) {
+          const original = icon.textContent;
+          icon.textContent = 'check';
+          icon.style.color = '#16a34a';
+          setTimeout(() => {
+            icon.textContent = original;
+            icon.style.color = '';
+          }, 1500);
         }
       });
     }
 
-    markWideCards();
-    window.addEventListener('resize', markWideCards);
+    function openModal(card) {
+      const name = card.querySelector('.cmd-name')?.textContent || '';
+      const desc = card.querySelector('.cmd-desc')?.textContent || '';
+      const syntax = card.querySelector('.cmd-syntax-text')?.textContent || '';
+      const badge = card.querySelector('.cmd-badge')?.cloneNode(true);
+
+      document.getElementById('modalTitle').textContent = name;
+      document.getElementById('modalDesc').textContent = desc;
+      document.getElementById('modalSyntaxText').textContent = syntax;
+      document.getElementById('modalSyntax').onclick = (e) => copyCmd(document.getElementById('modalSyntax'), syntax);
+
+      const badgesContainer = document.getElementById('modalBadges');
+      badgesContainer.innerHTML = '';
+      if (badge) badgesContainer.appendChild(badge);
+
+      document.getElementById('cmdModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('cmdModal').classList.remove('active');
+    }
+
+    // Search filter
+    const search = document.getElementById('cmdSearch');
+    const cards = Array.from(document.querySelectorAll('.cmd-card'));
+
+    if (search) {
+      search.addEventListener('input', () => {
+        const q = search.value.toLowerCase().trim();
+        cards.forEach(card => {
+          const text = (card.textContent + ' ' + (card.dataset.tags || '')).toLowerCase();
+          card.style.display = text.includes(q) ? '' : 'none';
+        });
+      });
+    }
+
+    cards.forEach(card => {
+      card.addEventListener('click', () => openModal(card));
+    });
   </script>
+
 </body>
 </html>

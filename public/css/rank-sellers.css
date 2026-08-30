@@ -1,359 +1,210 @@
-
+/* Rank Sellers Theme — Unified with Documentation Design System */
 
 :root {
-  --rs-background-color: #222222;
-  --rs-text-color: #eee;
-  --rs-title-color: #ffffff;
-  --rs-text-shadow-color: #000000;
-  --rs-credits-footer-color: #6c757d;
-  --rs-seller-list-background: rgba(0, 0, 0, 0.2);
-  --rs-seller-card-background: rgba(100, 100, 100, 0.1);
-  --rs-box-shadow-color: rgba(1, 1, 1, 0.1);
-  --rs-box-shadow-hover-color: rgba(0, 0, 0, 0.3);
-  --rs-box-shadow-seller-card: rgba(200, 200, 200, 0.2);
-  --rs-box-shadow-seller-card-hover: rgba(255, 255, 255, 0.6);
-  --rs-status-selling-color: limegreen;
-  --rs-status-paused-color: #ff6a00;
-  --rs-status-inactive-color: red;
-  --rs-status-unknown-color: #6c757d;
-  --rs-button-background-color: #444444;
-  --rs-button-text-color: #fff;
-  --rs-button-hover-background-color: #222222;
-  --rs-warning-color: red;
-  --rs-warning-text-shadow-color: #000000;
-  --rs-background-tint: rgba(0, 0, 0, 0.5);
-  --rs-shadow-color: rgba(200, 200, 200, 0.3);
-  --rs-shadow-color-solid: rgba(100, 100, 100, 0.5);
-  --rs-border-card: 1px solid rgba(255, 255, 255, 0.4);
-  --rs-card-drop-shadow: transparent;
-  --rs-opacity: 0.8;
+  --rs-card-bg: #ffffff;
+  --rs-card-hover: #f8fafc;
+  --rs-border: #e2e8f0;
+  --rs-status-selling-bg: #f0fdf4;
+  --rs-status-selling-text: #16a34a;
+  --rs-status-selling-border: #bbf7d0;
+  --rs-status-paused-bg: #fffbeb;
+  --rs-status-paused-text: #d97706;
+  --rs-status-paused-border: #fde68a;
+  --rs-status-inactive-bg: #fef2f2;
+  --rs-status-inactive-text: #dc2626;
+  --rs-status-inactive-border: #fecaca;
 }
 
-.rs-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  color: var(--rs-text-color);
-  text-align: left;
-  background-image:
-    linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url('../Backgrounds/IMG_4500.webp');
-}
-
-a.rs-seller-card {
-  text-decoration: none;
-}
-
-a.rs-inactive {
-  text-decoration: none;
-}
-
-.rs-title {
-  font-size: 2.5rem;
-  margin: 10rem 5% 20px 5%;
-  color: var(--rs-title-color);
-  text-align: center;
-  text-shadow: 2px 2px var(--rs-text-shadow-color);
-}
-
-.rs-seller-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  width: 90%;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.rs-seller-card {
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  background: var(--rs-seller-card-background);
-  backdrop-filter: blur(2px) saturate(180%);
-  border: var(--rs-border-card);
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2),
-    inset 0 4px 20px var(--rs-shadow-color);
-  padding: 15px;
-  transition: transform 0.3s, box-shadow 0.3s;
-  overflow-wrap: break-word;
-  min-width: 250px;
-  min-height: 250px;
+/* Control & Filter Bar */
+.sellers-filter-bar {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin-bottom: 24px;
   display: flex;
-  flex-direction: column;
-  justify-content: space-around;
   align-items: center;
-  position: relative;
-  border-radius: 16px;
-  will-change: transform, box-shadow;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
-.rs-seller-card::after {
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  backdrop-filter: blur(1px);
-  box-shadow: inset -10px -8px 0px -11px var(--rs-shadow-color-solid),
-    inset 0px -5px 0px -4px var(--rs-shadow-color-solid);
-  opacity: var(--rs-opacity);
-  z-index: -1;
-  filter: blur(1px) drop-shadow(10px 4px 6px var(--rs-card-drop-shadow)) brightness(115%);
-  border-radius: 16px;
-}
-
-.rs-inactive {
-  border: 3px solid rgba(255, 0, 0, 0.3);
-  background-color: var(--rs-seller-card-background);
-  background-image: linear-gradient(135deg, rgba(255, 0, 0, 0.1), rgba(255, 0, 0, 0.1));
-}
-
-
-.rs-seller-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0px 0px var(--rs-box-shadow-seller-card-hover);
-}
-
-.rs-seller-card img {
-  height: 47px;
-  width: auto;
-  border-radius: 4px;
-}
-
-.rs-inactive img {
-  height: 47px;
-  width: auto;
-  border-radius: 4px;
-  filter: grayscale(100%);
-}
-
-img.rs-rank {
-  height: 47px;
-  width: auto;
-  margin-right: 5px;
-  object-fit: contain;
-  align-items: left;
-}
-
-.rs-status {
-  font-weight: bold;
-  border-radius: 5px;
-  text-align: center;
-}
-
-#status-badge {
-  padding: 5px 10px;
-  border-radius: 8px;
-}
-
-.rs-Selling {
-  background-color: var(--rs-selling-bg, rgba(0, 128, 0, 0.3));
-  color: var(--rs-selling-color, #82EB53);
-}
-
-.rs-Paused {
-  background-color: var(--rs-paused-bg, rgba(218, 81, 0, 0.3));
-  color: var(--rs-paused-color, #ff9b59);
-}
-
-.rs-Inactive {
-  background-color: var(--rs-inactive-bg, rgba(255, 0, 0, 0.3));
-  color: var(--rs-inactive-color, #ff6b6b);
-}
-
-a.rs-button {
-  display: inline-block;
-  padding: 10px 15px;
-  margin: 10px;
-  background-color: var(--rs-button-background-color);
-  color: var(--rs-button-text-color);
-  text-decoration: none;
-  border-radius: 5px;
-  font-weight: bold;
-  text-align: center;
-}
-
-.rs-button-container {
-  text-align: center;
-  margin: 20px 0;
-}
-
-a.rs-button:hover {
-  background-color: var(--rs-button-hover-background-color);
-}
-
-.rs-warning {
-  font-size: 0.9rem;
-  font-weight: bold;
-  margin: 20px 5%;
-  color: var(--rs-warning-color);
-  font-style: italic;
-  text-align: center;
-  text-shadow: 1px 0.9px var(--rs-warning-text-shadow-color);
-}
-
-p.rs-info {
-  font-size: 0.9rem;
-  margin: 20px 5%;
-  color: var(--rs-text-color);
-  text-align: center;
-}
-
-/* Style for background selector dropdown */
-#backgroundSelect {
-  background: rgba(0, 0, 0, 0.4);
-  color: var(--rs-button-text-color);
-  border: 2px solid rgba(255, 255, 255, 0.7);
-  border-radius: 8px;
-  padding: 10px 15px;
-  font-size: 1rem;
-  font-weight: bold;
-  margin: 10px 0;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+.sellers-search-input {
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  color: var(--text-main);
+  font-size: 0.88rem;
+  font-family: var(--font-sans);
+  width: 260px;
   outline: none;
+  transition: border-color 0.15s;
 }
 
-#backgroundSelect:hover {
-  background: rgba(0, 0, 0, 0.2);
+.sellers-search-input:focus {
+  border-color: var(--accent-color);
+  background: #ffffff;
 }
 
-#backgroundSelect option,
-#backgroundSelect optgroup {
-  color: #000;
-}
-
-#backgroundSelect optgroup {
-  font-weight: bold;
-  color: #000;
-}
-
-
-
-.rs-container input {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-}
-
-.rs-container {
+.sellers-toggles {
   display: flex;
   align-items: center;
-  flex-direction: row;
-  gap: 8px;
-  font-size: 30px;
-  user-select: none;
-  position: relative;
-  cursor: pointer;
-} 
+  gap: 20px;
+}
 
-.rs-checkbox-container-container {
+.seller-toggle-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-main);
+  cursor: pointer;
+  user-select: none;
+}
+
+.seller-toggle-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--accent-color);
+}
+
+/* Seller Cards Grid */
+.sellers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.seller-card {
+  background: var(--rs-card-bg);
+  border: 1px solid var(--rs-border);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  cursor: pointer;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  box-sizing: border-box;
 }
 
-.rs-checkbox-container {
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  width: 90%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  margin: 20px 0;
-  background: var(--rs-seller-card-background);
-  backdrop-filter: blur(2px) saturate(180%);
-  border: var(--rs-border-card);
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2),
-    inset 0 4px 20px var(--rs-shadow-color);
-  border-radius: 16px;
+.seller-card:hover {
+  background: var(--rs-card-hover);
+  border-color: var(--accent-color);
 }
 
-.rs-checkbox-container::after {
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  backdrop-filter: blur(1px);
-  box-shadow: inset -10px -8px 0px -11px var(--rs-shadow-color-solid),
-    inset 0px -5px 0px -4px var(--rs-shadow-color-solid);
-  opacity: var(--rs-opacity);
-  z-index: -1;
-  filter: blur(1px) drop-shadow(10px 4px 6px var(--rs-card-drop-shadow)) brightness(115%);
-  border-radius: 16px;
+.seller-card.rs-inactive {
+  opacity: 0.7;
 }
 
-.rs-checkbox-container p {
-  margin: 0 0 0 0;
-  padding: 0;
-  color: var(--rs-text-color);
-  font-size: 1.5rem;
-  text-align: center;
-  display: inline-block;
-}
-
-.rs-label-and-checkmark {
+/* Card Top Header: Rank on Left, Status on Right */
+.seller-card-top {
   display: flex;
   align-items: center;
-  gap: 10px;
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 10px;
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
 
-.rs-label-and-checkmark:last-child {
-  border-right: none;
+.seller-rank-badge {
+  height: 22px;
+  width: auto;
+  max-width: 110px;
+  object-fit: contain;
 }
 
-@media (max-width: 800px) and (min-width: 600px) {
-  .rs-seller-container {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.seller-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 12px;
+  word-break: break-word;
 }
 
-@media (max-width: 600px) {
-  .rs-seller-container {
-    grid-template-columns: 1fr;
-  }
-
-  .rs-checkbox-container {
-    flex-direction: column;
-  }
-  .rs-label-and-checkmark {
-    border-right: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    width: 60%;
-    justify-content: center;
-    padding: 10px 0;
-  }
-  .rs-label-and-checkmark:last-child {
-    border-bottom: none;
-  }
+/* Status Badges */
+.status-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
-@media (max-width: 400px) {
-  .rs-checkbox-container {
-    width: 100%;
-  }
-  .rs-label-and-checkmark {
-    width: 100%;
-    justify-content: center;
-    flex-direction: column;
-    padding: 10px;
-  }
-  
+.status-pill.selling {
+  background: var(--rs-status-selling-bg);
+  color: var(--rs-status-selling-text);
+  border: 1px solid var(--rs-status-selling-border);
+}
+
+.status-pill.paused {
+  background: var(--rs-status-paused-bg);
+  color: var(--rs-status-paused-text);
+  border: 1px solid var(--rs-status-paused-border);
+}
+
+.status-pill.inactive {
+  background: var(--rs-status-inactive-bg);
+  color: var(--rs-status-inactive-text);
+  border: 1px solid var(--rs-status-inactive-border);
+}
+
+/* Seller Pricing Breakdown */
+.seller-pricing {
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.82rem;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price-label {
+  color: var(--text-muted);
+}
+
+.price-values {
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.seller-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.seller-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.seller-meta-item .material-icons {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
 }

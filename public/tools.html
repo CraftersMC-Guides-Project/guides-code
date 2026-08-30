@@ -1,81 +1,208 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <link rel="icon" href="assets/cmc-icon.png" type="image/png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="CraftersMC Tools">
-    <meta property="og:description" content="Track events like Bank Interest, New Year Cake, Traveling Zoo, and more from CraftersMC Skyblock.">
-    <meta property="og:image" content="https://media.discordapp.net/attachments/1320310626232569887/1368524227673849857/image.png?ex=68188901&is=68173781&hm=184e0ab7aca6baa8e835875a22221cf8c6305dcb34c1f2eb504070e2a548be2c&=&format=webp&quality=lossless&width=600&height=367">
-    <meta property="og:url" content="https://craftersmc-guides.pages.dev/tools.html">
-    <meta property="og:type" content="website">
-    <meta name="theme-color" content="#007bff">
-    <meta name="twitter:card" content="summary_large_image">
-    <title>CraftersMC Tools</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="js/script.js"></script>
-    <link rel="stylesheet" href="css/essential.css">
-    <link rel="stylesheet" href="css/event.css">
+  <meta charset="UTF-8">
+  <title>Calculators &amp; Tools — CraftersMC Guides</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interactive SkyBlock calculators for reforges, minion production, skill EXP, and accessory optimization.">
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+  <link rel="icon" href="assets/cmc-guides.png" type="image/png">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="better-api-docs/style.css">
+
+  <!-- Scripts -->
+  <script src="better-api-docs/app.js" defer></script>
 </head>
 
 <body>
 
-    <div id="loader">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-    <div class="event-log-background"></div>
-    <div class="top"></div>
-
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar"></div>
-    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-  <span class="material-icons" id="scrollToTopBtn">north</span>
-  <div class="gap"></div>
-    <div class="event-log-card-container">
-        <div class="event-log-card developement">
-            <img src="Backgrounds/reforge-npc-S.jpg" alt="Best Reforge Calculator">
-            <div class="event-log-card-content">
-                <h3>Best Reforge Calculator</h3>
-                <p>Choose the best reforge you want based on what stats you actually want!</p>
-                <button onclick="window.location.href = 'tools/best-reforge.html';">Visit</button>
-            </div>
+  <!-- Top Header Navigation -->
+  <header class="top-header">
+    <div class="header-left">
+      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
+        <span class="material-icons" style="font-size:1.25rem;">menu</span>
+      </button>
+      <a href="index.html" class="header-brand">
+        <img src="assets/cmc-guides.png" alt="CraftersMC Logo">
+        <div class="brand-text">
+          <span class="brand-title">CraftersMC Guides</span>
+          <span class="version-badge">Calculators</span>
         </div>
-        <div class="event-log-card developement">
-            <img src="Backgrounds/Event_New_Year_Celebration.webp" alt="Skill Exp Calculator">
-            <div class="event-log-card-content">
-                <h3>Skill Exp Calculator</h3>
-                <p></p>
-                <button onclick="window.location.href = 'tools/skill-calculator.html';">Visit</button>
-            </div>
-        </div>
-        <div class="event-log-card developement">
-            <img src="Backgrounds/Event_New_Year_Celebration.webp" alt="Pet Exp Calculator">
-            <div class="event-log-card-content">
-                <h3>Pet Exp Calculator</h3>
-                <p></p>
-                <button onclick="window.location.href = 'tools/pet-exp-calculator.html';" disabled>Visit</button>
-            </div>
-        </div>
-        <div class="event-log-card development">
-            <img src="Backgrounds/imag38606-003424.webp" alt="Traveling Zoo">
-            <div class="event-log-card-content">
-                <h3>Minion Inv-Time Calculator</h3>
-                <p>Calculate how much time it will take to fill up your minion's inventory.</p>
-                <button onclick="window.location.href = 'tools/minion-inv.html';">Visit</button>
-            </div>
-        </div>
-        <div class="event-log-card development">
-            <img src="Backgrounds/image63s.webp" alt="Minion Production">
-            <div class="event-log-card-content">
-                <h3>Minion Production calculator</h3>
-                <p></p>
-                <button onclick="window.location.href = 'tools/minion-production.html';" disabled>Visit</button>
-            </div>
-        </div>
+      </a>
     </div>
 
-    <div id="footer" style="margin: 0;"></div>
+    <!-- Search Box -->
+    <div class="search-box">
+      <span class="material-icons search-icon">search</span>
+      <input type="text" id="search-input" placeholder="Search guides, tools, calculators...">
+      <span class="search-kbd-shortcut">/</span>
+    </div>
+
+    <!-- Header Utility Links -->
+    <div class="header-actions">
+      <a href="better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
+      <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
+    </div>
+  </header>
+
+  <!-- Application Layout -->
+  <div class="app-layout">
+
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Getting Started</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="index.html#overview"><span class="material-icons nav-icon">home</span> <span>Overview</span></a></li>
+          <li class="sidebar-nav-item"><a href="index.html#section-guides"><span class="material-icons nav-icon">menu_book</span> <span>Progression Guides</span></a></li>
+          <li class="sidebar-nav-item"><a href="index.html#section-tools"><span class="material-icons nav-icon">build</span> <span>Live Tools</span></a></li>
+          <li class="sidebar-nav-item"><a href="index.html#section-api"><span class="material-icons nav-icon">code</span> <span>Developer &amp; API</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Live Tools &amp; Trackers</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="skycalendar.html"><span class="material-icons nav-icon">event</span> <span>SkyCalendar (Events)</span></a></li>
+          <li class="sidebar-nav-item"><a href="rank-sellers.html"><span class="material-icons nav-icon">card_giftcard</span> <span>Rank &amp; Gems Sellers</span></a></li>
+          <li class="sidebar-nav-item"><a href="leaderboards.html"><span class="material-icons nav-icon">leaderboard</span> <span>Leaderboards</span></a></li>
+          <li class="sidebar-nav-item"><a href="texture-packs.html"><span class="material-icons nav-icon">palette</span> <span>Texture Packs</span></a></li>
+          <li class="sidebar-nav-item active"><a href="tools.html" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons nav-icon" style="color: var(--accent-color);">calculate</span> <span>Calculators</span></a></li>
+          <li class="sidebar-nav-item"><a href="feather-bot/index.html"><span class="material-icons nav-icon">smart_toy</span> <span>Feather Bot Guide</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Progression Guides</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="guide/starter-guide.html"><span class="material-icons nav-icon">play_circle</span> <span>Starter Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/intermediate-guide.html"><span class="material-icons nav-icon">trending_up</span> <span>Intermediate Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/intermediate-guide2.html"><span class="material-icons nav-icon">shield</span> <span>Slayers Edition</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/advanced-guide.html"><span class="material-icons nav-icon">military_tech</span> <span>Advanced Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/accessories-guide.html"><span class="material-icons nav-icon">auto_awesome</span> <span>Accessories &amp; Reforges</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/bazaar-guide.html"><span class="material-icons nav-icon">storefront</span> <span>Bazaar Trading</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/queries.html"><span class="material-icons nav-icon">help_outline</span> <span>Common Queries &amp; FAQ</span></a></li>
+          <li class="sidebar-nav-item"><a href="unicode.html"><span class="material-icons nav-icon">format_shapes</span> <span>Unicode &amp; Formatting</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Developer &amp; API</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="better-api-docs/index.html"><span class="material-icons nav-icon">code</span> <span>REST API v1 Reference</span></a></li>
+          <li class="sidebar-nav-item"><a href="better-api-docs/index.html#section-nbt-decoding"><span class="material-icons nav-icon">memory</span> <span>15 NBT Storage Blobs</span></a></li>
+          <li class="sidebar-nav-item"><a href="better-api-docs/index.html#section-item-ids"><span class="material-icons nav-icon">list_alt</span> <span>Numerical Item IDs (1,933)</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Community &amp; Source</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="https://craftersmc.net/" target="_blank"><span class="material-icons nav-icon">language</span> <span>Server Website</span></a></li>
+          <li class="sidebar-nav-item"><a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank"><span class="material-icons nav-icon">code</span> <span>GitHub Repository</span></a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- Section Header -->
+      <section class="doc-section">
+        <div class="section-header">
+          <h1>SkyBlock Calculators &amp; Utilities</h1>
+          <p>Interactive tools to calculate reforge stats, minion output, skill progression, and gear optimization.</p>
+        </div>
+
+        <!-- Category: Gear & Optimization -->
+        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
+          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: var(--accent-color);">tune</span> Gear &amp; Stats Optimization</h2>
+        </div>
+
+        <div class="schema-cards-grid" style="margin-bottom: 28px;">
+          <div class="schema-card">
+            <div class="schema-name"><a href="tools/best-reforge.html">Best Reforge Calculator</a></div>
+            <div class="schema-desc">Find the optimal reforge combination for your weapon or armor based on desired stats.</div>
+            <div style="margin-top: auto;"><a href="tools/best-reforge.html" style="font-weight: 600;">Launch Calculator &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="tools/missing-acces-calc.html">Missing Accessories Calculator</a></div>
+            <div class="schema-desc">Check which talismans, rings, and artifacts you are missing to maximize your magical power.</div>
+            <div style="margin-top: auto;"><a href="tools/missing-acces-calc.html" style="font-weight: 600;">Launch Calculator &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="tools/calc.html">General SkyBlock Calculator</a></div>
+            <div class="schema-desc">Multi-purpose calculator for combat damage formulas, effective HP, and stat scaling.</div>
+            <div style="margin-top: auto;"><a href="tools/calc.html" style="font-weight: 600;">Launch Calculator &rarr;</a></div>
+          </div>
+        </div>
+
+        <!-- Category: Minions -->
+        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
+          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #16a34a;">precision_manufacturing</span> Minion Automation</h2>
+        </div>
+
+        <div class="schema-cards-grid" style="margin-bottom: 28px;">
+          <div class="schema-card">
+            <div class="schema-name"><a href="tools/minion-inv-time.html">Minion Inventory Filling Calculator</a></div>
+            <div class="schema-desc">Calculate exact hours until your minion's inventory fills up based on tier, fuel, and storage chests.</div>
+            <div style="margin-top: auto;"><a href="tools/minion-inv-time.html" style="font-weight: 600;">Launch Calculator &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="tools/minion-production.html">Minion Production Calculator</a></div>
+            <div class="schema-desc">Estimate daily item yields and coin revenue per minion setup with different fuel upgrades.</div>
+            <div style="margin-top: auto;"><a href="tools/minion-production.html" style="font-weight: 600;">Launch Calculator &rarr;</a></div>
+          </div>
+        </div>
+
+        <!-- Category: Progression & Pets -->
+        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
+          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #9333ea;">pets</span> Progression &amp; Leveling</h2>
+        </div>
+
+        <div class="schema-cards-grid" style="margin-bottom: 28px;">
+          <div class="schema-card">
+            <div class="schema-name"><a href="tools/skill-calculator.html">Skill EXP Calculator</a></div>
+            <div class="schema-desc">Calculate remaining experience and total actions needed to reach your target skill level.</div>
+            <div style="margin-top: auto;"><a href="tools/skill-calculator.html" style="font-weight: 600;">Launch Calculator &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="tools/pet-exp-calculator.html">Pet EXP Calculator</a></div>
+            <div class="schema-desc">Estimate pet level progression and required candy / exp amounts to reach level 100.</div>
+            <div style="margin-top: auto;"><a href="tools/pet-exp-calculator.html" style="font-weight: 600;">Launch Calculator &rarr;</a></div>
+          </div>
+
+          <div class="schema-card">
+            <div class="schema-name"><a href="tools/missing-cakes-calc.html">Missing Cakes Calculator</a></div>
+            <div class="schema-desc">Track which New Year Celebration Cakes you still need for your Century Cake Bag collection.</div>
+            <div style="margin-top: auto;"><a href="tools/missing-cakes-calc.html" style="font-weight: 600;">Launch Calculator &rarr;</a></div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
+        <div class="site-footer-right">
+          <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
 </body>
 </html>
