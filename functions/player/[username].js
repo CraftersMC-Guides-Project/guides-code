@@ -7,6 +7,7 @@ export async function onRequest({ params, env }) {
         {
             headers: {
                 'X-API-Key': apiKey,
+                'User-Agent': 'CraftersMC-Guides/1.0',
                 'Accept': 'application/json'
             }
         }
