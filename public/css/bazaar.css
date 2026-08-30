@@ -1,23 +1,41 @@
 /* ==========================================================================
-   CraftersMC Bazaar Market Stylesheet — Fully Responsive & Polished
+   CraftersMC Bazaar Market Stylesheet — Fully Fluid & Responsive
    ========================================================================== */
 
-/* Layout Padding & Container Responsiveness */
-@media (max-width: 992px) {
-  .app-layout {
-    padding: 20px 24px;
+/* Container & Layout Overrides */
+.app-layout {
+  display: flex;
+  width: 100%;
+  min-height: calc(100vh - 56px);
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.main-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  padding: 32px 40px 80px 40px;
+  background: #ffffff;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    padding: 24px 24px 60px 24px;
   }
 }
 
 @media (max-width: 768px) {
-  .app-layout {
-    padding: 16px 14px;
+  .main-content {
+    padding: 16px 14px 40px 14px;
   }
 }
 
 @media (max-width: 480px) {
-  .app-layout {
-    padding: 12px 10px;
+  .main-content {
+    padding: 12px 10px 32px 10px;
   }
 }
 
@@ -29,6 +47,9 @@
   padding: 24px 28px;
   margin-bottom: 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
 }
 
 @media (max-width: 768px) {
@@ -38,36 +59,61 @@
   }
 }
 
+@media (max-width: 480px) {
+  .bazaar-hero-card {
+    padding: 14px 12px;
+    margin-bottom: 14px;
+  }
+}
+
 .bazaar-search-grid {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   align-items: flex-end;
   margin-top: 18px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-@media (max-width: 768px) {
+.bazaar-search-grid .input-field-group {
+  flex: 1 1 300px;
+  min-width: 0;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.bazaar-search-grid .btn-fetch,
+.bazaar-search-grid .btn-secondary-action {
+  height: 42px;
+  padding: 0 18px;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
   .bazaar-search-grid {
-    grid-template-columns: 1fr 1fr;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
   }
-  .bazaar-search-grid .search-input-wrapper {
-    grid-column: 1 / -1;
+
+  .bazaar-search-grid .input-field-group {
+    flex: none;
+    width: 100%;
   }
-  .bazaar-search-grid .btn {
+
+  .bazaar-search-grid .btn-fetch,
+  .bazaar-search-grid .btn-secondary-action {
     width: 100%;
     justify-content: center;
-  }
-}
-
-@media (max-width: 420px) {
-  .bazaar-search-grid {
-    grid-template-columns: 1fr;
   }
 }
 
 .search-input-wrapper {
   position: relative;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .bazaar-input {
@@ -147,12 +193,22 @@
   padding: 24px 28px;
   margin-bottom: 28px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
 }
 
 @media (max-width: 768px) {
   .bazaar-detail-card {
     padding: 18px 16px;
     margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bazaar-detail-card {
+    padding: 14px 12px;
+    margin-bottom: 16px;
   }
 }
 
@@ -178,6 +234,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .item-main-name {
@@ -188,9 +245,9 @@
   line-height: 1.2;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   .item-main-name {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
   }
 }
 
@@ -211,23 +268,25 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin-bottom: 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 1100px) {
   .bazaar-stats-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
+    gap: 12px;
   }
 }
 
 @media (max-width: 480px) {
   .bazaar-stats-grid {
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 8px;
   }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 340px) {
   .bazaar-stats-grid {
     grid-template-columns: 1fr;
   }
@@ -241,21 +300,24 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 @media (max-width: 480px) {
   .stat-box {
-    padding: 12px 14px;
+    padding: 12px 10px;
   }
 }
 
 .stat-box-title {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   margin-bottom: 6px;
+  word-break: break-word;
 }
 
 .stat-box-value {
@@ -263,17 +325,23 @@
   font-weight: 700;
   font-family: var(--font-mono);
   margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (max-width: 480px) {
   .stat-box-value {
-    font-size: 1.15rem;
+    font-size: 1.08rem;
   }
 }
 
 .stat-box-subtitle {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Order Books Grid (Side-by-Side Depth) */
@@ -282,6 +350,8 @@
   grid-template-columns: 1fr 1fr;
   gap: 20px;
   margin-bottom: 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 900px) {
@@ -296,11 +366,14 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 16px 18px;
+  box-sizing: border-box;
+  overflow: hidden;
+  width: 100%;
 }
 
 @media (max-width: 480px) {
   .order-book-card {
-    padding: 12px 14px;
+    padding: 12px 10px;
   }
 }
 
@@ -324,13 +397,14 @@
 .order-book-table-container {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .order-book-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.83rem;
-  min-width: 260px;
+  min-width: 240px;
 }
 
 .order-book-table th {
@@ -369,11 +443,14 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   margin-bottom: 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .flip-calc-grid {
     grid-template-columns: 1fr;
+    gap: 8px;
   }
 }
 
@@ -382,6 +459,7 @@
   border: 1px solid #bbf7d0;
   border-radius: var(--radius-sm);
   padding: 14px 16px;
+  box-sizing: border-box;
 }
 
 .flip-calc-box-title {
@@ -407,11 +485,14 @@
   border-radius: var(--radius-sm);
   padding: 18px;
   margin-bottom: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
 }
 
 @media (max-width: 600px) {
   .chart-container-box {
-    padding: 14px 12px;
+    padding: 14px 10px;
   }
 }
 
@@ -424,6 +505,7 @@
   margin-bottom: 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid #f1f5f9;
+  width: 100%;
 }
 
 @media (max-width: 600px) {
@@ -433,11 +515,13 @@
   }
   .chart-btn-group {
     width: 100%;
-    justify-content: space-around;
+    display: flex;
   }
   .chart-filter-btn {
     flex: 1;
     text-align: center;
+    padding: 6px 4px;
+    font-size: 0.76rem;
   }
 }
 
@@ -475,11 +559,12 @@
   position: relative;
   height: 320px;
   width: 100%;
+  max-width: 100%;
 }
 
 @media (max-width: 600px) {
   .chart-wrapper {
-    height: 250px;
+    height: 240px;
   }
 }
 
@@ -491,11 +576,15 @@
   padding: 24px 28px;
   margin-bottom: 32px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
   .catalog-card {
-    padding: 18px 16px;
+    padding: 18px 14px;
     margin-bottom: 20px;
   }
 }
@@ -507,12 +596,16 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 16px;
+  width: 100%;
 }
 
 @media (max-width: 600px) {
   .table-filter-bar {
     flex-direction: column;
     align-items: stretch;
+  }
+  .table-filter-bar .search-input-wrapper {
+    width: 100%;
   }
   .table-filter-bar input {
     width: 100% !important;
@@ -521,6 +614,7 @@
 
 .catalog-table-responsive {
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
@@ -532,7 +626,7 @@
   border-collapse: collapse;
   font-size: 0.88rem;
   text-align: left;
-  min-width: 700px;
+  min-width: 680px;
 }
 
 .bazaar-table th {
@@ -602,6 +696,7 @@
   margin-top: 14px;
   flex-wrap: wrap;
   gap: 10px;
+  width: 100%;
 }
 
 @media (max-width: 500px) {
@@ -611,4 +706,5 @@
     text-align: center;
   }
 }
+
 
