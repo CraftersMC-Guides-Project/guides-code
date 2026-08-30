@@ -20,6 +20,7 @@ export async function onRequest(context) {
 
     const headers = {
       'Accept': 'application/json',
+
       'User-Agent': 'CraftersMC-Guides/1.0'
     };
     if (apiKey) {
@@ -29,7 +30,7 @@ export async function onRequest(context) {
 
     // Call live item details endpoint
     let upstreamRes = await fetch(`https://proxy.craftersmcguides.workers.dev/v1/skyblock/bazaar/${itemId}/details`, { headers });
-    
+
     // Direct fallback if proxy fails
     if (!upstreamRes.ok) {
       upstreamRes = await fetch(`https://api.craftersmc.net/v1/skyblock/bazaar/${itemId}/details`, { headers });
