@@ -260,9 +260,19 @@
     }
 
     async function fetchFromProxy(endpoint) {
-      // 1. Try relative endpoint on current host (e.g. /player/username or /profile/profileId)
+      const PROXY_ORIGIN = 'https://craftersmc-guides.pages.dev';
+
+      // 1. If running on the main production domain, use relative fetch
+      if (window.location.origin === PROXY_ORIGIN) {
+        try {
+          const res = await fetch(endpoint);
+          if (res.ok) return await res.json();
+        } catch (e) {}
+      }
+
+      // 2. On preview branches or local dev, fetch directly from authenticated production proxy
       try {
-        const res = await fetch(endpoint);
+        const res = await fetch(`${PROXY_ORIGIN}${endpoint}`);
         if (res.ok) {
           return await res.json();
         }
@@ -270,21 +280,16 @@
           const errData = await res.json().catch(() => ({}));
           throw new Error(errData.message || 'Player or profile not found');
         }
-      } catch (err) {
-        if (err.message?.includes('not found')) throw err;
-        console.warn(`Relative fetch to ${endpoint} failed, trying fallback:`, err);
-      }
-
-      // 2. Try primary Cloudflare Pages proxy
-      try {
-        const fallbackUrl = `https://craftersmc-guides.pages.dev${endpoint}`;
-        const res = await fetch(fallbackUrl);
-        if (res.ok) {
-          return await res.json();
-        }
         const errData = await res.json().catch(() => ({}));
         throw new Error(`HTTP ${res.status}: ${errData.message || errData.error || 'Failed to fetch from proxy'}`);
       } catch (err) {
+        // 3. Fallback to relative endpoint if external fetch failed
+        if (!err.message?.includes('not found')) {
+          try {
+            const fallbackRes = await fetch(endpoint);
+            if (fallbackRes.ok) return await fallbackRes.json();
+          } catch (e) {}
+        }
         throw err;
       }
     }
