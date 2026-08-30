@@ -269,6 +269,12 @@
               </div>
             </div>
 
+            <!-- Chart Canvas -->
+            <div class="chart-wrapper">
+              <canvas id="bazaarChartCanvas"></canvas>
+            </div>
+          </div>
+
           <!-- Collapsible Raw Response JSON Inspector -->
           <details style="margin-top: 18px; background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px 14px;">
             <summary style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; user-select: none;">
@@ -443,18 +449,22 @@
         catalogItems = [];
         if (itemsMap && typeof itemsMap === 'object' && !Array.isArray(itemsMap)) {
           Object.entries(itemsMap).forEach(([id, info]) => {
-            const buyPrice = Number(info.buyPrice ?? info.buy_price ?? 0);
-            const sellPrice = Number(info.sellPrice ?? info.sell_price ?? 0);
+            // detail.sellTopEntries[0].price = Lowest Sell Offer (User buys instantly)
+            const instantBuy = Number(info.sellPrice ?? info.sell_price ?? 0);
+            // detail.buyTopEntries[0].price = Highest Buy Order (User sells instantly)
+            const instantSell = Number(info.buyPrice ?? info.buy_price ?? 0);
             const avgPrice = Number(info.weeklyAveragePrice ?? info.avg_7d_price ?? 0);
             const buyVolume = Number(info.buyVolume ?? info.buy_volume ?? 0);
             const sellVolume = Number(info.sellVolume ?? info.sell_volume ?? 0);
-            const spread = buyPrice > 0 && sellPrice > 0 ? (((buyPrice - sellPrice) / buyPrice) * 100).toFixed(1) : '0';
+            const spread = instantBuy > 0 && instantSell > 0 ? (((instantBuy - instantSell) / instantBuy) * 100).toFixed(1) : '0';
 
             catalogItems.push({
               id,
               name: id.replace(/_/g, ' '),
-              buyPrice,
-              sellPrice,
+              instantBuy,
+              instantSell,
+              buyPrice: instantBuy,
+              sellPrice: instantSell,
               avgPrice,
               buyVolume,
               sellVolume,
@@ -512,7 +522,7 @@
         dropdown.innerHTML = matches.map(m => `
           <div class="autocomplete-item" onclick="selectAutocomplete('${m.id}')">
             <span style="font-weight: 600;">${m.name}</span>
-            <span style="font-size: 0.75rem; color: var(--accent-color); font-family: var(--font-mono);">${formatNumber(m.buyPrice)} coins</span>
+            <span style="font-size: 0.75rem; color: var(--accent-color); font-family: var(--font-mono);">${formatNumber(m.instantBuy)} coins</span>
           </div>
         `).join('');
 
@@ -559,15 +569,15 @@
       const itemInfo = catalogItems.find(i => i.id === cleanId);
       if (itemInfo) {
         console.log('[Bazaar Inspector] Snapshot Data Found:', itemInfo);
-        document.getElementById('statInstantBuy').textContent = formatCoins(itemInfo.buyPrice);
-        document.getElementById('statBuyVolume').textContent = `Volume: ${formatNumber(itemInfo.buyVolume)} units`;
+        document.getElementById('statInstantBuy').textContent = formatCoins(itemInfo.instantBuy);
+        document.getElementById('statBuyVolume').textContent = `Volume: ${formatNumber(itemInfo.sellVolume)} units`;
 
-        document.getElementById('statInstantSell').textContent = formatCoins(itemInfo.sellPrice);
-        document.getElementById('statSellVolume').textContent = `Volume: ${formatNumber(itemInfo.sellVolume)} units`;
+        document.getElementById('statInstantSell').textContent = formatCoins(itemInfo.instantSell);
+        document.getElementById('statSellVolume').textContent = `Volume: ${formatNumber(itemInfo.buyVolume)} units`;
 
         document.getElementById('statWeeklyAvg').textContent = formatCoins(itemInfo.avgPrice);
 
-        const margin = Math.max(0, itemInfo.buyPrice - itemInfo.sellPrice);
+        const margin = Math.max(0, itemInfo.instantBuy - itemInfo.instantSell);
         document.getElementById('statSpread').textContent = `${itemInfo.spread}%`;
         document.getElementById('statMarginCoins').textContent = `Margin: ${formatNumber(margin)} coins`;
 
@@ -717,7 +727,9 @@
     }
 
     function renderHistoryChart() {
-      const ctx = document.getElementById('bazaarChartCanvas').getContext('2d');
+      const canvasEl = document.getElementById('bazaarChartCanvas');
+      if (!canvasEl) return;
+      const ctx = canvasEl.getContext('2d');
       if (!ctx) return;
 
       let historyRecords = [];
@@ -817,13 +829,15 @@
     }
 
     function renderFallbackChart() {
-      const ctx = document.getElementById('bazaarChartCanvas').getContext('2d');
+      const canvasEl = document.getElementById('bazaarChartCanvas');
+      if (!canvasEl) return;
+      const ctx = canvasEl.getContext('2d');
       if (!ctx) return;
       if (chartInstance) chartInstance.destroy();
 
       const itemInfo = catalogItems.find(i => i.id === currentSelectedItemId);
-      const buyPrice = itemInfo?.buyPrice || 100;
-      const sellPrice = itemInfo?.sellPrice || 90;
+      const buyPrice = itemInfo?.instantBuy || 100;
+      const sellPrice = itemInfo?.instantSell || 90;
       const avgPrice = itemInfo?.avgPrice || (buyPrice + sellPrice) / 2;
 
       const labels = ['6d ago', '5d ago', '4d ago', '3d ago', '2d ago', 'Yesterday', 'Today'];
