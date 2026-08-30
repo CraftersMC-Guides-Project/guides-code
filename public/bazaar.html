@@ -873,6 +873,8 @@
       const buyPrices = filteredRecords.map(r => Number(r.sell_price ?? r.sellPrice ?? r.buy_price ?? r.buyPrice ?? 0));
       // buy_price = highest buy order = Instant Sell
       const sellPrices = filteredRecords.map(r => Number(r.buy_price ?? r.buyPrice ?? r.sell_price ?? r.sellPrice ?? 0));
+      // avg_7d_price = 7-Day Average benchmark
+      const avgPrices = filteredRecords.map(r => Number(r.avg_7d_price ?? r.weeklyAveragePrice ?? 0));
       const volumes = filteredRecords.map(r => Number(r.buy_volume ?? r.sell_volume ?? r.volume ?? 0));
 
       if (chartInstance) chartInstance.destroy();
@@ -895,6 +897,16 @@
           fill: true,
           tension: 0.3,
           pointRadius: filteredRecords.length > 30 ? 1 : 3,
+        },
+        {
+          label: '7D Average Price',
+          data: avgPrices,
+          borderColor: '#0284c7',
+          borderDash: [5, 4],
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: false,
+          tension: 0.3,
         }
       ] : [
         {
