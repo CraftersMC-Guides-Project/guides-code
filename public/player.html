@@ -349,6 +349,8 @@
       }
     }
 
+
+
     async function fetchProfileData(profileId) {
       currentProfileId = profileId;
       showStatus(`Fetching profile data (${profileId.substring(0, 8)}...)...`, 'info');
@@ -356,6 +358,15 @@
       try {
         const data = await fetchFromProxy(`/profile/${encodeURIComponent(profileId)}`);
         profileData = data.profile || data;
+
+        // Accurately resolve selectedMemberId matching profile.members keys
+        if (profileData?.members && typeof profileData.members === 'object') {
+          const memberKeys = Object.keys(profileData.members);
+          const cleanPlayerUuid = (playerData?.uuid || '').replace(/-/g, '').toLowerCase();
+          const match = memberKeys.find(m => m.toLowerCase() === cleanPlayerUuid);
+          selectedMemberId = match || memberKeys[0] || '';
+        }
+
         showStatus(`Profile data loaded successfully!`, 'success');
       } catch (err) {
         console.warn('Profile fetch error:', err);
@@ -461,41 +472,114 @@
       renderJSON();
     }
 
-    const SKILL_XP_TABLE = [
-      0, 50, 175, 375, 675, 1175, 1925, 2925, 4425, 6425,
-      9925, 14925, 22425, 32425, 47425, 67425, 97425, 147425, 222425, 322425,
-      522425, 822425, 1222425, 1722425, 2322425, 3022425, 3822425, 4722425, 5722425, 6822425,
-      8022425, 9322425, 10722425, 12222425, 13822425, 15522425, 17322425, 19222425, 21222425, 23322425,
-      25522425, 27822425, 30222425, 32722425, 35322425, 38072425, 40972425, 44072425, 47472425, 51172425,
-      55172425, 59472425, 64072425, 68972425, 74172425, 79672425, 85472425, 91572425, 97972425, 104672425
+    // Feather Bot Skill Math & Level Curves
+    const SKILL_XP_PER_LEVEL = [
+      50, 125, 200, 300, 500, 750, 1000, 1500, 2000, 3500,
+      5000, 7500, 10000, 15000, 20000, 30000, 50000, 75000, 100000, 200000,
+      300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000, 1100000, 1200000,
+      1300000, 1400000, 1500000, 1600000, 1700000, 1800000, 1900000, 2000000, 2100000, 2200000,
+      2300000, 2400000, 2500000, 2600000, 2750000, 2900000, 3100000, 3400000, 3700000, 4000000,
+      4300000, 4600000, 4900000, 5200000, 5500000, 5800000, 6100000, 6400000, 6700000, 7000000,
     ];
 
-    function getSkillLevel(xp) {
-      if (!xp || xp <= 0) return { level: 0, progress: 0, currentXp: 0, nextXp: 50 };
+    const SKILL_CAPS = {
+      farming: 60,
+      mining: 50,
+      combat: 50,
+      foraging: 50,
+      fishing: 50,
+      enchanting: 50,
+      alchemy: 50,
+      taming: 50,
+      carpentry: 50,
+      runecrafting: 25,
+      social: 25
+    };
+
+    function getSkillLevelFromXp(skillName, totalXpInput) {
+      const cap = SKILL_CAPS[skillName] || 50;
+      const totalXp = Math.max(0, Number(totalXpInput) || 0);
       let level = 0;
-      for (let i = 0; i < SKILL_XP_TABLE.length; i++) {
-        if (xp >= SKILL_XP_TABLE[i]) {
-          level = i;
-        } else {
-          break;
+      let cumulativeAtLevelStart = 0;
+
+      for (let nextLevel = 1; nextLevel <= cap; nextLevel += 1) {
+        const required = SKILL_XP_PER_LEVEL[nextLevel - 1] || 7000000;
+        if (totalXp >= cumulativeAtLevelStart + required) {
+          cumulativeAtLevelStart += required;
+          level = nextLevel;
+          continue;
         }
+        break;
       }
-      const currentXp = Math.floor(xp - (SKILL_XP_TABLE[level] || 0));
-      const nextXp = (SKILL_XP_TABLE[level + 1] ? (SKILL_XP_TABLE[level + 1] - SKILL_XP_TABLE[level]) : 1);
-      const progress = Math.min(100, Math.round((currentXp / nextXp) * 100));
-      return { level, progress, currentXp, nextXp };
+
+      if (level >= cap) {
+        return {
+          level: cap,
+          cap,
+          xpIntoLevel: 0,
+          xpForNextLevel: 0,
+          xpToNextLevel: 0,
+          progressPercent: 100,
+        };
+      }
+
+      const xpForNextLevel = SKILL_XP_PER_LEVEL[level] || 1;
+      const xpIntoLevel = Math.max(0, totalXp - cumulativeAtLevelStart);
+      const xpToNextLevel = Math.max(0, xpForNextLevel - xpIntoLevel);
+      const progressPercent = xpForNextLevel > 0 ? Math.min(100, Math.round((xpIntoLevel / xpForNextLevel) * 100)) : 100;
+
+      return {
+        level,
+        cap,
+        xpIntoLevel: Math.floor(xpIntoLevel),
+        xpForNextLevel: Math.floor(xpForNextLevel),
+        xpToNextLevel: Math.floor(xpToNextLevel),
+        progressPercent,
+      };
+    }
+
+    // Network Level Calculations (Feather Bot Formula)
+    function getLevelFromXP(xp) {
+      return xp <= 0 ? 1 : Math.floor(-3.5 + Math.sqrt(20.25 + 0.002 * xp));
+    }
+    function getTotalExpForLevel(level) {
+      return level <= 1 ? 0 : (500 * (level - 2) + 5000) * (level - 1);
+    }
+    function getRemainingXP(xp) {
+      const currentLevel = getLevelFromXP(xp);
+      const xpForCurrentLevel = getTotalExpForLevel(currentLevel);
+      return xp - xpForCurrentLevel;
+    }
+    function getExpFromLevelToNext(level) {
+      return level < 1 ? 5000 : 1000 * (level - 1) + 5000;
+    }
+    function getNetworkLevelProgress(xp) {
+      const totalXp = Number(xp) || 0;
+      const currentLevel = getLevelFromXP(totalXp);
+      const remainingXP = getRemainingXP(totalXp);
+      const xpToNextLevel = getExpFromLevelToNext(currentLevel);
+      return `Level ${currentLevel} (${formatNumber(remainingXP)} / ${formatNumber(xpToNextLevel)} XP)`;
     }
 
     function formatPlaytime(seconds) {
-      if (!seconds) return '0 hrs';
+      if (!seconds) return '0s';
       const hrs = Math.floor(seconds / 3600);
       const mins = Math.floor((seconds % 3600) / 60);
       if (hrs >= 24) {
         const days = (hrs / 24).toFixed(1);
-        return `${hrs} hrs (${days} days)`;
+        return `${hrs}h ${mins}m (${days} days)`;
       }
-      return `${hrs} hrs ${mins} mins`;
+      return `${hrs}h ${mins}m`;
     }
+
+    const FARMING_BRACKET_NAMES = {
+      '-1': 'Participated',
+      '0': 'Bronze',
+      '1': 'Silver',
+      '2': 'Gold',
+      '3': 'Platinum',
+      '4': 'Diamond'
+    };
 
     function renderOverview() {
       const container = document.getElementById('overviewTab');
@@ -510,7 +594,10 @@
       const cuteName = profileData?.cuteName || profileData?.cute_name || 'N/A';
       const gameMode = profileData?.gameMode || profileData?.game_mode || 'Normal';
       const profileIdStr = profileData?.id || profileData?.profile_id || currentProfileId;
-      const fairySouls = member.fairies ? Object.keys(member.fairies).length : (member.fairyExchanges || 0);
+      const fairySouls = Array.isArray(member.fairies) ? member.fairies.length : (member.fairyExchanges || 0);
+      const visitedZonesCount = Array.isArray(member.visitedZones) ? member.visitedZones.length : 0;
+      const memberLevel = member.level ?? 'N/A';
+      const memberExp = member.exp ?? 'N/A';
 
       container.innerHTML = `
         <div class="cards-grid">
@@ -521,6 +608,7 @@
             </div>
             <div class="data-item"><span class="data-label">Username</span><span class="data-value string">${playerData.name || playerData.username || 'N/A'}</span></div>
             <div class="data-item"><span class="data-label">Selected Rank</span><span class="data-value string">${playerData.selectedRank || 'DEFAULT'}</span></div>
+            <div class="data-item"><span class="data-label">Network Level</span><span class="data-value string" style="color:var(--accent-color); font-weight:700;">${getNetworkLevelProgress(playerData.networkExp)}</span></div>
             <div class="data-item"><span class="data-label">Network Exp</span><span class="data-value number">${formatNumber(playerData.networkExp || 0)}</span></div>
             <div class="data-item"><span class="data-label">Network Coins</span><span class="data-value number">${formatNumber(playerData.networkCoins || 0)}</span></div>
             <div class="data-item"><span class="data-label">UUID</span><span class="data-value string" style="font-size:0.75rem;">${playerData.uuid || 'N/A'}</span></div>
@@ -532,10 +620,13 @@
               <span class="card-title">Economy &amp; Profile</span>
             </div>
             <div class="data-item"><span class="data-label">Profile Cute Name</span><span class="data-value string" style="color:var(--accent-color); font-weight:700;">${cuteName}</span></div>
+            <div class="data-item"><span class="data-label">SkyBlock Level</span><span class="data-value string" style="color:#16a34a; font-weight:700;">Level ${memberLevel} (${formatNumber(memberExp)} XP)</span></div>
             <div class="data-item"><span class="data-label">Coin Purse</span><span class="data-value number">${formatNumber(purseCoins)} coins</span></div>
             <div class="data-item"><span class="data-label">Bank Balance</span><span class="data-value number">${formatNumber(bankBalance)} coins</span></div>
             <div class="data-item"><span class="data-label">Gamemode</span><span class="data-value string">${gameMode}</span></div>
-            <div class="data-item"><span class="data-label">Fairy Souls</span><span class="data-value number">${formatNumber(fairySouls)}</span></div>
+            <div class="data-item"><span class="data-label">Fairy Souls Found</span><span class="data-value number">${fairySouls}</span></div>
+            <div class="data-item"><span class="data-label">Visited Zones</span><span class="data-value number">${visitedZonesCount}</span></div>
+            <div class="data-item"><span class="data-label">Pinned Quest</span><span class="data-value string">${member.pinnedQuest ? member.pinnedQuest.replace(/_/g, ' ') : 'None'}</span></div>
             <div class="data-item"><span class="data-label">Profile ID</span><span class="data-value string" style="font-size:0.75rem;">${profileIdStr || 'N/A'}</span></div>
           </div>
 
@@ -547,6 +638,8 @@
             <div class="data-item"><span class="data-label">First Login</span><span class="data-value date">${formatDate(playerData.firstLogin)}</span></div>
             <div class="data-item"><span class="data-label">Last Login</span><span class="data-value date">${formatDate(playerData.lastLogin)}</span></div>
             <div class="data-item"><span class="data-label">Last Server</span><span class="data-value string">${playerData.lastServer || 'HUB'}</span></div>
+            <div class="data-item"><span class="data-label">Total Playtime</span><span class="data-value string">${formatPlaytime(playerData.totalPlaytime)}</span></div>
+            <div class="data-item"><span class="data-label">Profile Created</span><span class="data-value date">${profileData?.createdAt ? formatDate(profileData.createdAt * 1000) : 'N/A'}</span></div>
           </div>
         </div>
       `;
@@ -558,13 +651,13 @@
       const skillsObj = member.skills || {};
 
       const skillTypes = [
-        { key: 'combat', fallbackKey: 'experience_skill_combat', name: 'Combat', icon: 'sports_martial_arts' },
-        { key: 'mining', fallbackKey: 'experience_skill_mining', name: 'Mining', icon: 'construction' },
         { key: 'farming', fallbackKey: 'experience_skill_farming', name: 'Farming', icon: 'agriculture' },
+        { key: 'mining', fallbackKey: 'experience_skill_mining', name: 'Mining', icon: 'construction' },
+        { key: 'combat', fallbackKey: 'experience_skill_combat', name: 'Combat', icon: 'sports_martial_arts' },
         { key: 'foraging', fallbackKey: 'experience_skill_foraging', name: 'Foraging', icon: 'park' },
+        { key: 'fishing', fallbackKey: 'experience_skill_fishing', name: 'Fishing', icon: 'phishing' },
         { key: 'enchanting', fallbackKey: 'experience_skill_enchanting', name: 'Enchanting', icon: 'auto_fix_high' },
         { key: 'alchemy', fallbackKey: 'experience_skill_alchemy', name: 'Alchemy', icon: 'science' },
-        { key: 'fishing', fallbackKey: 'experience_skill_fishing', name: 'Fishing', icon: 'phishing' },
         { key: 'taming', fallbackKey: 'experience_skill_taming', name: 'Taming', icon: 'pets' },
         { key: 'carpentry', fallbackKey: 'experience_skill_carpentry', name: 'Carpentry', icon: 'handyman' },
         { key: 'runecrafting', fallbackKey: 'experience_skill_runecrafting', name: 'Runecrafting', icon: 'blur_on' },
@@ -576,22 +669,29 @@
 
       const cardsHtml = skillTypes.map(s => {
         const xp = typeof skillsObj[s.key] === 'number' ? skillsObj[s.key] : (member[s.fallbackKey] || 0);
-        const { level, progress } = getSkillLevel(xp);
+        const calc = getSkillLevelFromXp(s.key, xp);
+        const level = calc?.level ?? 0;
+        const cap = calc?.cap ?? 50;
+        const progress = calc?.progressPercent ?? 0;
+
         if (s.key !== 'runecrafting' && s.key !== 'social' && s.key !== 'carpentry') {
           totalLevels += level;
           countedSkills++;
         }
 
+        const isMax = level >= cap;
+        const subtext = isMax ? 'MAX LEVEL REACHED' : `${formatNumber(calc?.xpIntoLevel || 0)} / ${formatNumber(calc?.xpForNextLevel || 0)} XP (${progress}%)`;
+
         return `
           <div class="skill-card">
             <div class="skill-header">
               <span class="skill-name"><span class="material-icons" style="font-size:1rem; vertical-align:middle; color:var(--accent-color);">${s.icon}</span> ${s.name}</span>
-              <span class="skill-lvl">Lvl ${level}</span>
+              <span class="skill-lvl" style="${isMax ? 'color:#16a34a;' : ''}">Lv ${level} / ${cap}</span>
             </div>
             <div class="skill-bar-bg">
-              <div class="skill-bar-fill" style="width: ${progress}%;"></div>
+              <div class="skill-bar-fill" style="width: ${progress}%; ${isMax ? 'background:#16a34a;' : ''}"></div>
             </div>
-            <div class="skill-xp-text">${formatNumber(xp)} Total XP &bull; ${progress}% to Lvl ${level + 1}</div>
+            <div class="skill-xp-text">${formatNumber(xp)} Total XP &bull; ${subtext}</div>
           </div>
         `;
       }).join('');
@@ -600,8 +700,11 @@
 
       container.innerHTML = `
         <div style="margin-bottom: 16px; padding: 12px 18px; background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-weight: 700; color: var(--text-bright);">Skill Average (Non-Cosmetic):</span>
-          <span style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 700; color: var(--accent-color);">${skillAvg}</span>
+          <div>
+            <span style="font-weight: 700; color: var(--text-bright);">True Skill Average:</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 8px;">(Farming, Mining, Combat, Foraging, Fishing, Enchanting, Alchemy, Taming)</span>
+          </div>
+          <span style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; color: var(--accent-color);">${skillAvg}</span>
         </div>
         <div class="cards-grid">${cardsHtml}</div>
       `;
@@ -650,14 +753,14 @@
         </div>
 
         <div class="card" style="margin-top: 16px;">
-          <div class="card-header"><span class="material-icons">task_alt</span><span class="card-title">Active Quest &amp; Claimed Rewards</span></div>
+          <div class="card-header"><span class="material-icons">task_alt</span><span class="card-title">Active Quest &amp; Rewards</span></div>
           <div class="data-item"><span class="data-label">Auto Slayer</span><span class="data-value boolean">${slayerData.autoSlayer ? 'Enabled' : 'Disabled'}</span></div>
-          <div class="data-item"><span class="data-label">Active Quest Type</span><span class="data-value string">${quest.type || 'None'} ${quest.tier ? `(Tier ${quest.tier})` : ''}</span></div>
+          <div class="data-item"><span class="data-label">Active Quest</span><span class="data-value string">${quest.type ? `${quest.type.toUpperCase()} (Tier ${quest.tier || 1})` : 'None active'}</span></div>
           <div class="data-item"><span class="data-label">Quest Progress</span><span class="data-value number">${formatNumber(quest.currentExperience || 0)} / ${formatNumber(quest.targetExperience || 0)} XP</span></div>
-          <div style="margin-top: 12px;">
-            <div class="data-label" style="margin-bottom: 6px;">Claimed Level Rewards (${claimedTiers.length}):</div>
+          <div style="margin-top: 14px;">
+            <div class="data-label" style="margin-bottom: 8px;">Claimed Level Rewards (${claimedTiers.length}):</div>
             <div style="display:flex; flex-wrap:wrap; gap:6px;">
-              ${claimedTiers.map(t => `<span class="profile-pill" style="font-size:0.75rem;">${t}</span>`).join('')}
+              ${claimedTiers.length > 0 ? claimedTiers.map(t => `<span class="profile-pill" style="font-size:0.75rem;">${t.replace(/_/g, ' ')}</span>`).join('') : '<span style="color:var(--text-muted); font-size:0.85rem;">None claimed</span>'}
             </div>
           </div>
         </div>
@@ -676,7 +779,8 @@
       const topKills = Object.entries(kills).sort((a, b) => (b[1] || 0) - (a[1] || 0)).slice(0, 10);
       const topDeaths = Object.entries(deaths).sort((a, b) => (b[1] || 0) - (a[1] || 0)).slice(0, 10);
 
-      const bossKillCounts = Object.entries(member.bossKillCounts || {}).sort((a, b) => (b[1] || 0) - (a[1] || 0));
+      const bossDamages = Object.entries(member.maxTotalDamageToBosses || {}).sort((a, b) => (b[1] || 0) - (a[1] || 0)).slice(0, 8);
+      const bossKills = Object.entries(member.bossKillCounts || {}).sort((a, b) => (b[1] || 0) - (a[1] || 0)).slice(0, 8);
 
       container.innerHTML = `
         <div class="cards-grid">
@@ -689,15 +793,15 @@
           </div>
 
           <div class="card">
-            <div class="card-header"><span class="material-icons" style="color:#8b5cf6;">military_tech</span><span class="card-title">Boss Damage &amp; Summons</span></div>
-            <div class="data-item"><span class="data-label">Summoning Eyes Placed</span><span class="data-value number">${formatNumber(member.summoningEyeContribution?.total || 0)}</span></div>
-            <div class="data-item"><span class="data-label">Zealots Contribution</span><span class="data-value number">${formatNumber(member.zealotsContribution || 0)}</span></div>
+            <div class="card-header"><span class="material-icons" style="color:#8b5cf6;">military_tech</span><span class="card-title">End &amp; Dragon Stats</span></div>
+            <div class="data-item"><span class="data-label">Zealots Contribution</span><span class="data-value number">${formatNumber(member.zealotsContribution?.['trpixel:end_stone_protector'] || Object.values(member.zealotsContribution || {})[0] || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Summoning Eyes Placed</span><span class="data-value number">${formatNumber(Object.values(member.summoningEyeContribution || {}).reduce((a, b) => a + (b || 0), 0))}</span></div>
           </div>
         </div>
 
         <div class="cards-grid" style="margin-top: 16px;">
           <div class="card">
-            <div class="card-header"><span class="material-icons">colorize</span><span class="card-title">Top Kills</span></div>
+            <div class="card-header"><span class="material-icons">colorize</span><span class="card-title">Top Mob Kills</span></div>
             ${topKills.map(([mob, count]) => `<div class="data-item"><span class="data-label">${mob.replace(/_/g, ' ')}</span><span class="data-value number">${formatNumber(count)}</span></div>`).join('')}
           </div>
 
@@ -706,6 +810,20 @@
             ${topDeaths.map(([cause, count]) => `<div class="data-item"><span class="data-label">${cause.replace(/_/g, ' ')}</span><span class="data-value number">${formatNumber(count)}</span></div>`).join('')}
           </div>
         </div>
+
+        ${bossDamages.length > 0 ? `
+          <div class="card" style="margin-top: 16px;">
+            <div class="card-header"><span class="material-icons" style="color:#f59e0b;">shield</span><span class="card-title">Highest Damage To Bosses</span></div>
+            <div class="cards-grid">
+              ${bossDamages.map(([boss, dmg]) => `
+                <div class="data-item" style="padding: 8px 12px; background: #f8fafc; border-radius: var(--radius-sm);">
+                  <span class="data-label">${boss.replace(/^trpixel:/i, '').replace(/_/g, ' ')}</span>
+                  <span class="data-value number">${formatNumber(Math.floor(dmg))}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
       `;
     }
 
@@ -714,27 +832,60 @@
       const member = profileData?.members?.[selectedMemberId] || {};
       const data = member.farmingContestData || {};
       const personalBests = data.personalBests || {};
+      const highestBrackets = data.highestBrackets || {};
+      const bracketHits = data.bracketHits || {};
+
+      let diamond = 0, platinum = 0, gold = 0, silver = 0, bronze = 0, participated = 0;
+      Object.values(bracketHits).forEach(hits => {
+        if (Array.isArray(hits)) {
+          hits.forEach(b => {
+            if (b === 4) diamond++;
+            else if (b === 3) platinum++;
+            else if (b === 2) gold++;
+            else if (b === 1) silver++;
+            else if (b === 0) bronze++;
+            else participated++;
+          });
+        }
+      });
+
+      const totalContests = diamond + platinum + gold + silver + bronze + participated;
 
       container.innerHTML = `
         <div class="cards-grid">
           <div class="card">
-            <div class="card-header"><span class="material-icons" style="color:#16a34a;">military_tech</span><span class="card-title">Contest Medals &amp; Pelts</span></div>
-            <div class="data-item"><span class="data-label">Collected Pelts</span><span class="data-value number">${formatNumber(data.pelts || 0)}</span></div>
-            <div class="data-item"><span class="data-label">Contests Participated</span><span class="data-value number">${Object.keys(data.bracketHits || {}).length}</span></div>
+            <div class="card-header"><span class="material-icons" style="color:#16a34a;">military_tech</span><span class="card-title">Jacob's Contest Medals</span></div>
+            <div class="data-item"><span class="data-label">Gold Medals</span><span class="data-value number" style="color:#eab308; font-weight:700;">${gold}</span></div>
+            <div class="data-item"><span class="data-label">Silver Medals</span><span class="data-value number" style="color:#94a3b8; font-weight:700;">${silver}</span></div>
+            <div class="data-item"><span class="data-label">Bronze Medals</span><span class="data-value number" style="color:#b45309; font-weight:700;">${bronze}</span></div>
+            <div class="data-item"><span class="data-label">Diamond / Platinum</span><span class="data-value number">${diamond + platinum}</span></div>
+            <div class="data-item"><span class="data-label">Total Participations</span><span class="data-value number">${totalContests}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#16a34a;">eco</span><span class="card-title">Highest Bracket Per Crop</span></div>
+            ${Object.keys(highestBrackets).length > 0 ? Object.entries(highestBrackets).map(([crop, bracket]) => `
+              <div class="data-item">
+                <span class="data-label">${crop.replace(/_/g, ' ')}</span>
+                <span class="data-value string" style="color:var(--accent-color); font-weight:600;">${FARMING_BRACKET_NAMES[String(bracket)] || bracket}</span>
+              </div>
+            `).join('') : '<p style="color:var(--text-muted); font-size:0.85rem;">No contest entries recorded yet.</p>'}
           </div>
         </div>
 
-        <div class="card" style="margin-top: 16px;">
-          <div class="card-header"><span class="material-icons">eco</span><span class="card-title">Personal Crop Bests in Contests</span></div>
-          <div class="cards-grid">
-            ${Object.entries(personalBests).map(([crop, amt]) => `
-              <div class="data-item" style="padding: 8px 12px; background: #f8fafc; border-radius: var(--radius-sm);">
-                <span class="data-label">${crop.replace(/_/g, ' ')}</span>
-                <span class="data-value number">${formatNumber(amt)}</span>
-              </div>
-            `).join('')}
+        ${Object.keys(personalBests).length > 0 ? `
+          <div class="card" style="margin-top: 16px;">
+            <div class="card-header"><span class="material-icons">grass</span><span class="card-title">Personal Crop Bests in Contests</span></div>
+            <div class="cards-grid">
+              ${Object.entries(personalBests).map(([crop, amt]) => `
+                <div class="data-item" style="padding: 8px 12px; background: #f8fafc; border-radius: var(--radius-sm);">
+                  <span class="data-label">${crop.replace(/_/g, ' ')}</span>
+                  <span class="data-value number">${formatNumber(amt)}</span>
+                </div>
+              `).join('')}
+            </div>
           </div>
-        </div>
+        ` : ''}
       `;
     }
 
@@ -756,12 +907,12 @@
 
       container.innerHTML = `
         <div class="card">
-          <div class="card-header"><span class="material-icons" style="color:#0284c7;">precision_manufacturing</span><span class="card-title">Crafted Minion Tiers (${craftedMinions.length} total tiers crafted)</span></div>
-          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:16px;">Highest unlocked tier per minion generator:</p>
+          <div class="card-header"><span class="material-icons" style="color:#0284c7;">precision_manufacturing</span><span class="card-title">Crafted Minion Tiers (${craftedMinions.length} total crafted entries)</span></div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:16px;">Unique generator types crafted and highest unlocked tier:</p>
           <div class="cards-grid">
             ${entries.map(([type, maxTier]) => `
               <div class="data-item" style="padding: 10px 14px; background: #f8fafc; border-radius: var(--radius-sm);">
-                <span class="data-label" style="font-weight: 600;">${type}</span>
+                <span class="data-label" style="font-weight: 600; text-transform: capitalize;">${type}</span>
                 <span class="data-value string" style="color: var(--accent-color); font-weight: 700;">Tier ${maxTier}</span>
               </div>
             `).join('')}
@@ -788,7 +939,7 @@
             const userPart = memberContr[item] || 0;
             return `
               <div class="card" style="padding:14px 18px;">
-                <div style="font-weight: 700; color: var(--text-bright); margin-bottom: 6px;">${item.replace(/_/g, ' ')}</div>
+                <div style="font-weight: 700; color: var(--text-bright); margin-bottom: 6px; text-transform: capitalize;">${item.replace(/_/g, ' ').toLowerCase()}</div>
                 <div class="data-item" style="border:none; padding: 2px 0;">
                   <span class="data-label">Profile Total</span>
                   <span class="data-value number">${formatNumber(total)}</span>
@@ -796,7 +947,7 @@
                 ${userPart > 0 ? `
                   <div class="data-item" style="border:none; padding: 2px 0;">
                     <span class="data-label">Your Contribution</span>
-                    <span class="data-value string" style="color: var(--accent-color); font-size: 0.8rem;">${formatNumber(userPart)}</span>
+                    <span class="data-value string" style="color: var(--accent-color); font-size: 0.8rem; font-weight:600;">${formatNumber(userPart)}</span>
                   </div>
                 ` : ''}
               </div>
@@ -811,7 +962,12 @@
       const member = profileData?.members?.[selectedMemberId] || {};
       const reality = member.realityShardData || {};
       const exp = member.experimentationData || {};
+      const relationships = member.relationshipData?.experiences || {};
       const stones = member.unlockedPowerStones || [];
+      const quests = member.quests || {};
+
+      const completedQuests = Object.values(quests).filter(q => q?.status === 'COMPLETE').length;
+      const activeQuests = Object.entries(quests).filter(([, q]) => q?.status === 'ACTIVE');
 
       container.innerHTML = `
         <div class="cards-grid">
@@ -822,17 +978,42 @@
           </div>
 
           <div class="card">
-            <div class="card-header"><span class="material-icons" style="color:#eab308;">bolt</span><span class="card-title">Power Stones &amp; Shiny Events</span></div>
-            <div class="data-item"><span class="data-label">Power Stones Unlocked</span><span class="data-value number">${stones.length}</span></div>
+            <div class="card-header"><span class="material-icons" style="color:#eab308;">bolt</span><span class="card-title">Power Stones &amp; Events</span></div>
+            <div class="data-item"><span class="data-label">Power Stones Unlocked</span><span class="data-value string">${stones.length > 0 ? stones.join(', ') : 'None'}</span></div>
             <div class="data-item"><span class="data-label">Shiny Pigs Captured</span><span class="data-value number">${formatNumber(member.shinyPigsCaptured || 0)}</span></div>
             <div class="data-item"><span class="data-label">Shiny Orbs Used</span><span class="data-value number">${formatNumber(member.shinyOrbsUsed || 0)}</span></div>
           </div>
 
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#a855f7;">auto_fix_normal</span><span class="card-title">Experimentation Table</span></div>
-            <div class="data-item"><span class="data-label">Superpairs Pairs Found</span><span class="data-value number">${formatNumber(exp.pairsFound || 0)}</span></div>
-            <div class="data-item"><span class="data-label">Chronomatron Best</span><span class="data-value number">${formatNumber(exp.chronomatronHighestRound || 0)}</span></div>
-            <div class="data-item"><span class="data-label">Ultrasequencer Best</span><span class="data-value number">${formatNumber(exp.ultrasequencerHighestRound || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Superpairs Count</span><span class="data-value number">${formatNumber(exp.superpairs?.value || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Superpair Resets</span><span class="data-value number">${formatNumber(exp.superpairResets?.value || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Total Superpairs</span><span class="data-value number">${formatNumber(exp.totalSuperpairs || 0)}</span></div>
+          </div>
+        </div>
+
+        <div class="cards-grid" style="margin-top: 16px;">
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#10b981;">task</span><span class="card-title">Quests Summary</span></div>
+            <div class="data-item"><span class="data-label">Total Quests Tracked</span><span class="data-value number">${Object.keys(quests).length}</span></div>
+            <div class="data-item"><span class="data-label">Completed Quests</span><span class="data-value number" style="color:#16a34a; font-weight:700;">${completedQuests}</span></div>
+            <div class="data-item"><span class="data-label">Active Quests</span><span class="data-value number">${activeQuests.length}</span></div>
+            ${activeQuests.length > 0 ? `
+              <div style="margin-top: 8px;">
+                <div class="data-label" style="margin-bottom: 4px;">Active:</div>
+                ${activeQuests.map(([qName]) => `<div style="font-size:0.83rem; color:var(--text-bright);">&bull; ${qName.replace(/_/g, ' ')}</div>`).join('')}
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#ec4899;">favorite</span><span class="card-title">NPC Relationship Levels</span></div>
+            ${Object.keys(relationships).length > 0 ? Object.entries(relationships).map(([npc, xp]) => `
+              <div class="data-item">
+                <span class="data-label" style="text-transform: capitalize;">${npc.replace(/_/g, ' ')}</span>
+                <span class="data-value number">${formatNumber(xp)} XP</span>
+              </div>
+            `).join('') : '<p style="color:var(--text-muted); font-size:0.85rem;">No relationship data found.</p>'}
           </div>
         </div>
       `;
@@ -850,6 +1031,7 @@
             <div class="data-item"><span class="data-label">Language</span><span class="data-value string">${playerData.language || 'english'}</span></div>
             <div class="data-item"><span class="data-label">Private Messages</span><span class="data-value string">${playerData.privateMessages || 'ALL'}</span></div>
             <div class="data-item"><span class="data-label">Friend Requests</span><span class="data-value string">${playerData.friendRequests || 'ALL'}</span></div>
+            <div class="data-item"><span class="data-label">Chat Hidden in Hubs</span><span class="data-value boolean">${playerData.isChatHiddenInHubs ? 'Yes' : 'No'}</span></div>
           </div>
 
           <div class="card">
@@ -861,7 +1043,7 @@
 
           <div class="card">
             <div class="card-header"><span class="material-icons">category</span><span class="card-title">Cosmetics &amp; Collectibles</span></div>
-            <div class="data-item"><span class="data-label">Unlocked Items</span><span class="data-value number">${playerData.unlockedCollectables ? playerData.unlockedCollectables.length : 0}</span></div>
+            <div class="data-item"><span class="data-label">Unlocked Cosmetics</span><span class="data-value number">${playerData.unlockedCollectables ? playerData.unlockedCollectables.length : 0}</span></div>
           </div>
         </div>
       `;
@@ -875,8 +1057,14 @@
         <div class="cards-grid">
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#ea580c;">timer</span><span class="card-title">SkyBlock Profile Playtime</span></div>
-            <div class="data-item"><span class="data-label">Active Time on Profile</span><span class="data-value string" style="color:var(--accent-color); font-weight:700;">${formatPlaytime(memberPlaytimeSec)}</span></div>
+            <div class="data-item"><span class="data-label">Active Time on This Profile</span><span class="data-value string" style="color:var(--accent-color); font-weight:700;">${formatPlaytime(memberPlaytimeSec)}</span></div>
             <div class="data-item"><span class="data-label">Raw Seconds</span><span class="data-value number">${formatNumber(memberPlaytimeSec)} sec</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#0284c7;">schedule</span><span class="card-title">Total Network Playtime</span></div>
+            <div class="data-item"><span class="data-label">All Server Playtime</span><span class="data-value string" style="color:#0284c7; font-weight:700;">${formatPlaytime(playerData?.totalPlaytime || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Raw Seconds</span><span class="data-value number">${formatNumber(playerData?.totalPlaytime || 0)} sec</span></div>
           </div>
         </div>
       `;
