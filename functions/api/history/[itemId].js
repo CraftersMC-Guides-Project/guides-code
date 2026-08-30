@@ -1,12 +1,19 @@
 export async function onRequest(context) {
   const { request, env, params } = context;
   try {
-    const apiKey = env?.CMCG_API_KEY;
+    const apiKey = env?.CMCG_API_KEY || env?.CMCG_BAZAAR_KEY || env?.CMC_API_KEY;
     const itemId = encodeURIComponent(String(params?.itemId || "").trim().toLowerCase());
 
     if (!itemId) {
       return new Response(JSON.stringify({ ok: false, error: "Missing itemId parameter" }), {
         status: 400,
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+      });
+    }
+
+    if (!apiKey) {
+      return new Response(JSON.stringify({ ok: false, error: "Missing CMCG_API_KEY environment variable in Cloudflare Pages settings" }), {
+        status: 500,
         headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
       });
     }

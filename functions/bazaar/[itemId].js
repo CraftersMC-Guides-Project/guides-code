@@ -1,12 +1,19 @@
 export async function onRequest(context) {
   const { request, env, params } = context;
   try {
-    const apiKey = env?.CRAFTERS_API_KEY || env?.CMC_API_KEY || env?.CMC_API_KEY_BAZAAR || 'e89b4eb6-1776-4fb5-9a25-812c2ce1f8d8';
+    const apiKey = env?.CRAFTERS_API_KEY || env?.CMC_API_KEY || env?.CMC_API_KEY_BAZAAR || null;
     const itemId = encodeURIComponent(String(params?.itemId || "").trim().toLowerCase());
 
     if (!itemId) {
       return new Response(JSON.stringify({ ok: false, error: "Missing itemId" }), {
         status: 400,
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+      });
+    }
+
+    if (!apiKey) {
+      return new Response(JSON.stringify({ ok: false, error: "Missing CRAFTERS_API_KEY environment variable in Cloudflare Pages settings" }), {
+        status: 500,
         headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
       });
     }

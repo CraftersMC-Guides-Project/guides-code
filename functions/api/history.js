@@ -1,6 +1,12 @@
 export async function onRequest({ request, env }) {
   try {
-    const apiKey = env?.CMCG_API_KEY || env?.CMCG_BAZAAR_KEY || env?.CMC_API_KEY || 'wdsRZrRI2irKRaA9';
+    const apiKey = env?.CMCG_API_KEY || env?.CMCG_BAZAAR_KEY || env?.CMC_API_KEY || null;
+    if (!apiKey) {
+      return new Response(JSON.stringify({ ok: false, error: "Missing CMCG_API_KEY environment variable in Cloudflare Pages settings" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+      });
+    }
     const headers = {
       'Accept': 'application/json',
       'User-Agent': 'CraftersMC-Guides/1.0'
