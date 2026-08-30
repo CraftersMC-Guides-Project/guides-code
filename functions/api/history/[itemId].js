@@ -27,11 +27,8 @@ export async function onRequest(context) {
       headers['X-API-Key'] = apiKey;
     }
 
-    // Try primary history endpoint
-    let upstreamRes = await fetch(`https://bazaar.craftersmcguides.workers.dev/api/items/${itemId}/history`, { headers });
-    if (!upstreamRes.ok && upstreamRes.status === 404) {
-      upstreamRes = await fetch(`https://bazaar.craftersmcguides.workers.dev/history/${itemId}`, { headers });
-    }
+    // Fetch single item history from valid endpoint
+    const upstreamRes = await fetch(`https://bazaar.craftersmcguides.workers.dev/api/items/${itemId}/history`, { headers });
 
     return new Response(upstreamRes.body, {
       status: upstreamRes.status,
