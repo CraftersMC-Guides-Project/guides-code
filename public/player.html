@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>CraftersMC Player &amp; Profile Viewer — CraftersMC Guides</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Search and inspect live CraftersMC player profiles, SkyBlock stats, skill progression, slayers, minions, collections, and playtime.">
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png">
+  <link rel="icon" href="assets/cmc-guides.png" type="image/png">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="better-api-docs/style.css">
+  <link rel="stylesheet" href="css/player.css">
+
+  <!-- Scripts -->
+  <script src="js/api-proxy-client.js"></script>
+  <script src="better-api-docs/app.js" defer></script>
+</head>
+
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="top-header">
+    <div class="header-left">
+      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
+        <span class="material-icons" style="font-size:1.25rem;">menu</span>
+      </button>
+      <a href="index.html" class="header-brand">
+        <img src="assets/cmc-guides.png" alt="CraftersMC Logo">
+        <div class="brand-text">
+          <span class="brand-title">CraftersMC Guides</span>
+          <span class="version-badge">Player Viewer</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Search Box -->
+    <div class="search-box">
+      <span class="material-icons search-icon">search</span>
+      <input type="text" id="search-input" placeholder="Search guides, tools, API...">
+      <span class="search-kbd-shortcut">/</span>
+    </div>
+
+    <!-- Header Utility Links -->
+    <div class="header-actions">
+      <a href="better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
+      <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
+    </div>
+  </header>
+
+  <!-- Application Layout -->
+  <div class="app-layout">
+
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Getting Started</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="index.html#overview"><span class="material-icons nav-icon">home</span> <span>Overview</span></a></li>
+          <li class="sidebar-nav-item"><a href="index.html#section-guides"><span class="material-icons nav-icon">menu_book</span> <span>Progression Guides</span></a></li>
+          <li class="sidebar-nav-item"><a href="index.html#section-tools"><span class="material-icons nav-icon">build</span> <span>Live Tools</span></a></li>
+          <li class="sidebar-nav-item"><a href="index.html#section-api"><span class="material-icons nav-icon">code</span> <span>Developer &amp; API</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Live Tools &amp; Trackers</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item active"><a href="player.html" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons nav-icon" style="color: var(--accent-color);">person_search</span> <span>Player Viewer</span></a></li>
+          <li class="sidebar-nav-item"><a href="skycalendar.html"><span class="material-icons nav-icon">event</span> <span>SkyCalendar (Events)</span></a></li>
+          <li class="sidebar-nav-item"><a href="rank-sellers.html"><span class="material-icons nav-icon">card_giftcard</span> <span>Rank &amp; Gems Sellers</span></a></li>
+          <li class="sidebar-nav-item"><a href="leaderboards.html"><span class="material-icons nav-icon">leaderboard</span> <span>Leaderboards</span></a></li>
+          <li class="sidebar-nav-item"><a href="texture-packs.html"><span class="material-icons nav-icon">palette</span> <span>Texture Packs</span></a></li>
+          <li class="sidebar-nav-item"><a href="tools.html"><span class="material-icons nav-icon">calculate</span> <span>Calculators</span></a></li>
+          <li class="sidebar-nav-item"><a href="feather-bot/index.html"><span class="material-icons nav-icon">smart_toy</span> <span>Feather Bot Guide</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Progression Guides</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="guide/starter-guide.html"><span class="material-icons nav-icon">play_circle</span> <span>Starter Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/intermediate-guide.html"><span class="material-icons nav-icon">trending_up</span> <span>Intermediate Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/intermediate-guide2.html"><span class="material-icons nav-icon">shield</span> <span>Slayers Edition</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/advanced-guide.html"><span class="material-icons nav-icon">military_tech</span> <span>Advanced Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/accessories-guide.html"><span class="material-icons nav-icon">auto_awesome</span> <span>Accessories &amp; Reforges</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/bazaar-guide.html"><span class="material-icons nav-icon">storefront</span> <span>Bazaar Trading</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/queries.html"><span class="material-icons nav-icon">help_outline</span> <span>Common Queries &amp; FAQ</span></a></li>
+          <li class="sidebar-nav-item"><a href="unicode.html"><span class="material-icons nav-icon">format_shapes</span> <span>Unicode &amp; Formatting</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Developer &amp; API</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="better-api-docs/index.html"><span class="material-icons nav-icon">code</span> <span>REST API v1 Reference</span></a></li>
+          <li class="sidebar-nav-item"><a href="better-api-docs/index.html#section-nbt-decoding"><span class="material-icons nav-icon">memory</span> <span>15 NBT Storage Blobs</span></a></li>
+          <li class="sidebar-nav-item"><a href="better-api-docs/index.html#section-item-ids"><span class="material-icons nav-icon">list_alt</span> <span>Numerical Item IDs (1,933)</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">Community &amp; Source</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="https://craftersmc.net/" target="_blank"><span class="material-icons nav-icon">language</span> <span>Server Website</span></a></li>
+          <li class="sidebar-nav-item"><a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank"><span class="material-icons nav-icon">code</span> <span>GitHub Repository</span></a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- Section Header -->
+      <section class="doc-section">
+        <div class="section-header">
+          <h1>CraftersMC Player &amp; Profile Viewer</h1>
+          <p>Inspect real-time player data, SkyBlock profiles, skills, slayer tiers, collections, and playtime via the CraftersMC REST API.</p>
+        </div>
+
+        <!-- Status Message Alert -->
+        <div id="statusAlert" class="player-status-alert">
+          <span class="material-icons" id="statusIcon" style="font-size: 1.15rem;">info</span>
+          <span id="statusText"></span>
+        </div>
+
+        <!-- Search Form Card -->
+        <div class="player-search-card">
+          <div class="search-form-grid">
+            <div class="input-field-group">
+              <label class="input-label" for="username"><span class="material-icons" style="font-size: 0.95rem;">person</span> Minecraft Username</label>
+              <input type="text" id="username" class="player-input" placeholder="Enter username (e.g. Tekkxz, NetworkPg)" autocomplete="off">
+            </div>
+            <div class="input-field-group">
+              <label class="input-label" for="profileId"><span class="material-icons" style="font-size: 0.95rem;">badge</span> Profile ID (Optional)</label>
+              <input type="text" id="profileId" class="player-input" placeholder="Profile ID or cute name" autocomplete="off">
+            </div>
+            <button type="button" class="btn-fetch" onclick="fetchPlayerData()">
+              <span class="material-icons" style="font-size: 1.1rem;">search</span> Fetch Player
+            </button>
+            <button type="button" class="btn-secondary-action" onclick="fetchRandomPlayer()" title="Test with sample player">
+              <span class="material-icons" style="font-size: 1.1rem;">shuffle</span> Example
+            </button>
+            <button type="button" class="btn-secondary-action" onclick="clearData()">
+              <span class="material-icons" style="font-size: 1.1rem;">clear</span> Clear
+            </button>
+          </div>
+        </div>
+
+        <!-- Profile Selector Pills -->
+        <div id="profileSelector" class="profile-pill-container" style="display: none;">
+          <span class="profile-pill-title">SkyBlock Profiles:</span>
+          <div id="profilePills" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+        </div>
+
+        <!-- Co-op Member Selector Pills -->
+        <div id="memberSelector" class="profile-pill-container" style="display: none; background: #f8fafc;">
+          <span class="profile-pill-title">Co-op Members:</span>
+          <div id="memberPills" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+        </div>
+
+        <!-- Main Data Display Container -->
+        <div id="mainData" style="display: none;">
+
+          <!-- Tabs Navigation -->
+          <div class="player-tabs-bar">
+            <button class="player-tab-btn active" onclick="switchTab('overview')"><span class="material-icons" style="font-size: 1rem;">dashboard</span> Overview</button>
+            <button class="player-tab-btn" onclick="switchTab('player')"><span class="material-icons" style="font-size: 1rem;">badge</span> Player Stats</button>
+            <button class="player-tab-btn" onclick="switchTab('profile')"><span class="material-icons" style="font-size: 1rem;">account_balance</span> Profile Data</button>
+            <button class="player-tab-btn" onclick="switchTab('skills')"><span class="material-icons" style="font-size: 1rem;">auto_awesome</span> Skills</button>
+            <button class="player-tab-btn" onclick="switchTab('slayers')"><span class="material-icons" style="font-size: 1rem;">shield</span> Slayers</button>
+            <button class="player-tab-btn" onclick="switchTab('farming')"><span class="material-icons" style="font-size: 1rem;">agriculture</span> Farming</button>
+            <button class="player-tab-btn" onclick="switchTab('minions')"><span class="material-icons" style="font-size: 1rem;">precision_manufacturing</span> Minions</button>
+            <button class="player-tab-btn" onclick="switchTab('collections')"><span class="material-icons" style="font-size: 1rem;">inventory_2</span> Collections</button>
+            <button class="player-tab-btn" onclick="switchTab('playtime')"><span class="material-icons" style="font-size: 1rem;">schedule</span> Playtime</button>
+            <button class="player-tab-btn" onclick="switchTab('json')"><span class="material-icons" style="font-size: 1rem;">code</span> Raw JSON</button>
+          </div>
+
+          <!-- Tab Contents -->
+          <div id="overviewTab" class="tab-content active"></div>
+          <div id="playerTab" class="tab-content" style="display: none;"></div>
+          <div id="profileTab" class="tab-content" style="display: none;"></div>
+          <div id="skillsTab" class="tab-content" style="display: none;"></div>
+          <div id="slayersTab" class="tab-content" style="display: none;"></div>
+          <div id="farmingTab" class="tab-content" style="display: none;"></div>
+          <div id="minionsTab" class="tab-content" style="display: none;"></div>
+          <div id="collectionsTab" class="tab-content" style="display: none;"></div>
+          <div id="playtimeTab" class="tab-content" style="display: none;"></div>
+          <div id="jsonTab" class="tab-content" style="display: none;"></div>
+
+        </div>
+
+      </section>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
+        <div class="site-footer-right">
+          <a href="feather-bot/privacy-policy.html">Privacy Policy</a> &bull;
+          <a href="feather-bot/terms-and-conditions.html">Terms of Service</a> &bull;
+          <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+  <!-- Player Viewer Logic -->
+  <script>
+    const PROXY_BASE = 'https://proxy.craftersmcguides.workers.dev/v1';
+
+    let playerData = null;
+    let profileData = null;
+    let currentProfileId = '';
+    let selectedMemberId = '';
+
+    function showStatus(message, type = 'info') {
+      const alert = document.getElementById('statusAlert');
+      const text = document.getElementById('statusText');
+      const icon = document.getElementById('statusIcon');
+
+      alert.className = `player-status-alert ${type}`;
+      text.textContent = message;
+
+      if (type === 'error') icon.textContent = 'error_outline';
+      else if (type === 'success') icon.textContent = 'check_circle';
+      else icon.textContent = 'info';
+
+      alert.style.display = 'flex';
+    }
+
+    function hideStatus() {
+      document.getElementById('statusAlert').style.display = 'none';
+    }
+
+    function formatNumber(num) {
+      if (num === null || num === undefined) return '0';
+      if (typeof num === 'number') {
+        if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2) + 'B';
+        if (num >= 1_000_000) return (num / 1_000_000).toFixed(2) + 'M';
+        if (num >= 1_000) return (num / 1_000).toFixed(1) + 'K';
+        return num.toLocaleString();
+      }
+      return num;
+    }
+
+    function formatDate(val) {
+      if (!val) return 'N/A';
+      try {
+        const d = new Date(val);
+        return isNaN(d.getTime()) ? val : d.toLocaleString();
+      } catch {
+        return val;
+      }
+    }
+
+    async function fetchPlayerData() {
+      const usernameInput = document.getElementById('username');
+      const username = usernameInput.value.trim();
+      if (!username) {
+        showStatus('Please enter a Minecraft username.', 'error');
+        return;
+      }
+
+      showStatus(`Fetching player data for ${username}...`, 'info');
+      document.getElementById('mainData').style.display = 'none';
+
+      try {
+        const res = await fetch(`${PROXY_BASE}/player/${encodeURIComponent(username)}`);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: Player not found or API error`);
+        }
+        const data = await res.json();
+        playerData = data.player || data;
+
+        showStatus(`Loaded player data for ${playerData.name || playerData.username || username}`, 'success');
+
+        // Check for SkyBlock profiles
+        const profiles = playerData.stats?.skyBlock?.profiles;
+        if (profiles && Object.keys(profiles).length > 0) {
+          displayProfiles(profiles);
+          const firstProfileId = Object.keys(profiles)[0];
+          await fetchProfileData(firstProfileId);
+        } else {
+          document.getElementById('profileSelector').style.display = 'none';
+          document.getElementById('memberSelector').style.display = 'none';
+          displayAllData();
+        }
+      } catch (err) {
+        console.error('Fetch error:', err);
+        showStatus(`Error: ${err.message}`, 'error');
+      }
+    }
+
+    async function fetchProfileData(profileId) {
+      currentProfileId = profileId;
+      showStatus(`Fetching profile data (${profileId.substring(0, 8)}...)...`, 'info');
+
+      try {
+        const res = await fetch(`${PROXY_BASE}/skyblock/profile/${encodeURIComponent(profileId)}`);
+        if (res.ok) {
+          const data = await res.json();
+          profileData = data.profile || data;
+          showStatus(`Profile data loaded successfully!`, 'success');
+        } else {
+          profileData = null;
+        }
+      } catch (err) {
+        console.warn('Profile fetch error:', err);
+        profileData = null;
+      }
+
+      displayMemberSelector();
+      displayAllData();
+    }
+
+    function displayProfiles(profiles) {
+      const selector = document.getElementById('profileSelector');
+      const pillsContainer = document.getElementById('profilePills');
+      pillsContainer.innerHTML = '';
+
+      if (!profiles || Object.keys(profiles).length === 0) {
+        selector.style.display = 'none';
+        return;
+      }
+
+      selector.style.display = 'flex';
+
+      Object.entries(profiles).forEach(([profId, prof]) => {
+        const btn = document.createElement('button');
+        btn.className = `profile-pill ${profId === currentProfileId ? 'active' : ''}`;
+        btn.innerHTML = `<span class="material-icons" style="font-size:0.9rem;">badge</span> ${prof.cuteName || prof.cute_name || 'Profile'} (${profId.substring(0, 6)})`;
+        btn.onclick = () => {
+          document.querySelectorAll('.profile-pill').forEach(p => p.classList.remove('active'));
+          btn.classList.add('active');
+          fetchProfileData(profId);
+        };
+        pillsContainer.appendChild(btn);
+      });
+    }
+
+    function displayMemberSelector() {
+      const container = document.getElementById('memberSelector');
+      const pillsContainer = document.getElementById('memberPills');
+      pillsContainer.innerHTML = '';
+
+      if (!profileData?.members || Object.keys(profileData.members).length === 0) {
+        container.style.display = 'none';
+        return;
+      }
+
+      container.style.display = 'flex';
+
+      const members = Object.keys(profileData.members);
+      if (!selectedMemberId || !profileData.members[selectedMemberId]) {
+        selectedMemberId = members[0];
+      }
+
+      members.forEach((memUuid) => {
+        const btn = document.createElement('button');
+        btn.className = `profile-pill ${memUuid === selectedMemberId ? 'active' : ''}`;
+        
+        let label = memUuid.substring(0, 8);
+        if (playerData?.uuid && memUuid === playerData.uuid.replace(/-/g, '')) {
+          label = `${playerData.name || playerData.username || 'You'} (Owner)`;
+        }
+
+        btn.innerHTML = `<span class="material-icons" style="font-size:0.9rem;">person</span> ${label}`;
+        btn.onclick = () => {
+          selectedMemberId = memUuid;
+          displayMemberSelector();
+          displayAllData();
+        };
+        pillsContainer.appendChild(btn);
+      });
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.player-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => {
+        c.classList.remove('active');
+        c.style.display = 'none';
+      });
+
+      const targetBtn = Array.from(document.querySelectorAll('.player-tab-btn')).find(b => b.getAttribute('onclick')?.includes(tabId));
+      if (targetBtn) targetBtn.classList.add('active');
+
+      const targetTab = document.getElementById(`${tabId}Tab`);
+      if (targetTab) {
+        targetTab.classList.add('active');
+        targetTab.style.display = 'block';
+      }
+    }
+
+    function displayAllData() {
+      document.getElementById('mainData').style.display = 'block';
+      renderOverview();
+      renderPlayerStats();
+      renderProfileStats();
+      renderSkills();
+      renderSlayers();
+      renderFarming();
+      renderMinions();
+      renderCollections();
+      renderPlaytime();
+      renderJSON();
+    }
+
+    function renderOverview() {
+      const container = document.getElementById('overviewTab');
+      if (!playerData) {
+        container.innerHTML = '<p style="color:var(--text-muted);">No player data loaded.</p>';
+        return;
+      }
+
+      const member = profileData?.members?.[selectedMemberId] || {};
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header">
+              <span class="material-icons" style="color:var(--accent-color);">person</span>
+              <span class="card-title">Identity &amp; Network</span>
+            </div>
+            <div class="data-item"><span class="data-label">Username</span><span class="data-value string">${playerData.name || playerData.username || 'N/A'}</span></div>
+            <div class="data-item"><span class="data-label">Selected Rank</span><span class="data-value string">${playerData.selectedRank || 'DEFAULT'}</span></div>
+            <div class="data-item"><span class="data-label">Network Exp</span><span class="data-value number">${formatNumber(playerData.networkExp || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Network Coins</span><span class="data-value number">${formatNumber(playerData.networkCoins || 0)}</span></div>
+            <div class="data-item"><span class="data-label">UUID</span><span class="data-value string" style="font-size:0.75rem;">${playerData.uuid || 'N/A'}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="material-icons" style="color:#16a34a;">account_balance_wallet</span>
+              <span class="card-title">Economy &amp; Profile</span>
+            </div>
+            <div class="data-item"><span class="data-label">Coin Purse</span><span class="data-value number">${formatNumber(member.coin_purse || 0)} coins</span></div>
+            <div class="data-item"><span class="data-label">Bank Balance</span><span class="data-value number">${formatNumber(profileData?.banking?.balance || 0)} coins</span></div>
+            <div class="data-item"><span class="data-label">Gamemode</span><span class="data-value string">${profileData?.game_mode || 'Normal'}</span></div>
+            <div class="data-item"><span class="data-label">Profile ID</span><span class="data-value string" style="font-size:0.75rem;">${currentProfileId || 'N/A'}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="material-icons" style="color:#ea580c;">history</span>
+              <span class="card-title">Activity &amp; Timestamps</span>
+            </div>
+            <div class="data-item"><span class="data-label">First Login</span><span class="data-value date">${formatDate(playerData.firstLogin)}</span></div>
+            <div class="data-item"><span class="data-label">Last Login</span><span class="data-value date">${formatDate(playerData.lastLogin)}</span></div>
+            <div class="data-item"><span class="data-label">Last Server</span><span class="data-value string">${playerData.lastServer || 'HUB'}</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPlayerStats() {
+      const container = document.getElementById('playerTab');
+      if (!playerData) return;
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><span class="material-icons">badge</span><span class="card-title">Account Details</span></div>
+            <div class="data-item"><span class="data-label">Pixel ID</span><span class="data-value string">${playerData.pixelId || 'N/A'}</span></div>
+            <div class="data-item"><span class="data-label">Language</span><span class="data-value string">${playerData.language || 'english'}</span></div>
+            <div class="data-item"><span class="data-label">Private Messages</span><span class="data-value string">${playerData.privateMessages || 'ALL'}</span></div>
+            <div class="data-item"><span class="data-label">Friend Requests</span><span class="data-value string">${playerData.friendRequests || 'ALL'}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons">music_note</span><span class="card-title">Music &amp; Jukebox</span></div>
+            <div class="data-item"><span class="data-label">Now Playing</span><span class="data-value string">${playerData.playingMusic || 'None'}</span></div>
+            <div class="data-item"><span class="data-label">Shuffle</span><span class="data-value boolean">${playerData.musicShuffle ? 'Enabled' : 'Disabled'}</span></div>
+            <div class="data-item"><span class="data-label">Queued Songs</span><span class="data-value number">${playerData.musicQueue ? playerData.musicQueue.length : 0}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons">category</span><span class="card-title">Cosmetics &amp; Collectibles</span></div>
+            <div class="data-item"><span class="data-label">Unlocked Items</span><span class="data-value number">${playerData.unlockedCollectables ? playerData.unlockedCollectables.length : 0}</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderProfileStats() {
+      const container = document.getElementById('profileTab');
+      if (!profileData) {
+        container.innerHTML = '<p style="color:var(--text-muted);">No active SkyBlock profile data available.</p>';
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><span class="material-icons">info</span><span class="card-title">Profile Metadata</span></div>
+            <div class="data-item"><span class="data-label">Profile ID</span><span class="data-value string" style="font-size:0.75rem;">${profileData.profile_id || currentProfileId}</span></div>
+            <div class="data-item"><span class="data-label">Cute Name</span><span class="data-value string">${profileData.cute_name || 'N/A'}</span></div>
+            <div class="data-item"><span class="data-label">Gamemode</span><span class="data-value string">${profileData.game_mode || 'Normal'}</span></div>
+            <div class="data-item"><span class="data-label">Total Members</span><span class="data-value number">${Object.keys(profileData.members || {}).length}</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="material-icons">account_balance</span><span class="card-title">Co-op Banking</span></div>
+            <div class="data-item"><span class="data-label">Bank Balance</span><span class="data-value number">${formatNumber(profileData.banking?.balance || 0)} coins</span></div>
+            <div class="data-item"><span class="data-label">Transactions</span><span class="data-value number">${profileData.banking?.transactions ? profileData.banking.transactions.length : 0} recorded</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSkills() {
+      const container = document.getElementById('skillsTab');
+      const member = profileData?.members?.[selectedMemberId] || {};
+
+      const skillTypes = [
+        { key: 'experience_skill_combat', name: 'Combat', icon: 'sports_martial_arts' },
+        { key: 'experience_skill_mining', name: 'Mining', icon: 'construction' },
+        { key: 'experience_skill_farming', name: 'Farming', icon: 'agriculture' },
+        { key: 'experience_skill_foraging', name: 'Foraging', icon: 'park' },
+        { key: 'experience_skill_enchanting', name: 'Enchanting', icon: 'auto_fix_high' },
+        { key: 'experience_skill_alchemy', name: 'Alchemy', icon: 'science' },
+        { key: 'experience_skill_fishing', name: 'Fishing', icon: 'phishing' },
+        { key: 'experience_skill_taming', name: 'Taming', icon: 'pets' },
+        { key: 'experience_skill_carpentry', name: 'Carpentry', icon: 'handyman' },
+        { key: 'experience_skill_runecrafting', name: 'Runecrafting', icon: 'blur_on' },
+        { key: 'experience_skill_social', name: 'Social', icon: 'groups' }
+      ];
+
+      let html = '<div class="cards-grid">';
+      skillTypes.forEach(s => {
+        const xp = member[s.key] || 0;
+        html += `
+          <div class="card">
+            <div class="card-header">
+              <span class="material-icons" style="color:var(--accent-color);">${s.icon}</span>
+              <span class="card-title">${s.name}</span>
+            </div>
+            <div class="data-item">
+              <span class="data-label">Total Experience</span>
+              <span class="data-value number">${formatNumber(xp)} XP</span>
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    function renderSlayers() {
+      const container = document.getElementById('slayersTab');
+      const member = profileData?.members?.[selectedMemberId] || {};
+      const slayers = member.slayer_bosses || {};
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#dc2626;">coronavirus</span><span class="card-title">Revenant Horror (Zombie)</span></div>
+            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(slayers.zombie?.xp || 0)} XP</span></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#d97706;">pest_control</span><span class="card-title">Tarantula Broodfather (Spider)</span></div>
+            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(slayers.spider?.xp || 0)} XP</span></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#2563eb;">pets</span><span class="card-title">Sven Packmaster (Wolf)</span></div>
+            <div class="data-item"><span class="data-label">Slayer XP</span><span class="data-value number">${formatNumber(slayers.wolf?.xp || 0)} XP</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderFarming() {
+      const container = document.getElementById('farmingTab');
+      const member = profileData?.members?.[selectedMemberId] || {};
+      const contests = member.jacob2 || {};
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#16a34a;">military_tech</span><span class="card-title">Contest Medals</span></div>
+            <div class="data-item"><span class="data-label">Gold Medals</span><span class="data-value number">${contests.medals_inv?.gold || 0}</span></div>
+            <div class="data-item"><span class="data-label">Silver Medals</span><span class="data-value number">${contests.medals_inv?.silver || 0}</span></div>
+            <div class="data-item"><span class="data-label">Bronze Medals</span><span class="data-value number">${contests.medals_inv?.bronze || 0}</span></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#16a34a;">grass</span><span class="card-title">Pelts &amp; Perks</span></div>
+            <div class="data-item"><span class="data-label">Pelts Collected</span><span class="data-value number">${contests.pelts || 0}</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMinions() {
+      const container = document.getElementById('minionsTab');
+      const craftedGenerators = profileData?.community_upgrades?.crafted_generators || [];
+
+      container.innerHTML = `
+        <div class="card">
+          <div class="card-header"><span class="material-icons" style="color:#0284c7;">precision_manufacturing</span><span class="card-title">Crafted Minion Tiers</span></div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">Total unique minion types and tiers crafted on this profile: <strong>${craftedGenerators.length}</strong></p>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            ${craftedGenerators.map(m => `<span class="profile-pill" style="font-size:0.75rem;">${m}</span>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCollections() {
+      const container = document.getElementById('collectionsTab');
+      const member = profileData?.members?.[selectedMemberId] || {};
+      const coll = member.collection || {};
+
+      let html = '<div class="cards-grid">';
+      const entries = Object.entries(coll);
+
+      if (entries.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted);">Collections API is either disabled or no collection items found.</p>';
+        return;
+      }
+
+      entries.forEach(([item, amount]) => {
+        html += `
+          <div class="card" style="padding:14px 18px;">
+            <div class="data-item" style="border:none; padding:0;">
+              <span class="data-label">${item.replace(/_/g, ' ')}</span>
+              <span class="data-value number">${formatNumber(amount)}</span>
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    function renderPlaytime() {
+      const container = document.getElementById('playtimeTab');
+      const stats = playerData?.stats || {};
+
+      container.innerHTML = `
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><span class="material-icons" style="color:#ea580c;">timer</span><span class="card-title">Playtime Breakdown</span></div>
+            <div class="data-item"><span class="data-label">Total Network Sessions</span><span class="data-value number">${stats.total_sessions || 'N/A'}</span></div>
+            <div class="data-item"><span class="data-label">AFK Time</span><span class="data-value date">${stats.afk_time || '0h'}</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderJSON() {
+      const container = document.getElementById('jsonTab');
+      const fullPayload = { player: playerData, profile: profileData };
+      container.innerHTML = `
+        <pre class="json-pre-box"><code>${JSON.stringify(fullPayload, null, 2)}</code></pre>
+      `;
+    }
+
+    function clearData() {
+      document.getElementById('username').value = '';
+      document.getElementById('profileId').value = '';
+      document.getElementById('mainData').style.display = 'none';
+      document.getElementById('profileSelector').style.display = 'none';
+      document.getElementById('memberSelector').style.display = 'none';
+      hideStatus();
+      playerData = null;
+      profileData = null;
+    }
+
+    function fetchRandomPlayer() {
+      const samplePlayers = ['Tekkxz', 'NetworkPg', 'Lord_Gooey'];
+      const pick = samplePlayers[Math.floor(Math.random() * samplePlayers.length)];
+      document.getElementById('username').value = pick;
+      fetchPlayerData();
+    }
+
+    // Auto-search from URL param
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const user = params.get('u') || params.get('username') || params.get('player');
+      if (user) {
+        document.getElementById('username').value = user;
+        fetchPlayerData();
+      }
+
+      document.getElementById('username')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') fetchPlayerData();
+      });
+    });
+  </script>
+
+</body>
+</html>
