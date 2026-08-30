@@ -214,8 +214,6 @@
 
   <!-- Player Viewer Logic -->
   <script>
-    const PROXY_BASE = 'https://proxy.craftersmcguides.workers.dev/v1';
-
     let playerData = null;
     let profileData = null;
     let currentProfileId = '';
@@ -261,6 +259,36 @@
       }
     }
 
+    async function fetchFromProxy(endpoint) {
+      // 1. Try relative endpoint on current host (e.g. /player/username or /profile/profileId)
+      try {
+        const res = await fetch(endpoint);
+        if (res.ok) {
+          return await res.json();
+        }
+        if (res.status === 404) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.message || 'Player or profile not found');
+        }
+      } catch (err) {
+        if (err.message?.includes('not found')) throw err;
+        console.warn(`Relative fetch to ${endpoint} failed, trying fallback:`, err);
+      }
+
+      // 2. Try primary Cloudflare Pages proxy
+      try {
+        const fallbackUrl = `https://craftersmc-guides.pages.dev${endpoint}`;
+        const res = await fetch(fallbackUrl);
+        if (res.ok) {
+          return await res.json();
+        }
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(`HTTP ${res.status}: ${errData.message || errData.error || 'Failed to fetch from proxy'}`);
+      } catch (err) {
+        throw err;
+      }
+    }
+
     async function fetchPlayerData() {
       const usernameInput = document.getElementById('username');
       const username = usernameInput.value.trim();
@@ -273,11 +301,7 @@
       document.getElementById('mainData').style.display = 'none';
 
       try {
-        const res = await fetch(`${PROXY_BASE}/player/${encodeURIComponent(username)}`);
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}: Player not found or API error`);
-        }
-        const data = await res.json();
+        const data = await fetchFromProxy(`/player/${encodeURIComponent(username)}`);
         playerData = data.player || data;
 
         showStatus(`Loaded player data for ${playerData.name || playerData.username || username}`, 'success');
@@ -304,14 +328,9 @@
       showStatus(`Fetching profile data (${profileId.substring(0, 8)}...)...`, 'info');
 
       try {
-        const res = await fetch(`${PROXY_BASE}/skyblock/profile/${encodeURIComponent(profileId)}`);
-        if (res.ok) {
-          const data = await res.json();
-          profileData = data.profile || data;
-          showStatus(`Profile data loaded successfully!`, 'success');
-        } else {
-          profileData = null;
-        }
+        const data = await fetchFromProxy(`/profile/${encodeURIComponent(profileId)}`);
+        profileData = data.profile || data;
+        showStatus(`Profile data loaded successfully!`, 'success');
       } catch (err) {
         console.warn('Profile fetch error:', err);
         profileData = null;
