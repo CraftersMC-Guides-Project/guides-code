@@ -9,15 +9,13 @@ const CalendarEngine = {
     SEASON_SPRING: 0, SEASON_SUMMER: 1, SEASON_AUTUMN: 2, SEASON_WINTER: 3,
     
     LEGENDARY_PATTERN: ['elephant','giraffe','tiger','lion','monkey'],
-    LEGENDARY_ICONS: { 'elephant':'<img src="img/pets/Elephant_Pet.webp" style="height:40px;width:auto;">',
-
-    'giraffe':'<img src="img/pets/Giraffe_Pet.webp" style="height:40px;width:auto;">',
-
-    'tiger':'<img src="img/pets/300px-Tiger_Pet.webp" style="height:40px;width:auto;">',
-
-    'lion':'<img src="img/pets/300px-Lion_Pet.webp" style="height:40px;width:auto;">',
-
-    'monkey':'<img src="img/pets/Monkey_Pet.webp" style="height:40px;width:auto;margin:4px;">'},
+    LEGENDARY_ICONS: { 
+        'elephant':'<img src="img/pets/Elephant_Pet.webp" style="height:40px;width:40px;object-fit:contain;">',
+        'giraffe':'<img src="img/pets/Giraffe_Pet.webp" style="height:40px;width:40px;object-fit:contain;">',
+        'tiger':'<img src="img/pets/300px-Tiger_Pet.webp" style="height:40px;width:40px;object-fit:contain;">',
+        'lion':'<img src="img/pets/300px-Lion_Pet.webp" style="height:40px;width:40px;object-fit:contain;">',
+        'monkey':'<img src="img/pets/Monkey_Pet.webp" style="height:40px;width:40px;object-fit:contain;margin:4px;">'
+    },
     PET_EMOJIS: {
         'elephant': '🐘',
         'giraffe': '🦒',
@@ -31,11 +29,11 @@ const CalendarEngine = {
     PET_TYPES: ['tiger', 'lion', 'monkey', 'elephant', 'giraffe'],
     RARITIES: ['COMMON','UNCOMMON','RARE','EPIC'],// no leg here because it works without it somehow lol
     RARITIES_ICONS: {
-        'COMMON': '<img src="img/rarity/common.webp" style="height:20px;width:auto;">',
-        'UNCOMMON': '<img src="img/rarity/uncommon.webp" style="height:20px;width:auto;">',
-        'RARE': '<img src="img/rarity/rare.webp" style="height:20px;width:auto;">',
-        'EPIC': '<img src="img/rarity/epic.webp" style="height:20px;width:auto;">',
-        'LEGENDARY': '<img src="img/rarity/legendary.webp" style="height:20px;width:auto;">'
+        'COMMON': '<img src="assets/rarity/common.webp" class="rarity-icon rarity-common" alt="Common" width="66" height="14">',
+        'UNCOMMON': '<img src="assets/rarity/uncommon.webp" class="rarity-icon rarity-uncommon" alt="Uncommon" width="82" height="14">',
+        'RARE': '<img src="assets/rarity/rare.webp" class="rarity-icon rarity-rare" alt="Rare" width="42" height="14">',
+        'EPIC': '<img src="assets/rarity/epic.webp" class="rarity-icon rarity-epic" alt="Epic" width="42" height="14">',
+        'LEGENDARY': '<img src="assets/rarity/legendary.webp" class="rarity-icon rarity-legendary" alt="Legendary" width="82" height="14">'
     },
     CropType: ['WHEAT', 'SUGAR_CANE', 'CARROT', 'POTATO', 'MELON', 'PUMPKIN', 'COCOA_BEANS', 'CACTUS', 'MUSHROOM', 'BEETROOT'],
     CROP_ICONS: { 
