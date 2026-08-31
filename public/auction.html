@@ -779,45 +779,61 @@
       renderAuctionsView();
     }
 
-    // Minecraft Color Code to HTML Converter (Tuned for Light Theme)
+    // Minecraft Color Code to HTML Converter (From feather-bot LEGACY_COLOR_MAP with pixel font shadow)
+    const FEATHER_COLOR_MAP = {
+      '0': '#000000',
+      '1': '#0000AA',
+      '2': '#00AA00',
+      '3': '#00AAAA',
+      '4': '#AA0000',
+      '5': '#AA00AA',
+      '6': '#FFAA00',
+      '7': '#AAAAAA',
+      '8': '#555555',
+      '9': '#5555FF',
+      a: '#55FF55',
+      b: '#55FFFF',
+      c: '#FF5555',
+      d: '#FF55FF',
+      e: '#FFFF55',
+      f: '#FFFFFF',
+      g: '#DDD605',
+      h: '#E3D4D1',
+      i: '#CECACA',
+      j: '#443A3B',
+      m: '#971607',
+      n: '#B4684D',
+      p: '#DEB12D',
+      q: '#119F36',
+      s: '#2CBAA8',
+      t: '#21497B',
+      u: '#9A5CC6',
+      v: '#EB7114',
+      w: '#8CB3FF',
+      x: '#A5A5A5',
+      y: '#F38BAA',
+      z: '#B38B6D',
+    };
+
     function minecraftColorToHtml(text) {
       if (!text) return '';
-      const colorMap = {
-        '0': '#0f172a', // Black / Dark Slate
-        '1': '#1e40af', // Dark Blue
-        '2': '#15803d', // Dark Green
-        '3': '#0369a1', // Dark Aqua
-        '4': '#b91c1c', // Dark Red
-        '5': '#7e22ce', // Dark Purple
-        '6': '#d97706', // Gold / Amber
-        '7': '#475569', // Gray / Slate
-        '8': '#64748b', // Dark Gray
-        '9': '#2563eb', // Blue
-        'a': '#16a34a', // Green
-        'b': '#0284c7', // Aqua
-        'c': '#dc2626', // Red
-        'd': '#9333ea', // Light Purple
-        'e': '#ca8a04', // Yellow / Dark Gold
-        'f': '#0f172a'  // White / Slate
-      };
-
       // Strip private unicode icon symbols (e.g. \uE000-\uF8FF) and control chars
       const clean = text.replace(/[\uE000-\uF8FF]/g, '').replace(/[\x00-\x1F\x7F-\x9F]/g, '');
       if (!clean.trim()) return '&nbsp;';
 
       let html = '';
-      let currentColor = '#475569';
+      let currentColor = '#AAAAAA';
       let isBold = false;
       let isItalic = false;
       let isStrike = false;
       let isUnderline = false;
 
-      const parts = clean.split(/(§[0-9a-fk-or])/gi);
+      const parts = clean.split(/(§[0-9a-z])/gi);
       for (const part of parts) {
         if (part.startsWith('§') && part.length === 2) {
           const code = part.charAt(1).toLowerCase();
-          if (colorMap[code]) {
-            currentColor = colorMap[code];
+          if (code === 'r') {
+            currentColor = '#AAAAAA';
             isBold = false;
             isItalic = false;
             isStrike = false;
@@ -826,23 +842,19 @@
             isBold = true;
           } else if (code === 'o') {
             isItalic = true;
-          } else if (code === 'm') {
-            // In SkyBlock lore, §m is used for muted secondary reforge bonuses (e.g. (Spicy +10))
-            currentColor = '#64748b';
-            isStrike = false;
           } else if (code === 'n') {
             isUnderline = true;
-          } else if (code === 'r') {
-            currentColor = '#475569';
-            isBold = false;
-            isItalic = false;
+          } else if (code === 'm') {
+            // In feather-bot, §m is color #971607 (custom reforge stats color)
+            currentColor = FEATHER_COLOR_MAP['m'] || '#971607';
             isStrike = false;
-            isUnderline = false;
+          } else if (FEATHER_COLOR_MAP[code]) {
+            currentColor = FEATHER_COLOR_MAP[code];
           }
         } else if (part.length > 0) {
           const safeText = part.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           const textDec = `${isStrike ? 'line-through ' : ''}${isUnderline ? 'underline' : ''}`.trim() || 'none';
-          html += `<span style="color:${currentColor}; font-weight:${isBold ? '700' : '500'}; font-style:${isItalic ? 'italic' : 'normal'}; text-decoration:${textDec};">${safeText}</span>`;
+          html += `<span style="color:${currentColor}; font-weight:${isBold ? '700' : 'normal'}; font-style:${isItalic ? 'italic' : 'normal'}; text-decoration:${textDec}; text-shadow: 1px 1px 0px rgba(0,0,0,0.95);">${safeText}</span>`;
         }
       }
       return html;
@@ -1077,6 +1089,15 @@
           <div class="mc-lore-line">${minecraftColorToHtml(`§7In-Game ID: §8${auctionData.itemId}`)}</div>
         `;
       }
+
+      // Add authentic rarity UI icon from feather-bot
+      const rarityKey = tier.toLowerCase();
+      tooltipHtml += `
+        <div class="mc-rarity-icon-footer">
+          <img src="assets/ui/${rarityKey}.webp" alt="${tier}" onerror="this.style.display='none'" />
+        </div>
+      `;
+
       document.getElementById('detailTooltipContent').innerHTML = tooltipHtml;
 
       // Seller Info
