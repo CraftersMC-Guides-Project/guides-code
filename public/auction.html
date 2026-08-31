@@ -699,63 +699,154 @@
         'f': '#ffffff'  // White
       };
 
-      // Clean unwanted unicode control chars
-      const clean = text.replace(/[\x00-\x1F\x7F-\x9F]/g, '');
+      // Strip private unicode icon symbols (e.g. \uE000-\uF8FF) and control chars
+      const clean = text.replace(/[\uE000-\uF8FF]/g, '').replace(/[\x00-\x1F\x7F-\x9F]/g, '');
+      if (!clean.trim()) return '&nbsp;';
+
       let html = '';
       let currentColor = '#aaaaaa';
       let isBold = false;
       let isItalic = false;
+      let isStrike = false;
+      let isUnderline = false;
 
       const parts = clean.split(/(§[0-9a-fk-or])/gi);
       for (const part of parts) {
-        if (part.startsWith('§')) {
+        if (part.startsWith('§') && part.length === 2) {
           const code = part.charAt(1).toLowerCase();
           if (colorMap[code]) {
             currentColor = colorMap[code];
             isBold = false;
             isItalic = false;
+            isStrike = false;
+            isUnderline = false;
           } else if (code === 'l') {
             isBold = true;
           } else if (code === 'o') {
             isItalic = true;
+          } else if (code === 'm') {
+            isStrike = true;
+          } else if (code === 'n') {
+            isUnderline = true;
           } else if (code === 'r') {
             currentColor = '#aaaaaa';
             isBold = false;
             isItalic = false;
+            isStrike = false;
+            isUnderline = false;
           }
         } else if (part.length > 0) {
           const safeText = part.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          html += `<span style="color:${currentColor}; font-weight:${isBold ? '700' : '400'}; font-style:${isItalic ? 'italic' : 'normal'}; text-shadow: 1px 1px 0px rgba(0,0,0,0.85);">${safeText}</span>`;
+          const textDec = `${isStrike ? 'line-through ' : ''}${isUnderline ? 'underline' : ''}`.trim() || 'none';
+          html += `<span style="color:${currentColor}; font-weight:${isBold ? '700' : '400'}; font-style:${isItalic ? 'italic' : 'normal'}; text-decoration:${textDec}; text-shadow: 1px 1px 0px rgba(0,0,0,0.9);">${safeText}</span>`;
         }
       }
       return html;
     }
 
+    // Binary NBT Parser with Auto Endianness Detection
+    function parseBinaryNbt(buf) {
+      if (!buf || buf.length < 3) return null;
+
+      // Detect Little-Endian vs Big-Endian
+      let isLE = false;
+      if (buf.length > 5) {
+        if (buf[4] !== 0 && buf[5] === 0) isLE = true;
+      }
+
+      let pos = 0;
+      const view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+
+      function readByte() { return view.getInt8(pos++); }
+      function readShort() { const v = view.getInt16(pos, isLE); pos += 2; return v; }
+      function readInt() { const v = view.getInt32(pos, isLE); pos += 4; return v; }
+      function readString() {
+        const len = view.getUint16(pos, isLE);
+        pos += 2;
+        const bytes = new Uint8Array(buf.buffer, buf.byteOffset + pos, len);
+        pos += len;
+        return new TextDecoder('utf-8').decode(bytes);
+      }
+
+      function readTag(type) {
+        if (type === 1) return readByte();
+        if (type === 2) return readShort();
+        if (type === 3) return readInt();
+        if (type === 4) { pos += 8; return 0; }
+        if (type === 5) { const v = view.getFloat32(pos, isLE); pos += 4; return v; }
+        if (type === 6) { const v = view.getFloat64(pos, isLE); pos += 8; return v; }
+        if (type === 7) {
+          const len = readInt();
+          const arr = new Uint8Array(buf.buffer, buf.byteOffset + pos, len);
+          pos += len;
+          return arr;
+        }
+        if (type === 8) return readString();
+        if (type === 9) {
+          const elemType = readByte();
+          const count = readInt();
+          const list = [];
+          for (let i = 0; i < count; i++) list.push(readTag(elemType));
+          return list;
+        }
+        if (type === 10) {
+          const comp = {};
+          while (pos < buf.byteLength) {
+            const t = readByte();
+            if (t === 0) break;
+            const name = readString();
+            comp[name] = readTag(t);
+          }
+          return comp;
+        }
+        if (type === 11) { const len = readInt(); pos += len * 4; return []; }
+        if (type === 12) { const len = readInt(); pos += len * 8; return []; }
+        return null;
+      }
+
+      try {
+        const rootType = readByte();
+        if (rootType === 10) {
+          readString();
+          return readTag(10);
+        }
+      } catch (err) {
+        console.warn('NBT parse error:', err);
+      }
+      return null;
+    }
+
     // Extract Lore from NBT itemData
     function extractLoreFromItemData(itemData) {
-      if (!itemData || typeof pako === 'undefined') return [];
+      if (!itemData || typeof pako === 'undefined') return { name: '', lore: [] };
       try {
         const raw = atob(itemData);
         const u8 = new Uint8Array(raw.length);
         for (let i = 0; i < raw.length; i++) u8[i] = raw.charCodeAt(i);
         const decomp1 = pako.ungzip(u8);
-        const str1 = new TextDecoder('utf-8').decode(decomp1);
+        const outer = parseBinaryNbt(decomp1);
 
-        let finalStr = str1;
-        const match = str1.match(/H4sIA[A-Za-z0-9+/=]+/);
-        if (match) {
-          const nestedRaw = atob(match[0]);
+        let inner = outer;
+        if (outer && outer.nbt) {
+          let b64Str = '';
+          if (outer.nbt instanceof Uint8Array) {
+            b64Str = new TextDecoder('utf-8').decode(outer.nbt);
+          } else {
+            b64Str = String(outer.nbt);
+          }
+          const nestedRaw = atob(b64Str.trim());
           const nestedU8 = new Uint8Array(nestedRaw.length);
           for (let i = 0; i < nestedRaw.length; i++) nestedU8[i] = nestedRaw.charCodeAt(i);
           const decomp2 = pako.ungzip(nestedU8);
-          finalStr = new TextDecoder('utf-8').decode(decomp2);
+          inner = parseBinaryNbt(decomp2);
         }
 
-        const loreMatches = finalStr.match(/§[0-9a-fk-or][^\x00-\x1F\x7F-\x9F]*/g) || [];
-        return loreMatches.map(l => l.replace(/[\x00-\x1F\x7F-\xFF]/g, '').trim()).filter(l => l.length > 0);
+        const lore = inner?.display?.Lore || inner?.tag?.display?.Lore || [];
+        const name = inner?.display?.Name || inner?.tag?.display?.Name || outer?.name || '';
+        return { name, lore: Array.isArray(lore) ? lore : [] };
       } catch (e) {
-        console.warn('NBT lore extraction failed:', e);
-        return [];
+        console.warn('NBT extraction failed:', e);
+        return { name: '', lore: [] };
       }
     }
 
@@ -768,22 +859,26 @@
       const contentEl = document.getElementById('loreModalContent');
       const sidebarEl = document.getElementById('loreModalSidebar');
 
+      // Extract real in-game lore lines
+      const { name: itemTitle, lore: loreLines } = extractLoreFromItemData(a.rawItemData);
       titleEl.textContent = `${a.name} (${a.tier})`;
 
-      // Extract real in-game lore lines
-      const loreLines = extractLoreFromItemData(a.rawItemData);
-
       let tooltipHtml = '';
-      if (loreLines.length > 0) {
-        tooltipHtml = loreLines.map(line => `<div class="mc-lore-line">${minecraftColorToHtml(line)}</div>`).join('');
+      if (itemTitle) {
+        tooltipHtml += `<div class="mc-tooltip-title">${minecraftColorToHtml(itemTitle)}</div>`;
       } else {
-        // Fallback formatted Minecraft display
-        tooltipHtml = `
-          <div class="mc-tooltip-title">${minecraftColorToHtml(`§6${a.name}`)}</div>
-          <div class="mc-lore-line" style="margin-bottom:8px;">${minecraftColorToHtml(`§7Rarity: §d${a.tier}`)}</div>
+        tooltipHtml += `<div class="mc-tooltip-title">${minecraftColorToHtml(`§6${a.name}`)}</div>`;
+      }
+
+      if (loreLines.length > 0) {
+        tooltipHtml += loreLines
+          .map(line => `<div class="mc-lore-line">${minecraftColorToHtml(line)}</div>`)
+          .join('');
+      } else {
+        tooltipHtml += `
+          <div class="mc-lore-line">${minecraftColorToHtml(`§7Rarity: §d${a.tier}`)}</div>
           <div class="mc-lore-line">${minecraftColorToHtml(`§7Category: §b${a.category}`)}</div>
           <div class="mc-lore-line">${minecraftColorToHtml(`§7In-Game ID: §8${a.itemId}`)}</div>
-          <div class="mc-lore-line" style="margin-top:12px;">${minecraftColorToHtml(`§eRight-click to inspect in game!`)}</div>
         `;
       }
 
@@ -820,16 +915,6 @@
             ${timeRemaining}
           </div>
           ${!a.isBin ? `<div style="font-size:0.78rem; color:#8b949e; margin-top:4px;">${a.bidsCount} total bids placed</div>` : ''}
-        </div>
-
-        <div class="modal-meta-card">
-          <div class="modal-meta-label">Quick In-Game Command</div>
-          <div class="modal-command-box">
-            <span>/viewauction ${a.id.substring(0, 10)}...</span>
-            <button onclick="copyAuctionCommand('${a.id}')" class="btn-secondary-action" style="padding:4px 8px; font-size:0.75rem;">
-              <span class="material-icons" style="font-size:0.85rem;">content_copy</span> Copy
-            </button>
-          </div>
         </div>
       `;
 
