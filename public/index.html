@@ -1,338 +1,1528 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>CraftersMC SkyBlock Guides &amp; Documentation</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Official documentation and progression guides for CraftersMC SkyBlock, including live event tools, sellers directory, and REST API reference." />
-  <meta name="google-site-verification" content="a1S654ozEH6kuH1DM6-3ssQYXgow72Mfh19eg3RCUTk" />
-  <meta name="google-site-verification" content="Wr3jatMv-sfXhgBy5jBfiX8Nwn6k8P1k_jPubQzBcTY" />
-  <meta name="google-site-verification" content="xlDzPprkNVmy_Wubs_ClU3zuXQEo8AuYkmjZKfcqI2o" />
-  <link rel="icon" href="assets/cmc-icon.png" type="image/png" />
-  <link rel="icon" href="assets/cmc-guides.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Community documentation and progression guides for CraftersMC SkyBlock, including live event tools, sellers directory, and REST API reference.">
 
-  <!-- Fonts & Icons -->
+  <meta name="google-site-verification" content="a1S654ozEH6kuH1DM6-3ssQYXgow72Mfh19eg3RCUTk">
+  <meta name="google-site-verification" content="Wr3jatMv-sfXhgBy5jBfiX8Nwn6k8P1k_jPubQzBcTY">
+  <meta name="google-site-verification" content="xlDzPprkNVmy_Wubs_ClU3zuXQEo8AuYkmjZKfcqI2o">
+
+  <link rel="icon" href="assets/cmc-guides.png" type="image/png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-  <!-- Stylesheet -->
-  <link rel="stylesheet" href="better-api-docs/style.css" />
+  <link rel="stylesheet" href="better-api-docs/style.css">
 
-  <!-- Scripts -->
+  <style>
+    /* =========================================================
+       HOMEPAGE RESPONSIVE + CRAFTERS MC COLOUR OVERRIDES
+       ========================================================= */
+
+    :root {
+      --accent-color: #0797e1;
+      --cmc-blue: #0797e1;
+      --cmc-blue-dark: #057fbe;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid var(--cmc-blue);
+      outline-offset: 2px;
+    }
+
+    .material-icons {
+      user-select: none;
+    }
+
+    .main-content {
+      padding-bottom: 40px;
+      min-width: 0;
+    }
+
+    .doc-section,
+    .featured-tools-section {
+      min-width: 0;
+      margin-bottom: 24px;
+    }
+
+    .section-header {
+      margin-bottom: 10px;
+    }
+
+    .section-header p {
+      margin: 4px 0 8px;
+    }
+
+    .section-header h2 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-header h2 .material-icons,
+    .featured-tools-title .material-icons {
+      color: var(--cmc-blue);
+      flex-shrink: 0;
+    }
+
+    /* Header / brand */
+    /* Header / brand */
+    .brand-title {
+      color: var(--text-primary) !important;
+    }
+
+    .brand-title-primary {
+      color: var(--cmc-blue) !important;
+    }
+
+    .brand-title-secondary {
+      color: #334155 !important;
+    }
+
+    .header-link,
+    .header-link .material-icons {
+      color: var(--cmc-blue) !important;
+    }
+
+    .version-badge {
+      color: var(--cmc-blue) !important;
+      border-color: rgba(7, 151, 225, .25);
+    }
+
+    /* Sidebar */
+    .sidebar-section-title {
+      color: var(--cmc-blue) !important;
+    }
+
+    .sidebar-nav-item a {
+      color: var(--text-secondary);
+    }
+
+    .sidebar-nav-item .nav-icon {
+      color: var(--text-secondary);
+    }
+
+    .sidebar-nav-item a:hover,
+    .sidebar-nav-item a:hover .nav-icon,
+    .sidebar-nav-item a.active,
+    .sidebar-nav-item a.active .nav-icon {
+      color: var(--cmc-blue);
+    }
+
+    /* Search */
+    .search-icon {
+      color: var(--cmc-blue);
+    }
+
+    .search-box:focus-within {
+      border-color: var(--cmc-blue);
+      box-shadow: 0 0 0 2px rgba(7, 151, 225, .12);
+    }
+
+    /* Cards */
+    .featured-tools-grid,
+    .horizontal-cards {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 4px 4px 10px 2px;
+      scroll-behavior: smooth;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+      min-width: 0;
+    }
+
+    .featured-tools-grid::-webkit-scrollbar,
+    .horizontal-cards::-webkit-scrollbar {
+      height: 7px;
+    }
+
+    .featured-tools-grid::-webkit-scrollbar-track,
+    .horizontal-cards::-webkit-scrollbar-track {
+      background: #edf2f7;
+      border-radius: 10px;
+    }
+
+    .featured-tools-grid::-webkit-scrollbar-thumb,
+    .horizontal-cards::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+
+    .featured-tools-grid::-webkit-scrollbar-thumb:hover,
+    .horizontal-cards::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .featured-tools-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .featured-tools-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -.015em;
+    }
+
+    .featured-tools-subtitle {
+      margin: 4px 0 8px;
+      color: var(--text-secondary);
+      font-size: .92rem;
+    }
+
+    .featured-tool-card {
+      flex: 0 0 220px;
+      min-height: 120px;
+      padding: 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background: var(--card-background, #fff);
+      box-shadow: 0 3px 10px rgba(15, 23, 42, .08);
+      transition: transform .18s ease, box-shadow .18s ease;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .featured-tool-card:hover,
+    .schema-card:hover,
+    .contributor-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, .11);
+    }
+
+    .featured-tool-icon {
+      color: var(--cmc-blue);
+      font-size: 1.5rem;
+      margin-bottom: 6px;
+    }
+
+    .featured-tool-name {
+      margin-bottom: 6px;
+    }
+
+    .featured-tool-name a,
+    .schema-name a {
+      color: var(--text-primary);
+      font-weight: 700;
+      text-decoration: none;
+      transition: color .16s ease;
+    }
+
+    .featured-tool-name a:hover,
+    .schema-name a:hover {
+      color: var(--cmc-blue);
+    }
+
+    /* Final link/brand color rules */
+
+    /* Header brand: only CraftersMC is blue; Guides stays grey. */
+    .brand-title {
+      color: var(--text-primary) !important;
+    }
+
+    .brand-title-primary {
+      color: var(--cmc-blue) !important;
+    }
+
+    .brand-title-secondary {
+      color: #334155 !important;
+    }
+
+    /* Card titles: grey normally, blue only on hover. */
+    .featured-tool-name a,
+    .schema-name a {
+      color: var(--text-primary) !important;
+      text-decoration: none;
+    }
+
+    .featured-tool-name a:hover,
+    .schema-name a:hover {
+      color: var(--cmc-blue) !important;
+    }
+
+    /* Action links remain blue at all times, including hover. */
+    .featured-tool-link,
+    .featured-tool-link:hover,
+    .section-view-all,
+    .section-view-all:hover,
+    .contributor-role a,
+    .contributor-role a:hover,
+    .btn-copy,
+    .btn-copy:hover,
+    .schema-card div[style*="margin-top"] a,
+    .schema-card div[style*="margin-top"] a:hover {
+      color: var(--cmc-blue) !important;
+    }
+
+    /* Sidebar labels/icons: grey normally, blue on hover. */
+    .sidebar-nav-item a,
+    .sidebar-nav-item .nav-icon {
+      color: var(--text-secondary) !important;
+    }
+
+    .sidebar-nav-item a:hover,
+    .sidebar-nav-item a:hover .nav-icon,
+    .sidebar-nav-item a.active,
+    .sidebar-nav-item a.active .nav-icon {
+      color: var(--cmc-blue) !important;
+    }
+
+    .featured-tool-desc {
+      color: var(--text-secondary);
+      font-size: .86rem;
+      line-height: 1.35;
+      margin-bottom: 9px;
+    }
+
+    .featured-tool-link,
+    .section-view-all {
+      font-size: .84rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .featured-tool-link {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin-top: auto;
+      padding-top: 8px;
+    }
+
+    .featured-tool-card:focus-within {
+      border-color: var(--cmc-blue);
+      box-shadow: 0 0 0 2px rgba(7, 151, 225, .12), 0 6px 16px rgba(15, 23, 42, .11);
+    }
+
+    .horizontal-card {
+      flex: 0 0 225px;
+      width: 225px;
+      min-height: 145px;
+    }
+
+    .schema-card {
+      padding: 14px;
+      box-shadow: 0 3px 10px rgba(15, 23, 42, .07);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .schema-desc {
+      line-height: 1.35;
+    }
+
+    .other-guides-grid,
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .section-header-with-action {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .section-view-all {
+      flex: 0 0 auto;
+      margin-top: 6px;
+      white-space: nowrap;
+    }
+
+    .section-view-all:hover,
+    .featured-tool-link:hover,
+    .contributor-role a:hover {
+      color: var(--cmc-blue-dark);
+      text-decoration: underline;
+    }
+
+    .contributors-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .contributor-card {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-height: 145px;
+      padding: 20px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background: var(--card-background, #fff);
+      box-shadow: 0 3px 10px rgba(15, 23, 42, .07);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .contributor-avatar {
+      flex: 0 0 78px;
+      width: 78px;
+      height: 78px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: #f1f5f9;
+    }
+
+    .contributor-info {
+      min-width: 0;
+    }
+
+    .contributor-name {
+      margin-bottom: 6px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .contributor-role {
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .code-block-wrapper {
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    .code-block-wrapper pre {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .mobile-menu-btn {
+      color: var(--cmc-blue);
+    }
+
+    /* =========================================================
+       TABLET
+       ========================================================= */
+
+    @media (max-width: 900px) {
+      .other-guides-grid,
+      .resource-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .contributors-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* =========================================================
+       PHONE
+       ========================================================= */
+
+    @media (max-width: 700px) {
+      html {
+        scroll-padding-top: 64px;
+      }
+
+      .top-header {
+        min-height: 58px;
+      }
+
+      .header-brand {
+        min-width: 0;
+      }
+
+      .brand-text {
+        min-width: 0;
+      }
+
+      .brand-title {
+        font-size: .88rem;
+        white-space: nowrap;
+      }
+
+      .version-badge {
+        font-size: .62rem;
+      }
+
+      .header-actions {
+        gap: 6px;
+      }
+
+      .header-link {
+        padding: 5px;
+      }
+
+      .header-link-text {
+        display: none;
+      }
+
+      .search-box {
+        max-width: none;
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      .search-box input {
+        min-width: 0;
+        font-size: .82rem;
+      }
+
+      .search-kbd-shortcut {
+        display: none;
+      }
+
+      /* Hide desktop sidebar; app.js can still use it as a drawer. */
+      .sidebar {
+        display: none;
+      }
+
+      .app-layout {
+        display: block;
+      }
+
+      .main-content {
+        width: 100%;
+        max-width: 100%;
+        padding: 18px 14px 32px;
+      }
+
+      .section-header {
+        margin-bottom: 12px;
+      }
+
+      .section-header h1 {
+        font-size: 1.55rem;
+        line-height: 1.2;
+      }
+
+      .section-header h2,
+      .featured-tools-title {
+        font-size: 1.15rem;
+        line-height: 1.3;
+      }
+
+      .section-header p,
+      .featured-tools-subtitle {
+        font-size: .84rem;
+        line-height: 1.45;
+      }
+
+      .prose-card {
+        width: 100%;
+      }
+
+      .featured-tool-card {
+        flex-basis: 235px;
+        min-height: 135px;
+        padding: 14px;
+      }
+
+      .featured-tools-title {
+        font-size: 1.15rem;
+        line-height: 1.3;
+      }
+
+      .horizontal-card {
+        flex-basis: 245px;
+        width: 245px;
+        min-height: 155px;
+      }
+
+      .other-guides-grid,
+      .resource-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .contributors-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .contributor-card {
+        min-height: 120px;
+        padding: 16px;
+      }
+
+      .contributor-avatar {
+        flex-basis: 64px;
+        width: 64px;
+        height: 64px;
+      }
+
+      .section-header-with-action {
+        gap: 10px;
+      }
+
+      .section-view-all {
+        font-size: .82rem;
+      }
+
+      .code-block-wrapper {
+        margin-top: 16px !important;
+      }
+    }
+
+    @media (max-width: 430px) {
+      :root { --mobile-header-height: 106px; }
+      .top-header {
+        flex-wrap: wrap;
+      }
+
+      .header-left {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      .search-box {
+        order: 3;
+        flex: 1 0 100%;
+        width: 100%;
+        margin-top: 5px;
+      }
+
+      .header-actions {
+        flex: 0 0 auto;
+      }
+
+      .main-content {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .horizontal-card {
+        flex-basis: 230px;
+        width: 230px;
+      }
+
+      .featured-tool-card {
+        flex-basis: 220px;
+      }
+
+      .contributor-card {
+        gap: 12px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .featured-tools-grid,
+      .horizontal-cards {
+        scroll-behavior: auto;
+      }
+
+      .featured-tool-card,
+      .schema-card,
+      .contributor-card {
+        transition: none;
+      }
+    }
+  
+    /* Header brand */
+    .header-brand .brand-title {
+      color: #0F172A !important;
+      font-size: 1.18rem !important;
+      font-weight: 700;
+    }
+
+    .header-brand .brand-title-primary {
+      color: var(--cmc-blue) !important;
+      font-size: 1.18rem !important;
+    }
+
+    .header-brand .brand-title-secondary {
+      color: #0F172A !important;
+      font-size: 1.18rem !important;
+    }
+
+  /* =========================================================
+     V2 UX POLISH: SEARCH, MOBILE NAV, INTERACTION, ACCESSIBILITY
+     ========================================================= */
+  .mobile-menu-btn {
+    display: none;
+    border: 0;
+    background: transparent;
+    padding: 7px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .mobile-menu-btn:hover { background: rgba(7,151,225,.08); }
+
+  .mobile-nav-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,.34);
+    z-index: 998;
+  }
+  .mobile-nav-backdrop.is-open { display: block; }
+
+  .search-box { position: relative; }
+  .search-results {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    max-height: min(60vh, 480px);
+    overflow: auto;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(15,23,42,.16);
+    padding: 6px;
+  }
+  .search-results[hidden] { display: none; }
+  .search-result {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+    padding: 10px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--text-primary);
+  }
+  .search-result:hover, .search-result.is-active { background: #f1f7fb; }
+  .search-result .material-icons { color: var(--cmc-blue); font-size: 19px; margin-top: 1px; }
+  .search-result-title { font-weight: 700; font-size: .88rem; line-height: 1.25; }
+  .search-result-meta { color: var(--text-secondary); font-size: .75rem; margin-top: 3px; }
+  .search-empty { padding: 14px; color: var(--text-secondary); font-size: .84rem; }
+
+  .schema-card, .featured-tool-card, .contributor-card { position: relative; }
+  .schema-card a, .featured-tool-card a { position: relative; z-index: 1; }
+  .section-header h1, .section-header h2, .featured-tools-title { letter-spacing: -.015em; }
+  .site-footer { gap: 12px; flex-wrap: wrap; }
+
+  @media (min-width: 701px) {
+    .mobile-menu-btn { display: none !important; }
+  }
+
+  @media (max-width: 700px) {
+    :root { --mobile-header-height: 58px; }
+    .mobile-menu-btn { display: inline-flex; align-items: center; justify-content: center; }
+    .sidebar {
+      display: block;
+      position: fixed;
+      top: var(--mobile-header-height, 58px);
+      bottom: 0;
+      left: 0;
+      width: min(82vw, 310px);
+      max-width: 310px;
+      z-index: 999;
+      overflow-y: auto;
+      transform: translateX(-105%);
+      transition: transform .2s ease;
+      box-shadow: 12px 0 30px rgba(15,23,42,.12);
+      background: var(--card-background, #fff);
+    }
+    .sidebar.is-open { transform: translateX(0); }
+    body.mobile-nav-open { overflow: hidden; }
+    .search-results { left: -6px; right: -6px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sidebar { transition: none; }
+  }
+
+
+    /* =========================================================
+       V3 POLISH: hierarchy, cards, search, footer, docs UX
+       ========================================================= */
+    /* Keep the featured tools heading visually identical to section headings. */
+    .featured-tools-title {
+      color: var(--text-primary);
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+
+    .overview-hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .overview-stat {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      padding: 7px 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: #f8fafc;
+      color: var(--text-secondary);
+      font-size: .78rem;
+    }
+    .overview-stat strong { color: var(--text-primary); font-size: .88rem; }
+    .card-eyebrow {
+      margin-bottom: 5px;
+      color: #64748b;
+      font-size: .66rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .featured-tool-card,
+    .schema-card,
+    .contributor-card { border-color: #e2e8f0; }
+    .featured-tool-card:hover,
+    .schema-card:hover {
+      border-color: rgba(7,151,225,.35);
+    }
+    .featured-tool-icon-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      margin-bottom: 8px;
+      border-radius: 9px;
+      background: #eef8fd;
+    }
+    .featured-tool-icon-wrap .featured-tool-icon { margin: 0; }
+    .progression-label {
+      display: inline-block;
+      margin-bottom: 6px;
+      color: #64748b;
+      font-size: .66rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .docs-category-label {
+      display: inline-block;
+      margin-bottom: 6px;
+      color: #64748b;
+      font-size: .66rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .api-example-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .site-footer {
+      align-items: flex-start;
+      padding-top: 24px;
+      padding-bottom: 24px;
+    }
+    .site-footer-left {
+      max-width: 680px;
+      line-height: 1.5;
+    }
+    .site-footer-brand {
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 3px;
+    }
+    .site-footer-note { color: var(--text-secondary); font-size: .82rem; }
+    .site-footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      margin-top: 8px;
+    }
+    .site-footer-links a { color: var(--text-secondary); text-decoration: none; font-size: .82rem; }
+    .site-footer-links a:hover { color: var(--cmc-blue); text-decoration: underline; }
+    .site-footer-version { color: var(--text-secondary); font-size: .75rem; margin-top: 10px; }
+    .search-result-group {
+      padding: 7px 10px 4px;
+      color: #64748b;
+      font-size: .65rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .search-result mark {
+      padding: 0;
+      background: #e0f2fe;
+      color: inherit;
+      border-radius: 2px;
+    }
+    .search-result.is-active { outline: 2px solid rgba(7,151,225,.18); outline-offset: -2px; }
+    .search-help {
+      padding: 8px 10px 5px;
+      color: var(--text-secondary);
+      font-size: .72rem;
+    }
+    .api-method-badge {
+      display: inline-block;
+      margin-right: 6px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      background: #f1f5f9;
+      color: #475569;
+      font: 700 .65rem var(--font-mono);
+    }
+    @media (max-width: 700px) {
+      .overview-hero-meta { gap: 6px; }
+      .overview-stat { padding: 6px 8px; }
+      .site-footer { padding-top: 18px; padding-bottom: 18px; }
+    }
+
+  </style>
+
   <script src="better-api-docs/app.js" defer></script>
 </head>
-<body>
 
-  <!-- Top Header Navigation -->
+<body>
   <header class="top-header">
     <div class="header-left">
-      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
-        <span class="material-icons" style="font-size:1.25rem;">menu</span>
+      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu" aria-controls="sidebar" aria-expanded="false">
+        <span class="material-icons" aria-hidden="true" style="font-size:1.25rem;">menu</span>
       </button>
+
       <a href="index.html" class="header-brand">
-        <img src="assets/cmc-guides.png" alt="CraftersMC Logo" />
+        <img src="assets/cmc-guides.png" alt="CraftersMC Guides">
         <div class="brand-text">
-          <span class="brand-title">CraftersMC Guides</span>
+          <span class="brand-title"><span class="brand-title-primary">CraftersMC</span> <span class="brand-title-secondary">Guides</span></span>
           <span class="version-badge">SkyBlock Docs</span>
         </div>
       </a>
     </div>
 
-    <!-- Search Box -->
     <div class="search-box">
-      <span class="material-icons search-icon">search</span>
-      <input type="text" id="search-input" placeholder="Search guides, tools, slayer, API..." />
-      <span class="search-kbd-shortcut">/</span>
+      <span class="material-icons search-icon" aria-hidden="true">search</span>
+      <input type="search" id="search-input" placeholder="Search guides, tools, players, items..." aria-label="Search guides, tools, players, and items" autocomplete="off" spellcheck="false" aria-expanded="false" aria-controls="search-results" role="combobox">
+      <span class="search-kbd-shortcut" aria-hidden="true">/</span>
+      <div class="search-results" id="search-results" role="listbox" hidden></div>
     </div>
 
-    <!-- Header Utility Links -->
     <div class="header-actions">
-      <a href="better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
-      <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
+      <a href="better-api-docs/index.html" class="header-link" style="font-weight:600;">
+        <span class="material-icons" aria-hidden="true" style="font-size:1rem;vertical-align:middle;">api</span>
+        <span class="header-link-text">API Docs</span>
+      </a>
+
+      <a href="https://discord.gg/BwuKACpVc9" target="_blank" rel="noopener noreferrer" class="header-link" style="font-weight:600;">
+        <span class="material-icons" aria-hidden="true" style="font-size:1rem;vertical-align:middle;">forum</span>
+        <span class="header-link-text">Discord</span>
+      </a>
     </div>
   </header>
+  <div class="mobile-nav-backdrop" id="mobile-nav-backdrop" aria-hidden="true"></div>
 
-  <!-- Application Layout -->
   <div class="app-layout">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
 
-    <!-- Left Sidebar Navigation -->
-    <aside class="sidebar" id="sidebar">
       <div class="sidebar-group">
         <div class="sidebar-section-title">Getting Started</div>
         <ul class="sidebar-nav">
-          <li class="sidebar-nav-item"><a href="#overview"><span class="material-icons nav-icon">home</span> <span>Overview</span></a></li>
-          <li class="sidebar-nav-item"><a href="#section-guides"><span class="material-icons nav-icon">menu_book</span> <span>Progression Guides</span></a></li>
-          <li class="sidebar-nav-item"><a href="#section-tools"><span class="material-icons nav-icon">build</span> <span>Live Tools</span></a></li>
-          <li class="sidebar-nav-item"><a href="#section-api"><span class="material-icons nav-icon">code</span> <span>Developer &amp; API</span></a></li>
+          <li class="sidebar-nav-item"><a href="#overview"><span class="material-icons nav-icon" aria-hidden="true">home</span><span>Overview</span></a></li>
+          <li class="sidebar-nav-item"><a href="#section-guides"><span class="material-icons nav-icon" aria-hidden="true">menu_book</span><span>Progression Guides</span></a></li>
+          <li class="sidebar-nav-item"><a href="#section-tools"><span class="material-icons nav-icon" aria-hidden="true">build</span><span>Live Tools</span></a></li>
+          <li class="sidebar-nav-item"><a href="#section-api"><span class="material-icons nav-icon" aria-hidden="true">code</span><span>Developer &amp; API</span></a></li>
         </ul>
       </div>
 
       <div class="sidebar-group">
         <div class="sidebar-section-title">Progression Guides</div>
         <ul class="sidebar-nav">
-          <li class="sidebar-nav-item"><a href="guide/starter-guide.html"><span class="material-icons nav-icon">play_circle</span> <span>Starter Guide</span></a></li>
-          <li class="sidebar-nav-item"><a href="guide/intermediate-guide.html"><span class="material-icons nav-icon">trending_up</span> <span>Intermediate Guide</span></a></li>
-          <li class="sidebar-nav-item"><a href="guide/intermediate-guide2.html"><span class="material-icons nav-icon">shield</span> <span>Slayers Edition</span></a></li>
-          <li class="sidebar-nav-item"><a href="guide/advanced-guide.html"><span class="material-icons nav-icon">military_tech</span> <span>Advanced Guide</span></a></li>
-          <li class="sidebar-nav-item"><a href="guide/accessories-guide.html"><span class="material-icons nav-icon">auto_awesome</span> <span>Accessories &amp; Reforges</span></a></li>
-          <li class="sidebar-nav-item"><a href="guide/bazaar-guide.html"><span class="material-icons nav-icon">storefront</span> <span>Bazaar Trading</span></a></li>
-          <li class="sidebar-nav-item"><a href="guide/queries.html"><span class="material-icons nav-icon">help_outline</span> <span>Common Queries &amp; FAQ</span></a></li>
-          <li class="sidebar-nav-item"><a href="unicode.html"><span class="material-icons nav-icon">format_shapes</span> <span>Unicode &amp; Formatting</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/starter-guide.html"><span class="material-icons nav-icon" aria-hidden="true">play_circle</span><span>Starter Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/intermediate-guide.html"><span class="material-icons nav-icon" aria-hidden="true">trending_up</span><span>Intermediate Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/intermediate-guide2.html"><span class="material-icons nav-icon" aria-hidden="true">shield</span><span>Slayers Edition</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/advanced-guide.html"><span class="material-icons nav-icon" aria-hidden="true">military_tech</span><span>Advanced Guide</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-section-title">SkyBlock Guides</div>
+        <ul class="sidebar-nav">
+          <li class="sidebar-nav-item"><a href="guide/accessories-guide.html"><span class="material-icons nav-icon" aria-hidden="true">auto_awesome</span><span>Accessories &amp; Reforges</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/bazaar-guide.html"><span class="material-icons nav-icon" aria-hidden="true">storefront</span><span>Bazaar Trading</span></a></li>
+          <li class="sidebar-nav-item"><a href="guide/queries.html"><span class="material-icons nav-icon" aria-hidden="true">help_outline</span><span>Common Queries &amp; FAQ</span></a></li>
+          <li class="sidebar-nav-item"><a href="unicode.html"><span class="material-icons nav-icon" aria-hidden="true">format_shapes</span><span>Unicode &amp; Formatting</span></a></li>
         </ul>
       </div>
 
       <div class="sidebar-group">
         <div class="sidebar-section-title">Live Tools &amp; Trackers</div>
         <ul class="sidebar-nav">
-          <li class="sidebar-nav-item"><a href="player.html"><span class="material-icons nav-icon">person_search</span> <span>Player Viewer</span></a></li>
-          <li class="sidebar-nav-item"><a href="skycalendar.html"><span class="material-icons nav-icon">event</span> <span>SkyCalendar (Events)</span></a></li>
-          <li class="sidebar-nav-item"><a href="rank-sellers.html"><span class="material-icons nav-icon">card_giftcard</span> <span>Rank &amp; Gems Sellers</span></a></li>
-          <li class="sidebar-nav-item"><a href="leaderboards.html"><span class="material-icons nav-icon">leaderboard</span> <span>Leaderboards</span></a></li>
-          <li class="sidebar-nav-item"><a href="texture-packs.html"><span class="material-icons nav-icon">palette</span> <span>Texture Packs</span></a></li>
-          <li class="sidebar-nav-item"><a href="tools.html"><span class="material-icons nav-icon">calculate</span> <span>Calculators</span></a></li>
-          <li class="sidebar-nav-item"><a href="feather-bot/index.html"><span class="material-icons nav-icon">smart_toy</span> <span>Feather Bot Guide</span></a></li>
+          <li class="sidebar-nav-item"><a href="player.html"><span class="material-icons nav-icon" aria-hidden="true">person_search</span><span>Player Viewer</span></a></li>
+          <li class="sidebar-nav-item"><a href="skycalendar.html"><span class="material-icons nav-icon" aria-hidden="true">event</span><span>SkyCalendar (Events)</span></a></li>
+          <li class="sidebar-nav-item"><a href="rank-sellers.html"><span class="material-icons nav-icon" aria-hidden="true">card_giftcard</span><span>Rank &amp; Gems Sellers</span></a></li>
+          <li class="sidebar-nav-item"><a href="leaderboards.html"><span class="material-icons nav-icon" aria-hidden="true">leaderboard</span><span>Leaderboards</span></a></li>
+          <li class="sidebar-nav-item"><a href="texture-packs.html"><span class="material-icons nav-icon" aria-hidden="true">palette</span><span>Texture Packs</span></a></li>
+          <li class="sidebar-nav-item"><a href="tools.html"><span class="material-icons nav-icon" aria-hidden="true">calculate</span><span>Calculators</span></a></li>
+          <li class="sidebar-nav-item"><a href="feather-bot/index.html"><span class="material-icons nav-icon" aria-hidden="true">smart_toy</span><span>Feather Bot Guide</span></a></li>
         </ul>
       </div>
 
       <div class="sidebar-group">
         <div class="sidebar-section-title">Developer &amp; API</div>
         <ul class="sidebar-nav">
-          <li class="sidebar-nav-item"><a href="better-api-docs/index.html"><span class="material-icons nav-icon">code</span> <span>REST API v1 Reference</span></a></li>
-          <li class="sidebar-nav-item"><a href="better-api-docs/index.html#section-nbt-decoding"><span class="material-icons nav-icon">memory</span> <span>15 NBT Storage Blobs</span></a></li>
-          <li class="sidebar-nav-item"><a href="better-api-docs/index.html#section-item-ids"><span class="material-icons nav-icon">list_alt</span> <span>Numerical Item IDs (1,933)</span></a></li>
+          <li class="sidebar-nav-item"><a href="better-api-docs/index.html"><span class="material-icons nav-icon" aria-hidden="true">code</span><span>REST API v1 Reference</span></a></li>
+          <li class="sidebar-nav-item"><a href="better-api-docs/index.html#section-nbt-decoding"><span class="material-icons nav-icon" aria-hidden="true">memory</span><span>15 NBT Storage Blobs</span></a></li>
+          <li class="sidebar-nav-item"><a href="better-api-docs/index.html#section-item-ids"><span class="material-icons nav-icon" aria-hidden="true">list_alt</span><span>Numerical Item IDs (1,933)</span></a></li>
         </ul>
       </div>
 
       <div class="sidebar-group">
         <div class="sidebar-section-title">Community &amp; Source</div>
         <ul class="sidebar-nav">
-          <li class="sidebar-nav-item"><a href="https://craftersmc.net/" target="_blank"><span class="material-icons nav-icon">language</span> <span>Server Website</span></a></li>
-          <li class="sidebar-nav-item"><a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank"><span class="material-icons nav-icon">code</span> <span>GitHub Repository</span></a></li>
+          <li class="sidebar-nav-item"><a href="https://craftersmc.net/" target="_blank" rel="noopener noreferrer"><span class="material-icons nav-icon" aria-hidden="true">language</span><span>Server Website</span></a></li>
+          <li class="sidebar-nav-item"><a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" rel="noopener noreferrer"><span class="material-icons nav-icon" aria-hidden="true">code</span><span>GitHub Repository</span></a></li>
         </ul>
       </div>
     </aside>
 
-    <!-- Main Content Area -->
     <main class="main-content">
 
-      <!-- Section: Overview -->
       <section class="doc-section" id="overview">
         <div class="section-header">
           <h1>CraftersMC SkyBlock Documentation</h1>
-          <p>
-            The comprehensive guide and reference library for CraftersMC SkyBlock players, traders, and developers.
-          </p>
+          <p>The comprehensive guide and reference library for CraftersMC SkyBlock players, traders, and developers.</p>
         </div>
 
         <div class="prose-card">
-          <p>
-            Whether you are just starting your island, advancing through slayer bosses, optimizing accessory reforges, or building integrations with the CraftersMC REST API, this documentation contains all verified strategies, event timers, and technical references.
-          </p>
+          <p>Whether you are just starting your island, advancing through slayer bosses, optimizing accessory reforges, or building integrations with the CraftersMC REST API, this documentation contains verified strategies, event timers, and technical references.</p>
+          <div class="overview-hero-meta" aria-label="Documentation overview">
+            <span class="overview-stat"><strong>10</strong> Guides</span>
+            <span class="overview-stat"><strong>7</strong> Tools</span>
+            <span class="overview-stat"><strong>3</strong> API References</span>
+          </div>
+
           <div class="alert-box tip">
-            <span class="material-icons alert-icon">lightbulb</span>
+            <span class="material-icons alert-icon" aria-hidden="true">lightbulb</span>
             <div>
-              <strong>Quick Tip:</strong> Press <kbd style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-family:var(--font-mono); font-size:0.8rem;">/</kbd> anywhere on the page to focus the global search bar and instantly filter guides and tools.
+              <strong>Quick Tip:</strong> Press
+              <kbd style="background:#e2e8f0;padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:.8rem;">/</kbd>
+              anywhere on the page to focus the global search bar and instantly filter guides and tools.
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Section: Progression Guides Directory -->
-      <section class="doc-section" id="section-guides">
-        <div class="section-header">
-          <h2><span class="material-icons">menu_book</span> Progression &amp; Gameplay Guides</h2>
-          <p>Detailed walkthroughs covering each stage of the game.</p>
+      <section class="featured-tools-section" aria-labelledby="featured-tools-title">
+        <div class="featured-tools-header">
+          <div>
+            <h2 class="featured-tools-title" id="featured-tools-title"><span class="material-icons" aria-hidden="true">build</span>Most Used Tools</h2>
+            <p class="featured-tools-subtitle">Quick access to the tools players use the most.</p>
+          </div>
         </div>
 
-        <div class="schema-cards-grid">
-          <div class="schema-card">
-            <div class="schema-name"><a href="guide/starter-guide.html">Starter Guide</a></div>
-            <div class="schema-desc">Early-game setup: Island layout, early coin generation, fairy souls, and minion automation.</div>
-            <div style="margin-top: 10px;"><a href="guide/starter-guide.html" style="font-weight: 600;">Open Starter Guide &rarr;</a></div>
+        <div class="featured-tools-grid" role="region" aria-label="Most used tools" tabindex="0">
+          <div class="featured-tool-card">
+            <div class="featured-tool-icon-wrap"><div class="featured-tool-icon material-icons" aria-hidden="true">person</div></div>
+            <div class="card-eyebrow">Player Tool</div>
+            <div class="featured-tool-name"><a href="player.html">Player Viewer</a></div>
+            <div class="featured-tool-desc">View player stats, skills, profiles, minions and more.</div>
+            <a class="featured-tool-link" href="player.html">Launch →</a>
           </div>
 
-          <div class="schema-card">
-            <div class="schema-name"><a href="guide/intermediate-guide.html">Intermediate Guide</a></div>
-            <div class="schema-desc">Dragon armor progression, weapon upgrades, Combat skill leveling, and minion slot expansion.</div>
-            <div style="margin-top: 10px;"><a href="guide/intermediate-guide.html" style="font-weight: 600;">Open Intermediate Guide &rarr;</a></div>
+          <div class="featured-tool-card">
+            <div class="featured-tool-icon-wrap"><div class="featured-tool-icon material-icons" aria-hidden="true">event</div></div>
+            <div class="card-eyebrow">Live Tool</div>
+            <div class="featured-tool-name"><a href="skycalendar.html">SkyCalendar</a></div>
+            <div class="featured-tool-desc">Live event timers and countdowns for SkyBlock events.</div>
+            <a class="featured-tool-link" href="skycalendar.html">Launch →</a>
           </div>
 
-          <div class="schema-card">
-            <div class="schema-name"><a href="guide/intermediate-guide2.html">Slayer Edition Guide</a></div>
-            <div class="schema-desc">Boss mechanics, gear loadouts, and spawn locations for Zombie, Spider, and Wolf slayers.</div>
-            <div style="margin-top: 10px;"><a href="guide/intermediate-guide2.html" style="font-weight: 600;">Open Slayer Guide &rarr;</a></div>
+          <div class="featured-tool-card">
+            <div class="featured-tool-icon-wrap"><div class="featured-tool-icon material-icons" aria-hidden="true">shopping_cart</div></div>
+            <div class="card-eyebrow">Market Tool</div>
+            <div class="featured-tool-name"><a href="guide/bazaar-guide.html">Bazaar Tracker</a></div>
+            <div class="featured-tool-desc">Track prices, flips, orders and market trends.</div>
+            <a class="featured-tool-link" href="guide/bazaar-guide.html">Launch →</a>
           </div>
 
-          <div class="schema-card">
-            <div class="schema-name"><a href="guide/advanced-guide.html">Advanced Guide</a></div>
-            <div class="schema-desc">Endgame combat setups, high-tier slayer farming, pet level optimization, and economy management.</div>
-            <div style="margin-top: 10px;"><a href="guide/advanced-guide.html" style="font-weight: 600;">Open Advanced Guide &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="guide/accessories-guide.html">Accessories &amp; Reforges</a></div>
-            <div class="schema-desc">Optimal reforge stones for common, uncommon, rare, epic, and legendary talismans.</div>
-            <div style="margin-top: 10px;"><a href="guide/accessories-guide.html" style="font-weight: 600;">Open Accessories Guide &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="guide/bazaar-guide.html">Bazaar Trading Guide</a></div>
-            <div class="schema-desc">How to use buy and sell orders, understand order book spreads, and make coins with margin flipping.</div>
-            <div style="margin-top: 10px;"><a href="guide/bazaar-guide.html" style="font-weight: 600;">Open Bazaar Guide &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="guide/queries.html">Common Queries &amp; FAQ</a></div>
-            <div class="schema-desc">Quick reference answers for common questions regarding CraftersMC custom features and mechanics.</div>
-            <div style="margin-top: 10px;"><a href="guide/queries.html" style="font-weight: 600;">Open Queries &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="unicode.html">Unicode &amp; Formatting</a></div>
-            <div class="schema-desc">Minecraft color code guide and custom unicode symbols for Book &amp; Quills and item signs.</div>
-            <div style="margin-top: 10px;"><a href="unicode.html" style="font-weight: 600;">Open Unicode Guide &rarr;</a></div>
+          <div class="featured-tool-card">
+            <div class="featured-tool-icon-wrap"><div class="featured-tool-icon material-icons" aria-hidden="true">emoji_events</div></div>
+            <div class="card-eyebrow">Ranking Tool</div>
+            <div class="featured-tool-name"><a href="leaderboards.html">Leaderboards</a></div>
+            <div class="featured-tool-desc">Check top players across multiple categories.</div>
+            <a class="featured-tool-link" href="leaderboards.html">View →</a>
           </div>
         </div>
       </section>
 
-      <!-- Section: Interactive Tools -->
+      <section class="doc-section" id="section-guides">
+        <div class="section-header">
+          <h2><span class="material-icons" aria-hidden="true">menu_book</span>Progression &amp; Gameplay Guides</h2>
+          <p>Step-by-step guides to help you progress in SkyBlock.</p>
+        </div>
+
+        <div class="horizontal-cards" role="region" aria-label="Progression and gameplay guides" tabindex="0">
+          <div class="schema-card horizontal-card">
+            <span class="progression-label">Start Here</span>
+            <div class="schema-name"><a href="guide/starter-guide.html">Starter Guide</a></div>
+            <div class="schema-desc">Early-game setup: Island layout, early coin generation, fairy souls, minions, and more.</div>
+            <div style="margin-top:10px;"><a href="guide/starter-guide.html" style="font-weight:600;">Open Guide →</a></div>
+          </div>
+
+          <div class="schema-card horizontal-card">
+            <span class="progression-label">Progress</span>
+            <div class="schema-name"><a href="guide/intermediate-guide.html">Intermediate Guide</a></div>
+            <div class="schema-desc">Dragon armor progression, weapon upgrades, combat skills and minion expansion.</div>
+            <div style="margin-top:10px;"><a href="guide/intermediate-guide.html" style="font-weight:600;">Open Guide →</a></div>
+          </div>
+
+          <div class="schema-card horizontal-card">
+            <span class="progression-label">Specialization</span>
+            <div class="schema-name"><a href="guide/intermediate-guide2.html">Slayers Edition</a></div>
+            <div class="schema-desc">Boss mechanics, gear loadouts, and slayer progression for Zombie, Spider, and Wolf slayers.</div>
+            <div style="margin-top:10px;"><a href="guide/intermediate-guide2.html" style="font-weight:600;">Open Guide →</a></div>
+          </div>
+
+          <div class="schema-card horizontal-card">
+            <span class="progression-label">Endgame</span>
+            <div class="schema-name"><a href="guide/advanced-guide.html">Advanced Guide</a></div>
+            <div class="schema-desc">Endgame setups, high-tier slayer farming, economy and optimization.</div>
+            <div style="margin-top:10px;"><a href="guide/advanced-guide.html" style="font-weight:600;">Open Guide →</a></div>
+          </div>
+        </div>
+      </section>
+
       <section class="doc-section" id="section-tools">
         <div class="section-header">
-          <h2><span class="material-icons">build</span> Live Interactive Tools</h2>
+          <h2><span class="material-icons" aria-hidden="true">build</span>Live Tools &amp; Trackers</h2>
           <p>Real-time trackers, directories, and utilities built for CraftersMC players.</p>
         </div>
 
-        <div class="schema-cards-grid">
-          <div class="schema-card">
-            <div class="schema-name"><a href="player.html">Player &amp; Profile Viewer</a></div>
-            <div class="schema-desc">Inspect real-time player data, SkyBlock profiles, skills, slayers, minions, and collections via the API.</div>
-            <div style="margin-top: 10px;"><a href="player.html" style="font-weight: 600;">Launch Player Viewer &rarr;</a></div>
+        <div class="horizontal-cards" role="region" aria-label="Live tools and trackers" tabindex="0">
+          <div class="schema-card horizontal-card">
+            <span class="progression-label">Player Tool</span>
+            <div class="schema-name"><a href="player.html">Player Viewer</a></div>
+            <div class="schema-desc">Inspect real-time player data, profiles, skills, slayers, minions, and more.</div>
+            <div style="margin-top:10px;"><a href="player.html" style="font-weight:600;">Launch →</a></div>
           </div>
 
-          <div class="schema-card">
+          <div class="schema-card horizontal-card">
+            <span class="progression-label">Event Tracker</span>
             <div class="schema-name"><a href="skycalendar.html">SkyCalendar</a></div>
-            <div class="schema-desc">Live countdown timers for Season of Jerry, Spooky Festival, Traveling Zoo, and Ethan's Contests.</div>
-            <div style="margin-top: 10px;"><a href="skycalendar.html" style="font-weight: 600;">Launch SkyCalendar &rarr;</a></div>
+            <div class="schema-desc">Live countdown timers for events, contests, and special seasons.</div>
+            <div style="margin-top:10px;"><a href="skycalendar.html" style="font-weight:600;">Launch →</a></div>
           </div>
 
-          <div class="schema-card">
+          <div class="schema-card horizontal-card">
+            <span class="progression-label">Seller Directory</span>
             <div class="schema-name"><a href="rank-sellers.html">Rank &amp; Gems Sellers</a></div>
-            <div class="schema-desc">Community-verified list of trusted rank and gem sellers with scam prevention guidelines.</div>
-            <div style="margin-top: 10px;"><a href="rank-sellers.html" style="font-weight: 600;">Open Directory &rarr;</a></div>
+            <div class="schema-desc">Verified list of trusted rank and gem sellers with scam prevention guidelines.</div>
+            <div style="margin-top:10px;"><a href="rank-sellers.html" style="font-weight:600;">Open Directory →</a></div>
           </div>
 
-          <div class="schema-card">
-            <div class="schema-name"><a href="leaderboards.html">Leaderboards Viewer</a></div>
-            <div class="schema-desc">Check top player placements across collections, skills, slayer XP, bank networth, and boss records.</div>
-            <div style="margin-top: 10px;"><a href="leaderboards.html" style="font-weight: 600;">View Leaderboards &rarr;</a></div>
+          <div class="schema-card horizontal-card">
+            <span class="progression-label">Leaderboard</span>
+            <div class="schema-name"><a href="leaderboards.html">Leaderboards</a></div>
+            <div class="schema-desc">Check top player placements across collections, skills, slayer XP, bank networth and boss records.</div>
+            <div style="margin-top:10px;"><a href="leaderboards.html" style="font-weight:600;">View Leaderboards →</a></div>
           </div>
 
-          <div class="schema-card">
+          <div class="schema-card horizontal-card">
+            <span class="progression-label">Calculator</span>
+            <div class="schema-name"><a href="tools.html">Calculators</a></div>
+            <div class="schema-desc">Reforge stat calculators, minion inventory timers, skill XP and other utilities.</div>
+            <div style="margin-top:10px;"><a href="tools.html" style="font-weight:600;">Open Calculators →</a></div>
+          </div>
+
+          <div class="schema-card horizontal-card">
+            <span class="progression-label">Resource Packs</span>
             <div class="schema-name"><a href="texture-packs.html">Texture Packs</a></div>
-            <div class="schema-desc">Curated list of Bedrock resource packs customized for CraftersMC weapons and armor.</div>
-            <div style="margin-top: 10px;"><a href="texture-packs.html" style="font-weight: 600;">Browse Packs &rarr;</a></div>
+            <div class="schema-desc">Curated Bedrock resource packs customized for CraftersMC weapons and armor.</div>
+            <div style="margin-top:10px;"><a href="texture-packs.html" style="font-weight:600;">Browse Packs →</a></div>
           </div>
 
-          <div class="schema-card">
-            <div class="schema-name"><a href="tools.html">Calculators &amp; Utilities</a></div>
-            <div class="schema-desc">Reforge stat calculators, minion inventory filling timers, and skill XP calculators.</div>
-            <div style="margin-top: 10px;"><a href="tools.html" style="font-weight: 600;">Open Calculators &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
+          <div class="schema-card horizontal-card">
+            <span class="progression-label">Discord Bot</span>
             <div class="schema-name"><a href="feather-bot/index.html">Feather Bot Guide</a></div>
-            <div class="schema-desc">Comprehensive slash command syntax and documentation for the official CraftersMC Discord bot.</div>
-            <div style="margin-top: 10px;"><a href="feather-bot/index.html" style="font-weight: 600;">View Bot Commands &rarr;</a></div>
+            <div class="schema-desc">Slash command syntax and documentation for the official CraftersMC Discord bot.</div>
+            <div style="margin-top:10px;"><a href="feather-bot/index.html" style="font-weight:600;">View Guide →</a></div>
           </div>
         </div>
       </section>
 
-      <!-- Section: Developer Platform & REST API -->
+      <section class="doc-section" id="section-other-guides">
+        <div class="section-header section-header-with-action">
+          <div>
+            <h2><span class="material-icons" aria-hidden="true">menu_book</span>Other SkyBlock Guides</h2>
+            <p>In-depth guides for specific game features and mechanics.</p>
+          </div>
+          <a href="guide/" class="section-view-all">View all →</a>
+        </div>
+
+        <div class="other-guides-grid">
+          <div class="schema-card">
+            <span class="docs-category-label">Guide</span>
+            <div class="schema-name"><a href="guide/accessories-guide.html">Accessories &amp; Reforges</a></div>
+            <div class="schema-desc">Optimal reforge stones for common, uncommon, rare, epic, and legendary talismans.</div>
+            <div style="margin-top:10px;"><a href="guide/accessories-guide.html" style="font-weight:600;">Open Guide →</a></div>
+          </div>
+
+          <div class="schema-card">
+            <span class="docs-category-label">Guide</span>
+            <div class="schema-name"><a href="guide/bazaar-guide.html">Bazaar Trading Guide</a></div>
+            <div class="schema-desc">How to use buy and sell orders, understand spreads, and make coins with margin flipping.</div>
+            <div style="margin-top:10px;"><a href="guide/bazaar-guide.html" style="font-weight:600;">Open Guide →</a></div>
+          </div>
+
+          <div class="schema-card">
+            <span class="docs-category-label">FAQ</span>
+            <div class="schema-name"><a href="guide/queries.html">Common Queries &amp; FAQ</a></div>
+            <div class="schema-desc">Quick answers to common questions regarding CraftersMC custom features and mechanics.</div>
+            <div style="margin-top:10px;"><a href="guide/queries.html" style="font-weight:600;">Open Guide →</a></div>
+          </div>
+
+          <div class="schema-card">
+            <span class="docs-category-label">Guide</span>
+            <div class="schema-name"><a href="unicode.html">Unicode &amp; Formatting</a></div>
+            <div class="schema-desc">Minecraft color code guide and custom unicode symbols for Book &amp; Quills and item signs.</div>
+            <div style="margin-top:10px;"><a href="unicode.html" style="font-weight:600;">Open Guide →</a></div>
+          </div>
+
+          <div class="schema-card">
+            <span class="docs-category-label">Guide</span>
+            <div class="schema-name"><a href="guide/minion-guide.html">Minion Guide</a></div>
+            <div class="schema-desc">Maximize your minion setup and profits. Best minions, upgrades and placements.</div>
+            <div style="margin-top:10px;"><a href="guide/minion-guide.html" style="font-weight:600;">Open Guide →</a></div>
+          </div>
+
+          <div class="schema-card">
+            <span class="docs-category-label">Guide</span>
+            <div class="schema-name"><a href="guide/combat-guide.html">Combat Guide</a></div>
+            <div class="schema-desc">Improve your combat skills and damage output. Learn mechanics and useful tips.</div>
+            <div style="margin-top:10px;"><a href="guide/combat-guide.html" style="font-weight:600;">Open Guide →</a></div>
+          </div>
+        </div>
+      </section>
+
       <section class="doc-section" id="section-api">
         <div class="section-header">
-          <h2><span class="material-icons">code</span> Developer Platform &amp; REST API</h2>
-          <p>Technical documentation and NBT specifications for bots, websites, and community tools.</p>
+          <h2><span class="material-icons" aria-hidden="true">code</span>Developer &amp; API Resources</h2>
+          <p>Resources for developers and data enthusiasts.</p>
         </div>
 
-        <div class="schema-cards-grid">
+        <div class="resource-grid">
           <div class="schema-card">
-            <div class="schema-name"><a href="better-api-docs/index.html">REST API Documentation (11 Routes)</a></div>
-            <div class="schema-desc">Interactive reference for Server Status, Voters, Players, Bazaar, Auctions, Profiles, and Settings.</div>
-            <div style="margin-top: 10px;"><a href="better-api-docs/index.html" style="font-weight: 600;">Open API Documentation &rarr;</a></div>
+            <span class="docs-category-label">API</span>
+            <div class="schema-name"><a href="better-api-docs/index.html">REST API v1 Reference</a></div>
+            <div class="schema-desc">Complete documentation for CraftersMC REST API endpoints and usage.</div>
+            <div style="margin-top:10px;"><a href="better-api-docs/index.html" style="font-weight:600;">View Docs →</a></div>
           </div>
 
           <div class="schema-card">
-            <div class="schema-name"><a href="better-api-docs/index.html#section-nbt-decoding">15 Decoded NBT Storage Catalog</a></div>
-            <div class="schema-desc">Specifications for Base64 GZIP decompression across player inventories, wardrobe, equipment, and quiver.</div>
-            <div style="margin-top: 10px;"><a href="better-api-docs/index.html#section-nbt-decoding" style="font-weight: 600;">View NBT Specifications &rarr;</a></div>
+            <span class="docs-category-label">NBT Reference</span>
+            <div class="schema-name"><a href="better-api-docs/index.html#section-nbt-decoding">15 NBT Storage Blobs</a></div>
+            <div class="schema-desc">Detailed reference for all 15 NBT storage blobs used in SkyBlock.</div>
+            <div style="margin-top:10px;"><a href="better-api-docs/index.html#section-nbt-decoding" style="font-weight:600;">View Reference →</a></div>
           </div>
 
           <div class="schema-card">
-            <div class="schema-name"><a href="better-api-docs/index.html#section-item-ids">Numerical Item IDs (1,933 Items)</a></div>
-            <div class="schema-desc">Searchable lookup table mapping Bedrock numerical IDs directly to vanilla Minecraft identifiers.</div>
-            <div style="margin-top: 10px;"><a href="better-api-docs/index.html#section-item-ids" style="font-weight: 600;">Search Item IDs &rarr;</a></div>
+            <span class="docs-category-label">Item Reference</span>
+            <div class="schema-name"><a href="better-api-docs/index.html#section-item-ids">Numerical Item IDs (1,933)</a></div>
+            <div class="schema-desc">Browse all items with their numerical IDs for API and integrations.</div>
+            <div style="margin-top:10px;"><a href="better-api-docs/index.html#section-item-ids" style="font-weight:600;">View Items →</a></div>
           </div>
         </div>
 
-        <div class="code-block-wrapper" style="margin-top: 20px;">
-          <div class="code-block-header">
-            <span>Quick Example: Fetch Server Status (Node.js)</span>
-            <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
+        <div class="code-block-wrapper" style="margin-top:20px;">
+          <div class="code-block-header api-example-title">
+            <span><span class="api-method-badge">GET</span>Quick Example: Fetch Server Status (Node.js)</span>
+            <button type="button" class="btn-copy" onclick="copyToClipboard(this)" aria-label="Copy Node.js API example">Copy</button>
           </div>
           <pre><code>const res = await fetch("https://api.craftersmc.net/v1/network/status", {
   headers: { "X-API-Key": "YOUR_API_KEY" }
 });
+
 const data = await res.json();
-console.log(`Online Players: ${data.playerCount}/${data.maxPlayerCount} | SkyBlock: ${data.games.SKYBLOCK.modes.hub}`);</code></pre>
+
+console.log(
+  `Online Players: ${data.playerCount}/${data.maxPlayerCount} | SkyBlock: ${data.games.SKYBLOCK.modes.hub}`
+);</code></pre>
         </div>
       </section>
 
-      <!-- Section: Project Contributors -->
-      <section class="doc-section" id="section-team">
+      <section class="doc-section contributors-section" id="contributors">
         <div class="section-header">
-          <h2><span class="material-icons">people</span> Project Contributors</h2>
+          <h2><span class="material-icons" aria-hidden="true">groups</span>Project Contributors</h2>
           <p>The authors and developers of the CraftersMC Guides project.</p>
         </div>
 
-        <div class="schema-cards-grid">
-          <div class="schema-card" style="display: flex; align-items: center; gap: 14px;">
-            <img src="assets/team/edu.png" alt="ieduoo" style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--border-color);" />
-            <div>
-              <div class="schema-name">ieduoo</div>
-              <div class="schema-desc">Lead Writer &amp; Author (<a href="https://discord.com/users/878545726014107698" target="_blank" rel="noopener">Discord</a>)</div>
+        <div class="contributors-grid">
+          <div class="contributor-card">
+            <img class="contributor-avatar" src="assets/team/edu.png" alt="ieduoo" loading="lazy" decoding="async">
+            <div class="contributor-info">
+              <div class="contributor-name">ieduoo</div>
+              <div class="contributor-role">Lead Writer &amp; Author (<a href="https://discord.gg/BwuKACpVc9" target="_blank" rel="noopener noreferrer">Discord</a>)</div>
             </div>
           </div>
 
-          <div class="schema-card" style="display: flex; align-items: center; gap: 14px;">
-            <img src="assets/team/pgnetwork.png" alt="Pg Network" style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--border-color);" />
-            <div>
-              <div class="schema-name">Pg Network</div>
-              <div class="schema-desc">Full-Stack &amp; Bot Developer (<a href="https://github.com/PgNetwork01" target="_blank">GitHub</a>)</div>
+          <div class="contributor-card">
+            <img class="contributor-avatar" src="assets/team/pgnetwork.png" alt="Pg Network" loading="lazy" decoding="async">
+            <div class="contributor-info">
+              <div class="contributor-name">Pg Network</div>
+              <div class="contributor-role">Full-Stack &amp; Bot Developer (<a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" rel="noopener noreferrer">GitHub</a>)</div>
             </div>
           </div>
 
-          <div class="schema-card" style="display: flex; align-items: center; gap: 14px;">
-            <img src="assets/team/techon.png" alt="TechonTheDev" style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--border-color);" />
-            <div>
-              <div class="schema-name">TechonTheDev</div>
-              <div class="schema-desc">Backend &amp; Website Developer (<a href="https://github.com/TechonVS" target="_blank">GitHub</a>)</div>
+          <div class="contributor-card">
+            <img class="contributor-avatar" src="assets/team/techon.png" alt="TechonTheDev" loading="lazy" decoding="async">
+            <div class="contributor-info">
+              <div class="contributor-name">TechonTheDev</div>
+              <div class="contributor-role">Backend &amp; Website Developer (<a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" rel="noopener noreferrer">GitHub</a>)</div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Footer -->
       <footer class="site-footer">
-        <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
-        <div class="site-footer-right">
-          <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
+        <div class="site-footer-left">
+          <div class="site-footer-brand">CraftersMC Guides</div>
+          <div class="site-footer-note">Unofficial community documentation for CraftersMC SkyBlock.</div>
+          <nav class="site-footer-links" aria-label="Footer navigation">
+            <a href="guide/">Guides</a>
+            <a href="tools.html">Tools</a>
+            <a href="better-api-docs/index.html">API</a>
+            <a href="https://discord.gg/BwuKACpVc9" target="_blank" rel="noopener noreferrer">Discord</a>
+            <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </nav>
+          <div class="site-footer-version">CraftersMC Guides Project &bull; Community maintained</div>
         </div>
       </footer>
-
     </main>
   </div>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const searchInput = document.getElementById("search-input");
+      const searchResults = document.getElementById("search-results");
+      const menuButton = document.querySelector(".mobile-menu-btn");
+      const sidebar = document.getElementById("sidebar");
+      const backdrop = document.getElementById("mobile-nav-backdrop");
+
+      // Global / shortcut: focus search without hijacking typing.
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "/" && !event.ctrlKey && !event.metaKey && !event.altKey) {
+          const active = document.activeElement;
+          const isTyping = active && (
+            active.tagName === "INPUT" || active.tagName === "TEXTAREA" ||
+            active.tagName === "SELECT" || active.isContentEditable
+          );
+          if (!isTyping && searchInput) {
+            event.preventDefault();
+            searchInput.focus();
+            searchInput.select();
+          }
+        }
+        if (event.key === "Escape") {
+          closeSearch();
+          closeMobileNav();
+        }
+      });
+
+      function openMobileNav() {
+        if (!sidebar || !menuButton) return;
+        sidebar.classList.add("is-open");
+        backdrop?.classList.add("is-open");
+        document.body.classList.add("mobile-nav-open");
+        menuButton.setAttribute("aria-expanded", "true");
+        const firstLink = sidebar.querySelector("a");
+        firstLink?.focus();
+      }
+      function closeMobileNav({ returnFocus = true } = {}) {
+        if (!sidebar || !menuButton) return;
+        sidebar.classList.remove("is-open");
+        backdrop?.classList.remove("is-open");
+        document.body.classList.remove("mobile-nav-open");
+        menuButton.setAttribute("aria-expanded", "false");
+        if (returnFocus) menuButton.focus();
+      }
+      menuButton?.addEventListener("click", function () {
+        sidebar?.classList.contains("is-open") ? closeMobileNav() : openMobileNav();
+      });
+      backdrop?.addEventListener("click", closeMobileNav);
+      sidebar?.querySelectorAll("a").forEach(link => link.addEventListener("click", closeMobileNav));
+
+      // Make the Most Used Tools cards clickable without creating nested interactive controls.
+      document.querySelectorAll(".featured-tool-card").forEach(card => {
+        const primaryLink = card.querySelector(".featured-tool-name a");
+        if (!primaryLink) return;
+        card.addEventListener("click", function (event) {
+          if (event.target.closest("a, button")) return;
+          window.location.href = primaryLink.href;
+        });
+      });
+
+      // Lightweight site search using the page's navigation plus card descriptions.
+      const searchSource = [];
+      const addSearchItem = (title, href, context, type, description = "") => {
+        if (!title || !href) return;
+        searchSource.push({ title: title.trim(), href, context, type, description: description.trim() });
+      };
+      document.querySelectorAll(".sidebar-nav-item a, .featured-tool-name a, .schema-name a").forEach(a => {
+        if (!a.textContent.trim()) return;
+        const card = a.closest(".schema-card, .featured-tool-card");
+        const context = a.closest("section, .sidebar-group")?.querySelector("h1,h2,.sidebar-section-title")?.textContent.trim() || "Documentation";
+        const description = card?.querySelector(".schema-desc, .featured-tool-desc")?.textContent || "";
+        let type = "Guides";
+        if (a.closest("#section-tools")) type = "Tools";
+        else if (a.closest("#section-api")) type = "API";
+        else if (a.closest(".sidebar-group")?.querySelector(".sidebar-section-title")?.textContent.includes("Developer & API")) type = "API";
+        else if (a.closest(".sidebar-group")?.querySelector(".sidebar-section-title")?.textContent.includes("Live Tools & Trackers")) type = "Tools";
+        addSearchItem(a.textContent.replace(/\s+/g, " "), a.getAttribute("href"), context, type, description);
+      });
+      const searchable = searchSource.filter((item, i, arr) => item.href && arr.findIndex(x => x.title === item.title && x.href === item.href) === i);
+      let activeSearchIndex = -1;
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));
+      }
+      function highlight(text, terms) {
+        const safe = escapeHtml(text);
+        const uniqueTerms = [...new Set(terms.filter(Boolean))].sort((a, b) => b.length - a.length);
+        if (!uniqueTerms.length) return safe;
+        const pattern = uniqueTerms
+          .map(term => escapeHtml(term).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+          .join("|");
+        return safe.replace(new RegExp(`(${pattern})`, "ig"), "<mark>$1</mark>");
+      }
+      function closeSearch() {
+        if (!searchResults || !searchInput) return;
+        searchResults.hidden = true;
+        searchResults.innerHTML = "";
+        searchInput.setAttribute("aria-expanded", "false");
+        searchInput.removeAttribute("aria-activedescendant");
+        activeSearchIndex = -1;
+      }
+      function renderSearch(query) {
+        if (!searchResults || !searchInput) return;
+        const q = query.trim().toLowerCase();
+        if (!q) return closeSearch();
+        const terms = q.split(/\s+/).filter(Boolean);
+        const matches = searchable.map(item => {
+          const hay = (item.title + " " + item.context + " " + item.description + " " + item.href).toLowerCase();
+          const score = terms.reduce((n, term) => n + (hay.includes(term) ? (item.title.toLowerCase().includes(term) ? 4 : item.description.toLowerCase().includes(term) ? 2 : 1) : 0), 0);
+          return { ...item, score };
+        }).filter(x => x.score > 0).sort((a,b) => b.score - a.score || a.title.localeCompare(b.title)).slice(0, 10);
+        activeSearchIndex = matches.length ? 0 : -1;
+        let lastGroup = "";
+        const html = matches.map((item, i) => {
+          const group = item.type || "Guides";
+          const groupHtml = group !== lastGroup ? `<div class="search-result-group" role="presentation">${escapeHtml(group)}</div>` : "";
+          lastGroup = group;
+          return groupHtml + `<button type="button" id="search-result-${i}" class="search-result${i === 0 ? " is-active" : ""}" role="option" data-index="${i}" data-href="${escapeHtml(item.href)}" aria-selected="${i === 0}">\n            <span class="material-icons" aria-hidden="true">${group === "Tools" ? "build" : group === "API" ? "code" : "menu_book"}</span>\n            <span><span class="search-result-title">${highlight(item.title, terms)}</span><span class="search-result-meta">${escapeHtml(item.context)}</span></span>\n          </button>`;
+        }).join("");
+        searchResults.innerHTML = matches.length ? html + '<div class="search-help" role="presentation">↑ ↓ to navigate &nbsp; Enter to open &nbsp; Esc to close</div>' : '<div class="search-empty" role="presentation">No matching guides, tools, or API resources found.</div>';
+        searchResults.hidden = false;
+        searchInput.setAttribute("aria-expanded", "true");
+        if (matches.length) searchInput.setAttribute("aria-activedescendant", "search-result-0");
+        searchResults.querySelectorAll(".search-result").forEach(btn => btn.addEventListener("click", () => {
+          const href = btn.dataset.href;
+          closeSearch();
+          searchInput.value = "";
+          if (href) window.location.href = href;
+        }));
+      }
+      function moveSearch(delta) {
+        const buttons = Array.from(searchResults?.querySelectorAll(".search-result") || []);
+        if (!buttons.length) return;
+        activeSearchIndex = (activeSearchIndex + delta + buttons.length) % buttons.length;
+        buttons.forEach((btn, i) => {
+          const active = i === activeSearchIndex;
+          btn.classList.toggle("is-active", active);
+          btn.setAttribute("aria-selected", String(active));
+        });
+        searchInput?.setAttribute("aria-activedescendant", buttons[activeSearchIndex].id);
+        buttons[activeSearchIndex].scrollIntoView({ block: "nearest" });
+      }
+
+      searchInput?.addEventListener("keydown", event => {
+        if (!searchResults || searchResults.hidden) return;
+        if (event.key === "ArrowDown") { event.preventDefault(); moveSearch(1); }
+        else if (event.key === "ArrowUp") { event.preventDefault(); moveSearch(-1); }
+        else if (event.key === "Enter") {
+          const btn = searchResults.querySelector(`.search-result[data-index="${activeSearchIndex}"]`);
+          if (btn) { event.preventDefault(); btn.click(); }
+        }
+      });
+      searchInput?.addEventListener("input", () => renderSearch(searchInput.value));
+      searchInput?.addEventListener("focus", () => { if (searchInput.value) renderSearch(searchInput.value); });
+      document.addEventListener("click", e => {
+        if (searchResults && !e.target.closest(".search-box")) closeSearch();
+      });
+    });
+
+    if (typeof window.copyToClipboard !== "function") {
+      window.copyToClipboard = async function (button) {
+        const wrapper = button.closest(".code-block-wrapper");
+        const code = wrapper ? wrapper.querySelector("pre code") : null;
+        if (!code) return;
+
+        const text = code.innerText || code.textContent || "";
+        const originalText = button.textContent;
+
+        try {
+          await navigator.clipboard.writeText(text);
+          button.textContent = "Copied!";
+          setTimeout(() => button.textContent = originalText, 1500);
+        } catch (error) {
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.opacity = "0";
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            const copied = document.execCommand("copy");
+            if (copied) {
+              button.textContent = "Copied!";
+            } else {
+              button.textContent = "Copy failed";
+            }
+            setTimeout(() => button.textContent = originalText, 1500);
+          } catch (fallbackError) {
+            console.error("Unable to copy code:", fallbackError);
+            button.textContent = "Copy failed";
+            setTimeout(() => button.textContent = originalText, 1500);
+          }
+
+          document.body.removeChild(textarea);
+        }
+      };
+    }
+  </script>
 </body>
 </html>
