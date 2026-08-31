@@ -120,6 +120,40 @@
               </div>
             </div>
 
+            <!-- In-Game Category Navigation Bar -->
+            <div class="ah-category-tabs-bar" id="ahCategoryTabsBar">
+              <button class="ah-cat-btn active" onclick="selectAhCategory('ALL', this)">
+                <img src="assets/ah/auction_type/show_all.png" alt="All" /> All Categories
+              </button>
+              <button class="ah-cat-btn" onclick="selectAhCategory('WEAPONS', this)">
+                <img src="assets/ah/categories/tab_weapons.png" alt="Weapons" /> Weapons
+              </button>
+              <button class="ah-cat-btn" onclick="selectAhCategory('ARMORS', this)">
+                <img src="assets/ah/categories/tab_armors.png" alt="Armors" /> Armors
+              </button>
+              <button class="ah-cat-btn" onclick="selectAhCategory('ACCESSORIES', this)">
+                <img src="assets/ah/categories/tab_accessories.png" alt="Accessories" /> Accessories
+              </button>
+              <button class="ah-cat-btn" onclick="selectAhCategory('PETS', this)">
+                <img src="assets/ah/categories/tab_pets.png" alt="Pets" /> Pets
+              </button>
+              <button class="ah-cat-btn" onclick="selectAhCategory('TOOLS', this)">
+                <img src="assets/ah/categories/tab_tools.png" alt="Tools" /> Tools
+              </button>
+              <button class="ah-cat-btn" onclick="selectAhCategory('COSMETICS', this)">
+                <img src="assets/ah/categories/tab_cosmetics.png" alt="Cosmetics" /> Cosmetics
+              </button>
+              <button class="ah-cat-btn" onclick="selectAhCategory('CONSUMABLES', this)">
+                <img src="assets/ah/categories/tab_consumables.png" alt="Consumables" /> Consumables
+              </button>
+              <button class="ah-cat-btn" onclick="selectAhCategory('BLOCKS', this)">
+                <img src="assets/ah/categories/tab_blocks.png" alt="Blocks" /> Blocks
+              </button>
+              <button class="ah-cat-btn" onclick="selectAhCategory('MISCELLANEOUS', this)">
+                <img src="assets/ah/categories/tab_miscellaneous.png" alt="Misc" /> Miscellaneous
+              </button>
+            </div>
+
             <!-- Status Tabs (Active vs Ended) & View Mode -->
             <div class="auction-tabs-row">
               <div class="tab-btn-group">
@@ -578,6 +612,43 @@
       renderPaginationControls();
     }
 
+    // Helper for Category Tab Selection
+    function selectAhCategory(cat, btnEl) {
+      document.querySelectorAll('.ah-cat-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      const sel = document.getElementById('filterCategory');
+      if (sel) {
+        sel.value = cat;
+        applyFiltersAndRender();
+      }
+    }
+
+    // Helper for Rarity Badge Image from /assets/ah/rarities/
+    function getRarityBadgeHtml(tier, isLarge = false) {
+      const t = (tier || 'COMMON').toLowerCase().replace(/\s+/g, '_');
+      const knownRarities = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'special'];
+      const key = knownRarities.includes(t) ? t : (t === 'very_special' ? 'special' : null);
+
+      if (key) {
+        return `<img src="assets/ah/rarities/${key}.png" alt="${tier}" class="rarity-badge-img ${isLarge ? 'large' : ''}" onerror="this.outerHTML='<span class=\\'tier-badge tier-${t}\\'>${tier}</span>'" />`;
+      }
+      return `<span class="tier-badge tier-${t.replace(/_/g, '-')}">${tier}</span>`;
+    }
+
+    // Helper for Auction Type Pill with authentic in-game icons
+    function getTypePillHtml(isBin, isEnded = false, highestBid = 0, cancelReason = null) {
+      if (cancelReason === 'OWNER') {
+        return `<span class="type-pill" style="background:#fee2e2; color:#b91c1c; font-weight:700;"><span class="material-icons" style="font-size:0.75rem;">cancel</span> CANCELLED</span>`;
+      }
+      if (isBin) {
+        return `<span class="type-pill bin" style="font-weight:700;"><img src="assets/ah/auction_type/bin_only.png" style="height:14px; width:14px; object-fit:contain; vertical-align:middle; image-rendering:pixelated;" alt="BIN" /> BIN</span>`;
+      }
+      if (isEnded && highestBid > 0) {
+        return `<span class="type-pill auction" style="background:#dcfce7; color:#15803d; border-color:#86efac; font-weight:700;"><img src="assets/ah/auction_type/auction_only.png" style="height:14px; width:14px; object-fit:contain; vertical-align:middle; image-rendering:pixelated;" alt="Sold" /> SOLD</span>`;
+      }
+      return `<span class="type-pill auction" style="font-weight:700;"><img src="assets/ah/auction_type/auction_only.png" style="height:14px; width:14px; object-fit:contain; vertical-align:middle; image-rendering:pixelated;" alt="Auction" /> AUCTION</span>`;
+    }
+
     // Render Grid vs Table View (Chunked to 24 per page for high performance)
     function renderAuctionsView() {
       const gridEl = document.getElementById('auctionGridContainer');
@@ -637,14 +708,8 @@
             priceClass = a.isBin ? '' : 'bidding';
           }
 
-          let typePillHtml = '';
-          if (a.cancelReason === 'OWNER') {
-            typePillHtml = `<span class="type-pill" style="background:#fee2e2; color:#b91c1c;"><span class="material-icons" style="font-size:0.75rem;">cancel</span> CANCELLED</span>`;
-          } else if (a.isBin) {
-            typePillHtml = `<span class="type-pill bin"><span class="material-icons" style="font-size:0.75rem;">bolt</span> BIN</span>`;
-          } else {
-            typePillHtml = `<span class="type-pill auction"><span class="material-icons" style="font-size:0.75rem;">gavel</span> ${isEndedTab && a.highestBid > 0 ? 'SOLD' : 'AUCTION'}</span>`;
-          }
+          const rarityImgHtml = getRarityBadgeHtml(a.tier);
+          const typePillHtml = getTypePillHtml(a.isBin, isEndedTab, a.highestBid, a.cancelReason);
 
           return `
             <div class="auction-card ${tierClass}">
@@ -652,8 +717,10 @@
                 <div class="auction-card-header">
                   <div>
                     <div class="auction-item-title">${a.name}</div>
-                    <span class="tier-badge ${tierClass}">${a.tier}</span>
-                    ${typePillHtml}
+                    <div style="display:flex; align-items:center; gap:6px; margin-top:3px;">
+                      ${rarityImgHtml}
+                      ${typePillHtml}
+                    </div>
                   </div>
                   <span class="material-icons" style="color:var(--text-dim); font-size:1.4rem;">token</span>
                 </div>
@@ -703,15 +770,8 @@
         tableBodyEl.innerHTML = visibleAuctions.map(a => {
           const tierClass = `tier-${a.tier.toLowerCase().replace(/_/g, '-')}`;
           const timeText = isEndedTab ? formatTimeEnded(a.endsAt) : formatTimeRemaining(a.endsAt);
-
-          let typePillHtml = '';
-          if (a.cancelReason === 'OWNER') {
-            typePillHtml = `<span class="type-pill" style="background:#fee2e2; color:#b91c1c;">CANCELLED</span>`;
-          } else if (a.isBin) {
-            typePillHtml = `<span class="type-pill bin">BIN</span>`;
-          } else {
-            typePillHtml = `<span class="type-pill auction">${isEndedTab && a.highestBid > 0 ? 'SOLD' : 'AUCTION'}</span>`;
-          }
+          const rarityImgHtml = getRarityBadgeHtml(a.tier);
+          const typePillHtml = getTypePillHtml(a.isBin, isEndedTab, a.highestBid, a.cancelReason);
 
           return `
             <tr>
@@ -722,7 +782,7 @@
               <td>
                 ${typePillHtml}
               </td>
-              <td><span class="tier-badge ${tierClass}">${a.tier}</span></td>
+              <td>${rarityImgHtml}</td>
               <td style="font-family: var(--font-mono); font-weight: 700; color: ${a.isBin ? '#16a34a' : '#2563eb'};">
                 ${formatNumber(a.price)}
               </td>
@@ -1122,12 +1182,10 @@
       const cleanName = itemTitle ? itemTitle.replace(/§[0-9a-fk-or]/gi, '') : formatItemName(auctionData.itemId);
 
       document.getElementById('detailItemTitle').textContent = cleanName;
-      document.getElementById('detailTierBadge').className = `tier-badge ${tierClass}`;
-      document.getElementById('detailTierBadge').textContent = tier;
+      document.getElementById('detailTierBadge').outerHTML = `<div id="detailTierBadge" style="display:inline-flex; align-items:center;">${getRarityBadgeHtml(tier, true)}</div>`;
 
-      const typePill = document.getElementById('detailTypePill');
-      typePill.className = `type-pill ${isBin ? 'bin' : 'auction'}`;
-      typePill.innerHTML = `<span class="material-icons" style="font-size:0.75rem;">${isBin ? 'bolt' : 'gavel'}</span> ${isBin ? 'BIN' : 'AUCTION'}`;
+      const isEnded = auctionData.ended || currentType === 'ended' || (endsAtMs > 0 && endsAtMs <= Date.now());
+      document.getElementById('detailTypePill').outerHTML = `<div id="detailTypePill" style="display:inline-flex; align-items:center;">${getTypePillHtml(isBin, isEnded, auctionData.highestBidAmount, auctionData.cancelReason)}</div>`;
 
       document.getElementById('detailCategoryBadge').textContent = auctionData.category || 'GENERAL';
       document.getElementById('detailPriceDisplay').innerHTML = `${formatNumber(price)} <span style="font-size: 0.95rem; font-weight: 500; color: var(--text-muted);">coins</span>`;
@@ -1288,7 +1346,13 @@
     // Attach Event Listeners
     document.getElementById('auctionSearchInput')?.addEventListener('input', applyFiltersAndRender);
     document.getElementById('filterType')?.addEventListener('change', applyFiltersAndRender);
-    document.getElementById('filterCategory')?.addEventListener('change', applyFiltersAndRender);
+    document.getElementById('filterCategory')?.addEventListener('change', (e) => {
+      const val = e.target.value;
+      document.querySelectorAll('.ah-cat-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('onclick')?.includes(`'${val}'`));
+      });
+      applyFiltersAndRender();
+    });
     document.getElementById('filterTier')?.addEventListener('change', applyFiltersAndRender);
     document.getElementById('sortBy')?.addEventListener('change', applyFiltersAndRender);
 
