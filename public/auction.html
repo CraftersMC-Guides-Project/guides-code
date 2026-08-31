@@ -677,26 +677,26 @@
       renderAuctionsView();
     }
 
-    // Minecraft Color Code to HTML Converter
+    // Minecraft Color Code to HTML Converter (Tuned for Light Theme)
     function minecraftColorToHtml(text) {
       if (!text) return '';
       const colorMap = {
-        '0': '#000000', // Black
-        '1': '#0000aa', // Dark Blue
-        '2': '#00aa00', // Dark Green
-        '3': '#00aaaa', // Dark Aqua
-        '4': '#aa0000', // Dark Red
-        '5': '#aa00aa', // Dark Purple
-        '6': '#ffaa00', // Gold
-        '7': '#aaaaaa', // Gray
-        '8': '#555555', // Dark Gray
-        '9': '#5555ff', // Blue
-        'a': '#55ff55', // Green
-        'b': '#55ffff', // Aqua
-        'c': '#ff5555', // Red
-        'd': '#ff55ff', // Light Purple
-        'e': '#ffff55', // Yellow
-        'f': '#ffffff'  // White
+        '0': '#0f172a', // Black / Dark Slate
+        '1': '#1e40af', // Dark Blue
+        '2': '#15803d', // Dark Green
+        '3': '#0369a1', // Dark Aqua
+        '4': '#b91c1c', // Dark Red
+        '5': '#7e22ce', // Dark Purple
+        '6': '#d97706', // Gold / Amber
+        '7': '#475569', // Gray / Slate
+        '8': '#64748b', // Dark Gray
+        '9': '#2563eb', // Blue
+        'a': '#16a34a', // Green
+        'b': '#0284c7', // Aqua
+        'c': '#dc2626', // Red
+        'd': '#9333ea', // Light Purple
+        'e': '#ca8a04', // Yellow / Dark Gold
+        'f': '#0f172a'  // White / Slate
       };
 
       // Strip private unicode icon symbols (e.g. \uE000-\uF8FF) and control chars
@@ -704,7 +704,7 @@
       if (!clean.trim()) return '&nbsp;';
 
       let html = '';
-      let currentColor = '#aaaaaa';
+      let currentColor = '#475569';
       let isBold = false;
       let isItalic = false;
       let isStrike = false;
@@ -729,7 +729,7 @@
           } else if (code === 'n') {
             isUnderline = true;
           } else if (code === 'r') {
-            currentColor = '#aaaaaa';
+            currentColor = '#475569';
             isBold = false;
             isItalic = false;
             isStrike = false;
@@ -738,7 +738,7 @@
         } else if (part.length > 0) {
           const safeText = part.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           const textDec = `${isStrike ? 'line-through ' : ''}${isUnderline ? 'underline' : ''}`.trim() || 'none';
-          html += `<span style="color:${currentColor}; font-weight:${isBold ? '700' : '400'}; font-style:${isItalic ? 'italic' : 'normal'}; text-decoration:${textDec}; text-shadow: 1px 1px 0px rgba(0,0,0,0.9);">${safeText}</span>`;
+          html += `<span style="color:${currentColor}; font-weight:${isBold ? '700' : '500'}; font-style:${isItalic ? 'italic' : 'normal'}; text-decoration:${textDec};">${safeText}</span>`;
         }
       }
       return html;
