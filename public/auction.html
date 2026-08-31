@@ -260,9 +260,11 @@
     let rawAuctions = [];
     let processedAuctions = [];
     let filteredAuctions = [];
-    let currentPage = 0;
+    let currentPage = 0; // API page
     let totalApiPages = 1;
     let totalAuctionsCount = 0;
+    let currentLocalPage = 0; // Client page (24 items per page)
+    const LOCAL_PAGE_SIZE = 24;
     let currentType = 'active'; // 'active' | 'ended'
     let currentView = 'grid'; // 'grid' | 'table'
     let timerInterval = null;
@@ -483,14 +485,16 @@
         return 0;
       });
 
+      // Reset local page on filter change
+      currentLocalPage = 0;
+
       document.getElementById('auctionCountLabel').textContent = `${filteredAuctions.length} auctions matching filters`;
-      document.getElementById('paginationInfo').textContent = `Showing ${filteredAuctions.length} of ${processedAuctions.length} auctions on Page ${currentPage + 1}`;
 
       renderAuctionsView();
       renderPaginationControls();
     }
 
-    // Render Grid vs Table View
+    // Render Grid vs Table View (Chunked to 24 per page for high performance)
     function renderAuctionsView() {
       const gridEl = document.getElementById('auctionGridContainer');
       const tableCardEl = document.getElementById('auctionTableContainer');
@@ -515,11 +519,21 @@
         return;
       }
 
+      // Slice only 24 items for the visible page
+      const totalLocalPages = Math.ceil(filteredAuctions.length / LOCAL_PAGE_SIZE) || 1;
+      if (currentLocalPage >= totalLocalPages) currentLocalPage = totalLocalPages - 1;
+      if (currentLocalPage < 0) currentLocalPage = 0;
+
+      const startIdx = currentLocalPage * LOCAL_PAGE_SIZE;
+      const visibleAuctions = filteredAuctions.slice(startIdx, startIdx + LOCAL_PAGE_SIZE);
+
+      document.getElementById('paginationInfo').textContent = `Showing ${startIdx + 1}–${Math.min(startIdx + LOCAL_PAGE_SIZE, filteredAuctions.length)} of ${filteredAuctions.length} matching auctions (Page ${currentLocalPage + 1} of ${totalLocalPages})`;
+
       if (currentView === 'grid') {
         gridEl.style.display = 'grid';
         tableCardEl.style.display = 'none';
 
-        gridEl.innerHTML = filteredAuctions.map(a => {
+        gridEl.innerHTML = visibleAuctions.map(a => {
           const tierClass = `tier-${a.tier.toLowerCase().replace(/_/g, '-')}`;
           const timeText = formatTimeRemaining(a.endsAt);
 
@@ -561,7 +575,7 @@
                     </div>
                     <div class="auction-meta-item">
                       <span>Time Remaining:</span>
-                      <strong style="color: ${timeText === 'Ended' ? '#ef4444' : '#0284c7'}; font-family:var(--font-mono);">${timeText}</strong>
+                      <strong class="auction-timer" data-ends="${a.endsAt}" style="color: ${timeText === 'Ended' ? '#ef4444' : '#0284c7'}; font-family:var(--font-mono);">${timeText}</strong>
                     </div>
                   </div>
                 </div>
@@ -583,7 +597,7 @@
         gridEl.style.display = 'none';
         tableCardEl.style.display = 'block';
 
-        tableBodyEl.innerHTML = filteredAuctions.map(a => {
+        tableBodyEl.innerHTML = visibleAuctions.map(a => {
           const tierClass = `tier-${a.tier.toLowerCase().replace(/_/g, '-')}`;
           const timeText = formatTimeRemaining(a.endsAt);
 
@@ -608,8 +622,10 @@
                   ${a.ownerName}
                 </a>
               </td>
-              <td style="font-family: var(--font-mono); color: ${timeText === 'Ended' ? '#ef4444' : '#0284c7'};">
-                ${timeText}
+              <td>
+                <span class="auction-timer" data-ends="${a.endsAt}" style="font-family: var(--font-mono); color: ${timeText === 'Ended' ? '#ef4444' : '#0284c7'};">
+                  ${timeText}
+                </span>
               </td>
               <td>
                 <div style="display:flex; gap:4px;">
@@ -635,35 +651,56 @@
 
       if (!prevBtn || !nextBtn || !pillsContainer) return;
 
-      prevBtn.disabled = currentPage <= 0;
-      nextBtn.disabled = currentPage >= totalApiPages - 1;
+      const totalLocalPages = Math.ceil(filteredAuctions.length / LOCAL_PAGE_SIZE) || 1;
 
-      // Render page pills
+      prevBtn.disabled = currentLocalPage <= 0;
+      nextBtn.disabled = currentLocalPage >= totalLocalPages - 1;
+
+      // Render local page pills
       let html = '';
-      const start = Math.max(0, currentPage - 2);
-      const end = Math.min(totalApiPages - 1, currentPage + 2);
+      const start = Math.max(0, currentLocalPage - 2);
+      const end = Math.min(totalLocalPages - 1, currentLocalPage + 2);
 
       for (let p = start; p <= end; p++) {
-        const isActive = p === currentPage;
+        const isActive = p === currentLocalPage;
         html += `
-          <button class="btn-secondary-action ${isActive ? 'active' : ''}" style="${isActive ? 'background:var(--accent-color); color:#ffffff; border-color:var(--accent-color); font-weight:700;' : ''} padding:4px 10px; font-size:0.8rem;" onclick="fetchAuctions(${p})">
+          <button class="btn-secondary-action ${isActive ? 'active' : ''}" style="${isActive ? 'background:var(--accent-color); color:#ffffff; border-color:var(--accent-color); font-weight:700;' : ''} padding:4px 10px; font-size:0.8rem;" onclick="setLocalPage(${p})">
             ${p + 1}
           </button>
         `;
       }
+
+      if (totalApiPages > 1) {
+        html += `
+          <span style="margin: 0 4px; color: var(--border-color);">|</span>
+          <button class="btn-secondary-action" style="padding:4px 8px; font-size:0.75rem;" onclick="fetchAuctions(${currentPage + 1 >= totalApiPages ? 0 : currentPage + 1})">
+            API Batch (${currentPage + 1}/${totalApiPages}) ➔
+          </button>
+        `;
+      }
+
       pillsContainer.innerHTML = html;
     }
 
+    function setLocalPage(p) {
+      currentLocalPage = p;
+      renderAuctionsView();
+      renderPaginationControls();
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
     function changePage(delta) {
-      const newPage = currentPage + delta;
-      if (newPage >= 0 && newPage < totalApiPages) {
-        fetchAuctions(newPage);
+      const totalLocalPages = Math.ceil(filteredAuctions.length / LOCAL_PAGE_SIZE) || 1;
+      const newPage = currentLocalPage + delta;
+      if (newPage >= 0 && newPage < totalLocalPages) {
+        setLocalPage(newPage);
       }
     }
 
     // Switch between Active and Ended
     function switchAuctionType(type) {
       currentType = type;
+      currentLocalPage = 0;
       document.getElementById('tabActive').classList.toggle('active', type === 'active');
       document.getElementById('tabEnded').classList.toggle('active', type === 'ended');
       fetchAuctions(0);
@@ -725,7 +762,9 @@
           } else if (code === 'o') {
             isItalic = true;
           } else if (code === 'm') {
-            isStrike = true;
+            // In SkyBlock lore, §m is used for muted secondary reforge bonuses (e.g. (Spicy +10))
+            currentColor = '#64748b';
+            isStrike = false;
           } else if (code === 'n') {
             isUnderline = true;
           } else if (code === 'r') {
@@ -935,11 +974,17 @@
     document.getElementById('filterTier')?.addEventListener('change', applyFiltersAndRender);
     document.getElementById('sortBy')?.addEventListener('change', applyFiltersAndRender);
 
-    // Live countdown updater every 1 second
+    // Live surgical countdown updater every 1 second (zero DOM rebuilds)
     timerInterval = setInterval(() => {
-      if (filteredAuctions.length > 0) {
-        renderAuctionsView();
-      }
+      document.querySelectorAll('.auction-timer[data-ends]').forEach(el => {
+        const endsAt = Number(el.getAttribute('data-ends'));
+        if (!endsAt) return;
+        const t = formatTimeRemaining(endsAt);
+        if (el.textContent !== t) {
+          el.textContent = t;
+          el.style.color = t === 'Ended' ? '#ef4444' : '#0284c7';
+        }
+      });
     }, 1000);
 
     // Initial Load
