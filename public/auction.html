@@ -1122,21 +1122,57 @@
         document.getElementById('detailDatesInfo').textContent = '';
       }
 
-      // Render Bidding History Table
+      // Render Bidding History / Buyer Table
       const bidsCountBadge = document.getElementById('detailBidsCountBadge');
       const bidsListContainer = document.getElementById('detailBidsList');
+      const buyerName = bidsList[0]?.bidderName || auctionData.winnerName || auctionData.highestBidderName || auctionData.buyerName;
 
       if (isBin) {
-        bidsCountBadge.textContent = 'Instant Buy';
-        bidsCountBadge.style.background = '#dcfce7';
-        bidsCountBadge.style.color = '#16a34a';
-        bidsListContainer.innerHTML = `
-          <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem; background: #f8fafc; border-radius: 6px;">
-            <span class="material-icons" style="color: #16a34a; font-size: 1.8rem; margin-bottom: 4px;">bolt</span>
-            <div style="font-weight: 700; color: var(--text-bright);">Buy It Now Listing</div>
-            <p style="margin-top: 4px;">This item is listed for direct instant purchase at <strong>${formatNumber(price)} coins</strong>. Bidding is not applicable.</p>
-          </div>
-        `;
+        if (buyerName) {
+          bidsCountBadge.textContent = 'Purchased';
+          bidsCountBadge.style.background = '#dcfce7';
+          bidsCountBadge.style.color = '#16a34a';
+
+          const buyTimestamp = bidsList[0]?.timestamp || auctionData.endsAt || auctionData.createdAt;
+          const buyDate = buyTimestamp ? new Date((buyTimestamp < 10000000000 ? buyTimestamp * 1000 : buyTimestamp)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+
+          bidsListContainer.innerHTML = `
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 18px; margin-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span class="type-pill bin" style="background: #16a34a; color: #ffffff;">
+                  <span class="material-icons" style="font-size:0.75rem;">check_circle</span> INSTANT BOUGHT
+                </span>
+                <span style="font-family: var(--font-mono); font-size: 0.78rem; color: #16a34a; font-weight: 600;">${buyDate}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-size: 0.72rem; font-weight: 700; color: #166534; text-transform: uppercase; letter-spacing: 0.04em;">Buyer Profile</div>
+                  <a href="player.html?username=${encodeURIComponent(buyerName)}" class="auction-seller-link" style="font-size: 1.08rem; font-weight: 700; color: #15803d; margin-top: 2px;">
+                    <span class="material-icons" style="font-size:1.15rem;">person</span>
+                    <span>${buyerName}</span>
+                  </a>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 0.72rem; font-weight: 700; color: #166534; text-transform: uppercase; letter-spacing: 0.04em;">Purchase Price</div>
+                  <div style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; color: #16a34a;">
+                    ${formatNumber(price)} <span style="font-size: 0.75rem; color: #166534; font-weight: 500;">coins</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        } else {
+          bidsCountBadge.textContent = 'Active BIN';
+          bidsCountBadge.style.background = '#dcfce7';
+          bidsCountBadge.style.color = '#16a34a';
+          bidsListContainer.innerHTML = `
+            <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem; background: #f8fafc; border-radius: 6px;">
+              <span class="material-icons" style="color: #16a34a; font-size: 1.8rem; margin-bottom: 4px;">bolt</span>
+              <div style="font-weight: 700; color: var(--text-bright);">Available for Instant Purchase</div>
+              <p style="margin-top: 4px;">Listed at fixed price of <strong>${formatNumber(price)} coins</strong>. Not yet purchased.</p>
+            </div>
+          `;
+        }
       } else {
         bidsCountBadge.textContent = `${bidsList.length} ${bidsList.length === 1 ? 'bid' : 'bids'}`;
         bidsCountBadge.style.background = '#eff6ff';
