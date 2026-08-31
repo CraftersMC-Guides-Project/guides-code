@@ -82,12 +82,14 @@
                 <label class="input-label" for="filterCategory">Category</label>
                 <select id="filterCategory" class="auction-select">
                   <option value="ALL">All Categories</option>
-                  <option value="WEAPON">Weapons</option>
-                  <option value="ARMOR">Armor</option>
-                  <option value="ACCESSORY">Accessories</option>
-                  <option value="CONSUMABLE">Consumables</option>
-                  <option value="BLOCKS">Blocks</option>
-                  <option value="MISC">Miscellaneous</option>
+                  <option value="WEAPONS">Weapons</option>
+                  <option value="ARMORS">Armors</option>
+                  <option value="ACCESSORIES">Accessories</option>
+                  <option value="PETS">Pets</option>
+                  <option value="TOOLS">Tools</option>
+                  <option value="COSMETICS">Cosmetics</option>
+                  <option value="CONSUMABLES">Consumables</option>
+                  <option value="MISCELLANEOUS">Miscellaneous</option>
                 </select>
               </div>
 
@@ -101,8 +103,8 @@
                   <option value="EPIC">Epic</option>
                   <option value="LEGENDARY">Legendary</option>
                   <option value="MYTHIC">Mythic</option>
-                  <option value="DIVINE">Divine</option>
                   <option value="SPECIAL">Special</option>
+                  <option value="VERY_SPECIAL">Very Special</option>
                 </select>
               </div>
 
@@ -538,7 +540,9 @@
 
         // Category match
         if (selCat !== 'ALL') {
-          if (!a.category.includes(selCat)) return false;
+          const catA = (a.category || '').toUpperCase();
+          const catSel = selCat.toUpperCase();
+          if (catA !== catSel && !catA.includes(catSel) && !catSel.includes(catA)) return false;
         }
 
         // Tier match
