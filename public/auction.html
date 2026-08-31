@@ -120,40 +120,6 @@
               </div>
             </div>
 
-            <!-- In-Game Category Navigation Bar -->
-            <div class="ah-category-tabs-bar" id="ahCategoryTabsBar">
-              <button class="ah-cat-btn active" onclick="selectAhCategory('ALL', this)">
-                <img src="assets/ah/auction_type/show_all.png" alt="All" /> All Categories
-              </button>
-              <button class="ah-cat-btn" onclick="selectAhCategory('WEAPONS', this)">
-                <img src="assets/ah/categories/tab_weapons.png" alt="Weapons" /> Weapons
-              </button>
-              <button class="ah-cat-btn" onclick="selectAhCategory('ARMORS', this)">
-                <img src="assets/ah/categories/tab_armors.png" alt="Armors" /> Armors
-              </button>
-              <button class="ah-cat-btn" onclick="selectAhCategory('ACCESSORIES', this)">
-                <img src="assets/ah/categories/tab_accessories.png" alt="Accessories" /> Accessories
-              </button>
-              <button class="ah-cat-btn" onclick="selectAhCategory('PETS', this)">
-                <img src="assets/ah/categories/tab_pets.png" alt="Pets" /> Pets
-              </button>
-              <button class="ah-cat-btn" onclick="selectAhCategory('TOOLS', this)">
-                <img src="assets/ah/categories/tab_tools.png" alt="Tools" /> Tools
-              </button>
-              <button class="ah-cat-btn" onclick="selectAhCategory('COSMETICS', this)">
-                <img src="assets/ah/categories/tab_cosmetics.png" alt="Cosmetics" /> Cosmetics
-              </button>
-              <button class="ah-cat-btn" onclick="selectAhCategory('CONSUMABLES', this)">
-                <img src="assets/ah/categories/tab_consumables.png" alt="Consumables" /> Consumables
-              </button>
-              <button class="ah-cat-btn" onclick="selectAhCategory('BLOCKS', this)">
-                <img src="assets/ah/categories/tab_blocks.png" alt="Blocks" /> Blocks
-              </button>
-              <button class="ah-cat-btn" onclick="selectAhCategory('MISCELLANEOUS', this)">
-                <img src="assets/ah/categories/tab_miscellaneous.png" alt="Misc" /> Miscellaneous
-              </button>
-            </div>
-
             <!-- Status Tabs (Active vs Ended) & View Mode -->
             <div class="auction-tabs-row">
               <div class="tab-btn-group">
@@ -612,25 +578,13 @@
       renderPaginationControls();
     }
 
-    // Helper for Category Tab Selection
-    function selectAhCategory(cat, btnEl) {
-      document.querySelectorAll('.ah-cat-btn').forEach(b => b.classList.remove('active'));
-      if (btnEl) btnEl.classList.add('active');
-      const sel = document.getElementById('filterCategory');
-      if (sel) {
-        sel.value = cat;
-        applyFiltersAndRender();
-      }
-    }
-
-    // Helper for Rarity Badge Image from /assets/ah/rarities/
+    // Helper for Rarity Badge Image from /assets/rarity/
     function getRarityBadgeHtml(tier, isLarge = false) {
       const t = (tier || 'COMMON').toLowerCase().replace(/\s+/g, '_');
-      const knownRarities = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'special'];
-      const key = knownRarities.includes(t) ? t : (t === 'very_special' ? 'special' : null);
+      const knownRarities = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
 
-      if (key) {
-        return `<img src="assets/ah/rarities/${key}.png" alt="${tier}" class="rarity-badge-img ${isLarge ? 'large' : ''}" onerror="this.outerHTML='<span class=\\'tier-badge tier-${t}\\'>${tier}</span>'" />`;
+      if (knownRarities.includes(t)) {
+        return `<img src="assets/rarity/${t}.webp" alt="${tier}" class="rarity-badge-img ${isLarge ? 'large' : ''}" onerror="this.outerHTML='<span class=\\'tier-badge tier-${t}\\'>${tier}</span>'" />`;
       }
       return `<span class="tier-badge tier-${t.replace(/_/g, '-')}">${tier}</span>`;
     }
@@ -1346,13 +1300,7 @@
     // Attach Event Listeners
     document.getElementById('auctionSearchInput')?.addEventListener('input', applyFiltersAndRender);
     document.getElementById('filterType')?.addEventListener('change', applyFiltersAndRender);
-    document.getElementById('filterCategory')?.addEventListener('change', (e) => {
-      const val = e.target.value;
-      document.querySelectorAll('.ah-cat-btn').forEach(b => {
-        b.classList.toggle('active', b.getAttribute('onclick')?.includes(`'${val}'`));
-      });
-      applyFiltersAndRender();
-    });
+    document.getElementById('filterCategory')?.addEventListener('change', applyFiltersAndRender);
     document.getElementById('filterTier')?.addEventListener('change', applyFiltersAndRender);
     document.getElementById('sortBy')?.addEventListener('change', applyFiltersAndRender);
 
