@@ -464,12 +464,16 @@ export async function onRequest({ request, env }) {
   const params = new URLSearchParams(url.search);
   const page = params.get('page') || '0';
   const type = params.get('type') || '';
+  const auctionId = params.get('id') || '';
   const apiKey = env?.CMC_API_KEY || env?.CRAFTERS_API_KEY || env?.CMC_API_KEY_BAZAAR || '';
 
   try {
-    const targetUrl = type === 'ended'
-      ? 'https://api.craftersmc.net/v1/skyblock/auctions/ended'
-      : `https://api.craftersmc.net/v1/skyblock/auctions?page=${page}`;
+    let targetUrl = `https://api.craftersmc.net/v1/skyblock/auctions?page=${page}`;
+    if (auctionId) {
+      targetUrl = `https://api.craftersmc.net/v1/skyblock/auction/${auctionId}`;
+    } else if (type === 'ended') {
+      targetUrl = 'https://api.craftersmc.net/v1/skyblock/auctions/ended';
+    }
 
     const headers = {
       'User-Agent': 'Auctions-Tracker/1.0',

@@ -48,195 +48,260 @@
           <span>Auction House Explorer</span>
         </div>
 
-        <!-- Hero & Filter Card -->
-        <div class="auction-hero-card">
-          <div class="section-header" style="margin-bottom: 0;">
-            <h1 class="section-title" style="font-size: 1.6rem; margin-bottom: 6px;">Live Auction House Explorer</h1>
-            <p class="section-desc">Search active Buy-It-Now (BIN) listings, bidding auctions, recently ended sales, item rarities, and sellers across CraftersMC SkyBlock.</p>
-          </div>
+        <!-- 1. All Auctions Explorer View -->
+        <div id="auctionListView">
+          <!-- Hero & Filter Card -->
+          <div class="auction-hero-card">
+            <div class="section-header" style="margin-bottom: 0;">
+              <h1 class="section-title" style="font-size: 1.6rem; margin-bottom: 6px;">Live Auction House Explorer</h1>
+              <p class="section-desc">Search active Buy-It-Now (BIN) listings, bidding auctions, recently ended sales, item rarities, and sellers across CraftersMC SkyBlock.</p>
+            </div>
 
-          <!-- Multi-filter bar -->
-          <div class="auction-filter-grid">
-            <div class="auction-search-col">
-              <label class="input-label" for="auctionSearchInput">
-                <span class="material-icons" style="font-size: 0.95rem;">search</span> Search Product or Seller
-              </label>
-              <div class="search-input-wrapper">
-                <span class="material-icons search-input-icon">gavel</span>
-                <input type="text" id="auctionSearchInput" class="bazaar-input" placeholder="e.g. Hyperion, Hardened Diamond, GJ11MAFFIYA..." autocomplete="off" />
+            <!-- Multi-filter bar -->
+            <div class="auction-filter-grid">
+              <div class="auction-search-col">
+                <label class="input-label" for="auctionSearchInput">
+                  <span class="material-icons" style="font-size: 0.95rem;">search</span> Search Product or Seller
+                </label>
+                <div class="search-input-wrapper">
+                  <span class="material-icons search-input-icon">gavel</span>
+                  <input type="text" id="auctionSearchInput" class="bazaar-input" placeholder="e.g. Hyperion, Hardened Diamond, GJ11MAFFIYA..." autocomplete="off" />
+                </div>
+              </div>
+
+              <div>
+                <label class="input-label" for="filterType">Listing Type</label>
+                <select id="filterType" class="auction-select">
+                  <option value="ALL">All Types</option>
+                  <option value="BIN">Buy It Now (BIN)</option>
+                  <option value="AUCTION">Bidding Auction</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="input-label" for="filterCategory">Category</label>
+                <select id="filterCategory" class="auction-select">
+                  <option value="ALL">All Categories</option>
+                  <option value="WEAPON">Weapons</option>
+                  <option value="ARMOR">Armor</option>
+                  <option value="ACCESSORY">Accessories</option>
+                  <option value="CONSUMABLE">Consumables</option>
+                  <option value="BLOCKS">Blocks</option>
+                  <option value="MISC">Miscellaneous</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="input-label" for="filterTier">Rarity Tier</label>
+                <select id="filterTier" class="auction-select">
+                  <option value="ALL">All Tiers</option>
+                  <option value="COMMON">Common</option>
+                  <option value="UNCOMMON">Uncommon</option>
+                  <option value="RARE">Rare</option>
+                  <option value="EPIC">Epic</option>
+                  <option value="LEGENDARY">Legendary</option>
+                  <option value="MYTHIC">Mythic</option>
+                  <option value="DIVINE">Divine</option>
+                  <option value="SPECIAL">Special</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="input-label" for="sortBy">Sort By</label>
+                <select id="sortBy" class="auction-select">
+                  <option value="endingSoon">Ending Soonest</option>
+                  <option value="priceLow">Lowest Price</option>
+                  <option value="priceHigh">Highest Price</option>
+                  <option value="mostBids">Most Bids</option>
+                  <option value="newest">Newly Listed</option>
+                </select>
               </div>
             </div>
 
-            <div>
-              <label class="input-label" for="filterType">Listing Type</label>
-              <select id="filterType" class="auction-select">
-                <option value="ALL">All Types</option>
-                <option value="BIN">Buy It Now (BIN)</option>
-                <option value="AUCTION">Bidding Auction</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="input-label" for="filterCategory">Category</label>
-              <select id="filterCategory" class="auction-select">
-                <option value="ALL">All Categories</option>
-                <option value="WEAPON">Weapons</option>
-                <option value="ARMOR">Armor</option>
-                <option value="ACCESSORY">Accessories</option>
-                <option value="CONSUMABLE">Consumables</option>
-                <option value="BLOCKS">Blocks</option>
-                <option value="MISC">Miscellaneous</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="input-label" for="filterTier">Rarity Tier</label>
-              <select id="filterTier" class="auction-select">
-                <option value="ALL">All Tiers</option>
-                <option value="COMMON">Common</option>
-                <option value="UNCOMMON">Uncommon</option>
-                <option value="RARE">Rare</option>
-                <option value="EPIC">Epic</option>
-                <option value="LEGENDARY">Legendary</option>
-                <option value="MYTHIC">Mythic</option>
-                <option value="DIVINE">Divine</option>
-                <option value="SPECIAL">Special</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="input-label" for="sortBy">Sort By</label>
-              <select id="sortBy" class="auction-select">
-                <option value="endingSoon">Ending Soonest</option>
-                <option value="priceLow">Lowest Price</option>
-                <option value="priceHigh">Highest Price</option>
-                <option value="mostBids">Most Bids</option>
-                <option value="newest">Newly Listed</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Status Tabs (Active vs Ended) & View Mode -->
-          <div class="auction-tabs-row">
-            <div class="tab-btn-group">
-              <button class="tab-btn active" id="tabActive" onclick="switchAuctionType('active')">
-                <span class="material-icons" style="font-size:1rem; color:#16a34a;">fiber_manual_record</span> Active Auctions
-              </button>
-              <button class="tab-btn" id="tabEnded" onclick="switchAuctionType('ended')">
-                <span class="material-icons" style="font-size:1rem; color:#64748b;">history</span> Recently Ended
-              </button>
-            </div>
-
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <span id="auctionCountLabel" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Loading auctions...</span>
-              <button class="btn-secondary-action" onclick="fetchAuctions(currentPage)" title="Refresh Auctions">
-                <span class="material-icons" style="font-size: 0.95rem;">refresh</span> Refresh
-              </button>
-              <div class="view-toggle-group">
-                <button class="view-btn active" id="btnViewGrid" onclick="setViewMode('grid')" title="Card Grid View">
-                  <span class="material-icons" style="font-size: 1.1rem;">grid_view</span>
+            <!-- Status Tabs (Active vs Ended) & View Mode -->
+            <div class="auction-tabs-row">
+              <div class="tab-btn-group">
+                <button class="tab-btn active" id="tabActive" onclick="switchAuctionType('active')">
+                  <span class="material-icons" style="font-size:1rem; color:#16a34a;">fiber_manual_record</span> Active Auctions
                 </button>
-                <button class="view-btn" id="btnViewTable" onclick="setViewMode('table')" title="Dense Table View">
-                  <span class="material-icons" style="font-size: 1.1rem;">view_list</span>
+                <button class="tab-btn" id="tabEnded" onclick="switchAuctionType('ended')">
+                  <span class="material-icons" style="font-size:1rem; color:#64748b;">history</span> Recently Ended
                 </button>
               </div>
+
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span id="auctionCountLabel" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Loading auctions...</span>
+                <button class="btn-secondary-action" onclick="fetchAuctions(currentPage)" title="Refresh Auctions">
+                  <span class="material-icons" style="font-size: 0.95rem;">refresh</span> Refresh
+                </button>
+                <div class="view-toggle-group">
+                  <button class="view-btn active" id="btnViewGrid" onclick="setViewMode('grid')" title="Card Grid View">
+                    <span class="material-icons" style="font-size: 1.1rem;">grid_view</span>
+                  </button>
+                  <button class="view-btn" id="btnViewTable" onclick="setViewMode('table')" title="Dense Table View">
+                    <span class="material-icons" style="font-size: 1.1rem;">view_list</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- KPI Market Overview Grid -->
-        <div class="auction-kpi-grid">
-          <div class="stat-box">
-            <div class="stat-box-title">Total Active Listings</div>
-            <div id="kpiTotalActive" class="stat-box-value" style="color: var(--accent-color);">-</div>
-            <div id="kpiPageCount" class="stat-box-subtitle">Page 1 of 1</div>
+          <!-- KPI Market Overview Grid -->
+          <div class="auction-kpi-grid">
+            <div class="stat-box">
+              <div class="stat-box-title">Total Active Listings</div>
+              <div id="kpiTotalActive" class="stat-box-value" style="color: var(--accent-color);">-</div>
+              <div id="kpiPageCount" class="stat-box-subtitle">Page 1 of 1</div>
+            </div>
+
+            <div class="stat-box">
+              <div class="stat-box-title">Buy It Now (BIN)</div>
+              <div id="kpiBinCount" class="stat-box-value" style="color: #16a34a;">-</div>
+              <div id="kpiBinShare" class="stat-box-subtitle">Instant purchase listings</div>
+            </div>
+
+            <div class="stat-box">
+              <div class="stat-box-title">Bidding Auctions</div>
+              <div id="kpiAuctionCount" class="stat-box-value" style="color: #2563eb;">-</div>
+              <div id="kpiAvgBids" class="stat-box-subtitle">Live player auctions</div>
+            </div>
+
+            <div class="stat-box">
+              <div class="stat-box-title">Average Starting Price</div>
+              <div id="kpiAvgPrice" class="stat-box-value" style="color: #ea580c;">-</div>
+              <div class="stat-box-subtitle">Market valuation estimate</div>
+            </div>
           </div>
 
-          <div class="stat-box">
-            <div class="stat-box-title">Buy It Now (BIN)</div>
-            <div id="kpiBinCount" class="stat-box-value" style="color: #16a34a;">-</div>
-            <div id="kpiBinShare" class="stat-box-subtitle">Instant purchase listings</div>
+          <!-- Status Alert -->
+          <div id="auctionStatusAlert" class="player-status-alert info" style="display: none;">
+            <span class="material-icons" id="auctionStatusIcon">info</span>
+            <span id="auctionStatusText">Loading auctions...</span>
           </div>
 
-          <div class="stat-box">
-            <div class="stat-box-title">Bidding Auctions</div>
-            <div id="kpiAuctionCount" class="stat-box-value" style="color: #2563eb;">-</div>
-            <div id="kpiAvgBids" class="stat-box-subtitle">Live player auctions</div>
+          <!-- Auction Container: Card Grid View -->
+          <div id="auctionGridContainer" class="auction-items-grid"></div>
+
+          <!-- Auction Container: Table View -->
+          <div id="auctionTableContainer" class="catalog-card" style="display: none; padding: 18px 20px;">
+            <div class="catalog-table-responsive">
+              <table class="bazaar-table" id="auctionDataTable">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Type</th>
+                    <th>Rarity</th>
+                    <th>Price / Highest Bid</th>
+                    <th>Bids</th>
+                    <th>Seller</th>
+                    <th>Time Remaining</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="auctionTableBody"></tbody>
+              </table>
+            </div>
           </div>
 
-          <div class="stat-box">
-            <div class="stat-box-title">Average Starting Price</div>
-            <div id="kpiAvgPrice" class="stat-box-value" style="color: #ea580c;">-</div>
-            <div class="stat-box-subtitle">Market valuation estimate</div>
-          </div>
-        </div>
-
-        <!-- Status Alert -->
-        <div id="auctionStatusAlert" class="player-status-alert info" style="display: none;">
-          <span class="material-icons" id="auctionStatusIcon">info</span>
-          <span id="auctionStatusText">Loading auctions...</span>
-        </div>
-
-        <!-- Auction Container: Card Grid View -->
-        <div id="auctionGridContainer" class="auction-items-grid"></div>
-
-        <!-- Auction Container: Table View -->
-        <div id="auctionTableContainer" class="catalog-card" style="display: none; padding: 18px 20px;">
-          <div class="catalog-table-responsive">
-            <table class="bazaar-table" id="auctionDataTable">
-              <thead>
-                <tr>
-                  <th>Item</th>
-                  <th>Type</th>
-                  <th>Rarity</th>
-                  <th>Price / Highest Bid</th>
-                  <th>Bids</th>
-                  <th>Seller</th>
-                  <th>Time Remaining</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="auctionTableBody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Pagination Controls -->
-        <div class="table-pagination-row" id="paginationRow" style="margin-top: 20px;">
-          <div id="paginationInfo" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">
-            Showing 0 of 0 auctions
-          </div>
-          <div style="display: flex; gap: 8px; align-items: center;">
-            <button class="btn-secondary-action" id="btnPrevPage" onclick="changePage(-1)" disabled>
-              <span class="material-icons" style="font-size: 1rem;">chevron_left</span> Previous
-            </button>
-            <span id="pagePillsContainer" style="display: flex; gap: 4px;"></span>
-            <button class="btn-secondary-action" id="btnNextPage" onclick="changePage(1)" disabled>
-              Next <span class="material-icons" style="font-size: 1rem;">chevron_right</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- NBT Lore Modal -->
-        <div id="loreModalOverlay" class="lore-modal-overlay" onclick="closeLoreModal(event)">
-          <div class="lore-modal-card" onclick="event.stopPropagation()">
-            <div class="lore-modal-header">
-              <div class="lore-modal-title">
-                <span class="material-icons" style="color:var(--accent-color); font-size:1.2rem;">shield</span>
-                <span id="loreModalTitle">Item Details</span>
-              </div>
-              <button class="lore-modal-close" onclick="closeLoreModal()">
-                <span class="material-icons">close</span>
+          <!-- Pagination Controls -->
+          <div class="table-pagination-row" id="paginationRow" style="margin-top: 20px;">
+            <div id="paginationInfo" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">
+              Showing 0 of 0 auctions
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <button class="btn-secondary-action" id="btnPrevPage" onclick="changePage(-1)" disabled>
+                <span class="material-icons" style="font-size: 1rem;">chevron_left</span> Previous
+              </button>
+              <span id="pagePillsContainer" style="display: flex; gap: 4px;"></span>
+              <button class="btn-secondary-action" id="btnNextPage" onclick="changePage(1)" disabled>
+                Next <span class="material-icons" style="font-size: 1rem;">chevron_right</span>
               </button>
             </div>
-            <div class="lore-modal-body-grid">
-              <!-- Left: Minecraft Tooltip -->
-              <div class="mc-tooltip-box" id="loreModalContent">
+          </div>
+        </div>
+
+        <!-- 2. Dedicated Single Auction Detail View -->
+        <div id="auctionDetailView" class="auction-detail-container" style="display: none;">
+          <!-- Top Navigation Bar -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <button class="btn-secondary-action" onclick="closeAuctionDetail()" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600;">
+              <span class="material-icons" style="font-size: 1.1rem;">arrow_back</span> Back to Live Auctions
+            </button>
+            <div id="detailAuctionIdTag" style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);"></div>
+          </div>
+
+          <!-- Item Header Card -->
+          <div class="auction-detail-header-card" id="detailHeaderCard">
+            <div>
+              <h1 id="detailItemTitle" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; color: var(--text-bright);">Item Name</h1>
+              <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <span id="detailTierBadge" class="tier-badge tier-common">COMMON</span>
+                <span id="detailTypePill" class="type-pill bin">BIN</span>
+                <span id="detailCategoryBadge" style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">Category</span>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">Current Price</div>
+              <div id="detailPriceDisplay" style="font-size: 1.8rem; font-weight: 700; font-family: var(--font-mono); color: #16a34a;">-</div>
+            </div>
+          </div>
+
+          <!-- Main Detail Grid -->
+          <div class="auction-detail-grid">
+            <!-- Left: Authentic In-Game Tooltip Box -->
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-bright); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                <span class="material-icons" style="font-size: 1rem; color: var(--accent-color);">memory</span> In-Game Tooltip &amp; Stats
+              </div>
+              <div class="mc-tooltip-box" id="detailTooltipContent" style="min-height: 280px; max-height: none;">
                 Loading item information...
               </div>
+            </div>
 
-              <!-- Right: Auction Metadata & Commands -->
-              <div class="modal-meta-sidebar" id="loreModalSidebar"></div>
+            <!-- Right: Auction Status, Seller & Live Bids History -->
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-bright); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                <span class="material-icons" style="font-size: 1rem; color: var(--accent-color);">info</span> Auction Details
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="modal-meta-card">
+                  <div class="modal-meta-label">Seller</div>
+                  <a id="detailSellerLink" href="#" class="auction-seller-link" style="font-size: 1.1rem; font-weight: 700; color: var(--accent-color);">
+                    <span class="material-icons" style="font-size: 1.2rem;">person</span>
+                    <span>Unknown</span>
+                  </a>
+                </div>
+
+                <div class="modal-meta-card">
+                  <div class="modal-meta-label">Time Remaining</div>
+                  <div id="detailTimeRemaining" style="font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700; color: #0284c7;">
+                    -
+                  </div>
+                  <div id="detailDatesInfo" style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;"></div>
+                </div>
+
+                <div class="modal-meta-card">
+                  <div class="modal-meta-label">Starting Price</div>
+                  <div id="detailStartingPrice" style="font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600; color: var(--text-bright);">
+                    -
+                  </div>
+                </div>
+              </div>
+
+              <!-- Live Bids History Card -->
+              <div class="bids-history-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  <div style="font-size: 0.92rem; font-weight: 700; color: var(--text-bright); display: flex; align-items: center; gap: 6px;">
+                    <span class="material-icons" style="font-size: 1.05rem; color: #2563eb;">gavel</span> Bidding History
+                  </div>
+                  <span id="detailBidsCountBadge" style="font-size: 0.75rem; font-weight: 700; background: #eff6ff; color: #2563eb; padding: 2px 8px; border-radius: 12px;">0 bids</span>
+                </div>
+                <div id="detailBidsList">
+                  <div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+                    Loading bids history...
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -585,7 +650,7 @@
                 <button class="btn-card-action" onclick="copyAuctionCommand('${a.id}')" title="Copy in-game command">
                   <span class="material-icons" style="font-size:0.95rem;">content_copy</span> Copy /view
                 </button>
-                <button class="btn-card-action" onclick="openLoreModal('${a.id}')" title="View Lore and Details">
+                <button class="btn-card-action" onclick="openAuctionDetail('${a.id}')" title="Inspect Full Item & Bids">
                   <span class="material-icons" style="font-size:0.95rem;">visibility</span> Inspect
                 </button>
               </div>
@@ -632,7 +697,7 @@
                   <button class="table-btn-chart" onclick="copyAuctionCommand('${a.id}')" title="Copy in-game command">
                     <span class="material-icons" style="font-size:0.85rem;">content_copy</span>
                   </button>
-                  <button class="table-btn-chart" onclick="openLoreModal('${a.id}')" title="Inspect Details">
+                  <button class="table-btn-chart" onclick="openAuctionDetail('${a.id}')" title="Inspect Full Item & Bids">
                     <span class="material-icons" style="font-size:0.85rem;">visibility</span>
                   </button>
                 </div>
@@ -889,24 +954,116 @@
       }
     }
 
-    // NBT Tooltip Modal
-    function openLoreModal(auctionId) {
-      const a = processedAuctions.find(x => x.id === auctionId);
-      if (!a) return;
+    // Dedicated Single Auction Detail Page Inspector
+    async function openAuctionDetail(auctionId) {
+      if (!auctionId) return;
 
-      const titleEl = document.getElementById('loreModalTitle');
-      const contentEl = document.getElementById('loreModalContent');
-      const sidebarEl = document.getElementById('loreModalSidebar');
+      // Update URL for shareable links and reloading
+      const newUrl = `${window.location.pathname}?id=${encodeURIComponent(auctionId)}`;
+      if (window.location.search !== `?id=${encodeURIComponent(auctionId)}`) {
+        window.history.pushState({ auctionId }, '', newUrl);
+      }
 
-      // Extract real in-game lore lines
-      const { name: itemTitle, lore: loreLines } = extractLoreFromItemData(a.rawItemData);
-      titleEl.textContent = `${a.name} (${a.tier})`;
+      document.getElementById('auctionListView').style.display = 'none';
+      const detailView = document.getElementById('auctionDetailView');
+      detailView.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
 
+      document.getElementById('detailAuctionIdTag').textContent = `Auction ID: ${auctionId}`;
+      document.getElementById('detailTooltipContent').innerHTML = `
+        <div style="padding: 32px; text-align: center; color: var(--text-muted);">
+          <span class="material-icons rotating" style="font-size: 2rem; color: var(--accent-color);">sync</span>
+          <div style="margin-top: 8px; font-weight: 600;">Loading in-game tooltip & stats...</div>
+        </div>
+      `;
+      document.getElementById('detailBidsList').innerHTML = `
+        <div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+          <span class="material-icons rotating" style="font-size: 1.6rem; color: #2563eb;">sync</span>
+          <div style="margin-top: 6px;">Fetching live bidding history...</div>
+        </div>
+      `;
+
+      let auctionData = null;
+      let bidsList = [];
+
+      // 1. Try to fetch from single auction proxy endpoint
+      try {
+        const res = await fetch(`/auction/${auctionId}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.auction) {
+            auctionData = json.auction;
+            bidsList = json.bids || [];
+          }
+        }
+      } catch (err) {
+        console.warn('Single auction fetch error:', err);
+      }
+
+      // 2. Fallback to cached item if available
+      if (!auctionData) {
+        const cached = processedAuctions.find(x => x.id === auctionId);
+        if (cached) {
+          auctionData = {
+            id: cached.id,
+            itemId: cached.itemId,
+            tier: cached.tier,
+            category: cached.category,
+            type: cached.isBin ? 'BIN' : 'NORMAL',
+            startingPrice: cached.price,
+            highestBidAmount: cached.price,
+            highestBidderName: '',
+            bids: cached.bidsCount,
+            ownerName: cached.ownerName,
+            endsAt: cached.endsAt ? Math.floor(cached.endsAt / 1000) : 0,
+            createdAt: cached.createdAt,
+            itemData: cached.rawItemData
+          };
+        }
+      }
+
+      if (!auctionData) {
+        document.getElementById('detailTooltipContent').innerHTML = `
+          <div style="padding: 32px 20px; color: #ef4444; text-align: center;">
+            <span class="material-icons" style="font-size: 2.2rem;">error_outline</span>
+            <div style="font-weight: 700; font-size: 1.05rem; margin-top: 6px;">Auction Not Found</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">This auction may have ended or does not exist.</p>
+          </div>
+        `;
+        document.getElementById('detailBidsList').innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted);">No bid data available.</div>';
+        return;
+      }
+
+      const isBin = auctionData.type === 'BIN' || auctionData.isBin;
+      const tier = auctionData.tier || 'COMMON';
+      const tierClass = `tier-${tier.toLowerCase().replace(/_/g, '-')}`;
+      const price = isBin ? (auctionData.startingPrice || 0) : (auctionData.highestBidAmount || auctionData.startingPrice || 0);
+      const endsAtMs = (auctionData.endsAt || 0) * 1000;
+      const timeRemaining = formatTimeRemaining(endsAtMs);
+      const ownerName = auctionData.ownerName || 'Unknown';
+
+      // Decode NBT lore
+      const { name: itemTitle, lore: loreLines } = extractLoreFromItemData(auctionData.itemData);
+      const cleanName = itemTitle ? itemTitle.replace(/§[0-9a-fk-or]/gi, '') : formatItemName(auctionData.itemId);
+
+      document.getElementById('detailItemTitle').textContent = cleanName;
+      document.getElementById('detailTierBadge').className = `tier-badge ${tierClass}`;
+      document.getElementById('detailTierBadge').textContent = tier;
+
+      const typePill = document.getElementById('detailTypePill');
+      typePill.className = `type-pill ${isBin ? 'bin' : 'auction'}`;
+      typePill.innerHTML = `<span class="material-icons" style="font-size:0.75rem;">${isBin ? 'bolt' : 'gavel'}</span> ${isBin ? 'BIN' : 'AUCTION'}`;
+
+      document.getElementById('detailCategoryBadge').textContent = auctionData.category || 'GENERAL';
+      document.getElementById('detailPriceDisplay').innerHTML = `${formatNumber(price)} <span style="font-size: 0.95rem; font-weight: 500; color: var(--text-muted);">coins</span>`;
+      document.getElementById('detailPriceDisplay').style.color = isBin ? '#16a34a' : '#2563eb';
+
+      // Tooltip HTML
       let tooltipHtml = '';
       if (itemTitle) {
         tooltipHtml += `<div class="mc-tooltip-title">${minecraftColorToHtml(itemTitle)}</div>`;
       } else {
-        tooltipHtml += `<div class="mc-tooltip-title">${minecraftColorToHtml(`§6${a.name}`)}</div>`;
+        tooltipHtml += `<div class="mc-tooltip-title">${minecraftColorToHtml(`§6${cleanName}`)}</div>`;
       }
 
       if (loreLines.length > 0) {
@@ -915,56 +1072,97 @@
           .join('');
       } else {
         tooltipHtml += `
-          <div class="mc-lore-line">${minecraftColorToHtml(`§7Rarity: §d${a.tier}`)}</div>
-          <div class="mc-lore-line">${minecraftColorToHtml(`§7Category: §b${a.category}`)}</div>
-          <div class="mc-lore-line">${minecraftColorToHtml(`§7In-Game ID: §8${a.itemId}`)}</div>
+          <div class="mc-lore-line">${minecraftColorToHtml(`§7Rarity: §d${tier}`)}</div>
+          <div class="mc-lore-line">${minecraftColorToHtml(`§7Category: §b${auctionData.category || 'MISC'}`)}</div>
+          <div class="mc-lore-line">${minecraftColorToHtml(`§7In-Game ID: §8${auctionData.itemId}`)}</div>
         `;
       }
+      document.getElementById('detailTooltipContent').innerHTML = tooltipHtml;
 
-      contentEl.innerHTML = tooltipHtml;
+      // Seller Info
+      const sellerLink = document.getElementById('detailSellerLink');
+      sellerLink.href = `player.html?username=${encodeURIComponent(ownerName)}`;
+      sellerLink.innerHTML = `<span class="material-icons" style="font-size:1.1rem;">person</span> <span>${ownerName}</span>`;
 
-      // Sidebar with Live Metadata
-      const timeRemaining = formatTimeRemaining(a.endsAt);
-      sidebarEl.innerHTML = `
-        <div class="modal-meta-card">
-          <div class="modal-meta-label">${a.isBin ? 'Buy It Now Price' : 'Current Highest Bid'}</div>
-          <div class="modal-meta-price" style="color: ${a.isBin ? '#22c55e' : '#3b82f6'};">
-            ${formatNumber(a.price)} <span style="font-size:0.85rem; font-weight:500; color:#8b949e;">coins</span>
+      // Starting Price & Time
+      document.getElementById('detailStartingPrice').textContent = `${formatNumber(auctionData.startingPrice || price)} coins`;
+      document.getElementById('detailTimeRemaining').textContent = timeRemaining;
+      document.getElementById('detailTimeRemaining').style.color = timeRemaining === 'Ended' ? '#ef4444' : '#0284c7';
+
+      if (auctionData.createdAt) {
+        const createdDate = new Date(auctionData.createdAt * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        document.getElementById('detailDatesInfo').textContent = `Listed: ${createdDate}`;
+      } else {
+        document.getElementById('detailDatesInfo').textContent = '';
+      }
+
+      // Render Bidding History Table
+      const bidsCountBadge = document.getElementById('detailBidsCountBadge');
+      const bidsListContainer = document.getElementById('detailBidsList');
+
+      if (isBin) {
+        bidsCountBadge.textContent = 'Instant Buy';
+        bidsCountBadge.style.background = '#dcfce7';
+        bidsCountBadge.style.color = '#16a34a';
+        bidsListContainer.innerHTML = `
+          <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem; background: #f8fafc; border-radius: 6px;">
+            <span class="material-icons" style="color: #16a34a; font-size: 1.8rem; margin-bottom: 4px;">bolt</span>
+            <div style="font-weight: 700; color: var(--text-bright);">Buy It Now Listing</div>
+            <p style="margin-top: 4px;">This item is listed for direct instant purchase at <strong>${formatNumber(price)} coins</strong>. Bidding is not applicable.</p>
           </div>
-          <div style="margin-top:8px; display:flex; gap:6px;">
-            <span class="type-pill ${a.isBin ? 'bin' : 'auction'}">
-              <span class="material-icons" style="font-size:0.75rem;">${a.isBin ? 'bolt' : 'gavel'}</span>
-              ${a.isBin ? 'BIN' : 'AUCTION'}
-            </span>
-            <span class="tier-badge tier-${a.tier.toLowerCase().replace(/_/g, '-')}">${a.tier}</span>
-          </div>
-        </div>
+        `;
+      } else {
+        bidsCountBadge.textContent = `${bidsList.length} ${bidsList.length === 1 ? 'bid' : 'bids'}`;
+        bidsCountBadge.style.background = '#eff6ff';
+        bidsCountBadge.style.color = '#2563eb';
 
-        <div class="modal-meta-card">
-          <div class="modal-meta-label">Seller Profile</div>
-          <a href="player.html?username=${encodeURIComponent(a.ownerName)}" class="auction-seller-link" style="font-size:1.05rem; font-weight:700; color:#58a6ff; margin-top:2px;">
-            <span class="material-icons" style="font-size:1.1rem;">person</span>
-            ${a.ownerName}
-          </a>
-        </div>
+        if (bidsList.length === 0) {
+          bidsListContainer.innerHTML = `
+            <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem; background: #f8fafc; border-radius: 6px;">
+              <span class="material-icons" style="color: #94a3b8; font-size: 1.8rem; margin-bottom: 4px;">gavel</span>
+              <div style="font-weight: 700; color: var(--text-bright);">No Bids Placed Yet</div>
+              <p style="margin-top: 4px;">Starting bid is <strong>${formatNumber(auctionData.startingPrice)} coins</strong>.</p>
+            </div>
+          `;
+        } else {
+          // Sort bids by amount descending
+          const sortedBids = [...bidsList].sort((a, b) => (b.amount || 0) - (a.amount || 0));
 
-        <div class="modal-meta-card">
-          <div class="modal-meta-label">Auction Time Remaining</div>
-          <div style="font-family:var(--font-mono); font-size:1.1rem; font-weight:700; color:${timeRemaining === 'Ended' ? '#ef4444' : '#38bdf8'}; margin-top:2px;">
-            ${timeRemaining}
-          </div>
-          ${!a.isBin ? `<div style="font-size:0.78rem; color:#8b949e; margin-top:4px;">${a.bidsCount} total bids placed</div>` : ''}
-        </div>
-      `;
-
-      document.getElementById('loreModalOverlay').classList.add('active');
+          bidsListContainer.innerHTML = sortedBids.map((bid, idx) => {
+            const isTop = idx === 0;
+            const bidDate = bid.timestamp ? new Date(bid.timestamp * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+            return `
+              <div class="bid-history-item" style="${isTop ? 'background: #f0fdf4; border-radius: 6px; margin-bottom: 6px; border: 1px solid #bbf7d0;' : ''}">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span class="bid-rank-pill ${isTop ? 'top' : ''}">${isTop ? '★' : idx + 1}</span>
+                  <div>
+                    <a href="player.html?username=${encodeURIComponent(bid.bidderName)}" class="auction-seller-link" style="font-weight: 700; font-size: 0.9rem;">
+                      ${bid.bidderName || 'Anonymous'}
+                    </a>
+                    <div style="font-size: 0.72rem; color: var(--text-muted);">${bidDate}</div>
+                  </div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-family: var(--font-mono); font-weight: 700; font-size: 0.95rem; color: ${isTop ? '#16a34a' : 'var(--text-bright)'};">
+                    ${formatNumber(bid.amount)} <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-muted);">coins</span>
+                  </div>
+                  <div style="font-size: 0.7rem; font-weight: 600; color: ${isTop ? '#16a34a' : '#94a3b8'};">
+                    ${isTop ? 'Top Bidder' : 'Outbid'}
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
     }
 
-    function closeLoreModal(e) {
-      if (e && e.target && e.target !== document.getElementById('loreModalOverlay') && !e.target.classList.contains('lore-modal-close')) {
-        return;
-      }
-      document.getElementById('loreModalOverlay').classList.remove('active');
+    function closeAuctionDetail() {
+      const newUrl = window.location.pathname;
+      window.history.pushState({}, '', newUrl);
+      document.getElementById('auctionDetailView').style.display = 'none';
+      document.getElementById('auctionListView').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // Attach Event Listeners
@@ -973,6 +1171,17 @@
     document.getElementById('filterCategory')?.addEventListener('change', applyFiltersAndRender);
     document.getElementById('filterTier')?.addEventListener('change', applyFiltersAndRender);
     document.getElementById('sortBy')?.addEventListener('change', applyFiltersAndRender);
+
+    // Browser back/forward button router
+    window.addEventListener('popstate', (e) => {
+      const urlId = new URLSearchParams(window.location.search).get('id') || new URLSearchParams(window.location.search).get('auctionId');
+      if (urlId) {
+        openAuctionDetail(urlId);
+      } else {
+        document.getElementById('auctionDetailView').style.display = 'none';
+        document.getElementById('auctionListView').style.display = 'block';
+      }
+    });
 
     // Live surgical countdown updater every 1 second (zero DOM rebuilds)
     timerInterval = setInterval(() => {
@@ -989,7 +1198,12 @@
 
     // Initial Load
     document.addEventListener('DOMContentLoaded', () => {
-      fetchAuctions(0);
+      const urlId = new URLSearchParams(window.location.search).get('id') || new URLSearchParams(window.location.search).get('auctionId');
+      if (urlId) {
+        openAuctionDetail(urlId);
+      } else {
+        fetchAuctions(0);
+      }
     });
   </script>
 
