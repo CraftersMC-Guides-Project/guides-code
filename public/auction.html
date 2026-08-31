@@ -410,10 +410,28 @@
       }, 2500);
     }
 
+    // Format ended time (relative past time)
+    function formatTimeEnded(endsAtMs) {
+      if (!endsAtMs) return 'Ended';
+      const now = Date.now();
+      const diff = now - endsAtMs;
+      if (diff <= 0) return 'Just ended';
+
+      const sec = Math.floor((diff / 1000) % 60);
+      const min = Math.floor((diff / (1000 * 60)) % 60);
+      const hrs = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+      if (days > 0) return `${days}d ago`;
+      if (hrs > 0) return `${hrs}h ago`;
+      if (min > 0) return `${min}m ago`;
+      return `${sec}s ago`;
+    }
+
     // Fetch Auctions from API
     async function fetchAuctions(page = 0) {
       currentPage = page;
-      showStatus(`Loading ${currentType === 'ended' ? 'recently ended sales' : 'live auctions'} (Page ${page + 1})...`, 'info');
+      showStatus(`Loading ${currentType === 'ended' ? 'recently ended auctions' : 'live auctions'} (Page ${page + 1})...`, 'info');
       document.getElementById('auctionCountLabel').textContent = 'Fetching market data...';
 
       const targetEndpoint = currentType === 'ended' ? `/auctions?type=ended` : `/auctions?page=${page}`;
@@ -431,38 +449,44 @@
         }
 
         const data = await res.json();
-        rawAuctions = data.auctions || [];
-        totalApiPages = data.totalPages || 1;
-        totalAuctionsCount = data.totalAuctions || rawAuctions.length;
+        hideStatus();
 
+        totalApiPages = data.totalPages || 1;
+        totalAuctionsCount = data.totalAuctions || (data.auctions ? data.auctions.length : 0);
+
+        rawAuctions = data.auctions || [];
         // Process auctions
         processedAuctions = rawAuctions.map(a => {
           const isBin = (a.type || '').toUpperCase() === 'BIN' || a.bin === true;
           const endsAtMs = a.endsAt ? (a.endsAt > 1e11 ? a.endsAt : a.endsAt * 1000) : 0;
-          const price = a.highestBidAmount > 0 ? a.highestBidAmount : (a.startingPrice || a.price || a.startingBid || 0);
+          const currentBidPrice = a.highestBidAmount || 0;
+          const startingPrice = a.startingPrice || a.price || 0;
+          const displayPrice = isBin ? startingPrice : (currentBidPrice > 0 ? currentBidPrice : startingPrice);
+          const tier = (a.tier || 'COMMON').toUpperCase();
 
           return {
-            id: a.id,
+            id: a.id || a.uuid || '',
             itemId: a.itemId || 'unknown',
             name: a.itemName || formatItemName(a.itemId),
-            tier: (a.tier || 'COMMON').toUpperCase(),
+            tier: tier,
             category: (a.category || 'MISC').toUpperCase(),
             isBin: isBin,
-            price: price,
-            startingPrice: a.startingPrice || 0,
-            highestBid: a.highestBidAmount || 0,
+            price: displayPrice,
+            startingPrice: startingPrice,
+            highestBid: currentBidPrice,
             bidsCount: a.bids || 0,
             ownerName: a.ownerName || 'Unknown',
             ownerUniqueId: a.ownerUniqueId || '',
             endsAt: endsAtMs,
             rawItemData: a.itemData || '',
-            ended: a.ended || (endsAtMs > 0 && endsAtMs <= Date.now())
+            ended: currentType === 'ended' || a.ended || (endsAtMs > 0 && endsAtMs <= Date.now()),
+            cancelReason: a.cancelReason || null,
+            winnerName: a.winnerName || a.highestBidderName || null
           };
         });
 
         updateKpiMetrics();
         applyFiltersAndRender();
-        hideStatus();
 
       } catch (err) {
         console.error('[Auctions] Fetch error:', err);
@@ -473,6 +497,7 @@
 
     // Update Top Summary KPI Cards
     function updateKpiMetrics() {
+      const isEndedTab = currentType === 'ended';
       const total = totalAuctionsCount || processedAuctions.length;
       const binCount = processedAuctions.filter(a => a.isBin).length;
       const bidCount = processedAuctions.filter(a => !a.isBin).length;
@@ -482,11 +507,11 @@
       const avgPrice = processedAuctions.length > 0 ? Math.round(totalPrice / processedAuctions.length) : 0;
 
       document.getElementById('kpiTotalActive').textContent = formatNumber(total);
-      document.getElementById('kpiPageCount').textContent = `Page ${currentPage + 1} of ${totalApiPages}`;
+      document.getElementById('kpiPageCount').textContent = isEndedTab ? 'Recently ended sales' : `Page ${currentPage + 1} of ${totalApiPages}`;
       document.getElementById('kpiBinCount').textContent = formatNumber(binCount);
-      document.getElementById('kpiBinShare').textContent = `${binShare}% of page listings`;
+      document.getElementById('kpiBinShare').textContent = `${binShare}% of listings`;
       document.getElementById('kpiAuctionCount').textContent = formatNumber(bidCount);
-      document.getElementById('kpiAvgBids').textContent = `${100 - binShare}% of page listings`;
+      document.getElementById('kpiAvgBids').textContent = `${100 - binShare}% of listings`;
       document.getElementById('kpiAvgPrice').textContent = `${formatNumber(avgPrice)} coins`;
     }
 
@@ -527,7 +552,7 @@
       // Sorting
       filteredAuctions.sort((a, b) => {
         if (sortBy === 'endingSoon') {
-          return (a.endsAt || 0) - (b.endsAt || 0);
+          return currentType === 'ended' ? (b.endsAt || 0) - (a.endsAt || 0) : (a.endsAt || 0) - (b.endsAt || 0);
         } else if (sortBy === 'priceLow') {
           return (a.price || 0) - (b.price || 0);
         } else if (sortBy === 'priceHigh') {
@@ -554,6 +579,7 @@
       const gridEl = document.getElementById('auctionGridContainer');
       const tableCardEl = document.getElementById('auctionTableContainer');
       const tableBodyEl = document.getElementById('auctionTableBody');
+      const isEndedTab = currentType === 'ended';
 
       if (filteredAuctions.length === 0) {
         if (currentView === 'grid') {
@@ -582,7 +608,7 @@
       const startIdx = currentLocalPage * LOCAL_PAGE_SIZE;
       const visibleAuctions = filteredAuctions.slice(startIdx, startIdx + LOCAL_PAGE_SIZE);
 
-      document.getElementById('paginationInfo').textContent = `Showing ${startIdx + 1}–${Math.min(startIdx + LOCAL_PAGE_SIZE, filteredAuctions.length)} of ${filteredAuctions.length} matching auctions (Page ${currentLocalPage + 1} of ${totalLocalPages})`;
+      document.getElementById('paginationInfo').textContent = `Showing ${startIdx + 1}–${Math.min(startIdx + LOCAL_PAGE_SIZE, filteredAuctions.length)} of ${filteredAuctions.length} ${isEndedTab ? 'ended' : 'active'} auctions (Page ${currentLocalPage + 1} of ${totalLocalPages})`;
 
       if (currentView === 'grid') {
         gridEl.style.display = 'grid';
@@ -590,7 +616,31 @@
 
         gridEl.innerHTML = visibleAuctions.map(a => {
           const tierClass = `tier-${a.tier.toLowerCase().replace(/_/g, '-')}`;
-          const timeText = formatTimeRemaining(a.endsAt);
+          const timeText = isEndedTab ? formatTimeEnded(a.endsAt) : formatTimeRemaining(a.endsAt);
+
+          let priceLabel = 'Buy It Now Price';
+          let priceClass = '';
+          if (isEndedTab) {
+            if (a.cancelReason === 'OWNER') {
+              priceLabel = 'Cancelled by Seller';
+            } else if (a.isBin) {
+              priceLabel = 'Final BIN Price';
+            } else {
+              priceLabel = a.highestBid > 0 ? 'Winning Bid' : 'Unsold (No Bids)';
+            }
+          } else {
+            priceLabel = a.isBin ? 'Buy It Now Price' : 'Current Highest Bid';
+            priceClass = a.isBin ? '' : 'bidding';
+          }
+
+          let typePillHtml = '';
+          if (a.cancelReason === 'OWNER') {
+            typePillHtml = `<span class="type-pill" style="background:#fee2e2; color:#b91c1c;"><span class="material-icons" style="font-size:0.75rem;">cancel</span> CANCELLED</span>`;
+          } else if (a.isBin) {
+            typePillHtml = `<span class="type-pill bin"><span class="material-icons" style="font-size:0.75rem;">bolt</span> BIN</span>`;
+          } else {
+            typePillHtml = `<span class="type-pill auction"><span class="material-icons" style="font-size:0.75rem;">gavel</span> ${isEndedTab && a.highestBid > 0 ? 'SOLD' : 'AUCTION'}</span>`;
+          }
 
           return `
             <div class="auction-card ${tierClass}">
@@ -599,18 +649,15 @@
                   <div>
                     <div class="auction-item-title">${a.name}</div>
                     <span class="tier-badge ${tierClass}">${a.tier}</span>
-                    <span class="type-pill ${a.isBin ? 'bin' : 'auction'}">
-                      <span class="material-icons" style="font-size:0.75rem;">${a.isBin ? 'bolt' : 'gavel'}</span>
-                      ${a.isBin ? 'BIN' : 'AUCTION'}
-                    </span>
+                    ${typePillHtml}
                   </div>
                   <span class="material-icons" style="color:var(--text-dim); font-size:1.4rem;">token</span>
                 </div>
 
                 <div class="auction-card-body">
                   <div class="auction-price-row">
-                    <div class="auction-price-label">${a.isBin ? 'Buy It Now Price' : 'Current Highest Bid'}</div>
-                    <div class="auction-price-value ${a.isBin ? '' : 'bidding'}">
+                    <div class="auction-price-label">${priceLabel}</div>
+                    <div class="auction-price-value ${priceClass}">
                       <span>${formatNumber(a.price)}</span>
                       <span style="font-size:0.8rem; font-weight:500; color:var(--text-muted);">coins</span>
                     </div>
@@ -625,12 +672,12 @@
                       </a>
                     </div>
                     <div class="auction-meta-item">
-                      <span>Bids:</span>
+                      <span>${isEndedTab ? 'Final Bids:' : 'Bids:'}</span>
                       <strong style="color:var(--text-bright);">${a.isBin ? 'Instant Buy' : `${a.bidsCount} bids`}</strong>
                     </div>
                     <div class="auction-meta-item">
-                      <span>Time Remaining:</span>
-                      <strong class="auction-timer" data-ends="${a.endsAt}" style="color: ${timeText === 'Ended' ? '#ef4444' : '#0284c7'}; font-family:var(--font-mono);">${timeText}</strong>
+                      <span>${isEndedTab ? 'Ended:' : 'Time Remaining:'}</span>
+                      <strong class="auction-timer" data-ends="${a.endsAt}" style="color: ${isEndedTab ? '#64748b' : (timeText === 'Ended' ? '#ef4444' : '#0284c7')}; font-family:var(--font-mono);">${timeText}</strong>
                     </div>
                   </div>
                 </div>
@@ -651,7 +698,16 @@
 
         tableBodyEl.innerHTML = visibleAuctions.map(a => {
           const tierClass = `tier-${a.tier.toLowerCase().replace(/_/g, '-')}`;
-          const timeText = formatTimeRemaining(a.endsAt);
+          const timeText = isEndedTab ? formatTimeEnded(a.endsAt) : formatTimeRemaining(a.endsAt);
+
+          let typePillHtml = '';
+          if (a.cancelReason === 'OWNER') {
+            typePillHtml = `<span class="type-pill" style="background:#fee2e2; color:#b91c1c;">CANCELLED</span>`;
+          } else if (a.isBin) {
+            typePillHtml = `<span class="type-pill bin">BIN</span>`;
+          } else {
+            typePillHtml = `<span class="type-pill auction">${isEndedTab && a.highestBid > 0 ? 'SOLD' : 'AUCTION'}</span>`;
+          }
 
           return `
             <tr>
@@ -660,9 +716,7 @@
                 <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);">${a.itemId}</div>
               </td>
               <td>
-                <span class="type-pill ${a.isBin ? 'bin' : 'auction'}">
-                  ${a.isBin ? 'BIN' : 'AUCTION'}
-                </span>
+                ${typePillHtml}
               </td>
               <td><span class="tier-badge ${tierClass}">${a.tier}</span></td>
               <td style="font-family: var(--font-mono); font-weight: 700; color: ${a.isBin ? '#16a34a' : '#2563eb'};">
@@ -675,7 +729,7 @@
                 </a>
               </td>
               <td>
-                <span class="auction-timer" data-ends="${a.endsAt}" style="font-family: var(--font-mono); color: ${timeText === 'Ended' ? '#ef4444' : '#0284c7'};">
+                <span class="auction-timer" data-ends="${a.endsAt}" style="font-family: var(--font-mono); color: ${isEndedTab ? '#64748b' : (timeText === 'Ended' ? '#ef4444' : '#0284c7')};">
                   ${timeText}
                 </span>
               </td>
