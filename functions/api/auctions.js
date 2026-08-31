@@ -602,23 +602,26 @@ export async function onRequest({ request, env }) {
     });
   }
 
-  // Parse query parameters
   const url = new URL(request.url);
   const params = new URLSearchParams(url.search);
   const page = params.get('page') || '0';
+  const type = params.get('type') || '';
+  const apiKey = env?.CMC_API_KEY || env?.CRAFTERS_API_KEY || env?.CMC_API_KEY_BAZAAR || '';
 
   try {
-    // Fetch auctions from CraftersMC API
-    const response = await fetch(
-      `https://api.craftersmc.net/v1/skyblock/auctions?page=${page}`,
-      {
-        headers: {
-          'User-Agent': 'Auctions-Tracker/1.0',
-          'Accept': 'application/json',
-          'x-api-key': env.CMC_API_KEY || env.cmc_api_key || env['cmc-api-key'] || ''
-        }
-      }
-    );
+    const targetUrl = type === 'ended'
+      ? 'https://api.craftersmc.net/v1/skyblock/auctions/ended'
+      : `https://api.craftersmc.net/v1/skyblock/auctions?page=${page}`;
+
+    const headers = {
+      'User-Agent': 'Auctions-Tracker/1.0',
+      'Accept': 'application/json'
+    };
+    if (apiKey) {
+      headers['X-API-Key'] = apiKey;
+    }
+
+    const response = await fetch(targetUrl, { headers });
 
     if (!response.ok) {
       return new Response(
