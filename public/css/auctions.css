@@ -423,8 +423,8 @@
 .lore-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(6px);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -432,7 +432,7 @@
   padding: 16px;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .lore-modal-overlay.active {
@@ -442,17 +442,18 @@
 
 .lore-modal-card {
   background: #0d1117;
-  border: 2px solid #30363d;
+  border: 1px solid #30363d;
   border-radius: var(--radius-md);
   width: 100%;
-  max-width: 480px;
-  max-height: 85vh;
+  max-width: 720px;
+  max-height: 88vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  transform: scale(0.95);
-  transition: transform 0.2s ease;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  transform: scale(0.96);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .lore-modal-overlay.active .lore-modal-card {
@@ -460,7 +461,7 @@
 }
 
 .lore-modal-header {
-  padding: 14px 18px;
+  padding: 14px 20px;
   border-bottom: 1px solid #21262d;
   display: flex;
   justify-content: space-between;
@@ -470,8 +471,11 @@
 
 .lore-modal-title {
   color: #f0f6fc;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .lore-modal-close {
@@ -481,33 +485,104 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  padding: 4px;
+  padding: 6px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
 }
 
 .lore-modal-close:hover {
   color: #ffffff;
+  background: #21262d;
 }
 
-.lore-modal-body {
-  padding: 18px;
+.lore-modal-body-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 16px;
+  padding: 20px;
   overflow-y: auto;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  color: #c9d1d9;
   background: #090d13;
+  box-sizing: border-box;
 }
 
+@media (max-width: 660px) {
+  .lore-modal-body-grid {
+    grid-template-columns: 1fr;
+    padding: 14px;
+    gap: 14px;
+  }
+}
+
+/* Authentic Minecraft In-Game Tooltip Box */
 .mc-tooltip-box {
-  background: #100c14;
-  border: 2px solid #2a1a45;
+  background: #100010;
+  border: 2px solid #280028;
   border-radius: 6px;
-  padding: 14px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  padding: 16px 18px;
+  box-shadow: 0 0 20px rgba(120, 0, 180, 0.25), inset 0 0 10px rgba(0, 0, 0, 0.8);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #aaaaaa;
+  min-height: 200px;
+  max-height: 480px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.mc-tooltip-title {
+  font-size: 1.08rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .mc-lore-line {
   white-space: pre-wrap;
   word-break: break-word;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
+}
+
+/* Modal Right Sidebar */
+.modal-meta-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-meta-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 14px;
+}
+
+.modal-meta-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #8b949e;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.modal-meta-price {
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: #22c55e;
+}
+
+.modal-command-box {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: #58a6ff;
 }

@@ -221,15 +221,22 @@
         <div id="loreModalOverlay" class="lore-modal-overlay" onclick="closeLoreModal(event)">
           <div class="lore-modal-card" onclick="event.stopPropagation()">
             <div class="lore-modal-header">
-              <div class="lore-modal-title" id="loreModalTitle">Item Details</div>
+              <div class="lore-modal-title">
+                <span class="material-icons" style="color:var(--accent-color); font-size:1.2rem;">shield</span>
+                <span id="loreModalTitle">Item Details</span>
+              </div>
               <button class="lore-modal-close" onclick="closeLoreModal()">
                 <span class="material-icons">close</span>
               </button>
             </div>
-            <div class="lore-modal-body">
+            <div class="lore-modal-body-grid">
+              <!-- Left: Minecraft Tooltip -->
               <div class="mc-tooltip-box" id="loreModalContent">
                 Loading item information...
               </div>
+
+              <!-- Right: Auction Metadata & Commands -->
+              <div class="modal-meta-sidebar" id="loreModalSidebar"></div>
             </div>
           </div>
         </div>
@@ -670,32 +677,162 @@
       renderAuctionsView();
     }
 
+    // Minecraft Color Code to HTML Converter
+    function minecraftColorToHtml(text) {
+      if (!text) return '';
+      const colorMap = {
+        '0': '#000000', // Black
+        '1': '#0000aa', // Dark Blue
+        '2': '#00aa00', // Dark Green
+        '3': '#00aaaa', // Dark Aqua
+        '4': '#aa0000', // Dark Red
+        '5': '#aa00aa', // Dark Purple
+        '6': '#ffaa00', // Gold
+        '7': '#aaaaaa', // Gray
+        '8': '#555555', // Dark Gray
+        '9': '#5555ff', // Blue
+        'a': '#55ff55', // Green
+        'b': '#55ffff', // Aqua
+        'c': '#ff5555', // Red
+        'd': '#ff55ff', // Light Purple
+        'e': '#ffff55', // Yellow
+        'f': '#ffffff'  // White
+      };
+
+      // Clean unwanted unicode control chars
+      const clean = text.replace(/[\x00-\x1F\x7F-\x9F]/g, '');
+      let html = '';
+      let currentColor = '#aaaaaa';
+      let isBold = false;
+      let isItalic = false;
+
+      const parts = clean.split(/(§[0-9a-fk-or])/gi);
+      for (const part of parts) {
+        if (part.startsWith('§')) {
+          const code = part.charAt(1).toLowerCase();
+          if (colorMap[code]) {
+            currentColor = colorMap[code];
+            isBold = false;
+            isItalic = false;
+          } else if (code === 'l') {
+            isBold = true;
+          } else if (code === 'o') {
+            isItalic = true;
+          } else if (code === 'r') {
+            currentColor = '#aaaaaa';
+            isBold = false;
+            isItalic = false;
+          }
+        } else if (part.length > 0) {
+          const safeText = part.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          html += `<span style="color:${currentColor}; font-weight:${isBold ? '700' : '400'}; font-style:${isItalic ? 'italic' : 'normal'}; text-shadow: 1px 1px 0px rgba(0,0,0,0.85);">${safeText}</span>`;
+        }
+      }
+      return html;
+    }
+
+    // Extract Lore from NBT itemData
+    function extractLoreFromItemData(itemData) {
+      if (!itemData || typeof pako === 'undefined') return [];
+      try {
+        const raw = atob(itemData);
+        const u8 = new Uint8Array(raw.length);
+        for (let i = 0; i < raw.length; i++) u8[i] = raw.charCodeAt(i);
+        const decomp1 = pako.ungzip(u8);
+        const str1 = new TextDecoder('utf-8').decode(decomp1);
+
+        let finalStr = str1;
+        const match = str1.match(/H4sIA[A-Za-z0-9+/=]+/);
+        if (match) {
+          const nestedRaw = atob(match[0]);
+          const nestedU8 = new Uint8Array(nestedRaw.length);
+          for (let i = 0; i < nestedRaw.length; i++) nestedU8[i] = nestedRaw.charCodeAt(i);
+          const decomp2 = pako.ungzip(nestedU8);
+          finalStr = new TextDecoder('utf-8').decode(decomp2);
+        }
+
+        const loreMatches = finalStr.match(/§[0-9a-fk-or][^\x00-\x1F\x7F-\x9F]*/g) || [];
+        return loreMatches.map(l => l.replace(/[\x00-\x1F\x7F-\xFF]/g, '').trim()).filter(l => l.length > 0);
+      } catch (e) {
+        console.warn('NBT lore extraction failed:', e);
+        return [];
+      }
+    }
+
     // NBT Tooltip Modal
     function openLoreModal(auctionId) {
       const a = processedAuctions.find(x => x.id === auctionId);
       if (!a) return;
 
-      document.getElementById('loreModalTitle').textContent = `${a.name} (${a.tier})`;
+      const titleEl = document.getElementById('loreModalTitle');
       const contentEl = document.getElementById('loreModalContent');
+      const sidebarEl = document.getElementById('loreModalSidebar');
 
-      let loreHtml = `
-        <div style="font-weight:700; font-size:1.05rem; margin-bottom:8px; color: #ffffff;">${a.name}</div>
-        <div style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 12px;">ID: ${a.itemId}</div>
-        <div style="margin-bottom: 8px;"><strong style="color:#38bdf8;">Type:</strong> ${a.isBin ? 'Buy It Now (BIN)' : 'Bidding Auction'}</div>
-        <div style="margin-bottom: 8px;"><strong style="color:#4ade80;">Price:</strong> ${formatNumber(a.price)} coins</div>
-        <div style="margin-bottom: 8px;"><strong style="color:#fbbf24;">Seller:</strong> ${a.ownerName}</div>
-        <div style="margin-bottom: 12px;"><strong style="color:#f472b6;">Rarity:</strong> ${a.tier}</div>
-        <hr style="border-color: #21262d; margin: 12px 0;" />
-        <div style="font-size:0.8rem; color:#8b949e; margin-bottom:4px;">In-Game Auction ID:</div>
-        <div style="background:#161b22; padding:8px 12px; border-radius:4px; border:1px solid #30363d; font-family:var(--font-mono); font-size:0.82rem; color:#58a6ff; display:flex; justify-content:space-between; align-items:center;">
-          <span>/viewauction ${a.id}</span>
-          <button onclick="copyAuctionCommand('${a.id}')" style="background:transparent; border:none; color:#58a6ff; cursor:pointer;">
-            <span class="material-icons" style="font-size:1rem;">content_copy</span>
-          </button>
+      titleEl.textContent = `${a.name} (${a.tier})`;
+
+      // Extract real in-game lore lines
+      const loreLines = extractLoreFromItemData(a.rawItemData);
+
+      let tooltipHtml = '';
+      if (loreLines.length > 0) {
+        tooltipHtml = loreLines.map(line => `<div class="mc-lore-line">${minecraftColorToHtml(line)}</div>`).join('');
+      } else {
+        // Fallback formatted Minecraft display
+        tooltipHtml = `
+          <div class="mc-tooltip-title">${minecraftColorToHtml(`§6${a.name}`)}</div>
+          <div class="mc-lore-line" style="margin-bottom:8px;">${minecraftColorToHtml(`§7Rarity: §d${a.tier}`)}</div>
+          <div class="mc-lore-line">${minecraftColorToHtml(`§7Category: §b${a.category}`)}</div>
+          <div class="mc-lore-line">${minecraftColorToHtml(`§7In-Game ID: §8${a.itemId}`)}</div>
+          <div class="mc-lore-line" style="margin-top:12px;">${minecraftColorToHtml(`§eRight-click to inspect in game!`)}</div>
+        `;
+      }
+
+      contentEl.innerHTML = tooltipHtml;
+
+      // Sidebar with Live Metadata
+      const timeRemaining = formatTimeRemaining(a.endsAt);
+      sidebarEl.innerHTML = `
+        <div class="modal-meta-card">
+          <div class="modal-meta-label">${a.isBin ? 'Buy It Now Price' : 'Current Highest Bid'}</div>
+          <div class="modal-meta-price" style="color: ${a.isBin ? '#22c55e' : '#3b82f6'};">
+            ${formatNumber(a.price)} <span style="font-size:0.85rem; font-weight:500; color:#8b949e;">coins</span>
+          </div>
+          <div style="margin-top:8px; display:flex; gap:6px;">
+            <span class="type-pill ${a.isBin ? 'bin' : 'auction'}">
+              <span class="material-icons" style="font-size:0.75rem;">${a.isBin ? 'bolt' : 'gavel'}</span>
+              ${a.isBin ? 'BIN' : 'AUCTION'}
+            </span>
+            <span class="tier-badge tier-${a.tier.toLowerCase().replace(/_/g, '-')}">${a.tier}</span>
+          </div>
+        </div>
+
+        <div class="modal-meta-card">
+          <div class="modal-meta-label">Seller Profile</div>
+          <a href="player.html?username=${encodeURIComponent(a.ownerName)}" class="auction-seller-link" style="font-size:1.05rem; font-weight:700; color:#58a6ff; margin-top:2px;">
+            <span class="material-icons" style="font-size:1.1rem;">person</span>
+            ${a.ownerName}
+          </a>
+        </div>
+
+        <div class="modal-meta-card">
+          <div class="modal-meta-label">Auction Time Remaining</div>
+          <div style="font-family:var(--font-mono); font-size:1.1rem; font-weight:700; color:${timeRemaining === 'Ended' ? '#ef4444' : '#38bdf8'}; margin-top:2px;">
+            ${timeRemaining}
+          </div>
+          ${!a.isBin ? `<div style="font-size:0.78rem; color:#8b949e; margin-top:4px;">${a.bidsCount} total bids placed</div>` : ''}
+        </div>
+
+        <div class="modal-meta-card">
+          <div class="modal-meta-label">Quick In-Game Command</div>
+          <div class="modal-command-box">
+            <span>/viewauction ${a.id.substring(0, 10)}...</span>
+            <button onclick="copyAuctionCommand('${a.id}')" class="btn-secondary-action" style="padding:4px 8px; font-size:0.75rem;">
+              <span class="material-icons" style="font-size:0.85rem;">content_copy</span> Copy
+            </button>
+          </div>
         </div>
       `;
 
-      contentEl.innerHTML = loreHtml;
       document.getElementById('loreModalOverlay').classList.add('active');
     }
 
