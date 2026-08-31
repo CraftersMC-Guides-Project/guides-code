@@ -504,6 +504,17 @@ export async function onRequest({ request, env }) {
 
     const data = await response.json();
 
+    if (auctionId) {
+      return new Response(JSON.stringify(data), {
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, OPTIONS'
+        }
+      });
+    }
+
     if (data.auctions && Array.isArray(data.auctions)) {
       data.auctions = processAuctions(data.auctions);
     }

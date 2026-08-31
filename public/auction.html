@@ -410,16 +410,6 @@
       }, 2500);
     }
 
-    // Copy command
-    function copyAuctionCommand(id) {
-      const cmd = `/viewauction ${id}`;
-      navigator.clipboard.writeText(cmd).then(() => {
-        showToast(`Copied: ${cmd}`);
-      }).catch(() => {
-        showToast(`Command: ${cmd}`);
-      });
-    }
-
     // Fetch Auctions from API
     async function fetchAuctions(page = 0) {
       currentPage = page;
@@ -647,11 +637,8 @@
               </div>
 
               <div class="auction-card-actions">
-                <button class="btn-card-action" onclick="copyAuctionCommand('${a.id}')" title="Copy in-game command">
-                  <span class="material-icons" style="font-size:0.95rem;">content_copy</span> Copy /view
-                </button>
-                <button class="btn-card-action" onclick="openAuctionDetail('${a.id}')" title="Inspect Full Item & Bids">
-                  <span class="material-icons" style="font-size:0.95rem;">visibility</span> Inspect
+                <button class="btn-card-action" onclick="openAuctionDetail('${a.id}')" style="width: 100%; justify-content: center; background: #f8fafc; font-weight: 700; border: 1px solid var(--border-color);" title="Inspect Full Item & Bids">
+                  <span class="material-icons" style="font-size:1.05rem; color: var(--accent-color);">visibility</span> Inspect Item
                 </button>
               </div>
             </div>
@@ -693,14 +680,9 @@
                 </span>
               </td>
               <td>
-                <div style="display:flex; gap:4px;">
-                  <button class="table-btn-chart" onclick="copyAuctionCommand('${a.id}')" title="Copy in-game command">
-                    <span class="material-icons" style="font-size:0.85rem;">content_copy</span>
-                  </button>
-                  <button class="table-btn-chart" onclick="openAuctionDetail('${a.id}')" title="Inspect Full Item & Bids">
-                    <span class="material-icons" style="font-size:0.85rem;">visibility</span>
-                  </button>
-                </div>
+                <button class="table-btn-chart" onclick="openAuctionDetail('${a.id}')" title="Inspect Item & Bids" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 0.78rem; font-weight: 600;">
+                  <span class="material-icons" style="font-size:0.9rem; color: var(--accent-color);">visibility</span> Inspect
+                </button>
               </td>
             </tr>
           `;
@@ -998,21 +980,34 @@
       let auctionData = null;
       let bidsList = [];
 
-      // 1. Try to fetch from single auction proxy endpoint
-      try {
-        const res = await fetch(`/auction/${auctionId}`);
-        if (res.ok) {
-          const json = await res.json();
-          if (json.success && json.auction) {
-            auctionData = json.auction;
-            bidsList = json.bids || [];
+      // 1. Try fetching from Cloudflare proxy endpoints with fallback
+      const candidateEndpoints = [
+        `/api/auctions?id=${encodeURIComponent(auctionId)}`,
+        `/auctions?id=${encodeURIComponent(auctionId)}`,
+        `/auction/${encodeURIComponent(auctionId)}`
+      ];
+
+      for (const ep of candidateEndpoints) {
+        try {
+          const res = await fetch(ep);
+          if (res.ok) {
+            const json = await res.json();
+            if (json && (json.auction || json.success)) {
+              auctionData = json.auction || json;
+              if (Array.isArray(json.bids) && json.bids.length > 0) {
+                bidsList = json.bids;
+              } else if (Array.isArray(auctionData.bids) && auctionData.bids.length > 0) {
+                bidsList = auctionData.bids;
+              }
+              break;
+            }
           }
+        } catch (err) {
+          console.warn(`Fetch error for ${ep}:`, err);
         }
-      } catch (err) {
-        console.warn('Single auction fetch error:', err);
       }
 
-      // 2. Fallback to cached item if available
+      // 2. Fallback to cached item if upstream API didn't return
       if (!auctionData) {
         const cached = processedAuctions.find(x => x.id === auctionId);
         if (cached) {
@@ -1032,6 +1027,16 @@
             itemData: cached.rawItemData
           };
         }
+      }
+
+      // If bidsList is still empty but we know there is a highest bidder, construct the top bid
+      if (bidsList.length === 0 && auctionData && auctionData.highestBidderName && (auctionData.highestBidAmount || auctionData.bids > 0)) {
+        bidsList.push({
+          id: auctionData.highestBidId || 'latest',
+          bidderName: auctionData.highestBidderName,
+          amount: auctionData.highestBidAmount || auctionData.startingPrice || 0,
+          timestamp: auctionData.createdAt || Math.floor(Date.now() / 1000)
+        });
       }
 
       if (!auctionData) {
