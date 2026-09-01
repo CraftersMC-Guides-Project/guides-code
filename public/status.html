@@ -194,8 +194,8 @@
         </div>
 
         <!-- Toast Notification Container -->
-        <div id="toastNotification" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999; background: #0f172a; color: #ffffff; padding: 12px 20px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.3); align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.1); pointer-events: none; transition: all 0.2s ease;">
-          <span class="material-icons" style="color: #22c55e;">check_circle</span>
+        <div id="toastNotification" class="cmc-toast">
+          <span class="material-icons toast-icon">check_circle</span>
           <span id="toastMessage">Copied to clipboard!</span>
         </div>
 
@@ -241,11 +241,10 @@
       const toastMsg = document.getElementById('toastMessage');
       if (!toast) return;
       if (toastMsg) toastMsg.textContent = message;
-      toast.style.display = 'flex';
-      toast.style.opacity = '1';
+      toast.classList.add('show');
       if (toastTimeout) clearTimeout(toastTimeout);
       toastTimeout = setTimeout(() => {
-        toast.style.display = 'none';
+        toast.classList.remove('show');
       }, 3000);
     }
 
