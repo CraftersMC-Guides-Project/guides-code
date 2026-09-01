@@ -347,10 +347,15 @@
         <!-- 2. Dedicated Single Auction Detail View -->
         <div id="auctionDetailView" class="auction-detail-container" style="display: none;">
           <!-- Top Navigation Bar -->
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <button class="btn-secondary-action" onclick="closeAuctionDetail()" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600;">
-              <span class="material-icons" style="font-size: 1.1rem;">arrow_back</span> Back to Live Auctions
-            </button>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <button class="btn-secondary-action" onclick="closeAuctionDetail()" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600;">
+                <span class="material-icons" style="font-size: 1.1rem;">arrow_back</span> Back to Live Auctions
+              </button>
+              <button class="btn-secondary-action" onclick="shareAuction()" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; background: #eff6ff; color: var(--accent-color); border-color: #bfdbfe;" title="Share this auction">
+                <span class="material-icons" style="font-size: 1.05rem;">share</span> Share Auction
+              </button>
+            </div>
             <div id="detailAuctionIdTag" style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);"></div>
           </div>
 
@@ -870,9 +875,12 @@
                 </div>
               </div>
 
-              <div class="auction-card-actions">
-                <button class="btn-card-action" onclick="openAuctionDetail('${a.id}')" style="width: 100%; justify-content: center; background: #f8fafc; font-weight: 700; border: 1px solid var(--border-color);" title="Inspect Full Item & Bids">
+              <div class="auction-card-actions" style="display: flex; gap: 6px;">
+                <button class="btn-card-action" onclick="openAuctionDetail('${a.id}')" style="flex: 1; justify-content: center; background: #f8fafc; font-weight: 700; border: 1px solid var(--border-color);" title="Inspect Full Item & Bids">
                   <span class="material-icons" style="font-size:1.05rem; color: var(--accent-color);">visibility</span> Inspect Item
+                </button>
+                <button class="btn-card-action" onclick="shareAuction('${a.id}', event)" style="flex: 0 0 38px; padding: 0; justify-content: center; background: #f8fafc; border: 1px solid var(--border-color);" title="Share Auction Link">
+                  <span class="material-icons" style="font-size:1.05rem; color: var(--text-muted);">share</span>
                 </button>
               </div>
             </div>
@@ -914,9 +922,14 @@
                 </span>
               </td>
               <td>
-                <button class="table-btn-chart" onclick="openAuctionDetail('${a.id}')" title="Inspect Item & Bids" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 0.78rem; font-weight: 600;">
-                  <span class="material-icons" style="font-size:0.9rem; color: var(--accent-color);">visibility</span> Inspect
-                </button>
+                <div style="display: inline-flex; gap: 4px; align-items: center;">
+                  <button class="table-btn-chart" onclick="openAuctionDetail('${a.id}')" title="Inspect Item & Bids" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 0.78rem; font-weight: 600;">
+                    <span class="material-icons" style="font-size:0.9rem; color: var(--accent-color);">visibility</span> Inspect
+                  </button>
+                  <button class="table-btn-chart" onclick="shareAuction('${a.id}', event)" title="Share Auction Link" style="padding: 4px 6px;">
+                    <span class="material-icons" style="font-size:0.9rem; color: var(--text-muted);">share</span>
+                  </button>
+                </div>
               </td>
             </tr>
           `;
@@ -1183,8 +1196,11 @@
     }
 
     // Dedicated Single Auction Detail Page Inspector
+    let currentAuctionDetailId = null;
+
     async function openAuctionDetail(auctionId) {
       if (!auctionId) return;
+      currentAuctionDetailId = auctionId;
 
       // Update URL for shareable links and reloading
       const newUrl = `${window.location.pathname}?id=${encodeURIComponent(auctionId)}`;
@@ -1454,9 +1470,63 @@
     function closeAuctionDetail() {
       const newUrl = window.location.pathname;
       window.history.pushState({}, '', newUrl);
+      currentAuctionDetailId = null;
       document.getElementById('auctionDetailView').style.display = 'none';
       document.getElementById('auctionListView').style.display = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Share Auction Handler
+    function shareAuction(auctionId, event) {
+      if (event) {
+        event.stopPropagation();
+      }
+      const targetId = auctionId || currentAuctionDetailId;
+      if (!targetId) return;
+
+      const shareUrl = `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(targetId)}`;
+
+      if (navigator.share) {
+        navigator.share({
+          title: 'CraftersMC SkyBlock Auction',
+          text: `Check out this auction on CraftersMC Guides!`,
+          url: shareUrl
+        }).catch(() => {
+          copyToClipboard(shareUrl);
+        });
+      } else {
+        copyToClipboard(shareUrl);
+      }
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('Auction link copied to clipboard!');
+        }).catch(() => {
+          fallbackCopyTextToClipboard(text);
+        });
+      } else {
+        fallbackCopyTextToClipboard(text);
+      }
+    }
+
+    function fallbackCopyTextToClipboard(text) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast('Auction link copied to clipboard!');
+      } catch (err) {
+        prompt('Copy auction link:', text);
+      }
+      document.body.removeChild(textArea);
     }
 
     // Attach Event Listeners
