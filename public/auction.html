@@ -1071,13 +1071,13 @@
             isBold = true;
           } else if (code === 'o') {
             isItalic = true;
-          } else if (code === 'n') {
-            isUnderline = true;
-          } else if (code === 'm') {
-            currentColor = FEATHER_COLOR_MAP['m'] || '#991b1b';
-            isStrike = false;
           } else if (FEATHER_COLOR_MAP[code]) {
             currentColor = FEATHER_COLOR_MAP[code];
+            // In Minecraft, switching color resets formatting styles
+            isBold = false;
+            isItalic = false;
+            isStrike = false;
+            isUnderline = false;
           }
         } else if (part.length > 0) {
           const safeText = part.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');

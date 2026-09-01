@@ -101,6 +101,7 @@
   // Define Web Components
   class CMCHeader extends HTMLElement {
     async connectedCallback() {
+      this.style.display = 'contents';
       const html = await loadComponentHtml('header');
       if (html) {
         this.innerHTML = html;
@@ -112,6 +113,7 @@
 
   class CMCSidebar extends HTMLElement {
     async connectedCallback() {
+      this.style.display = 'contents';
       const html = await loadComponentHtml('sidebar');
       if (html) {
         this.innerHTML = html;
@@ -123,6 +125,7 @@
 
   class CMCFooter extends HTMLElement {
     async connectedCallback() {
+      this.style.display = 'block';
       const html = await loadComponentHtml('footer');
       if (html) {
         this.innerHTML = html;
