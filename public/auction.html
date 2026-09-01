@@ -1046,16 +1046,16 @@
 
     function minecraftColorToHtml(text) {
       if (!text) return '';
-      // Strip private unicode icon symbols (e.g. \uE000-\uF8FF) and control chars
-      const clean = text.replace(/[\uE000-\uF8FF]/g, '').replace(/[\x00-\x1F\x7F-\x9F]/g, '');
+      const clean = text
+        .replace(/[\uE000-\uF8FF]/g, '')
+        .replace(/[\uDB80-\uDBBF][\uDC00-\uDFFF]/g, '')
+        .replace(/[\x00-\x1F\x7F-\x9F]/g, '');
       if (!clean.trim()) return '&nbsp;';
 
       let html = '';
       let currentColor = '#475569';
       let isBold = false;
       let isItalic = false;
-      let isStrike = false;
-      let isUnderline = false;
 
       const parts = clean.split(/(§[0-9a-z])/gi);
       for (const part of parts) {
@@ -1065,24 +1065,18 @@
             currentColor = '#475569';
             isBold = false;
             isItalic = false;
-            isStrike = false;
-            isUnderline = false;
           } else if (code === 'l') {
             isBold = true;
           } else if (code === 'o') {
             isItalic = true;
           } else if (FEATHER_COLOR_MAP[code]) {
             currentColor = FEATHER_COLOR_MAP[code];
-            // In Minecraft, switching color resets formatting styles
             isBold = false;
             isItalic = false;
-            isStrike = false;
-            isUnderline = false;
           }
         } else if (part.length > 0) {
           const safeText = part.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          const textDec = `${isStrike ? 'line-through ' : ''}${isUnderline ? 'underline' : ''}`.trim() || 'none';
-          html += `<span style="color:${currentColor}; font-weight:${isBold ? '700' : 'normal'}; font-style:${isItalic ? 'italic' : 'normal'}; text-decoration:${textDec};">${safeText}</span>`;
+          html += `<span style="color:${currentColor}; font-weight:${isBold ? '700' : 'normal'}; font-style:${isItalic ? 'italic' : 'normal'}; text-decoration:none;">${safeText}</span>`;
         }
       }
       return html;

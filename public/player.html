@@ -429,12 +429,24 @@
       if (!rawLore || rawLore.length === 0) return '';
       const lines = Array.isArray(rawLore) ? rawLore : [rawLore];
 
-      return lines.map(line => {
+      const renderedLines = [];
+
+      for (const line of lines) {
+        // Strip Minecraft Bedrock Private Use Area (PUA) icon glyphs and non-printable control characters
+        const cleanLine = String(line)
+          .replace(/[\uE000-\uF8FF]/g, '')
+          .replace(/[\uDB80-\uDBBF][\uDC00-\uDFFF]/g, '')
+          .replace(/[\x00-\x1F\x7F-\x9F]/g, '');
+
+        // If the line had only PUA icons and is now completely empty, skip rendering it
+        const textWithoutColors = cleanLine.replace(/§[0-9a-z]/gi, '').trim();
+        if (!textWithoutColors) continue;
+
         let currentColor = '#475569';
         let isBold = false;
         let isItalic = false;
 
-        const parts = String(line).split(/(§[0-9a-fk-or])/gi);
+        const parts = cleanLine.split(/(§[0-9a-fk-or])/gi);
         let html = '';
 
         for (const part of parts) {
@@ -458,8 +470,12 @@
             html += `<span style="color:${currentColor}; font-weight:${isBold ? '700' : 'normal'}; font-style:${isItalic ? 'italic' : 'normal'}; text-decoration:none;">${safeText}</span>`;
           }
         }
-        return `<div style="line-height:1.35; margin: 1px 0;">${html || '&nbsp;'}</div>`;
-      }).join('');
+        if (html.trim()) {
+          renderedLines.push(`<div style="line-height:1.35; margin: 1px 0;">${html}</div>`);
+        }
+      }
+
+      return renderedLines.join('');
     }
 
     // Binary NBT Parser with Auto Endianness Detection (Big-Endian & Little-Endian)
@@ -1245,12 +1261,22 @@
       const completedQuests = Object.values(quests).filter(q => q?.status === 'COMPLETE').length;
       const activeQuests = Object.entries(quests).filter(([, q]) => q?.status === 'ACTIVE');
 
+      const shardsList = Array.isArray(reality.collectedShards) ? reality.collectedShards.slice().sort((a, b) => Number(a) - Number(b)) : [];
+
       container.innerHTML = `
         <div class="cards-grid">
           <div class="card">
-            <div class="card-header"><span class="material-icons" style="color:#06b6d4;">diamond</span><span class="card-title">Reality Shards</span></div>
-            <div class="data-item"><span class="data-label">Collected Shards</span><span class="data-value number">${reality.collectedShards ? reality.collectedShards.length : 0}</span></div>
+            <div class="card-header"><span class="material-icons" style="color:#06b6d4;">diamond</span><span class="card-title">Reality Shards (${shardsList.length} collected)</span></div>
+            <div class="data-item"><span class="data-label">Total Collected Shards</span><span class="data-value number">${shardsList.length}</span></div>
             <div class="data-item"><span class="data-label">Fusions Completed</span><span class="data-value number">${formatNumber(reality.fusions || 0)}</span></div>
+            ${shardsList.length > 0 ? `
+              <div style="margin-top: 12px;">
+                <div class="data-label" style="margin-bottom: 6px;">Collected Shard IDs (${shardsList.length}):</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 140px; overflow-y: auto; padding-right: 4px;">
+                  ${shardsList.map(id => `<span class="profile-pill" style="font-size: 0.75rem; padding: 2px 7px; border-color: #06b6d4; color: #0891b2; font-weight: 600;"><span class="material-icons" style="font-size: 0.8rem; vertical-align: middle;">diamond</span> Shard #${id}</span>`).join('')}
+                </div>
+              </div>
+            ` : '<p style="color:var(--text-muted); font-size:0.85rem; margin-top:8px;">No reality shards collected.</p>'}
           </div>
 
           <div class="card">
