@@ -1226,12 +1226,21 @@
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#16a34a;">storefront</span><span class="card-title">Daily NPC Shop Limits</span></div>
             <div class="data-item"><span class="data-label">Daily Coins Sold To NPC</span><span class="data-value number">${formatNumber(sellsValue)} coins</span></div>
-            ${Object.keys(buys).length > 0 ? Object.entries(buys).map(([item, count]) => `
-              <div class="data-item">
-                <span class="data-label">${item.replace(/^npc#/i, '').replace(/_/g, ' ')}</span>
-                <span class="data-value number">${count} bought</span>
-              </div>
-            `).join('') : '<p style="color:var(--text-muted); font-size:0.85rem; margin-top:8px;">No special daily items purchased.</p>'}
+            ${Object.keys(buys).length > 0 ? Object.entries(buys).map(([item, count]) => {
+              const cleanItemName = item
+                .replace(/^npc#/i, '')
+                .replace(/^minecraft:/i, '')
+                .replace(/^trpixel:/i, '')
+                .replace(/:0$/i, '')
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, c => c.toUpperCase());
+              return `
+                <div class="data-item">
+                  <span class="data-label">${cleanItemName}</span>
+                  <span class="data-value number">${count} bought</span>
+                </div>
+              `;
+            }).join('') : '<p style="color:var(--text-muted); font-size:0.85rem; margin-top:8px;">No special daily items purchased.</p>'}
           </div>
         </div>
 
@@ -1251,23 +1260,14 @@
     // 13. Playtime Tab
     function renderPlaytime() {
       const container = document.getElementById('playtimeTab');
-      const memberPlaytimeSec = profileData?.playtimes?.[selectedMemberId] || 0;
-      const totalSec = playerData?.totalPlaytime || 1;
+      const totalSec = playerData?.totalPlaytime || 0;
       const games = playerData?.playtimePerGame || {};
 
       container.innerHTML = `
-        <div class="cards-grid">
-          <div class="card">
-            <div class="card-header"><span class="material-icons" style="color:#ea580c;">timer</span><span class="card-title">SkyBlock Profile Playtime</span></div>
-            <div class="data-item"><span class="data-label">Active Time on This Profile</span><span class="data-value string" style="color:var(--accent-color); font-weight:700;">${formatPlaytime(memberPlaytimeSec)}</span></div>
-            <div class="data-item"><span class="data-label">Raw Seconds</span><span class="data-value number">${formatNumber(memberPlaytimeSec)} sec</span></div>
-          </div>
-
-          <div class="card">
-            <div class="card-header"><span class="material-icons" style="color:#0284c7;">schedule</span><span class="card-title">Total Network Playtime</span></div>
-            <div class="data-item"><span class="data-label">All Server Playtime</span><span class="data-value string" style="color:#0284c7; font-weight:700;">${formatPlaytime(totalSec)}</span></div>
-            <div class="data-item"><span class="data-label">Raw Seconds</span><span class="data-value number">${formatNumber(totalSec)} sec</span></div>
-          </div>
+        <div class="card" style="margin-bottom: 16px;">
+          <div class="card-header"><span class="material-icons" style="color:#0284c7;">schedule</span><span class="card-title">Total Network Playtime</span></div>
+          <div class="data-item"><span class="data-label">All Server Playtime</span><span class="data-value string" style="color:#0284c7; font-weight:700;">${formatPlaytime(totalSec)}</span></div>
+          <div class="data-item"><span class="data-label">Raw Seconds</span><span class="data-value number">${formatNumber(totalSec)} sec</span></div>
         </div>
 
         <div class="card" style="margin-top: 16px;">
