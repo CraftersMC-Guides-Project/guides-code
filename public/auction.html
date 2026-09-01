@@ -1008,40 +1008,40 @@
       renderAuctionsView();
     }
 
-    // Minecraft Color Code to HTML Converter (From feather-bot LEGACY_COLOR_MAP with pixel font shadow)
+    // Minecraft Color Code to HTML Converter (Calibrated for clean white theme tooltip)
     const FEATHER_COLOR_MAP = {
-      '0': '#000000',
-      '1': '#0000AA',
-      '2': '#00AA00',
-      '3': '#00AAAA',
-      '4': '#AA0000',
-      '5': '#AA00AA',
-      '6': '#FFAA00',
-      '7': '#AAAAAA',
-      '8': '#555555',
-      '9': '#5555FF',
-      a: '#55FF55',
-      b: '#55FFFF',
-      c: '#FF5555',
-      d: '#FF55FF',
-      e: '#FFFF55',
-      f: '#FFFFFF',
-      g: '#DDD605',
-      h: '#E3D4D1',
-      i: '#CECACA',
-      j: '#443A3B',
-      m: '#971607',
-      n: '#B4684D',
-      p: '#DEB12D',
-      q: '#119F36',
-      s: '#2CBAA8',
-      t: '#21497B',
-      u: '#9A5CC6',
-      v: '#EB7114',
-      w: '#8CB3FF',
-      x: '#A5A5A5',
-      y: '#F38BAA',
-      z: '#B38B6D',
+      '0': '#0f172a',
+      '1': '#1d4ed8',
+      '2': '#15803d',
+      '3': '#0e7490',
+      '4': '#b91c1c',
+      '5': '#7e22ce',
+      '6': '#d97706',
+      '7': '#64748b',
+      '8': '#334155',
+      '9': '#2563eb',
+      a: '#16a34a',
+      b: '#0284c7',
+      c: '#dc2626',
+      d: '#c026d3',
+      e: '#b45309',
+      f: '#0f172a',
+      g: '#b45309',
+      h: '#475569',
+      i: '#64748b',
+      j: '#1e293b',
+      m: '#991b1b',
+      n: '#b45309',
+      p: '#d97706',
+      q: '#15803d',
+      s: '#0d9488',
+      t: '#1e40af',
+      u: '#9333ea',
+      v: '#ea580c',
+      w: '#2563eb',
+      x: '#64748b',
+      y: '#e11d48',
+      z: '#92400e',
     };
 
     function minecraftColorToHtml(text) {
@@ -1051,7 +1051,7 @@
       if (!clean.trim()) return '&nbsp;';
 
       let html = '';
-      let currentColor = '#AAAAAA';
+      let currentColor = '#475569';
       let isBold = false;
       let isItalic = false;
       let isStrike = false;
@@ -1062,7 +1062,7 @@
         if (part.startsWith('§') && part.length === 2) {
           const code = part.charAt(1).toLowerCase();
           if (code === 'r') {
-            currentColor = '#AAAAAA';
+            currentColor = '#475569';
             isBold = false;
             isItalic = false;
             isStrike = false;
@@ -1074,8 +1074,7 @@
           } else if (code === 'n') {
             isUnderline = true;
           } else if (code === 'm') {
-            // In feather-bot, §m is color #971607 (custom reforge stats color)
-            currentColor = FEATHER_COLOR_MAP['m'] || '#971607';
+            currentColor = FEATHER_COLOR_MAP['m'] || '#991b1b';
             isStrike = false;
           } else if (FEATHER_COLOR_MAP[code]) {
             currentColor = FEATHER_COLOR_MAP[code];
@@ -1083,7 +1082,7 @@
         } else if (part.length > 0) {
           const safeText = part.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           const textDec = `${isStrike ? 'line-through ' : ''}${isUnderline ? 'underline' : ''}`.trim() || 'none';
-          html += `<span style="color:${currentColor}; font-weight:${isBold ? '700' : 'normal'}; font-style:${isItalic ? 'italic' : 'normal'}; text-decoration:${textDec}; text-shadow: 1px 1px 0px rgba(0,0,0,0.95);">${safeText}</span>`;
+          html += `<span style="color:${currentColor}; font-weight:${isBold ? '700' : 'normal'}; font-style:${isItalic ? 'italic' : 'normal'}; text-decoration:${textDec};">${safeText}</span>`;
         }
       }
       return html;
