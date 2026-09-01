@@ -436,7 +436,7 @@
         </div>
 
         <!-- Toast Notification Container -->
-        <div id="toastNotification" style="position: fixed; bottom: 24px; right: 24px; z-index: 2000; background: #0f172a; color: #ffffff; padding: 12px 20px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.2); align-items: center; gap: 8px;">
+        <div id="toastNotification" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999; background: #0f172a; color: #ffffff; padding: 12px 20px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.3); align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.1); pointer-events: none; transition: all 0.2s ease;">
           <span class="material-icons" style="color: #22c55e;">check_circle</span>
           <span id="toastMessage">Copied to clipboard!</span>
         </div>
@@ -1476,23 +1476,43 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // Toast Notification Controller
+    let toastTimeout = null;
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      const toastMsg = document.getElementById('toastMessage');
+      if (!toast) return;
+      if (toastMsg) toastMsg.textContent = message;
+      toast.style.display = 'flex';
+      toast.style.opacity = '1';
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
     // Share Auction Handler
     function shareAuction(auctionId, event) {
-      if (event) {
+      if (event && event.stopPropagation) {
         event.stopPropagation();
       }
-      const targetId = auctionId || currentAuctionDetailId;
-      if (!targetId) return;
+      const targetId = auctionId || currentAuctionDetailId || (new URLSearchParams(window.location.search).get('id'));
+      if (!targetId) {
+        showToast('No auction selected to share');
+        return;
+      }
 
       const shareUrl = `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(targetId)}`;
 
-      if (navigator.share) {
+      if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
         navigator.share({
           title: 'CraftersMC SkyBlock Auction',
-          text: `Check out this auction on CraftersMC Guides!`,
+          text: `Check out this auction on CraftersMC Guides:`,
           url: shareUrl
-        }).catch(() => {
-          copyToClipboard(shareUrl);
+        }).catch((err) => {
+          if (err.name !== 'AbortError') {
+            copyToClipboard(shareUrl);
+          }
         });
       } else {
         copyToClipboard(shareUrl);
@@ -1501,11 +1521,13 @@
 
     function copyToClipboard(text) {
       if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).then(() => {
-          showToast('Auction link copied to clipboard!');
-        }).catch(() => {
-          fallbackCopyTextToClipboard(text);
-        });
+        navigator.clipboard.writeText(text)
+          .then(() => {
+            showToast('Auction link copied to clipboard!');
+          })
+          .catch(() => {
+            fallbackCopyTextToClipboard(text);
+          });
       } else {
         fallbackCopyTextToClipboard(text);
       }
@@ -1515,14 +1537,25 @@
       const textArea = document.createElement('textarea');
       textArea.value = text;
       textArea.style.position = 'fixed';
-      textArea.style.left = '-999999px';
-      textArea.style.top = '-999999px';
+      textArea.style.top = '0';
+      textArea.style.left = '0';
+      textArea.style.width = '2em';
+      textArea.style.height = '2em';
+      textArea.style.padding = '0';
+      textArea.style.border = 'none';
+      textArea.style.outline = 'none';
+      textArea.style.boxShadow = 'none';
+      textArea.style.background = 'transparent';
       document.body.appendChild(textArea);
       textArea.focus();
       textArea.select();
       try {
-        document.execCommand('copy');
-        showToast('Auction link copied to clipboard!');
+        const successful = document.execCommand('copy');
+        if (successful) {
+          showToast('Auction link copied to clipboard!');
+        } else {
+          prompt('Copy auction link:', text);
+        }
       } catch (err) {
         prompt('Copy auction link:', text);
       }
