@@ -17,7 +17,7 @@ export async function onRequest(context) {
     }
 
     const token = env.cmc_api_key || env.CMC_API_KEY || env['cmc-api-key'] || env.cmcApiKey || env.CMCAPIKEY;
-    const upstreamUrl = 'https://api.craftersmc.net/v1/network/status';
+    const upstreamUrl = 'https://api.craftersmc.net/v1/network/voters';
 
     const headers = {
         'Accept': 'application/json',
@@ -37,7 +37,7 @@ export async function onRequest(context) {
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*',
-                'Cache-Control': 'public, max-age=15',
+                'Cache-Control': 'public, max-age=60',
             },
         });
     } catch (error) {
