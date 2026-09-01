@@ -403,13 +403,80 @@
       renderPlayerStats();
       renderPlaytime();
       renderJSON();
+    }    // Color and Style Code Mapper for Minecraft Bedrock Tooltip Lore
+    const FEATHER_COLOR_MAP = {
+      '0': '#0f172a',
+      '1': '#1d4ed8',
+      '2': '#15803d',
+      '3': '#0e7490',
+      '4': '#b91c1c',
+      '5': '#7e22ce',
+      '6': '#b45309',
+      '7': '#475569',
+      '8': '#334155',
+      '9': '#2563eb',
+      'a': '#16a34a',
+      'b': '#0284c7',
+      'c': '#dc2626',
+      'd': '#c026d3',
+      'e': '#ca8a04',
+      'f': '#0f172a',
+      'n': '#b45309'
+    };
+
+    function renderMinecraftLore(rawLore) {
+      if (!rawLore || rawLore.length === 0) return '';
+      const lines = Array.isArray(rawLore) ? rawLore : [rawLore];
+
+      return lines.map(line => {
+        let currentColor = '#475569';
+        let isBold = false;
+        let isItalic = false;
+        let isStrike = false;
+        let isUnderline = false;
+
+        const parts = String(line).split(/(§[0-9a-fk-or])/gi);
+        let html = '';
+
+        for (const part of parts) {
+          if (part.startsWith('§')) {
+            const code = part.charAt(1).toLowerCase();
+            if (code === 'r') {
+              currentColor = '#475569';
+              isBold = false;
+              isItalic = false;
+              isStrike = false;
+              isUnderline = false;
+            } else if (code === 'l') {
+              isBold = true;
+            } else if (code === 'o') {
+              isItalic = true;
+            } else if (code === 'm') {
+              isStrike = true;
+            } else if (FEATHER_COLOR_MAP[code]) {
+              currentColor = FEATHER_COLOR_MAP[code];
+              isBold = false;
+              isItalic = false;
+              isStrike = false;
+              isUnderline = false;
+            }
+          } else if (part.length > 0) {
+            const safeText = part.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const textDec = `${isStrike ? 'line-through ' : ''}${isUnderline ? 'underline' : ''}`.trim() || 'none';
+            html += `<span style="color:${currentColor}; font-weight:${isBold ? '700' : 'normal'}; font-style:${isItalic ? 'italic' : 'normal'}; text-decoration:${textDec};">${safeText}</span>`;
+          }
+        }
+        return `<div style="line-height:1.35; margin: 1px 0;">${html || '&nbsp;'}</div>`;
+      }).join('');
     }
 
-    // Binary NBT Parser with Auto Endianness Detection
+    // Binary NBT Parser with Auto Endianness Detection (Big-Endian & Little-Endian)
     function parseBinaryNbt(buf) {
       if (!buf || buf.length < 3) return null;
       let isLE = false;
-      if (buf.length > 5 && buf[4] !== 0 && buf[5] === 0) isLE = true;
+      if (buf.length > 5) {
+        if (buf[4] !== 0 && buf[5] === 0) isLE = true;
+      }
 
       let pos = 0;
       const view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
@@ -417,6 +484,9 @@
       function readByte() { return view.getInt8(pos++); }
       function readShort() { const v = view.getInt16(pos, isLE); pos += 2; return v; }
       function readInt() { const v = view.getInt32(pos, isLE); pos += 4; return v; }
+      function readLong() { const lo = view.getInt32(pos, isLE); const hi = view.getInt32(pos + 4, isLE); pos += 8; return lo; }
+      function readFloat() { const v = view.getFloat32(pos, isLE); pos += 4; return v; }
+      function readDouble() { const v = view.getFloat64(pos, isLE); pos += 8; return v; }
       function readString() {
         const len = view.getUint16(pos, isLE);
         pos += 2;
@@ -426,12 +496,13 @@
       }
 
       function readTag(type) {
+        if (type === 0) return null;
         if (type === 1) return readByte();
         if (type === 2) return readShort();
         if (type === 3) return readInt();
-        if (type === 4) { pos += 8; return 0; }
-        if (type === 5) { const v = view.getFloat32(pos, isLE); pos += 4; return v; }
-        if (type === 6) { const v = view.getFloat64(pos, isLE); pos += 8; return v; }
+        if (type === 4) return readLong();
+        if (type === 5) return readFloat();
+        if (type === 6) return readDouble();
         if (type === 7) {
           const len = readInt();
           const arr = new Uint8Array(buf.buffer, buf.byteOffset + pos, len);
@@ -473,7 +544,7 @@
       return null;
     }
 
-    // Extract Items list from base64 gzip NBT
+    // Complete Recursive 100% NBT Item & Lore Extractor
     function extractItemsFromNbt(b64Data) {
       if (!b64Data || typeof pako === 'undefined') return [];
       try {
@@ -483,24 +554,50 @@
         const decomp = pako.ungzip(u8);
         const root = parseBinaryNbt(decomp);
 
-        const items = root?.i || root?.items || (Array.isArray(root) ? root : []);
+        const items = root?.items || root?.i || (Array.isArray(root) ? root : []);
         if (Array.isArray(items)) {
           return items.map(it => {
-            const id = it.id || it.name || 'air';
-            const count = it.Count || it.count || 1;
-            const tag = it.tag || {};
-            const displayName = tag.display?.Name || tag.display?.name || id;
-            const cleanName = String(displayName).replace(/§[0-9a-fk-or]/gi, '');
+            let displayName = it.name || it.id || 'Item';
+            let lore = [];
+
+            if (it.nbt) {
+              try {
+                let b64Str = '';
+                if (it.nbt instanceof Uint8Array) {
+                  b64Str = new TextDecoder('utf-8').decode(it.nbt);
+                } else {
+                  b64Str = String(it.nbt);
+                }
+                const innerRaw = atob(b64Str.trim());
+                const innerU8 = new Uint8Array(innerRaw.length);
+                for (let i = 0; i < innerRaw.length; i++) innerU8[i] = innerRaw.charCodeAt(i);
+                const innerDecomp = pako.ungzip(innerU8);
+                const inner = parseBinaryNbt(innerDecomp);
+
+                if (inner?.display?.Name) displayName = inner.display.Name;
+                if (Array.isArray(inner?.display?.Lore)) lore = inner.display.Lore;
+                else if (Array.isArray(inner?.tag?.display?.Lore)) lore = inner.tag.display.Lore;
+              } catch (innerErr) {
+                // inner NBT parse fallback
+              }
+            }
+
+            const cleanName = String(displayName).replace(/§[0-9a-fk-or]/gi, '').trim();
+
             return {
-              id,
-              count,
-              name: cleanName || id,
-              lore: tag.display?.Lore || []
+              id: it.id,
+              meta: it.meta || 0,
+              count: it.count || it.Count || 1,
+              slot: it.slot !== undefined ? it.slot : -1,
+              rawName: displayName,
+              name: cleanName || 'Item',
+              lore: lore
             };
-          }).filter(it => it.id !== 'minecraft:air' && it.id !== 0 && it.name !== 'air');
+          }).filter(it => it.id !== 0 && it.name !== 'air' && it.id !== 'minecraft:air');
         }
         return [];
       } catch (e) {
+        console.warn('extractItemsFromNbt error:', e);
         return [];
       }
     }
@@ -762,17 +859,29 @@
             </div>
             ${items.length === 0 ? `<p style="color:var(--text-muted); font-size:0.85rem;">${emptyMsg}</p>` : `
               <div class="inventory-grid-container">
-                ${items.map(it => `
-                  <div class="item-slot-card">
-                    <div class="item-slot-icon">
-                      <span class="material-icons" style="font-size: 1.15rem;">widgets</span>
+                ${items.map(it => {
+                  const loreHtml = it.lore && it.lore.length > 0 ? renderMinecraftLore(it.lore) : '';
+                  const itemTitleHtml = renderMinecraftLore(it.rawName || it.name);
+
+                  return `
+                    <div class="item-slot-card" style="align-items: flex-start; flex-direction: column; gap: 8px;">
+                      <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                        <div class="item-slot-icon">
+                          <span class="material-icons" style="font-size: 1.15rem;">${iconName}</span>
+                        </div>
+                        <div class="item-slot-info" style="flex: 1;">
+                          <div class="item-slot-name">${itemTitleHtml} ${it.count > 1 ? `<span style="font-size:0.75rem; color:var(--text-muted); font-weight:500;">x${it.count}</span>` : ''}</div>
+                          <div class="item-slot-type">${it.id} ${it.slot >= 0 ? `• Slot ${it.slot}` : ''}</div>
+                        </div>
+                      </div>
+                      ${loreHtml ? `
+                        <div style="width: 100%; padding: 10px 12px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 6px; font-family: 'Minecraft', var(--font-mono); font-size: 0.78rem; line-height: 1.35; margin-top: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);">
+                          ${loreHtml}
+                        </div>
+                      ` : ''}
                     </div>
-                    <div class="item-slot-info">
-                      <div class="item-slot-name">${it.name} ${it.count > 1 ? `<span style="font-size:0.75rem; color:var(--text-muted);">x${it.count}</span>` : ''}</div>
-                      <div class="item-slot-type">${it.id}</div>
-                    </div>
-                  </div>
-                `).join('')}
+                  `;
+                }).join('')}
               </div>
             `}
           </div>
