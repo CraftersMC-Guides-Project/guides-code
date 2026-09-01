@@ -421,6 +421,7 @@
       'd': '#c026d3',
       'e': '#ca8a04',
       'f': '#0f172a',
+      'm': '#64748b',
       'n': '#b45309'
     };
 
@@ -432,8 +433,6 @@
         let currentColor = '#475569';
         let isBold = false;
         let isItalic = false;
-        let isStrike = false;
-        let isUnderline = false;
 
         const parts = String(line).split(/(§[0-9a-fk-or])/gi);
         let html = '';
@@ -445,25 +444,18 @@
               currentColor = '#475569';
               isBold = false;
               isItalic = false;
-              isStrike = false;
-              isUnderline = false;
             } else if (code === 'l') {
               isBold = true;
             } else if (code === 'o') {
               isItalic = true;
-            } else if (code === 'm') {
-              isStrike = true;
             } else if (FEATHER_COLOR_MAP[code]) {
               currentColor = FEATHER_COLOR_MAP[code];
               isBold = false;
               isItalic = false;
-              isStrike = false;
-              isUnderline = false;
             }
           } else if (part.length > 0) {
             const safeText = part.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            const textDec = `${isStrike ? 'line-through ' : ''}${isUnderline ? 'underline' : ''}`.trim() || 'none';
-            html += `<span style="color:${currentColor}; font-weight:${isBold ? '700' : 'normal'}; font-style:${isItalic ? 'italic' : 'normal'}; text-decoration:${textDec};">${safeText}</span>`;
+            html += `<span style="color:${currentColor}; font-weight:${isBold ? '700' : 'normal'}; font-style:${isItalic ? 'italic' : 'normal'}; text-decoration:none;">${safeText}</span>`;
           }
         }
         return `<div style="line-height:1.35; margin: 1px 0;">${html || '&nbsp;'}</div>`;
@@ -1224,17 +1216,17 @@
 
           <div class="cosmetics-category-title">Companion Pets (${pets.length})</div>
           <div class="cosmetics-chips">
-            ${pets.map(p => `<span class="cosmetic-chip ${p === playerData.selectedPet ? 'equipped' : ''}">${p.replace(/^pet_/i, '').replace(/_/g, ' ')} ${p === playerData.selectedPet ? '★' : ''}</span>`).join('')}
+            ${pets.map(p => `<span class="cosmetic-chip ${p === playerData.selectedPet ? 'equipped' : ''}">${p.replace(/^pet_/i, '').replace(/_/g, ' ')} ${p === playerData.selectedPet ? '(Equipped)' : ''}</span>`).join('')}
           </div>
 
           <div class="cosmetics-category-title">Particle Auras (${particles.length})</div>
           <div class="cosmetics-chips">
-            ${particles.map(pr => `<span class="cosmetic-chip ${pr === playerData.selectedParticle ? 'equipped' : ''}">${pr.replace(/^particle_/i, '').replace(/_/g, ' ')} ${pr === playerData.selectedParticle ? '★' : ''}</span>`).join('')}
+            ${particles.map(pr => `<span class="cosmetic-chip ${pr === playerData.selectedParticle ? 'equipped' : ''}">${pr.replace(/^particle_/i, '').replace(/_/g, ' ')} ${pr === playerData.selectedParticle ? '(Equipped)' : ''}</span>`).join('')}
           </div>
 
           <div class="cosmetics-category-title">Lobby Gadgets (${gadgets.length})</div>
           <div class="cosmetics-chips">
-            ${gadgets.map(g => `<span class="cosmetic-chip ${g === playerData.selectedGadget ? 'equipped' : ''}">${g.replace(/^gadget_/i, '').replace(/_/g, ' ')} ${g === playerData.selectedGadget ? '★' : ''}</span>`).join('')}
+            ${gadgets.map(g => `<span class="cosmetic-chip ${g === playerData.selectedGadget ? 'equipped' : ''}">${g.replace(/^gadget_/i, '').replace(/_/g, ' ')} ${g === playerData.selectedGadget ? '(Equipped)' : ''}</span>`).join('')}
           </div>
         </div>
       `;
@@ -1360,7 +1352,7 @@
           </div>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">Each claimed century cake grants permanent +1 Health to your SkyBlock character.</p>
           <div class="cakes-grid">
-            ${cakes.length > 0 ? cakes.map(c => `<span class="cake-chip">🎂 Year #${c} (+1 HP)</span>`).join('') : '<p style="color:var(--text-muted); font-size:0.85rem;">No century cakes claimed.</p>'}
+            ${cakes.length > 0 ? cakes.map(c => `<span class="cake-chip"><span class="material-icons" style="font-size:0.95rem; vertical-align:middle; color:#d946ef; margin-right:4px;">cake</span> Year #${c} (+1 HP)</span>`).join('') : '<p style="color:var(--text-muted); font-size:0.85rem;">No century cakes claimed.</p>'}
           </div>
         </div>
       `;
