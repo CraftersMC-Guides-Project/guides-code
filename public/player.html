@@ -25,6 +25,9 @@
   <!-- Pako for client-side NBT decompression -->
   <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
 
+  <!-- Reality Shards Database -->
+  <script src="data/realityShardCoordinates.js"></script>
+
   <!-- Scripts -->
   <script src="js/api-proxy-client.js"></script>
   <script src="better-api-docs/app.js" defer></script>
@@ -1262,17 +1265,29 @@
       const activeQuests = Object.entries(quests).filter(([, q]) => q?.status === 'ACTIVE');
 
       const shardsList = Array.isArray(reality.collectedShards) ? reality.collectedShards.slice().sort((a, b) => Number(a) - Number(b)) : [];
+      const collectedSet = new Set(shardsList.map(Number));
+      const allShardsList = typeof REALITY_SHARDS !== 'undefined' ? REALITY_SHARDS : (window.REALITY_SHARDS || []);
+      const totalDatabaseShards = allShardsList.length || 114;
+      const missingCount = Math.max(0, totalDatabaseShards - shardsList.length);
 
       container.innerHTML = `
         <div class="cards-grid">
           <div class="card">
-            <div class="card-header"><span class="material-icons" style="color:#06b6d4;">diamond</span><span class="card-title">Reality Shards (${shardsList.length} collected)</span></div>
-            <div class="data-item"><span class="data-label">Total Collected Shards</span><span class="data-value number">${shardsList.length}</span></div>
+            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="material-icons" style="color:#06b6d4;">diamond</span>
+                <span class="card-title">Reality Shards</span>
+              </div>
+              <button type="button" class="shard-copy-btn" style="background:#ecfeff; border-color:#a5f3fc; color:#0891b2; font-weight:700;" onclick="openMissingShardsModal()">
+                <span class="material-icons" style="font-size:0.95rem;">explore</span> Missing Shards (${missingCount})
+              </button>
+            </div>
+            <div class="data-item"><span class="data-label">Collected Shards</span><span class="data-value number">${shardsList.length} / ${totalDatabaseShards}</span></div>
             <div class="data-item"><span class="data-label">Fusions Completed</span><span class="data-value number">${formatNumber(reality.fusions || 0)}</span></div>
             ${shardsList.length > 0 ? `
               <div style="margin-top: 12px;">
                 <div class="data-label" style="margin-bottom: 6px;">Collected Shard IDs (${shardsList.length}):</div>
-                <div style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 140px; overflow-y: auto; padding-right: 4px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 130px; overflow-y: auto; padding-right: 4px;">
                   ${shardsList.map(id => `<span class="profile-pill" style="font-size: 0.75rem; padding: 2px 7px; border-color: #06b6d4; color: #0891b2; font-weight: 600;"><span class="material-icons" style="font-size: 0.8rem; vertical-align: middle;">diamond</span> Shard #${id}</span>`).join('')}
                 </div>
               </div>
@@ -1435,6 +1450,98 @@
       `;
     }
 
+    // Toast Helper
+    function showToast(message) {
+      const existing = document.querySelector('.cmc-toast');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.className = 'cmc-toast';
+      toast.innerHTML = `
+        <span class="material-icons toast-icon" style="color:#16a34a;">check_circle</span>
+        <span class="toast-message">${message}</span>
+      `;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.animation = 'fadeOut 0.25s ease-out forwards';
+        setTimeout(() => toast.remove(), 250);
+      }, 3000);
+    }
+
+    // Missing Reality Shards Modal Logic
+    function openMissingShardsModal() {
+      const member = profileData?.members?.[selectedMemberId] || {};
+      const reality = member.realityShardData || {};
+      const collectedSet = new Set((reality.collectedShards || []).map(Number));
+      const groups = typeof REALITY_SHARD_GROUPS !== 'undefined' ? REALITY_SHARD_GROUPS : (window.REALITY_SHARD_GROUPS || []);
+
+      const modal = document.getElementById('missingShardsModal');
+      const body = document.getElementById('missingShardsModalBody');
+
+      let html = '';
+      let totalMissing = 0;
+
+      groups.forEach(group => {
+        const missingInArea = group.shards.filter(s => !collectedSet.has(Number(s.id)));
+        totalMissing += missingInArea.length;
+
+        if (missingInArea.length > 0) {
+          html += `
+            <div class="missing-shards-area-title">
+              <span class="material-icons" style="font-size:1.05rem;">location_on</span>
+              <span>${group.area} (${missingInArea.length} missing)</span>
+            </div>
+            <div class="missing-shards-grid">
+              ${missingInArea.map(shard => `
+                <div class="missing-shard-card">
+                  <div>
+                    <div class="shard-id-title">Shard #${shard.id}</div>
+                    <div class="shard-coord-text">X: ${shard.x}, Y: ${shard.y}, Z: ${shard.z}</div>
+                  </div>
+                  <button type="button" class="shard-copy-btn" onclick="copyShardCoords(${shard.x}, ${shard.y}, ${shard.z}, ${shard.id})" title="Copy coordinates">
+                    <span class="material-icons" style="font-size:0.9rem;">content_copy</span> Copy
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+      });
+
+      if (totalMissing === 0) {
+        body.innerHTML = `
+          <div style="text-align: center; padding: 36px 16px;">
+            <span class="material-icons" style="font-size: 3rem; color: #16a34a; margin-bottom: 8px;">verified</span>
+            <h3 style="font-size: 1.15rem; color: var(--text-bright); margin-bottom: 4px;">All Reality Shards Collected!</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">This profile has collected all 114 reality shards across all SkyBlock areas.</p>
+          </div>
+        `;
+      } else {
+        body.innerHTML = `
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:16px;">
+            Found <strong>${totalMissing}</strong> uncollected reality shards. Click <strong>Copy</strong> to copy in-game coordinates.
+          </p>
+          ${html}
+        `;
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeMissingShardsModal() {
+      document.getElementById('missingShardsModal').style.display = 'none';
+    }
+
+    function copyShardCoords(x, y, z, id) {
+      const coordStr = `${x} ${y} ${z}`;
+      navigator.clipboard.writeText(coordStr).then(() => {
+        showToast(`Copied Shard #${id} coordinates: ${coordStr}`);
+      }).catch(() => {
+        showToast(`Coordinates: ${coordStr}`);
+      });
+    }
+
     function clearData() {
       document.getElementById('username').value = '';
       document.getElementById('profileId').value = '';
@@ -1467,6 +1574,22 @@
       });
     });
   </script>
+
+  <!-- Missing Reality Shards Modal -->
+  <div id="missingShardsModal" class="shards-modal-overlay" style="display: none;" onclick="if(event.target === this) closeMissingShardsModal()">
+    <div class="shards-modal-card">
+      <div class="shards-modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="material-icons" style="color: #06b6d4;">explore</span>
+          <span style="font-weight: 700; font-size: 1.05rem; color: var(--text-bright);">Missing Reality Shards &amp; Coordinates</span>
+        </div>
+        <button type="button" class="btn-secondary-action" style="padding: 4px 8px;" onclick="closeMissingShardsModal()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div id="missingShardsModalBody" class="shards-modal-body"></div>
+    </div>
+  </div>
 
 </body>
 </html>
