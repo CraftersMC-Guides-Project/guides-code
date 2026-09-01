@@ -1511,29 +1511,29 @@
           url: shareUrl
         }).catch((err) => {
           if (err.name !== 'AbortError') {
-            copyToClipboard(shareUrl);
+            copyAuctionLinkToClipboard(shareUrl);
           }
         });
       } else {
-        copyToClipboard(shareUrl);
+        copyAuctionLinkToClipboard(shareUrl);
       }
     }
 
-    function copyToClipboard(text) {
+    function copyAuctionLinkToClipboard(text) {
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text)
           .then(() => {
             showToast('Auction link copied to clipboard!');
           })
           .catch(() => {
-            fallbackCopyTextToClipboard(text);
+            fallbackCopyAuctionLink(text);
           });
       } else {
-        fallbackCopyTextToClipboard(text);
+        fallbackCopyAuctionLink(text);
       }
     }
 
-    function fallbackCopyTextToClipboard(text) {
+    function fallbackCopyAuctionLink(text) {
       const textArea = document.createElement('textarea');
       textArea.value = text;
       textArea.style.position = 'fixed';
@@ -1603,9 +1603,6 @@
       }
     });
   </script>
-
-  <!-- Mobile Sidebar & Backdrop Controller -->
-  <script src="better-api-docs/app.js"></script>
 
 </body>
 </html>

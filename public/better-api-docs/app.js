@@ -125,10 +125,13 @@ function switchSnippet(btn, targetId) {
  * Copy to clipboard with instant user feedback
  */
 function copyToClipboard(btn) {
+  if (typeof btn === 'string') {
+    return navigator.clipboard.writeText(btn);
+  }
+  if (!btn || typeof btn.closest !== 'function') return;
   const wrapper = btn.closest(".code-block-wrapper") || btn.parentElement;
-  const codeEl = wrapper.querySelector("code");
-  // Copy original raw code if stored, otherwise innerText
-  const text = codeEl.dataset.rawCode || codeEl.innerText || codeEl.textContent;
+  const codeEl = wrapper ? wrapper.querySelector("code") : null;
+  const text = codeEl ? (codeEl.dataset.rawCode || codeEl.innerText || codeEl.textContent) : '';
 
   navigator.clipboard.writeText(text).then(() => {
     const origText = btn.textContent;
