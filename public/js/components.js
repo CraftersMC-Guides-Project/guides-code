@@ -8,7 +8,7 @@
 
   // Cache duration: 5 minutes in sessionStorage
   const CACHE_PREFIX = 'cmc_comp_';
-  const CACHE_VERSION = 'v3_';
+  const CACHE_VERSION = 'v4_';
 
   async function loadComponentHtml(name) {
     const cacheKey = `${CACHE_PREFIX}${CACHE_VERSION}${name}`;

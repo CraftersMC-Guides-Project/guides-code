@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Network Status &amp; Real-time Intelligence — CraftersMC Guides</title>
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png" />
+
+  <!-- Google Fonts & Material Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="better-api-docs/style.css" />
+  <link rel="stylesheet" href="css/status.css" />
+
+  <!-- Core Components -->
+  <script src="js/components.js"></script>
+</head>
+<body>
+
+  <!-- Top Header Web Component -->
+  <cmc-header active="status"></cmc-header>
+
+  <!-- Main Application Layout -->
+  <div class="app-layout">
+
+    <!-- Left Sidebar Web Component -->
+    <cmc-sidebar active="status"></cmc-sidebar>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <section class="doc-section">
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+          <a href="index.html">Guides</a>
+          <span class="breadcrumb-separator">/</span>
+          <span>Live Intelligence</span>
+          <span class="breadcrumb-separator">/</span>
+          <span>Network Status</span>
+        </div>
+
+        <div class="status-container">
+
+          <!-- 1. Header & Live Health Banner -->
+          <div class="status-header-banner">
+            <div class="status-header-left">
+              <div class="status-title-row">
+                <h1 class="status-h1">CraftersMC Network Status</h1>
+                <div id="networkHealthBadge" class="status-live-badge online">
+                  <span class="status-pulse-dot"></span>
+                  <span id="networkHealthText">Online &amp; Operational</span>
+                </div>
+              </div>
+              <p class="status-subtitle" id="statusLastUpdated">Connecting to CraftersMC REST API...</p>
+            </div>
+
+            <div class="status-header-actions">
+              <button id="btnManualRefresh" class="status-btn status-btn-secondary" onclick="refreshStatusData(true)">
+                <span class="material-icons" style="font-size: 1rem;" id="refreshIcon">sync</span>
+                <span id="refreshBtnText">Refresh</span>
+              </button>
+              <a href="https://craftersmc.net/vote" target="_blank" class="status-btn status-btn-primary">
+                <span class="material-icons" style="font-size: 1rem;">how_to_vote</span>
+                <span>Vote for Server</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- 2. KPI Bento Grid -->
+          <div class="status-kpi-grid">
+            <!-- Active Players -->
+            <div class="status-kpi-card">
+              <div class="status-kpi-header">
+                <span class="status-kpi-label">Active Players</span>
+                <span class="material-icons status-kpi-icon">people</span>
+              </div>
+              <div>
+                <div class="status-kpi-value" id="kpiPlayerCount">
+                  <span id="kpiCurrentPlayers">-</span>
+                  <span style="font-size: 1rem; color: var(--text-muted); font-weight: 500;">/ <span id="kpiMaxPlayers">750</span></span>
+                </div>
+                <div class="status-progress-bar">
+                  <div id="kpiCapacityFill" class="status-progress-fill" style="width: 0%;"></div>
+                </div>
+              </div>
+              <div class="status-kpi-subtext" id="kpiCapacityText">Network Load: Calculating...</div>
+            </div>
+
+            <!-- Maintenance & Whitelist -->
+            <div class="status-kpi-card">
+              <div class="status-kpi-header">
+                <span class="status-kpi-label">Access State</span>
+                <span class="material-icons status-kpi-icon">lock_open</span>
+              </div>
+              <div>
+                <div class="status-kpi-value" id="kpiWhitelistValue" style="font-size: 1.4rem;">Public (Default)</div>
+              </div>
+              <div class="status-kpi-subtext" id="kpiMaintenanceText">Full Maintenance: Disabled</div>
+            </div>
+
+            <!-- Total Monthly Votes -->
+            <div class="status-kpi-card">
+              <div class="status-kpi-header">
+                <span class="status-kpi-label">Monthly Votes</span>
+                <span class="material-icons status-kpi-icon">how_to_vote</span>
+              </div>
+              <div>
+                <div class="status-kpi-value" id="kpiVotesCount">-</div>
+              </div>
+              <div class="status-kpi-subtext" id="kpiVotersSubtext">Active Voters Logged: -</div>
+            </div>
+          </div>
+
+          <!-- 3. Quick Connect Server IP Card (Bedrock Edition) -->
+          <div class="status-ip-grid" style="grid-template-columns: 1fr;">
+            <div class="status-ip-card" style="padding: 22px 24px;">
+              <div class="status-ip-info">
+                <div class="status-ip-title" style="display: flex; align-items: center; gap: 6px;">
+                  <span class="material-icons" style="font-size: 1rem; color: var(--accent-color);">smartphone</span>
+                  <span>Minecraft Bedrock Edition Server</span>
+                </div>
+                <div class="status-ip-address" style="font-size: 1.3rem;">play.craftersmc.net <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">(Port: 19132)</span></div>
+                <div class="status-ip-port">Compatible with iOS, Android, Windows 10/11, Xbox, PlayStation &amp; Nintendo Switch</div>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="status-btn status-btn-secondary" onclick="copyIp('play.craftersmc.net', '19132')">
+                  <span class="material-icons" style="font-size: 1rem;">content_copy</span>
+                  <span>Copy IP &amp; Port</span>
+                </button>
+                <a class="status-btn status-btn-primary" href="minecraft://?addExternalServer=CraftersMC|play.craftersmc.net:19132">
+                  <span class="material-icons" style="font-size: 1rem;">launch</span>
+                  <span>Open in Minecraft</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Subserver & Gamemode Realms Breakdown -->
+          <div>
+            <div class="status-section-title">
+              <span class="material-icons" style="color: var(--accent-color);">dns</span>
+              <span>Live Realm &amp; Gamemode Breakdown</span>
+            </div>
+            <div class="status-realms-grid" id="realmsGridContainer">
+              <div style="padding: 24px; color: var(--text-muted); font-size: 0.88rem;">Loading realm player distribution...</div>
+            </div>
+          </div>
+
+          <!-- 5. Top Voters Leaderboard Section -->
+          <div class="voters-container">
+            <div class="voters-header">
+              <div class="voters-header-left">
+                <span class="material-icons" style="color: #f59e0b; font-size: 1.3rem;">emoji_events</span>
+                <span style="font-weight: 700; font-size: 1rem; color: var(--text-bright);">Monthly Top Voters</span>
+                <span id="votersMonthBadge" class="voters-month-badge">Cycle: Active</span>
+              </div>
+              <div class="voters-search-box">
+                <span class="material-icons voters-search-icon">search</span>
+                <input type="text" id="votersSearchInput" class="voters-search-input" placeholder="Search voter username..." />
+              </div>
+            </div>
+
+            <!-- Top 3 Podium -->
+            <div class="voters-podium" id="votersPodiumContainer">
+              <!-- Dynamically Populated -->
+            </div>
+
+            <!-- Full Voters Table -->
+            <div class="voters-table-container">
+              <table class="voters-table">
+                <thead>
+                  <tr>
+                    <th style="width: 70px; text-align: center;">Rank</th>
+                    <th>Player</th>
+                    <th style="text-align: right; width: 140px;">Votes</th>
+                    <th style="text-align: right; width: 120px;">Profile</th>
+                  </tr>
+                </thead>
+                <tbody id="votersTableBody">
+                  <tr>
+                    <td colspan="4" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                      Fetching voter rankings...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Toast Notification Container -->
+        <div id="toastNotification" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999; background: #0f172a; color: #ffffff; padding: 12px 20px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.3); align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.1); pointer-events: none; transition: all 0.2s ease;">
+          <span class="material-icons" style="color: #22c55e;">check_circle</span>
+          <span id="toastMessage">Copied to clipboard!</span>
+        </div>
+
+      </section>
+
+      <!-- Reusable Site Footer -->
+      <cmc-footer></cmc-footer>
+    </main>
+  </div>
+
+  <!-- Client Script for Live API Fetching & Rendering -->
+  <script>
+    // State
+    let statusData = null;
+    let votersData = [];
+    let autoRefreshCountdown = 30;
+    let autoRefreshTimer = null;
+    let labelMap = {
+      "SKYBLOCK.modes.hub": "SkyLine Village (Hub)",
+      "SKYBLOCK.modes.dynamic": "Private Islands",
+      "SKYBLOCK.modes.the_park": "The Park",
+      "SKYBLOCK.modes.mining_1": "Deep Caverns",
+      "SKYBLOCK.modes.sb_the_end": "The End",
+      "LIMBO.modes.limbo": "Limbo / Queue",
+      "HUB": "Main Hub Proxy"
+    };
+
+    // Realm Icons Map
+    const REALM_ICONS = {
+      "SkyLine Village (Hub)": "location_city",
+      "Private Islands": "home",
+      "The Park": "park",
+      "Deep Caverns": "terrain",
+      "The End": "nights_stay",
+      "Limbo / Queue": "hourglass_empty",
+      "Main Hub Proxy": "hub"
+    };
+
+    // Toast Notification Controller
+    let toastTimeout = null;
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      const toastMsg = document.getElementById('toastMessage');
+      if (!toast) return;
+      if (toastMsg) toastMsg.textContent = message;
+      toast.style.display = 'flex';
+      toast.style.opacity = '1';
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+    // 1-Click Copy IP Helper
+    function copyIp(ip, port = null) {
+      const textToCopy = port ? `${ip}:${port}` : ip;
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          showToast(`Copied ${textToCopy} to clipboard!`);
+        }).catch(() => {
+          fallbackCopyIp(textToCopy);
+        });
+      } else {
+        fallbackCopyIp(textToCopy);
+      }
+    }
+
+    function fallbackCopyIp(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.top = '0';
+      ta.style.left = '0';
+      ta.style.width = '2em';
+      ta.style.height = '2em';
+      ta.style.padding = '0';
+      ta.style.border = 'none';
+      ta.style.outline = 'none';
+      ta.style.boxShadow = 'none';
+      ta.style.background = 'transparent';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(`Copied ${text} to clipboard!`);
+      } catch (e) {
+        prompt('Copy Server IP:', text);
+      }
+      document.body.removeChild(ta);
+    }
+
+    // Load External Label Map
+    async function fetchLabelMap() {
+      try {
+        const res = await fetch('/network-labels.json');
+        if (res.ok) {
+          const json = await res.json();
+          labelMap = { ...labelMap, ...json };
+        }
+      } catch (err) {
+        // Fallback default
+      }
+    }
+
+    // Fetch Network Status
+    async function fetchStatus() {
+      const endpoints = [
+        '/api/network/status',
+        '/network-status',
+        '/v1/network/status',
+        'https://api.craftersmc.net/v1/network/status'
+      ];
+
+      for (const ep of endpoints) {
+        try {
+          const res = await fetch(ep, { cache: 'no-store' });
+          if (res.ok) {
+            const data = await res.json();
+            if (data && (data.success || data.playerCount !== undefined)) {
+              statusData = data;
+              localStorage.setItem('cmc_status_cache', JSON.stringify({ ts: Date.now(), data }));
+              return data;
+            }
+          }
+        } catch (e) {
+          // continue fallback
+        }
+      }
+
+      // Check Local Cache Fallback
+      const cached = localStorage.getItem('cmc_status_cache');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          statusData = parsed.data;
+          return statusData;
+        } catch (e) {}
+      }
+      return null;
+    }
+
+    // Fetch Network Voters
+    async function fetchVoters() {
+      const endpoints = [
+        '/api/network/voters',
+        '/v1/network/voters',
+        'https://api.craftersmc.net/v1/network/voters'
+      ];
+
+      for (const ep of endpoints) {
+        try {
+          const res = await fetch(ep, { cache: 'no-store' });
+          if (res.ok) {
+            const data = await res.json();
+            if (data && (data.success || Array.isArray(data.voters))) {
+              votersData = data.voters || [];
+              if (data.month) {
+                document.getElementById('votersMonthBadge').textContent = `Month: ${data.month}`;
+              }
+              localStorage.setItem('cmc_voters_cache', JSON.stringify({ ts: Date.now(), data }));
+              return;
+            }
+          }
+        } catch (e) {
+          // continue fallback
+        }
+      }
+
+      // Fallback cache
+      const cached = localStorage.getItem('cmc_voters_cache');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          votersData = parsed.data.voters || [];
+        } catch (e) {}
+      }
+    }
+
+    // Render Status UI
+    function renderStatus() {
+      if (!statusData) {
+        document.getElementById('networkHealthText').textContent = 'Status Unavailable';
+        document.getElementById('networkHealthBadge').className = 'status-live-badge maintenance';
+        return;
+      }
+
+      const isMaintenance = statusData.fullMaintenance === true;
+      const healthBadge = document.getElementById('networkHealthBadge');
+      const healthText = document.getElementById('networkHealthText');
+
+      if (isMaintenance) {
+        healthBadge.className = 'status-live-badge maintenance';
+        healthText.textContent = 'Under Maintenance';
+      } else {
+        healthBadge.className = 'status-live-badge online';
+        healthText.textContent = 'Online & Operational';
+      }
+
+      const currentPlayers = statusData.playerCount ?? 0;
+      const maxPlayers = statusData.maxPlayerCount ?? 750;
+      const percent = Math.min(100, Math.round((currentPlayers / maxPlayers) * 100));
+
+      document.getElementById('kpiCurrentPlayers').textContent = currentPlayers.toLocaleString();
+      document.getElementById('kpiMaxPlayers').textContent = maxPlayers.toLocaleString();
+      document.getElementById('kpiCapacityFill').style.width = `${percent}%`;
+      document.getElementById('kpiCapacityFill').style.background = percent > 85 ? '#ef4444' : (percent > 60 ? '#f59e0b' : '#16a34a');
+      document.getElementById('kpiCapacityText').textContent = `Network Load: ${percent}% of capacity`;
+
+      document.getElementById('kpiWhitelistValue').textContent = statusData.whitelistRank ? `Rank: ${statusData.whitelistRank}` : 'Public (Default)';
+      document.getElementById('kpiMaintenanceText').textContent = isMaintenance ? 'Full Maintenance: Active' : 'Full Maintenance: Disabled';
+
+      // Last updated time
+      const nowTime = new Date().toLocaleTimeString();
+      document.getElementById('statusLastUpdated').textContent = `Live data refreshed at ${nowTime} &bull; Next update in ${autoRefreshCountdown}s`;
+
+      // Render Realms Breakdown
+      renderRealms(statusData.games || {});
+    }
+
+    // Render Realms Breakdown
+    function renderRealms(games) {
+      const container = document.getElementById('realmsGridContainer');
+      const realmList = [];
+
+      function scan(obj, prefix = '') {
+        for (const [k, v] of Object.entries(obj)) {
+          const currentKey = prefix ? `${prefix}.${k}` : k;
+          if (v === null) continue;
+          if (typeof v === 'number' || (typeof v === 'string' && !isNaN(Number(v)))) {
+            const displayName = labelMap[currentKey] || labelMap[k] || k;
+            realmList.push({ key: currentKey, name: displayName, count: Number(v) });
+            continue;
+          }
+          if (typeof v === 'object') {
+            scan(v, currentKey);
+          }
+        }
+      }
+
+      scan(games);
+
+      if (realmList.length === 0) {
+        container.innerHTML = `<div style="padding: 18px; color: var(--text-muted); font-size: 0.88rem;">No realm distribution reported.</div>`;
+        return;
+      }
+
+      const totalActive = statusData?.playerCount || realmList.reduce((a, b) => a + b.count, 0) || 1;
+
+      container.innerHTML = realmList.map(r => {
+        const pct = Math.min(100, Math.round((r.count / totalActive) * 100));
+        const icon = REALM_ICONS[r.name] || 'sports_esports';
+        return `
+          <div class="status-realm-card">
+            <div class="status-realm-header">
+              <div class="status-realm-name">
+                <span class="material-icons" style="font-size: 1.15rem; color: var(--accent-color);">${icon}</span>
+                <span>${r.name}</span>
+              </div>
+              <div class="status-realm-count">${r.count} <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">online</span></div>
+            </div>
+            <div>
+              <div class="status-realm-meter">
+                <div class="status-realm-fill" style="width: ${pct}%;"></div>
+              </div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; text-align: right;">${pct}% of online players</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render Voters Leaderboard
+    function renderVoters(query = '') {
+      const totalVotes = votersData.reduce((acc, cur) => acc + (cur.votes || 0), 0);
+      document.getElementById('kpiVotesCount').textContent = totalVotes.toLocaleString();
+      document.getElementById('kpiVotersSubtext').textContent = `Total Registered Voters: ${votersData.length.toLocaleString()}`;
+
+      const filtered = query
+        ? votersData.filter(v => (v.nickname || '').toLowerCase().includes(query.toLowerCase()))
+        : votersData;
+
+      // 1. Render Top 3 Podium
+      const podiumEl = document.getElementById('votersPodiumContainer');
+      if (votersData.length >= 3 && !query) {
+        const top1 = votersData[0];
+        const top2 = votersData[1];
+        const top3 = votersData[2];
+
+        podiumEl.innerHTML = `
+          <!-- Rank 2: Silver -->
+          <div class="podium-card rank-2">
+            <div class="podium-medal">🥈</div>
+            <img class="podium-avatar" src="https://mc-heads.net/avatar/${encodeURIComponent(top2.nickname)}/48" alt="${top2.nickname}" onerror="this.src='assets/cmc-icon.png'" />
+            <a href="player.html?username=${encodeURIComponent(top2.nickname)}" class="podium-name">${top2.nickname}</a>
+            <div class="podium-votes">${top2.votes} votes</div>
+          </div>
+
+          <!-- Rank 1: Gold -->
+          <div class="podium-card rank-1">
+            <div class="podium-medal">🥇</div>
+            <img class="podium-avatar" src="https://mc-heads.net/avatar/${encodeURIComponent(top1.nickname)}/48" alt="${top1.nickname}" onerror="this.src='assets/cmc-icon.png'" />
+            <a href="player.html?username=${encodeURIComponent(top1.nickname)}" class="podium-name" style="font-size: 1.05rem;">${top1.nickname}</a>
+            <div class="podium-votes" style="background: #fef08a; color: #854d0e; border-color: #facc15;">${top1.votes} votes</div>
+          </div>
+
+          <!-- Rank 3: Bronze -->
+          <div class="podium-card rank-3">
+            <div class="podium-medal">🥉</div>
+            <img class="podium-avatar" src="https://mc-heads.net/avatar/${encodeURIComponent(top3.nickname)}/48" alt="${top3.nickname}" onerror="this.src='assets/cmc-icon.png'" />
+            <a href="player.html?username=${encodeURIComponent(top3.nickname)}" class="podium-name">${top3.nickname}</a>
+            <div class="podium-votes">${top3.votes} votes</div>
+          </div>
+        `;
+        podiumEl.style.display = 'grid';
+      } else {
+        podiumEl.style.display = 'none';
+      }
+
+      // 2. Render Voters Table (Top 100)
+      const tbody = document.getElementById('votersTableBody');
+      const displayList = filtered.slice(0, 100);
+
+      if (displayList.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" style="text-align: center; padding: 24px; color: var(--text-muted);">
+              No voters found matching "${query}".
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = displayList.map((v, idx) => {
+        const rank = idx + 1;
+        let rankBadge = `<span style="font-weight:700; color:var(--text-muted);">#${rank}</span>`;
+        if (rank === 1) rankBadge = '🥇';
+        else if (rank === 2) rankBadge = '🥈';
+        else if (rank === 3) rankBadge = '🥉';
+
+        return `
+          <tr>
+            <td style="text-align: center;">${rankBadge}</td>
+            <td>
+              <div class="voter-player-cell">
+                <img class="voter-mini-head" src="https://mc-heads.net/avatar/${encodeURIComponent(v.nickname)}/24" alt="${v.nickname}" onerror="this.src='assets/cmc-icon.png'" />
+                <a href="player.html?username=${encodeURIComponent(v.nickname)}" class="voter-name-link">${v.nickname}</a>
+              </div>
+            </td>
+            <td style="text-align: right; font-family: var(--font-mono); font-weight: 700; color: var(--accent-color);">
+              ${v.votes} <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-muted);">votes</span>
+            </td>
+            <td style="text-align: right;">
+              <a href="player.html?username=${encodeURIComponent(v.nickname)}" class="status-btn status-btn-secondary" style="padding: 4px 8px; font-size: 0.75rem;">
+                View
+              </a>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Master Refresh Function
+    async function refreshStatusData(manual = false) {
+      const refreshIcon = document.getElementById('refreshIcon');
+      const refreshBtn = document.getElementById('btnManualRefresh');
+      if (manual && refreshIcon) {
+        refreshIcon.classList.add('rotating');
+        refreshBtn.disabled = true;
+      }
+
+      await Promise.all([fetchLabelMap(), fetchStatus(), fetchVoters()]);
+
+      renderStatus();
+      renderVoters(document.getElementById('votersSearchInput')?.value || '');
+
+      autoRefreshCountdown = 30;
+
+      if (manual && refreshIcon) {
+        setTimeout(() => {
+          refreshIcon.classList.remove('rotating');
+          refreshBtn.disabled = false;
+          showToast('Network status refreshed!');
+        }, 400);
+      }
+    }
+
+    // Search Input Listener
+    document.getElementById('votersSearchInput')?.addEventListener('input', (e) => {
+      renderVoters(e.target.value.trim());
+    });
+
+    // Auto-refresh interval (every 30 seconds)
+    setInterval(() => {
+      autoRefreshCountdown--;
+      if (autoRefreshCountdown <= 0) {
+        refreshStatusData(false);
+      } else {
+        const timeEl = document.getElementById('statusLastUpdated');
+        if (timeEl && statusData) {
+          const nowTime = new Date().toLocaleTimeString();
+          timeEl.textContent = `Live data refreshed at ${nowTime} &bull; Next update in ${autoRefreshCountdown}s`;
+        }
+      }
+    }, 1000);
+
+    // Initial Load
+    document.addEventListener('DOMContentLoaded', () => {
+      refreshStatusData(false);
+    });
+  </script>
+
+</body>
+</html>

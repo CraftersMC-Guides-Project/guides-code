@@ -1,0 +1,555 @@
+/* ==========================================================================
+   CraftersMC Network Status & Live Health Stylesheet
+   ========================================================================== */
+
+/* Main Container */
+.status-container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+}
+
+/* Header & Banner */
+.status-header-banner {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 24px 28px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.status-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.status-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.status-h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin: 0;
+}
+
+.status-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status-live-badge.online {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.status-live-badge.maintenance {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.status-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: currentColor;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  animation: statusPulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+
+@keyframes statusPulse {
+  to {
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+  }
+}
+
+.status-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Header Actions */
+.status-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.status-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+
+.status-btn-primary {
+  background: var(--accent-color);
+  color: #ffffff;
+  border: 1px solid var(--accent-color);
+}
+
+.status-btn-primary:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+.status-btn-secondary {
+  background: #ffffff;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+
+.status-btn-secondary:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+/* KPI Bento Grid */
+.status-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.status-kpi-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px 22px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.status-kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--accent-color);
+  opacity: 0.8;
+}
+
+.status-kpi-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-kpi-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.status-kpi-icon {
+  font-size: 1.3rem;
+  color: var(--accent-color);
+  opacity: 0.85;
+}
+
+.status-kpi-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.status-kpi-subtext {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Capacity Progress Bar */
+.status-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.status-progress-fill {
+  height: 100%;
+  background: #16a34a;
+  border-radius: 9999px;
+  transition: width 0.5s ease;
+}
+
+/* Quick Connect IP Cards */
+.status-ip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.status-ip-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.status-ip-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.status-ip-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.status-ip-address {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-bright);
+}
+
+.status-ip-port {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Server Realms Grid */
+.status-section-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-realms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.status-realm-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.status-realm-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.status-realm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-realm-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-realm-count {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent-color);
+}
+
+.status-realm-meter {
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.status-realm-fill {
+  height: 100%;
+  background: var(--accent-color);
+  border-radius: 9999px;
+  transition: width 0.4s ease;
+}
+
+/* Voters Leaderboard Section */
+.voters-container {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.voters-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  background: #f8fafc;
+}
+
+.voters-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.voters-month-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #bfdbfe;
+}
+
+.voters-search-box {
+  position: relative;
+  width: 240px;
+}
+
+.voters-search-input {
+  width: 100%;
+  padding: 7px 12px 7px 32px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  background: #ffffff;
+  color: var(--text-main);
+  outline: none;
+}
+
+.voters-search-input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.voters-search-icon {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  pointer-events: none;
+}
+
+/* Podium Top 3 Voters */
+.voters-podium {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 24px;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.podium-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 18px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: transform 0.15s ease;
+}
+
+.podium-card:hover {
+  transform: translateY(-3px);
+}
+
+.podium-card.rank-1 {
+  border-color: #fde047;
+  background: #fefce8;
+}
+
+.podium-card.rank-2 {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.podium-card.rank-3 {
+  border-color: #fed7aa;
+  background: #fff7ed;
+}
+
+.podium-medal {
+  font-size: 1.5rem;
+}
+
+.podium-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  image-rendering: pixelated;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+}
+
+.podium-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-bright);
+  text-decoration: none;
+}
+
+.podium-name:hover {
+  color: var(--accent-color);
+  text-decoration: underline;
+}
+
+.podium-votes {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--accent-color);
+  background: #eff6ff;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  border: 1px solid #bfdbfe;
+}
+
+/* Voters Table */
+.voters-table-container {
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.voters-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.88rem;
+}
+
+.voters-table th {
+  padding: 10px 16px;
+  background: #f8fafc;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.voters-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  color: var(--text-main);
+  vertical-align: middle;
+}
+
+.voters-table tr:hover {
+  background: #f8fafc;
+}
+
+.voter-player-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.voter-mini-head {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  image-rendering: pixelated;
+}
+
+.voter-name-link {
+  font-weight: 600;
+  color: var(--text-bright);
+  text-decoration: none;
+}
+
+.voter-name-link:hover {
+  color: var(--accent-color);
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .voters-podium {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .status-header-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .status-header-actions {
+    width: 100%;
+  }
+}

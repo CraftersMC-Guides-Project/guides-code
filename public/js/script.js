@@ -122,7 +122,7 @@ function fetchPartial(url, key) {
 function fetchAllPartials() {
   Promise.all([
     fetchPartial("/navbarv2.html", "navbarHtml"),
-    fetchPartial("/sidebar.html", "sidebarHtmlV3"),
+    fetchPartial("/sidebar.html", "sidebarHtmlV4"),
     fetchPartial("/footer.html", "footerHtmlV2"),
     fetchPartial("/loader.html", "loaderHtml"),
   ])
