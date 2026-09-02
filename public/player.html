@@ -1032,6 +1032,12 @@
       const loreHtml = item.lore && item.lore.length > 0 ? renderMinecraftLore(item.lore) : '';
       const itemTitleHtml = renderMinecraftLore(item.rawName || item.name);
       const imgUrl = getItemImageUrl(item);
+      const safeItemName = String(item.name || item.rawName || item.id || 'Unknown Item').replace(/['"\\]/g, ' ');
+      const safeItemId = String(item.id !== undefined && item.id !== null ? item.id : '').replace(/['"\\]/g, ' ');
+
+      if (!imgUrl && item.id && item.id !== 0 && item.id !== 'minecraft:air') {
+        console.warn(`[Missing Item Image] No image URL resolved for: "${safeItemName}" (ID: ${safeItemId})`);
+      }
 
       const tooltipContent = `
         <span class="item-title">${itemTitleHtml}</span>
@@ -1041,7 +1047,7 @@
 
       return `
         <div class="cell" data-tooltip-content="${encodeURIComponent(tooltipContent)}">
-          ${imgUrl ? `<img src="${imgUrl}" alt="" loading="lazy" onerror="this.style.visibility='hidden';">` : ''}
+          ${imgUrl ? `<img src="${imgUrl}" alt="" loading="lazy" onerror="console.warn('[Missing Item Image] Failed to load asset:', this.src, 'for item:', '${safeItemName}', '(ID: ${safeItemId})'); this.style.visibility='hidden';">` : ''}
           ${item.count > 1 ? `<span class="item-count">${item.count}</span>` : ''}
         </div>
       `;
@@ -1196,7 +1202,7 @@
     }
     window.setEnderPage = setEnderPage;
 
-    // 3. Ender Chest Tab (Multi-Page 54-Slot GUI Storage with Page Switcher Buttons)
+    // 3. Ender Chest Tab (Multi-Page 45-Slot / 5-Row GUI Storage with Page Switcher Buttons)
     function renderEnderChest() {
       const container = document.getElementById('enderTab');
       const member = profileData?.members?.[selectedMemberId] || {};
@@ -1215,9 +1221,10 @@
         return;
       }
 
+      const SLOTS_PER_PAGE = 45; // 5 rows × 9 columns
       const highestSlot = enderItems.reduce((max, it) => Math.max(max, it.slot >= 0 ? it.slot : 0), 0);
-      const totalPages = Math.max(1, Math.ceil((highestSlot + 1) / 54));
-      const totalSlots = totalPages * 54;
+      const totalPages = Math.max(1, Math.ceil((highestSlot + 1) / SLOTS_PER_PAGE));
+      const totalSlots = totalPages * SLOTS_PER_PAGE;
       const slots = new Array(totalSlots).fill(null);
 
       enderItems.forEach(it => {
@@ -1243,7 +1250,7 @@
 
         const pagePills = [];
         for (let p = 0; p < totalPages; p++) {
-          const pageSlots = slots.slice(p * 54, (p + 1) * 54);
+          const pageSlots = slots.slice(p * SLOTS_PER_PAGE, (p + 1) * SLOTS_PER_PAGE);
           const count = pageSlots.filter(s => s !== null).length;
           const isActive = p === currentEnderPage;
           pagePills.push(`
@@ -1266,8 +1273,8 @@
         `;
       }
 
-      // Render Selected Page (54 Slots: 6 rows × 9 columns)
-      const curPageSlots = slots.slice(currentEnderPage * 54, (currentEnderPage + 1) * 54);
+      // Render Selected Page (45 Slots: 5 rows × 9 columns)
+      const curPageSlots = slots.slice(currentEnderPage * SLOTS_PER_PAGE, (currentEnderPage + 1) * SLOTS_PER_PAGE);
       const curPageCount = curPageSlots.filter(s => s !== null).length;
       const curPageCells = curPageSlots.map(it => renderMcSlot(it)).join('');
       const pageTitle = totalPages > 1 
@@ -1278,7 +1285,7 @@
         <div style="margin-bottom: 24px;">
           ${navButtonsHtml}
           ${wrapMinecraftContainer(pageTitle, `
-            <div class="extreme-inner-container" style="grid-template-rows: repeat(6, auto);">${curPageCells}</div>
+            <div class="extreme-inner-container" style="grid-template-rows: repeat(5, auto);">${curPageCells}</div>
           `)}
         </div>
       `;
