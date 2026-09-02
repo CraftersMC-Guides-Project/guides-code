@@ -118,6 +118,7 @@
                 <div class="player-subpanel-title">Gear &amp; Inventories</div>
                 <div class="player-subpanel-nav">
                   <button class="player-subpanel-btn" onclick="switchTab('armor')"><span class="material-icons">shield</span> Equipped Armor</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('wardrobe')"><span class="material-icons">checkroom</span> Wardrobe</button>
                   <button class="player-subpanel-btn" onclick="switchTab('inventory')"><span class="material-icons">backpack</span> Main Inventory</button>
                   <button class="player-subpanel-btn" onclick="switchTab('ender')"><span class="material-icons">inbox</span> Ender Chest</button>
                   <button class="player-subpanel-btn" onclick="switchTab('accessory')"><span class="material-icons">auto_awesome</span> Accessory Bag</button>
@@ -140,7 +141,7 @@
               <div class="player-subpanel-group">
                 <div class="player-subpanel-title">Hub &amp; Account</div>
                 <div class="player-subpanel-nav">
-                  <button class="player-subpanel-btn" onclick="switchTab('cosmetics')"><span class="material-icons">checkroom</span> Hub Cosmetics</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('cosmetics')"><span class="material-icons">palette</span> Hub Cosmetics</button>
                   <button class="player-subpanel-btn" onclick="switchTab('extras')"><span class="material-icons">extension</span> Shards &amp; Extras</button>
                   <button class="player-subpanel-btn" onclick="switchTab('player')"><span class="material-icons">badge</span> Account &amp; Shop</button>
                   <button class="player-subpanel-btn" onclick="switchTab('playtime')"><span class="material-icons">schedule</span> Playtime</button>
@@ -157,6 +158,7 @@
               
               <!-- Gear & Inventories Tabs -->
               <div id="armorTab" class="tab-content" style="display: none;"></div>
+              <div id="wardrobeTab" class="tab-content" style="display: none;"></div>
               <div id="inventoryTab" class="tab-content" style="display: none;"></div>
               <div id="enderTab" class="tab-content" style="display: none;"></div>
               <div id="accessoryTab" class="tab-content" style="display: none;"></div>
@@ -421,6 +423,7 @@
       renderSkills();
       renderSlayers();
       renderArmor();
+      renderWardrobe();
       renderInventory();
       renderEnderChest();
       renderAccessoryBag();
@@ -982,6 +985,74 @@
       container.innerHTML = `
         <div style="margin-bottom: 24px;">
           ${wrapMinecraftContainer('Armor', `<div class="armor-extreme-inner-container">${armorSlots.join('')}</div>`)}
+        </div>
+      `;
+    }
+
+    // Wardrobe Tab (Minecraft Wardrobe Armor Sets)
+    function renderWardrobe() {
+      const container = document.getElementById('wardrobeTab');
+      if (!container) return;
+      const member = profileData?.members?.[selectedMemberId] || {};
+      const wardrobeNbt = member.wardrobeContents || member.otherInventories?.wardrobe_inventory || member.wardrobe_contents || member.wardrobeInventory || member.otherInventories?.wardrobeContents;
+      const wardrobeItems = extractItemsFromNbt(wardrobeNbt);
+      const equippedSlot = member.wardrobe_equipped_slot !== undefined ? member.wardrobe_equipped_slot : -1;
+
+      if (!wardrobeItems || wardrobeItems.length === 0) {
+        container.innerHTML = `
+          <div style="margin-bottom: 24px;">
+            ${wrapMinecraftContainer('Wardrobe (0 Sets)', `
+              <div style="padding: 24px 16px; text-align: center; color: #555555; font-family: 'Minecraft', monospace; font-size: 0.9rem;">
+                No armor sets found in wardrobe.
+              </div>
+            `)}
+          </div>
+        `;
+        return;
+      }
+
+      // Group wardrobe items into sets of 4 (Helmet, Chestplate, Leggings, Boots)
+      const maxSlots = Math.max(36, Math.ceil(Math.max(wardrobeItems.length, 1) / 4) * 4);
+      const slots = new Array(maxSlots).fill(null);
+      wardrobeItems.forEach(it => {
+        if (it.slot >= 0 && it.slot < maxSlots) slots[it.slot] = it;
+        else {
+          const emptyIdx = slots.findIndex(s => s === null);
+          if (emptyIdx !== -1) slots[emptyIdx] = it;
+        }
+      });
+
+      // Split into sets of 4
+      const totalSets = Math.ceil(slots.length / 4);
+      let setsHtml = '';
+
+      for (let s = 0; s < totalSets; s++) {
+        const setSlots = slots.slice(s * 4, s * 4 + 4);
+        const hasAny = setSlots.some(it => it !== null);
+        if (!hasAny && s >= 9) continue; // Skip empty trailing sets beyond standard page 1
+
+        const isEquipped = equippedSlot === s;
+        const setCells = setSlots.map(it => renderMcSlot(it)).join('');
+
+        setsHtml += `
+          <div style="display: flex; flex-direction: column; align-items: center; background: ${isEquipped ? 'rgba(6, 182, 212, 0.15)' : 'rgba(0, 0, 0, 0.05)'}; border: 1px solid ${isEquipped ? '#06b6d4' : '#a1a1a1'}; border-radius: 4px; padding: 6px 8px; position: relative;">
+            <div style="font-family: 'Minecraft', monospace; font-size: 0.75rem; font-weight: 700; color: ${isEquipped ? '#06b6d4' : '#333333'}; margin-bottom: 4px;">
+              Slot ${s + 1} ${isEquipped ? '★ (Equipped)' : ''}
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(4, auto); gap: 2px;">
+              ${setCells}
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <div style="margin-bottom: 24px;">
+          ${wrapMinecraftContainer(`Wardrobe (${wardrobeItems.length} pieces)`, `
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; max-width: 720px; margin: 0 auto; padding: 4px;">
+              ${setsHtml}
+            </div>
+          `)}
         </div>
       `;
     }
