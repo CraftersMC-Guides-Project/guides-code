@@ -634,8 +634,9 @@
         const items = root?.items || root?.i || (Array.isArray(root) ? root : []);
         if (Array.isArray(items)) {
           return items.map(it => {
-            let displayName = it.name || it.id || 'Item';
+            let displayName = null;
             let lore = [];
+            let extraId = null;
 
             if (it.nbt) {
               try {
@@ -651,25 +652,38 @@
                 const innerDecomp = pako.ungzip(innerU8);
                 const inner = parseBinaryNbt(innerDecomp);
 
-                if (inner?.display?.Name) displayName = inner.display.Name;
+                displayName = inner?.display?.Name || inner?.tag?.display?.Name || inner?.Name || inner?.name;
                 if (Array.isArray(inner?.display?.Lore)) lore = inner.display.Lore;
                 else if (Array.isArray(inner?.tag?.display?.Lore)) lore = inner.tag.display.Lore;
+
+                extraId = inner?.ExtraAttributes?.id || inner?.tag?.ExtraAttributes?.id || inner?.extra_attributes?.id;
               } catch (innerErr) {
                 // inner NBT parse fallback
               }
             }
 
-            let cleanName = String(displayName).replace(/§[0-9a-fk-or]/gi, '').trim();
+            if (!displayName) {
+              displayName = it.display?.Name || it.tag?.display?.Name || it.Name || it.name;
+            }
 
-            // Convert numeric ID to human readable item name if displayName is numeric or missing
+            let cleanName = String(displayName || '').replace(/§[0-9a-fk-or]/gi, '').trim();
+
+            // Only use numeric map if there is NO decoded name or the decoded name is a numeric ID
             if (!cleanName || /^-?\d+$/.test(cleanName)) {
-              const mapped = (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(it.id) : null) ||
-                (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(cleanName) : null) ||
-                (typeof MINECRAFT_NUMERIC_IDS !== 'undefined' ? (MINECRAFT_NUMERIC_IDS[String(it.id)] || MINECRAFT_NUMERIC_IDS[cleanName]) : null) ||
-                (typeof window !== 'undefined' && window.MINECRAFT_NUMERIC_IDS ? (window.MINECRAFT_NUMERIC_IDS[String(it.id)] || window.MINECRAFT_NUMERIC_IDS[cleanName]) : null);
-              if (mapped) {
-                displayName = mapped;
-                cleanName = mapped;
+              if (extraId) {
+                cleanName = String(extraId).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                displayName = cleanName;
+              } else {
+                const mapped = (typeof getItemNameFromNumericId === 'function' ? (getItemNameFromNumericId(it.id) || (cleanName ? getItemNameFromNumericId(cleanName) : null)) : null) ||
+                  (typeof MINECRAFT_NUMERIC_IDS !== 'undefined' ? (MINECRAFT_NUMERIC_IDS[String(it.id)] || MINECRAFT_NUMERIC_IDS[cleanName]) : null) ||
+                  (typeof window !== 'undefined' && window.MINECRAFT_NUMERIC_IDS ? (window.MINECRAFT_NUMERIC_IDS[String(it.id)] || window.MINECRAFT_NUMERIC_IDS[cleanName]) : null);
+                if (mapped) {
+                  displayName = mapped;
+                  cleanName = mapped;
+                } else {
+                  cleanName = cleanName || String(it.id || 'Item');
+                  displayName = displayName || cleanName;
+                }
               }
             }
 
@@ -680,7 +694,8 @@
               slot: it.slot !== undefined ? it.slot : -1,
               rawName: displayName,
               name: cleanName || 'Item',
-              lore: lore
+              lore: lore,
+              extraId: extraId
             };
           }).filter(it => it.id !== 0 && it.name !== 'air' && it.id !== 'minecraft:air');
         }
@@ -1057,28 +1072,13 @@
         return `assets/images/${encodeURIComponent(mappedType)}_Minion_(Tier_${tierNum}).png`;
       }
 
-      // 9. Numeric ID or vanilla numeric item name fallback (ONLY if candidate has no name or is a numeric ID)
-      if (!candidate || /^-?\d+$/.test(candidate)) {
-        const lookupKey = candidate && /^-?\d+$/.test(candidate) ? candidate : id;
-        const mappedName = (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(lookupKey) : null) ||
-                           (typeof MINECRAFT_NUMERIC_IDS !== 'undefined' ? MINECRAFT_NUMERIC_IDS[lookupKey] : null) ||
-                           (typeof window !== 'undefined' && window.MINECRAFT_NUMERIC_IDS ? window.MINECRAFT_NUMERIC_IDS[lookupKey] : null);
-        if (mappedName) {
-          if (/end.*stone.*brick.*slab/i.test(mappedName)) {
-            return 'assets/images/End_Stone_Bricks.png';
-          }
-          const sanitized = mappedName.replace(/[^a-zA-Z0-9.\-']/g, '_').replace(/_+/g, '_');
-          return `assets/images/${encodeURIComponent(sanitized)}.png`;
-        }
-      }
-
-      // 10. Dot and dash preserving candidate (e.g. Melon_Dicer_3.0.png, Carrot_Harvester_2.0.png)
+      // 9. Dot and dash preserving candidate (e.g. Melon_Dicer_3.0.png, Carrot_Harvester_2.0.png)
       if (/\d+\.\d+/.test(candidate)) {
         const withDots = candidate.replace(/[^a-zA-Z0-9.\-']/g, '_').replace(/_+/g, '_');
         return `assets/images/${encodeURIComponent(withDots)}.png`;
       }
 
-      // 11. Pet Name Resolution: Strip [Lvl X] prefix and try with _Pet.png or direct mob name
+      // 10. Pet Name Resolution: Strip [Lvl X] prefix and try with _Pet.png or direct mob name
       const petMatch = candidate.match(/^(?:\[\s*Lvl\s*\d+\s*\]|\(\s*Lvl\s*\d+\s*\)|Lvl\s*\d+)?\s*(.*?)(?:\s+Pet)?$/i);
       if (petMatch && petMatch[1]) {
         const petClean = petMatch[1].trim();
@@ -1105,17 +1105,32 @@
         }
       }
 
-      // 12. Standard candidate with apostrophe / hyphen preservation
+      // 11. Standard candidate with apostrophe / hyphen preservation
       if (candidate && !/^-?\d+$/.test(candidate)) {
         const sanitized = candidate.replace(/[^a-zA-Z0-9.\-']/g, '_').replace(/_+/g, '_');
         return `assets/images/${encodeURIComponent(sanitized)}.png`;
       }
 
-      // 13. Direct ID lookup
+      // 12. Direct ID lookup
       if (id && !/^-?\d+$/.test(id)) {
         const pureId = id.replace(/^(minecraft|trpixel):/i, '').replace(/:\d+$/, '');
         const titleCase = pureId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('_');
         return `assets/images/${encodeURIComponent(titleCase)}.png`;
+      }
+
+      // 13. Vanilla numeric ID fallback (ONLY if no name or candidate is numeric ID)
+      if (!candidate || /^-?\d+$/.test(candidate) || /^-?\d+$/.test(id)) {
+        const lookupKey = candidate && /^-?\d+$/.test(candidate) ? candidate : id;
+        const mappedName = (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(lookupKey) : null) ||
+                           (typeof MINECRAFT_NUMERIC_IDS !== 'undefined' ? MINECRAFT_NUMERIC_IDS[lookupKey] : null) ||
+                           (typeof window !== 'undefined' && window.MINECRAFT_NUMERIC_IDS ? window.MINECRAFT_NUMERIC_IDS[lookupKey] : null);
+        if (mappedName) {
+          if (/end.*stone.*brick.*slab/i.test(mappedName)) {
+            return 'assets/images/End_Stone_Bricks.png';
+          }
+          const sanitized = mappedName.replace(/[^a-zA-Z0-9.\-']/g, '_').replace(/_+/g, '_');
+          return `assets/images/${encodeURIComponent(sanitized)}.png`;
+        }
       }
 
       return null;
