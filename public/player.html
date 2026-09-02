@@ -882,6 +882,31 @@
       `;
     }
 
+    const ROMAN_NUMERAL_MAP = {
+      'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5, 'VI': 6,
+      'VII': 7, 'VIII': 8, 'IX': 9, 'X': 10, 'XI': 11, 'XII': 12
+    };
+
+    const MINION_NAME_TYPE_MAP = {
+      'acacia': 'Acacia_Log',
+      'birch': 'Birch_Log',
+      'dark oak': 'Dark_Oak_Log',
+      'jungle': 'Jungle_Log',
+      'oak': 'Oak_Log',
+      'spruce': 'Spruce_Log',
+      'cocoa': 'Cocoa_Beans',
+      'cocoa bean': 'Cocoa_Beans',
+      'cocoa beans': 'Cocoa_Beans',
+      'lapis': 'Lapis_Lazuli',
+      'endstone': 'End_Stone',
+      'end stone': 'End_Stone',
+      'magma': 'Magma_Cube',
+      'magma cube': 'Magma_Cube',
+      'cave spider': 'Cave_Spider',
+      'sugar cane': 'Sugar_Cane',
+      'sugarcane': 'Sugar_Cane'
+    };
+
     // Item Image Resolver from assets/images/
     function getItemImageUrl(item) {
       if (!item) return null;
@@ -906,12 +931,78 @@
         }
       }
 
-      const candidateName = strippedName || rawName;
-      if (candidateName) {
-        const sanitized = candidateName.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_');
+      const candidate = strippedName || rawName;
+
+      // 1. Special case: New Year's Cake & Cake Bag
+      if (/new year('?s)? cake bag/i.test(candidate)) {
+        return "assets/images/New_Year's_Cake_Bag.png";
+      }
+      if (/new year('?s)? cake/i.test(candidate)) {
+        return "assets/images/New_Year's_Cake.png";
+      }
+
+      // 2. Special case: Cake Soul
+      if (/cake soul/i.test(candidate)) {
+        return "assets/images/Cake_Soul_(Aqua).png";
+      }
+
+      // 3. Minion Roman Numerals -> Tier format
+      const minionMatch = candidate.match(/^(.*?)\s+Minion(?:\s+([IVX]+|\d+))?$/i);
+      if (minionMatch) {
+        const rawType = minionMatch[1].trim();
+        const cleanTypeKey = rawType.toLowerCase();
+        const mappedType = MINION_NAME_TYPE_MAP[cleanTypeKey] || rawType.replace(/\s+/g, '_');
+
+        let tierNum = 1;
+        if (minionMatch[2]) {
+          const romanUpper = minionMatch[2].toUpperCase();
+          tierNum = ROMAN_NUMERAL_MAP[romanUpper] || parseInt(minionMatch[2], 10) || 1;
+        }
+        if (tierNum > 11) tierNum = 11;
+
+        return `assets/images/${encodeURIComponent(mappedType)}_Minion_(Tier_${tierNum}).png`;
+      }
+
+      // 4. Dot and dash preserving candidate (e.g. Melon_Dicer_3.0.png, Carrot_Harvester_2.0.png)
+      if (/\d+\.\d+/.test(candidate)) {
+        const withDots = candidate.replace(/[^a-zA-Z0-9.\-']/g, '_').replace(/_+/g, '_');
+        return `assets/images/${encodeURIComponent(withDots)}.png`;
+      }
+
+      // 5. Pet Name Resolution: Strip [Lvl X] prefix and try with _Pet.png or direct mob name
+      const petMatch = candidate.match(/^(?:\[\s*Lvl\s*\d+\s*\]|\(\s*Lvl\s*\d+\s*\)|Lvl\s*\d+)?\s*(.*?)(?:\s+Pet)?$/i);
+      if (petMatch && petMatch[1]) {
+        const petClean = petMatch[1].trim();
+        const petKey = petClean.toLowerCase();
+        const petSanitized = petClean.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_');
+
+        const lobbyPets = {
+          'cow': 'Lobby_Cow_Pet',
+          'chicken': 'Lobby_Chicken_Pet',
+          'pig': 'Lobby_Pig_Pet',
+          'snowman': 'Lobby_Snowman_Pet',
+          'cat': 'Lobby_Cat_Pet',
+          'villager': 'Lobby_Villager_Pet',
+          'wither': 'Lobby_Wither_Pet',
+          'iron golem': 'Lobby_Iron_Golem_Pet'
+        };
+
+        if (lobbyPets[petKey]) {
+          return `assets/images/${encodeURIComponent(lobbyPets[petKey])}.png`;
+        }
+
+        if (/^(ender dragon|baby yeti|black cat|blue whale|tiger|wither skeleton|golem|skeleton horse|pigman|lion|monkey|elephant|rabbit|bat|bee|blaze|enderman|endermite|ghoul|giraffe|ocelot|panda|phoenix|rock|silverfish|skeleton|slime sheep|spider|wolf|zombie|duck|eye of the cliffs)/i.test(petKey)) {
+          return `assets/images/${encodeURIComponent(petSanitized)}_Pet.png`;
+        }
+      }
+
+      // 6. Standard candidate without special characters
+      if (candidate) {
+        const sanitized = candidate.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_');
         return `assets/images/${encodeURIComponent(sanitized)}.png`;
       }
 
+      // 7. Direct ID lookup
       if (id) {
         const pureId = id.replace(/^(minecraft|trpixel):/i, '').replace(/:\d+$/, '');
         const titleCase = pureId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('_');
