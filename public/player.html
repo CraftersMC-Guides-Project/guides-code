@@ -1057,10 +1057,19 @@
         return `assets/images/${encodeURIComponent(mappedType)}_Minion_(Tier_${tierNum}).png`;
       }
 
-      // 9. Numeric ID or vanilla numeric item name fallback
-      if (VANILLA_NUMERIC_MAP[id] || VANILLA_NUMERIC_MAP[candidate]) {
-        const mapped = VANILLA_NUMERIC_MAP[id] || VANILLA_NUMERIC_MAP[candidate];
-        return `assets/images/${encodeURIComponent(mapped)}`;
+      // 9. Numeric ID or vanilla numeric item name fallback using imported numericItemIds.js
+      if (/^-?\d+$/.test(id) || /^-?\d+$/.test(candidate)) {
+        const mappedName = (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(id) : null) ||
+                           (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(candidate) : null) ||
+                           (typeof MINECRAFT_NUMERIC_IDS !== 'undefined' ? (MINECRAFT_NUMERIC_IDS[id] || MINECRAFT_NUMERIC_IDS[candidate]) : null) ||
+                           (typeof window !== 'undefined' && window.MINECRAFT_NUMERIC_IDS ? (window.MINECRAFT_NUMERIC_IDS[id] || window.MINECRAFT_NUMERIC_IDS[candidate]) : null);
+        if (mappedName) {
+          if (/end.*stone.*brick.*slab/i.test(mappedName)) {
+            return 'assets/images/End_Stone_Bricks.png';
+          }
+          const sanitized = mappedName.replace(/[^a-zA-Z0-9.\-']/g, '_').replace(/_+/g, '_');
+          return `assets/images/${encodeURIComponent(sanitized)}.png`;
+        }
       }
 
       // 10. Dot and dash preserving candidate (e.g. Melon_Dicer_3.0.png, Carrot_Harvester_2.0.png)
