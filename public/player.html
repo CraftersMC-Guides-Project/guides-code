@@ -1189,7 +1189,14 @@
       `;
     }
 
-    // 3. Ender Chest Tab (Multi-Page 54-Slot GUI Storage)
+    let currentEnderPage = 0;
+    function setEnderPage(pageIndex) {
+      currentEnderPage = pageIndex;
+      renderEnderChest();
+    }
+    window.setEnderPage = setEnderPage;
+
+    // 3. Ender Chest Tab (Multi-Page 54-Slot GUI Storage with Page Switcher Buttons)
     function renderEnderChest() {
       const container = document.getElementById('enderTab');
       const member = profileData?.members?.[selectedMemberId] || {};
@@ -1222,25 +1229,59 @@
         }
       });
 
-      let pagesHtml = '';
-      for (let p = 0; p < totalPages; p++) {
-        const pageSlots = slots.slice(p * 54, (p + 1) * 54);
-        const pageItemCount = pageSlots.filter(s => s !== null).length;
-        if (pageItemCount === 0 && p > 0) continue; // Skip empty pages after page 1
+      // Clamp currentEnderPage
+      if (currentEnderPage >= totalPages) currentEnderPage = totalPages - 1;
+      if (currentEnderPage < 0) currentEnderPage = 0;
 
-        const pageCells = pageSlots.map(it => renderMcSlot(it)).join('');
-        const pageTitle = totalPages > 1 ? `Ender Chest — Page ${p + 1} (${pageItemCount} items)` : `Ender Chest (${pageItemCount} items)`;
+      // Build Navigation Buttons
+      let navButtonsHtml = '';
+      if (totalPages > 1) {
+        const isPrevDisabled = currentEnderPage === 0;
+        const isNextDisabled = currentEnderPage === totalPages - 1;
+        const prevImg = isPrevDisabled ? 'assets/ah/previous_gray.png' : 'assets/ah/previous.png';
+        const nextImg = isNextDisabled ? 'assets/ah/next_gray.png' : 'assets/ah/next.png';
 
-        pagesHtml += `
-          <div style="margin-bottom: 24px;">
-            ${wrapMinecraftContainer(pageTitle, `
-              <div class="extreme-inner-container" style="grid-template-rows: repeat(6, auto);">${pageCells}</div>
-            `)}
+        const pagePills = [];
+        for (let p = 0; p < totalPages; p++) {
+          const pageSlots = slots.slice(p * 54, (p + 1) * 54);
+          const count = pageSlots.filter(s => s !== null).length;
+          const isActive = p === currentEnderPage;
+          pagePills.push(`
+            <button class="mc-page-btn ${isActive ? 'active' : ''}" onclick="window.setEnderPage(${p})" title="Go to Page ${p + 1}">
+              Page ${p + 1} (${count})
+            </button>
+          `);
+        }
+
+        navButtonsHtml = `
+          <div class="mc-page-nav">
+            <button class="mc-page-btn" ${isPrevDisabled ? 'disabled' : ''} onclick="window.setEnderPage(${currentEnderPage - 1})" title="Previous Page">
+              <img src="${prevImg}" alt="Previous">
+            </button>
+            ${pagePills.join('')}
+            <button class="mc-page-btn" ${isNextDisabled ? 'disabled' : ''} onclick="window.setEnderPage(${currentEnderPage + 1})" title="Next Page">
+              <img src="${nextImg}" alt="Next">
+            </button>
           </div>
         `;
       }
 
-      container.innerHTML = pagesHtml;
+      // Render Selected Page (54 Slots: 6 rows × 9 columns)
+      const curPageSlots = slots.slice(currentEnderPage * 54, (currentEnderPage + 1) * 54);
+      const curPageCount = curPageSlots.filter(s => s !== null).length;
+      const curPageCells = curPageSlots.map(it => renderMcSlot(it)).join('');
+      const pageTitle = totalPages > 1 
+        ? `Ender Chest — Page ${currentEnderPage + 1} of ${totalPages} (${curPageCount} items)` 
+        : `Ender Chest (${curPageCount} items)`;
+
+      container.innerHTML = `
+        <div style="margin-bottom: 24px;">
+          ${navButtonsHtml}
+          ${wrapMinecraftContainer(pageTitle, `
+            <div class="extreme-inner-container" style="grid-template-rows: repeat(6, auto);">${curPageCells}</div>
+          `)}
+        </div>
+      `;
     }
 
     // 4. Accessory Bag Tab with Container GUI & Missing Checklist
