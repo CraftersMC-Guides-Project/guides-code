@@ -913,20 +913,31 @@
       const rawName = String(item.rawName !== undefined && item.rawName !== null ? item.rawName : (item.name !== undefined && item.name !== null ? item.name : '')).replace(/§[0-9a-fk-or]/gi, '').trim();
       const id = String(item.id !== undefined && item.id !== null ? item.id : '').trim();
 
-      // Common SkyBlock reforges to strip for base item lookup
+      // CraftersMC Wiki Reforges (sorted by length descending for accurate prefix matching)
       const reforges = [
-        'Gentle', 'Odd', 'Fast', 'Fair', 'Epic', 'Sharp', 'Heroic', 'Spicy', 'Legendary', 'Deadly', 'Fine', 'Grand', 'Hasty', 'Neat', 'Rapid', 'Unreal',
-        'Clean', 'Fierce', 'Heavy', 'Light', 'Mythic', 'Pure', 'Smart', 'Titanic', 'Wise', 'Bizarre', 'Itchy', 'Ominous', 'Pleasant', 'Pretty', 'Shiny',
-        'Simple', 'Strange', 'Vivid', 'Godly', 'Demonic', 'Forceful', 'Hurtful', 'Keen', 'Strong', 'Superior', 'Unpleasant', 'Zealous', 'Silky', 'Bloody',
-        'Shaded', 'Sweet', 'Loving', 'Renowned', 'Ancient', 'Withered', 'Fabled', 'Suspicious', 'Gilded', 'Warped', 'Necrotic', 'Perfect', 'Undead', 'Cubic',
-        'Spiritual', 'Headstrong', 'Fruitful', 'Magnetic', 'Fleet', 'Stiff', 'Lucky', 'Salty', 'Treacherous', 'Stained', 'Menacing', 'Heated', 'Ambered',
-        'Great', 'Submerged', 'Empowered', 'Moil', 'Toil', 'Blessed', 'Bountiful', 'Pitchin', 'Very', 'Highly', 'Extremely', 'Not So', 'Thicc', 'Absolutely'
+        'Green Thumb', 'Double-Bit', "Lumberjack's", "Peasant's", 'Not So', 'Treacherous',
+        'Reinforced', 'Headstrong', 'Suspicious', 'Submerged', 'Empowered', 'Unpleasant',
+        'Brilliant', 'Legendary', 'Bountiful', 'Colossal', 'Spiritual', 'Ambered',
+        'Menacing', 'Renowned', 'Withered', 'Fruitful', 'Magnetic', 'Necrotic',
+        'Deadly', 'Fabled', 'Gentle', 'Heroic', 'Mythic', 'Pure', 'Robust', 'Rugged',
+        'Smart', 'Spiked', 'Stained', 'Titanic', 'Unreal', 'Zooming', 'Astute',
+        'Awkward', 'Blended', 'Blessed', 'Candied', 'Dirty', 'Epic', 'Fair', 'Fast',
+        'Fierce', 'Fine', 'Grand', 'Great', 'Hasty', 'Heavy', 'Hefty', 'Honored',
+        'Hyper', 'Light', 'Lush', 'Moil', 'Neat', 'Odd', 'Peasant', 'Refined',
+        'Rich', 'Sharp', 'Softy', 'Spicy', 'Toil', 'Wise', 'Ancient', 'Gilded',
+        'Warped', 'Perfect', 'Undead', 'Cubic', 'Fleet', 'Stiff', 'Lucky', 'Salty',
+        'Heated', 'Pitchin', 'Very', 'Highly', 'Extremely', 'Thicc', 'Absolutely',
+        'Bizarre', 'Itchy', 'Ominous', 'Pleasant', 'Pretty', 'Shiny', 'Simple',
+        'Strange', 'Vivid', 'Godly', 'Demonic', 'Forceful', 'Hurtful', 'Keen',
+        'Strong', 'Superior', 'Zealous', 'Silky', 'Bloody', 'Shaded', 'Sweet',
+        'Loving', 'Clean'
       ];
 
       let strippedName = rawName;
       for (const ref of reforges) {
-        if (strippedName.toLowerCase().startsWith(ref.toLowerCase() + ' ')) {
-          strippedName = strippedName.slice(ref.length + 1).trim();
+        const prefix = ref.toLowerCase() + ' ';
+        if (strippedName.toLowerCase().startsWith(prefix)) {
+          strippedName = strippedName.slice(prefix.length).trim();
           break;
         }
       }
@@ -991,7 +1002,7 @@
           return `assets/images/${encodeURIComponent(lobbyPets[petKey])}.png`;
         }
 
-        if (/^(ender dragon|baby yeti|black cat|blue whale|tiger|wither skeleton|golem|skeleton horse|pigman|lion|monkey|elephant|rabbit|bat|bee|blaze|enderman|endermite|ghoul|giraffe|ocelot|panda|phoenix|rock|silverfish|skeleton|slime sheep|spider|wolf|zombie|duck|eye of the cliffs)/i.test(petKey)) {
+        if (/^(ender dragon|baby yeti|black cat|blue whale|tiger|wither skeleton|golem|skeleton horse|pigman|lion|monkey|elephant|rabbit|bat|bee|blaze|enderman|endermite|ghoul|giraffe|ocelot|panda|phoenix|rock|silverfish|skeleton|slime sheep|spider|wolf|zombie|duck|eye of the cliffs)$/i.test(petKey)) {
           return `assets/images/${encodeURIComponent(petSanitized)}_Pet.png`;
         }
       }
