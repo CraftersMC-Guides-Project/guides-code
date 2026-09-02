@@ -437,25 +437,26 @@
       renderPlaytime();
       renderJSON();
     }    // Color and Style Code Mapper for Minecraft Bedrock Tooltip Lore
+    // Color and Style Code Mapper for Minecraft Bedrock Tooltip Lore (Vibrant high-contrast palette)
     const FEATHER_COLOR_MAP = {
-      '0': '#0f172a',
-      '1': '#1d4ed8',
-      '2': '#15803d',
-      '3': '#0e7490',
-      '4': '#b91c1c',
-      '5': '#7e22ce',
-      '6': '#b45309',
-      '7': '#475569',
-      '8': '#334155',
-      '9': '#2563eb',
-      'a': '#16a34a',
-      'b': '#0284c7',
-      'c': '#dc2626',
-      'd': '#c026d3',
-      'e': '#ca8a04',
-      'f': '#0f172a',
-      'm': '#64748b',
-      'n': '#b45309'
+      '0': '#222222',
+      '1': '#5555ff',
+      '2': '#55ff55',
+      '3': '#55ffff',
+      '4': '#ff5555',
+      '5': '#ff55ff',
+      '6': '#ffaa00',
+      '7': '#aaaaaa',
+      '8': '#888888',
+      '9': '#5555ff',
+      'a': '#55ff55',
+      'b': '#55ffff',
+      'c': '#ff5555',
+      'd': '#ff55ff',
+      'e': '#ffff55',
+      'f': '#ffffff',
+      'm': '#ffaa00',
+      'n': '#55ff55'
     };
 
     function renderMinecraftLore(rawLore) {
@@ -475,7 +476,7 @@
         const textWithoutColors = cleanLine.replace(/§[0-9a-z]/gi, '').trim();
         if (!textWithoutColors) continue;
 
-        let currentColor = '#475569';
+        let currentColor = '#ffffff';
         let isBold = false;
         let isItalic = false;
 
@@ -486,7 +487,7 @@
           if (part.startsWith('§')) {
             const code = part.charAt(1).toLowerCase();
             if (code === 'r') {
-              currentColor = '#475569';
+              currentColor = '#ffffff';
               isBold = false;
               isItalic = false;
             } else if (code === 'l') {
@@ -927,15 +928,16 @@
       const itemTitleHtml = renderMinecraftLore(item.rawName || item.name);
       const imgUrl = getItemImageUrl(item);
 
+      const tooltipContent = `
+        <span class="item-title" style="color:#ffffff; font-weight:700; display:block; margin-bottom:4px; font-size:0.95rem;">${itemTitleHtml}</span>
+        <div style="font-size:0.75rem; color:#a3a3ff; margin-bottom:6px; font-family:var(--font-mono);">${item.id} ${item.slot >= 0 ? `• Slot ${item.slot}` : ''}</div>
+        ${loreHtml ? `<div class="item-data" style="border-top:1px solid #280070; padding-top:6px; margin-top:4px;">${loreHtml}</div>` : ''}
+      `;
+
       return `
-        <div class="cell">
+        <div class="cell" data-tooltip-content="${encodeURIComponent(tooltipContent)}">
           ${imgUrl ? `<img src="${imgUrl}" alt="" loading="lazy" onerror="this.style.visibility='hidden';">` : ''}
           ${item.count > 1 ? `<span class="item-count">${item.count}</span>` : ''}
-          <div class="item-tooltip">
-            <span class="item-title" style="color:#ffffff; font-weight:700; display:block; margin-bottom:4px; font-size:0.95rem;">${itemTitleHtml}</span>
-            <div style="font-size:0.75rem; color:#a3a3ff; margin-bottom:6px; font-family:var(--font-mono);">${item.id} ${item.slot >= 0 ? `• Slot ${item.slot}` : ''}</div>
-            ${loreHtml ? `<div class="item-data" style="border-top:1px solid #4b267a; padding-top:6px; margin-top:4px;">${loreHtml}</div>` : ''}
-          </div>
         </div>
       `;
     }
@@ -1796,6 +1798,66 @@
       fetchPlayerData();
     }
 
+    // Global Clamped Minecraft Floating Tooltip Positioning
+    function positionFloatingTooltip(e, tooltip) {
+      const pad = 12;
+      const w = tooltip.offsetWidth || 280;
+      const h = tooltip.offsetHeight || 140;
+
+      let x = e.clientX + 16;
+      let y = e.clientY + 16;
+
+      // Flip / clamp X if overflowing right edge
+      if (x + w > window.innerWidth - pad) {
+        x = e.clientX - w - 16;
+      }
+      if (x < pad) x = pad;
+
+      // Flip / clamp Y if overflowing bottom edge
+      if (y + h > window.innerHeight - pad) {
+        y = window.innerHeight - h - pad;
+      }
+      if (y < pad) y = pad;
+
+      tooltip.style.left = `${x}px`;
+      tooltip.style.top = `${y}px`;
+    }
+
+    document.addEventListener('mouseover', (e) => {
+      const cell = e.target.closest('.cell[data-tooltip-content]');
+      if (!cell) return;
+      const tooltip = document.getElementById('mcFloatingTooltip');
+      if (!tooltip) return;
+      const content = decodeURIComponent(cell.getAttribute('data-tooltip-content') || '');
+      if (!content) return;
+
+      tooltip.innerHTML = content;
+      tooltip.style.display = 'block';
+      positionFloatingTooltip(e, tooltip);
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      const cell = e.target.closest('.cell[data-tooltip-content]');
+      const tooltip = document.getElementById('mcFloatingTooltip');
+      if (cell && tooltip && tooltip.style.display === 'block') {
+        positionFloatingTooltip(e, tooltip);
+      }
+    });
+
+    document.addEventListener('mouseout', (e) => {
+      const cell = e.target.closest('.cell[data-tooltip-content]');
+      if (!cell) return;
+      const related = e.relatedTarget?.closest('.cell[data-tooltip-content]');
+      if (related === cell) return;
+      const tooltip = document.getElementById('mcFloatingTooltip');
+      if (tooltip) tooltip.style.display = 'none';
+    });
+
+    window.addEventListener('scroll', () => {
+      const tooltip = document.getElementById('mcFloatingTooltip');
+      if (tooltip) tooltip.style.display = 'none';
+    }, { passive: true });
+
     // Auto-search from URL param
     document.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
@@ -1810,6 +1872,9 @@
       });
     });
   </script>
+
+  <!-- Global Viewport-Clamped Minecraft Tooltip -->
+  <div id="mcFloatingTooltip" class="mc-floating-tooltip"></div>
 
   <!-- Missing Reality Shards Modal -->
   <div id="missingShardsModal" class="shards-modal-overlay" style="display: none;" onclick="if(event.target === this) closeMissingShardsModal()">
