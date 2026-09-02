@@ -907,13 +907,38 @@
       'sugarcane': 'Sugar_Cane'
     };
 
+    const VANILLA_NUMERIC_MAP = {
+      3: 'Dirt.png',
+      262: 'Flint_Arrow.png',
+      264: 'Diamond.png',
+      276: 'Diamond_Sword.png',
+      277: 'Diamond_Shovel.png',
+      278: 'Diamond_Pickaxe.png',
+      279: 'Diamond_Axe.png',
+      284: 'Gold_Ingot.png',
+      285: 'Gold_Pickaxe.png',
+      286: 'Gold_Axe.png',
+      293: 'Diamond_Hoe.png',
+      294: 'Diamond_Hoe.png',
+      352: 'Bone.png',
+      360: 'Melon.png',
+      368: 'Ender_Pearl.png',
+      381: 'Eye_of_Ender.png',
+      403: 'Enchanted_Book.png',
+      2500: 'SkyBlock_Menu.png',
+      '-162': 'Acacia_Log.png',
+      162: 'Acacia_Log.png',
+      '-163': 'Acacia_Log.png',
+      163: 'Acacia_Log.png'
+    };
+
     // Item Image Resolver from assets/images/
     function getItemImageUrl(item) {
       if (!item) return null;
       const rawName = String(item.rawName !== undefined && item.rawName !== null ? item.rawName : (item.name !== undefined && item.name !== null ? item.name : '')).replace(/§[0-9a-fk-or]/gi, '').trim();
       const id = String(item.id !== undefined && item.id !== null ? item.id : '').trim();
 
-      // CraftersMC Wiki Reforges (sorted by length descending for accurate prefix matching)
+      // CraftersMC & SkyBlock Reforges (sorted by length descending for accurate prefix matching)
       const reforges = [
         'Green Thumb', 'Double-Bit', "Lumberjack's", "Peasant's", 'Not So', 'Treacherous',
         'Reinforced', 'Headstrong', 'Suspicious', 'Submerged', 'Empowered', 'Unpleasant',
@@ -930,7 +955,7 @@
         'Bizarre', 'Itchy', 'Ominous', 'Pleasant', 'Pretty', 'Shiny', 'Simple',
         'Strange', 'Vivid', 'Godly', 'Demonic', 'Forceful', 'Hurtful', 'Keen',
         'Strong', 'Superior', 'Zealous', 'Silky', 'Bloody', 'Shaded', 'Sweet',
-        'Loving', 'Clean'
+        'Loving', 'Clean', 'Rapid'
       ];
 
       let strippedName = rawName;
@@ -942,9 +967,22 @@
         }
       }
 
+      // Strip trailing (Click) suffixes
+      strippedName = strippedName.replace(/\s*\([^)]*click[^)]*\)/i, '').trim();
+
       const candidate = strippedName || rawName;
 
-      // 1. Special case: New Year's Cake & Cake Bag
+      // 1. Special case: Enchanted Books (ID 403 or ends with Enchant Book)
+      if (id === '403' || /enchant(ed)?\s*book/i.test(candidate) || /enchant\s*book$/i.test(candidate)) {
+        return 'assets/images/Enchanted_Book.png';
+      }
+
+      // 2. Special case: SkyBlock Menu
+      if (/skyblock menu/i.test(candidate) || id === '2500') {
+        return 'assets/images/SkyBlock_Menu.png';
+      }
+
+      // 3. Special case: New Year's Cake & Cake Bag
       if (/new year('?s)? cake bag/i.test(candidate)) {
         return "assets/images/New_Year's_Cake_Bag.png";
       }
@@ -952,12 +990,27 @@
         return "assets/images/New_Year's_Cake.png";
       }
 
-      // 2. Special case: Cake Soul
+      // 4. Special case: Cake Soul
       if (/cake soul/i.test(candidate)) {
         return "assets/images/Cake_Soul_(Aqua).png";
       }
 
-      // 3. Minion Roman Numerals -> Tier format
+      // 5. Special case: Trick-or-Treat Bag
+      if (/trick.or.treat bag/i.test(candidate)) {
+        return "assets/images/Trick-or-Treat_Bag.png";
+      }
+
+      // 6. Special case: Ethan's Ticket
+      if (/ethan('?s)? ticket/i.test(candidate) || id === '4456') {
+        return "assets/images/Ethan's_Ticket.png";
+      }
+
+      // 7. Special case: Blast o' Lantern
+      if (/blast.*lantern/i.test(candidate) || id === '4736') {
+        return "assets/images/Blast_o'_Lantern.png";
+      }
+
+      // 8. Minion Roman Numerals -> Tier format
       const minionMatch = candidate.match(/^(.*?)\s+Minion(?:\s+([IVX]+|\d+))?$/i);
       if (minionMatch) {
         const rawType = minionMatch[1].trim();
@@ -974,13 +1027,19 @@
         return `assets/images/${encodeURIComponent(mappedType)}_Minion_(Tier_${tierNum}).png`;
       }
 
-      // 4. Dot and dash preserving candidate (e.g. Melon_Dicer_3.0.png, Carrot_Harvester_2.0.png)
+      // 9. Numeric ID or vanilla numeric item name fallback
+      if (VANILLA_NUMERIC_MAP[id] || VANILLA_NUMERIC_MAP[candidate]) {
+        const mapped = VANILLA_NUMERIC_MAP[id] || VANILLA_NUMERIC_MAP[candidate];
+        return `assets/images/${encodeURIComponent(mapped)}`;
+      }
+
+      // 10. Dot and dash preserving candidate (e.g. Melon_Dicer_3.0.png, Carrot_Harvester_2.0.png)
       if (/\d+\.\d+/.test(candidate)) {
         const withDots = candidate.replace(/[^a-zA-Z0-9.\-']/g, '_').replace(/_+/g, '_');
         return `assets/images/${encodeURIComponent(withDots)}.png`;
       }
 
-      // 5. Pet Name Resolution: Strip [Lvl X] prefix and try with _Pet.png or direct mob name
+      // 11. Pet Name Resolution: Strip [Lvl X] prefix and try with _Pet.png or direct mob name
       const petMatch = candidate.match(/^(?:\[\s*Lvl\s*\d+\s*\]|\(\s*Lvl\s*\d+\s*\)|Lvl\s*\d+)?\s*(.*?)(?:\s+Pet)?$/i);
       if (petMatch && petMatch[1]) {
         const petClean = petMatch[1].trim();
@@ -1007,14 +1066,14 @@
         }
       }
 
-      // 6. Standard candidate without special characters
-      if (candidate) {
-        const sanitized = candidate.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_');
+      // 12. Standard candidate with apostrophe / hyphen preservation
+      if (candidate && !/^-?\d+$/.test(candidate)) {
+        const sanitized = candidate.replace(/[^a-zA-Z0-9.\-']/g, '_').replace(/_+/g, '_');
         return `assets/images/${encodeURIComponent(sanitized)}.png`;
       }
 
-      // 7. Direct ID lookup
-      if (id) {
+      // 13. Direct ID lookup
+      if (id && !/^-?\d+$/.test(id)) {
         const pureId = id.replace(/^(minecraft|trpixel):/i, '').replace(/:\d+$/, '');
         const titleCase = pureId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('_');
         return `assets/images/${encodeURIComponent(titleCase)}.png`;
@@ -1275,16 +1334,12 @@
 
       // Render Selected Page (45 Slots: 5 rows × 9 columns)
       const curPageSlots = slots.slice(currentEnderPage * SLOTS_PER_PAGE, (currentEnderPage + 1) * SLOTS_PER_PAGE);
-      const curPageCount = curPageSlots.filter(s => s !== null).length;
       const curPageCells = curPageSlots.map(it => renderMcSlot(it)).join('');
-      const pageTitle = totalPages > 1 
-        ? `Ender Chest — Page ${currentEnderPage + 1} of ${totalPages} (${curPageCount} items)` 
-        : `Ender Chest (${curPageCount} items)`;
 
       container.innerHTML = `
         <div style="margin-bottom: 24px;">
           ${navButtonsHtml}
-          ${wrapMinecraftContainer(pageTitle, `
+          ${wrapMinecraftContainer('Ender Chest', `
             <div class="extreme-inner-container" style="grid-template-rows: repeat(5, auto);">${curPageCells}</div>
           `)}
         </div>
