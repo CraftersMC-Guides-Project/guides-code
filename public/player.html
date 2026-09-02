@@ -31,6 +31,9 @@
   <!-- Accessory Checklist Database -->
   <script src="data/accessoryChecklist.js"></script>
 
+  <!-- Numeric Item IDs Database from Feather-Bot -->
+  <script src="js/numericItemIds.js"></script>
+
   <!-- Scripts -->
   <script src="js/api-proxy-client.js"></script>
   <script src="better-api-docs/app.js" defer></script>
@@ -627,7 +630,19 @@
               }
             }
 
-            const cleanName = String(displayName).replace(/§[0-9a-fk-or]/gi, '').trim();
+            let cleanName = String(displayName).replace(/§[0-9a-fk-or]/gi, '').trim();
+
+            // Convert numeric ID to human readable item name if displayName is numeric or missing
+            if (!cleanName || /^-?\d+$/.test(cleanName)) {
+              const mapped = (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(it.id) : null) ||
+                             (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(cleanName) : null) ||
+                             (typeof MINECRAFT_NUMERIC_IDS !== 'undefined' ? (MINECRAFT_NUMERIC_IDS[String(it.id)] || MINECRAFT_NUMERIC_IDS[cleanName]) : null) ||
+                             (typeof window !== 'undefined' && window.MINECRAFT_NUMERIC_IDS ? (window.MINECRAFT_NUMERIC_IDS[String(it.id)] || window.MINECRAFT_NUMERIC_IDS[cleanName]) : null);
+              if (mapped) {
+                displayName = mapped;
+                cleanName = mapped;
+              }
+            }
 
             return {
               id: it.id,
@@ -1095,8 +1110,16 @@
         return `<div class="cell"></div>`;
       }
 
+      let titleName = item.rawName || item.name;
+      if (!titleName || /^-?\d+$/.test(String(titleName).replace(/§[0-9a-fk-or]/gi, '').trim())) {
+        const mapped = (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(item.id) : null) ||
+                       (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(titleName) : null) ||
+                       (typeof MINECRAFT_NUMERIC_IDS !== 'undefined' ? (MINECRAFT_NUMERIC_IDS[String(item.id)] || MINECRAFT_NUMERIC_IDS[String(titleName)]) : null) ||
+                       (typeof window !== 'undefined' && window.MINECRAFT_NUMERIC_IDS ? (window.MINECRAFT_NUMERIC_IDS[String(item.id)] || window.MINECRAFT_NUMERIC_IDS[String(titleName)]) : null);
+        if (mapped) titleName = mapped;
+      }
+      const itemTitleHtml = renderMinecraftLore(titleName);
       const loreHtml = item.lore && item.lore.length > 0 ? renderMinecraftLore(item.lore) : '';
-      const itemTitleHtml = renderMinecraftLore(item.rawName || item.name);
       const imgUrl = getItemImageUrl(item);
       const safeItemName = String(item.name || item.rawName || item.id || 'Unknown Item').replace(/['"\\]/g, ' ');
       const safeItemId = String(item.id !== undefined && item.id !== null ? item.id : '').replace(/['"\\]/g, ' ');
