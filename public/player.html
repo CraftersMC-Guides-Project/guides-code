@@ -917,10 +917,10 @@
       return null;
     }
 
-    // Helper to generate a single Minecraft GUI Cell using assets/images/
+    // Helper to generate a single Minecraft GUI Cell using assets/images/ & bazaarsave styling
     function renderMcSlot(item) {
       if (!item) {
-        return `<div class="mc-slot-cell"></div>`;
+        return `<div class="cell"></div>`;
       }
 
       const loreHtml = item.lore && item.lore.length > 0 ? renderMinecraftLore(item.lore) : '';
@@ -928,13 +928,39 @@
       const imgUrl = getItemImageUrl(item);
 
       return `
-        <div class="mc-slot-cell">
-          ${imgUrl ? `<img src="${imgUrl}" class="mc-item-img" alt="" loading="lazy" onerror="this.style.visibility='hidden';">` : ''}
-          ${item.count > 1 ? `<span class="mc-slot-count">${item.count}</span>` : ''}
-          <div class="mc-slot-tooltip">
-            <div style="font-weight:700; margin-bottom:4px; font-size:0.88rem;">${itemTitleHtml}</div>
-            <div style="font-size:0.72rem; color:#888888; margin-bottom:6px;">${item.id} ${item.slot >= 0 ? `• Slot ${item.slot}` : ''}</div>
-            ${loreHtml ? `<div style="border-top:1px solid #280070; padding-top:6px; margin-top:4px;">${loreHtml}</div>` : ''}
+        <div class="cell">
+          ${imgUrl ? `<img src="${imgUrl}" alt="" loading="lazy" onerror="this.style.visibility='hidden';">` : ''}
+          ${item.count > 1 ? `<span class="item-count">${item.count}</span>` : ''}
+          <div class="item-tooltip">
+            <span class="item-title" style="color:#ffffff; font-weight:700; display:block; margin-bottom:4px; font-size:0.95rem;">${itemTitleHtml}</span>
+            <div style="font-size:0.75rem; color:#a3a3ff; margin-bottom:6px; font-family:var(--font-mono);">${item.id} ${item.slot >= 0 ? `• Slot ${item.slot}` : ''}</div>
+            ${loreHtml ? `<div class="item-data" style="border-top:1px solid #4b267a; padding-top:6px; margin-top:4px;">${loreHtml}</div>` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // Reusable Minecraft 3D Container Wrapper from bazaarsave.html
+    function wrapMinecraftContainer(title, contentHtml) {
+      return `
+        <div class="mc-bazaar-container">
+          <div class="corner-left"></div>
+          <div class="corner-right"></div>
+          <div class="corner-bottom"></div>
+          <div class="corner-top"></div>
+          <div class="tl-tl"></div>
+          <div class="tr-tl s-tl"></div>
+          <div class="bl-tl s-tl"></div>
+          <div class="br-tl"></div>
+          <div class="tr-bl s-bl"></div>
+          <div class="bl-tr s-tr"></div>
+          <div class="tl-br"></div>
+          <div class="tr-br s-br"></div>
+          <div class="bl-br s-br"></div>
+          <div class="br-br"></div>
+          <div class="inventory inner-container">
+            <h3>${title}</h3>
+            ${contentHtml}
           </div>
         </div>
       `;
@@ -958,14 +984,7 @@
             <span class="card-title">Equipped Armor Sets (${armorItems.length} pieces)</span>
           </div>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">Hover over any armor slot to inspect defense, stats, and reforges:</p>
-          <div class="mc-container-wrapper">
-            <div class="mc-gui-frame">
-              <div class="mc-gui-title">Armor</div>
-              <div class="mc-gui-grid-4">
-                ${armorSlots.join('')}
-              </div>
-            </div>
-          </div>
+          ${wrapMinecraftContainer('Armor', `<div class="armor-extreme-inner-container">${armorSlots.join('')}</div>`)}
         </div>
       `;
     }
@@ -997,17 +1016,10 @@
             <span class="card-title">Main Inventory (${invItems.length} slots used)</span>
           </div>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">Hover over any inventory cell to view full item lore and metadata:</p>
-          <div class="mc-container-wrapper">
-            <div class="mc-gui-frame">
-              <div class="mc-gui-title">Inventory</div>
-              <div class="mc-gui-grid-9">
-                ${storageCells}
-              </div>
-              <div class="mc-gui-grid-9 mc-gui-hotbar-gap">
-                ${hotbarCells}
-              </div>
-            </div>
-          </div>
+          ${wrapMinecraftContainer('Inventory', `
+            <div class="extreme-inner-container">${storageCells}</div>
+            <div class="hotbar-extreme-inner-container">${hotbarCells}</div>
+          `)}
         </div>
       `;
     }
@@ -1037,14 +1049,7 @@
             <span class="card-title">Ender Chest (${enderItems.length} items stored)</span>
           </div>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">Hover over any cell to view stored items and enchantments:</p>
-          <div class="mc-container-wrapper">
-            <div class="mc-gui-frame">
-              <div class="mc-gui-title">Ender Chest</div>
-              <div class="mc-gui-grid-9">
-                ${enderCells}
-              </div>
-            </div>
-          </div>
+          ${wrapMinecraftContainer('Ender Chest', `<div class="extreme-inner-container">${enderCells}</div>`)}
         </div>
       `;
     }
@@ -1105,14 +1110,7 @@
             <span class="card-title">Accessory Bag (${accItems.length} talismans)</span>
           </div>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">Hover over any talisman cell to inspect stats and abilities:</p>
-          <div class="mc-container-wrapper">
-            <div class="mc-gui-frame">
-              <div class="mc-gui-title">Accessory Bag</div>
-              <div class="mc-gui-grid-9">
-                ${accCells}
-              </div>
-            </div>
-          </div>
+          ${wrapMinecraftContainer('Accessory Bag', `<div class="extreme-inner-container">${accCells}</div>`)}
         </div>
       `;
     }
@@ -1139,14 +1137,7 @@
             <span class="card-title">Pet Storage (${petItems.length} pets)</span>
           </div>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">Hover over any pet to view tier, stats, and pet level:</p>
-          <div class="mc-container-wrapper">
-            <div class="mc-gui-frame">
-              <div class="mc-gui-title">Pet Storage</div>
-              <div class="mc-gui-grid-9">
-                ${petCells}
-              </div>
-            </div>
-          </div>
+          ${wrapMinecraftContainer('Pet Storage', `<div class="extreme-inner-container">${petCells}</div>`)}
         </div>
       `;
     }
@@ -1178,14 +1169,7 @@
             <span class="material-icons" style="color:#ea580c;">colorize</span>
             <span class="card-title">Quiver &amp; Arrows (${quiverItems.length} slots used)</span>
           </div>
-          <div class="mc-container-wrapper">
-            <div class="mc-gui-frame">
-              <div class="mc-gui-title">Quiver</div>
-              <div class="mc-gui-grid-9">
-                ${quiverSlots.map(it => renderMcSlot(it)).join('')}
-              </div>
-            </div>
-          </div>
+          ${wrapMinecraftContainer('Quiver', `<div class="extreme-inner-container">${quiverSlots.map(it => renderMcSlot(it)).join('')}</div>`)}
         </div>
 
         <div class="card">
@@ -1193,14 +1177,7 @@
             <span class="material-icons" style="color:#d946ef;">cake</span>
             <span class="card-title">New Year Cake Bag (${cakeBagItems.length} cakes stored)</span>
           </div>
-          <div class="mc-container-wrapper">
-            <div class="mc-gui-frame">
-              <div class="mc-gui-title">New Year Cake Bag</div>
-              <div class="mc-gui-grid-9">
-                ${cakeSlots.map(it => renderMcSlot(it)).join('')}
-              </div>
-            </div>
-          </div>
+          ${wrapMinecraftContainer('New Year Cake Bag', `<div class="extreme-inner-container">${cakeSlots.map(it => renderMcSlot(it)).join('')}</div>`)}
         </div>
       `;
     }
