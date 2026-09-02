@@ -926,6 +926,7 @@
       381: 'Eye_of_Ender.png',
       403: 'Enchanted_Book.png',
       2500: 'SkyBlock_Menu.png',
+      198: 'Enchanted_Ender_Pearl.png',
       '-162': 'Acacia_Log.png',
       162: 'Acacia_Log.png',
       '-163': 'Acacia_Log.png',
@@ -937,6 +938,17 @@
       if (!item) return null;
       const rawName = String(item.rawName !== undefined && item.rawName !== null ? item.rawName : (item.name !== undefined && item.name !== null ? item.name : '')).replace(/§[0-9a-fk-or]/gi, '').trim();
       const id = String(item.id !== undefined && item.id !== null ? item.id : '').trim();
+      const loreText = Array.isArray(item.lore) ? item.lore.map(l => String(l).replace(/§[0-9a-fk-or]/gi, '')).join(' ') : '';
+
+      // 1. Special case: Cake Soul (can have player head names like "iPhyruss" with "Cake Soul" in lore)
+      if (/cake soul/i.test(rawName) || /cake soul/i.test(loreText) || id === '4766' || id === '4769') {
+        return "assets/images/Cake_Soul_(Aqua).png";
+      }
+
+      // 2. Special case: Magnetic Talisman (and other items starting with a reforge name)
+      if (/magnetic talisman/i.test(rawName) || id === '1964') {
+        return "assets/images/Magnetic_Talisman.png";
+      }
 
       // CraftersMC & SkyBlock Reforges (sorted by length descending for accurate prefix matching)
       const reforges = [
@@ -972,17 +984,17 @@
 
       const candidate = strippedName || rawName;
 
-      // 1. Special case: Enchanted Books (ID 403 or ends with Enchant Book)
+      // 3. Special case: Enchanted Books (ID 403 or ends with Enchant Book)
       if (id === '403' || /enchant(ed)?\s*book/i.test(candidate) || /enchant\s*book$/i.test(candidate)) {
         return 'assets/images/Enchanted_Book.png';
       }
 
-      // 2. Special case: SkyBlock Menu
+      // 4. Special case: SkyBlock Menu
       if (/skyblock menu/i.test(candidate) || id === '2500') {
         return 'assets/images/SkyBlock_Menu.png';
       }
 
-      // 3. Special case: New Year's Cake & Cake Bag
+      // 5. Special case: New Year's Cake & Cake Bag
       if (/new year('?s)? cake bag/i.test(candidate)) {
         return "assets/images/New_Year's_Cake_Bag.png";
       }
@@ -990,22 +1002,17 @@
         return "assets/images/New_Year's_Cake.png";
       }
 
-      // 4. Special case: Cake Soul
-      if (/cake soul/i.test(candidate)) {
-        return "assets/images/Cake_Soul_(Aqua).png";
-      }
-
-      // 5. Special case: Trick-or-Treat Bag
+      // 6. Special case: Trick-or-Treat Bag
       if (/trick.or.treat bag/i.test(candidate)) {
         return "assets/images/Trick-or-Treat_Bag.png";
       }
 
-      // 6. Special case: Ethan's Ticket
+      // 7. Special case: Ethan's Ticket
       if (/ethan('?s)? ticket/i.test(candidate) || id === '4456') {
         return "assets/images/Ethan's_Ticket.png";
       }
 
-      // 7. Special case: Blast o' Lantern
+      // 8. Special case: Blast o' Lantern
       if (/blast.*lantern/i.test(candidate) || id === '4736') {
         return "assets/images/Blast_o'_Lantern.png";
       }
@@ -1424,35 +1431,90 @@
       `;
     }
 
-    // 6. Special Bags Tab (Quiver & Cake Bag)
+    // 6. Special Bags Tab (Quiver, Cake Bag, Trick-or-Treat Bag, Pumpkin Launcher Ammo, Basket of Seeds, etc.)
     function renderSpecialBags() {
       const container = document.getElementById('bagsTab');
       const member = profileData?.members?.[selectedMemberId] || {};
-      const quiverItems = extractItemsFromNbt(member.quiver);
-      const cakeBagItems = extractItemsFromNbt(member.newYearCakeBag);
 
-      const quiverMax = Math.max(9, Math.ceil(Math.max(quiverItems.length, 1) / 9) * 9);
-      const quiverSlots = new Array(quiverMax).fill(null);
-      quiverItems.forEach((it, idx) => {
-        if (it.slot >= 0 && it.slot < quiverMax) quiverSlots[it.slot] = it;
-        else quiverSlots[idx] = it;
-      });
+      function buildGridSlots(nbtData, defaultSize = 27) {
+        const items = extractItemsFromNbt(nbtData);
+        const maxSlots = Math.max(defaultSize, Math.ceil(Math.max(items.length, 1) / 9) * 9);
+        const slots = new Array(maxSlots).fill(null);
+        items.forEach((it, idx) => {
+          if (it.slot >= 0 && it.slot < maxSlots) slots[it.slot] = it;
+          else slots[idx] = it;
+        });
+        return { items, slots, html: slots.map(it => renderMcSlot(it)).join('') };
+      }
 
-      const cakeMax = Math.max(27, Math.ceil(Math.max(cakeBagItems.length, 1) / 9) * 9);
-      const cakeSlots = new Array(cakeMax).fill(null);
-      cakeBagItems.forEach((it, idx) => {
-        if (it.slot >= 0 && it.slot < cakeMax) cakeSlots[it.slot] = it;
-        else cakeSlots[idx] = it;
-      });
+      const trickBag = buildGridSlots(member.otherInventories?.trick_or_treat_bag, 27);
+      const pumpkinAmmo = buildGridSlots(member.otherInventories?.pumpkin_launcher_ammo, 27);
+      const seedBag = buildGridSlots(member.otherInventories?.seeds_inventory, 54);
+      const cakeBag = buildGridSlots(member.newYearCakeBag, 27);
+      const quiver = buildGridSlots(member.quiver, 9);
+      const medalBag = buildGridSlots(member.otherInventories?.medal_inventory, 27);
 
-      container.innerHTML = `
-        <div style="margin-bottom: 24px;">
-          ${wrapMinecraftContainer('Quiver', `<div class="extreme-inner-container">${quiverSlots.map(it => renderMcSlot(it)).join('')}</div>`)}
-        </div>
-        <div style="margin-bottom: 24px;">
-          ${wrapMinecraftContainer('New Year Cake Bag', `<div class="extreme-inner-container">${cakeSlots.map(it => renderMcSlot(it)).join('')}</div>`)}
+      let sectionsHtml = '';
+
+      // Trick-or-Treat Bag
+      sectionsHtml += `
+        <div style="margin-bottom: 20px;">
+          ${wrapMinecraftContainer(`Trick-or-Treat Bag (${trickBag.items.length} items)`, `
+            <div class="extreme-inner-container">${trickBag.html}</div>
+          `)}
         </div>
       `;
+
+      // Pumpkin Launcher Ammo
+      sectionsHtml += `
+        <div style="margin-bottom: 20px;">
+          ${wrapMinecraftContainer(`Pumpkin Launcher Ammo (${pumpkinAmmo.items.length} ammo)`, `
+            <div class="extreme-inner-container">${pumpkinAmmo.html}</div>
+          `)}
+        </div>
+      `;
+
+      // Quiver
+      sectionsHtml += `
+        <div style="margin-bottom: 20px;">
+          ${wrapMinecraftContainer(`Quiver (${quiver.items.length} arrows)`, `
+            <div class="extreme-inner-container">${quiver.html}</div>
+          `)}
+        </div>
+      `;
+
+      // New Year Cake Bag
+      sectionsHtml += `
+        <div style="margin-bottom: 20px;">
+          ${wrapMinecraftContainer(`New Year Cake Bag (${cakeBag.items.length} cakes)`, `
+            <div class="extreme-inner-container">${cakeBag.html}</div>
+          `)}
+        </div>
+      `;
+
+      // Basket of Seeds (if any seeds stored)
+      if (seedBag.items.length > 0) {
+        sectionsHtml += `
+          <div style="margin-bottom: 20px;">
+            ${wrapMinecraftContainer(`Basket of Seeds (${seedBag.items.length} seeds)`, `
+              <div class="extreme-inner-container">${seedBag.html}</div>
+            `)}
+          </div>
+        `;
+      }
+
+      // Medal Inventory (if any medals stored)
+      if (medalBag.items.length > 0) {
+        sectionsHtml += `
+          <div style="margin-bottom: 20px;">
+            ${wrapMinecraftContainer(`Medal Inventory (${medalBag.items.length} medals)`, `
+              <div class="extreme-inner-container">${medalBag.html}</div>
+            `)}
+          </div>
+        `;
+      }
+
+      container.innerHTML = sectionsHtml;
     }
 
     // 4. Slayers Tab
