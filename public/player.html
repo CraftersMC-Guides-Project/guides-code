@@ -1189,29 +1189,58 @@
       `;
     }
 
-    // 3. Ender Chest Tab (54 Storage Slots)
+    // 3. Ender Chest Tab (Multi-Page 54-Slot GUI Storage)
     function renderEnderChest() {
       const container = document.getElementById('enderTab');
       const member = profileData?.members?.[selectedMemberId] || {};
-      const enderItems = extractItemsFromNbt(member.enderContents);
+      const enderItems = extractItemsFromNbt(member.enderContents || member.enderChest || member.ender_chest || member.ender_chest_contents || member.otherInventories?.ender_chest);
 
-      const maxSlots = Math.max(27, Math.ceil(enderItems.length / 9) * 9);
-      const slots = new Array(maxSlots).fill(null);
+      if (!enderItems || enderItems.length === 0) {
+        container.innerHTML = `
+          <div style="margin-bottom: 24px;">
+            ${wrapMinecraftContainer('Ender Chest (0 items)', `
+              <div style="padding: 24px 16px; text-align: center; color: #555555; font-family: 'Minecraft', monospace; font-size: 0.9rem;">
+                No items stored in Ender Chest.
+              </div>
+            `)}
+          </div>
+        `;
+        return;
+      }
+
+      const highestSlot = enderItems.reduce((max, it) => Math.max(max, it.slot >= 0 ? it.slot : 0), 0);
+      const totalPages = Math.max(1, Math.ceil((highestSlot + 1) / 54));
+      const totalSlots = totalPages * 54;
+      const slots = new Array(totalSlots).fill(null);
+
       enderItems.forEach(it => {
-        if (it.slot >= 0 && it.slot < maxSlots) slots[it.slot] = it;
-        else {
+        if (it.slot >= 0 && it.slot < totalSlots) {
+          slots[it.slot] = it;
+        } else {
           const firstEmpty = slots.findIndex(s => s === null);
           if (firstEmpty !== -1) slots[firstEmpty] = it;
         }
       });
 
-      const enderCells = slots.map(it => renderMcSlot(it)).join('');
+      let pagesHtml = '';
+      for (let p = 0; p < totalPages; p++) {
+        const pageSlots = slots.slice(p * 54, (p + 1) * 54);
+        const pageItemCount = pageSlots.filter(s => s !== null).length;
+        if (pageItemCount === 0 && p > 0) continue; // Skip empty pages after page 1
 
-      container.innerHTML = `
-        <div style="margin-bottom: 24px;">
-          ${wrapMinecraftContainer('Ender Chest', `<div class="extreme-inner-container">${enderCells}</div>`)}
-        </div>
-      `;
+        const pageCells = pageSlots.map(it => renderMcSlot(it)).join('');
+        const pageTitle = totalPages > 1 ? `Ender Chest — Page ${p + 1} (${pageItemCount} items)` : `Ender Chest (${pageItemCount} items)`;
+
+        pagesHtml += `
+          <div style="margin-bottom: 24px;">
+            ${wrapMinecraftContainer(pageTitle, `
+              <div class="extreme-inner-container" style="grid-template-rows: repeat(6, auto);">${pageCells}</div>
+            `)}
+          </div>
+        `;
+      }
+
+      container.innerHTML = pagesHtml;
     }
 
     // 4. Accessory Bag Tab with Container GUI & Missing Checklist
