@@ -471,7 +471,18 @@
       renderPlayerStats();
       renderPlaytime();
       renderJSON();
-    }    // Color and Style Code Mapper for Minecraft Bedrock Tooltip Lore
+    }
+
+    function stripFormatting(value) {
+      return String(value || '')
+        .replace(/[\uE000-\uF8FF]/g, '')
+        .replace(/[\uDB80-\uDBBF][\uDC00-\uDFFF]/g, '')
+        .replace(/[\x00-\x1F\x7F-\x9F]/g, '')
+        .replace(/§./g, '')
+        .replace(/_/g, ' ')
+        .trim();
+    }
+
     // Color and Style Code Mapper for Minecraft Bedrock Tooltip Lore (Vibrant high-contrast palette)
     const FEATHER_COLOR_MAP = {
       '0': '#222222',
@@ -988,9 +999,9 @@
     // Item Image Resolver from assets/images/
     function getItemImageUrl(item) {
       if (!item) return null;
-      const rawName = String(item.rawName !== undefined && item.rawName !== null ? item.rawName : (item.name !== undefined && item.name !== null ? item.name : '')).replace(/§[0-9a-fk-or]/gi, '').trim();
+      const rawName = stripFormatting(item.rawName !== undefined && item.rawName !== null ? item.rawName : (item.name !== undefined && item.name !== null ? item.name : ''));
       const id = String(item.id !== undefined && item.id !== null ? item.id : '').trim();
-      const loreText = Array.isArray(item.lore) ? item.lore.map(l => String(l).replace(/§[0-9a-fk-or]/gi, '')).join(' ') : '';
+      const loreText = Array.isArray(item.lore) ? item.lore.map(l => stripFormatting(l)).join(' ') : '';
 
       // 1. Special case: Cake Soul (can have player head names like "iPhyruss" with "Cake Soul" in lore)
       if (/cake soul/i.test(rawName) || /cake soul/i.test(loreText) || id === '4766' || id === '4769') {
@@ -1002,7 +1013,7 @@
         return "assets/images/Magnetic_Talisman.png";
       }
 
-      // CraftersMC & SkyBlock Reforges (sorted by length descending for accurate prefix matching)
+      // CraftersMC & SkyBlock Reforges
       const reforges = [
         'Green Thumb', 'Double-Bit', "Lumberjack's", "Peasant's", 'Not So', 'Treacherous',
         'Reinforced', 'Headstrong', 'Suspicious', 'Submerged', 'Empowered', 'Unpleasant',
@@ -1091,13 +1102,13 @@
         return `assets/images/${encodeURIComponent(mappedType)}_Minion_(Tier_${tierNum}).png`;
       }
 
-      // 9. Dot and dash preserving candidate (e.g. Melon_Dicer_3.0.png, Carrot_Harvester_2.0.png)
+      // 9. Dot and dash preserving candidate
       if (/\d+\.\d+/.test(candidate)) {
         const withDots = candidate.replace(/[^a-zA-Z0-9.\-']/g, '_').replace(/_+/g, '_');
         return `assets/images/${encodeURIComponent(withDots)}.png`;
       }
 
-      // 10. Pet Name Resolution: Strip [Lvl X] prefix and try with _Pet.png or direct mob name
+      // 10. Pet Name Resolution
       const petMatch = candidate.match(/^(?:\[\s*Lvl\s*\d+\s*\]|\(\s*Lvl\s*\d+\s*\)|Lvl\s*\d+)?\s*(.*?)(?:\s+Pet)?$/i);
       if (petMatch && petMatch[1]) {
         const petClean = petMatch[1].trim();
@@ -1124,7 +1135,7 @@
         }
       }
 
-      // 11. Standard candidate with apostrophe / hyphen preservation
+      // 11. Standard candidate
       if (candidate && !/^-?\d+$/.test(candidate)) {
         const sanitized = candidate.replace(/[^a-zA-Z0-9.\-']/g, '_').replace(/_+/g, '_');
         return `assets/images/${encodeURIComponent(sanitized)}.png`;
@@ -1137,8 +1148,8 @@
         return `assets/images/${encodeURIComponent(titleCase)}.png`;
       }
 
-      // 13. Vanilla numeric ID fallback (ONLY if no name or candidate is numeric ID)
-      if (!candidate || /^-?\d+$/.test(candidate) || /^-?\d+$/.test(id)) {
+      // 13. Vanilla numeric ID fallback
+      if (!candidate || /^-?\d+$/.test(candidate)) {
         const lookupKey = candidate && /^-?\d+$/.test(candidate) ? candidate : id;
         const damage = item.meta ?? item.damage ?? item.Damage;
         const mappedName = (typeof resolveItemName === 'function' ? resolveItemName(lookupKey, damage) : null) ||
@@ -1157,14 +1168,15 @@
       return null;
     }
 
-    // Helper to generate a single Minecraft GUI Cell using assets/images/ & bazaarsave styling
+    // Helper to generate a single Minecraft GUI Cell
     function renderMcSlot(item) {
       if (!item) {
         return `<div class="cell"></div>`;
       }
 
       let titleName = item.rawName || item.name;
-      if (!titleName || /^-?\d+$/.test(String(titleName).replace(/§[0-9a-fk-or]/gi, '').trim())) {
+      const strippedTitle = stripFormatting(titleName);
+      if (!strippedTitle || /^-?\d+$/.test(strippedTitle)) {
         const mapped = (typeof resolveItemName === 'function' ? resolveItemName(item.id, item.meta) : null) ||
           (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(item.id) : null) ||
           (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(titleName) : null) ||
