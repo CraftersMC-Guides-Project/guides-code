@@ -22,12 +22,12 @@
   <script src="../better-api-docs/app.js" defer></script>
   <script src="../js/components.js" defer></script>
   <script src="../js/api-proxy-client.js"></script>
+  <script src="../js/boss-time-leaderboard.js"></script>
   <script src="../js/leaderboards-api.js"></script>
   <script src="../js/leaderboard-theme-helper.js"></script>
 </head>
 <body>
 
-  <!-- Top Header Navigation -->
   <header class="top-header">
     <div class="header-left">
       <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
@@ -42,30 +42,22 @@
       </a>
     </div>
 
-    <!-- Search Box -->
     <div class="search-box">
       <span class="material-icons search-icon">search</span>
       <input type="text" id="search-input" placeholder="Search leaderboards, guides, API..." />
       <span class="search-kbd-shortcut">/</span>
     </div>
 
-    <!-- Header Utility Links -->
     <div class="header-actions">
       <a href="../better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
       <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
     </div>
   </header>
 
-  <!-- Application Layout -->
   <div class="app-layout">
-
-    <!-- Left Sidebar Web Component -->
     <cmc-sidebar active="slayers-leaderboards"></cmc-sidebar>
-
-    <!-- Main Content Area -->
     <main class="main-content">
 
-      <!-- Hero Header -->
       <div class="lb-hero-card">
         <div class="lb-hero-info">
           <h1>
@@ -80,20 +72,16 @@
         </a>
       </div>
 
-
-      <!-- Category Selector -->
       <div class="lb-categories-panel" id="categoryPanel">
         <div class="lb-panel-header">
-          <h2 class="lb-panel-title"><span class="material-icons" style="color:var(--accent-color);">category</span> Select Boss & Tier</h2>
+          <h2 class="lb-panel-title" id="panelNavTitle"><span class="material-icons" style="color:var(--accent-color);">category</span> Select Boss</h2>
         </div>
         <div class="lb-category-grid" id="collectionGrid"></div>
       </div>
-  
 
-      <!-- Leaderboard Table Card -->
       <div class="lb-table-card">
         <div class="lb-table-header">
-          <h2 class="lb-table-title" id="collectionTitle">Select a Category</h2>
+          <h2 class="lb-table-title" id="collectionTitle">Select a Boss &amp; Tier</h2>
         </div>
         <div class="lb-table-wrapper">
           <table class="lb-table">
@@ -106,174 +94,157 @@
             </thead>
             <tbody id="leaderboardData">
               <tr><td style="text-align:center;">1</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">2</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">3</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">4</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">5</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">6</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">7</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">8</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">9</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">10</td><td>???</td><td style="text-align:right;">???</td></tr>
             </tbody>
           </table>
         </div>
       </div>
-  
 
-
-      <!-- Footer -->
       <footer class="site-footer">
         <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
         <div class="site-footer-right">
           <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
         </div>
       </footer>
-
     </main>
   </div>
 
-  <!-- Sidelid & Modal hooks for backward compatibility with scripts -->
-  <div id="sidelid" style="display:none;"><h2 class="lb-h2"></h2></div>
-
-<script src="../js/api-proxy-client.js"></script>
-<script src="../js/leaderboards-api.js"></script>
-<script>
+  <script>
     let currentBoss = null;
     let currentCategory = null;
     let currentType = null;
     let currentTier = null;
-    let collectionsData = {};
+    let bossTimesData = {};
+
+    function normalizeImg(src) {
+      if (!src) return "../assets/cmc-icon.png";
+      if (src.startsWith("http") || src.startsWith("/")) return src;
+      return "../" + src;
+    }
 
     document.addEventListener("DOMContentLoaded", async () => {
-        try {
-            collectionsData = await leaderboardsApi.getLeaderboard("boss-time");
-            showBossTypes();
-        } catch (error) {
-            console.error("Failed to load boss time leaderboards", error);
-            document.getElementById("leaderboardData").innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
-        }
+      try {
+        bossTimesData = await leaderboardsApi.getLeaderboard("boss-times");
+      } catch (e) {
+        console.warn("Using local boss time fallback", e);
+        bossTimesData = window.collectionsData || {};
+      }
+
+      showBossTypes();
     });
-    document.getElementById("sidelid").addEventListener("click", e => e.stopPropagation());
 
     function showBossTypes() {
-        currentBoss = null;
-        currentCategory = null;
-        currentType = null;
-        currentTier = null;
-        const collectionGrid = document.getElementById("collectionGrid");
-        collectionGrid.innerHTML = "";
+      currentBoss = null;
+      currentCategory = null;
+      currentType = null;
+      currentTier = null;
+      const grid = document.getElementById("collectionGrid");
+      grid.innerHTML = "";
 
-        document.querySelector("#sidelid h2.lb-h2").innerText = "Boss Time Leaderboards";
-        document.getElementById("collectionTitle").innerText = "Select a Category";
+      document.getElementById("panelNavTitle").innerHTML = `<span class="material-icons" style="color:var(--accent-color);">category</span> Select Boss Type`;
+      document.getElementById("collectionTitle").innerText = "Select a Boss & Tier";
 
-        collectionsData["Boss Type"].forEach(boss => {
-            const bossDiv = document.createElement("div");
-            bossDiv.className = "lb-collection-item main-category";
-            bossDiv.innerHTML = `<img src="${boss.image}" alt="${boss.name}" style="width:94px;">`;
-            bossDiv.onclick = () => showCategories(boss);
-            collectionGrid.appendChild(bossDiv);
-        });
+      const bosses = bossTimesData["Boss Type"] || [];
+      bosses.forEach((boss, idx) => {
+        const btn = document.createElement("div");
+        btn.className = "lb-category-item";
+        btn.innerHTML = `<img src="${normalizeImg(boss.image)}" alt="${boss.name}" onerror="this.src='../assets/cmc-icon.png'"> <span>${boss.name}</span>`;
+        btn.onclick = () => showCategories(boss);
+        grid.appendChild(btn);
+      });
     }
 
     function showCategories(boss) {
-        currentBoss = boss;
-        currentCategory = null;
-        currentType = null;
-        currentTier = null;
-        const collectionGrid = document.getElementById("collectionGrid");
-        collectionGrid.innerHTML = "";
+      currentBoss = boss;
+      const grid = document.getElementById("collectionGrid");
+      grid.innerHTML = "";
 
-        document.querySelector("#sidelid h2.lb-h2").innerText = `${boss.name} Leaderboards`;
-        document.getElementById("collectionTitle").innerText = `${boss.name} Leaderboards`;
+      document.getElementById("panelNavTitle").innerHTML = `<span class="material-icons" style="color:var(--accent-color);">category</span> ${boss.name} &bull; Select Category`;
 
-        const backBtn = document.createElement("div");
-        backBtn.className = "lb-collection-item back-btn";
-        backBtn.innerHTML = "← Back";
-        backBtn.onclick = showBossTypes;
-        collectionGrid.appendChild(backBtn);
+      const back = document.createElement("div");
+      back.className = "lb-category-item";
+      back.style.background = "var(--border-color)";
+      back.innerHTML = `<span>&larr; Back</span>`;
+      back.onclick = showBossTypes;
+      grid.appendChild(back);
 
-        boss.categories.forEach(category => {
-            const catDiv = document.createElement("div");
-            catDiv.className = "lb-collection-item";
-            catDiv.innerHTML = `<img src="${category.image}" alt="${category.name}" title="${category.name}" style="width:64px;">`;
-            catDiv.onclick = () => showTypes(category);
-            collectionGrid.appendChild(catDiv);
-        });
+      boss.categories.forEach(category => {
+        const btn = document.createElement("div");
+        btn.className = "lb-category-item";
+        btn.innerHTML = `<img src="${normalizeImg(category.image)}" alt="${category.name}" onerror="this.src='../assets/cmc-icon.png'"> <span>${category.name}</span>`;
+        btn.onclick = () => showTypes(category);
+        grid.appendChild(btn);
+      });
     }
 
     function showTypes(category) {
-        currentCategory = category;
-        currentType = null;
-        currentTier = null;
-        const collectionGrid = document.getElementById("collectionGrid");
-        collectionGrid.innerHTML = "";
+      currentCategory = category;
+      const grid = document.getElementById("collectionGrid");
+      grid.innerHTML = "";
 
-        document.querySelector("#sidelid h2.lb-h2").innerText = `${currentBoss.name} - ${category.name}`;
-        document.getElementById("collectionTitle").innerText = `${currentBoss.name} - ${category.name}`;
+      document.getElementById("panelNavTitle").innerHTML = `<span class="material-icons" style="color:var(--accent-color);">category</span> ${currentBoss.name} &bull; ${category.name}`;
 
-        const backBtn = document.createElement("div");
-        backBtn.className = "lb-collection-item back-btn";
-        backBtn.innerHTML = "← Back";
-        backBtn.onclick = () => showCategories(currentBoss);
-        collectionGrid.appendChild(backBtn);
+      const back = document.createElement("div");
+      back.className = "lb-category-item";
+      back.style.background = "var(--border-color)";
+      back.innerHTML = `<span>&larr; Back</span>`;
+      back.onclick = () => showCategories(currentBoss);
+      grid.appendChild(back);
 
-        category.types.forEach(type => {
-            const typeDiv = document.createElement("div");
-            typeDiv.className = "lb-collection-item";
-            typeDiv.innerHTML = `<img src="${type.image}" alt="${type.name}" title="${type.name}" style="width:64px;">`;
-            typeDiv.onclick = () => showTiers(type);
-            collectionGrid.appendChild(typeDiv);
-        });
+      category.types.forEach(type => {
+        const btn = document.createElement("div");
+        btn.className = "lb-category-item";
+        btn.innerHTML = `<img src="${normalizeImg(type.image)}" alt="${type.name}" onerror="this.src='../assets/cmc-icon.png'"> <span>${type.name}</span>`;
+        btn.onclick = () => showTiers(type);
+        grid.appendChild(btn);
+      });
     }
 
     function showTiers(type) {
-        currentType = type;
-        currentTier = null;
-        const collectionGrid = document.getElementById("collectionGrid");
-        collectionGrid.innerHTML = "";
+      currentType = type;
+      const grid = document.getElementById("collectionGrid");
+      grid.innerHTML = "";
 
-        document.querySelector("#sidelid h2.lb-h2").innerText = `${currentBoss.name} - ${currentCategory.name} - ${type.name}`;
-        document.getElementById("collectionTitle").innerText = `${currentBoss.name} - ${currentCategory.name} - ${type.name}`;
+      document.getElementById("panelNavTitle").innerHTML = `<span class="material-icons" style="color:var(--accent-color);">category</span> ${currentBoss.name} &bull; ${type.name}`;
 
-        const backBtn = document.createElement("div");
-        backBtn.className = "lb-collection-item back-btn";
-        backBtn.innerHTML = "← Back";
-        backBtn.onclick = () => showTypes(currentCategory);
-        collectionGrid.appendChild(backBtn);
+      const back = document.createElement("div");
+      back.className = "lb-category-item";
+      back.style.background = "var(--border-color)";
+      back.innerHTML = `<span>&larr; Back</span>`;
+      back.onclick = () => showTypes(currentCategory);
+      grid.appendChild(back);
 
-        type.tiers.forEach(tier => {
-            const tierDiv = document.createElement("div");
-            tierDiv.className = "lb-collection-item";
-            tierDiv.innerHTML = `<img src="${tier.image}" alt="${tier.name}" style="width:94px;">`;
-            tierDiv.onclick = () => showLeaderboard(tier);
-            collectionGrid.appendChild(tierDiv);
-        });
+      type.tiers.forEach(tier => {
+        const btn = document.createElement("div");
+        btn.className = "lb-category-item";
+        btn.innerHTML = `<img src="${normalizeImg(tier.image)}" alt="${tier.name}" onerror="this.src='../assets/cmc-icon.png'"> <span>${tier.name}</span>`;
+        btn.onclick = () => {
+          document.querySelectorAll(".lb-category-item").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          showLeaderboard(tier);
+        };
+        grid.appendChild(btn);
+      });
     }
 
     function showLeaderboard(tier) {
-        currentTier = tier;
-        document.querySelector("#sidelid h2.lb-h2").innerText =
-            `${currentBoss.name} - ${currentCategory.name} - ${currentType.name} - ${tier.name}`;
-        document.getElementById("collectionTitle").innerText =
-            `${currentBoss.name} - ${currentCategory.name} - ${currentType.name} - ${tier.name}`;
-        document.getElementById("scoreHeader").innerText = "Score";
+      currentTier = tier;
+      document.getElementById("collectionTitle").innerText = `${currentBoss.name} - ${currentCategory.name} - ${currentType.name} - ${tier.name}`;
+      document.getElementById("scoreHeader").innerText = "Clear Time";
 
-        const leaderboardData = document.getElementById("leaderboardData");
-        if (tier.players && tier.players.length) {
-            leaderboardData.innerHTML = tier.players.map(player => `
-                <tr>
-                    <td>${player.rank}</td>
-                    ${createPlayerCell(player.name)}
-                    <td>${player.score}</td>
-                </tr>
-            `).join("");
-        } else {
-            leaderboardData.innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
-        }
-        window.scrollTo({ top: 350, behavior: "smooth" });
+      const tbody = document.getElementById("leaderboardData");
+      if (tier.players && tier.players.length) {
+        tbody.innerHTML = tier.players.map(p => `
+          <tr>
+            <td style="text-align:center;">${formatRankBadge(p.rank)}</td>
+            ${createPlayerCell(p.name)}
+            <td class="score-cell" style="text-align:right;">${p.score || "???"}</td>
+          </tr>
+        `).join("");
+      } else {
+        tbody.innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
+      }
+      document.getElementById("collectionTitle").scrollIntoView({ behavior: "smooth" });
     }
-</script>
-
+  </script>
 </body>
 </html>

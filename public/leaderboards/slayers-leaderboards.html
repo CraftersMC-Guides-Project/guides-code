@@ -22,12 +22,12 @@
   <script src="../better-api-docs/app.js" defer></script>
   <script src="../js/components.js" defer></script>
   <script src="../js/api-proxy-client.js"></script>
+  <script src="../js/multi-lb-data.js"></script>
   <script src="../js/leaderboards-api.js"></script>
   <script src="../js/leaderboard-theme-helper.js"></script>
 </head>
 <body>
 
-  <!-- Top Header Navigation -->
   <header class="top-header">
     <div class="header-left">
       <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
@@ -42,30 +42,22 @@
       </a>
     </div>
 
-    <!-- Search Box -->
     <div class="search-box">
       <span class="material-icons search-icon">search</span>
       <input type="text" id="search-input" placeholder="Search leaderboards, guides, API..." />
       <span class="search-kbd-shortcut">/</span>
     </div>
 
-    <!-- Header Utility Links -->
     <div class="header-actions">
       <a href="../better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
       <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
     </div>
   </header>
 
-  <!-- Application Layout -->
   <div class="app-layout">
-
-    <!-- Left Sidebar Web Component -->
     <cmc-sidebar active="slayers-leaderboards"></cmc-sidebar>
-
-    <!-- Main Content Area -->
     <main class="main-content">
 
-      <!-- Hero Header -->
       <div class="lb-hero-card">
         <div class="lb-hero-info">
           <h1>
@@ -80,20 +72,16 @@
         </a>
       </div>
 
-
-      <!-- Category Selector -->
       <div class="lb-categories-panel" id="categoryPanel">
         <div class="lb-panel-header">
           <h2 class="lb-panel-title"><span class="material-icons" style="color:var(--accent-color);">category</span> Select Slayer Boss</h2>
         </div>
         <div class="lb-category-grid" id="collectionGrid"></div>
       </div>
-  
 
-      <!-- Leaderboard Table Card -->
       <div class="lb-table-card">
         <div class="lb-table-header">
-          <h2 class="lb-table-title" id="collectionTitle">Select a Category</h2>
+          <h2 class="lb-table-title" id="collectionTitle">Select a Slayer Boss</h2>
         </div>
         <div class="lb-table-wrapper">
           <table class="lb-table">
@@ -106,84 +94,74 @@
             </thead>
             <tbody id="leaderboardData">
               <tr><td style="text-align:center;">1</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">2</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">3</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">4</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">5</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">6</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">7</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">8</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">9</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">10</td><td>???</td><td style="text-align:right;">???</td></tr>
             </tbody>
           </table>
         </div>
       </div>
-  
 
-
-      <!-- Footer -->
       <footer class="site-footer">
         <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
         <div class="site-footer-right">
           <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
         </div>
       </footer>
-
     </main>
   </div>
 
-  <!-- Sidelid & Modal hooks for backward compatibility with scripts -->
-  <div id="sidelid" style="display:none;"><h2 class="lb-h2"></h2></div>
+  <script>
+    let slayersData = {};
 
-<script src="../js/api-proxy-client.js"></script>
-<script src="../js/leaderboards-api.js"></script>
-<script>
-        let collectionsData = [];
+    document.addEventListener("DOMContentLoaded", async () => {
+      const collectionGrid = document.getElementById("collectionGrid");
 
-        document.addEventListener("DOMContentLoaded", async () => {
-            try {
-                collectionsData = await leaderboardsApi.getLeaderboard("slayers");
-            } catch (error) {
-                console.error("Failed to load slayers leaderboards", error);
-                document.getElementById("leaderboardData").innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
-                return;
-            }
+      try {
+        slayersData = await leaderboardsApi.getLeaderboard("slayers");
+      } catch (error) {
+        console.warn("Using local slayers data fallback", error);
+        slayersData = window.slayersData || {};
+      }
 
-            loadCollections();
+      const entries = Object.values(slayersData);
+      if (!entries.length) {
+        document.getElementById("leaderboardData").innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
+        return;
+      }
 
-            function loadCollections() {
-                const collectionGrid = document.getElementById("collectionGrid");
-                collectionGrid.innerHTML = "";
+      collectionGrid.innerHTML = "";
+      entries.forEach((lb, idx) => {
+        const div = document.createElement("div");
+        div.className = "lb-category-item" + (idx === 0 ? " active" : "");
+        div.innerHTML = `<span class="material-icons" style="color:var(--accent-color);font-size:1.2rem;">shield</span> <span>${lb.name}</span>`;
+        div.onclick = () => {
+          document.querySelectorAll(".lb-category-item").forEach(d => d.classList.remove("active"));
+          div.classList.add("active");
+          loadLeaderboard(lb);
+        };
+        collectionGrid.appendChild(div);
+      });
 
-                collectionsData.forEach((collection, index) => {
-                    let item = document.createElement("div");
-                    item.classList.add("lb-collection-item");
-                    item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`;
-                    item.onclick = () => loadLeaderboard(index);
-                    collectionGrid.appendChild(item);
-                });
-            }
+      if (entries.length > 0) {
+        loadLeaderboard(entries[0]);
+      }
+    });
 
-            function loadLeaderboard(index) {
-                const collection = collectionsData[index];
-                document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
+    function loadLeaderboard(lb) {
+      document.getElementById("collectionTitle").innerText = lb.name + " Leaderboard";
+      document.getElementById("scoreHeader").innerText = lb.scoreLabel || "Slayer XP";
 
-                const leaderboardData = document.getElementById("leaderboardData");
-                leaderboardData.innerHTML = collection.players.length
-                    ? collection.players.map(player => `
-                <tr>
-                    <td>${player.rank}</td>
-                    ${createPlayerCell(player.name || "???")}
-                    <td>${player.score || "???"}</td>
-                </tr>
-            `).join("")
-                    : leaderboardsApi.getPlaceholderRows(10, "???");
-
-                document.getElementById('collectionTitle').scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    </script>
-
+      const tbody = document.getElementById("leaderboardData");
+      if (lb.players && lb.players.length) {
+        tbody.innerHTML = lb.players.map(p => `
+          <tr>
+            <td style="text-align:center;">${formatRankBadge(p.rank)}</td>
+            ${createPlayerCell(p.name)}
+            <td class="score-cell" style="text-align:right;">${p.score || "???"}</td>
+          </tr>
+        `).join("");
+      } else {
+        tbody.innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
+      }
+    }
+  </script>
 </body>
 </html>

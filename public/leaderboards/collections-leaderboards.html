@@ -22,6 +22,7 @@
   <script src="../better-api-docs/app.js" defer></script>
   <script src="../js/components.js" defer></script>
   <script src="../js/api-proxy-client.js"></script>
+  <script src="../js/updated_collections.js"></script>
   <script src="../js/leaderboards-api.js"></script>
   <script src="../js/leaderboard-theme-helper.js"></script>
 </head>
@@ -58,11 +59,7 @@
 
   <!-- Application Layout -->
   <div class="app-layout">
-
-    <!-- Left Sidebar Web Component -->
     <cmc-sidebar active="collections-leaderboards"></cmc-sidebar>
-
-    <!-- Main Content Area -->
     <main class="main-content">
 
       <!-- Hero Header -->
@@ -80,20 +77,19 @@
         </a>
       </div>
 
-
       <!-- Category Selector -->
       <div class="lb-categories-panel" id="categoryPanel">
         <div class="lb-panel-header">
-          <h2 class="lb-panel-title"><span class="material-icons" style="color:var(--accent-color);">category</span> Select Collection</h2>
+          <h2 class="lb-panel-title"><span class="material-icons" style="color:var(--accent-color);">category</span> Select Collection Category</h2>
         </div>
+        <div class="lb-tabs" id="categoryTabs" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;"></div>
         <div class="lb-category-grid" id="collectionGrid"></div>
       </div>
-  
 
       <!-- Leaderboard Table Card -->
       <div class="lb-table-card">
         <div class="lb-table-header">
-          <h2 class="lb-table-title" id="collectionTitle">Select a Category</h2>
+          <h2 class="lb-table-title" id="collectionTitle">Select a Collection</h2>
         </div>
         <div class="lb-table-wrapper">
           <table class="lb-table">
@@ -106,21 +102,10 @@
             </thead>
             <tbody id="leaderboardData">
               <tr><td style="text-align:center;">1</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">2</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">3</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">4</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">5</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">6</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">7</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">8</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">9</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">10</td><td>???</td><td style="text-align:right;">???</td></tr>
             </tbody>
           </table>
         </div>
       </div>
-  
-
 
       <!-- Footer -->
       <footer class="site-footer">
@@ -129,101 +114,108 @@
           <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
         </div>
       </footer>
-
     </main>
   </div>
 
-  <!-- Sidelid & Modal hooks for backward compatibility with scripts -->
-  <div id="sidelid" style="display:none;"><h2 class="lb-h2"></h2></div>
+  <script>
+    let collectionsData = {};
 
-<script src="../js/api-proxy-client.js"></script>
-<script src="../js/leaderboards-api.js"></script>
-<script>
-        let collectionsData = {};
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        collectionsData = await leaderboardsApi.getLeaderboard("collections");
+      } catch (error) {
+        console.warn("Using local collections data fallback", error);
+        collectionsData = window.collectionsData || {};
+      }
 
-        document.addEventListener("DOMContentLoaded", async () => {
-            try {
-                collectionsData = await leaderboardsApi.getLeaderboard("collections");
-            } catch (error) {
-                console.error("Failed to load collections leaderboards", error);
-                document.getElementById("leaderboardData").innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
-                return;
-            }
+      const categories = Object.keys(collectionsData);
+      if (!categories.length) {
+        document.getElementById("leaderboardData").innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
+        return;
+      }
 
-            let defaultCategory = Object.keys(collectionsData)[0];
+      const categoryIcons = {
+        "Mining": "../assets/mining/pickaxe.png",
+        "Farming": "../assets/farming/hoe.png",
+        "Combat": "../assets/combat/sword.png",
+        "Foraging": "../assets/foraging/axe.png",
+        "Fishing": "../assets/fishing/fishing_rod.png"
+      };
 
-            loadCategories();
-            loadCollections(defaultCategory);
+      const tabsContainer = document.getElementById("categoryTabs");
+      const gridContainer = document.getElementById("collectionGrid");
 
-            function loadCategories() {
-                const tabsContainer = document.querySelector(".lb-tabs");
-                tabsContainer.innerHTML = "";
+      function normalizeImg(src) {
+        if (!src) return "../assets/cmc-icon.png";
+        if (src.startsWith("http") || src.startsWith("/")) return src;
+        return "../" + src;
+      }
 
-                const categoryIcons = {
-                    "Mining": "assets/mining/pickaxe.png",
-                    "Farming": "assets/farming/hoe.png",
-                    "Combat": "assets/combat/sword.png",
-                    "Foraging": "assets/foraging/axe.png"
-                };
-
-                Object.keys(collectionsData).forEach((category, index) => {
-                    let tab = document.createElement("a");
-                    tab.classList.add("lb-tab");
-                    if (index === 0) tab.classList.add("active");
-                    tab.href = "javascript:void(0)";
-                    tab.onclick = () => switchCategory(category);
-
-                    let img = document.createElement("img");
-                    img.src = categoryIcons[category] || "default-icon.png"; // Use default if missing
-                    img.width = 30;
-                    img.alt = category;
-
-                    tab.appendChild(img);
-                    tabsContainer.appendChild(tab);
-                });
-            }
-
-            function switchCategory(category) {
-                document.querySelectorAll(".lb-tab").forEach(tab => tab.classList.remove("active"));
-
-                const tabs = document.querySelectorAll(".lb-tab");
-                const categoryIndex = Object.keys(collectionsData).indexOf(category);
-
-                if (categoryIndex !== -1) {
-                    tabs[categoryIndex].classList.add("active");
-                }
-
-                loadCollections(category);
-            }
-
-            function loadCollections(category) {
-                const collectionGrid = document.getElementById("collectionGrid");
-                collectionGrid.innerHTML = "";
-
-                if (!collectionsData[category]) return;
-
-                collectionsData[category].forEach((collection, index) => {
-                    let item = document.createElement("div");
-                    item.classList.add("lb-collection-item");
-                    item.innerHTML = `<img src="${collection.image}" alt="${collection.name}">`; //<p>${collection.name}</p>
-                    item.onclick = () => loadLeaderboard(category, index);
-                    collectionGrid.appendChild(item);
-
-                });
-            }
-
-            function loadLeaderboard(category, index) {
-                const collection = collectionsData[category][index];
-                document.getElementById("collectionTitle").innerText = `${collection.name} Leaderboard`;
-
-                const leaderboardData = document.getElementById("leaderboardData");
-                leaderboardData.innerHTML = collection.players.length
-                    ? collection.players.map(player => `<tr><td>${player.rank}</td>${createPlayerCell(player.name)}<td>${player.score}</td></tr>`).join("")
-                    : leaderboardsApi.getPlaceholderRows(10, "???");
-                document.getElementById('collectionTitle').scrollIntoView({ behavior: 'smooth' });
-            }
+      function switchCategory(catName) {
+        // Highlight active tab
+        document.querySelectorAll(".lb-category-tab").forEach(t => {
+          t.classList.toggle("active", t.dataset.category === catName);
         });
-    </script>
 
+        // Load items into grid
+        gridContainer.innerHTML = "";
+        const items = collectionsData[catName] || [];
+        items.forEach((item, idx) => {
+          const btn = document.createElement("div");
+          btn.className = "lb-category-item";
+          btn.innerHTML = `<img src="${normalizeImg(item.image)}" alt="${item.name}" onerror="this.src='../assets/cmc-icon.png'"> <span>${item.name}</span>`;
+          btn.onclick = () => {
+            document.querySelectorAll(".lb-category-item").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            loadLeaderboard(catName, idx);
+          };
+          gridContainer.appendChild(btn);
+        });
+
+        // Auto select first item
+        if (items.length > 0) {
+          const firstBtn = gridContainer.firstElementChild;
+          if (firstBtn) firstBtn.classList.add("active");
+          loadLeaderboard(catName, 0);
+        }
+      }
+
+      function loadLeaderboard(catName, itemIdx) {
+        const item = collectionsData[catName][itemIdx];
+        if (!item) return;
+
+        document.getElementById("collectionTitle").innerHTML = `<img src="${normalizeImg(item.image)}" style="width:24px;height:24px;vertical-align:middle;margin-right:6px;" onerror="this.src='../assets/cmc-icon.png'"> ${item.name} Leaderboard`;
+        document.getElementById("scoreHeader").innerText = "Collected";
+
+        const tbody = document.getElementById("leaderboardData");
+        if (item.players && item.players.length) {
+          tbody.innerHTML = item.players.map(p => `
+            <tr>
+              <td style="text-align:center;">${formatRankBadge(p.rank)}</td>
+              ${createPlayerCell(p.name)}
+              <td class="score-cell" style="text-align:right;">${p.score || "???"}</td>
+            </tr>
+          `).join("");
+        } else {
+          tbody.innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
+        }
+      }
+
+      // Render category tabs
+      tabsContainer.innerHTML = "";
+      categories.forEach((cat, idx) => {
+        const tab = document.createElement("button");
+        tab.className = "lb-category-tab lb-category-item" + (idx === 0 ? " active" : "");
+        tab.dataset.category = cat;
+        tab.style.padding = "8px 16px";
+        tab.innerHTML = `<img src="${normalizeImg(categoryIcons[cat])}" alt="${cat}" onerror="this.src='../assets/cmc-icon.png'" style="width:20px;height:20px;"> <span>${cat}</span>`;
+        tab.onclick = () => switchCategory(cat);
+        tabsContainer.appendChild(tab);
+      });
+
+      // Initialize with first category
+      switchCategory(categories[0]);
+    });
+  </script>
 </body>
 </html>

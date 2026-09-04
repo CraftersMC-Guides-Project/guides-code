@@ -22,12 +22,12 @@
   <script src="../better-api-docs/app.js" defer></script>
   <script src="../js/components.js" defer></script>
   <script src="../js/api-proxy-client.js"></script>
+  <script src="../js/multi-lb-data.js"></script>
   <script src="../js/leaderboards-api.js"></script>
   <script src="../js/leaderboard-theme-helper.js"></script>
 </head>
 <body>
 
-  <!-- Top Header Navigation -->
   <header class="top-header">
     <div class="header-left">
       <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
@@ -42,30 +42,22 @@
       </a>
     </div>
 
-    <!-- Search Box -->
     <div class="search-box">
       <span class="material-icons search-icon">search</span>
       <input type="text" id="search-input" placeholder="Search leaderboards, guides, API..." />
       <span class="search-kbd-shortcut">/</span>
     </div>
 
-    <!-- Header Utility Links -->
     <div class="header-actions">
       <a href="../better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
       <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
     </div>
   </header>
 
-  <!-- Application Layout -->
   <div class="app-layout">
-
-    <!-- Left Sidebar Web Component -->
     <cmc-sidebar active="skills-leaderboards"></cmc-sidebar>
-
-    <!-- Main Content Area -->
     <main class="main-content">
 
-      <!-- Hero Header -->
       <div class="lb-hero-card">
         <div class="lb-hero-info">
           <h1>
@@ -80,12 +72,9 @@
         </a>
       </div>
 
-
-
-      <!-- Leaderboard Table Card -->
       <div class="lb-table-card">
         <div class="lb-table-header">
-          <h2 class="lb-table-title" id="collectionTitle">Average Skill Leaderboard</h2>
+          <h2 class="lb-table-title">Average Skill Leaderboard</h2>
         </div>
         <div class="lb-table-wrapper">
           <table class="lb-table">
@@ -93,63 +82,48 @@
               <tr>
                 <th style="width: 80px; text-align: center;">Rank</th>
                 <th>Player</th>
-                <th id="scoreHeader" style="text-align: right;">Avg Skill</th>
+                <th id="scoreHeader" style="text-align: right;">Average Skill</th>
               </tr>
             </thead>
             <tbody id="leaderboardData">
               <tr><td style="text-align:center;">1</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">2</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">3</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">4</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">5</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">6</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">7</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">8</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">9</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">10</td><td>???</td><td style="text-align:right;">???</td></tr>
             </tbody>
           </table>
         </div>
       </div>
-  
 
-
-      <!-- Footer -->
       <footer class="site-footer">
         <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
         <div class="site-footer-right">
           <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
         </div>
       </footer>
-
     </main>
   </div>
 
-  <!-- Sidelid & Modal hooks for backward compatibility with scripts -->
-  <div id="sidelid" style="display:none;"><h2 class="lb-h2"></h2></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const tbody = document.getElementById("leaderboardData");
+      let list = [];
+      try {
+        list = await leaderboardsApi.getLeaderboard("average-skill");
+      } catch (e) {
+        console.warn("Using local fallback for average-skill", e);
+        list = window.skillData || [];
+      }
 
-<script src="../js/api-proxy-client.js"></script>
-<script src="../js/leaderboards-api.js"></script>
-<script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            const leaderboardData = document.getElementById("leaderboardData");
-
-            try {
-                const skillData = await leaderboardsApi.getLeaderboard("avg-skill");
-                leaderboardData.innerHTML = skillData.map(player => {
-                    const avgSkill = player.level ?? "N/A";
-                    return `<tr>
-                        <td>${player.rank}</td>
-                        ${createPlayerCell(player.name)}
-                        <td>${avgSkill}</td>
-                    </tr>`;
-                }).join("");
-            } catch (error) {
-                console.error("Failed to load average skill leaderboard", error);
-                leaderboardData.innerHTML = leaderboardsApi.getPlaceholderRows(10, "N/A");
-            }
-        });
-    </script>
-
+      if (Array.isArray(list) && list.length > 0) {
+        tbody.innerHTML = list.map((p, idx) => `
+          <tr>
+            <td style="text-align:center;">${formatRankBadge(p.rank ?? idx + 1)}</td>
+            ${createPlayerCell(p.name)}
+            <td class="score-cell" style="text-align:right;">${p.level ?? p.score ?? p.time ?? p.level ?? "???"}</td>
+          </tr>
+        `).join("");
+      } else {
+        tbody.innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
+      }
+    });
+  </script>
 </body>
 </html>

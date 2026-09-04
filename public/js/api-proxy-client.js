@@ -3,9 +3,9 @@
  * Handles communication with the Cloudflare Function API Proxy
  */
 
-class APIProxyClient {
+var APIProxyClient = window.APIProxyClient || class APIProxyClient {
   constructor(proxyUrl) {
-    this.proxyUrl = proxyUrl || 'https://craftersmc-guides.pages.dev';
+    this.proxyUrl = proxyUrl || (typeof window !== 'undefined' ? window.location.origin : 'https://craftersmc-guides.pages.dev');
     this.cache = new Map();
     this.cacheDuration = {
       bazaar: 30000,      // 30 seconds for bazaar data

@@ -73,14 +73,54 @@
     }).join("");
   }
 
+  function getLocalFallback(id) {
+    const norm = String(id).toLowerCase().replace(/_/g, '-');
+    if (norm === 'collections' && typeof window.collectionsData !== 'undefined') return window.collectionsData;
+    if (norm === 'skills' && typeof window.skillsLeaderboards !== 'undefined') return window.skillsLeaderboards;
+    if (norm === 'skills' && typeof window.skillsData !== 'undefined') return window.skillsData;
+    if (norm === 'slayers' && typeof window.slayersData !== 'undefined') return window.slayersData;
+    if (norm === 'coins' && typeof window.coinsData !== 'undefined') return window.coinsData;
+    if (norm === 'pets' && typeof window.petsData !== 'undefined') return window.petsData;
+    if (norm === 'pets' && typeof window.petsLeaderboards !== 'undefined') return window.petsLeaderboards;
+    if ((norm === 'boss-times' || norm === 'boss-time') && typeof window.bossTimesData !== 'undefined') return window.bossTimesData;
+    if ((norm === 'boss-times' || norm === 'boss-time') && typeof window.collectionsData !== 'undefined') return window.collectionsData;
+    if (norm === 'farming-contests' && typeof window.farmingContestsData !== 'undefined') return window.farmingContestsData;
+    if ((norm === 'average-skill' || norm === 'avg-skill') && typeof window.skillData !== 'undefined') return window.skillData;
+    if (norm === 'achievements' && typeof window.achievementsData !== 'undefined') return window.achievementsData;
+    if (norm === 'cakes' && typeof window.cakeData !== 'undefined') return window.cakeData;
+    if (norm === 'gems' && typeof window.gemsData !== 'undefined') return window.gemsData;
+    if (norm === 'crafters-level' && typeof window.levelsData !== 'undefined') return window.levelsData;
+    if (norm === 'networth' && typeof window.networthData !== 'undefined') return window.networthData;
+    if (norm === 'damage' && typeof window.damageData !== 'undefined') return window.damageData;
+    if (norm === 'arctic-cave-race' && typeof window.arcticCaveRaceData !== 'undefined') return window.arcticCaveRaceData;
+    if (norm === 'target-practice' && typeof window.targetPracticeData !== 'undefined') return window.targetPracticeData;
+    if (norm === 'ender-node-hunt' && typeof window.enderNodeHuntData !== 'undefined') return window.enderNodeHuntData;
+    if (norm === 'playtime' && typeof window.playtimeData !== 'undefined') return window.playtimeData;
+    return null;
+  }
+
   window.leaderboardsApi = {
     async getCatalog() {
-      return apiClient.makeRequest("/api/leaderboards");
+      try {
+        return await apiClient.makeRequest("/api/leaderboards");
+      } catch (e) {
+        console.warn("[Leaderboards API] Fallback for catalog:", e.message);
+        return {};
+      }
     },
 
     async getLeaderboard(id) {
-      const payload = await apiClient.makeRequest(`/api/leaderboards/${encodeURIComponent(id)}`);
-      return withPositions(getPayloadData(payload));
+      try {
+        const payload = await apiClient.makeRequest(`/api/leaderboards/${encodeURIComponent(id)}`);
+        return withPositions(getPayloadData(payload));
+      } catch (err) {
+        console.warn(`[Leaderboards API] Failed to fetch /api/leaderboards/${id}, checking local fallback...`, err.message);
+        const fallback = getLocalFallback(id);
+        if (fallback) {
+          return withPositions(fallback);
+        }
+        throw err;
+      }
     },
 
     getPlayerCellHtml,

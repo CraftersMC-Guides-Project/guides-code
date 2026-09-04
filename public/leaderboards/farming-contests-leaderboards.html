@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Farming Contests Leaderboards — CraftersMC Guides</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Rankings for individual crop harvests during Jacob's Farming Contests." />
+  <meta name="description" content="Rankings for individual crop harvests and medals during Jacob's Farming Contests." />
   <link rel="icon" href="../assets/cmc-icon.png" type="image/png" />
   <link rel="icon" href="../assets/cmc-guides.png" type="image/png" />
 
@@ -22,12 +22,12 @@
   <script src="../better-api-docs/app.js" defer></script>
   <script src="../js/components.js" defer></script>
   <script src="../js/api-proxy-client.js"></script>
+  <script src="../js/farming-contest-leaderboard.js"></script>
   <script src="../js/leaderboards-api.js"></script>
   <script src="../js/leaderboard-theme-helper.js"></script>
 </head>
 <body>
 
-  <!-- Top Header Navigation -->
   <header class="top-header">
     <div class="header-left">
       <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
@@ -42,37 +42,29 @@
       </a>
     </div>
 
-    <!-- Search Box -->
     <div class="search-box">
       <span class="material-icons search-icon">search</span>
       <input type="text" id="search-input" placeholder="Search leaderboards, guides, API..." />
       <span class="search-kbd-shortcut">/</span>
     </div>
 
-    <!-- Header Utility Links -->
     <div class="header-actions">
       <a href="../better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
       <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
     </div>
   </header>
 
-  <!-- Application Layout -->
   <div class="app-layout">
-
-    <!-- Left Sidebar Web Component -->
     <cmc-sidebar active="farming-contests-leaderboards"></cmc-sidebar>
-
-    <!-- Main Content Area -->
     <main class="main-content">
 
-      <!-- Hero Header -->
       <div class="lb-hero-card">
         <div class="lb-hero-info">
           <h1>
             <span class="material-icons" style="color:var(--accent-color);">agriculture</span>
             Farming Contests Leaderboards
           </h1>
-          <p>Rankings for individual crop harvests during Jacob's Farming Contests.</p>
+          <p>Rankings for individual crop harvests and medals during Jacob's Farming Contests.</p>
         </div>
         <a href="index.html" class="lb-back-btn">
           <span class="material-icons" style="font-size:1rem;">arrow_back</span>
@@ -80,20 +72,17 @@
         </a>
       </div>
 
-
-      <!-- Category Selector -->
       <div class="lb-categories-panel" id="categoryPanel">
         <div class="lb-panel-header">
-          <h2 class="lb-panel-title"><span class="material-icons" style="color:var(--accent-color);">category</span> Select Crop Contest</h2>
+          <h2 class="lb-panel-title"><span class="material-icons" style="color:var(--accent-color);">category</span> Select Farming Category</h2>
         </div>
+        <div class="lb-tabs" id="categoryTabs" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;"></div>
         <div class="lb-category-grid" id="collectionGrid"></div>
       </div>
-  
 
-      <!-- Leaderboard Table Card -->
       <div class="lb-table-card">
         <div class="lb-table-header">
-          <h2 class="lb-table-title" id="collectionTitle">Select a Category</h2>
+          <h2 class="lb-table-title" id="collectionTitle">Select a Contest</h2>
         </div>
         <div class="lb-table-wrapper">
           <table class="lb-table">
@@ -101,130 +90,111 @@
               <tr>
                 <th style="width: 80px; text-align: center;">Rank</th>
                 <th>Player</th>
-                <th id="scoreHeader" style="text-align: right;">Crops Harvested</th>
+                <th id="scoreHeader" style="text-align: right;">Harvested</th>
               </tr>
             </thead>
             <tbody id="leaderboardData">
               <tr><td style="text-align:center;">1</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">2</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">3</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">4</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">5</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">6</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">7</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">8</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">9</td><td>???</td><td style="text-align:right;">???</td></tr>
-              <tr><td style="text-align:center;">10</td><td>???</td><td style="text-align:right;">???</td></tr>
             </tbody>
           </table>
         </div>
       </div>
-  
 
-
-      <!-- Footer -->
       <footer class="site-footer">
         <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
         <div class="site-footer-right">
           <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
         </div>
       </footer>
-
     </main>
   </div>
 
-  <!-- Sidelid & Modal hooks for backward compatibility with scripts -->
-  <div id="sidelid" style="display:none;"><h2 class="lb-h2"></h2></div>
-
-<script src="../js/api-proxy-client.js"></script>
-<script src="../js/leaderboards-api.js"></script>
-<script>
-    const categoryImages = {
-        "General": "img/gear.png",
-        "Personal Bests": "img/graph-bar.png",
-        "Medals": "img/medals.png"
-    };
-
-    let currentCategory = null;
-    let collectionsData = {};
+  <script>
+    let farmingData = {};
 
     document.addEventListener("DOMContentLoaded", async () => {
-        try {
-            collectionsData = await leaderboardsApi.getLeaderboard("farming-contests");
-            showMainCategories();
-        } catch (error) {
-            console.error("Failed to load farming contest leaderboards", error);
-            document.getElementById("leaderboardData").innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
+      try {
+        farmingData = await leaderboardsApi.getLeaderboard("farming-contests");
+      } catch (e) {
+        console.warn("Using local farming data fallback", e);
+        farmingData = window.collectionsData || window.farmingContestsData || {};
+      }
+
+      const categories = Object.keys(farmingData);
+      if (!categories.length) {
+        document.getElementById("leaderboardData").innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
+        return;
+      }
+
+      const tabsContainer = document.getElementById("categoryTabs");
+      const gridContainer = document.getElementById("collectionGrid");
+
+      function normalizeImg(src) {
+        if (!src) return "../assets/cmc-icon.png";
+        if (src.startsWith("http") || src.startsWith("/")) return src;
+        return "../" + src;
+      }
+
+      function switchCategory(catName) {
+        document.querySelectorAll(".lb-category-tab").forEach(t => {
+          t.classList.toggle("active", t.dataset.category === catName);
+        });
+
+        gridContainer.innerHTML = "";
+        const items = farmingData[catName] || [];
+        items.forEach((item, idx) => {
+          const btn = document.createElement("div");
+          btn.className = "lb-category-item";
+          btn.innerHTML = `<img src="${normalizeImg(item.image)}" alt="${item.name}" onerror="this.src='../assets/cmc-icon.png'"> <span>${item.name}</span>`;
+          btn.onclick = () => {
+            document.querySelectorAll(".lb-category-item").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            loadLeaderboard(catName, idx);
+          };
+          gridContainer.appendChild(btn);
+        });
+
+        if (items.length > 0) {
+          const first = gridContainer.firstElementChild;
+          if (first) first.classList.add("active");
+          loadLeaderboard(catName, 0);
         }
-    });
+      }
 
-    document.getElementById("sidelid").addEventListener("click", e => e.stopPropagation());
+      function loadLeaderboard(catName, idx) {
+        const item = farmingData[catName][idx];
+        if (!item) return;
 
-    function showMainCategories() {
-        currentCategory = null;
-        const collectionGrid = document.getElementById("collectionGrid");
-        collectionGrid.innerHTML = "";
+        document.getElementById("collectionTitle").innerHTML = `<img src="${normalizeImg(item.image)}" style="width:24px;height:24px;vertical-align:middle;margin-right:6px;" onerror="this.src='../assets/cmc-icon.png'"> ${item.name} Leaderboard`;
+        document.getElementById("scoreHeader").innerText = catName === "Medals" ? "Medals Won" : "Harvested / Score";
 
-        document.getElementById("collectionTitleSidelid").innerText = "Farming Contests Leaderboards";
-        document.getElementById("collectionTitle").innerText = "Select a Category";
-
-        Object.keys(collectionsData).forEach(category => {
-            const catDiv = document.createElement("div");
-            catDiv.className = "lb-collection-item main-category";
-            let imgHtml = "";
-            if (categoryImages[category]) {
-                imgHtml = `<img src="${categoryImages[category]}" alt="${category} icon" style="width:48px;height:48px;display:block;">`;
-            }
-            catDiv.innerHTML = `${imgHtml}`;
-            catDiv.onclick = () => showCategory(category);
-            collectionGrid.appendChild(catDiv);
-        });
-    }
-
-    function showCategory(category) {
-        currentCategory = category;
-        const collectionGrid = document.getElementById("collectionGrid");
-        collectionGrid.innerHTML = "";
-
-        document.getElementById("collectionTitleSidelid").innerText = `${category} Leaderboards`;
-        document.getElementById("collectionTitle").innerText = `${category} Leaderboards`;
-
-        const backBtn = document.createElement("div");
-        backBtn.className = "lb-collection-item back-btn";
-        backBtn.innerHTML = "← Back";
-        backBtn.onclick = showMainCategories;
-        collectionGrid.appendChild(backBtn);
-
-        collectionsData[category].forEach(item => {
-            const itemDiv = document.createElement("div");
-            itemDiv.className = "lb-collection-item";
-            itemDiv.innerHTML = `<img src="${item.image}" alt="${item.name}" title="${item.name}">`;
-            itemDiv.onclick = () => showLeaderboard(item);
-            collectionGrid.appendChild(itemDiv);
-        });
-    }
-
-    function showLeaderboard(item) {
-        document.getElementById("collectionTitle").innerText = `${item.name} Leaderboard`;
-        document.getElementById("collectionTitleSidelid").innerText = `${item.name} Leaderboard`;
-        document.getElementById("scoreHeader").innerText = "Score";
-
-        const leaderboardData = document.getElementById("leaderboardData");
+        const tbody = document.getElementById("leaderboardData");
         if (item.players && item.players.length) {
-            leaderboardData.innerHTML = item.players.map(player => `
-                <tr>
-                    <td>${player.rank}</td>
-                    ${createPlayerCell(player.name)}
-                    <td>${player.score}</td>
-                </tr>
-            `).join("");
+          tbody.innerHTML = item.players.map(p => `
+            <tr>
+              <td style="text-align:center;">${formatRankBadge(p.rank)}</td>
+              ${createPlayerCell(p.name)}
+              <td class="score-cell" style="text-align:right;">${p.score || "???"}</td>
+            </tr>
+          `).join("");
         } else {
-            leaderboardData.innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
+          tbody.innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
         }
-        window.scrollTo({ top: 400, behavior: "smooth" });
-    }
+      }
 
-</script>
+      tabsContainer.innerHTML = "";
+      categories.forEach((cat, idx) => {
+        const tab = document.createElement("button");
+        tab.className = "lb-category-tab lb-category-item" + (idx === 0 ? " active" : "");
+        tab.dataset.category = cat;
+        tab.style.padding = "8px 16px";
+        tab.innerHTML = `<span class="material-icons" style="font-size:1.1rem;color:var(--accent-color);">agriculture</span> <span>${cat}</span>`;
+        tab.onclick = () => switchCategory(cat);
+        tabsContainer.appendChild(tab);
+      });
 
+      switchCategory(categories[0]);
+    });
+  </script>
 </body>
 </html>
