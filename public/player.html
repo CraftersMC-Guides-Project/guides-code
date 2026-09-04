@@ -621,7 +621,7 @@
       return null;
     }
 
-    // Complete Recursive 100% NBT Item & Lore Extractor
+    // Complete Recursive 100% NBT Item & Lore Extractor matching feather-bot hierarchy
     function extractItemsFromNbt(b64Data) {
       if (!b64Data || typeof pako === 'undefined') return [];
       try {
@@ -634,10 +634,7 @@
         const items = root?.items || root?.i || (Array.isArray(root) ? root : []);
         if (Array.isArray(items)) {
           return items.map(it => {
-            let displayName = null;
-            let lore = [];
-            let extraId = null;
-
+            let inner = null;
             if (it.nbt) {
               try {
                 let b64Str = '';
@@ -650,41 +647,63 @@
                 const innerU8 = new Uint8Array(innerRaw.length);
                 for (let i = 0; i < innerRaw.length; i++) innerU8[i] = innerRaw.charCodeAt(i);
                 const innerDecomp = pako.ungzip(innerU8);
-                const inner = parseBinaryNbt(innerDecomp);
-
-                displayName = inner?.display?.Name || inner?.tag?.display?.Name || inner?.Name || inner?.name;
-                if (Array.isArray(inner?.display?.Lore)) lore = inner.display.Lore;
-                else if (Array.isArray(inner?.tag?.display?.Lore)) lore = inner.tag.display.Lore;
-
-                extraId = inner?.ExtraAttributes?.id || inner?.tag?.ExtraAttributes?.id || inner?.extra_attributes?.id;
+                inner = parseBinaryNbt(innerDecomp);
               } catch (innerErr) {
                 // inner NBT parse fallback
               }
             }
 
-            if (!displayName) {
-              displayName = it.display?.Name || it.tag?.display?.Name || it.Name || it.name;
+            const tagCandidates = [
+              inner?.tag,
+              inner,
+              it.tag,
+              it
+            ].filter(Boolean);
+
+            let rawDisplayName = null;
+            for (const cand of tagCandidates) {
+              rawDisplayName = cand.display?.Name || cand.display?.name || cand.Name || cand.name;
+              if (rawDisplayName) break;
             }
 
-            let cleanName = String(displayName || '').replace(/§[0-9a-fk-or]/gi, '').trim();
-
-            // Only use numeric map if there is NO decoded name or the decoded name is a numeric ID
-            if (!cleanName || /^-?\d+$/.test(cleanName)) {
-              if (extraId) {
-                cleanName = String(extraId).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-                displayName = cleanName;
-              } else {
-                const mapped = (typeof getItemNameFromNumericId === 'function' ? (getItemNameFromNumericId(it.id) || (cleanName ? getItemNameFromNumericId(cleanName) : null)) : null) ||
-                  (typeof MINECRAFT_NUMERIC_IDS !== 'undefined' ? (MINECRAFT_NUMERIC_IDS[String(it.id)] || MINECRAFT_NUMERIC_IDS[cleanName]) : null) ||
-                  (typeof window !== 'undefined' && window.MINECRAFT_NUMERIC_IDS ? (window.MINECRAFT_NUMERIC_IDS[String(it.id)] || window.MINECRAFT_NUMERIC_IDS[cleanName]) : null);
-                if (mapped) {
-                  displayName = mapped;
-                  cleanName = mapped;
-                } else {
-                  cleanName = cleanName || String(it.id || 'Item');
-                  displayName = displayName || cleanName;
-                }
+            let lore = [];
+            for (const cand of tagCandidates) {
+              const l = cand.display?.Lore || cand.display?.lore || cand.Lore || cand.lore || cand.loreLines;
+              if (Array.isArray(l) && l.length > 0) {
+                lore = l;
+                break;
               }
+            }
+
+            let rawExtraId = null;
+            for (const cand of tagCandidates) {
+              rawExtraId = cand.ExtraAttributes?.id || cand.extra_attributes?.id || cand.attributes?.id;
+              if (rawExtraId) break;
+            }
+
+            const cleanName = String(rawDisplayName || '').replace(/§[0-9a-fk-or]/gi, '').trim();
+            const isNumericDisplayName = cleanName && /^-?\d+$/.test(cleanName);
+            const effectiveDisplayName = isNumericDisplayName ? null : cleanName;
+
+            const extraId = rawExtraId ? String(rawExtraId).trim().toLowerCase() : null;
+
+            // Prioritize text names (displayName, extraId) FIRST. Only look up numeric ID if no text name exists.
+            let name = effectiveDisplayName || (extraId ? extraId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : null);
+
+            if (!name) {
+              const rawBaseId = it.id;
+              const damage = it.meta ?? it.damage ?? it.Damage;
+              if (typeof resolveItemName === 'function') {
+                name = resolveItemName(rawBaseId, damage);
+              } else if (typeof getItemNameFromNumericId === 'function') {
+                name = getItemNameFromNumericId(rawBaseId);
+              } else if (typeof MINECRAFT_NUMERIC_IDS !== 'undefined') {
+                name = MINECRAFT_NUMERIC_IDS[String(rawBaseId)];
+              }
+            }
+
+            if (!name) {
+              name = String(it.id || 'Item');
             }
 
             return {
@@ -692,8 +711,8 @@
               meta: it.meta || 0,
               count: it.count || it.Count || 1,
               slot: it.slot !== undefined ? it.slot : -1,
-              rawName: displayName,
-              name: cleanName || 'Item',
+              rawName: rawDisplayName || name,
+              name: name || 'Item',
               lore: lore,
               extraId: extraId
             };
@@ -1121,10 +1140,12 @@
       // 13. Vanilla numeric ID fallback (ONLY if no name or candidate is numeric ID)
       if (!candidate || /^-?\d+$/.test(candidate) || /^-?\d+$/.test(id)) {
         const lookupKey = candidate && /^-?\d+$/.test(candidate) ? candidate : id;
-        const mappedName = (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(lookupKey) : null) ||
+        const damage = item.meta ?? item.damage ?? item.Damage;
+        const mappedName = (typeof resolveItemName === 'function' ? resolveItemName(lookupKey, damage) : null) ||
+                           (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(lookupKey) : null) ||
                            (typeof MINECRAFT_NUMERIC_IDS !== 'undefined' ? MINECRAFT_NUMERIC_IDS[lookupKey] : null) ||
                            (typeof window !== 'undefined' && window.MINECRAFT_NUMERIC_IDS ? window.MINECRAFT_NUMERIC_IDS[lookupKey] : null);
-        if (mappedName) {
+        if (mappedName && mappedName !== 'Unknown Item') {
           if (/end.*stone.*brick.*slab/i.test(mappedName)) {
             return 'assets/images/End_Stone_Bricks.png';
           }
@@ -1144,11 +1165,12 @@
 
       let titleName = item.rawName || item.name;
       if (!titleName || /^-?\d+$/.test(String(titleName).replace(/§[0-9a-fk-or]/gi, '').trim())) {
-        const mapped = (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(item.id) : null) ||
+        const mapped = (typeof resolveItemName === 'function' ? resolveItemName(item.id, item.meta) : null) ||
+          (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(item.id) : null) ||
           (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(titleName) : null) ||
           (typeof MINECRAFT_NUMERIC_IDS !== 'undefined' ? (MINECRAFT_NUMERIC_IDS[String(item.id)] || MINECRAFT_NUMERIC_IDS[String(titleName)]) : null) ||
           (typeof window !== 'undefined' && window.MINECRAFT_NUMERIC_IDS ? (window.MINECRAFT_NUMERIC_IDS[String(item.id)] || window.MINECRAFT_NUMERIC_IDS[String(titleName)]) : null);
-        if (mapped) titleName = mapped;
+        if (mapped && mapped !== 'Unknown Item') titleName = mapped;
       }
       const itemTitleHtml = renderMinecraftLore(titleName);
       const loreHtml = item.lore && item.lore.length > 0 ? renderMinecraftLore(item.lore) : '';
@@ -1369,24 +1391,11 @@
         const prevImg = isPrevDisabled ? 'assets/ah/previous_gray.png' : 'assets/ah/previous.png';
         const nextImg = isNextDisabled ? 'assets/ah/next_gray.png' : 'assets/ah/next.png';
 
-        const pagePills = [];
-        for (let p = 0; p < totalPages; p++) {
-          const pageSlots = slots.slice(p * SLOTS_PER_PAGE, (p + 1) * SLOTS_PER_PAGE);
-          const count = pageSlots.filter(s => s !== null).length;
-          const isActive = p === currentEnderPage;
-          pagePills.push(`
-            <button class="mc-page-btn ${isActive ? 'active' : ''}" onclick="window.setEnderPage(${p})" title="Go to Page ${p + 1}">
-              Page ${p + 1} (${count})
-            </button>
-          `);
-        }
-
         navButtonsHtml = `
           <div class="mc-page-nav">
             <button class="mc-page-btn" ${isPrevDisabled ? 'disabled' : ''} onclick="window.setEnderPage(${currentEnderPage - 1})" title="Previous Page">
               <img src="${prevImg}" alt="Previous">
             </button>
-            ${pagePills.join('')}
             <button class="mc-page-btn" ${isNextDisabled ? 'disabled' : ''} onclick="window.setEnderPage(${currentEnderPage + 1})" title="Next Page">
               <img src="${nextImg}" alt="Next">
             </button>

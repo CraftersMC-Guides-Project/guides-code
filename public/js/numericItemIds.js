@@ -1829,13 +1829,58 @@ function getItemNameFromNumericId(numericId) {
   return null;
 }
 
+/**
+ * Resolves item name for an ID or name, handling negative Bedrock IDs, damage keys, and base names.
+ * @param {string|number} itemIdOrName
+ * @param {number|string} [damage]
+ * @returns {string} Formatted item name
+ */
+function resolveItemName(itemIdOrName, damage) {
+  if (!itemIdOrName && itemIdOrName !== 0) return 'Unknown Item';
+  const rawStr = String(itemIdOrName).trim();
+  const str = rawStr.replace(/^minecraft:/i, '');
+  const parts = str.split(':');
+  const base = parts[parts.length - 1];
+
+  const numVal = Number(base);
+  if (Number.isInteger(numVal)) {
+    if (MINECRAFT_NUMERIC_IDS[numVal]) return MINECRAFT_NUMERIC_IDS[numVal];
+    const posVal = numVal < 0 ? numVal + 256 : numVal;
+    if (damage !== undefined && damage !== null) {
+      const key = `${posVal}:${damage}`;
+      if (MINECRAFT_NUMERIC_IDS[key]) return MINECRAFT_NUMERIC_IDS[key];
+    }
+    if (MINECRAFT_NUMERIC_IDS[posVal]) return MINECRAFT_NUMERIC_IDS[posVal];
+  }
+
+  if (damage !== undefined && damage !== null) {
+    const key = `${base}:${damage}`;
+    if (MINECRAFT_NUMERIC_IDS[key]) return MINECRAFT_NUMERIC_IDS[key];
+  }
+
+  if (MINECRAFT_NUMERIC_IDS[str]) return MINECRAFT_NUMERIC_IDS[str];
+  if (MINECRAFT_NUMERIC_IDS[base]) return MINECRAFT_NUMERIC_IDS[base];
+
+  if (/^-?\d+$/.test(base)) {
+    const n = Number(base);
+    if (MINECRAFT_NUMERIC_IDS[n]) return MINECRAFT_NUMERIC_IDS[n];
+    const pos = n < 0 ? n + 256 : n;
+    if (MINECRAFT_NUMERIC_IDS[pos]) return MINECRAFT_NUMERIC_IDS[pos];
+  }
+
+  return str.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 if (typeof window !== 'undefined') {
   window.MINECRAFT_NUMERIC_IDS = MINECRAFT_NUMERIC_IDS;
   window.getItemNameFromNumericId = getItemNameFromNumericId;
+  window.resolveItemName = resolveItemName;
 }
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     MINECRAFT_NUMERIC_IDS,
     getItemNameFromNumericId,
+    resolveItemName,
   };
 }
+
