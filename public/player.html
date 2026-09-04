@@ -471,6 +471,78 @@
       renderPlayerStats();
       renderPlaytime();
       renderJSON();
+      logAllLoadedItems();
+    }
+
+    function logAllLoadedItems() {
+      const member = profileData?.members?.[selectedMemberId] || {};
+      const invSources = [
+        { name: 'Equipped Armor', nbt: member.armorContents },
+        { name: 'Wardrobe', nbt: member.wardrobeContents || member.otherInventories?.wardrobe_inventory || member.wardrobe_contents || member.wardrobeInventory || member.otherInventories?.wardrobeContents },
+        { name: 'Main Inventory', nbt: member.inventoryContents },
+        { name: 'Ender Chest', nbt: member.enderContents || member.enderChest || member.ender_chest || member.ender_chest_contents || member.otherInventories?.ender_chest },
+        { name: 'Accessory Bag', nbt: member.accessoryBag },
+        { name: 'Pet Storage', nbt: member.petInventory },
+        { name: 'Backpacks', nbt: member.backpackContents || member.backpack_contents || member.otherInventories?.backpack_contents },
+        { name: 'Quiver', nbt: member.quiver || member.otherInventories?.quiver },
+        { name: 'Candy Bag', nbt: member.candyBag || member.candy_inventory_contents || member.otherInventories?.candy_bag },
+        { name: 'Trick-or-Treat Bag', nbt: member.trickOrTreatBag || member.otherInventories?.trick_or_treat_bag },
+        { name: 'Pumpkin Launcher Ammo', nbt: member.pumpkinLauncherAmmo || member.otherInventories?.pumpkin_launcher_ammo },
+        { name: 'New Year Cake Bag', nbt: member.newYearCakeBag || member.new_year_cake_bag || member.otherInventories?.new_year_cake_bag },
+        { name: 'Seed Bag', nbt: member.otherInventories?.seeds_inventory },
+        { name: 'Medal Bag', nbt: member.otherInventories?.medal_inventory }
+      ];
+
+      if (member.otherInventories && typeof member.otherInventories === 'object') {
+        Object.entries(member.otherInventories).forEach(([key, nbtVal]) => {
+          if (nbtVal && !invSources.some(s => s.nbt === nbtVal)) {
+            invSources.push({ name: `Other Inventory (${key})`, nbt: nbtVal });
+          }
+        });
+      }
+
+      console.group(`📦 [Player Profile Loaded: ${playerData?.name || playerData?.username || selectedMemberId}] - Decoded Items & IDs`);
+      const allLoadedItems = [];
+      let totalItemsLogged = 0;
+
+      invSources.forEach(source => {
+        if (!source.nbt) return;
+        const items = extractItemsFromNbt(source.nbt);
+        if (items && items.length > 0) {
+          totalItemsLogged += items.length;
+          console.group(`🔹 ${source.name} (${items.length} items)`);
+          items.forEach((it, idx) => {
+            console.log(`[${source.name}] #${idx + 1} | Name: "${it.name}" | ID: ${it.id} | Slot: ${it.slot} | Count: ${it.count}${it.extraId ? ` | ExtraID: ${it.extraId}` : ''}`);
+            allLoadedItems.push({
+              'Container': source.name,
+              'Item Name': it.name,
+              'Item ID': it.id,
+              'Slot': it.slot,
+              'Count': it.count,
+              'Extra ID': it.extraId || 'None'
+            });
+          });
+          if (console.table) {
+            console.table(items.map(it => ({
+              'Item Name': it.name,
+              'Item ID': it.id,
+              'Slot': it.slot,
+              'Count': it.count,
+              'Extra ID': it.extraId || 'None'
+            })));
+          }
+          console.groupEnd();
+        }
+      });
+
+      if (allLoadedItems.length > 0 && console.table) {
+        console.groupCollapsed(`📋 All Decoded Items Table (${allLoadedItems.length} total items)`);
+        console.table(allLoadedItems);
+        console.groupEnd();
+      }
+
+      console.log(`✨ Total Decoded Items Loaded & Logged: ${totalItemsLogged}`);
+      console.groupEnd();
     }
 
     function stripFormatting(value) {
