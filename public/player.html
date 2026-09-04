@@ -478,6 +478,7 @@
       const member = profileData?.members?.[selectedMemberId] || {};
       const invSources = [
         { name: 'Equipped Armor', nbt: member.armorContents },
+        { name: 'Equipment', nbt: member.extra_equipment || member.otherInventories?.extra_equipment },
         { name: 'Wardrobe', nbt: member.wardrobeContents || member.otherInventories?.wardrobe_inventory || member.wardrobe_contents || member.wardrobeInventory || member.otherInventories?.wardrobeContents },
         { name: 'Main Inventory', nbt: member.inventoryContents },
         { name: 'Ender Chest', nbt: member.enderContents || member.enderChest || member.ender_chest || member.ender_chest_contents || member.otherInventories?.ender_chest },
@@ -787,6 +788,141 @@
 
             if (!name) {
               name = String(it.id || 'Item');
+            }
+
+            // 1. Extract Kills (matching feather-bot: exclude farming tools, axes, pickaxes, drills, rods)
+            const nameLower = String(name || '').toLowerCase();
+            const isTool = (
+              nameLower.includes('harvester') ||
+              nameLower.includes('hoe') ||
+              nameLower.includes('dicer') ||
+              nameLower.includes('chopper') ||
+              nameLower.includes('axe') ||
+              nameLower.includes('pickaxe') ||
+              nameLower.includes('drill') ||
+              nameLower.includes('rod') ||
+              nameLower.includes('spade') ||
+              nameLower.includes('shovel')
+            );
+
+            let itemKills = null;
+            if (!isTool) {
+              for (const cand of tagCandidates) {
+                const k = cand.blood_god_crest_kills ?? cand.blood_god_kills ?? cand.crest_kills ?? cand.zombie_kills ?? cand.zombieKills ?? cand.tarantula_kills ?? cand.spider_kills ?? cand.revenant_kills ?? cand.sven_kills ?? cand.final_destination_kills ?? cand.enderman_kills ?? cand.slayer_kills ?? cand.kills ?? cand.kill_count ?? cand.killCount ?? cand.ExtraAttributes?.blood_god_crest_kills ?? cand.ExtraAttributes?.kills ?? cand.ExtraAttributes?.killCount ?? cand.ExtraAttributes?.revenant_kills ?? cand.ExtraAttributes?.tarantula_kills ?? cand.ExtraAttributes?.sven_kills;
+                if (k !== undefined && k !== null && !isNaN(Number(k)) && Number(k) > 0) {
+                  itemKills = Number(k);
+                  break;
+                }
+              }
+              if (itemKills === null && lore.length) {
+                for (const line of lore) {
+                  const clean = String(line).replace(/§./g, '').trim();
+                  const m = clean.match(/(?:Kills|Counter|Killed)\s*:\s*(\d[\d,]*)/i) || clean.match(/\((\d[\d,]*)\s*kills?\)/i);
+                  if (m) {
+                    const num = parseInt(m[1].replace(/,/g, ''), 10);
+                    if (!isNaN(num) && num > 0) { itemKills = num; break; }
+                  }
+                }
+              }
+              if (itemKills && itemKills > 0 && !/kills?/i.test(name)) {
+                name = `${name} (${itemKills.toLocaleString()} kills)`;
+              }
+            }
+
+            // 2. Extract Cake Year
+            let cakeYear = null;
+            for (const cand of tagCandidates) {
+              const y = cand.cakeYear ?? cand.ExtraAttributes?.new_years_cake ?? cand.ExtraAttributes?.new_year_cake ?? cand.ExtraAttributes?.cake_year;
+              if (y !== undefined && y !== null && !isNaN(Number(y)) && Number(y) > 0) {
+                cakeYear = Number(y);
+                break;
+              }
+            }
+            if (cakeYear === null && rawDisplayName) {
+              const m = rawDisplayName.match(/Year\s*#?(\d+)/i) || rawDisplayName.match(/#(\d+)/);
+              if (m) cakeYear = Number(m[1]);
+            }
+            if (cakeYear === null && lore.length) {
+              for (const line of lore) {
+                const clean = String(line).replace(/§./g, '').trim();
+                const m = clean.match(/(\d+)(?:st|nd|rd|th)\s+SkyBlock\s+year/i) || clean.match(/Year\s*#?(\d+)/i);
+                if (m) { cakeYear = Number(m[1]); break; }
+              }
+            }
+            if (cakeYear && !/Year\s*\d+/i.test(name)) {
+              name = `${name} (Year ${cakeYear})`;
+            }
+
+            // 3. Extract Pet Rarity & Level
+            let rawPetRarity = null;
+            for (const cand of tagCandidates) {
+              const rawInfo = cand.petInfo ?? cand.pet_info ?? cand.ExtraAttributes?.petInfo;
+              if (rawInfo) {
+                try {
+                  const infoObj = typeof rawInfo === 'string' ? JSON.parse(rawInfo || '{}') : rawInfo;
+                  if (infoObj?.tier || infoObj?.rarity || infoObj?.petRarity) {
+                    rawPetRarity = infoObj.tier || infoObj.rarity || infoObj.petRarity;
+                    break;
+                  }
+                } catch {}
+              }
+            }
+            if (!rawPetRarity) {
+              for (const cand of tagCandidates) {
+                rawPetRarity = cand.petRarity ?? cand.pet_rarity ?? cand.ExtraAttributes?.petRarity ?? cand.extra_attributes?.petRarity;
+                if (rawPetRarity) break;
+              }
+            }
+
+            let itemRarity = null;
+            for (const cand of tagCandidates) {
+              itemRarity = cand.rarity ?? cand.tier ?? cand.ExtraAttributes?.tier ?? cand.ExtraAttributes?.rarity ?? cand.extra_attributes?.tier ?? cand.extra_attributes?.rarity;
+              if (itemRarity) break;
+            }
+            if (!itemRarity && lore.length) {
+              const RARITIES = ['VERY SPECIAL', 'SPECIAL', 'DIVINE', 'MYTHIC', 'LEGENDARY', 'EPIC', 'RARE', 'UNCOMMON', 'COMMON'];
+              for (const line of lore.slice().reverse()) {
+                const text = String(line).replace(/§./g, '').toUpperCase();
+                for (const r of RARITIES) {
+                  if (text.includes(r)) {
+                    itemRarity = r;
+                    break;
+                  }
+                }
+                if (itemRarity) break;
+              }
+              if (!itemRarity) {
+                let abilityCount = 0;
+                for (const line of lore) {
+                  const clean = String(line).replace(/§./g, '').trim();
+                  if (/^[A-Z][a-zA-Z\s]+$/.test(clean) && !clean.includes('Pet') && !clean.includes('XP') && !clean.includes('MAX LEVEL')) {
+                    abilityCount++;
+                  }
+                }
+                if (abilityCount >= 3) itemRarity = 'LEGENDARY';
+                else if (abilityCount === 2) itemRarity = 'EPIC';
+              }
+            }
+
+            const isPetItem = !!(
+              rawPetRarity ||
+              (rawDisplayName && /\bpet\b/i.test(rawDisplayName) && !/\b(skin|item|candy|augment)\b/i.test(rawDisplayName)) ||
+              (name && /\bpet\b/i.test(name) && !/\b(skin|item|candy|augment)\b/i.test(name)) ||
+              (rawExtraId && String(rawExtraId).startsWith('PET_'))
+            );
+
+            const displayRarity = itemRarity || (isPetItem ? rawPetRarity : null);
+
+            if (isPetItem && displayRarity) {
+              const rarityUpper = String(displayRarity).toUpperCase();
+              if (!name.toUpperCase().includes(rarityUpper)) {
+                if (name.startsWith('[Lvl ')) {
+                  const idx = name.indexOf(']');
+                  name = `${name.slice(0, idx + 1)} [${rarityUpper}] ${name.slice(idx + 1).trim()}`;
+                } else {
+                  name = `[${rarityUpper}] ${name}`;
+                }
+              }
             }
 
             return {
@@ -1157,7 +1293,17 @@
         return "assets/images/End_Stone_Bricks.png";
       }
 
-      // 8. Minion Roman Numerals -> Tier format
+      // 10. Direct vanilla item filename aliases
+      const candidateLower = candidate.toLowerCase();
+      if (candidateLower === 'melon slice') return "assets/images/Melon.png";
+      if (candidateLower === 'beef' || candidateLower === 'raw beef') return "assets/images/Raw_Beef.png";
+      if (candidateLower === 'leather leggings') return "assets/images/Leather_Pants.png";
+      if (candidateLower === 'cod' || candidateLower === 'raw cod') return "assets/images/Cod.png";
+      if (candidateLower === 'green bundle') return "assets/images/Green_Bundle.png";
+      if (candidateLower === 'wind charge') return "assets/images/Wind_Charge.png";
+      if (candidateLower === 'apple') return "assets/images/Apple.png";
+
+      // 11. Minion Roman Numerals -> Tier format
       const minionMatch = candidate.match(/^(.*?)\s+Minion(?:\s+([IVX]+|\d+))?$/i);
       if (minionMatch) {
         const rawType = minionMatch[1].trim();
@@ -1306,20 +1452,28 @@
       `;
     }
 
-    // 1. Equipped Armor Tab (Minecraft Armor Frame)
+    // 1. Equipped Armor & Equipment Tab
     function renderArmor() {
       const container = document.getElementById('armorTab');
       const member = profileData?.members?.[selectedMemberId] || {};
       const armorItems = extractItemsFromNbt(member.armorContents);
+      const equipNbt = member.extra_equipment || member.otherInventories?.extra_equipment;
+      const equipItems = extractItemsFromNbt(equipNbt);
 
       const armorSlots = [0, 1, 2, 3].map(slotIdx => {
         const match = armorItems.find(it => it.slot === slotIdx) || armorItems[slotIdx] || null;
         return renderMcSlot(match);
       });
 
+      const equipSlots = [0, 1, 2, 3].map(slotIdx => {
+        const match = equipItems.find(it => it.slot === slotIdx) || equipItems[slotIdx] || null;
+        return renderMcSlot(match);
+      });
+
       container.innerHTML = `
-        <div style="margin-bottom: 24px;">
-          ${wrapMinecraftContainer('Armor', `<div class="armor-extreme-inner-container">${armorSlots.join('')}</div>`)}
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 24px;">
+          ${wrapMinecraftContainer('Equipped Armor', `<div class="armor-extreme-inner-container">${armorSlots.join('')}</div>`)}
+          ${equipItems && equipItems.length > 0 ? wrapMinecraftContainer('Equipment', `<div class="armor-extreme-inner-container">${equipSlots.join('')}</div>`) : ''}
         </div>
       `;
     }
@@ -2339,7 +2493,7 @@
     }
 
     document.addEventListener('mouseover', (e) => {
-      const cell = e.target.closest('.cell[data-tooltip-content]');
+      const cell = (e.target && typeof e.target.closest === 'function') ? e.target.closest('.cell[data-tooltip-content]') : null;
       if (!cell) return;
       const tooltip = document.getElementById('mcFloatingTooltip');
       if (!tooltip) return;
@@ -2352,7 +2506,7 @@
     });
 
     document.addEventListener('mousemove', (e) => {
-      const cell = e.target.closest('.cell[data-tooltip-content]');
+      const cell = (e.target && typeof e.target.closest === 'function') ? e.target.closest('.cell[data-tooltip-content]') : null;
       const tooltip = document.getElementById('mcFloatingTooltip');
       if (cell && tooltip && tooltip.style.display === 'block') {
         positionFloatingTooltip(e, tooltip);
@@ -2360,9 +2514,9 @@
     });
 
     document.addEventListener('mouseout', (e) => {
-      const cell = e.target.closest('.cell[data-tooltip-content]');
+      const cell = (e.target && typeof e.target.closest === 'function') ? e.target.closest('.cell[data-tooltip-content]') : null;
       if (!cell) return;
-      const related = e.relatedTarget?.closest('.cell[data-tooltip-content]');
+      const related = (e.relatedTarget && typeof e.relatedTarget.closest === 'function') ? e.relatedTarget.closest('.cell[data-tooltip-content]') : null;
       if (related === cell) return;
       const tooltip = document.getElementById('mcFloatingTooltip');
       if (tooltip) tooltip.style.display = 'none';

@@ -1829,14 +1829,14 @@ function getItemNameFromNumericId(numericId) {
   return null;
 }
 
-/**
- * Resolves item name for an ID or name, handling negative Bedrock IDs, damage keys, and base names.
- * @param {string|number} itemIdOrName
- * @param {number|string} [damage]
- * @returns {string} Formatted item name
- */
+module.exports = {
+  MINECRAFT_NUMERIC_IDS,
+  getItemNameFromNumericId,
+};
+
+
 function resolveItemName(itemIdOrName, damage) {
-  if (!itemIdOrName && itemIdOrName !== 0) return 'Unknown Item';
+  if (!itemIdOrName) return 'Unknown Item';
   const rawStr = String(itemIdOrName).trim();
   const str = rawStr.replace(/^minecraft:/i, '');
   const parts = str.split(':');
@@ -1873,14 +1873,14 @@ function resolveItemName(itemIdOrName, damage) {
 
 if (typeof window !== 'undefined') {
   window.MINECRAFT_NUMERIC_IDS = MINECRAFT_NUMERIC_IDS;
-  window.getItemNameFromNumericId = getItemNameFromNumericId;
-  window.resolveItemName = resolveItemName;
+  if (typeof getItemNameFromNumericId !== 'undefined') window.getItemNameFromNumericId = getItemNameFromNumericId;
+  if (typeof resolveItemName !== 'undefined') window.resolveItemName = resolveItemName;
 }
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     MINECRAFT_NUMERIC_IDS,
-    getItemNameFromNumericId,
-    resolveItemName,
+    getItemNameFromNumericId: typeof getItemNameFromNumericId !== 'undefined' ? getItemNameFromNumericId : (id) => MINECRAFT_NUMERIC_IDS[String(id)] || 'Unknown Item',
+    resolveItemName
   };
 }
-
