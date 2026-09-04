@@ -128,23 +128,23 @@
       }
 
       const skillIcons = {
-        "Farming": "🌾",
-        "Mining": "⛏️",
-        "Combat": "⚔️",
-        "Foraging": "🪓",
-        "Fishing": "🎣",
-        "Enchanting": "✨",
-        "Alchemy": "⚗️",
-        "Taming": "🦴",
-        "Carpentry": "🪑"
+        "Farming": "../assets/farming/hoe.png",
+        "Mining": "../assets/mining/pickaxe.png",
+        "Combat": "../assets/combat/sword.png",
+        "Foraging": "../assets/foraging/axe.png",
+        "Fishing": "../assets/images/Fishing_Rod.png",
+        "Enchanting": "../assets/images/Enchanting_Table.png",
+        "Alchemy": "../assets/images/Glass_Bottle.png",
+        "Taming": "../assets/combat/Bone_JE3_BE2.png",
+        "Carpentry": "../assets/images/Crafting_Table.png"
       };
 
       collectionGrid.innerHTML = "";
       entries.forEach((lb, idx) => {
         const div = document.createElement("div");
         div.className = "lb-category-item" + (idx === 0 ? " active" : "");
-        const emoji = skillIcons[lb.name] || "⭐";
-        div.innerHTML = `<span style="font-size:1.2rem;">${emoji}</span> <span>${lb.name}</span>`;
+        const imgSrc = skillIcons[lb.name] || "../assets/cmc-icon.png";
+        div.innerHTML = `<img src="${imgSrc}" alt="${lb.name}" onerror="this.src='../assets/cmc-icon.png'" style="width:20px;height:20px;object-fit:contain;"> <span>${lb.name}</span>`;
         div.onclick = () => {
           document.querySelectorAll(".lb-category-item").forEach(d => d.classList.remove("active"));
           div.classList.add("active");

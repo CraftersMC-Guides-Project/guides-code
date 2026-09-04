@@ -129,9 +129,16 @@
       const tabsContainer = document.getElementById("categoryTabs");
       const gridContainer = document.getElementById("collectionGrid");
 
+      const categoryIcons = {
+        "Medals": "../assets/images/Gold_Medal.png",
+        "General": "../img/most_contest_joined.png",
+        "Crops": "../assets/farming/Wheat_JE2_BE2.png"
+      };
+
       function normalizeImg(src) {
         if (!src) return "../assets/cmc-icon.png";
-        if (src.startsWith("http") || src.startsWith("/")) return src;
+        if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("/")) return src;
+        if (src.startsWith("../")) return src;
         return "../" + src;
       }
 
@@ -188,7 +195,11 @@
         tab.className = "lb-category-tab lb-category-item" + (idx === 0 ? " active" : "");
         tab.dataset.category = cat;
         tab.style.padding = "8px 16px";
-        tab.innerHTML = `<span class="material-icons" style="font-size:1.1rem;color:var(--accent-color);">agriculture</span> <span>${cat}</span>`;
+        const iconSrc = categoryIcons[cat];
+        const iconHtml = iconSrc 
+          ? `<img src="${normalizeImg(iconSrc)}" alt="${cat}" onerror="this.src='../assets/cmc-icon.png'" style="width:20px;height:20px;">`
+          : `<span class="material-icons" style="font-size:1.1rem;color:var(--accent-color);">agriculture</span>`;
+        tab.innerHTML = `${iconHtml} <span>${cat}</span>`;
         tab.onclick = () => switchCategory(cat);
         tabsContainer.appendChild(tab);
       });

@@ -127,11 +127,18 @@
         return;
       }
 
+      const coinIcons = {
+        "Purse": "../assets/mining/Gold_Ingot_JE4_BE2.png",
+        "Bank": "../assets/images/Gold_Block.png",
+        "Dropped Coins": "../assets/mining/Gold_Ingot_JE4_BE2.png"
+      };
+
       collectionGrid.innerHTML = "";
       entries.forEach((lb, idx) => {
         const div = document.createElement("div");
         div.className = "lb-category-item" + (idx === 0 ? " active" : "");
-        div.innerHTML = `<span class="material-icons" style="color:var(--accent-color);font-size:1.2rem;">account_balance_wallet</span> <span>${lb.name}</span>`;
+        const imgSrc = coinIcons[lb.name] || "../assets/mining/Gold_Ingot_JE4_BE2.png";
+        div.innerHTML = `<img src="${imgSrc}" alt="${lb.name}" onerror="this.src='../assets/cmc-icon.png'" style="width:20px;height:20px;object-fit:contain;"> <span>${lb.name}</span>`;
         div.onclick = () => {
           document.querySelectorAll(".lb-category-item").forEach(d => d.classList.remove("active"));
           div.classList.add("active");
@@ -146,7 +153,13 @@
     });
 
     function loadLeaderboard(lb) {
-      document.getElementById("collectionTitle").innerText = lb.name + " Leaderboard";
+      const coinIcons = {
+        "Purse": "../assets/mining/Gold_Ingot_JE4_BE2.png",
+        "Bank": "../assets/images/Gold_Block.png",
+        "Dropped Coins": "../assets/mining/Gold_Ingot_JE4_BE2.png"
+      };
+      const icon = coinIcons[lb.name] || "../assets/mining/Gold_Ingot_JE4_BE2.png";
+      document.getElementById("collectionTitle").innerHTML = `<img src="${icon}" style="width:24px;height:24px;vertical-align:middle;margin-right:6px;object-fit:contain;" onerror="this.src='../assets/cmc-icon.png'"> ${lb.name} Leaderboard`;
       document.getElementById("scoreHeader").innerText = lb.scoreLabel || "Coins";
 
       const tbody = document.getElementById("leaderboardData");

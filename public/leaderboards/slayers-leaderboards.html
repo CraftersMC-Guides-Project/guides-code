@@ -127,11 +127,26 @@
         return;
       }
 
+      const slayerIcons = {
+        "Revenant Horror": "../assets/slayers/zombie-5.png",
+        "Tarantula Broodfather": "../assets/combat/Spider_Eye_JE2_BE2.png",
+        "Sven Packmaster": "../assets/slayers/wolf-5.png",
+        "Voidgloom Seraph": "../assets/images/Enderman_Pet.png"
+      };
+
+      function normalizeImg(src) {
+        if (!src) return "../assets/cmc-icon.png";
+        if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("/")) return src;
+        if (src.startsWith("../")) return src;
+        return "../" + src;
+      }
+
       collectionGrid.innerHTML = "";
       entries.forEach((lb, idx) => {
         const div = document.createElement("div");
         div.className = "lb-category-item" + (idx === 0 ? " active" : "");
-        div.innerHTML = `<span class="material-icons" style="color:var(--accent-color);font-size:1.2rem;">shield</span> <span>${lb.name}</span>`;
+        const imgSrc = slayerIcons[lb.name] || "../assets/cmc-icon.png";
+        div.innerHTML = `<img src="${normalizeImg(imgSrc)}" alt="${lb.name}" onerror="this.src='../assets/cmc-icon.png'" style="width:20px;height:20px;object-fit:contain;"> <span>${lb.name}</span>`;
         div.onclick = () => {
           document.querySelectorAll(".lb-category-item").forEach(d => d.classList.remove("active"));
           div.classList.add("active");
@@ -146,7 +161,14 @@
     });
 
     function loadLeaderboard(lb) {
-      document.getElementById("collectionTitle").innerText = lb.name + " Leaderboard";
+      const slayerIcons = {
+        "Revenant Horror": "../assets/slayers/zombie-5.png",
+        "Tarantula Broodfather": "../assets/combat/Spider_Eye_JE2_BE2.png",
+        "Sven Packmaster": "../assets/slayers/wolf-5.png",
+        "Voidgloom Seraph": "../assets/images/Enderman_Pet.png"
+      };
+      const icon = slayerIcons[lb.name] || "../assets/cmc-icon.png";
+      document.getElementById("collectionTitle").innerHTML = `<img src="${icon}" style="width:24px;height:24px;vertical-align:middle;margin-right:6px;object-fit:contain;" onerror="this.src='../assets/cmc-icon.png'"> ${lb.name} Leaderboard`;
       document.getElementById("scoreHeader").innerText = lb.scoreLabel || "Slayer XP";
 
       const tbody = document.getElementById("leaderboardData");

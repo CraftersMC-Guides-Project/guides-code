@@ -117,7 +117,7 @@
         petsData = await leaderboardsApi.getLeaderboard("pets");
       } catch (e) {
         console.warn("Using local pets data fallback", e);
-        petsData = window.petsData || window.petsLeaderboards || {};
+        petsData = window.petsData || window.petsLeaderboards || window.leaderboards || {};
       }
 
       const entries = Object.values(petsData);
@@ -126,11 +126,18 @@
         return;
       }
 
+      const petIcons = {
+        "Pet Score": "../assets/images/Tiger_Pet.png",
+        "Pets Levels": "../assets/images/Phoenix_Pet.png",
+        "Pets XP": "../assets/images/Grand_Experience_Bottle.png"
+      };
+
       grid.innerHTML = "";
       entries.forEach((lb, idx) => {
         const btn = document.createElement("div");
         btn.className = "lb-category-item" + (idx === 0 ? " active" : "");
-        btn.innerHTML = `<span class="material-icons" style="font-size:1.2rem;color:var(--accent-color);">pets</span> <span>${lb.name}</span>`;
+        const imgSrc = petIcons[lb.name] || "../assets/images/Tiger_Pet.png";
+        btn.innerHTML = `<img src="${imgSrc}" alt="${lb.name}" onerror="this.src='../assets/cmc-icon.png'" style="width:20px;height:20px;object-fit:contain;"> <span>${lb.name}</span>`;
         btn.onclick = () => {
           document.querySelectorAll(".lb-category-item").forEach(b => b.classList.remove("active"));
           btn.classList.add("active");
@@ -145,7 +152,13 @@
     });
 
     function loadLeaderboard(lb) {
-      document.getElementById("collectionTitle").innerText = lb.name + " Leaderboard";
+      const petIcons = {
+        "Pet Score": "../assets/images/Tiger_Pet.png",
+        "Pets Levels": "../assets/images/Phoenix_Pet.png",
+        "Pets XP": "../assets/images/Grand_Experience_Bottle.png"
+      };
+      const icon = petIcons[lb.name] || "../assets/images/Tiger_Pet.png";
+      document.getElementById("collectionTitle").innerHTML = `<img src="${icon}" style="width:24px;height:24px;vertical-align:middle;margin-right:6px;object-fit:contain;" onerror="this.src='../assets/cmc-icon.png'"> ${lb.name} Leaderboard`;
       document.getElementById("scoreHeader").innerText = lb.scoreLabel || "Score";
 
       const tbody = document.getElementById("leaderboardData");

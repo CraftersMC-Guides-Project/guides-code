@@ -117,7 +117,8 @@
 
     function normalizeImg(src) {
       if (!src) return "../assets/cmc-icon.png";
-      if (src.startsWith("http") || src.startsWith("/")) return src;
+      if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("/")) return src;
+      if (src.startsWith("../")) return src;
       return "../" + src;
     }
 
@@ -126,7 +127,7 @@
         bossTimesData = await leaderboardsApi.getLeaderboard("boss-times");
       } catch (e) {
         console.warn("Using local boss time fallback", e);
-        bossTimesData = window.collectionsData || {};
+        bossTimesData = window.bossTimesData || window.collectionsData || {};
       }
 
       showBossTypes();
