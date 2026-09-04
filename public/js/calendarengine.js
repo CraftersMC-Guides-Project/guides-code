@@ -29,11 +29,11 @@ const CalendarEngine = {
     PET_TYPES: ['tiger', 'lion', 'monkey', 'elephant', 'giraffe'],
     RARITIES: ['COMMON','UNCOMMON','RARE','EPIC'],// no leg here because it works without it somehow lol
     RARITIES_ICONS: {
-        'COMMON': '<img src="assets/rarity/common.webp" class="rarity-icon rarity-common" alt="Common" width="66" height="14">',
-        'UNCOMMON': '<img src="assets/rarity/uncommon.webp" class="rarity-icon rarity-uncommon" alt="Uncommon" width="82" height="14">',
-        'RARE': '<img src="assets/rarity/rare.webp" class="rarity-icon rarity-rare" alt="Rare" width="42" height="14">',
-        'EPIC': '<img src="assets/rarity/epic.webp" class="rarity-icon rarity-epic" alt="Epic" width="42" height="14">',
-        'LEGENDARY': '<img src="assets/rarity/legendary.webp" class="rarity-icon rarity-legendary" alt="Legendary" width="82" height="14">'
+        'COMMON': '<img src="assets/rarity/common.webp" class="rarity-icon rarity-common" alt="Common">',
+        'UNCOMMON': '<img src="assets/rarity/uncommon.webp" class="rarity-icon rarity-uncommon" alt="Uncommon">',
+        'RARE': '<img src="assets/rarity/rare.webp" class="rarity-icon rarity-rare" alt="Rare">',
+        'EPIC': '<img src="assets/rarity/epic.webp" class="rarity-icon rarity-epic" alt="Epic">',
+        'LEGENDARY': '<img src="assets/rarity/legendary.webp" class="rarity-icon rarity-legendary" alt="Legendary">'
     },
     CropType: ['WHEAT', 'SUGAR_CANE', 'CARROT', 'POTATO', 'MELON', 'PUMPKIN', 'COCOA_BEANS', 'CACTUS', 'MUSHROOM', 'BEETROOT'],
     CROP_ICONS: { 

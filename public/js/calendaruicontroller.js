@@ -152,22 +152,28 @@ getPetEmoji(name) {
         this.elements.eventList.innerHTML = events.map((event, idx) => {
             let info = 'Starts in...';
             if (event.type === 'farming' && event.crops) {
-                info = event.crops.map(c => this.engine.CROP_ICONS[c] || '?').join(' ');
+                info = `<div class="farming-crops-preview">${event.crops.map(c => this.engine.CROP_ICONS[c] || '?').join(' ')}</div>`;
             } else if (event.name === 'Travelling Zoo' && event.legendaryName) {
                 if (event.pets && event.pets.length) {
-                    const items = event.pets.map(p => `<li style="font-size: 12px; font-weight: bold;">${this.getPetEmoji(p.name)} ${capitalize(p.name)} ${this.getRarityLabel(p.rarity)}</li>`).join('');
-                    info = ` <div style="margin-bottom:4px;"><ul class="zoo-pet-list" style="margin:0; padding:0;">${items}</ul></div>`;
+                    const items = event.pets.map(p => `
+                        <li class="zoo-pet-item">
+                            <span class="zoo-pet-emoji">${this.getPetEmoji(p.name)}</span>
+                            <span class="zoo-pet-name">${capitalize(p.name)}</span>
+                            ${this.getRarityLabel(p.rarity)}
+                        </li>
+                    `).join('');
+                    info = `<ul class="zoo-pet-list">${items}</ul>`;
                 } else {
-                    info = `Legendary pet: ${this.getEventIcon(event.legendaryName)} ${capitalize(event.legendaryName)}`;
+                    info = `<div class="zoo-legendary-preview">Legendary pet: ${this.getEventIcon(event.legendaryName)} ${capitalize(event.legendaryName)}</div>`;
                 }
             }
             return `
                 <div class="event-timer-item" data-event-index="${idx}">
-                    <div class="event-timer-info">
-                        <span class="event-icon" style="margin-right: ${event.type === 'Travelling Zoo' ? 0 : 8}px;">${this.getEventIcon(event)}</span>
-                        <div>
+                    <div class="event-timer-left">
+                        <span class="event-icon">${this.getEventIcon(event)}</span>
+                        <div class="event-timer-info">
                             <p class="event-name">${event.name}</p>
-                            <p class="event-info">${info}</p>
+                            <div class="event-info">${info}</div>
                             <p class="expand-text">Click to see next 10 timings</p>
                         </div>
                     </div>
@@ -259,7 +265,7 @@ getPetEmoji(name) {
                     info = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(${event.crops.join(', ')})</span>`;
                 } else if (event.name === 'Travelling Zoo' && event.legendaryName) {
                     if (event.pets && event.pets.length) {
-                        const items = event.pets.map(p => `<li>${this.getPetEmoji(p.name)} ${capitalize(p.name)} ${this.getRarityLabel(p.rarity)}</li>`).join('');
+                        const items = event.pets.map(p => `<li class="zoo-pet-item"><span class="zoo-pet-emoji">${this.getPetEmoji(p.name)}</span> <span class="zoo-pet-name">${capitalize(p.name)}</span> ${this.getRarityLabel(p.rarity)}</li>`).join('');
                         info = ` <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top:4px;"><ul class="zoo-pet-list">${items}</ul></div>`;
                     } else {
                         info = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(Legendary: ${this.getPetEmoji(event.legendaryName)} ${capitalize(event.legendaryName)})</span>`;
@@ -388,7 +394,7 @@ getPetEmoji(name) {
                         let extra = '';
                         // If occurrence supplies full pet shop, display that
                         if (o.pets && o.pets.length) {
-                            const items = o.pets.map(p => `<li>${this.getPetEmoji(p.name)} ${capitalize(p.name)} ${this.getRarityLabel(p.rarity)}</li>`).join('');
+                            const items = o.pets.map(p => `<li class="zoo-pet-item"><span class="zoo-pet-emoji">${this.getPetEmoji(p.name)}</span> <span class="zoo-pet-name">${capitalize(p.name)}</span> ${this.getRarityLabel(p.rarity)}</li>`).join('');
                             extra = `<ul class="zoo-pet-list">${items}</ul>`;
                         } else if (o.legendaryName) {
                             const icon = this.getPetEmoji(o.legendaryName);
