@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Boss Time Leaderboards — CraftersMC Guides</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Check the fastest recorded boss spawn and clear times on CraftersMC." />
+  <link rel="icon" href="../assets/cmc-icon.png" type="image/png" />
+  <link rel="icon" href="../assets/cmc-guides.png" type="image/png" />
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../better-api-docs/style.css" />
+  <link rel="stylesheet" href="../css/leaderboards-theme.css" />
+
+  <!-- Core Scripts -->
+  <script src="../better-api-docs/app.js" defer></script>
+  <script src="../js/components.js" defer></script>
+  <script src="../js/api-proxy-client.js"></script>
+  <script src="../js/leaderboards-api.js"></script>
+  <script src="../js/leaderboard-theme-helper.js"></script>
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="top-header">
+    <div class="header-left">
+      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
+        <span class="material-icons" style="font-size:1.25rem;">menu</span>
+      </button>
+      <a href="../index.html" class="header-brand">
+        <img src="../assets/cmc-guides.png" alt="CraftersMC Logo" />
+        <div class="brand-text">
+          <span class="brand-title">CraftersMC Guides</span>
+          <span class="version-badge">Leaderboards</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Search Box -->
+    <div class="search-box">
+      <span class="material-icons search-icon">search</span>
+      <input type="text" id="search-input" placeholder="Search leaderboards, guides, API..." />
+      <span class="search-kbd-shortcut">/</span>
+    </div>
+
+    <!-- Header Utility Links -->
+    <div class="header-actions">
+      <a href="../better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
+      <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
+    </div>
+  </header>
+
+  <!-- Application Layout -->
+  <div class="app-layout">
+
+    <!-- Left Sidebar Web Component -->
+    <cmc-sidebar active="slayers-leaderboards"></cmc-sidebar>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- Hero Header -->
+      <div class="lb-hero-card">
+        <div class="lb-hero-info">
+          <h1>
+            <span class="material-icons" style="color:var(--accent-color);">timer</span>
+            Boss Time Leaderboards
+          </h1>
+          <p>Check the fastest recorded boss spawn and clear times on CraftersMC.</p>
+        </div>
+        <a href="index.html" class="lb-back-btn">
+          <span class="material-icons" style="font-size:1rem;">arrow_back</span>
+          All Leaderboards
+        </a>
+      </div>
+
+
+      <!-- Category Selector -->
+      <div class="lb-categories-panel" id="categoryPanel">
+        <div class="lb-panel-header">
+          <h2 class="lb-panel-title"><span class="material-icons" style="color:var(--accent-color);">category</span> Select Boss & Tier</h2>
+        </div>
+        <div class="lb-category-grid" id="collectionGrid"></div>
+      </div>
+  
+
+      <!-- Leaderboard Table Card -->
+      <div class="lb-table-card">
+        <div class="lb-table-header">
+          <h2 class="lb-table-title" id="collectionTitle">Select a Category</h2>
+        </div>
+        <div class="lb-table-wrapper">
+          <table class="lb-table">
+            <thead>
+              <tr>
+                <th style="width: 80px; text-align: center;">Rank</th>
+                <th>Player</th>
+                <th id="scoreHeader" style="text-align: right;">Clear Time</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardData">
+              <tr><td style="text-align:center;">1</td><td>???</td><td style="text-align:right;">???</td></tr>
+              <tr><td style="text-align:center;">2</td><td>???</td><td style="text-align:right;">???</td></tr>
+              <tr><td style="text-align:center;">3</td><td>???</td><td style="text-align:right;">???</td></tr>
+              <tr><td style="text-align:center;">4</td><td>???</td><td style="text-align:right;">???</td></tr>
+              <tr><td style="text-align:center;">5</td><td>???</td><td style="text-align:right;">???</td></tr>
+              <tr><td style="text-align:center;">6</td><td>???</td><td style="text-align:right;">???</td></tr>
+              <tr><td style="text-align:center;">7</td><td>???</td><td style="text-align:right;">???</td></tr>
+              <tr><td style="text-align:center;">8</td><td>???</td><td style="text-align:right;">???</td></tr>
+              <tr><td style="text-align:center;">9</td><td>???</td><td style="text-align:right;">???</td></tr>
+              <tr><td style="text-align:center;">10</td><td>???</td><td style="text-align:right;">???</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
+        <div class="site-footer-right">
+          <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+  <!-- Sidelid & Modal hooks for backward compatibility with scripts -->
+  <div id="sidelid" style="display:none;"><h2 class="lb-h2"></h2></div>
+
+<script src="../js/api-proxy-client.js"></script>
+<script src="../js/leaderboards-api.js"></script>
+<script>
+    let currentBoss = null;
+    let currentCategory = null;
+    let currentType = null;
+    let currentTier = null;
+    let collectionsData = {};
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        try {
+            collectionsData = await leaderboardsApi.getLeaderboard("boss-time");
+            showBossTypes();
+        } catch (error) {
+            console.error("Failed to load boss time leaderboards", error);
+            document.getElementById("leaderboardData").innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
+        }
+    });
+    document.getElementById("sidelid").addEventListener("click", e => e.stopPropagation());
+
+    function showBossTypes() {
+        currentBoss = null;
+        currentCategory = null;
+        currentType = null;
+        currentTier = null;
+        const collectionGrid = document.getElementById("collectionGrid");
+        collectionGrid.innerHTML = "";
+
+        document.querySelector("#sidelid h2.lb-h2").innerText = "Boss Time Leaderboards";
+        document.getElementById("collectionTitle").innerText = "Select a Category";
+
+        collectionsData["Boss Type"].forEach(boss => {
+            const bossDiv = document.createElement("div");
+            bossDiv.className = "lb-collection-item main-category";
+            bossDiv.innerHTML = `<img src="${boss.image}" alt="${boss.name}" style="width:94px;">`;
+            bossDiv.onclick = () => showCategories(boss);
+            collectionGrid.appendChild(bossDiv);
+        });
+    }
+
+    function showCategories(boss) {
+        currentBoss = boss;
+        currentCategory = null;
+        currentType = null;
+        currentTier = null;
+        const collectionGrid = document.getElementById("collectionGrid");
+        collectionGrid.innerHTML = "";
+
+        document.querySelector("#sidelid h2.lb-h2").innerText = `${boss.name} Leaderboards`;
+        document.getElementById("collectionTitle").innerText = `${boss.name} Leaderboards`;
+
+        const backBtn = document.createElement("div");
+        backBtn.className = "lb-collection-item back-btn";
+        backBtn.innerHTML = "← Back";
+        backBtn.onclick = showBossTypes;
+        collectionGrid.appendChild(backBtn);
+
+        boss.categories.forEach(category => {
+            const catDiv = document.createElement("div");
+            catDiv.className = "lb-collection-item";
+            catDiv.innerHTML = `<img src="${category.image}" alt="${category.name}" title="${category.name}" style="width:64px;">`;
+            catDiv.onclick = () => showTypes(category);
+            collectionGrid.appendChild(catDiv);
+        });
+    }
+
+    function showTypes(category) {
+        currentCategory = category;
+        currentType = null;
+        currentTier = null;
+        const collectionGrid = document.getElementById("collectionGrid");
+        collectionGrid.innerHTML = "";
+
+        document.querySelector("#sidelid h2.lb-h2").innerText = `${currentBoss.name} - ${category.name}`;
+        document.getElementById("collectionTitle").innerText = `${currentBoss.name} - ${category.name}`;
+
+        const backBtn = document.createElement("div");
+        backBtn.className = "lb-collection-item back-btn";
+        backBtn.innerHTML = "← Back";
+        backBtn.onclick = () => showCategories(currentBoss);
+        collectionGrid.appendChild(backBtn);
+
+        category.types.forEach(type => {
+            const typeDiv = document.createElement("div");
+            typeDiv.className = "lb-collection-item";
+            typeDiv.innerHTML = `<img src="${type.image}" alt="${type.name}" title="${type.name}" style="width:64px;">`;
+            typeDiv.onclick = () => showTiers(type);
+            collectionGrid.appendChild(typeDiv);
+        });
+    }
+
+    function showTiers(type) {
+        currentType = type;
+        currentTier = null;
+        const collectionGrid = document.getElementById("collectionGrid");
+        collectionGrid.innerHTML = "";
+
+        document.querySelector("#sidelid h2.lb-h2").innerText = `${currentBoss.name} - ${currentCategory.name} - ${type.name}`;
+        document.getElementById("collectionTitle").innerText = `${currentBoss.name} - ${currentCategory.name} - ${type.name}`;
+
+        const backBtn = document.createElement("div");
+        backBtn.className = "lb-collection-item back-btn";
+        backBtn.innerHTML = "← Back";
+        backBtn.onclick = () => showTypes(currentCategory);
+        collectionGrid.appendChild(backBtn);
+
+        type.tiers.forEach(tier => {
+            const tierDiv = document.createElement("div");
+            tierDiv.className = "lb-collection-item";
+            tierDiv.innerHTML = `<img src="${tier.image}" alt="${tier.name}" style="width:94px;">`;
+            tierDiv.onclick = () => showLeaderboard(tier);
+            collectionGrid.appendChild(tierDiv);
+        });
+    }
+
+    function showLeaderboard(tier) {
+        currentTier = tier;
+        document.querySelector("#sidelid h2.lb-h2").innerText =
+            `${currentBoss.name} - ${currentCategory.name} - ${currentType.name} - ${tier.name}`;
+        document.getElementById("collectionTitle").innerText =
+            `${currentBoss.name} - ${currentCategory.name} - ${currentType.name} - ${tier.name}`;
+        document.getElementById("scoreHeader").innerText = "Score";
+
+        const leaderboardData = document.getElementById("leaderboardData");
+        if (tier.players && tier.players.length) {
+            leaderboardData.innerHTML = tier.players.map(player => `
+                <tr>
+                    <td>${player.rank}</td>
+                    ${createPlayerCell(player.name)}
+                    <td>${player.score}</td>
+                </tr>
+            `).join("");
+        } else {
+            leaderboardData.innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
+        }
+        window.scrollTo({ top: 350, behavior: "smooth" });
+    }
+</script>
+
+</body>
+</html>

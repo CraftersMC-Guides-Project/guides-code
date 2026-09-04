@@ -1,158 +1,90 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <link rel="icon" href="assets/cmc-icon.png" type="image/png">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta property="og:title" content="CraftersMC Leaderboards Submission Portal">
-  <meta property="og:description"
-    content="Submit your information to be considered for inclusion in the CraftersMC Leaderboards. Provide proof and details for accurate ranking!">
-  <meta property="og:image"
-    content="https://cdn.discordapp.com/attachments/1416722412032229457/1423270231740256256/Screenshot_20250524-2112033.png?ex=68dfb332&is=68de61b2&hm=809b90de9e5b77d767b558b836bb6b6f1cf3bf58f6e45a168400aa8654409a4c&">
-  <meta property="og:url" content="https://craftersmc-guides.pages.dev/leaderboards-submission.html">
-  <meta property="og:type" content="website">
-  <meta name="theme-color" content="#007bff">
-  <meta name="twitter:card" content="summary_large_image" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <script src="js/script.js" defer></script>
-  <script src="js/api-proxy-client.js"></script>
-  <script src="js/leaderboards-api.js"></script>
-  <link rel="stylesheet" href="css/essential.css">
-  <link rel="stylesheet" href="css/event.css">
-  <title>CraftersMC Guides - Leaderboards Submission Portal</title>
+  <meta charset="UTF-8" />
+  <title>Leaderboard Score Submission — CraftersMC Guides</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Submit your verified in-game screenshots and videos to claim a spot on the community leaderboards." />
+  <link rel="icon" href="../assets/cmc-icon.png" type="image/png" />
+  <link rel="icon" href="../assets/cmc-guides.png" type="image/png" />
 
-  <style>
-    h1 {
-      font-size: 22px;
-      margin-bottom: 14px;
-      text-align: center;
-      font-weight: 600;
-    }
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-    body {
-      background: url('Backgrounds/image8298.webp') no-repeat center center fixed;
-      font-family: Arial, sans-serif;
-      background-size: cover;
-    }
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../better-api-docs/style.css" />
+  <link rel="stylesheet" href="../css/leaderboards-theme.css" />
 
-    form {
-      background: #ffffff25;
-      border: 2px solid #dfe3ea;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 6px 18px rgba(20, 30, 50, 0.06);
-      backdrop-filter: blur(10px);
-      width: 95%;
-      max-width: 800px;
-      margin: 0 auto 40px auto;
-      color: #fff;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    input[type=text],
-    input[type=file],
-    textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #434343;
-      border-radius: 6px;
-      font-size: 14px;
-      background-color: #11111171;
-      color: #fff;
-    }
-
-    textarea {
-      resize: vertical;
-    }
-
-    .row {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .col {
-      flex: 1;
-    }
-
-    .note {
-      display: block;
-      font-size: 13px;
-      margin-top: 4px;
-      color: #ff2e2e;
-      text-shadow: 0px 0px 14px red;
-    }
-
-    #lbContainer label {
-      display: flex;
-      align-items: center;
-      padding: 4px 0;
-      font-size: 14px;
-      gap: 6px;
-      cursor: pointer;
-    }
-
-    details {
-      background: #ffffff10;
-      border-radius: 6px;
-      padding: 10px;
-    }
-
-    details summary {
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
-      padding: 4px 0;
-    }
-
-    .preview-img,
-    .preview-video {
-      margin-top: 8px;
-      max-width: 200px;
-      border-radius: 6px;
-      border: 1px solid #e3e6ea;
-    }
-
-    button[disabled] {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .status {
-      margin-top: 12px;
-      font-size: 14px;
-      font-weight: 500;
-      color: #5cff76;
-    }
-
-    #spinner {
-      font-size: 14px;
-      color: #444;
-    }
-  </style>
+  <!-- Core Scripts -->
+  <script src="../better-api-docs/app.js" defer></script>
+  <script src="../js/components.js" defer></script>
+  <script src="../js/api-proxy-client.js"></script>
+  <script src="../js/leaderboards-api.js"></script>
+  <script src="../js/leaderboard-theme-helper.js"></script>
 </head>
-
 <body>
-  <div id="loader">
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
-  <div class="top"></div>
-  <div class="sidebar" id="sidebar"></div>
-  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-  <span class="material-icons" id="scrollToTopBtn">north</span>
-  <div class="gap"></div>
-  <h1>CraftersMC Guides - Leaderboards Submission Portal</h1>
 
-  <form id="submissionForm" autocomplete="off">
+  <!-- Top Header Navigation -->
+  <header class="top-header">
+    <div class="header-left">
+      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
+        <span class="material-icons" style="font-size:1.25rem;">menu</span>
+      </button>
+      <a href="../index.html" class="header-brand">
+        <img src="../assets/cmc-guides.png" alt="CraftersMC Logo" />
+        <div class="brand-text">
+          <span class="brand-title">CraftersMC Guides</span>
+          <span class="version-badge">Leaderboards</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Search Box -->
+    <div class="search-box">
+      <span class="material-icons search-icon">search</span>
+      <input type="text" id="search-input" placeholder="Search leaderboards, guides, API..." />
+      <span class="search-kbd-shortcut">/</span>
+    </div>
+
+    <!-- Header Utility Links -->
+    <div class="header-actions">
+      <a href="../better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
+      <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
+    </div>
+  </header>
+
+  <!-- Application Layout -->
+  <div class="app-layout">
+
+    <!-- Left Sidebar Web Component -->
+    <cmc-sidebar active="leaderboards"></cmc-sidebar>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- Hero Header -->
+      <div class="lb-hero-card">
+        <div class="lb-hero-info">
+          <h1>
+            <span class="material-icons" style="color:var(--accent-color);">post_add</span>
+            Leaderboard Score Submission
+          </h1>
+          <p>Submit your verified in-game screenshots and videos to claim a spot on the community leaderboards.</p>
+        </div>
+        <a href="index.html" class="lb-back-btn">
+          <span class="material-icons" style="font-size:1rem;">arrow_back</span>
+          All Leaderboards
+        </a>
+      </div>
+
+
+
+
+      <div class="lb-table-card" style="max-width: 700px; margin: 0 auto 24px;">
+        <form id="submissionForm" autocomplete="off">
 
     <div class="row">
       <div class="col">
@@ -198,9 +130,26 @@
 
     <div class="status" id="status"></div>
   </form>
-  <div id="footer"></div>
+      </div>
+    
 
-  <script>
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
+        <div class="site-footer-right">
+          <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+  <!-- Sidelid & Modal hooks for backward compatibility with scripts -->
+  <div id="sidelid" style="display:none;"><h2 class="lb-h2"></h2></div>
+
+<script src="../js/api-proxy-client.js"></script>
+<script src="../js/leaderboards-api.js"></script>
+<script>
     const WORKER_URL = '/leaderboard-submission-api'; // Now points to your Pages Function
 
     const maxFileSize = 5 * 1024 * 1024;
@@ -382,6 +331,6 @@
       spinner.style.display = 'none';
     });
   </script>
-</body>
 
+</body>
 </html>
