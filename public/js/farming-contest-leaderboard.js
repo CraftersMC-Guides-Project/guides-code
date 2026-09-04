@@ -1,4 +1,4 @@
-const collectionsData = {
+var farmingContestsData = {
     "Medals": [
         {
             name: "Medal - Bronze",
@@ -230,3 +230,5 @@ const collectionsData = {
         }
     ]
 };
+
+window.farmingContestsData = farmingContestsData;

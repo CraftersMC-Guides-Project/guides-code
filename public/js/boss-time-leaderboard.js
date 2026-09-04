@@ -1,4 +1,4 @@
-const collectionsData = {
+var bossTimesData = {
     "Boss Type": [
         {
             name: "Revenant Horror",
@@ -726,3 +726,5 @@ const collectionsData = {
         }
     ]
 };
+
+window.bossTimesData = bossTimesData;

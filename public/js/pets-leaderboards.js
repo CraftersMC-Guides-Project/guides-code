@@ -1,4 +1,4 @@
-const leaderboards = {
+var leaderboards = {
     petsLevels: {
         name: "Pets Levels",
         scoreLabel: "Level",

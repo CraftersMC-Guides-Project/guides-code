@@ -1,7 +1,7 @@
 // Data Here: Achievements, Arctic Cave Race, Avg Skill, Cakes, Gems, Crafters Level, Playtime, Slayers, Damage, Networth, Pets, Coins, Skills, Target Practice, Ender Node Hunt
 // Not here: Collections, Farming Contests, Boss Time (Or any other with 200-300 lines data)
 // Achievements
-const achievementsData = [
+var achievementsData = [
     { rank: 1, name: "SphinxWraith/HeGzoStRqFe", achievements: "70" },
     { rank: 2, name: "Kg_lcky_01", achievements: "64" },
     { rank: 3, name: "hornrush89", achievements: "62" },
@@ -14,7 +14,7 @@ const achievementsData = [
     { rank: 10, name: "TGJASSIYT", achievements: "49" }
 ];
 // Avg Skill
-const skillData = [
+var skillData = [
   { rank: 1, name: "SphinxWraith/David_R06/Moerderfisch", level: "51.7" },
   { rank: 2, name: "GRAVITY8303", level: "50.2" },
   { rank: 3, name: "AndyGamer024/Aryaan045", level: "50" },
@@ -27,7 +27,7 @@ const skillData = [
   { rank: 10, name: "Fallen1sec", level: "40.2" }
 ];
 // Cakes
-const cakeData = [
+var cakeData = [
   { rank: 1, name: "gelacktic", cakes: "654" },
   { rank: 2, name: "MythicalPanda30", cakes: "172" },
   { rank: 3, name: "TGJASSIYT", cakes: "74" },
@@ -40,7 +40,7 @@ const cakeData = [
   { rank: 10, name: "Unknown", cakes: "N/A" }
 ];
 // Gems 
-const gemsData = [
+var gemsData = [
   { rank: 1, name: "RaiTheBirds", gems: "208k" },
   { rank: 2, name: "Darkshadow52195", gems: "54K" },
   { rank: 3, name: "Shakilbaby", gems: "52K" },
@@ -53,7 +53,7 @@ const gemsData = [
   { rank: 10, name: "KRIZMORRENO", gems: "12K" }
 ];
 // Crafters Level 
-const levelsData = [
+var levelsData = [
   { rank: 1, name: "HeGzoStRqFe", level: "105" },
   { rank: 2, name: "SphinxWraith", level: "91" },
   { rank: 3, name: "hornrush89", level: "88" },
@@ -66,7 +66,7 @@ const levelsData = [
   { rank: 10, name: "Jeremy2075/Darkshadow52195", level: "40" }
 ];
 // Playtime
-const playtimeData = [
+var playtimeData = [
     { rank: 1, name: "HeGzoStRqFe", playtime: "8156.4h" },
     { rank: 2, name: "SphinxWraith", playtime: "6454.9h" },
     { rank: 3, name: "Perry3338", playtime: "5064.1h" },
@@ -79,7 +79,7 @@ const playtimeData = [
     { rank: 10, name: "Kg_lcky_01", playtime: "2515.7h" }
 ];
 // Zombie and Wolf Slayer Exp 
-const collectionsData = [
+var collectionsData = [
   {
     "name": "Zombie Slayer",
     "image": "img/revenant-horror.png",
@@ -114,7 +114,7 @@ const collectionsData = [
   }
 ];
 // Damage
-const damageData = [
+var damageData = [
   { rank: 1, name: "Unknown", damage: "N/A" },
   { rank: 2, name: "Unknown", damage: "N/A" },
   { rank: 3, name: "Unknown", damage: "N/A" },
@@ -127,7 +127,7 @@ const damageData = [
   { rank: 10, name: "Unknown", damage: "N/A" }
 ];
 // Networth
-const networthData = [
+var networthData = [
   { rank: 1, name: "Unknown", networth: "N/A" },
   { rank: 2, name: "Unknown", networth: "N/A" },
   { rank: 3, name: "Unknown", networth: "N/A" },
@@ -140,7 +140,7 @@ const networthData = [
   { rank: 10, name: "Unknown", networth: "N/A" }
 ];
 // Pets
-const petsData = {
+var petsData = {
     petsLevels: {
         name: "Pets Levels",
         scoreLabel: "Level",
@@ -191,7 +191,7 @@ const petsData = {
     }
 };
 // Most Coins and Dropped Coins
-const coinsData = {
+var coinsData = {
     highestCoins: {
         name: "Highest Coins",
         scoreLabel: "Coins",
@@ -226,7 +226,7 @@ const coinsData = {
     }
 };
 // Skills
-const skillsLeaderboards = {
+var skillsLeaderboards = {
     skillsXp: {
         name: "Skills XP",
         scoreLabel: "XP",
@@ -277,7 +277,7 @@ const skillsLeaderboards = {
     }
 };
 // Target Practice
-const targetPracticeLeaderboard = {
+var targetPracticeLeaderboard = {
     name: "Target Practice",
     scoreLabel: "Time",
     players: [
@@ -289,7 +289,7 @@ const targetPracticeLeaderboard = {
     ]
 };
 // Arctic Cave Race
-const arcticCaveRace = {
+var arcticCaveRace = {
     name: "Arctic Cave Race",
     scoreLabel: "Time",
     players: [
@@ -301,7 +301,7 @@ const arcticCaveRace = {
     ]
 };
 // Ender Node Hunt
-const enderNodeHunt = {
+var enderNodeHunt = {
     name: "Ender Node Hunt",
     scoreLabel: "Time",
     players: [
