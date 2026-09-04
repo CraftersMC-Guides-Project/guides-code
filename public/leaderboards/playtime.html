@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Arctic Cave Race Leaderboard — CraftersMC Guides</title>
+  <title>Playtime Leaderboard — CraftersMC Guides</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Fastest verified race completion times in the Arctic Cave." />
+  <meta name="description" content="Check out the top players with the most hours played across the CraftersMC network." />
   <link rel="icon" href="../assets/cmc-icon.png" type="image/png" />
   <link rel="icon" href="../assets/cmc-guides.png" type="image/png" />
 
@@ -22,7 +22,7 @@
   <script src="../better-api-docs/app.js" defer></script>
   <script src="../js/components.js" defer></script>
   <script src="../js/api-proxy-client.js"></script>
-<script src="../js/multi-lb-data.js"></script>
+  <script src="../js/multi-lb-data.js"></script>
   <script src="../js/leaderboards-api.js"></script>
   <script src="../js/leaderboard-theme-helper.js"></script>
 </head>
@@ -61,10 +61,10 @@
       <div class="lb-hero-card">
         <div class="lb-hero-info">
           <h1>
-            <span class="material-icons" style="color:var(--accent-color);">downhill_skiing</span>
-            Arctic Cave Race Leaderboard
+            <span class="material-icons" style="color:var(--accent-color);">schedule</span>
+            Playtime Leaderboard
           </h1>
-          <p>Fastest verified race completion times in the Arctic Cave.</p>
+          <p>Check out the top players with the most hours played across the CraftersMC network.</p>
         </div>
         <a href="index.html" class="lb-back-btn">
           <span class="material-icons" style="font-size:1rem;">arrow_back</span>
@@ -74,7 +74,7 @@
 
       <div class="lb-table-card">
         <div class="lb-table-header">
-          <h2 class="lb-table-title" id="collectionTitle">Arctic Cave Race Leaderboard</h2>
+          <h2 class="lb-table-title" id="collectionTitle">Network Playtime Rankings</h2>
         </div>
         <div class="lb-table-wrapper">
           <table class="lb-table">
@@ -82,7 +82,7 @@
               <tr>
                 <th style="width: 80px; text-align: center;">Rank</th>
                 <th>Player</th>
-                <th id="scoreHeader" style="text-align: right;">Best Time</th>
+                <th id="scoreHeader" style="text-align: right;">Total Playtime</th>
               </tr>
             </thead>
             <tbody id="leaderboardData">
@@ -106,10 +106,10 @@
       const tbody = document.getElementById("leaderboardData");
       let list = [];
       try {
-        list = await leaderboardsApi.getLeaderboard("arctic-cave-race");
+        list = await leaderboardsApi.getLeaderboard("playtime");
       } catch (e) {
-        console.warn("Using local fallback for arctic-cave-race", e);
-        list = window.arcticCaveRaceData || [];
+        console.warn("Using local playtime fallback", e);
+        list = window.playtimeData || [];
       }
 
       if (Array.isArray(list) && list.length > 0) {
@@ -117,7 +117,7 @@
           <tr>
             <td style="text-align:center;">${formatRankBadge(p.rank ?? idx + 1)}</td>
             ${createPlayerCell(p.name)}
-            <td class="score-cell" style="text-align:right;">${p.time ?? p.score ?? p.time ?? p.level ?? "???"}</td>
+            <td class="score-cell" style="text-align:right;">${p.playtime ?? p.score ?? "???"}</td>
           </tr>
         `).join("");
       } else {
