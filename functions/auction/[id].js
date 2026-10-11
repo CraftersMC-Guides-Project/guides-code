@@ -13,7 +13,7 @@ export async function onRequest(context) {
     });
   }
 
-  const apiKey = env.CMC_API_KEY || env.CMCG_API_KEY || 'e89b4eb6-1776-4fb5-9a25-812c2ce1f8d8';
+  const apiKey = env.CMC_API_KEY || env.CMCG_API_KEY;
 
   try {
     const upstreamUrl = `https://api.craftersmc.net/v1/skyblock/auction/${auctionId}`;
