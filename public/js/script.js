@@ -122,7 +122,7 @@ function fetchPartial(url, key) {
 function fetchAllPartials() {
   Promise.all([
     fetchPartial("/navbarv2.html", "navbarHtmlV6"),
-    fetchPartial("/sidebar.html", "sidebarHtmlV4"),
+    fetchPartial("/sidebar.html", "sidebarHtmlV5"),
     fetchPartial("/footer.html", "footerHtmlV5"),
     fetchPartial("/loader.html", "loaderHtml"),
   ])
@@ -138,6 +138,14 @@ function fetchAllPartials() {
         }
       });
       document.getElementById("sidebar").innerHTML = sidebarHtml;
+      document.querySelectorAll(".sidebar .sidebar-link").forEach(link => {
+        const href = link.getAttribute("href")?.toLowerCase() || "";
+        if (href && (currentPath.endsWith(href) || (href.endsWith("index.html") && (currentPath === "/" || currentPath.endsWith("/index.html"))))) {
+          link.classList.add("active");
+        } else {
+          link.classList.remove("active");
+        }
+      });
       document.getElementById("footer").innerHTML = footerHtml;
       document.getElementById("loader").innerHTML = loaderHtml;
       //setupThemeSwitchers();
