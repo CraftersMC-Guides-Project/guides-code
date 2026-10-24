@@ -121,13 +121,22 @@ function fetchPartial(url, key) {
 
 function fetchAllPartials() {
   Promise.all([
-    fetchPartial("/navbarv2.html", "navbarHtml"),
+    fetchPartial("/navbarv2.html", "navbarHtmlV3"),
     fetchPartial("/sidebar.html", "sidebarHtmlV4"),
     fetchPartial("/footer.html", "footerHtmlV2"),
     fetchPartial("/loader.html", "loaderHtml"),
   ])
     .then(([navbarHtml, sidebarHtml, footerHtml, loaderHtml]) => {
       document.querySelector(".top").innerHTML = navbarHtml;
+      const currentPath = window.location.pathname.toLowerCase();
+      document.querySelectorAll(".navbar .nav-item").forEach(link => {
+        const href = link.getAttribute("href")?.toLowerCase() || "";
+        if (href && (currentPath.endsWith(href) || (href.endsWith("index.html") && (currentPath === "/" || currentPath.endsWith("/index.html"))))) {
+          link.classList.add("active");
+        } else {
+          link.classList.remove("active");
+        }
+      });
       document.getElementById("sidebar").innerHTML = sidebarHtml;
       document.getElementById("footer").innerHTML = footerHtml;
       document.getElementById("loader").innerHTML = loaderHtml;
