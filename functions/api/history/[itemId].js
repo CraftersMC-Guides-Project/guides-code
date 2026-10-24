@@ -33,9 +33,7 @@ export async function onRequest(context) {
       return new Response(JSON.stringify({
         ok: false,
         status: upstreamRes.status,
-        upstream_error: errBody,
-        debug_used_key: apiKey || "UNDEFINED",
-        debug_available_env_keys: Object.keys(env || {})
+        upstream_error: errBody
       }), {
         status: upstreamRes.status,
         headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
