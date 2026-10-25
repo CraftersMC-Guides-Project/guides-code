@@ -107,6 +107,9 @@
         this.innerHTML = html;
         setActiveLinks(this, this.getAttribute('active'));
         initMobileMenu();
+        if (typeof window.setupThemeSwitchers === 'function') {
+          window.setupThemeSwitchers();
+        }
       }
     }
   }
@@ -116,7 +119,11 @@
       this.style.display = 'contents';
       const html = await loadComponentHtml('sidebar');
       if (html) {
-        this.innerHTML = html;
+        if (!html.includes('class="sidebar"') && !html.includes('<aside')) {
+          this.innerHTML = `<aside class="sidebar" id="sidebar">${html}</aside>`;
+        } else {
+          this.innerHTML = html;
+        }
         setActiveLinks(this, this.getAttribute('active'));
         initMobileMenu();
       }

@@ -1,11 +1,24 @@
+// Early theme initialization to prevent flash of wrong theme
+(function () {
+  try {
+    const isDark = localStorage.getItem("darkMode") === "true" ||
+      (localStorage.getItem("darkMode") === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    if (isDark) {
+      document.documentElement.classList.add("darkmode");
+      if (document.body) {
+        document.body.classList.add("darkmode");
+      }
+    }
+  } catch (e) {}
+})();
+
 document.addEventListener("DOMContentLoaded", function () {
 
   const loader = document.querySelector("#loader");
   if (loader) loader.style.display = "none";
 
-  //setupThemeSwitchers();
+  setupThemeSwitchers();
   fetchAllPartials();
-  fetchAllLPartials();
 });
 
 function toggleLid() {
@@ -121,34 +134,51 @@ function fetchPartial(url, key) {
 
 function fetchAllPartials() {
   Promise.all([
-    fetchPartial("/navbarv2.html", "navbarHtmlV6"),
-    fetchPartial("/sidebar.html", "sidebarHtmlV5"),
-    fetchPartial("/footer.html", "footerHtmlV5"),
+    fetchPartial("/components/navbar.html", "navbarHtmlV8"),
+    fetchPartial("/components/sidebar.html", "sidebarHtmlV8"),
+    fetchPartial("/components/footer.html", "footerHtmlV8"),
     fetchPartial("/loader.html", "loaderHtml"),
   ])
     .then(([navbarHtml, sidebarHtml, footerHtml, loaderHtml]) => {
-      document.querySelector(".top").innerHTML = navbarHtml;
-      const currentPath = window.location.pathname.toLowerCase();
-      document.querySelectorAll(".navbar .nav-item").forEach(link => {
-        const href = link.getAttribute("href")?.toLowerCase() || "";
-        if (href && (currentPath.endsWith(href) || (href.endsWith("index.html") && (currentPath === "/" || currentPath.endsWith("/index.html"))))) {
-          link.classList.add("active");
-        } else {
-          link.classList.remove("active");
-        }
-      });
-      document.getElementById("sidebar").innerHTML = sidebarHtml;
-      document.querySelectorAll(".sidebar .sidebar-link").forEach(link => {
-        const href = link.getAttribute("href")?.toLowerCase() || "";
-        if (href && (currentPath.endsWith(href) || (href.endsWith("index.html") && (currentPath === "/" || currentPath.endsWith("/index.html"))))) {
-          link.classList.add("active");
-        } else {
-          link.classList.remove("active");
-        }
-      });
-      document.getElementById("footer").innerHTML = footerHtml;
-      document.getElementById("loader").innerHTML = loaderHtml;
-      //setupThemeSwitchers();
+      const topEl = document.querySelector(".top");
+      if (topEl) {
+        topEl.innerHTML = navbarHtml;
+        const currentPath = window.location.pathname.toLowerCase();
+        document.querySelectorAll(".navbar .nav-item").forEach(link => {
+          const href = link.getAttribute("href")?.toLowerCase() || "";
+          if (href && (currentPath.endsWith(href) || (href.endsWith("index.html") && (currentPath === "/" || currentPath.endsWith("/index.html"))))) {
+            link.classList.add("active");
+          } else {
+            link.classList.remove("active");
+          }
+        });
+      }
+
+      const sidebarEl = document.getElementById("sidebar");
+      if (sidebarEl) {
+        sidebarEl.innerHTML = sidebarHtml;
+        const currentPath = window.location.pathname.toLowerCase();
+        document.querySelectorAll(".sidebar .sidebar-link").forEach(link => {
+          const href = link.getAttribute("href")?.toLowerCase() || "";
+          if (href && (currentPath.endsWith(href) || (href.endsWith("index.html") && (currentPath === "/" || currentPath.endsWith("/index.html"))))) {
+            link.classList.add("active");
+          } else {
+            link.classList.remove("active");
+          }
+        });
+      }
+
+      const footerEl = document.getElementById("footer");
+      if (footerEl) {
+        footerEl.innerHTML = footerHtml;
+      }
+
+      const loaderEl = document.getElementById("loader");
+      if (loaderEl) {
+        loaderEl.innerHTML = loaderHtml;
+      }
+
+      setupThemeSwitchers();
       window.addEventListener('load', () => {
         const o = document.getElementById('loader-wrapper');
         o && (o.classList.add('hidden'), setTimeout(() => {
@@ -169,14 +199,18 @@ function fetchAllPartials() {
 
 function fetchAllLPartials() {
   Promise.all([
-    fetch("/sidebar.html").then((res) => res.text()),
-    fetch("/footer.html").then((res) => res.text()),
+    fetch("/components/sidebar.html").then((res) => res.text()),
+    fetch("/components/footer.html").then((res) => res.text()),
     fetch("/loader.html").then((res) => res.text()),
   ])
     .then(([sidebarHtml, footerHtml, loaderHtml]) => {
-      document.getElementById("sidebar").innerHTML = sidebarHtml;
-      document.getElementById("footer").innerHTML = footerHtml;
-      document.getElementById("loader").innerHTML = loaderHtml;
+      const sidebarEl = document.getElementById("sidebar");
+      if (sidebarEl) sidebarEl.innerHTML = sidebarHtml;
+      const footerEl = document.getElementById("footer");
+      if (footerEl) footerEl.innerHTML = footerHtml;
+      const loaderEl = document.getElementById("loader");
+      if (loaderEl) loaderEl.innerHTML = loaderHtml;
+      setupThemeSwitchers();
       window.addEventListener('load', () => {
         const o = document.getElementById('loader-wrapper');
         o && (o.classList.add('hidden'), setTimeout(() => {
@@ -194,34 +228,55 @@ function fetchAllLPartials() {
       });
     });
 }
-/*
+
 function setupThemeSwitchers() {
   const themeSwitches = [
     document.getElementById("theme-switch"),
+    document.getElementById("darkModeToggle"),
     document.getElementById("leaderboard-theme-switch"),
   ].filter(Boolean);
 
-  if (!themeSwitches.length) return;
+  const getIsDark = () => {
+    const stored = localStorage.getItem("darkMode");
+    if (stored !== null) return stored === "true";
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  };
 
-  const updateTheme = () => {
-    const isDark = localStorage.getItem("darkMode") === "true";
-    document.body.classList.toggle("darkmode", isDark);
+  const updateTheme = (isDark) => {
+    document.documentElement.classList.toggle("darkmode", isDark);
+    if (document.body) {
+      document.body.classList.toggle("darkmode", isDark);
+    }
     themeSwitches.forEach((switchEl) => {
-      switchEl.textContent = isDark ? "light_mode" : "dark_mode";
+      const icon = switchEl.querySelector(".material-icons") || (switchEl.classList.contains("material-icons") ? switchEl : null);
+      if (icon) {
+        icon.textContent = isDark ? "light_mode" : "dark_mode";
+      } else {
+        switchEl.textContent = isDark ? "light_mode" : "dark_mode";
+      }
+      const label = isDark ? "Switch to light mode" : "Switch to dark mode";
+      switchEl.setAttribute("aria-label", label);
+      switchEl.setAttribute("title", label);
     });
   };
 
-  const toggleTheme = () => {
-    const isNowDark = !document.body.classList.contains("darkmode");
-    localStorage.setItem("darkMode", isNowDark);
-    updateTheme();
+  const toggleTheme = (e) => {
+    if (e) e.preventDefault();
+    const isCurrentlyDark = document.documentElement.classList.contains("darkmode") ||
+      (document.body && document.body.classList.contains("darkmode"));
+    const isNowDark = !isCurrentlyDark;
+    localStorage.setItem("darkMode", isNowDark ? "true" : "false");
+    updateTheme(isNowDark);
   };
 
-  updateTheme();
+  // Sync state initially
+  updateTheme(getIsDark());
+
   themeSwitches.forEach((switchEl) => {
-    switchEl.addEventListener("click", toggleTheme);
+    switchEl.onclick = toggleTheme;
   });
-}*/
+}
+window.setupThemeSwitchers = setupThemeSwitchers;
 
 function closeAnnouncementBanner() {
   document.getElementById("announcement-banner").style.display = "none";
