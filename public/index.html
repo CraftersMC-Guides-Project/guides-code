@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>CraftersMC SkyBlock Guides &amp; Documentation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Official documentation and progression guides for CraftersMC SkyBlock, including live event tools, sellers directory, and REST API reference." />
+  <meta name="description"
+    content="Official documentation and progression guides for CraftersMC SkyBlock, including live event tools, sellers directory, and REST API reference." />
   <meta name="google-site-verification" content="a1S654ozEH6kuH1DM6-3ssQYXgow72Mfh19eg3RCUTk" />
   <meta name="google-site-verification" content="Wr3jatMv-sfXhgBy5jBfiX8Nwn6k8P1k_jPubQzBcTY" />
   <meta name="google-site-verification" content="xlDzPprkNVmy_Wubs_ClU3zuXQEo8AuYkmjZKfcqI2o" />
@@ -14,272 +16,1137 @@
   <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-  <!-- Stylesheet -->
-  <link rel="stylesheet" href="better-api-docs/style.css" />
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/essential.css" />
+  <link rel="stylesheet" href="css/neo-brutalism.css" />
 
   <!-- Scripts -->
-  <script src="better-api-docs/app.js" defer></script>
-  <script src="js/components.js" defer></script>
+  <script src="js/script.js" defer></script>
 </head>
+
 <body>
 
-  <!-- Top Header Navigation -->
-  <header class="top-header">
-    <div class="header-left">
-      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
-        <span class="material-icons" style="font-size:1.25rem;">menu</span>
-      </button>
-      <a href="index.html" class="header-brand">
-        <img src="assets/cmc-guides.png" alt="CraftersMC Logo" />
-        <div class="brand-text">
-          <span class="brand-title">CraftersMC Guides</span>
-          <span class="version-badge">SkyBlock Docs</span>
+  <!-- Fullscreen / Layout Overlays -->
+  <div class="background"></div>
+
+  <!-- =========================================================
+       NEO-BRUTALISM NAVBAR SYSTEM
+       ========================================================= -->
+  <div class="top">
+    <div class="navbar">
+      <div class="left navbar-left">
+        <button type="button" class="navbar-menu-btn menu-icon" onclick="toggleSidebar()"
+          aria-label="Toggle navigation menu" title="Open Navigation Menu">
+          <span class="material-icons">menu</span>
+        </button>
+        <a href="index.html" class="navbar-brand" title="CraftersMC Guides Home">
+          <img src="assets/cmc-icon.png" alt="CraftersMC Logo" class="navbar-logo"
+            onerror="this.src='assets/cmc-guides.png'; this.onerror=null;" />
+          <div class="navbar-brand-info">
+            <span class="navbar-brand-title">CraftersMC Guides</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="navbar-center">
+        <a href="index.html" class="nav-item active">Home</a>
+        <a href="player.html" class="nav-item">Player</a>
+        <a href="bazaar.html" class="nav-item">Bazaar</a>
+        <a href="auction.html" class="nav-item">Auctions</a>
+        <a href="templates-showcase.html" class="nav-item">Templates</a>
+      </div>
+
+      <div class="right navbar-right">
+        <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" rel="noopener noreferrer"
+          class="navbar-github-btn navbar-icon-btn github-button" aria-label="Open guides GitHub repo"
+          title="GitHub Repository">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              d="M12 .5C5.65.5.5 5.65.5 12a11.49 11.49 0 0 0 7.8 10.9c.57.1.78-.25.78-.55v-1.9c-3.17.69-3.84-1.35-3.84-1.35-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.75 2.67 1.24 3.32.95.1-.74.4-1.24.72-1.52-2.53-.29-5.2-1.27-5.2-5.67 0-1.25.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.96 10.96 0 0 1 5.73 0c2.18-1.49 3.14-1.18 3.14-1.18.63 1.59.23 2.76.12 3.05.74.81 1.18 1.84 1.18 3.09 0 4.41-2.67 5.38-5.21 5.66.41.36.77 1.06.77 2.15v3.19c0 .31.21.66.78.55A11.49 11.49 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       NEO-BRUTALISM SIDEBAR SYSTEM
+       ========================================================= -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <a class="sidebar-brand" href="index.html" aria-label="Go to home page">
+        <img id="sidebarProfilePic" src="assets/cmc-guides.png" alt="CMC Guides Logo"
+          onerror="this.src='assets/cmc-icon.png'; this.onerror=null;">
+        <div class="sidebar-brand-text">
+          <span class="sidebar-brand-title">CraftersMC</span>
+          <span class="sidebar-brand-subtitle">Guides Project</span>
         </div>
       </a>
+      <button type="button" class="sidebar-close" onclick="toggleSidebar()" aria-label="Close navigation menu"
+        title="Close Menu">
+        <span class="material-icons">close</span>
+      </button>
     </div>
+    <div class="sidebar-content">
+      <div class="sidebar-category intel">Live Intelligence</div>
+      <a class="sidebar-link active" href="index.html"><span
+          class="material-icons sidebar-link-icon">home</span><span>Overview</span></a>
+      <a class="sidebar-link" href="status.html"><span class="material-icons sidebar-link-icon">lan</span><span>Network
+          Status</span></a>
+      <a class="sidebar-link" href="player.html"><span
+          class="material-icons sidebar-link-icon">person_search</span><span>Player Viewer</span></a>
+      <a class="sidebar-link" href="auction.html"><span class="material-icons sidebar-link-icon">gavel</span><span>Live
+          Auctions</span></a>
+      <a class="sidebar-link" href="bazaar.html"><span
+          class="material-icons sidebar-link-icon">storefront</span><span>Bazaar Market</span></a>
+      <a class="sidebar-link" href="bazaar-price-graph.html"><span
+          class="material-icons sidebar-link-icon">show_chart</span><span>Bazaar Price Charts</span></a>
+      <a class="sidebar-link" href="skycalendar.html"><span
+          class="material-icons sidebar-link-icon">event</span><span>SkyCalendar</span></a>
+      <a class="sidebar-link" href="bank-interest.html"><span
+          class="material-icons sidebar-link-icon">account_balance</span><span>Bank Interest</span></a>
 
-    <!-- Search Box -->
-    <div class="search-box">
-      <span class="material-icons search-icon">search</span>
-      <input type="text" id="search-input" placeholder="Search guides, tools, slayer, API..." />
-      <span class="search-kbd-shortcut">/</span>
+      <div class="sidebar-category guides">Guides &amp; Progression</div>
+      <a class="sidebar-link" href="journey-guides.html"><span
+          class="material-icons sidebar-link-icon">map</span><span>Guides Hub</span></a>
+      <a class="sidebar-link" href="guide/starter-guide.html"><span
+          class="material-icons sidebar-link-icon">explore</span><span>Starter Guide</span></a>
+      <a class="sidebar-link" href="guide/intermediate-guide.html"><span
+          class="material-icons sidebar-link-icon">trending_up</span><span>Intermediate Guide</span></a>
+      <a class="sidebar-link" href="guide/advanced-guide.html"><span
+          class="material-icons sidebar-link-icon">military_tech</span><span>Advanced Guide</span></a>
+      <a class="sidebar-link" href="guide/accessories-guide.html"><span
+          class="material-icons sidebar-link-icon">diamond</span><span>Accessories Guide</span></a>
+      <a class="sidebar-link" href="guide/bazaar-guide.html"><span
+          class="material-icons sidebar-link-icon">insights</span><span>Bazaar Guide</span></a>
+      <a class="sidebar-link" href="minions.html"><span
+          class="material-icons sidebar-link-icon">smart_toy</span><span>Minions Database</span></a>
+      <a class="sidebar-link" href="pets.html"><span class="material-icons sidebar-link-icon">pets</span><span>Pets
+          Database</span></a>
+      <a class="sidebar-link" href="texture-packs.html"><span
+          class="material-icons sidebar-link-icon">palette</span><span>Texture Packs</span></a>
+
+      <div class="sidebar-category tools">Calculators &amp; Tools</div>
+      <a class="sidebar-link" href="tools.html"><span class="material-icons sidebar-link-icon">build</span><span>Tools
+          Hub</span></a>
+      <a class="sidebar-link" href="tools/best-reforge.html"><span
+          class="material-icons sidebar-link-icon">auto_fix_high</span><span>Best Reforge Calc</span></a>
+      <a class="sidebar-link" href="tools/pet-exp-calculator.html"><span
+          class="material-icons sidebar-link-icon">pets</span><span>Pet EXP Calc</span></a>
+      <a class="sidebar-link" href="tools/skill-calculator.html"><span
+          class="material-icons sidebar-link-icon">psychology</span><span>Skill Calculator</span></a>
+      <a class="sidebar-link" href="tools/minion-production.html"><span
+          class="material-icons sidebar-link-icon">precision_manufacturing</span><span>Minion Production</span></a>
+      <a class="sidebar-link" href="tools/missing-acces-calc.html"><span
+          class="material-icons sidebar-link-icon">checklist</span><span>Missing Accessories</span></a>
+      <a class="sidebar-link" href="tools/missing-cakes-calc.html"><span
+          class="material-icons sidebar-link-icon">cake</span><span>Missing Cakes</span></a>
+      <a class="sidebar-link" href="unicode.html"><span
+          class="material-icons sidebar-link-icon">format_shapes</span><span>Unicode &amp; Formatting</span></a>
+
+      <div class="sidebar-category leaderboards">Leaderboards</div>
+      <a class="sidebar-link" href="leaderboards/index.html"><span
+          class="material-icons sidebar-link-icon">leaderboard</span><span>Leaderboard Hub</span></a>
+      <a class="sidebar-link" href="leaderboards/skills-leaderboards.html"><span
+          class="material-icons sidebar-link-icon">auto_awesome</span><span>Skills Rankings</span></a>
+      <a class="sidebar-link" href="leaderboards/coins-leaderboards.html"><span
+          class="material-icons sidebar-link-icon">monetization_on</span><span>Coins Leaderboards</span></a>
+      <a class="sidebar-link" href="leaderboards/networth-leaderboard.html"><span
+          class="material-icons sidebar-link-icon">account_balance_wallet</span><span>Networth Rankings</span></a>
+      <a class="sidebar-link" href="leaderboards/slayers-leaderboards.html"><span
+          class="material-icons sidebar-link-icon">shield</span><span>Slayers Rankings</span></a>
+      <a class="sidebar-link" href="leaderboards/farming-contests-leaderboards.html"><span
+          class="material-icons sidebar-link-icon">agriculture</span><span>Farming Contests</span></a>
+      <a class="sidebar-link" href="leaderboards/achievements-leaderboard.html"><span
+          class="material-icons sidebar-link-icon">emoji_events</span><span>Achievements</span></a>
+      <a class="sidebar-link" href="leaderboards/collections-leaderboards.html"><span
+          class="material-icons sidebar-link-icon">inventory_2</span><span>Collections</span></a>
+
+      <div class="sidebar-category community">Community &amp; External</div>
+      <a class="sidebar-link" href="rank-sellers.html"><span
+          class="material-icons sidebar-link-icon">card_giftcard</span><span>Rank Sellers</span></a>
+      <a class="sidebar-link" href="traveling-zoo.html"><span
+          class="material-icons sidebar-link-icon">cruelty_free</span><span>Traveling Zoo</span></a>
+      <a class="sidebar-link" href="games/craftle/index.html"><span
+          class="material-icons sidebar-link-icon">sports_esports</span><span>Craftle Game</span></a>
+      <a class="sidebar-link" href="better-api-docs/index.html"><span
+          class="material-icons sidebar-link-icon">api</span><span>REST API Reference</span></a>
+      <a class="sidebar-link" href="templates-showcase.html"><span
+          class="material-icons sidebar-link-icon">dashboard_customize</span><span>Templates Showcase</span></a>
+      <a class="sidebar-link" href="https://craftersmc.net/" target="_blank" rel="noopener noreferrer"><span
+          class="material-icons sidebar-link-icon">language</span><span>Server Website</span></a>
     </div>
+  </div>
 
-    <!-- Header Utility Links -->
-    <div class="header-actions">
-      <a href="better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
-      <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
-    </div>
-  </header>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-  <!-- Application Layout -->
-  <div class="app-layout">
+  <!-- =========================================================
+       MAIN NEO-BRUTALISM PAGE CONTENT
+       ========================================================= -->
+  <main class="neo-container">
 
-    <!-- Left Sidebar Web Component -->
-    <cmc-sidebar active="index"></cmc-sidebar>
+    <!-- HERO SECTION -->
+    <section class="neo-hero-card" id="overview">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
+        </div>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px; color:#111827;">stars</span>
+          CraftersMC-Guides-Project
+        </div>
+        <!-- <div style="font-size: 11px; font-weight: 800; font-family: var(--font-mono); color: #111827;">
+          v2.4 STABLE
+        </div> -->
+      </div>
 
-    <!-- Main Content Area -->
-    <main class="main-content">
-
-      <!-- Section: Overview -->
-      <section class="doc-section" id="overview">
-        <div class="section-header">
-          <h1>CraftersMC SkyBlock Documentation</h1>
-          <p>
-            The comprehensive guide and reference library for CraftersMC SkyBlock players, traders, and developers.
+      <div class="neo-hero-content">
+        <div class="neo-hero-heading-group">
+          <!-- <div class="neo-badge" style="background: #fde047;">
+            <span class="material-icons" style="color: #b45309;">local_fire_department</span>
+            Verified Player Companion
+          </div> -->
+          <h1 class="neo-hero-title">
+            CraftersMC <span class="neo-hero-highlight">SkyBlock Guides</span>
+          </h1>
+          <p class="neo-hero-subtitle">
+            The comprehensive guide and reference library for CraftersMC SkyBlock players, sellers, and community
+            members. Explore progression routes, real-time trackers, verified rank seller directories, and market tools.
           </p>
         </div>
 
-        <div class="prose-card">
-          <p>
-            Whether you are just starting your island, advancing through slayer bosses, optimizing accessory reforges, or building integrations with the CraftersMC REST API, this documentation contains all verified strategies, event timers, and technical references.
+        <!-- Quick Metrics / Chips -->
+        <div class="neo-hero-stats">
+          <a href="#section-guides" class="neo-stat-chip">
+            <span class="material-icons">menu_book</span>
+            <span>11 Progression Guides</span>
+          </a>
+          <a href="#section-tools" class="neo-stat-chip">
+            <span class="material-icons">build</span>
+            <span>8 Live Tools</span>
+          </a>
+          <a href="#section-team" class="neo-stat-chip">
+            <span class="material-icons">group</span>
+            <span>Project Team</span>
+          </a>
+        </div>
+
+        <!-- Real-Time Neo-Brutalist Search -->
+        <div class="neo-search-wrap">
+          <div class="neo-search-inner">
+            <span class="material-icons neo-search-icon">search</span>
+            <input type="text" id="search-input" class="neo-search-input"
+              placeholder="Search guides, tools, slayers, bazaar, calculators, events..." autocomplete="off"
+              aria-label="Search guides, tools, and calculators" />
+            <button type="button" id="search-clear" class="neo-search-clear" title="Clear search"
+              aria-label="Clear search input">
+              <span class="material-icons">close</span>
+            </button>
+            <span class="neo-search-shortcut" title="Press / to search">/</span>
+          </div>
+          <div class="neo-search-meta">
+            <span>Filter results in real time</span>
+            <span>Showing <strong id="results-count">19</strong> resources</span>
+          </div>
+        </div>
+
+        <!-- Quick Jump Action Buttons (Button 70 Neo-Brutalism) -->
+        <div class="neo-hero-actions">
+          <a href="#section-guides" class="button70-btn yellow">
+            <span class="material-icons">explore</span>
+            Explore Guides
+          </a>
+          <a href="player.html" class="button70-btn cyan">
+            <span class="material-icons">person_search</span>
+            Player Viewer
+          </a>
+          <a href="auction.html" class="button70-btn green">
+            <span class="material-icons">gavel</span>
+            Live Auctions
+          </a>
+          <!-- Developer link commented out:
+          <a href="#section-api" class="button70-btn green">
+            <span class="material-icons">terminal</span>
+            REST API Docs
+          </a>
+          -->
+          <!-- <a href="templates-showcase.html" class="button70-btn pink">
+            <span class="material-icons">style</span>
+            Theme Showcase
+          </a> -->
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         SECTION: PROGRESSION & GAMEPLAY GUIDES
+         ======================================================= -->
+    <section class="neo-section" id="section-guides">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#fef08a;">
+              <span class="material-icons">menu_book</span>
+              PROGRESSION
+            </span>
+            <h2 class="neo-section-title">Progression &amp; Gameplay Guides</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Comprehensive walkthroughs covering island establishment, early coins, slayer bosses, and endgame
+            optimization.
           </p>
-          <div class="alert-box tip">
-            <span class="material-icons alert-icon">lightbulb</span>
-            <div>
-              <strong>Quick Tip:</strong> Press <kbd style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-family:var(--font-mono); font-size:0.8rem;">/</kbd> anywhere on the page to focus the global search bar and instantly filter guides and tools.
+        </div>
+        <span class="neo-section-count">11 Guides Available</span>
+      </div>
+
+      <div class="neo-grid" id="guides-grid">
+
+        <!-- Card 1: Starter Guide -->
+        <div class="neo-card yellow"
+          data-search="starter guide early game island layout coin generation fairy souls minion automation beginner">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">star</span> Featured</span>
+            <span class="material-icons neo-card-icon">explore</span>
+          </div>
+          <h3 class="neo-card-title">Starter Guide</h3>
+          <p class="neo-card-desc">Early-game setup: Island layout, early coin generation, fairy souls, and minion
+            automation basics.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Early Game <span>/ Foundations</span></div>
+            <a href="guide/starter-guide.html" class="neo-card-btn">Open Guide &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 2: Intermediate Guide -->
+        <div class="neo-card cyan"
+          data-search="intermediate guide dragon armor combat skill minion slot expansion progression weapons mid-game">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">trending_up</span> Mid-Game</span>
+            <span class="material-icons neo-card-icon">military_tech</span>
+          </div>
+          <h3 class="neo-card-title">Intermediate Guide</h3>
+          <p class="neo-card-desc">Dragon armor progression, weapon upgrades, Combat skill leveling, and minion slot
+            expansion routes.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Mid Game <span>/ Combat</span></div>
+            <a href="guide/intermediate-guide.html" class="neo-card-btn">Open Guide &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 3: Slayer Edition Guide -->
+        <div class="neo-card pink"
+          data-search="slayer edition guide boss mechanics loadouts revenant tarantula sven zombie spider wolf combat">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">local_fire_department</span> Bosses</span>
+            <span class="material-icons neo-card-icon">shield</span>
+          </div>
+          <h3 class="neo-card-title">Slayer Edition Guide</h3>
+          <p class="neo-card-desc">Boss mechanics, gear loadouts, and spawn locations for Zombie, Spider, and Wolf
+            slayer tier challenges.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Tier 1-4 <span>/ Bosses</span></div>
+            <a href="guide/intermediate-guide2.html" class="neo-card-btn">Open Guide &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 4: Advanced Guide -->
+        <div class="neo-card purple"
+          data-search="advanced guide endgame combat setups high-tier slayer pet optimization economy late-game">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">diamond</span> Endgame</span>
+            <span class="material-icons neo-card-icon">auto_awesome</span>
+          </div>
+          <h3 class="neo-card-title">Advanced Guide</h3>
+          <p class="neo-card-desc">Endgame combat setups, high-tier slayer farming, pet level optimization, and economy
+            management.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Late Game <span>/ Meta</span></div>
+            <a href="guide/advanced-guide.html" class="neo-card-btn">Open Guide &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 5: Accessories & Reforges -->
+        <div class="neo-card orange"
+          data-search="accessories reforges talismans optimal stones common uncommon rare epic legendary stat boosts">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">tune</span> Optimization</span>
+            <span class="material-icons neo-card-icon">toll</span>
+          </div>
+          <h3 class="neo-card-title">Accessories &amp; Reforges</h3>
+          <p class="neo-card-desc">Optimal reforge stones for common, uncommon, rare, epic, and legendary talismans and
+            damage stats.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Stats <span>/ Accessories</span></div>
+            <a href="guide/accessories-guide.html" class="neo-card-btn">Open Guide &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 6: Bazaar Trading Guide -->
+        <div class="neo-card green"
+          data-search="bazaar trading guide buy sell orders spread margin flipping economy market coins">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">storefront</span> Economy</span>
+            <span class="material-icons neo-card-icon">paid</span>
+          </div>
+          <h3 class="neo-card-title">Bazaar Trading Guide</h3>
+          <p class="neo-card-desc">How to use buy and sell orders, understand order book spreads, and make millions
+            flipping commodities.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Economy <span>/ Trading</span></div>
+            <a href="guide/bazaar-guide.html" class="neo-card-btn">Open Guide &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 7: Minions Database -->
+        <div class="neo-card cyan"
+          data-search="minions database production rates fuels hoppers upgrades automated storage tier rates">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">smart_toy</span> Automation</span>
+            <span class="material-icons neo-card-icon">precision_manufacturing</span>
+          </div>
+          <h3 class="neo-card-title">Minions Database</h3>
+          <p class="neo-card-desc">Complete minion production timings, fuel multipliers, hopper coin formulas, and
+            storage upgrade tiers.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Passive <span>/ Income</span></div>
+            <a href="minions.html" class="neo-card-btn">Open Database &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 8: Pets Database -->
+        <div class="neo-card pink"
+          data-search="pets database levels 1-100 exp curves candies combat perks abilities companions tier list">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">pets</span> Companions</span>
+            <span class="material-icons neo-card-icon">cruelty_free</span>
+          </div>
+          <h3 class="neo-card-title">Pets Database</h3>
+          <p class="neo-card-desc">Level 1-100 EXP curves, stat perks, candy calculators, and combat companion tier list
+            comparisons.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Companions <span>/ Stats</span></div>
+            <a href="pets.html" class="neo-card-btn">Open Database &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 9: Common Queries & FAQ -->
+        <div class="neo-card"
+          data-search="common queries faq questions answers custom features craftersmc mechanics rules help">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">help_outline</span> Q&amp;A</span>
+            <span class="material-icons neo-card-icon">psychology</span>
+          </div>
+          <h3 class="neo-card-title">Common Queries &amp; FAQ</h3>
+          <p class="neo-card-desc">Quick reference answers for common questions regarding CraftersMC custom features and
+            mechanics.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Reference <span>/ Support</span></div>
+            <a href="guide/queries.html" class="neo-card-btn">Open FAQ &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 10: Unicode & Formatting -->
+        <div class="neo-card yellow"
+          data-search="unicode formatting color codes symbols glyphs book quills item signs formatting">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">palette</span> Formatting</span>
+            <span class="material-icons neo-card-icon">format_shapes</span>
+          </div>
+          <h3 class="neo-card-title">Unicode &amp; Formatting</h3>
+          <p class="neo-card-desc">Minecraft color code guide and custom unicode symbols for Book &amp; Quills, chat,
+            and item signs.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Glyphs <span>/ Chat</span></div>
+            <a href="unicode.html" class="neo-card-btn">Open Guide &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 11: Feather Bot Guide -->
+        <div class="neo-card dark"
+          data-search="feather bot discord slash commands documentation syntax player lookup verification bot guide">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">terminal</span> Discord Bot</span>
+            <span class="material-icons neo-card-icon">smart_toy</span>
+          </div>
+          <h3 class="neo-card-title" style="color: #ffffff !important;">Feather Bot Guide</h3>
+          <p class="neo-card-desc">Comprehensive slash command syntax and documentation for the official CraftersMC
+            Discord companion bot.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price" style="color: #ffffff !important;">Bot <span>/ Commands</span></div>
+            <a href="feather-bot/index.html" class="neo-card-btn">View Bot Guide &rarr;</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =======================================================
+         SECTION: LIVE INTERACTIVE TOOLS
+         ======================================================= -->
+    <section class="neo-section" id="section-tools">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#bae6fd;">
+              <span class="material-icons">build</span>
+              LIVE UTILITIES
+            </span>
+            <h2 class="neo-section-title">Live Interactive Tools &amp; Trackers</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Real-time player lookup, countdown timers, anti-scam seller directories, market graphs, and calculators.
+          </p>
+        </div>
+        <span class="neo-section-count">8 Tools Available</span>
+      </div>
+
+      <div class="neo-grid" id="tools-grid">
+
+        <!-- Tool 1: Player & Profile Viewer -->
+        <div class="neo-card cyan"
+          data-search="player profile viewer real-time data skills slayers minions collections bust lookup">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons" style="color:#0284c7;">fiber_manual_record</span> Live
+              API</span>
+            <span class="material-icons neo-card-icon">person_search</span>
+          </div>
+          <h3 class="neo-card-title">Player &amp; Profile Viewer</h3>
+          <p class="neo-card-desc">Inspect real-time player data, SkyBlock profiles, skills, slayers, minions, and
+            collections via the API.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Real-Time <span>/ Inspect</span></div>
+            <a href="player.html" class="neo-card-btn">Launch Viewer &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Tool 2: SkyCalendar -->
+        <div class="neo-card yellow"
+          data-search="skycalendar events jerry spooky traveling zoo ethan farming countdown timers tracker">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">event</span> Real-Time</span>
+            <span class="material-icons neo-card-icon">schedule</span>
+          </div>
+          <h3 class="neo-card-title">SkyCalendar Event Timer</h3>
+          <p class="neo-card-desc">Live countdown timers for Season of Jerry, Spooky Festival, Traveling Zoo, and
+            Ethan's Contests.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Events <span>/ Live</span></div>
+            <a href="skycalendar.html" class="neo-card-btn">Launch SkyCalendar &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Tool 3: Rank & Gems Sellers (Disabled) -->
+        <div class="neo-card disabled"
+          data-search="rank gems sellers directory trusted scam prevention verified trade market safety disabled offline">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons" style="color:#6b7280;">block</span> Disabled</span>
+            <span class="material-icons neo-card-icon">card_giftcard</span>
+          </div>
+          <h3 class="neo-card-title">Rank &amp; Gems Sellers</h3>
+          <p class="neo-card-desc">Community-verified list of trusted rank and gem sellers with verified pricing and
+            anti-scam guidelines.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Unavailable <span>/ Directory</span></div>
+            <button type="button" class="neo-card-btn" disabled style="pointer-events: none;">Disabled</button>
+          </div>
+        </div>
+
+        <!-- Tool 4: Leaderboards Viewer -->
+        <div class="neo-card orange"
+          data-search="leaderboards viewer top players collections skills slayer xp bank networth rankings records">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">leaderboard</span> Rankings</span>
+            <span class="material-icons neo-card-icon">emoji_events</span>
+          </div>
+          <h3 class="neo-card-title">Leaderboards Viewer</h3>
+          <p class="neo-card-desc">Check top player placements across collections, skills, slayer XP, bank networth, and
+            boss records.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Top 100 <span>/ Records</span></div>
+            <a href="leaderboards.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Tool 5: Live Auctions Market -->
+        <div class="neo-card purple"
+          data-search="auctions market live auction house bids bin items pricing search rarity filters">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">gavel</span> Market</span>
+            <span class="material-icons neo-card-icon">store</span>
+          </div>
+          <h3 class="neo-card-title">Live Auctions Browser</h3>
+          <p class="neo-card-desc">Inspect active player auctions, BIN prices, bid history, item lore, and real-time
+            SkyBlock market deals.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Auctions <span>/ Market</span></div>
+            <a href="auction.html" class="neo-card-btn">Browse Auctions &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Tool 6: Bazaar Price Charts -->
+        <div class="neo-card pink"
+          data-search="bazaar price charts graphs commodities margins volume analytics trends history buy sell">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">show_chart</span> Analytics</span>
+            <span class="material-icons neo-card-icon">trending_up</span>
+          </div>
+          <h3 class="neo-card-title">Bazaar Price Charts</h3>
+          <p class="neo-card-desc">Interactive commodity price graphs, 24h volume tracking, spread margins, and
+            historical trends.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Trends <span>/ Graphs</span></div>
+            <a href="bazaar.html" class="neo-card-btn">View Charts &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Tool 7: Calculators & Utilities -->
+        <div class="neo-card"
+          data-search="calculators utilities best reforge pet exp skill calculator minion production missing accessories cakes">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">calculate</span> Calculator</span>
+            <span class="material-icons neo-card-icon">build</span>
+          </div>
+          <h3 class="neo-card-title">Calculators &amp; Utilities</h3>
+          <p class="neo-card-desc">Reforge stat calculators, minion inventory filling timers, missing accessory
+            checkers, and skill XP math.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Formulas <span>/ Tools</span></div>
+            <a href="tools.html" class="neo-card-btn">Open Calculators &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Tool 8: Texture Packs -->
+        <div class="neo-card cyan"
+          data-search="texture packs bedrock resource packs custom weapons armor items models visuals graphics">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">palette</span> Bedrock</span>
+            <span class="material-icons neo-card-icon">brush</span>
+          </div>
+          <h3 class="neo-card-title">Bedrock Texture Packs</h3>
+          <p class="neo-card-desc">Curated list of Bedrock resource packs customized for CraftersMC custom weapons,
+            armor, and menus.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Visuals <span>/ Bedrock</span></div>
+            <a href="texture-packs.html" class="neo-card-btn">Browse Packs &rarr;</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =======================================================
+         SECTION: DEVELOPER PLATFORM & REST API (COMMENTED OUT)
+         ======================================================= -->
+    <!--
+    <section class="neo-section" id="section-api">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#bbf7d0;">
+              <span class="material-icons">code</span>
+              DEVELOPER HUB
+            </span>
+            <h2 class="neo-section-title">Developer Platform &amp; REST API</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Technical endpoints, binary NBT decoding specifications, and numerical item mappings for Discord bots and web tools.
+          </p>
+        </div>
+        <span class="neo-section-count">11 Endpoints &bull; 1,933 Items</span>
+      </div>
+
+      <div class="neo-grid">
+
+        /* Card: API Reference */
+        <div class="neo-card dark" data-search="rest api reference 11 routes status voters players bazaar auctions profiles settings endpoints json">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">api</span> REST v1.0</span>
+            <span class="material-icons neo-card-icon">terminal</span>
+          </div>
+          <h3 class="neo-card-title">REST API Documentation (11 Routes)</h3>
+          <p class="neo-card-desc">Interactive reference for Network Status, Voters, Player Stats, Bazaar Orders, Auctions, and Profile Blobs.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">11 Routes <span>/ JSON</span></div>
+            <a href="better-api-docs/index.html" class="neo-card-btn">Open API Docs &rarr;</a>
+          </div>
+        </div>
+
+        /* Card: NBT Blobs */
+        <div class="neo-card green" data-search="nbt storage catalog decoding base64 gzip decompression inventory equipment wardrobe quiver binary">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">memory</span> Specifications</span>
+            <span class="material-icons neo-card-icon">data_object</span>
+          </div>
+          <h3 class="neo-card-title">15 Decoded NBT Storage Catalog</h3>
+          <p class="neo-card-desc">Complete specifications for Base64 GZIP decompression across player inventories, wardrobe, equipment, and quiver.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">15 Blobs <span>/ Binary</span></div>
+            <a href="better-api-docs/index.html#section-nbt-decoding" class="neo-card-btn">View NBT Specs &rarr;</a>
+          </div>
+        </div>
+
+        /* Card: Numerical Item IDs */
+        <div class="neo-card purple" data-search="numerical item ids 1933 bedrock identifiers mapping vanilla names lookup table">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">list_alt</span> Bedrock IDs</span>
+            <span class="material-icons neo-card-icon">inventory_2</span>
+          </div>
+          <h3 class="neo-card-title">Numerical Item IDs (1,933 Items)</h3>
+          <p class="neo-card-desc">Searchable lookup table mapping Bedrock numerical IDs directly to vanilla Minecraft item identifiers.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">1,933 Items <span>/ Bedrock</span></div>
+            <a href="better-api-docs/index.html#section-item-ids" class="neo-card-btn">Search Item IDs &rarr;</a>
+          </div>
+        </div>
+
+      </div>
+
+      /* Neo-Brutalist Code Block */
+      <div class="neo-code-card">
+        <div class="neo-code-header">
+          <div class="neo-code-title">
+            <div class="neo-hero-window-dots">
+              <span class="neo-hero-dot red"></span>
+              <span class="neo-hero-dot yellow"></span>
+              <span class="neo-hero-dot green"></span>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Section: Progression Guides Directory -->
-      <section class="doc-section" id="section-guides">
-        <div class="section-header">
-          <h2><span class="material-icons">menu_book</span> Progression &amp; Gameplay Guides</h2>
-          <p>Detailed walkthroughs covering each stage of the game.</p>
-        </div>
-
-        <div class="schema-cards-grid">
-          <div class="schema-card">
-            <div class="schema-name"><a href="guide/starter-guide.html">Starter Guide</a></div>
-            <div class="schema-desc">Early-game setup: Island layout, early coin generation, fairy souls, and minion automation.</div>
-            <div style="margin-top: 10px;"><a href="guide/starter-guide.html" style="font-weight: 600;">Open Starter Guide &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="guide/intermediate-guide.html">Intermediate Guide</a></div>
-            <div class="schema-desc">Dragon armor progression, weapon upgrades, Combat skill leveling, and minion slot expansion.</div>
-            <div style="margin-top: 10px;"><a href="guide/intermediate-guide.html" style="font-weight: 600;">Open Intermediate Guide &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="guide/intermediate-guide2.html">Slayer Edition Guide</a></div>
-            <div class="schema-desc">Boss mechanics, gear loadouts, and spawn locations for Zombie, Spider, and Wolf slayers.</div>
-            <div style="margin-top: 10px;"><a href="guide/intermediate-guide2.html" style="font-weight: 600;">Open Slayer Guide &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="guide/advanced-guide.html">Advanced Guide</a></div>
-            <div class="schema-desc">Endgame combat setups, high-tier slayer farming, pet level optimization, and economy management.</div>
-            <div style="margin-top: 10px;"><a href="guide/advanced-guide.html" style="font-weight: 600;">Open Advanced Guide &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="guide/accessories-guide.html">Accessories &amp; Reforges</a></div>
-            <div class="schema-desc">Optimal reforge stones for common, uncommon, rare, epic, and legendary talismans.</div>
-            <div style="margin-top: 10px;"><a href="guide/accessories-guide.html" style="font-weight: 600;">Open Accessories Guide &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="guide/bazaar-guide.html">Bazaar Trading Guide</a></div>
-            <div class="schema-desc">How to use buy and sell orders, understand order book spreads, and make coins with margin flipping.</div>
-            <div style="margin-top: 10px;"><a href="guide/bazaar-guide.html" style="font-weight: 600;">Open Bazaar Guide &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="guide/queries.html">Common Queries &amp; FAQ</a></div>
-            <div class="schema-desc">Quick reference answers for common questions regarding CraftersMC custom features and mechanics.</div>
-            <div style="margin-top: 10px;"><a href="guide/queries.html" style="font-weight: 600;">Open Queries &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="unicode.html">Unicode &amp; Formatting</a></div>
-            <div class="schema-desc">Minecraft color code guide and custom unicode symbols for Book &amp; Quills and item signs.</div>
-            <div style="margin-top: 10px;"><a href="unicode.html" style="font-weight: 600;">Open Unicode Guide &rarr;</a></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Section: Interactive Tools -->
-      <section class="doc-section" id="section-tools">
-        <div class="section-header">
-          <h2><span class="material-icons">build</span> Live Interactive Tools</h2>
-          <p>Real-time trackers, directories, and utilities built for CraftersMC players.</p>
-        </div>
-
-        <div class="schema-cards-grid">
-          <div class="schema-card">
-            <div class="schema-name"><a href="player.html">Player &amp; Profile Viewer</a></div>
-            <div class="schema-desc">Inspect real-time player data, SkyBlock profiles, skills, slayers, minions, and collections via the API.</div>
-            <div style="margin-top: 10px;"><a href="player.html" style="font-weight: 600;">Launch Player Viewer &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="skycalendar.html">SkyCalendar</a></div>
-            <div class="schema-desc">Live countdown timers for Season of Jerry, Spooky Festival, Traveling Zoo, and Ethan's Contests.</div>
-            <div style="margin-top: 10px;"><a href="skycalendar.html" style="font-weight: 600;">Launch SkyCalendar &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="rank-sellers.html">Rank &amp; Gems Sellers</a></div>
-            <div class="schema-desc">Community-verified list of trusted rank and gem sellers with scam prevention guidelines.</div>
-            <div style="margin-top: 10px;"><a href="rank-sellers.html" style="font-weight: 600;">Open Directory &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="leaderboards.html">Leaderboards Viewer</a></div>
-            <div class="schema-desc">Check top player placements across collections, skills, slayer XP, bank networth, and boss records.</div>
-            <div style="margin-top: 10px;"><a href="leaderboards.html" style="font-weight: 600;">View Leaderboards &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="texture-packs.html">Texture Packs</a></div>
-            <div class="schema-desc">Curated list of Bedrock resource packs customized for CraftersMC weapons and armor.</div>
-            <div style="margin-top: 10px;"><a href="texture-packs.html" style="font-weight: 600;">Browse Packs &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="tools.html">Calculators &amp; Utilities</a></div>
-            <div class="schema-desc">Reforge stat calculators, minion inventory filling timers, and skill XP calculators.</div>
-            <div style="margin-top: 10px;"><a href="tools.html" style="font-weight: 600;">Open Calculators &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="feather-bot/index.html">Feather Bot Guide</a></div>
-            <div class="schema-desc">Comprehensive slash command syntax and documentation for the official CraftersMC Discord bot.</div>
-            <div style="margin-top: 10px;"><a href="feather-bot/index.html" style="font-weight: 600;">View Bot Commands &rarr;</a></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Section: Developer Platform & REST API -->
-      <section class="doc-section" id="section-api">
-        <div class="section-header">
-          <h2><span class="material-icons">code</span> Developer Platform &amp; REST API</h2>
-          <p>Technical documentation and NBT specifications for bots, websites, and community tools.</p>
-        </div>
-
-        <div class="schema-cards-grid">
-          <div class="schema-card">
-            <div class="schema-name"><a href="better-api-docs/index.html">REST API Documentation (11 Routes)</a></div>
-            <div class="schema-desc">Interactive reference for Server Status, Voters, Players, Bazaar, Auctions, Profiles, and Settings.</div>
-            <div style="margin-top: 10px;"><a href="better-api-docs/index.html" style="font-weight: 600;">Open API Documentation &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="better-api-docs/index.html#section-nbt-decoding">15 Decoded NBT Storage Catalog</a></div>
-            <div class="schema-desc">Specifications for Base64 GZIP decompression across player inventories, wardrobe, equipment, and quiver.</div>
-            <div style="margin-top: 10px;"><a href="better-api-docs/index.html#section-nbt-decoding" style="font-weight: 600;">View NBT Specifications &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="better-api-docs/index.html#section-item-ids">Numerical Item IDs (1,933 Items)</a></div>
-            <div class="schema-desc">Searchable lookup table mapping Bedrock numerical IDs directly to vanilla Minecraft identifiers.</div>
-            <div style="margin-top: 10px;"><a href="better-api-docs/index.html#section-item-ids" style="font-weight: 600;">Search Item IDs &rarr;</a></div>
-          </div>
-        </div>
-
-        <div class="code-block-wrapper" style="margin-top: 20px;">
-          <div class="code-block-header">
             <span>Quick Example: Fetch Server Status (Node.js)</span>
-            <button class="btn-copy" onclick="copyToClipboard(this)">Copy</button>
           </div>
-          <pre><code>const res = await fetch("https://api.craftersmc.net/v1/network/status", {
+          <button type="button" class="neo-code-copy-btn" onclick="copyApiSnippet(this)" title="Copy snippet to clipboard">
+            <span class="material-icons">content_copy</span>
+            <span>Copy</span>
+          </button>
+        </div>
+        <pre class="neo-code-body"><code id="api-code-snippet">const res = await fetch("https://api.craftersmc.net/v1/network/status", {
   headers: { "X-API-Key": "YOUR_API_KEY" }
 });
 const data = await res.json();
 console.log(`Online Players: ${data.playerCount}/${data.maxPlayerCount} | SkyBlock: ${data.games.SKYBLOCK.modes.hub}`);</code></pre>
-        </div>
-      </section>
+      </div>
+    </section>
+    -->
 
-      <!-- Section: Project Contributors -->
-      <section class="doc-section" id="section-team">
-        <div class="section-header">
-          <h2><span class="material-icons">people</span> Project Contributors</h2>
-          <p>The authors and developers of the CraftersMC Guides project.</p>
+    <!-- =======================================================
+         SECTION: PROJECT CONTRIBUTORS
+         ======================================================= -->
+    <section class="neo-section" id="section-team">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#fbcfe8;">
+              <span class="material-icons">people</span>
+              TEAM &amp; AUTHORS
+            </span>
+            <h2 class="neo-section-title">Project Contributors &amp; Authors</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            The community writers, developers, and maintainers behind the CraftersMC Guides &amp; Tools project.
+          </p>
         </div>
+        <a href="about.html" class="button70-btn yellow" style="height: 38px; padding: 0 14px; font-size: 13px;">
+          <span class="material-icons" style="font-size: 16px;">info</span>
+          Full Team List
+        </a>
+      </div>
 
-        <div class="schema-cards-grid">
-          <div class="schema-card" style="display: flex; align-items: center; gap: 14px;">
-            <img src="assets/team/edu.png" alt="ieduoo" style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--border-color);" />
-            <div>
-              <div class="schema-name">ieduoo</div>
-              <div class="schema-desc">Lead Writer &amp; Author (<a href="https://discord.com/users/878545726014107698" target="_blank" rel="noopener">Discord</a>)</div>
+      <div class="neo-team-grid">
+
+        <!-- Contributor 1: ieduoo -->
+        <div class="neo-team-card">
+          <div class="neo-team-top">
+            <img class="neo-team-pfp" src="assets/team/edu.png" alt="ieduoo Avatar"
+              onerror="this.src='assets/cmc-guides.png'; this.onerror=null;" />
+            <div class="neo-team-meta">
+              <div class="neo-team-name">ieduoo</div>
+              <span class="neo-team-role lead">Lead Writer &amp; Content Editor</span>
             </div>
           </div>
-
-          <div class="schema-card" style="display: flex; align-items: center; gap: 14px;">
-            <img src="assets/team/pgnetwork.png" alt="Pg Network" style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--border-color);" />
-            <div>
-              <div class="schema-name">Pg Network</div>
-              <div class="schema-desc">Full-Stack &amp; Bot Developer (<a href="https://github.com/PgNetwork01" target="_blank">GitHub</a>)</div>
-            </div>
-          </div>
-
-          <div class="schema-card" style="display: flex; align-items: center; gap: 14px;">
-            <img src="assets/team/techon.png" alt="TechonTheDev" style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--border-color);" />
-            <div>
-              <div class="schema-name">TechonTheDev</div>
-              <div class="schema-desc">Backend &amp; Website Developer (<a href="https://github.com/TechonVS" target="_blank">GitHub</a>)</div>
-            </div>
+          <p class="neo-team-bio">
+            Shapes written progression guides, clarifies gameplay mechanics, and ensures all walkthroughs remain
+            intuitive and verified.
+          </p>
+          <div class="neo-team-links">
+            <a href="https://github.com/Zulfi-hub" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">code</span>
+              GitHub
+            </a>
+            <a href="https://discord.com/users/878545726014107698" target="_blank" rel="noopener noreferrer"
+              class="neo-team-link">
+              <span class="material-icons">chat</span>
+              Discord
+            </a>
           </div>
         </div>
-      </section>
 
-      <!-- Footer -->
-      <footer class="site-footer">
-        <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
-        <div class="site-footer-right">
-          <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
+        <!-- Contributor 2: Pg Network -->
+        <div class="neo-team-card">
+          <div class="neo-team-top">
+            <img class="neo-team-pfp" src="assets/team/pgnetwork.png" alt="Pg Network Avatar"
+              onerror="this.src='assets/cmc-guides.png'; this.onerror=null;" />
+            <div class="neo-team-meta">
+              <div class="neo-team-name">Pg Network</div>
+              <span class="neo-team-role bot">Full-Stack &amp; Bot Developer</span>
+            </div>
+          </div>
+          <p class="neo-team-bio">
+            Built Feather Bot and created the core guides infrastructure, interactive tools, and data-driven systems.
+          </p>
+          <div class="neo-team-links">
+            <a href="https://github.com/PgNetwork01" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">code</span>
+              GitHub
+            </a>
+            <a href="https://discord.com/users/947868777528307742" target="_blank" rel="noopener noreferrer"
+              class="neo-team-link">
+              <span class="material-icons">chat</span>
+              Discord
+            </a>
+          </div>
         </div>
-      </footer>
 
-    </main>
+        <!-- Contributor 3: TechonTheDev -->
+        <div class="neo-team-card">
+          <div class="neo-team-top">
+            <img class="neo-team-pfp" src="assets/team/techon.png" alt="TechonTheDev Avatar"
+              onerror="this.src='assets/cmc-guides.png'; this.onerror=null;" />
+            <div class="neo-team-meta">
+              <div class="neo-team-name">TechonTheDev</div>
+              <span class="neo-team-role dev">Backend &amp; Website Developer</span>
+            </div>
+          </div>
+          <p class="neo-team-bio">
+            Maintains API integrations, database workflows, server status metrics, and supporting site features across
+            the project.
+          </p>
+          <div class="neo-team-links">
+            <a href="https://github.com/TechonVS" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">code</span>
+              GitHub
+            </a>
+            <a href="https://discord.com/users/1099047739209293944" target="_blank" rel="noopener noreferrer"
+              class="neo-team-link">
+              <span class="material-icons">chat</span>
+              Discord
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Search Empty State -->
+    <div id="neo-empty-state" class="neo-empty-state">
+      <span class="material-icons neo-empty-icon">search_off</span>
+      <div class="neo-empty-title">No Guides or Tools Found</div>
+      <p class="neo-empty-desc">
+        We couldn't find any resources matching your search. Try searching for &ldquo;bazaar&rdquo;,
+        &ldquo;slayer&rdquo;, &ldquo;reforge&rdquo;, &ldquo;player&rdquo;, or &ldquo;api&rdquo;.
+      </p>
+      <button type="button" class="button70-btn yellow" onclick="clearSearchFilter()" style="margin-top: 8px;">
+        <span class="material-icons">refresh</span>
+        Reset Search
+      </button>
+    </div>
+
+  </main>
+
+  <!-- =========================================================
+       NEO-BRUTALISM FOOTER SYSTEM
+       ========================================================= -->
+  <div id="footer">
+    <footer class="site-footer">
+      <div class="footer-shell">
+        <div class="footer-brand footer-column">
+          <a class="footer-brand-link" href="index.html" aria-label="Go to home page">
+            <img src="assets/cmc-guides.png" alt="CraftersMC Guides Logo"
+              onerror="this.src='assets/cmc-icon.png'; this.onerror=null;">
+            <div class="footer-brand-text">
+              <h1>CraftersMC Guides</h1>
+              <p>SkyBlock tools, progression guides, and community resources.</p>
+            </div>
+          </a>
+
+          <div class="footer-socials" aria-label="Social links">
+            <a href="https://x.com/CraftersMCGuide" target="_blank" rel="noopener noreferrer" title="Twitter"
+              aria-label="Twitter">
+              <img src="https://www.svgrepo.com/show/475689/twitter-color.svg" alt="Twitter">
+            </a>
+            <a href="https://www.facebook.com/profile.php?id=61580398230140" target="_blank" rel="noopener noreferrer"
+              title="Facebook" aria-label="Facebook">
+              <img src="https://www.svgrepo.com/show/448224/facebook.svg" alt="Facebook">
+            </a>
+            <a href="https://www.instagram.com/craftersmcguides/" target="_blank" rel="noopener noreferrer"
+              title="Instagram" aria-label="Instagram">
+              <img src="https://www.svgrepo.com/show/303154/instagram-2016-logo.svg" alt="Instagram">
+            </a>
+            <a href="https://www.youtube.com/@CraftersMCGuides" target="_blank" rel="noopener noreferrer"
+              title="YouTube" aria-label="YouTube">
+              <img src="https://www.svgrepo.com/show/303198/youtube-icon-logo.svg" alt="YouTube">
+            </a>
+            <a href="https://discord.gg/vfE3y4uv7K" target="_blank" rel="noopener noreferrer" title="Discord"
+              aria-label="Discord">
+              <img src="https://www.svgrepo.com/show/353655/discord-icon.svg" alt="Discord">
+            </a>
+            <a href="https://www.reddit.com/r/CraftersMCGuides/" target="_blank" rel="noopener noreferrer"
+              title="Reddit" aria-label="Reddit">
+              <img src="https://www.svgrepo.com/show/475675/reddit-color.svg" alt="Reddit">
+            </a>
+            <a href="https://t.me/craftersmcguides" target="_blank" rel="noopener noreferrer" title="Telegram"
+              aria-label="Telegram">
+              <img
+                src="https://www.svgrepo.com/show/343522/telegram-communication-chat-interaction-network-connection.svg"
+                alt="Telegram">
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-column">
+          <h2>Navigation</h2>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="player.html">Player Viewer</a></li>
+            <li><a href="bazaar.html">Bazaar Market</a></li>
+            <li><a href="auction.html">Live Auctions</a></li>
+            <li><a href="templates-showcase.html">Templates Showcase</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h2>Feather Bot</h2>
+          <ul>
+            <li><a href="feather-bot/index.html">Command Guide</a></li>
+            <li><a href="feather-bot/privacy-policy.html">Privacy Policy</a></li>
+            <li><a href="feather-bot/terms-and-conditions.html">Terms &amp; Conditions</a></li>
+            <li><a href="rank-sellers.html">Rank Sellers</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column footer-team">
+          <h2>Project Team</h2>
+          <ul>
+            <li><a href="https://github.com/Zulfi-hub" target="_blank" rel="noopener noreferrer">ieduoo
+                (Writer)</a></li>
+            <li><a href="https://github.com/PgNetwork01" target="_blank" rel="noopener noreferrer">Pg Network
+                (Developer)</a></li>
+            <li><a href="https://github.com/TechonVS" target="_blank" rel="noopener noreferrer">TechonTheDev
+                (Backend)</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-legal">
+        <span>&copy; 2026 CraftersMC Guides | Unofficial Community Guides &amp; Documentation</span>
+        <div class="footer-legal-links">
+          <a href="terms-conditions.html">Terms &amp; Conditions</a>
+          <span class="footer-divider">&bull;</span>
+          <a href="privacypolicy.html">Privacy Policy</a>
+        </div>
+      </div>
+    </footer>
   </div>
 
+  <!-- Tactile Action Toast (From templates-showcase) -->
+  <div id="tactile-toast" class="tactile-toast" role="status" aria-live="polite"></div>
+
+  <!-- =========================================================
+       PAGE SCRIPT: SEARCH FILTER & INTERACTION
+       ========================================================= -->
+  <script>
+    // Copy code snippet helper
+    function copyApiSnippet(btn) {
+      const code = document.getElementById('api-code-snippet');
+      if (!code) return;
+      const text = code.innerText || code.textContent;
+
+      navigator.clipboard.writeText(text).then(() => {
+        showActionToast('Code copied to clipboard!');
+        const origContent = btn.innerHTML;
+        btn.innerHTML = '<span class="material-icons">check</span><span>Copied!</span>';
+        btn.style.background = '#4ade80';
+        setTimeout(() => {
+          btn.innerHTML = origContent;
+          btn.style.background = '';
+        }, 2000);
+      }).catch(() => {
+        showActionToast('Failed to copy to clipboard');
+      });
+    }
+
+    // Tactile Toast notification (From templates-showcase)
+    function showActionToast(msg) {
+      let toast = document.getElementById('tactile-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'tactile-toast';
+        toast.className = 'tactile-toast';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2200);
+    }
+
+    // Live search filter across cards
+    const searchInput = document.getElementById('search-input');
+    const searchClear = document.getElementById('search-clear');
+    const resultsCount = document.getElementById('results-count');
+    const emptyState = document.getElementById('neo-empty-state');
+    const cards = document.querySelectorAll('.neo-card[data-search]');
+
+    function filterResources(query) {
+      const q = query.trim().toLowerCase();
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const text = (card.getAttribute('data-search') + ' ' + card.innerText).toLowerCase();
+        if (!q || text.includes(q)) {
+          card.style.display = '';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      if (resultsCount) {
+        resultsCount.textContent = visibleCount;
+      }
+
+      if (searchClear) {
+        searchClear.style.display = q.length > 0 ? 'inline-flex' : 'none';
+      }
+
+      if (emptyState) {
+        emptyState.classList.toggle('active', visibleCount === 0);
+      }
+    }
+
+    function clearSearchFilter() {
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+        filterResources('');
+      }
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        filterResources(e.target.value);
+      });
+
+      if (searchClear) {
+        searchClear.addEventListener('click', clearSearchFilter);
+      }
+    }
+
+    // Keyboard shortcut: '/' anywhere to focus search
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement !== searchInput && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+        e.preventDefault();
+        if (searchInput) {
+          searchInput.focus();
+          searchInput.select();
+        }
+      } else if (e.key === 'Escape' && document.activeElement === searchInput) {
+        clearSearchFilter();
+        searchInput.blur();
+      }
+    });
+
+    // Buttery-smooth easing animation for in-page scrolling
+    function smoothScrollTo(targetPosition, duration = 650) {
+      const startPosition = window.pageYOffset || document.documentElement.scrollTop;
+      const distance = targetPosition - startPosition;
+      if (Math.abs(distance) < 2) return;
+
+      let startTime = null;
+      let userInterrupted = false;
+
+      const stopOnInterrupt = () => {
+        userInterrupted = true;
+        cleanup();
+      };
+      const cleanup = () => {
+        window.removeEventListener('wheel', stopOnInterrupt);
+        window.removeEventListener('touchmove', stopOnInterrupt);
+      };
+      window.addEventListener('wheel', stopOnInterrupt, { passive: true });
+      window.addEventListener('touchmove', stopOnInterrupt, { passive: true });
+
+      // Cubic ease-in-out curve for natural gliding acceleration and deceleration
+      function easeInOutCubic(t) {
+        return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+      }
+
+      function animation(currentTime) {
+        if (userInterrupted) return;
+        if (!startTime) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const progress = Math.min(timeElapsed / duration, 1);
+        const ease = easeInOutCubic(progress);
+
+        window.scrollTo(0, startPosition + distance * ease);
+
+        if (progress < 1) {
+          requestAnimationFrame(animation);
+        } else {
+          cleanup();
+        }
+      }
+
+      requestAnimationFrame(animation);
+    }
+
+    // Delegated smooth scroll handler for all anchor links
+    document.addEventListener('click', function (e) {
+      const anchor = e.target.closest('a');
+      if (!anchor) return;
+      const href = anchor.getAttribute('href');
+      if (!href) return;
+
+      let hash = '';
+      if (href.startsWith('#') && href.length > 1) {
+        hash = href;
+      } else if (href.includes('#')) {
+        const split = href.split('#');
+        const page = split[0].toLowerCase();
+        if (page === '' || page === 'index.html' || page.endsWith('/index.html')) {
+          hash = '#' + split[1];
+        }
+      }
+
+      if (hash && hash !== '#') {
+        const targetEl = document.querySelector(hash);
+        if (targetEl) {
+          e.preventDefault();
+          const topOffset = 84;
+          const startPosition = window.pageYOffset || document.documentElement.scrollTop;
+          const targetPosition = targetEl.getBoundingClientRect().top + startPosition - topOffset;
+
+          smoothScrollTo(targetPosition, 700);
+
+          if (history.pushState) {
+            history.pushState(null, '', hash);
+          }
+        }
+      }
+    });
+
+    // Initialize total count
+    if (resultsCount) {
+      resultsCount.textContent = cards.length;
+    }
+  </script>
+
 </body>
+
 </html>
