@@ -19,11 +19,12 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="better-api-docs/style.css">
+  <link rel="stylesheet" href="css/essential.css">
+  <link rel="stylesheet" href="css/neo-brutalism.css">
   <link rel="stylesheet" href="css/player.css">
 
-  <!-- Core Components -->
-  <script src="js/components.js"></script>
+  <!-- Scripts -->
+  <script src="js/script.js" defer></script>
 
   <!-- Pako for client-side NBT decompression -->
   <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
@@ -39,64 +40,236 @@
 
   <!-- Scripts -->
   <script src="js/api-proxy-client.js"></script>
-  <script src="better-api-docs/app.js" defer></script>
 </head>
 
 <body>
 
-  <!-- Top Header Web Component -->
-  <cmc-header active="player"></cmc-header>
+  <!-- Fullscreen / Layout Overlays -->
+  <div class="background"></div>
 
-  <!-- Application Layout -->
-  <div class="app-layout">
-
-    <!-- Left Sidebar Web Component -->
-    <cmc-sidebar active="player"></cmc-sidebar>
-
-    <!-- Main Content Area -->
-    <main class="main-content">
-
-      <!-- Section Header -->
-      <section class="doc-section">
-        <div class="section-header">
-          <h1>CraftersMC Player &amp; Profile Viewer</h1>
-          <p>Inspect real-time player data, SkyBlock profiles, equipment, skills, slayer tiers, collections, and
-            playtime via the CraftersMC REST API.</p>
-        </div>
-
-        <!-- Status Message Alert -->
-        <div id="statusAlert" class="player-status-alert">
-          <span class="material-icons" id="statusIcon" style="font-size: 1.15rem;">info</span>
-          <span id="statusText"></span>
-        </div>
-
-        <!-- Search Form Card -->
-        <div class="player-search-card">
-          <div class="search-form-grid">
-            <div class="input-field-group">
-              <label class="input-label" for="username"><span class="material-icons"
-                  style="font-size: 0.95rem;">person</span> Minecraft Username</label>
-              <input type="text" id="username" class="player-input"
-                placeholder="Enter username (e.g. Tekkxz, NetworkPg)" autocomplete="off">
-            </div>
-            <div class="input-field-group">
-              <label class="input-label" for="profileId"><span class="material-icons"
-                  style="font-size: 0.95rem;">badge</span> Profile ID (Optional)</label>
-              <input type="text" id="profileId" class="player-input" placeholder="Profile ID or cute name"
-                autocomplete="off">
-            </div>
-            <button type="button" class="btn-fetch" onclick="fetchPlayerData()">
-              <span class="material-icons" style="font-size: 1.1rem;">search</span> Fetch Player
-            </button>
-            <button type="button" class="btn-secondary-action" onclick="fetchRandomPlayer()"
-              title="Test with sample player">
-              <span class="material-icons" style="font-size: 1.1rem;">shuffle</span> Example
-            </button>
-            <button type="button" class="btn-secondary-action" onclick="clearData()">
-              <span class="material-icons" style="font-size: 1.1rem;">clear</span> Clear
-            </button>
+  <!-- =========================================================
+       NEO-BRUTALISM NAVBAR SYSTEM
+       ========================================================= -->
+  <div class="top">
+    <div class="navbar">
+      <div class="left navbar-left">
+        <button type="button" class="navbar-menu-btn menu-icon" onclick="toggleSidebar()"
+          aria-label="Toggle navigation menu" title="Open Navigation Menu">
+          <span class="material-icons">menu</span>
+        </button>
+        <a href="index.html" class="navbar-brand" title="CraftersMC Guides Home">
+          <img src="assets/cmc-icon.png" alt="CraftersMC Logo" class="navbar-logo"
+            onerror="this.src='assets/cmc-guides.png'; this.onerror=null;" />
+          <div class="navbar-brand-info">
+            <span class="navbar-brand-title">CraftersMC Guides</span>
           </div>
+        </a>
+      </div>
+
+      <div class="navbar-center">
+        <a href="index.html" class="nav-item">Home</a>
+        <a href="player.html" class="nav-item active">Player</a>
+        <a href="bazaar.html" class="nav-item">Bazaar</a>
+        <a href="auction.html" class="nav-item">Auctions</a>
+        <a href="templates-showcase.html" class="nav-item">Templates</a>
+      </div>
+
+      <div class="right navbar-right">
+        <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" rel="noopener noreferrer"
+          class="navbar-github-btn navbar-icon-btn github-button" aria-label="Open guides GitHub repo"
+          title="GitHub Repository">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              d="M12 .5C5.65.5.5 5.65.5 12a11.49 11.49 0 0 0 7.8 10.9c.57.1.78-.25.78-.55v-1.9c-3.17.69-3.84-1.35-3.84-1.35-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.75 2.67 1.24 3.32.95.1-.74.4-1.24.72-1.52-2.53-.29-5.2-1.27-5.2-5.67 0-1.25.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.96 10.96 0 0 1 5.73 0c2.18-1.49 3.14-1.18 3.14-1.18.63 1.59.23 2.76.12 3.05.74.81 1.18 1.84 1.18 3.09 0 4.41-2.67 5.38-5.21 5.66.41.36.77 1.06.77 2.15v3.19c0 .31.21.66.78.55A11.49 11.49 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       NEO-BRUTALISM SIDEBAR SYSTEM
+       ========================================================= -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <a class="sidebar-brand" href="index.html" aria-label="Go to home page">
+        <img id="sidebarProfilePic" src="assets/cmc-guides.png" alt="CMC Guides Logo"
+          onerror="this.src='assets/cmc-icon.png'; this.onerror=null;">
+        <div class="sidebar-brand-text">
+          <span class="sidebar-brand-title">CraftersMC</span>
+          <span class="sidebar-brand-subtitle">Guides Project</span>
         </div>
+      </a>
+      <button type="button" class="sidebar-close" onclick="toggleSidebar()" aria-label="Close navigation menu"
+        title="Close Menu">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="sidebar-content">
+      <div class="sidebar-category intel">Live Intelligence</div>
+      <a class="sidebar-link" href="index.html"><span
+          class="material-icons sidebar-link-icon">home</span><span>Overview</span></a>
+      <a class="sidebar-link" href="status.html"><span class="material-icons sidebar-link-icon">lan</span><span>Network
+          Status</span></a>
+      <a class="sidebar-link active" href="player.html"><span
+          class="material-icons sidebar-link-icon">person_search</span><span>Player Viewer</span></a>
+      <a class="sidebar-link" href="auction.html"><span class="material-icons sidebar-link-icon">gavel</span><span>Live
+          Auctions</span></a>
+      <a class="sidebar-link" href="bazaar.html"><span
+          class="material-icons sidebar-link-icon">storefront</span><span>Bazaar Market</span></a>
+      <a class="sidebar-link" href="bazaar-price-graph.html"><span
+          class="material-icons sidebar-link-icon">show_chart</span><span>Bazaar Price Charts</span></a>
+      <a class="sidebar-link" href="skycalendar.html"><span
+          class="material-icons sidebar-link-icon">event</span><span>SkyCalendar</span></a>
+      <a class="sidebar-link" href="bank-interest.html"><span
+          class="material-icons sidebar-link-icon">account_balance</span><span>Bank Interest</span></a>
+
+      <div class="sidebar-category guides">Guides &amp; Progression</div>
+      <a class="sidebar-link" href="journey-guides.html"><span
+          class="material-icons sidebar-link-icon">map</span><span>Guides Hub</span></a>
+      <a class="sidebar-link" href="guide/starter-guide.html"><span
+          class="material-icons sidebar-link-icon">explore</span><span>Starter Guide</span></a>
+      <a class="sidebar-link" href="guide/intermediate-guide.html"><span
+          class="material-icons sidebar-link-icon">trending_up</span><span>Intermediate Guide</span></a>
+      <a class="sidebar-link" href="guide/advanced-guide.html"><span
+          class="material-icons sidebar-link-icon">military_tech</span><span>Advanced Guide</span></a>
+      <a class="sidebar-link" href="guide/accessories-guide.html"><span
+          class="material-icons sidebar-link-icon">diamond</span><span>Accessories Guide</span></a>
+      <a class="sidebar-link" href="guide/bazaar-guide.html"><span
+          class="material-icons sidebar-link-icon">insights</span><span>Bazaar Guide</span></a>
+      <a class="sidebar-link" href="minions.html"><span
+          class="material-icons sidebar-link-icon">smart_toy</span><span>Minions Database</span></a>
+      <a class="sidebar-link" href="pets.html"><span class="material-icons sidebar-link-icon">pets</span><span>Pets
+          Database</span></a>
+      <a class="sidebar-link" href="texture-packs.html"><span
+          class="material-icons sidebar-link-icon">palette</span><span>Texture Packs</span></a>
+
+      <div class="sidebar-category tools">Calculators &amp; Tools</div>
+      <a class="sidebar-link" href="tools.html"><span class="material-icons sidebar-link-icon">build</span><span>Tools
+          Hub</span></a>
+      <a class="sidebar-link" href="tools/best-reforge.html"><span
+          class="material-icons sidebar-link-icon">auto_fix_high</span><span>Best Reforge Calc</span></a>
+      <a class="sidebar-link" href="tools/pet-exp-calculator.html"><span
+          class="material-icons sidebar-link-icon">pets</span><span>Pet EXP Calc</span></a>
+      <a class="sidebar-link" href="tools/skill-calculator.html"><span
+          class="material-icons sidebar-link-icon">psychology</span><span>Skill Calculator</span></a>
+      <a class="sidebar-link" href="tools/minion-production.html"><span
+          class="material-icons sidebar-link-icon">precision_manufacturing</span><span>Minion Production</span></a>
+      <a class="sidebar-link" href="tools/missing-acces-calc.html"><span
+          class="material-icons sidebar-link-icon">checklist</span><span>Missing Accessories</span></a>
+      <a class="sidebar-link" href="tools/missing-cakes-calc.html"><span
+          class="material-icons sidebar-link-icon">cake</span><span>Missing Cakes</span></a>
+      <a class="sidebar-link" href="unicode.html"><span
+          class="material-icons sidebar-link-icon">format_shapes</span><span>Unicode &amp; Formatting</span></a>
+
+      <div class="sidebar-category leaderboards">Leaderboards</div>
+      <a class="sidebar-link" href="leaderboards/index.html"><span
+          class="material-icons sidebar-link-icon">leaderboard</span><span>Leaderboard Hub</span></a>
+      <a class="sidebar-link" href="leaderboards/skills-leaderboards.html"><span
+          class="material-icons sidebar-link-icon">auto_awesome</span><span>Skills Rankings</span></a>
+      <a class="sidebar-link" href="leaderboards/coins-leaderboards.html"><span
+          class="material-icons sidebar-link-icon">monetization_on</span><span>Coins Leaderboards</span></a>
+      <a class="sidebar-link" href="leaderboards/networth-leaderboard.html"><span
+          class="material-icons sidebar-link-icon">account_balance_wallet</span><span>Networth Rankings</span></a>
+      <a class="sidebar-link" href="leaderboards/slayers-leaderboards.html"><span
+          class="material-icons sidebar-link-icon">shield</span><span>Slayers Rankings</span></a>
+      <a class="sidebar-link" href="leaderboards/farming-contests-leaderboards.html"><span
+          class="material-icons sidebar-link-icon">agriculture</span><span>Farming Contests</span></a>
+      <a class="sidebar-link" href="leaderboards/achievements-leaderboard.html"><span
+          class="material-icons sidebar-link-icon">emoji_events</span><span>Achievements</span></a>
+      <a class="sidebar-link" href="leaderboards/collections-leaderboards.html"><span
+          class="material-icons sidebar-link-icon">inventory_2</span><span>Collections</span></a>
+
+      <div class="sidebar-category community">Community &amp; External</div>
+      <a class="sidebar-link" href="rank-sellers.html"><span
+          class="material-icons sidebar-link-icon">card_giftcard</span><span>Rank Sellers</span></a>
+      <a class="sidebar-link" href="traveling-zoo.html"><span
+          class="material-icons sidebar-link-icon">cruelty_free</span><span>Traveling Zoo</span></a>
+      <a class="sidebar-link" href="games/craftle/index.html"><span
+          class="material-icons sidebar-link-icon">sports_esports</span><span>Craftle Game</span></a>
+      <a class="sidebar-link" href="better-api-docs/index.html"><span
+          class="material-icons sidebar-link-icon">api</span><span>REST API Reference</span></a>
+      <a class="sidebar-link" href="templates-showcase.html"><span
+          class="material-icons sidebar-link-icon">dashboard_customize</span><span>Templates Showcase</span></a>
+      <a class="sidebar-link" href="https://craftersmc.net/" target="_blank" rel="noopener noreferrer"><span
+          class="material-icons sidebar-link-icon">language</span><span>Server Website</span></a>
+    </div>
+  </div>
+
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- =========================================================
+       MAIN NEO-BRUTALISM PAGE CONTENT
+       ========================================================= -->
+  <main class="neo-container">
+
+    <!-- HERO WINDOW CARD -->
+    <section class="neo-hero-card" style="margin-bottom: 24px;">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
+        </div>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px; color:#111827;">person_search</span>
+          CraftersMC-Guides-Project | Player Viewer
+        </div>
+        <!-- <div style="font-size: 11px; font-weight: 800; font-family: var(--font-mono); color: #111827;">
+          LIVE INTEL v1
+        </div> -->
+      </div>
+
+      <div class="neo-hero-content" style="padding: 24px 28px;">
+        <div class="neo-hero-heading-group">
+          <!-- <div class="neo-badge" style="background: #38bdf8; margin-bottom: 8px;">
+            <span class="material-icons" style="font-size: 14px; color: #111827;">query_stats</span>
+            Real-Time Profile Intelligence
+          </div> -->
+          <h1 class="neo-hero-title" style="font-size: clamp(1.8rem, 4vw, 2.6rem); margin-bottom: 8px;">
+            Player &amp; Profile <span class="neo-hero-highlight" style="background: #fde047;">Viewer</span>
+          </h1>
+          <p class="neo-hero-subtitle" style="font-size: 14.5px; max-width: 800px; margin: 0;">
+            Search and inspect live CraftersMC player profiles, SkyBlock stats, skill progression, equipment, slayers, minions, collections, and playtime via the CraftersMC REST API.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Status Message Alert -->
+    <div id="statusAlert" class="player-status-alert">
+      <span class="material-icons" id="statusIcon" style="font-size: 1.15rem;">info</span>
+      <span id="statusText"></span>
+    </div>
+
+    <!-- Search Form Card -->
+    <div class="player-search-card">
+      <div class="search-form-grid">
+        <div class="input-field-group">
+          <label class="input-label" for="username"><span class="material-icons"
+              style="font-size: 0.95rem; color: #111827;">person</span> Minecraft Username</label>
+          <input type="text" id="username" class="player-input"
+            placeholder="Enter username (e.g. NetworkPg, ieduoo)" autocomplete="off">
+        </div>
+        <div class="input-field-group">
+          <label class="input-label" for="profileId"><span class="material-icons"
+              style="font-size: 0.95rem; color: #111827;">badge</span> Profile ID (Optional)</label>
+          <input type="text" id="profileId" class="player-input" placeholder="Profile ID or cute name"
+            autocomplete="off">
+        </div>
+        <button type="button" class="btn-fetch" onclick="fetchPlayerData()">
+          <span class="material-icons" style="font-size: 1.1rem; color: #111827;">search</span> Fetch Player
+        </button>
+        <button type="button" class="btn-secondary-action" onclick="fetchRandomPlayer()"
+          title="Test with sample player">
+          <span class="material-icons" style="font-size: 1.1rem; color: #111827;">shuffle</span> Example
+        </button>
+        <button type="button" class="btn-secondary-action" onclick="clearData()"
+          style="background: #ffffff !important;">
+          <span class="material-icons" style="font-size: 1.1rem; color: #111827;">clear</span> Clear
+        </button>
+      </div>
+    </div>
 
         <!-- Profile Selector Pills -->
         <div id="profileSelector" class="profile-pill-container" style="display: none;">
@@ -214,18 +387,124 @@
 
           </div>
 
+  </main>
+
+  <!-- =========================================================
+       NEO-BRUTALISM FOOTER SYSTEM
+       ========================================================= -->
+  <div id="footer">
+    <footer class="site-footer">
+      <div class="footer-shell">
+        <div class="footer-brand footer-column">
+          <a class="footer-brand-link" href="index.html" aria-label="Go to home page">
+            <img src="assets/cmc-guides.png" alt="CraftersMC Guides logo"
+              onerror="this.src='assets/cmc-icon.png'; this.onerror=null;">
+            <div class="footer-brand-text">
+              <h1>CraftersMC Guides</h1>
+              <p>SkyBlock progression guides, live market intelligence, and player tools.</p>
+            </div>
+          </a>
+
+          <div class="footer-socials" aria-label="Social links">
+            <a href="https://x.com/CraftersMCGuide" target="_blank" rel="noopener noreferrer" title="Twitter"
+              aria-label="Twitter">
+              <img src="https://www.svgrepo.com/show/475689/twitter-color.svg" alt="Twitter">
+            </a>
+            <a href="https://www.facebook.com/profile.php?id=61580398230140" target="_blank" rel="noopener noreferrer"
+              title="Facebook" aria-label="Facebook">
+              <img src="https://www.svgrepo.com/show/448224/facebook.svg" alt="Facebook">
+            </a>
+            <a href="https://www.instagram.com/craftersmcguides/" target="_blank" rel="noopener noreferrer"
+              title="Instagram" aria-label="Instagram">
+              <img src="https://www.svgrepo.com/show/303154/instagram-2016-logo.svg" alt="Instagram">
+            </a>
+            <a href="https://www.youtube.com/@CraftersMCGuides" target="_blank" rel="noopener noreferrer"
+              title="YouTube" aria-label="YouTube">
+              <img src="https://www.svgrepo.com/show/303198/youtube-icon-logo.svg" alt="YouTube">
+            </a>
+            <a href="https://discord.gg/vfE3y4uv7K" target="_blank" rel="noopener noreferrer" title="Discord"
+              aria-label="Discord">
+              <img src="https://www.svgrepo.com/show/353655/discord-icon.svg" alt="Discord">
+            </a>
+            <a href="https://www.reddit.com/r/CraftersMCGuides/" target="_blank" rel="noopener noreferrer"
+              title="Reddit" aria-label="Reddit">
+              <img src="https://www.svgrepo.com/show/475675/reddit-color.svg" alt="Reddit">
+            </a>
+            <a href="https://t.me/craftersmcguides" target="_blank" rel="noopener noreferrer" title="Telegram"
+              aria-label="Telegram">
+              <img
+                src="https://www.svgrepo.com/show/343522/telegram-communication-chat-interaction-network-connection.svg"
+                alt="Telegram">
+            </a>
+          </div>
         </div>
 
-      </section>
+        <div class="footer-column">
+          <h2>Navigation</h2>
+          <ul>
+            <li><a href="index.html">Guides Home</a></li>
+            <li><a href="about.html">About Project</a></li>
+            <li><a href="feedback.html">Submit Feedback</a></li>
+            <li><a href="applications.html">Join the Team</a></li>
+            <li><a href="status.html">Network Status</a></li>
+          </ul>
+        </div>
 
-      <!-- Reusable Site Footer -->
-      <cmc-footer></cmc-footer>
+        <div class="footer-column">
+          <h2>Feather Bot</h2>
+          <ul>
+            <li><a href="feather-bot/index.html">Command Guide</a></li>
+            <li><a href="feather-bot/privacy-policy.html">Privacy Policy</a></li>
+            <li><a href="feather-bot/terms-and-conditions.html">Terms &amp; Conditions</a></li>
+            <li><a href="rank-sellers.html">Rank Sellers</a></li>
+          </ul>
+        </div>
 
-    </main>
+        <div class="footer-column footer-team">
+          <h2>Project Team</h2>
+          <ul>
+            <li><a href="https://github.com/Zulfi-hub" target="_blank" rel="noopener noreferrer">ieduoo
+                (Writer)</a></li>
+            <li><a href="https://github.com/PgNetwork01" target="_blank" rel="noopener noreferrer">Pg Network
+                (Developer)</a></li>
+            <li><a href="https://github.com/TechonVS" target="_blank" rel="noopener noreferrer">TechonTheDev
+                (Backend)</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-legal">
+        <span>&copy; 2026 CraftersMC Guides | Unofficial Community Guides &amp; Documentation</span>
+        <div class="footer-legal-links">
+          <a href="terms-conditions.html">Terms &amp; Conditions</a>
+          <span class="footer-divider">&bull;</span>
+          <a href="privacypolicy.html">Privacy Policy</a>
+        </div>
+      </div>
+    </footer>
   </div>
+
+  <!-- Tactile Action Toast -->
+  <div id="tactile-toast" class="tactile-toast" role="status" aria-live="polite"></div>
 
   <!-- Player Viewer Logic -->
   <script>
+    // Tactile Toast notification helper
+    function showToast(msg) {
+      let toast = document.getElementById('tactile-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'tactile-toast';
+        toast.className = 'tactile-toast';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2200);
+    }
     let playerData = null;
     let profileData = null;
     let currentProfileId = '';
@@ -2461,8 +2740,14 @@
     }
 
     function fetchRandomPlayer() {
-      const samplePlayers = ['Tekkxz', 'NetworkPg', 'Lord_Gooey'];
-      const pick = samplePlayers[Math.floor(Math.random() * samplePlayers.length)];
+      const samplePlayers = ['NetworkPg', 'ieduoo'];
+      const current = (document.getElementById('username')?.value || '').trim();
+      let pick = samplePlayers[Math.floor(Math.random() * samplePlayers.length)];
+      if (current.toLowerCase() === 'networkpg') {
+        pick = 'ieduoo';
+      } else if (current.toLowerCase() === 'ieduoo') {
+        pick = 'NetworkPg';
+      }
       document.getElementById('username').value = pick;
       fetchPlayerData();
     }
