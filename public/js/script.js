@@ -134,7 +134,7 @@ function fetchPartial(url, key) {
 
 function fetchAllPartials() {
   Promise.all([
-    fetchPartial("/components/navbar.html", "navbarHtmlV8"),
+    fetchPartial("/components/navbar.html", "navbarHtmlV10"),
     fetchPartial("/components/sidebar.html", "sidebarHtmlV8"),
     fetchPartial("/components/footer.html", "footerHtmlV8"),
     fetchPartial("/loader.html", "loaderHtml"),
@@ -143,10 +143,23 @@ function fetchAllPartials() {
       const topEl = document.querySelector(".top");
       if (topEl) {
         topEl.innerHTML = navbarHtml;
+        initNavbarPlayerCount();
         const currentPath = window.location.pathname.toLowerCase();
         document.querySelectorAll(".navbar .nav-item").forEach(link => {
           const href = link.getAttribute("href")?.toLowerCase() || "";
-          if (href && (currentPath.endsWith(href) || (href.endsWith("index.html") && (currentPath === "/" || currentPath.endsWith("/index.html"))))) {
+          if (!href) return;
+          const isHome = (href === "/index.html" || href === "index.html") &&
+            (currentPath === "/" || currentPath === "" || (currentPath.endsWith("/index.html") && !currentPath.includes("/leaderboards/")));
+          const isGuides = href.includes("journey-guides") && (currentPath.includes("journey-guides") || currentPath.includes("/guide/"));
+          const isTools = href.includes("tools") && currentPath.includes("tools");
+          const isLeaderboards = href.includes("leaderboards") && currentPath.includes("leaderboards");
+          const isBazaar = href.includes("bazaar") && currentPath.includes("bazaar");
+          const isAuction = href.includes("auction") && currentPath.includes("auction");
+          const isPlayer = href.includes("player") && (currentPath.includes("player") || currentPath.includes("profile"));
+          const isStatus = href.includes("status") && currentPath.includes("status");
+          const isExact = currentPath.endsWith(href);
+
+          if (isExact || isHome || isGuides || isTools || isLeaderboards || isBazaar || isAuction || isPlayer || isStatus) {
             link.classList.add("active");
           } else {
             link.classList.remove("active");
@@ -338,3 +351,84 @@ document.addEventListener("click", function(event) {
         document.querySelectorAll(".dropdown-content.show").forEach(d => d.classList.remove("show"));
     }
 });
+
+// Live Online Players Counter for Navbar
+let navbarPlayerInterval = null;
+
+function initNavbarPlayerCount() {
+    const countEl = document.getElementById("navbarOnlineCount");
+    const badgeEl = document.getElementById("navbarOnlineBadge");
+    const dotEl = document.getElementById("navbarPulseDot");
+    if (!countEl) return;
+
+    function renderData(data) {
+        if (!countEl) return;
+        const isMaintenance = data.fullMaintenance === true;
+        const count = data.playerCount ?? 0;
+        const max = data.maxPlayerCount ?? 750;
+
+        if (isMaintenance) {
+            countEl.textContent = "Maintenance";
+            if (dotEl) dotEl.className = "status-pulse-dot maintenance";
+            if (badgeEl) badgeEl.setAttribute("title", "CraftersMC Network is currently under maintenance");
+        } else {
+            countEl.textContent = Number(count).toLocaleString();
+            if (dotEl) dotEl.className = "status-pulse-dot";
+            if (badgeEl) badgeEl.setAttribute("title", `CraftersMC Network • ${Number(count).toLocaleString()} / ${Number(max).toLocaleString()} players online (Click for Status)`);
+        }
+    }
+
+    // 1. Instant render from local cache if present
+    try {
+        const cached = localStorage.getItem("cmc_status_cache");
+        if (cached) {
+            const parsed = JSON.parse(cached);
+            if (parsed && parsed.data && typeof parsed.data.playerCount === "number") {
+                renderData(parsed.data);
+            }
+        }
+    } catch (e) {}
+
+    // 2. Fetch live data
+    async function fetchLive() {
+        const endpoints = ["/api/network/status", "/network-status"];
+        for (const ep of endpoints) {
+            try {
+                const res = await fetch(ep, { cache: "no-store" });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && (data.success || data.playerCount !== undefined)) {
+                        renderData(data);
+                        try {
+                            localStorage.setItem("cmc_status_cache", JSON.stringify({ ts: Date.now(), data }));
+                        } catch (e) {}
+                        return;
+                    }
+                }
+            } catch (e) {}
+        }
+
+        // Direct fallback for local development preview
+        try {
+            const res = await fetch("https://api.craftersmc.net/v1/network/status", {
+                headers: { "x-api-key": "e89b4eb6-1776-4fb5-9a25-812c2ce1f8d8" }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data && (data.success || data.playerCount !== undefined)) {
+                    renderData(data);
+                    try {
+                        localStorage.setItem("cmc_status_cache", JSON.stringify({ ts: Date.now(), data }));
+                    } catch (e) {}
+                }
+            }
+        } catch (e) {}
+    }
+
+    fetchLive();
+
+    if (!navbarPlayerInterval) {
+        navbarPlayerInterval = setInterval(fetchLive, 30000);
+    }
+}
+
