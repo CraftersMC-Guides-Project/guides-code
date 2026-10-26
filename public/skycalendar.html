@@ -17,8 +17,10 @@
   <!-- Stylesheets -->
   <link rel="stylesheet" href="better-api-docs/style.css" />
   <link rel="stylesheet" href="css/skycalendar.css" />
+  <link rel="stylesheet" href="css/neo-brutalism.css" />
 
   <!-- Scripts -->
+   <script src="js/script.js" defer></script>
   <script src="better-api-docs/app.js" defer></script>
   <script src="js/components.js" defer></script>
   <script src="js/calendarengine.js" defer></script>
@@ -26,74 +28,49 @@
 </head>
 <body>
 
-  <!-- Top Header Navigation -->
-  <header class="top-header">
-    <div class="header-left">
-      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
-        <span class="material-icons" style="font-size:1.25rem;">menu</span>
-      </button>
-      <a href="index.html" class="header-brand">
-        <img src="assets/cmc-guides.png" alt="CraftersMC Logo" />
-        <div class="brand-text">
-          <span class="brand-title">CraftersMC Guides</span>
-          <span class="version-badge">SkyCalendar</span>
-        </div>
-      </a>
-    </div>
+  <!-- Fullscreen / Layout Overlays -->
+  <div class="background"></div>
 
-    <!-- Search Box -->
-    <div class="search-box">
-      <span class="material-icons search-icon">search</span>
-      <input type="text" id="search-input" placeholder="Search events, guides, API..." />
-      <span class="search-kbd-shortcut">/</span>
-    </div>
+  <!-- Top Navigation (Loaded dynamically from /components/navbar.html) -->
+  <div class="top"></div>
 
-    <!-- Header Utility Links -->
-    <div class="header-actions">
-      <a href="better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
-      <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
-    </div>
-  </header>
-
-  <!-- Application Layout -->
-  <div class="app-layout">
-
-    <!-- Left Sidebar Web Component -->
-    <cmc-sidebar active="skycalendar"></cmc-sidebar>
+  <!-- Navigation Sidebar (Loaded dynamically from /components/sidebar.html) -->
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
     <!-- Main Content Area -->
-    <main class="main-content">
+    <main class="neo-container" id="main-content">
 
       <!-- Top Overview Bar -->
-      <div class="calendar-top-card">
+      <div class="calendar-top-card neo-hero-card">
         <div class="calendar-top-info">
           <h1>SkyBlock Calendar &amp; Event Timers</h1>
           <p id="date-top">Loading current date...</p>
         </div>
-        <button id="go-to-today-btn" class="btn-today" onclick="toToday()">
+        <button id="go-to-today-btn" class="btn-today neo-card-btn" onclick="toToday()">
           <span class="material-icons" style="font-size:1.1rem;">my_location</span>
           Go to Today
         </button>
       </div>
 
       <!-- Calendar Grid Card -->
-      <div class="calendar-card">
+      <div class="calendar-card neo-hero-card">
         <div class="calendar-card-header">
           <h2>
             <span class="material-icons" style="color:var(--accent-color);">calendar_month</span>
             Calendar &bull; Year <span id="year">1</span>
           </h2>
           <div class="pagination-controls">
-            <button id="prev-page" class="pagination-btn">&larr; Prev</button>
+            <button id="prev-page" class="pagination-btn neo-card-btn">&larr; Prev</button>
             <span class="pagination-text">Page <span id="page-counter">1</span></span>
-            <button id="next-page" class="pagination-btn">Next &rarr;</button>
+            <button id="next-page" class="pagination-btn neo-card-btn">Next &rarr;</button>
           </div>
         </div>
         <div id="grid"></div>
       </div>
 
       <!-- Upcoming Events Card -->
-      <div class="calendar-card">
+      <div class="calendar-card neo-hero-card">
         <div class="calendar-card-header">
           <h2>
             <span class="material-icons" style="color:#ea580c;">timer</span>
