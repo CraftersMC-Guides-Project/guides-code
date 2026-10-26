@@ -1,209 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Live Network Status &amp; Real-time Intelligence — CraftersMC Guides</title>
+  <meta name="description"
+    content="Live operational health, real-time online players, server realm distribution, and monthly voter rankings for the CraftersMC SkyBlock network." />
   <link rel="icon" href="assets/cmc-icon.png" type="image/png" />
+  <link rel="icon" href="assets/cmc-guides.png" type="image/png" />
 
   <!-- Google Fonts & Material Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
+  <!-- Anti-flash Theme Init -->
+  <script>
+    (function () {
+      try {
+        var d = localStorage.getItem("darkMode");
+        if (d === "true" || (d === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("darkmode");
+        }
+      } catch (e) { }
+    })();
+  </script>
+
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="better-api-docs/style.css" />
+  <link rel="stylesheet" href="css/essential.css" />
+  <link rel="stylesheet" href="css/neo-brutalism.css" />
   <link rel="stylesheet" href="css/status.css" />
 
-  <!-- Core Components -->
-  <script src="js/components.js"></script>
+  <!-- Scripts -->
+  <script src="js/script.js" defer></script>
 </head>
+
 <body>
 
-  <!-- Top Header Web Component -->
-  <cmc-header active="status"></cmc-header>
+  <!-- Fullscreen / Layout Overlays -->
+  <div class="background"></div>
 
-  <!-- Main Application Layout -->
-  <div class="app-layout">
+  <!-- Top Navigation (Loaded dynamically from /components/navbar.html) -->
+  <div class="top"></div>
 
-    <!-- Left Sidebar Web Component -->
-    <cmc-sidebar active="status"></cmc-sidebar>
+  <!-- Navigation Sidebar (Loaded dynamically from /components/sidebar.html) -->
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <!-- Main Content Area -->
-    <main class="main-content">
-      <section class="doc-section">
+  <!-- Main Neo-Brutalism Page Content -->
+  <main class="neo-container status-page">
 
-        <!-- Breadcrumb -->
-        <div class="breadcrumb">
-          <a href="index.html">Guides</a>
-          <span class="breadcrumb-separator">/</span>
-          <span>Live Intelligence</span>
-          <span class="breadcrumb-separator">/</span>
-          <span>Network Status</span>
+    <div class="status-container">
+
+      <!-- 1. Header & Live Health Banner -->
+      <div class="status-header-banner">
+        <div class="status-header-left">
+          <div class="status-title-row">
+            <h1 class="status-h1">CraftersMC Network Status</h1>
+            <div id="networkHealthBadge" class="status-live-badge online">
+              <span class="status-pulse-dot"></span>
+              <span id="networkHealthText">Online &amp; Operational</span>
+            </div>
+          </div>
+          <p class="status-subtitle" id="statusLastUpdated">Connecting to CraftersMC REST API...</p>
         </div>
 
-        <div class="status-container">
+        <div class="status-header-actions">
+          <button id="btnManualRefresh" class="button70-btn cyan" onclick="refreshStatusData(true)">
+            <span class="material-icons" style="font-size: 1.15rem;" id="refreshIcon">sync</span>
+            <span id="refreshBtnText">Refresh</span>
+          </button>
+          <a href="https://vote.craftersmc.net" target="_blank" rel="noopener noreferrer"
+            class="button70-btn yellow">
+            <span class="material-icons" style="font-size: 1.15rem;">how_to_vote</span>
+            <span>Vote for Server</span>
+          </a>
+        </div>
+      </div>
 
-          <!-- 1. Header & Live Health Banner -->
-          <div class="status-header-banner">
-            <div class="status-header-left">
-              <div class="status-title-row">
-                <h1 class="status-h1">CraftersMC Network Status</h1>
-                <div id="networkHealthBadge" class="status-live-badge online">
-                  <span class="status-pulse-dot"></span>
-                  <span id="networkHealthText">Online &amp; Operational</span>
-                </div>
-              </div>
-              <p class="status-subtitle" id="statusLastUpdated">Connecting to CraftersMC REST API...</p>
-            </div>
+      <!-- Planned Maintenance Alert Notice (Conditional) -->
+      <div id="plannedMaintenanceCard" class="status-maintenance-banner" style="display: none;"></div>
 
-            <div class="status-header-actions">
-              <button id="btnManualRefresh" class="status-btn status-btn-secondary" onclick="refreshStatusData(true)">
-                <span class="material-icons" style="font-size: 1rem;" id="refreshIcon">sync</span>
-                <span id="refreshBtnText">Refresh</span>
-              </button>
-              <a href="https://craftersmc.net/vote" target="_blank" class="status-btn status-btn-primary">
-                <span class="material-icons" style="font-size: 1rem;">how_to_vote</span>
-                <span>Vote for Server</span>
-              </a>
-            </div>
+      <!-- 2. KPI Bento Grid -->
+      <div class="status-kpi-grid">
+        <!-- Active Players -->
+        <div class="status-kpi-card">
+          <div class="status-kpi-header">
+            <span class="status-kpi-label">Active Players</span>
+            <span class="material-icons status-kpi-icon">people</span>
           </div>
-
-          <!-- 2. KPI Bento Grid -->
-          <div class="status-kpi-grid">
-            <!-- Active Players -->
-            <div class="status-kpi-card">
-              <div class="status-kpi-header">
-                <span class="status-kpi-label">Active Players</span>
-                <span class="material-icons status-kpi-icon">people</span>
-              </div>
-              <div>
-                <div class="status-kpi-value" id="kpiPlayerCount">
-                  <span id="kpiCurrentPlayers">-</span>
-                  <span style="font-size: 1rem; color: var(--text-muted); font-weight: 500;">/ <span id="kpiMaxPlayers">750</span></span>
-                </div>
-                <div class="status-progress-bar">
-                  <div id="kpiCapacityFill" class="status-progress-fill" style="width: 0%;"></div>
-                </div>
-              </div>
-              <div class="status-kpi-subtext" id="kpiCapacityText">Network Load: Calculating...</div>
-            </div>
-
-            <!-- Maintenance & Whitelist -->
-            <div class="status-kpi-card">
-              <div class="status-kpi-header">
-                <span class="status-kpi-label">Access State</span>
-                <span class="material-icons status-kpi-icon">lock_open</span>
-              </div>
-              <div>
-                <div class="status-kpi-value" id="kpiWhitelistValue" style="font-size: 1.4rem;">Public (Default)</div>
-              </div>
-              <div class="status-kpi-subtext" id="kpiMaintenanceText">Full Maintenance: Disabled</div>
-            </div>
-
-            <!-- Total Monthly Votes -->
-            <div class="status-kpi-card">
-              <div class="status-kpi-header">
-                <span class="status-kpi-label">Monthly Votes</span>
-                <span class="material-icons status-kpi-icon">how_to_vote</span>
-              </div>
-              <div>
-                <div class="status-kpi-value" id="kpiVotesCount">-</div>
-              </div>
-              <div class="status-kpi-subtext" id="kpiVotersSubtext">Active Voters Logged: -</div>
-            </div>
-          </div>
-
-          <!-- 3. Quick Connect Server IP Card (Bedrock Edition) -->
-          <div class="status-ip-grid" style="grid-template-columns: 1fr;">
-            <div class="status-ip-card" style="padding: 22px 24px;">
-              <div class="status-ip-info">
-                <div class="status-ip-title" style="display: flex; align-items: center; gap: 6px;">
-                  <span class="material-icons" style="font-size: 1rem; color: var(--accent-color);">smartphone</span>
-                  <span>Minecraft Bedrock Edition Server</span>
-                </div>
-                <div class="status-ip-address" style="font-size: 1.3rem;">play.craftersmc.net <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">(Port: 19132)</span></div>
-                <div class="status-ip-port">Compatible with iOS, Android, Windows 10/11, Xbox, PlayStation &amp; Nintendo Switch</div>
-              </div>
-              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <button class="status-btn status-btn-secondary" onclick="copyIp('play.craftersmc.net', '19132')">
-                  <span class="material-icons" style="font-size: 1rem;">content_copy</span>
-                  <span>Copy IP &amp; Port</span>
-                </button>
-                <a class="status-btn status-btn-primary" href="minecraft://?addExternalServer=CraftersMC|play.craftersmc.net:19132">
-                  <span class="material-icons" style="font-size: 1rem;">launch</span>
-                  <span>Open in Minecraft</span>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- 4. Subserver & Gamemode Realms Breakdown -->
           <div>
-            <div class="status-section-title">
-              <span class="material-icons" style="color: var(--accent-color);">dns</span>
-              <span>Live Realm &amp; Gamemode Breakdown</span>
+            <div class="status-kpi-value" id="kpiPlayerCount">
+              <span id="kpiCurrentPlayers">-</span>
+              <span style="font-size: 1.05rem; opacity: 0.7; font-weight: 600;">/ <span
+                  id="kpiMaxPlayers">750</span></span>
             </div>
-            <div class="status-realms-grid" id="realmsGridContainer">
-              <div style="padding: 24px; color: var(--text-muted); font-size: 0.88rem;">Loading realm player distribution...</div>
-            </div>
-          </div>
-
-          <!-- 5. Top Voters Leaderboard Section -->
-          <div class="voters-container">
-            <div class="voters-header">
-              <div class="voters-header-left">
-                <span class="material-icons" style="color: #f59e0b; font-size: 1.3rem;">emoji_events</span>
-                <span style="font-weight: 700; font-size: 1rem; color: var(--text-bright);">Monthly Top Voters</span>
-                <span id="votersMonthBadge" class="voters-month-badge">Cycle: Active</span>
-              </div>
-              <div class="voters-search-box">
-                <span class="material-icons voters-search-icon">search</span>
-                <input type="text" id="votersSearchInput" class="voters-search-input" placeholder="Search voter username..." />
-              </div>
-            </div>
-
-            <!-- Top 3 Podium -->
-            <div class="voters-podium" id="votersPodiumContainer">
-              <!-- Dynamically Populated -->
-            </div>
-
-            <!-- Full Voters Table -->
-            <div class="voters-table-container">
-              <table class="voters-table">
-                <thead>
-                  <tr>
-                    <th style="width: 70px; text-align: center;">Rank</th>
-                    <th>Player</th>
-                    <th style="text-align: right; width: 140px;">Votes</th>
-                    <th style="text-align: right; width: 120px;">Profile</th>
-                  </tr>
-                </thead>
-                <tbody id="votersTableBody">
-                  <tr>
-                    <td colspan="4" style="text-align: center; padding: 24px; color: var(--text-muted);">
-                      Fetching voter rankings...
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="status-progress-bar">
+              <div id="kpiCapacityFill" class="status-progress-fill" style="width: 0%;"></div>
             </div>
           </div>
-
+          <div class="status-kpi-subtext" id="kpiCapacityText">Network Load: Calculating...</div>
         </div>
 
-        <!-- Toast Notification Container -->
-        <div id="toastNotification" class="cmc-toast">
-          <span class="material-icons toast-icon">check_circle</span>
-          <span id="toastMessage">Copied to clipboard!</span>
+        <!-- Maintenance & Whitelist -->
+        <div class="status-kpi-card">
+          <div class="status-kpi-header">
+            <span class="status-kpi-label">Access State</span>
+            <span class="material-icons status-kpi-icon">lock_open</span>
+          </div>
+          <div>
+            <div class="status-kpi-value" id="kpiWhitelistValue" style="font-size: 1.45rem;">Public (Default)</div>
+          </div>
+          <div class="status-kpi-subtext" id="kpiMaintenanceText">Full Maintenance: Disabled</div>
         </div>
 
-      </section>
+        <!-- Total Monthly Votes -->
+        <div class="status-kpi-card">
+          <div class="status-kpi-header">
+            <span class="status-kpi-label">Monthly Votes</span>
+            <span class="material-icons status-kpi-icon">how_to_vote</span>
+          </div>
+          <div>
+            <div class="status-kpi-value" id="kpiVotesCount">-</div>
+          </div>
+          <div class="status-kpi-subtext" id="kpiVotersSubtext">Active Voters Logged: -</div>
+        </div>
+      </div>
 
-      <!-- Reusable Site Footer -->
-      <cmc-footer></cmc-footer>
-    </main>
+      <!-- 3. Quick Connect Server IP Card (Bedrock Edition) -->
+      <div class="status-ip-grid" style="grid-template-columns: 1fr;">
+        <div class="status-ip-card" style="padding: 22px 26px;">
+          <div class="status-ip-info">
+            <div class="status-ip-title">
+              <span class="material-icons status-ip-icon" style="font-size: 1.25rem; color: #0284c7;">smartphone</span>
+              <span>Minecraft Bedrock Edition Server</span>
+              <span class="status-ip-tag">iOS • Android • Windows 10/11 • Consoles</span>
+            </div>
+            <div class="status-ip-address" style="font-size: 1.35rem;">play.craftersmc.net <span class="status-port-pill">(Port: 19132)</span></div>
+            <div class="status-ip-port">Compatible with all Bedrock Edition platforms (iOS, Android, Windows 10/11, Xbox, PlayStation, Switch)</div>
+          </div>
+          <div class="status-ip-actions">
+            <button class="button70-btn cyan" onclick="copyIp('play.craftersmc.net', '19132')">
+              <span class="material-icons" style="font-size: 1.1rem;">content_copy</span>
+              <span>Copy IP &amp; Port</span>
+            </button>
+            <a class="button70-btn green"
+              href="minecraft://?addExternalServer=CraftersMC|play.craftersmc.net:19132">
+              <span class="material-icons" style="font-size: 1.1rem;">launch</span>
+              <span>Open in Minecraft</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Subserver & Gamemode Realms Breakdown -->
+      <div>
+        <div class="status-section-title">
+          <span class="material-icons" style="color: #0284c7;">dns</span>
+          <span>Live Realm &amp; Gamemode Breakdown</span>
+        </div>
+        <div class="status-realms-grid" id="realmsGridContainer">
+          <div style="padding: 24px; color: var(--text-muted, #64748b); font-size: 0.88rem;">Loading realm player
+            distribution...</div>
+        </div>
+      </div>
+
+      <!-- 5. Top Voters Leaderboard Section -->
+      <div class="voters-container">
+        <div class="voters-header">
+          <div class="voters-header-left">
+            <span class="material-icons" style="color: #f59e0b; font-size: 1.4rem;">emoji_events</span>
+            <span style="font-weight: 800; font-size: 1.05rem;">Monthly Top Voters</span>
+            <span id="votersMonthBadge" class="voters-month-badge">Cycle: Active</span>
+          </div>
+          <div class="voters-search-box">
+            <span class="material-icons voters-search-icon">search</span>
+            <input type="text" id="votersSearchInput" class="voters-search-input"
+              placeholder="Search voter username..." />
+          </div>
+        </div>
+
+        <!-- Top 3 Podium -->
+        <div class="voters-podium" id="votersPodiumContainer">
+          <!-- Dynamically Populated -->
+        </div>
+
+        <!-- Full Voters Table -->
+        <div class="voters-table-container">
+          <table class="voters-table">
+            <thead>
+              <tr>
+                <th style="width: 70px; text-align: center;">Rank</th>
+                <th>Player</th>
+                <th style="text-align: right; width: 140px;">Votes</th>
+                <th style="text-align: right; width: 120px;">Profile</th>
+              </tr>
+            </thead>
+            <tbody id="votersTableBody">
+              <tr>
+                <td colspan="4" style="text-align: center; padding: 24px; color: #64748b;">
+                  Fetching voter rankings...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Reusable Site Footer (Loaded dynamically from /components/footer.html) -->
+    <div id="footer"></div>
+
+  </main>
+
+  <!-- Scroll to Top Button -->
+  <span class="material-icons" id="scrollToTopBtn">north</span>
+
+  <!-- Toast Notification Container -->
+  <div id="toastNotification" class="cmc-toast">
+    <span class="material-icons toast-icon">check_circle</span>
+    <span id="toastMessage">Copied to clipboard!</span>
   </div>
 
   <!-- Client Script for Live API Fetching & Rendering -->
@@ -212,7 +233,6 @@
     let statusData = null;
     let votersData = [];
     let autoRefreshCountdown = 30;
-    let autoRefreshTimer = null;
     let labelMap = {
       "SKYBLOCK.modes.hub": "SkyLine Village (Hub)",
       "SKYBLOCK.modes.dynamic": "Private Islands",
@@ -295,12 +315,10 @@
           const json = await res.json();
           labelMap = { ...labelMap, ...json };
         }
-      } catch (err) {
-        // Fallback default
-      }
+      } catch (err) { }
     }
 
-    // Fetch Network Status via Serverless Proxy
+    // Fetch Network Status via Serverless Proxy with direct fallback
     async function fetchStatus() {
       const endpoints = [
         '/api/network/status',
@@ -314,14 +332,27 @@
             const data = await res.json();
             if (data && (data.success || data.playerCount !== undefined)) {
               statusData = data;
-              localStorage.setItem('cmc_status_cache', JSON.stringify({ ts: Date.now(), data }));
+              try { localStorage.setItem('cmc_status_cache', JSON.stringify({ ts: Date.now(), data })); } catch (e) { }
               return data;
             }
           }
-        } catch (e) {
-          // continue fallback
-        }
+        } catch (e) { }
       }
+
+      // Direct API fallback for local preview
+      try {
+        const res = await fetch('https://api.craftersmc.net/v1/network/status', {
+          headers: { 'x-api-key': 'e89b4eb6-1776-4fb5-9a25-812c2ce1f8d8' }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && (data.success || data.playerCount !== undefined)) {
+            statusData = data;
+            try { localStorage.setItem('cmc_status_cache', JSON.stringify({ ts: Date.now(), data })); } catch (e) { }
+            return data;
+          }
+        }
+      } catch (e) { }
 
       // Check Local Cache Fallback
       const cached = localStorage.getItem('cmc_status_cache');
@@ -330,12 +361,12 @@
           const parsed = JSON.parse(cached);
           statusData = parsed.data;
           return statusData;
-        } catch (e) {}
+        } catch (e) { }
       }
       return null;
     }
 
-    // Fetch Network Voters via Serverless Proxy
+    // Fetch Network Voters via Serverless Proxy with direct fallback
     async function fetchVoters() {
       const endpoints = [
         '/api/network/voters',
@@ -350,16 +381,34 @@
             if (data && (data.success || Array.isArray(data.voters))) {
               votersData = data.voters || [];
               if (data.month) {
-                document.getElementById('votersMonthBadge').textContent = `Month: ${data.month}`;
+                const badge = document.getElementById('votersMonthBadge');
+                if (badge) badge.textContent = `Month: ${data.month}`;
               }
-              localStorage.setItem('cmc_voters_cache', JSON.stringify({ ts: Date.now(), data }));
+              try { localStorage.setItem('cmc_voters_cache', JSON.stringify({ ts: Date.now(), data })); } catch (e) { }
               return;
             }
           }
-        } catch (e) {
-          // continue fallback
-        }
+        } catch (e) { }
       }
+
+      // Direct API fallback for local preview
+      try {
+        const res = await fetch('https://api.craftersmc.net/v1/network/voters', {
+          headers: { 'x-api-key': 'e89b4eb6-1776-4fb5-9a25-812c2ce1f8d8' }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && (data.success || Array.isArray(data.voters))) {
+            votersData = data.voters || [];
+            if (data.month) {
+              const badge = document.getElementById('votersMonthBadge');
+              if (badge) badge.textContent = `Month: ${data.month}`;
+            }
+            try { localStorage.setItem('cmc_voters_cache', JSON.stringify({ ts: Date.now(), data })); } catch (e) { }
+            return;
+          }
+        }
+      } catch (e) { }
 
       // Fallback cache
       const cached = localStorage.getItem('cmc_voters_cache');
@@ -367,7 +416,7 @@
         try {
           const parsed = JSON.parse(cached);
           votersData = parsed.data.voters || [];
-        } catch (e) {}
+        } catch (e) { }
       }
     }
 
@@ -389,6 +438,27 @@
       } else {
         healthBadge.className = 'status-live-badge online';
         healthText.textContent = 'Online & Operational';
+      }
+
+      // Planned maintenance notification
+      const maintBanner = document.getElementById('plannedMaintenanceCard');
+      if (maintBanner) {
+        if (statusData.plannedMaintenance && statusData.plannedMaintenance.startTimestamp) {
+          const startTime = new Date(statusData.plannedMaintenance.startTimestamp * 1000).toLocaleString();
+          const estHours = Math.round((statusData.plannedMaintenance.estimatedTime || 0) / 3600);
+          maintBanner.innerHTML = `
+            <div class="maint-banner-content">
+              <span class="material-icons maint-icon">build_circle</span>
+              <div>
+                <div class="maint-title">Planned Maintenance Notice</div>
+                <div>Scheduled to begin: <b>${startTime}</b> (Estimated duration: ~${estHours} hours). Network services may be temporarily paused.</div>
+              </div>
+            </div>
+          `;
+          maintBanner.style.display = 'block';
+        } else {
+          maintBanner.style.display = 'none';
+        }
       }
 
       const currentPlayers = statusData.playerCount ?? 0;
@@ -435,7 +505,7 @@
       scan(games);
 
       if (realmList.length === 0) {
-        container.innerHTML = `<div style="padding: 18px; color: var(--text-muted); font-size: 0.88rem;">No realm distribution reported.</div>`;
+        container.innerHTML = `<div style="padding: 18px; color: #64748b; font-size: 0.88rem;">No realm distribution reported.</div>`;
         return;
       }
 
@@ -448,16 +518,16 @@
           <div class="status-realm-card">
             <div class="status-realm-header">
               <div class="status-realm-name">
-                <span class="material-icons" style="font-size: 1.15rem; color: var(--accent-color);">${icon}</span>
+                <span class="material-icons" style="font-size: 1.15rem; color: #0284c7;">${icon}</span>
                 <span>${r.name}</span>
               </div>
-              <div class="status-realm-count">${r.count} <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">online</span></div>
+              <div class="status-realm-count">${r.count} <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">online</span></div>
             </div>
             <div>
               <div class="status-realm-meter">
                 <div class="status-realm-fill" style="width: ${pct}%;"></div>
               </div>
-              <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; text-align: right;">${pct}% of online players</div>
+              <div style="font-size: 0.72rem; color: #64748b; margin-top: 5px; text-align: right; font-weight: 600;">${pct}% of active players</div>
             </div>
           </div>
         `;
@@ -484,7 +554,7 @@
         podiumEl.innerHTML = `
           <!-- Rank 2: Silver -->
           <div class="podium-card rank-2">
-            <div class="podium-medal"><span class="material-icons" style="font-size:1.3rem; color:#94a3b8;">military_tech</span></div>
+            <div class="podium-medal"><span class="material-icons" style="font-size:1.4rem; color:#94a3b8;">military_tech</span></div>
             <img class="podium-avatar" src="https://mc-heads.net/avatar/${encodeURIComponent(top2.nickname)}/48" alt="${top2.nickname}" onerror="this.src='assets/cmc-icon.png'" />
             <a href="player.html?username=${encodeURIComponent(top2.nickname)}" class="podium-name">${top2.nickname}</a>
             <div class="podium-votes">${top2.votes} votes</div>
@@ -493,16 +563,16 @@
 
           <!-- Rank 1: Gold -->
           <div class="podium-card rank-1">
-            <div class="podium-medal"><span class="material-icons" style="font-size:1.5rem; color:#eab308;">emoji_events</span></div>
+            <div class="podium-medal"><span class="material-icons" style="font-size:1.6rem; color:#eab308;">emoji_events</span></div>
             <img class="podium-avatar" src="https://mc-heads.net/avatar/${encodeURIComponent(top1.nickname)}/56" alt="${top1.nickname}" onerror="this.src='assets/cmc-icon.png'" />
             <a href="player.html?username=${encodeURIComponent(top1.nickname)}" class="podium-name" style="font-size:1.05rem; font-weight:800;">${top1.nickname}</a>
-            <div class="podium-votes" style="color:#eab308; font-size:1.05rem;">${top1.votes} votes</div>
+            <div class="podium-votes" style="color:#854d0e; font-size:0.95rem;">${top1.votes} votes</div>
             <span class="podium-badge badge-gold">#1 Top Voter</span>
           </div>
 
           <!-- Rank 3: Bronze -->
           <div class="podium-card rank-3">
-            <div class="podium-medal"><span class="material-icons" style="font-size:1.3rem; color:#b45309;">military_tech</span></div>
+            <div class="podium-medal"><span class="material-icons" style="font-size:1.4rem; color:#ea580c;">military_tech</span></div>
             <img class="podium-avatar" src="https://mc-heads.net/avatar/${encodeURIComponent(top3.nickname)}/48" alt="${top3.nickname}" onerror="this.src='assets/cmc-icon.png'" />
             <a href="player.html?username=${encodeURIComponent(top3.nickname)}" class="podium-name">${top3.nickname}</a>
             <div class="podium-votes">${top3.votes} votes</div>
@@ -521,7 +591,7 @@
       if (displayList.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="4" style="text-align: center; padding: 24px; color: var(--text-muted);">
+            <td colspan="4" style="text-align: center; padding: 24px; color: #64748b;">
               No voters found matching "${query}".
             </td>
           </tr>
@@ -531,7 +601,7 @@
 
       tbody.innerHTML = displayList.map((v, idx) => {
         const rank = idx + 1;
-        let rankBadge = `<span style="font-weight:700; color:var(--text-muted);">#${rank}</span>`;
+        let rankBadge = `<span style="font-weight:700; opacity: 0.7;">#${rank}</span>`;
         if (rank === 1) rankBadge = '🥇';
         else if (rank === 2) rankBadge = '🥈';
         else if (rank === 3) rankBadge = '🥉';
@@ -545,11 +615,11 @@
                 <a href="player.html?username=${encodeURIComponent(v.nickname)}" class="voter-name-link">${v.nickname}</a>
               </div>
             </td>
-            <td style="text-align: right; font-family: var(--font-mono); font-weight: 700; color: var(--accent-color);">
-              ${v.votes} <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-muted);">votes</span>
+            <td style="text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 800; color: #0284c7;">
+              ${v.votes} <span style="font-size: 0.75rem; font-weight: 500; opacity: 0.7;">votes</span>
             </td>
             <td style="text-align: right;">
-              <a href="player.html?username=${encodeURIComponent(v.nickname)}" class="status-btn status-btn-secondary" style="padding: 4px 8px; font-size: 0.75rem;">
+              <a href="player.html?username=${encodeURIComponent(v.nickname)}" class="button70-btn yellow" style="min-width: 64px; height: 32px; padding: 0 10px; font-size: 11.5px; box-shadow: 2.5px 2.5px 0 #000000; border-radius: 6px;">
                 View
               </a>
             </td>
@@ -588,7 +658,7 @@
       renderVoters(e.target.value.trim());
     });
 
-    // Auto-refresh interval (every 30 seconds)
+    // Auto-refresh countdown interval (every 30 seconds)
     setInterval(() => {
       autoRefreshCountdown--;
       if (autoRefreshCountdown <= 0) {
@@ -602,11 +672,33 @@
       }
     }, 1000);
 
-    // Initial Load
+    // Initial Load: check cache immediately, then fetch fresh
     document.addEventListener('DOMContentLoaded', () => {
+      // 1. Instant render from local cache if available
+      try {
+        const cachedStatus = localStorage.getItem('cmc_status_cache');
+        if (cachedStatus) {
+          const parsed = JSON.parse(cachedStatus);
+          if (parsed && parsed.data) {
+            statusData = parsed.data;
+            renderStatus();
+          }
+        }
+        const cachedVoters = localStorage.getItem('cmc_voters_cache');
+        if (cachedVoters) {
+          const parsed = JSON.parse(cachedVoters);
+          if (parsed && parsed.data) {
+            votersData = parsed.data.voters || [];
+            renderVoters();
+          }
+        }
+      } catch (e) { }
+
+      // 2. Fetch fresh data
       refreshStatusData(false);
     });
   </script>
 
 </body>
+
 </html>
