@@ -440,22 +440,36 @@
         healthText.textContent = 'Online & Operational';
       }
 
-      // Planned maintenance notification
+      // Planned maintenance notification (only show if future or currently in-progress)
       const maintBanner = document.getElementById('plannedMaintenanceCard');
       if (maintBanner) {
-        if (statusData.plannedMaintenance && statusData.plannedMaintenance.startTimestamp) {
-          const startTime = new Date(statusData.plannedMaintenance.startTimestamp * 1000).toLocaleString();
-          const estHours = Math.round((statusData.plannedMaintenance.estimatedTime || 0) / 3600);
-          maintBanner.innerHTML = `
-            <div class="maint-banner-content">
-              <span class="material-icons maint-icon">build_circle</span>
-              <div>
-                <div class="maint-title">Planned Maintenance Notice</div>
-                <div>Scheduled to begin: <b>${startTime}</b> (Estimated duration: ~${estHours} hours). Network services may be temporarily paused.</div>
+        const pm = statusData.plannedMaintenance;
+        if (pm && pm.startTimestamp) {
+          const nowSec = Math.floor(Date.now() / 1000);
+          const startSec = pm.startTimestamp;
+          const durationSec = pm.estimatedTime || 14400;
+          const endSec = startSec + durationSec;
+
+          // Only display if the maintenance window hasn't expired yet
+          if (nowSec < endSec) {
+            const isCurrentlyActive = nowSec >= startSec;
+            const startTime = new Date(startSec * 1000).toLocaleString();
+            const estHours = Math.round(durationSec / 3600);
+            maintBanner.innerHTML = `
+              <div class="maint-banner-content">
+                <span class="material-icons maint-icon">build_circle</span>
+                <div>
+                  <div class="maint-title">${isCurrentlyActive ? 'Maintenance in Progress' : 'Planned Maintenance Notice'}</div>
+                  <div>${isCurrentlyActive 
+                    ? `Maintenance is currently underway (started <b>${startTime}</b>, estimated duration: ~${estHours} hours). Network services may be temporarily paused.` 
+                    : `Scheduled to begin: <b>${startTime}</b> (Estimated duration: ~${estHours} hours). Network services may be temporarily paused.`}</div>
+                </div>
               </div>
-            </div>
-          `;
-          maintBanner.style.display = 'block';
+            `;
+            maintBanner.style.display = 'block';
+          } else {
+            maintBanner.style.display = 'none';
+          }
         } else {
           maintBanner.style.display = 'none';
         }
