@@ -7,6 +7,14 @@
   --player-shadow: 4px 4px 0 #111827;
   --player-shadow-sm: 2.5px 2.5px 0 #111827;
   --player-shadow-lg: 6px 6px 0 #111827;
+  --accent-color: #0284c7;
+  --text-muted: #64748b;
+  --text-bright: #111827;
+  --border-color: #e2e8f0;
+  --card-inner-bg: #f8fafc;
+  --card-inner-border: #e2e8f0;
+  --radius-sm: 8px;
+  --radius-md: 12px;
 }
 
 /* Search Card */
@@ -63,6 +71,11 @@
   box-shadow: 2.5px 2.5px 0 #111827;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   box-sizing: border-box;
+}
+
+.player-input::placeholder {
+  color: #9ca3af;
+  font-weight: 500;
 }
 
 .player-input:focus {
@@ -151,10 +164,19 @@
 
 /* Global button icon color guarantee */
 button .material-icons {
-  color: #111827 !important;
+  color: inherit;
 }
 
 .input-label .material-icons {
+  color: #0284c7;
+}
+
+.profile-pill .material-icons {
+  color: #0284c7;
+}
+
+.profile-pill.active .material-icons,
+.profile-pill:hover .material-icons {
   color: #111827 !important;
 }
 
@@ -176,18 +198,24 @@ button .material-icons {
   display: flex;
   background: #bae6fd;
   color: #0c4a6e;
+  border: 2px solid #0284c7;
+  box-shadow: 4px 4px 0 #0c4a6e;
 }
 
 .player-status-alert.success {
   display: flex;
   background: #bbf7d0;
   color: #14532d;
+  border: 2px solid #16a34a;
+  box-shadow: 4px 4px 0 #14532d;
 }
 
 .player-status-alert.error {
   display: flex;
   background: #fecdd3;
   color: #881337;
+  border: 2px solid #e11d48;
+  box-shadow: 4px 4px 0 #881337;
 }
 
 /* Profile Selector Pills */
@@ -864,6 +892,98 @@ button .material-icons {
   box-shadow: 1px 1px 0 #111827;
 }
 
+/* Helper Cards & Component Containers */
+.skill-avg-banner {
+  margin-bottom: 18px;
+  padding: 14px 18px;
+  background: #ffffff;
+  border: 2px solid #111827;
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 #111827;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.data-item-box {
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.missing-talisman-group {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.wardrobe-set-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1.5px solid #a1a1a1;
+  border-radius: 6px;
+  padding: 6px 8px;
+  position: relative;
+  transition: transform 0.1s ease, border-color 0.1s ease;
+}
+
+.wardrobe-set-box.equipped {
+  background: rgba(6, 182, 212, 0.12);
+  border: 1.5px solid #06b6d4;
+  box-shadow: 0 0 0 1px #06b6d4;
+}
+
+.wardrobe-set-title {
+  font-family: 'Minecraft', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 4px;
+}
+
+.wardrobe-set-box.equipped .wardrobe-set-title {
+  color: #0284c7;
+}
+
+.missing-shards-trigger-btn {
+  background: #ecfeff;
+  border: 2px solid #0891b2;
+  box-shadow: 2px 2px 0 #0891b2;
+  color: #0e7490;
+  font-weight: 800;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+}
+
+.missing-shards-trigger-btn:hover {
+  background: #cffafe;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #0891b2;
+}
+
+.shard-badge {
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border: 1.5px solid #06b6d4;
+  border-radius: 6px;
+  background: #ecfeff;
+  color: #0891b2;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
 /* Minecraft Container Box & Border exactly from bazaarsave.html */
 .mc-bazaar-container {
   display: grid;
@@ -1167,10 +1287,28 @@ button .material-icons {
    DARK MODE STYLES (Pure #000 Pitch Black Neo-Brutalism)
    ========================================================= */
 
+.darkmode {
+  --player-border: 2px solid #27272a;
+  --player-shadow: 4px 4px 0 #000000;
+  --player-shadow-sm: 2.5px 2.5px 0 #000000;
+  --player-shadow-lg: 6px 6px 0 #000000;
+  --accent-color: #38bdf8;
+  --text-muted: #a1a1aa;
+  --text-bright: #ffffff;
+  --border-color: #27272a;
+  --card-inner-bg: #0d0d0d;
+  --card-inner-border: #27272a;
+}
+
+/* Global button icon handling in dark mode */
+.darkmode button .material-icons {
+  color: inherit !important;
+}
+
 .darkmode .player-search-card {
   background: #000000 !important;
   border: 2px solid #27272a !important;
-  box-shadow: 4px 4px 0 #18181b !important;
+  box-shadow: 4px 4px 0 #000000 !important;
   color: #ffffff !important;
 }
 
@@ -1187,6 +1325,10 @@ button .material-icons {
   color: #ffffff !important;
   border: 2px solid #27272a !important;
   box-shadow: 2px 2px 0 #000000 !important;
+}
+
+.darkmode .player-input::placeholder {
+  color: #71717a !important;
 }
 
 .darkmode .player-input:focus {
@@ -1259,7 +1401,7 @@ button .material-icons {
 .darkmode .profile-pill-container {
   background: #000000 !important;
   border: 2px solid #27272a !important;
-  box-shadow: 3px 3px 0 #18181b !important;
+  box-shadow: 4px 4px 0 #000000 !important;
 }
 
 .darkmode .profile-pill-title {
@@ -1273,6 +1415,10 @@ button .material-icons {
   box-shadow: 2px 2px 0 #000000 !important;
 }
 
+.darkmode .profile-pill .material-icons {
+  color: #38bdf8 !important;
+}
+
 .darkmode .profile-pill:hover {
   background: #fde047 !important;
   color: #000000 !important;
@@ -1280,25 +1426,64 @@ button .material-icons {
   box-shadow: 3px 3px 0 #000000 !important;
 }
 
+.darkmode .profile-pill:hover .material-icons {
+  color: #000000 !important;
+}
+
 .darkmode .profile-pill.active {
   background: #38bdf8 !important;
   color: #000000 !important;
   border-color: #000000 !important;
-  box-shadow: 3px 3px 0 #000000 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
 }
 
+.darkmode .profile-pill.active .material-icons {
+  color: #000000 !important;
+}
+
+/* Status Alerts in Dark Mode */
 .darkmode .player-status-alert {
-  background: #000000 !important;
-  color: #ffffff !important;
-  border: 2px solid #27272a !important;
-  box-shadow: 3px 3px 0 #18181b !important;
+  box-shadow: 4px 4px 0 #000000 !important;
+}
+
+.darkmode .player-status-alert.info {
+  display: flex !important;
+  background: #082f49 !important;
+  color: #bae6fd !important;
+  border: 2px solid #0284c7 !important;
+}
+
+.darkmode .player-status-alert.info .material-icons {
+  color: #38bdf8 !important;
+}
+
+.darkmode .player-status-alert.success {
+  display: flex !important;
+  background: #052e16 !important;
+  color: #bbf7d0 !important;
+  border: 2px solid #16a34a !important;
+}
+
+.darkmode .player-status-alert.success .material-icons {
+  color: #4ade80 !important;
+}
+
+.darkmode .player-status-alert.error {
+  display: flex !important;
+  background: #4c0519 !important;
+  color: #fecdd3 !important;
+  border: 2px solid #f43f5e !important;
+}
+
+.darkmode .player-status-alert.error .material-icons {
+  color: #fb7185 !important;
 }
 
 /* Player Sub Navigation Side Panel in Dark Mode */
 .darkmode .player-subpanel {
   background: #000000 !important;
   border: 2px solid #27272a !important;
-  box-shadow: 5px 5px 0 #18181b !important;
+  box-shadow: 5px 5px 0 #000000 !important;
   color: #ffffff !important;
 }
 
@@ -1356,18 +1541,33 @@ button .material-icons {
   color: #000000 !important;
 }
 
+@media (max-width: 900px) {
+  .darkmode .player-subpanel-btn {
+    background: #0d0d0d !important;
+    border: 2px solid #27272a !important;
+    box-shadow: 2px 2px 0 #000000 !important;
+    color: #e4e4e7 !important;
+  }
+
+  .darkmode .player-subpanel-btn.active {
+    background: #fde047 !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+  }
+}
+
 /* Data & Player Cards in Dark Mode */
 .darkmode .card {
   background: #000000 !important;
   border: 2px solid #27272a !important;
   border-radius: 12px !important;
-  box-shadow: 4px 4px 0 #18181b !important;
+  box-shadow: 4px 4px 0 #000000 !important;
   color: #ffffff !important;
 }
 
 .darkmode .card:hover {
   border-color: #fde047 !important;
-  box-shadow: 7px 7px 0 #fde047 !important;
+  box-shadow: 6px 6px 0 #000000 !important;
   transform: translate(-2px, -2px) !important;
 }
 
@@ -1397,18 +1597,77 @@ button .material-icons {
 }
 
 .darkmode .data-value.date {
-  color: #71717a !important;
+  color: #94a3b8 !important;
 }
 
 .darkmode .data-value.boolean {
   color: #4ade80 !important;
 }
 
+/* Helper Cards in Dark Mode */
+.darkmode .skill-avg-banner {
+  background: #000000 !important;
+  border: 2px solid #27272a !important;
+  box-shadow: 4px 4px 0 #000000 !important;
+  color: #ffffff !important;
+}
+
+.darkmode .data-item-box {
+  background: #0d0d0d !important;
+  border: 1.5px solid #27272a !important;
+  color: #ffffff !important;
+}
+
+.darkmode .missing-talisman-group {
+  background: #0d0d0d !important;
+  border: 1.5px solid #27272a !important;
+  color: #ffffff !important;
+}
+
+.darkmode .wardrobe-set-box {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: #3f3f46 !important;
+}
+
+.darkmode .wardrobe-set-box.equipped {
+  background: rgba(56, 189, 248, 0.18) !important;
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 0 1px #38bdf8 !important;
+}
+
+.darkmode .wardrobe-set-title {
+  color: #e4e4e7 !important;
+}
+
+.darkmode .wardrobe-set-box.equipped .wardrobe-set-title {
+  color: #38bdf8 !important;
+}
+
+.darkmode .missing-shards-trigger-btn {
+  background: #082f49 !important;
+  border: 2px solid #38bdf8 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+  color: #38bdf8 !important;
+}
+
+.darkmode .missing-shards-trigger-btn:hover {
+  background: #38bdf8 !important;
+  color: #000000 !important;
+  border-color: #38bdf8 !important;
+  box-shadow: 3px 3px 0 #38bdf8 !important;
+}
+
+.darkmode .shard-badge {
+  background: #082f49 !important;
+  border: 1.5px solid #0284c7 !important;
+  color: #38bdf8 !important;
+}
+
 /* Skill Cards in Dark Mode */
 .darkmode .skill-card {
   background: #000000 !important;
   border: 2px solid #27272a !important;
-  box-shadow: 3px 3px 0 #18181b !important;
+  box-shadow: 3px 3px 0 #000000 !important;
   color: #ffffff !important;
 }
 
@@ -1442,7 +1701,7 @@ button .material-icons {
 .darkmode .playtime-card {
   background: #000000 !important;
   border: 2px solid #27272a !important;
-  box-shadow: 3px 3px 0 #18181b !important;
+  box-shadow: 3px 3px 0 #000000 !important;
   color: #ffffff !important;
 }
 
@@ -1460,7 +1719,7 @@ button .material-icons {
 .darkmode .item-slot-card {
   background: #000000 !important;
   border: 2px solid #27272a !important;
-  box-shadow: 3px 3px 0 #18181b !important;
+  box-shadow: 3px 3px 0 #000000 !important;
   color: #ffffff !important;
 }
 
@@ -1489,8 +1748,12 @@ button .material-icons {
 .darkmode .zone-chip {
   background: #000000 !important;
   border: 2px solid #27272a !important;
-  box-shadow: 2px 2px 0 #18181b !important;
+  box-shadow: 2px 2px 0 #000000 !important;
   color: #ffffff !important;
+}
+
+.darkmode .zone-chip .material-icons {
+  color: #38bdf8 !important;
 }
 
 .darkmode .cake-chip {
@@ -1510,7 +1773,7 @@ button .material-icons {
 .darkmode .cosmetic-chip {
   background: #000000 !important;
   border: 2px solid #27272a !important;
-  box-shadow: 2px 2px 0 #18181b !important;
+  box-shadow: 2px 2px 0 #000000 !important;
   color: #ffffff !important;
 }
 
@@ -1521,11 +1784,39 @@ button .material-icons {
   box-shadow: 2.5px 2.5px 0 #000000 !important;
 }
 
+/* Minecraft Container in Dark Mode */
+.darkmode .mc-bazaar-container .inner-container h3 {
+  color: #262626 !important;
+}
+
+.darkmode .mc-page-btn {
+  background-color: #2e2e2e !important;
+  color: #ffffff !important;
+  box-shadow: 
+    inset 2px 2px 0 0 #555555,
+    inset -2px -2px 0 0 #111111,
+    0 0 0 1px #000000 !important;
+}
+
+.darkmode .mc-page-btn:hover:not(:disabled) {
+  background-color: #3f3f3f !important;
+  color: #fde047 !important;
+}
+
+.darkmode .mc-page-btn.active {
+  background-color: #1a1a1a !important;
+  box-shadow: 
+    inset 2px 2px 0 0 #000000,
+    inset -2px -2px 0 0 #555555,
+    0 0 0 1px #000000 !important;
+  color: #ffff55 !important;
+}
+
 /* Shards Modal in Dark Mode */
 .darkmode .shards-modal-card {
   background: #000000 !important;
   border: 3px solid #27272a !important;
-  box-shadow: 8px 8px 0 #18181b !important;
+  box-shadow: 8px 8px 0 #000000 !important;
   color: #ffffff !important;
 }
 
@@ -1542,11 +1833,50 @@ button .material-icons {
   box-shadow: 1.5px 1.5px 0 #000000 !important;
 }
 
+.darkmode .missing-shard-card {
+  background: #0d0d0d !important;
+  border: 2px solid #27272a !important;
+  box-shadow: 3px 3px 0 #000000 !important;
+  color: #ffffff !important;
+}
+
+.darkmode .missing-shard-card:hover {
+  background: #18181b !important;
+  border-color: #fde047 !important;
+  box-shadow: 4px 4px 0 #fde047 !important;
+}
+
+.darkmode .shard-id-title {
+  color: #ffffff !important;
+}
+
+.darkmode .shard-coord-text {
+  color: #a1a1aa !important;
+}
+
+.darkmode .shard-copy-btn {
+  background: #18181b !important;
+  color: #ffffff !important;
+  border: 2px solid #27272a !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+}
+
+.darkmode .shard-copy-btn:hover {
+  background: #fde047 !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
+  box-shadow: 3px 3px 0 #000000 !important;
+}
+
+.darkmode .shard-copy-btn:active {
+  box-shadow: 0 0 0 #000000 !important;
+}
+
 /* Raw JSON Box in Dark Mode */
 .darkmode .json-pre-box {
   background: #000000 !important;
   border: 2px solid #27272a !important;
-  box-shadow: 5px 5px 0 #18181b !important;
+  box-shadow: 5px 5px 0 #000000 !important;
   color: #f8fafc !important;
 }
 

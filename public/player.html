@@ -25,6 +25,8 @@
         var d = localStorage.getItem("darkMode");
         if (d === "true" || (d === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
           document.documentElement.classList.add("darkmode");
+        } else {
+          document.documentElement.classList.remove("darkmode");
         }
       } catch (e) {}
     })();
@@ -80,22 +82,15 @@
           <span class="neo-hero-dot green"></span>
         </div>
         <div class="neo-hero-bar-title">
-          <span class="material-icons" style="font-size:15px; color:#111827;">person_search</span>
+          <span class="material-icons" style="font-size:15px;">person_search</span>
           CraftersMC-Guides-Project | Player Viewer
         </div>
-        <!-- <div style="font-size: 11px; font-weight: 800; font-family: var(--font-mono); color: #111827;">
-          LIVE INTEL v1
-        </div> -->
       </div>
 
       <div class="neo-hero-content" style="padding: 24px 28px;">
         <div class="neo-hero-heading-group">
-          <!-- <div class="neo-badge" style="background: #38bdf8; margin-bottom: 8px;">
-            <span class="material-icons" style="font-size: 14px; color: #111827;">query_stats</span>
-            Real-Time Profile Intelligence
-          </div> -->
           <h1 class="neo-hero-title" style="font-size: clamp(1.8rem, 4vw, 2.6rem); margin-bottom: 8px;">
-            Player &amp; Profile <span class="neo-hero-highlight" style="background: #fde047;">Viewer</span>
+            Player &amp; Profile <span class="neo-hero-highlight">Viewer</span>
           </h1>
           <p class="neo-hero-subtitle" style="font-size: 14.5px; max-width: 800px; margin: 0;">
             Search and inspect live CraftersMC player profiles, SkyBlock stats, skill progression, equipment, slayers, minions, collections, and playtime via the CraftersMC REST API.
@@ -115,13 +110,13 @@
       <div class="search-form-grid">
         <div class="input-field-group">
           <label class="input-label" for="username"><span class="material-icons"
-              style="font-size: 0.95rem; color: #111827;">person</span> Minecraft Username</label>
+              style="font-size: 0.95rem;">person</span> Minecraft Username</label>
           <input type="text" id="username" class="player-input"
             placeholder="Enter username (e.g. NetworkPg, ieduoo)" autocomplete="off">
         </div>
         <div class="input-field-group">
           <label class="input-label" for="profileId"><span class="material-icons"
-              style="font-size: 0.95rem; color: #111827;">badge</span> Profile ID (Optional)</label>
+              style="font-size: 0.95rem;">badge</span> Profile ID (Optional)</label>
           <input type="text" id="profileId" class="player-input" placeholder="Profile ID or cute name"
             autocomplete="off">
         </div>
@@ -145,7 +140,7 @@
         </div>
 
         <!-- Co-op Member Selector Pills -->
-        <div id="memberSelector" class="profile-pill-container" style="display: none; background: #f8fafc;">
+        <div id="memberSelector" class="profile-pill-container" style="display: none;">
           <span class="profile-pill-title">Co-op Members:</span>
           <div id="memberPills" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
         </div>
@@ -1314,7 +1309,7 @@
       const skillAvg = countedSkills > 0 ? (totalLevels / countedSkills).toFixed(2) : '0';
 
       container.innerHTML = `
-        <div style="margin-bottom: 16px; padding: 12px 18px; background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
+        <div class="skill-avg-banner">
           <div>
             <span style="font-weight: 700; color: var(--text-bright);">True Skill Average:</span>
             <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 8px;">(Farming, Mining, Combat, Foraging, Fishing, Enchanting, Alchemy, Taming)</span>
@@ -1670,8 +1665,8 @@
         const setCells = setSlots.map(it => renderMcSlot(it)).join('');
 
         setsHtml += `
-          <div style="display: flex; flex-direction: column; align-items: center; background: ${isEquipped ? 'rgba(6, 182, 212, 0.15)' : 'rgba(0, 0, 0, 0.05)'}; border: 1px solid ${isEquipped ? '#06b6d4' : '#a1a1a1'}; border-radius: 4px; padding: 6px 8px; position: relative;">
-            <div style="font-family: 'Minecraft', monospace; font-size: 0.75rem; font-weight: 700; color: ${isEquipped ? '#06b6d4' : '#333333'}; margin-bottom: 4px;">
+          <div class="wardrobe-set-box ${isEquipped ? 'equipped' : ''}">
+            <div class="wardrobe-set-title">
               Slot ${s + 1} ${isEquipped ? '★ (Equipped)' : ''}
             </div>
             <div style="display: grid; grid-template-columns: repeat(4, auto); gap: 2px;">
@@ -1837,7 +1832,7 @@
                 <div class="data-label" style="margin-bottom: 8px;">Missing Talisman Upgrades:</div>
                 <div style="display:flex; flex-direction:column; gap:10px;">
                   ${checklistStatus.missingByRarity.map(b => `
-                    <div style="background:#f8fafc; border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:10px 14px;">
+                    <div class="missing-talisman-group">
                       <div style="font-weight:700; font-size:0.82rem; color:var(--text-bright); text-transform:uppercase; margin-bottom:4px;">${b.rarity} (${b.count} missing)</div>
                       <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.4;">${b.lines.map(l => l.replace(/^•\s*/, '')).join(' • ')}</div>
                     </div>
@@ -2072,7 +2067,7 @@
             <div class="card-header"><span class="material-icons" style="color:#f59e0b;">shield</span><span class="card-title">Highest Damage To Bosses</span></div>
             <div class="cards-grid">
               ${bossDamages.map(([boss, dmg]) => `
-                <div class="data-item" style="padding: 8px 12px; background: #f8fafc; border-radius: var(--radius-sm);">
+                <div class="data-item data-item-box">
                   <span class="data-label">${boss.replace(/^trpixel:/i, '').replace(/_/g, ' ')}</span>
                   <span class="data-value number">${formatNumber(Math.floor(dmg))}</span>
                 </div>
@@ -2135,7 +2130,7 @@
             <div class="card-header"><span class="material-icons">grass</span><span class="card-title">Personal Crop Bests in Contests</span></div>
             <div class="cards-grid">
               ${Object.entries(personalBests).map(([crop, amt]) => `
-                <div class="data-item" style="padding: 8px 12px; background: #f8fafc; border-radius: var(--radius-sm);">
+                <div class="data-item data-item-box">
                   <span class="data-label">${crop.replace(/_/g, ' ')}</span>
                   <span class="data-value number">${formatNumber(amt)}</span>
                 </div>
@@ -2169,7 +2164,7 @@
           <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:16px;">Unique generator types crafted and highest unlocked tier:</p>
           <div class="cards-grid">
             ${entries.map(([type, maxTier]) => `
-              <div class="data-item" style="padding: 10px 14px; background: #f8fafc; border-radius: var(--radius-sm);">
+              <div class="data-item data-item-box">
                 <span class="data-label" style="font-weight: 600; text-transform: capitalize;">${type}</span>
                 <span class="data-value string" style="color: var(--accent-color); font-weight: 700;">Tier ${maxTier}</span>
               </div>
@@ -2331,7 +2326,7 @@
                 <span class="material-icons" style="color:#06b6d4;">diamond</span>
                 <span class="card-title">Reality Shards</span>
               </div>
-              <button type="button" class="shard-copy-btn" style="background:#ecfeff; border-color:#a5f3fc; color:#0891b2; font-weight:700;" onclick="openMissingShardsModal()">
+              <button type="button" class="missing-shards-trigger-btn" onclick="openMissingShardsModal()">
                 <span class="material-icons" style="font-size:0.95rem;">explore</span> Missing Shards (${missingCount})
               </button>
             </div>
@@ -2341,7 +2336,7 @@
               <div style="margin-top: 12px;">
                 <div class="data-label" style="margin-bottom: 6px;">Collected Shard IDs (${shardsList.length}):</div>
                 <div style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 130px; overflow-y: auto; padding-right: 4px;">
-                  ${shardsList.map(id => `<span class="profile-pill" style="font-size: 0.75rem; padding: 2px 7px; border-color: #06b6d4; color: #0891b2; font-weight: 600;"><span class="material-icons" style="font-size: 0.8rem; vertical-align: middle;">diamond</span> Shard #${id}</span>`).join('')}
+                  ${shardsList.map(id => `<span class="shard-badge"><span class="material-icons" style="font-size: 0.8rem; vertical-align: middle;">diamond</span> Shard #${id}</span>`).join('')}
                 </div>
               </div>
             ` : '<p style="color:var(--text-muted); font-size:0.85rem; margin-top:8px;">No reality shards collected.</p>'}
@@ -2501,25 +2496,6 @@
       container.innerHTML = `
         <pre class="json-pre-box"><code>${JSON.stringify(fullPayload, null, 2)}</code></pre>
       `;
-    }
-
-    // Toast Helper
-    function showToast(message) {
-      const existing = document.querySelector('.cmc-toast');
-      if (existing) existing.remove();
-
-      const toast = document.createElement('div');
-      toast.className = 'cmc-toast';
-      toast.innerHTML = `
-        <span class="material-icons toast-icon" style="color:#16a34a;">check_circle</span>
-        <span class="toast-message">${message}</span>
-      `;
-      document.body.appendChild(toast);
-
-      setTimeout(() => {
-        toast.style.animation = 'fadeOut 0.25s ease-out forwards';
-        setTimeout(() => toast.remove(), 250);
-      }, 3000);
     }
 
     // Missing Reality Shards Modal Logic
@@ -2715,9 +2691,6 @@
       <div id="missingShardsModalBody" class="shards-modal-body"></div>
     </div>
   </div>
-
-  <!-- Footer (Loaded dynamically from /components/footer.html) -->
-  <div id="footer"></div>
 
 </body>
 
