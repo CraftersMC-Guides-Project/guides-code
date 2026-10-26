@@ -2537,16 +2537,36 @@
               </div>
             ` : ''}
           </div>
+        </div>
 
-          <div class="card">
-            <div class="card-header"><span class="material-icons" style="color:#ec4899;">favorite</span><span class="card-title">NPC Relationship Levels</span></div>
-            ${Object.keys(relationships).length > 0 ? Object.entries(relationships).map(([npc, xp]) => `
-              <div class="data-item">
-                <span class="data-label" style="text-transform: capitalize;">${npc.replace(/_/g, ' ')}</span>
-                <span class="data-value number">${formatNumber(xp)} XP</span>
-              </div>
-            `).join('') : '<p style="color:var(--text-muted); font-size:0.85rem;">No relationship data found.</p>'}
+        <div class="card" style="margin-top: 18px;">
+          <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="material-icons" style="color:#ec4899;">favorite</span>
+              <span class="card-title">NPC Relationship Levels</span>
+            </div>
+            ${Object.keys(relationships).length > 0 ? `
+              <span class="profile-pill" style="font-weight:800; font-size:0.82rem; color:#db2777;">
+                ${Object.keys(relationships).length} NPCs Met
+              </span>
+            ` : ''}
           </div>
+          ${Object.keys(relationships).length > 0 ? `
+            <div class="npc-relationships-grid">
+              ${Object.entries(relationships).map(([npc, xp]) => `
+                <div class="npc-relationship-card">
+                  <div class="npc-relationship-top">
+                    <span class="npc-name">${npc.replace(/_/g, ' ')}</span>
+                    <span class="material-icons" style="font-size:1rem; color:#ec4899;">favorite</span>
+                  </div>
+                  <div class="npc-relationship-xp">
+                    <span class="npc-xp-val">${formatNumber(xp)}</span>
+                    <span class="npc-xp-label">XP</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          ` : '<p style="color:var(--text-muted); font-size:0.85rem; margin-top:8px;">No relationship data found.</p>'}
         </div>
       `;
     }
