@@ -2318,7 +2318,55 @@
       `;
     }
 
-    // 11. Extras Tab
+    // 11. Extras Tab (Expanded Reality Shards Hub + Account Progress)
+    let currentShardStatusFilter = 'all';
+    let currentShardAreaFilter = 'all';
+
+    function updateShardMatrixDisplay() {
+      const items = document.querySelectorAll('.shard-tracker-item');
+      items.forEach(el => {
+        const isCollected = el.getAttribute('data-collected') === 'true';
+        const itemArea = el.getAttribute('data-area');
+
+        let matchesStatus = true;
+        if (currentShardStatusFilter === 'collected') matchesStatus = isCollected;
+        if (currentShardStatusFilter === 'missing') matchesStatus = !isCollected;
+
+        let matchesArea = true;
+        if (currentShardAreaFilter !== 'all') matchesArea = (itemArea === currentShardAreaFilter);
+
+        el.style.display = (matchesStatus && matchesArea) ? 'flex' : 'none';
+      });
+
+      document.querySelectorAll('[id^="shardFilter_status_"]').forEach(b => b.classList.remove('active'));
+      const statusBtn = document.getElementById(`shardFilter_status_${currentShardStatusFilter}`);
+      if (statusBtn) statusBtn.classList.add('active');
+
+      document.querySelectorAll('[id^="shardFilter_area_"]').forEach(b => b.classList.remove('active'));
+      const areaBtn = document.getElementById(`shardFilter_area_${currentShardAreaFilter.replace(/\s+/g, '_')}`);
+      if (areaBtn) areaBtn.classList.add('active');
+
+      document.querySelectorAll('.shard-area-card').forEach(c => c.classList.remove('active'));
+      if (currentShardAreaFilter !== 'all') {
+        const areaCard = document.getElementById(`shardAreaCard_${currentShardAreaFilter.replace(/\s+/g, '_')}`);
+        if (areaCard) areaCard.classList.add('active');
+      }
+    }
+
+    window.setShardStatusFilter = function (status) {
+      currentShardStatusFilter = status;
+      updateShardMatrixDisplay();
+    };
+
+    window.setShardAreaFilter = function (area) {
+      if (currentShardAreaFilter === area && area !== 'all') {
+        currentShardAreaFilter = 'all';
+      } else {
+        currentShardAreaFilter = area;
+      }
+      updateShardMatrixDisplay();
+    };
+
     function renderExtras() {
       const container = document.getElementById('extrasTab');
       const member = profileData?.members?.[selectedMemberId] || {};
@@ -2336,31 +2384,133 @@
       const allShardsList = typeof REALITY_SHARDS !== 'undefined' ? REALITY_SHARDS : (window.REALITY_SHARDS || []);
       const totalDatabaseShards = allShardsList.length || 114;
       const missingCount = Math.max(0, totalDatabaseShards - shardsList.length);
+      const completionPercent = totalDatabaseShards > 0 ? ((shardsList.length / totalDatabaseShards) * 100).toFixed(1) : 0;
+
+      const groups = typeof REALITY_SHARD_GROUPS !== 'undefined' ? REALITY_SHARD_GROUPS : (window.REALITY_SHARD_GROUPS || []);
+      const areaStats = {};
+      groups.forEach(g => {
+        const totalInArea = g.shards.length;
+        const collectedInArea = g.shards.filter(s => collectedSet.has(Number(s.id))).length;
+        areaStats[g.area] = {
+          total: totalInArea,
+          collected: collectedInArea,
+          percent: totalInArea > 0 ? ((collectedInArea / totalInArea) * 100).toFixed(0) : 0
+        };
+      });
+
+      const areaCardsHtml = groups.map(g => {
+        const stats = areaStats[g.area] || { total: g.shards.length, collected: 0, percent: 0 };
+        return `
+          <div class="shard-area-card" id="shardAreaCard_${g.area.replace(/\s+/g, '_')}" onclick="window.setShardAreaFilter('${g.area}')">
+            <div class="shard-area-header">
+              <span>${g.area}</span>
+              <span style="font-size:0.8rem; color:var(--accent-color); font-weight:800;">${stats.collected}/${stats.total} (${stats.percent}%)</span>
+            </div>
+            <div class="shard-area-mini-track">
+              <div class="shard-area-mini-fill" style="width: ${stats.percent}%;"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const shardMatrixHtml = allShardsList.map(shard => {
+        const isCollected = collectedSet.has(Number(shard.id));
+        const statusClass = isCollected ? 'collected' : 'missing';
+        const badgeClass = isCollected ? 'done' : 'pending';
+        const badgeLabel = isCollected ? 'Collected' : 'Missing';
+        const coordStr = `${shard.x}, ${shard.y}, ${shard.z}`;
+        return `
+          <div class="shard-tracker-item ${statusClass}" 
+               data-collected="${isCollected}" 
+               data-area="${shard.area}"
+               onclick="copyShardCoords(${shard.x}, ${shard.y}, ${shard.z}, ${shard.id})"
+               title="Click to copy coordinates (${coordStr})">
+            <div class="shard-tracker-top">
+              <span class="shard-tracker-id"><span class="material-icons" style="font-size:0.85rem; vertical-align:middle; color:${isCollected ? '#16a34a' : '#0284c7'};">diamond</span> #${shard.id}</span>
+              <span class="shard-tracker-status ${badgeClass}">${badgeLabel}</span>
+            </div>
+            <div class="shard-tracker-area">${shard.area}</div>
+            <div class="shard-tracker-coords">
+              <span>${coordStr}</span>
+              <span class="material-icons" style="font-size:0.85rem; color:${isCollected ? '#16a34a' : '#0284c7'};">content_copy</span>
+            </div>
+          </div>
+        `;
+      }).join('');
 
       container.innerHTML = `
-        <div class="cards-grid">
-          <div class="card">
-            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span class="material-icons" style="color:#06b6d4;">diamond</span>
-                <span class="card-title">Reality Shards</span>
+        <!-- Full-Width Reality Shards Tracker Hub -->
+        <div class="shard-hub-card">
+          <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span class="material-icons" style="color:#06b6d4; font-size:1.6rem;">diamond</span>
+              <div>
+                <span class="card-title" style="font-size:1.25rem;">Reality Shards Hub</span>
+                <span class="profile-pill" style="margin-left:8px; font-weight:800; font-size:0.82rem; color:var(--accent-color);">
+                  ${shardsList.length} / ${totalDatabaseShards} Found (${completionPercent}%)
+                </span>
               </div>
-              <button type="button" class="missing-shards-trigger-btn" onclick="openMissingShardsModal()">
-                <span class="material-icons" style="font-size:0.95rem;">explore</span> Missing Shards (${missingCount})
-              </button>
             </div>
-            <div class="data-item"><span class="data-label">Collected Shards</span><span class="data-value number">${shardsList.length} / ${totalDatabaseShards}</span></div>
-            <div class="data-item"><span class="data-label">Fusions Completed</span><span class="data-value number">${formatNumber(reality.fusions || 0)}</span></div>
-            ${shardsList.length > 0 ? `
-              <div style="margin-top: 12px;">
-                <div class="data-label" style="margin-bottom: 6px;">Collected Shard IDs (${shardsList.length}):</div>
-                <div style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 130px; overflow-y: auto; padding-right: 4px;">
-                  ${shardsList.map(id => `<span class="shard-badge"><span class="material-icons" style="font-size: 0.8rem; vertical-align: middle;">diamond</span> Shard #${id}</span>`).join('')}
-                </div>
-              </div>
-            ` : '<p style="color:var(--text-muted); font-size:0.85rem; margin-top:8px;">No reality shards collected.</p>'}
+            <button type="button" class="missing-shards-trigger-btn" onclick="openMissingShardsModal()" style="padding:6px 14px; font-size:0.84rem;">
+              <span class="material-icons" style="font-size:1rem;">explore</span> Missing Shards Explorer (${missingCount})
+            </button>
           </div>
 
+          <div class="shard-progress-bar-container">
+            <div style="display:flex; justify-content:space-between; font-size:0.82rem; font-weight:700; color:var(--text-bright);">
+              <span>Overall Collection Progress</span>
+              <span>${completionPercent}% Complete</span>
+            </div>
+            <div class="shard-progress-track">
+              <div class="shard-progress-fill" style="width: ${completionPercent}%;"></div>
+            </div>
+          </div>
+
+          <!-- Summary Metric Boxes -->
+          <div class="shard-stats-grid">
+            <div class="data-item data-item-box">
+              <span class="data-label">Collected</span>
+              <span class="data-value number" style="color:#16a34a; font-weight:800;">${shardsList.length}</span>
+            </div>
+            <div class="data-item data-item-box">
+              <span class="data-label">Missing</span>
+              <span class="data-value number" style="color:#ea580c; font-weight:800;">${missingCount}</span>
+            </div>
+            <div class="data-item data-item-box">
+              <span class="data-label">Total Known</span>
+              <span class="data-value number">${totalDatabaseShards}</span>
+            </div>
+            <div class="data-item data-item-box">
+              <span class="data-label">Fusions Done</span>
+              <span class="data-value number">${formatNumber(reality.fusions || 0)}</span>
+            </div>
+          </div>
+
+          <!-- Area Breakdown Cards -->
+          <div class="data-label" style="margin-bottom:8px;">Collection by SkyBlock Area (Click to Filter):</div>
+          <div class="shard-areas-grid">
+            ${areaCardsHtml}
+          </div>
+
+          <!-- Interactive Filters Bar -->
+          <div class="shard-filters-bar">
+            <span style="font-size:0.8rem; font-weight:800; color:var(--text-bright); margin-right:4px;">Status:</span>
+            <button type="button" class="shard-filter-btn active" id="shardFilter_status_all" onclick="window.setShardStatusFilter('all')">All (${totalDatabaseShards})</button>
+            <button type="button" class="shard-filter-btn" id="shardFilter_status_collected" onclick="window.setShardStatusFilter('collected')">Collected (${shardsList.length})</button>
+            <button type="button" class="shard-filter-btn" id="shardFilter_status_missing" onclick="window.setShardStatusFilter('missing')">Missing (${missingCount})</button>
+            <span style="font-size:0.8rem; font-weight:800; color:var(--text-bright); margin: 0 4px 0 8px;">Area:</span>
+            <button type="button" class="shard-filter-btn active" id="shardFilter_area_all" onclick="window.setShardAreaFilter('all')">All Areas</button>
+            ${groups.map(g => `<button type="button" class="shard-filter-btn" id="shardFilter_area_${g.area.replace(/\s+/g, '_')}" onclick="window.setShardAreaFilter('${g.area}')">${g.area}</button>`).join('')}
+          </div>
+
+          <!-- Shards Visual Grid Matrix -->
+          <div class="shard-matrix-grid" id="shardMatrixGrid">
+            ${shardMatrixHtml}
+          </div>
+        </div>
+
+        <!-- Additional Account Stats Grid Below Shards -->
+        <div class="cards-grid">
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#eab308;">bolt</span><span class="card-title">Power Stones &amp; Events</span></div>
             <div class="data-item"><span class="data-label">Power Stones Unlocked</span><span class="data-value string">${stones.length > 0 ? stones.join(', ') : 'None'}</span></div>
@@ -2374,9 +2524,7 @@
             <div class="data-item"><span class="data-label">Superpair Resets</span><span class="data-value number">${formatNumber(exp.superpairResets?.value || 0)}</span></div>
             <div class="data-item"><span class="data-label">Total Superpairs</span><span class="data-value number">${formatNumber(exp.totalSuperpairs || 0)}</span></div>
           </div>
-        </div>
 
-        <div class="cards-grid" style="margin-top: 16px;">
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#10b981;">task</span><span class="card-title">Quests Summary</span></div>
             <div class="data-item"><span class="data-label">Total Quests Tracked</span><span class="data-value number">${Object.keys(quests).length}</span></div>
