@@ -46,21 +46,24 @@ function toggleSidebar() {
 
 document.addEventListener("DOMContentLoaded", function () {
   const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+  if (!scrollToTopBtn) return;
 
-  if (!scrollToTopBtn) {
-      console.error("scrollToTopBtn not found in the DOM");
-      return;
-  }
+  scrollToTopBtn.classList.add("scroll-to-top-btn");
 
-  window.onscroll = function () {
-      if (document.documentElement.scrollTop > 300) {
-          scrollToTopBtn.style.display = "block";
+  const checkScroll = function () {
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      if (scrollY > 260) {
+          scrollToTopBtn.classList.add("visible");
       } else {
-          scrollToTopBtn.style.display = "none";
+          scrollToTopBtn.classList.remove("visible");
       }
   };
 
-  scrollToTopBtn.addEventListener("click", function () {
+  window.addEventListener("scroll", checkScroll, { passive: true });
+  checkScroll();
+
+  scrollToTopBtn.addEventListener("click", function (e) {
+      if (e) e.preventDefault();
       window.scrollTo({ top: 0, behavior: "smooth" });
   });
 });

@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   setupThemeSwitchers();
   fetchAllPartials();
+  initScrollToTop();
 });
 
 function toggleLid() {
@@ -430,5 +431,62 @@ function initNavbarPlayerCount() {
     if (!navbarPlayerInterval) {
         navbarPlayerInterval = setInterval(fetchLive, 30000);
     }
+}
+
+// =========================================================
+// SCROLL TO TOP CONTROLLER (NEO-BRUTALIST SYSTEM)
+// =========================================================
+function initScrollToTop() {
+    let btn = document.getElementById("scrollToTopBtn");
+
+    if (!btn) {
+        btn = document.createElement("button");
+        btn.id = "scrollToTopBtn";
+        btn.className = "scroll-to-top-btn";
+        btn.setAttribute("aria-label", "Scroll to top");
+        btn.setAttribute("title", "Scroll to top");
+        btn.innerHTML = '<span class="material-icons">north</span>';
+        document.body.appendChild(btn);
+    } else {
+        btn.classList.add("scroll-to-top-btn");
+        if (!btn.getAttribute("aria-label")) btn.setAttribute("aria-label", "Scroll to top");
+        if (!btn.getAttribute("title")) btn.setAttribute("title", "Scroll to top");
+        if (!btn.querySelector(".material-icons") && btn.textContent.trim() === "north") {
+            btn.innerHTML = '<span class="material-icons">north</span>';
+        }
+    }
+
+    // Smooth scroll on click
+    btn.onclick = function (e) {
+        if (e) e.preventDefault();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    // Throttled scroll listener to toggle visibility class
+    let scrollTicking = false;
+    const checkScrollPosition = () => {
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        if (scrollY > 260) {
+            btn.classList.add("visible");
+        } else {
+            btn.classList.remove("visible");
+        }
+        scrollTicking = false;
+    };
+
+    window.addEventListener("scroll", () => {
+        if (!scrollTicking) {
+            window.requestAnimationFrame(checkScrollPosition);
+            scrollTicking = true;
+        }
+    }, { passive: true });
+
+    checkScrollPosition();
+}
+window.initScrollToTop = initScrollToTop;
+
+// Run if DOM is already ready (e.g. async/defer loaded)
+if (document.readyState === "interactive" || document.readyState === "complete") {
+    initScrollToTop();
 }
 
