@@ -158,7 +158,7 @@ getPetEmoji(name) {
                     const items = event.pets.map(p => `
                         <li class="zoo-pet-item">
                             <span class="zoo-pet-emoji">${this.getPetEmoji(p.name)}</span>
-                            <span class="zoo-pet-name">${capitalize(p.name)}</span>
+                            <span class="zoo-pet-name" style="color:white;">${capitalize(p.name)}</span>
                             ${this.getRarityLabel(p.rarity)}
                         </li>
                     `).join('');
@@ -168,16 +168,16 @@ getPetEmoji(name) {
                 }
             }
             return `
-                <div class="event-timer-item" data-event-index="${idx}">
+                <div class="event-timer-item neo-card cyan" style="text-align: left; align-items: flex-start;" data-event-index="${idx}">
                     <div class="event-timer-left">
                         <span class="event-icon">${this.getEventIcon(event)}</span>
                         <div class="event-timer-info">
-                            <p class="event-name">${event.name}</p>
+                            <p class="event-name" style="color:white;">${event.name}</p>
                             <div class="event-info">${info}</div>
                             <p class="expand-text">Click to see next 10 timings</p>
                         </div>
                     </div>
-                    <div class="event-timer-countdown">${this.timeCorrect(event.msUntil)}</div>
+                    <div class="event-timer-countdown neo-stat-chip">${this.timeCorrect(event.msUntil)}</div>
                 </div>
                 `;
         }).join('');
@@ -216,6 +216,8 @@ getPetEmoji(name) {
                         <span class="day-year">Y${day.year}</span>
                     </div>
                     <div class="day-body">${eventContent}</div>`;
+                dayCell.classList.add('neo-card');
+                dayCell.classList.add('cyan');
                 dayCell.addEventListener('click', () => this.modalThing(day));
                 this.elements.calGrid.appendChild(dayCell);
             });
@@ -232,53 +234,54 @@ getPetEmoji(name) {
         },
 
         modalThing(day) {
-        const realDate = this.engine.getRealTimeForDay(day.totalDays);
-        document.getElementById('modal-title').textContent = `Year ${day.year}, ${day.season} ${day.dayOfSeason}`;
-        document.getElementById('modal-subtitle').textContent = `Date: ${realDate.toLocaleString()}`;
-        const countdownEl = document.getElementById('modal-timer');
-        if (this.modalCount) clearInterval(this.modalCount);
+            const realDate = this.engine.getRealTimeForDay(day.totalDays);
+            document.getElementById('modal-title').textContent = `Year ${day.year}, ${day.season} ${day.dayOfSeason}`;
+            document.getElementById('modal-subtitle').textContent = `Date: ${realDate.toLocaleString()}`;
+            const countdownEl = document.getElementById('modal-timer');
+            if (this.modalCount) clearInterval(this.modalCount);
 
-        const updateCountdown = () => {
-            const now = Date.now();
-            const ms = realDate.getTime() - now;
-            if (ms > 0) {
-                countdownEl.style.display = '';
-                countdownEl.textContent = `Countdown: ${this.timeCorrect(ms)}`;
-            } else {
-                countdownEl.style.display = 'none';
-            }
-        };
-        updateCountdown();
-        this.modalCount = setInterval(updateCountdown, 1000);
-
-        const eventListEl = document.getElementById('modal-event-list');
-        const eventsTitleEl = document.getElementById('modal-events-title');
-        eventListEl.innerHTML = '';
-        
-        if (day.events.length > 0) {
-            eventsTitleEl.style.display = 'block';
-            day.events.forEach(event => {
-                const li = document.createElement('li');
-                li.className = 'modal-event-item';
-                let info = '';
-                if (event.type === 'farming') {
-                    info = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(${event.crops.join(', ')})</span>`;
-                } else if (event.name === 'Travelling Zoo' && event.legendaryName) {
-                    if (event.pets && event.pets.length) {
-                        const items = event.pets.map(p => `<li class="zoo-pet-item"><span class="zoo-pet-emoji">${this.getPetEmoji(p.name)}</span> <span class="zoo-pet-name">${capitalize(p.name)}</span> ${this.getRarityLabel(p.rarity)}</li>`).join('');
-                        info = ` <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top:4px;"><ul class="zoo-pet-list">${items}</ul></div>`;
-                    } else {
-                        info = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(Legendary: ${this.getPetEmoji(event.legendaryName)} ${capitalize(event.legendaryName)})</span>`;
-                    }
+            const updateCountdown = () => {
+                const now = Date.now();
+                const ms = realDate.getTime() - now;
+                if (ms > 0) {
+                    countdownEl.style.display = '';
+                    countdownEl.textContent = `Countdown: ${this.timeCorrect(ms)}`;
+                } else {
+                    countdownEl.style.display = 'none';
                 }
-                li.innerHTML = `<span class="event-icon">${event.icon}</span> <span>${event.name}${info}</span>`;
-                eventListEl.appendChild(li);
-            });
-        } else {
-            eventsTitleEl.style.display = 'none';
-            eventListEl.innerHTML = '<li>No events on this day.</li>';
-        }
-        this.elements.modal.classList.add('visible');
+            };
+            updateCountdown();
+            this.modalCount = setInterval(updateCountdown, 1000);
+
+            const eventListEl = document.getElementById('modal-event-list');
+            const eventsTitleEl = document.getElementById('modal-events-title');
+            eventListEl.innerHTML = '';
+            
+            if (day.events.length > 0) {
+                eventsTitleEl.style.display = 'block';
+                day.events.forEach(event => {
+                    const li = document.createElement('li');
+                    li.className = 'modal-event-item';
+                    let info = '';
+                    if (event.type === 'farming') {
+                        info = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(${event.crops.join(', ')})</span>`;
+                    } else if (event.name === 'Travelling Zoo' && event.legendaryName) {
+                        if (event.pets && event.pets.length) {
+                            const items = event.pets.map(p => `<li class="zoo-pet-item"><span class="zoo-pet-emoji">${this.getPetEmoji(p.name)}</span> <span class="zoo-pet-name">${capitalize(p.name)}</span> ${this.getRarityLabel(p.rarity)}</li>`).join('');
+                            info = ` <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top:4px;"><ul class="zoo-pet-list">${items}</ul></div>`;
+                        } else {
+                            info = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(Legendary: ${this.getPetEmoji(event.legendaryName)} ${capitalize(event.legendaryName)})</span>`;
+                        }
+                    }
+                    li.innerHTML = `<span class="event-icon" style="height: 24px; width: auto;">${event.icon}</span> <span>${event.name}${info}</span>`;
+                    eventListEl.appendChild(li);
+                });
+            } else {
+                eventsTitleEl.style.display = 'none';
+                eventListEl.innerHTML = '<li>No events on this day.</li>';
+            }
+            
+            this.elements.modal.classList.add('visible');
         },
 
         eventOccurLoad(event, itemEl) {
@@ -287,15 +290,16 @@ getPetEmoji(name) {
         const hasExtra = occ.some(o => (o.crops && o.crops.length) || o.legendaryName);
         const wrapper = document.createElement('div');
         wrapper.className = 'event-occurrences-wrapper accordion';
+        wrapper.classList.add('neo-hero-card');
         const accItem = document.createElement('div');
         accItem.className = 'accordion-item';
         accItem.setAttribute('data-event-name', event.name);
         const header = document.createElement('div');
         header.className = 'accordion-header';
         header.innerHTML = `
-            <div class="header-left">
+            <div class="header-left" style="display:flex;align-items:center;gap:8px;">
                 <div>
-                    <h3>${event.name}</h3>
+                    <h2>${event.name}</h2>
                     <div style="font-size:0.85rem;color:var(--text-secondary)">${event.type === 'farming' && event.crops ? event.crops.map(c => this.engine.CROP_ICONS[c] || c).join(' ') : (event.legendaryName ? 'Legendary: ' + capitalize(event.legendaryName) : '')}</div>
                 </div>
             </div>
