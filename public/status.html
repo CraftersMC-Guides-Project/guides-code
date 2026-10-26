@@ -33,7 +33,7 @@
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/essential.css" />
   <link rel="stylesheet" href="css/neo-brutalism.css" />
-  <link rel="stylesheet" href="css/status.css" />
+  <link rel="stylesheet" href="css/status.css?v=2" />
 
   <!-- Scripts -->
   <script src="js/script.js" defer></script>
@@ -212,17 +212,16 @@
       </div>
 
     </div>
-
-    <!-- Reusable Site Footer (Loaded dynamically from /components/footer.html) -->
-    <div id="footer"></div>
-
   </main>
+
+  <!-- Reusable Site Footer (Loaded dynamically from /components/footer.html) -->
+  <div id="footer"></div>
 
   <!-- Scroll to Top Button -->
   <span class="material-icons" id="scrollToTopBtn">north</span>
 
   <!-- Toast Notification Container -->
-  <div id="toastNotification" class="cmc-toast">
+  <div id="toastNotification" class="cmc-toast" style="display: none;">
     <span class="material-icons toast-icon">check_circle</span>
     <span id="toastMessage">Copied to clipboard!</span>
   </div>
@@ -256,15 +255,24 @@
 
     // Toast Notification Controller
     let toastTimeout = null;
+    let toastHideTimeout = null;
     function showToast(message) {
       const toast = document.getElementById('toastNotification');
       const toastMsg = document.getElementById('toastMessage');
       if (!toast) return;
       if (toastMsg) toastMsg.textContent = message;
-      toast.classList.add('show');
       if (toastTimeout) clearTimeout(toastTimeout);
+      if (toastHideTimeout) clearTimeout(toastHideTimeout);
+      toast.style.display = 'flex';
+      toast.offsetHeight;
+      toast.classList.add('show');
       toastTimeout = setTimeout(() => {
         toast.classList.remove('show');
+        toastHideTimeout = setTimeout(() => {
+          if (!toast.classList.contains('show')) {
+            toast.style.display = 'none';
+          }
+        }, 250);
       }, 3000);
     }
 
