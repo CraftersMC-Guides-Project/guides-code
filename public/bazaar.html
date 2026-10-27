@@ -4,55 +4,91 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bazaar Market Explorer &amp; Price History — CraftersMC Guides</title>
+  <meta name="description" content="Search real-time order books, calculate profit margins, inspect volume depth, and analyze price trends across all CraftersMC SkyBlock commodities." />
   <link rel="icon" href="assets/cmc-icon.png" type="image/png" />
+  <link rel="icon" href="assets/cmc-guides.png" type="image/png" />
   
   <!-- Google Fonts & Material Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-  <!-- Core & Documentation Stylesheets -->
-  <link rel="stylesheet" href="better-api-docs/style.css" />
+  <!-- Anti-flash Theme Init -->
+  <script>
+    (function () {
+      try {
+        var d = localStorage.getItem("darkMode");
+        if (d === "true" || (d === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("darkmode");
+        } else {
+          document.documentElement.classList.remove("darkmode");
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Core & Unified Stylesheets -->
+  <link rel="stylesheet" href="css/essential.css" />
+  <link rel="stylesheet" href="css/neo-brutalism.css" />
   <link rel="stylesheet" href="css/player.css" />
   <link rel="stylesheet" href="css/bazaar.css" />
 
-  <!-- Core Components -->
-  <script src="js/components.js"></script>
+  <!-- Dynamic Header / Sidebar / Theme Script -->
+  <script src="js/script.js" defer></script>
 
   <!-- Chart.js for Interactive Price Graph -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
-  <!-- Top Header Web Component -->
-  <cmc-header active="bazaar"></cmc-header>
+  <!-- Fullscreen / Layout Overlays -->
+  <div class="background"></div>
 
-  <!-- Page Layout -->
-  <div class="app-layout">
-    
-    <!-- Left Sidebar Web Component -->
-    <cmc-sidebar active="bazaar"></cmc-sidebar>
+  <!-- Top Navigation (Loaded dynamically from /components/navbar.html) -->
+  <div class="top"></div>
 
-    <!-- Main Content Area -->
-    <main class="main-content">
-      <section class="doc-section">
-        
-        <!-- Breadcrumb -->
-        <div class="breadcrumb">
-          <a href="index.html">Guides</a>
-          <span class="breadcrumb-separator">/</span>
-          <a href="bazaar.html">Live Tools</a>
-          <span class="breadcrumb-separator">/</span>
-          <span>Bazaar Market Explorer</span>
+  <!-- Navigation Sidebar (Loaded dynamically from /components/sidebar.html) -->
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- =========================================================
+       MAIN NEO-BRUTALISM PAGE CONTENT
+       ========================================================= -->
+  <main class="neo-container">
+
+    <!-- HERO WINDOW CARD -->
+    <section class="neo-hero-card" style="margin-bottom: 24px;">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
         </div>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px;">storefront</span>
+          CraftersMC-Guides-Project | Bazaar Market Explorer
+        </div>
+      </div>
 
-        <!-- Hero & Search Card -->
-        <div class="bazaar-hero-card">
-          <div class="section-header" style="margin-bottom: 0;">
-            <h1 class="section-title" style="font-size: 1.6rem; margin-bottom: 6px;">Bazaar Market Explorer &amp; Price History</h1>
-            <p class="section-desc">Search real-time order books, calculate profit margins, inspect volume depth, and analyze price trends across all CraftersMC SkyBlock commodities.</p>
-          </div>
+      <div class="neo-hero-content" style="padding: 24px 28px;">
+        <div class="neo-hero-heading-group">
+          <h1 class="neo-hero-title" style="font-size: clamp(1.8rem, 4vw, 2.6rem); margin-bottom: 8px;">
+            Bazaar Market <span class="neo-hero-highlight">Explorer</span>
+          </h1>
+          <p class="neo-hero-subtitle" style="font-size: 14.5px; max-width: 800px; margin: 0;">
+            Search real-time order books, calculate profit margins, inspect volume depth, and analyze price trends across all CraftersMC SkyBlock commodities.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Search Card -->
+    <div class="bazaar-hero-card" style="margin-bottom: 24px;">
+      <div class="section-header" style="margin-bottom: 0;">
+        <h2 class="section-title" style="font-size: 1.25rem; margin-bottom: 6px;">Commodity Search &amp; Quick Lookup</h2>
+        <p class="section-desc">Search any bazaar item by identifier or name to inspect order book depth, flip calculations, and price trends.</p>
+      </div>
 
           <div class="bazaar-search-grid">
             <div class="input-field-group">
@@ -216,11 +252,11 @@
           </div>
 
           <!-- Collapsible Raw Response JSON Inspector -->
-          <details style="margin-top: 18px; background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px 14px;">
-            <summary style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; user-select: none;">
-              <span class="material-icons" style="font-size: 0.95rem; vertical-align: middle; color: var(--accent-color);">data_object</span> View Raw Live JSON Payload
+          <details class="neo-json-details" style="margin-top: 18px;">
+            <summary>
+              <span class="material-icons" style="font-size: 1.1rem; color: #0284c7;">data_object</span> View Raw Live JSON Payload
             </summary>
-            <pre class="json-pre-box" style="margin-top: 10px; max-height: 250px; overflow-y: auto;"><code id="rawItemJson">{}</code></pre>
+            <pre class="json-pre-box" style="margin-top: 10px; max-height: 250px;"><code id="rawItemJson">{}</code></pre>
           </details>
         </div>
 
@@ -267,13 +303,10 @@
           </div>
         </div>
 
-      </section>
+    <!-- Reusable Site Footer -->
+    <div id="footer" style="margin-top: 40px;"></div>
 
-      <!-- Reusable Site Footer -->
-      <cmc-footer></cmc-footer>
-
-    </main>
-  </div>
+  </main>
 
   <!-- Bazaar Explorer Logic -->
   <script>
@@ -853,6 +886,11 @@
         }
       ];
 
+      const isDark = document.documentElement.classList.contains('darkmode');
+      const gridColor = isDark ? '#27272a' : '#f1f5f9';
+      const textColor = isDark ? '#a1a1aa' : '#64748b';
+      const legendColor = isDark ? '#f4f4f5' : '#111827';
+
       chartInstance = new Chart(ctx, {
         type: 'line',
         data: { labels, datasets },
@@ -861,7 +899,14 @@
           maintainAspectRatio: false,
           interaction: { intersect: false, mode: 'index' },
           plugins: {
-            legend: { position: 'top', labels: { boxWidth: 12, font: { family: 'Inter', size: 12 } } },
+            legend: {
+              position: 'top',
+              labels: {
+                color: legendColor,
+                boxWidth: 12,
+                font: { family: 'Inter', size: 12, weight: '600' }
+              }
+            },
             tooltip: {
               callbacks: {
                 label: (ctx) => `${ctx.dataset.label}: ${formatNumber(ctx.raw)} ${currentMetric === 'price' ? 'coins' : 'units'}`
@@ -869,8 +914,24 @@
             }
           },
           scales: {
-            x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 8, font: { size: 11 } } },
-            y: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'JetBrains Mono', size: 11 }, callback: (v) => formatNumber(v) } }
+            x: {
+              grid: { display: false },
+              ticks: {
+                color: textColor,
+                maxRotation: 0,
+                autoSkip: true,
+                maxTicksLimit: 8,
+                font: { family: 'Inter', size: 11 }
+              }
+            },
+            y: {
+              grid: { color: gridColor },
+              ticks: {
+                color: textColor,
+                font: { family: 'JetBrains Mono', size: 11 },
+                callback: (v) => formatNumber(v)
+              }
+            }
           }
         }
       });
@@ -971,14 +1032,19 @@
       if (e.key === 'Enter') inspectCurrentItem();
     });
 
+    // Auto re-render chart when Dark Mode is toggled
+    const themeObserver = new MutationObserver(() => {
+      if (currentHistoryData && chartInstance) {
+        renderHistoryChart();
+      }
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', () => {
       loadCatalogSnapshot();
     });
   </script>
-
-  <!-- Mobile Sidebar & Backdrop Controller -->
-  <script src="better-api-docs/app.js"></script>
 
 </body>
 </html>
