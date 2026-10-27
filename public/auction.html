@@ -4,58 +4,94 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Live Auction House Explorer — CraftersMC Guides</title>
+  <meta name="description" content="Search active Buy-It-Now (BIN) listings, bidding auctions, recently ended sales, item rarities, and sellers across CraftersMC SkyBlock." />
   <link rel="icon" href="assets/cmc-icon.png" type="image/png" />
+  <link rel="icon" href="assets/cmc-guides.png" type="image/png" />
 
   <!-- Google Fonts & Material Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-  <!-- Core & Documentation Stylesheets -->
-  <link rel="stylesheet" href="better-api-docs/style.css" />
+  <!-- Anti-flash Theme Init -->
+  <script>
+    (function () {
+      try {
+        var d = localStorage.getItem("darkMode");
+        if (d === "true" || (d === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("darkmode");
+        } else {
+          document.documentElement.classList.remove("darkmode");
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Core & Unified Stylesheets -->
+  <link rel="stylesheet" href="css/essential.css" />
+  <link rel="stylesheet" href="css/neo-brutalism.css" />
   <link rel="stylesheet" href="css/player.css" />
   <link rel="stylesheet" href="css/bazaar.css" />
   <link rel="stylesheet" href="css/auctions.css" />
 
-  <!-- Core Components -->
-  <script src="js/components.js"></script>
+  <!-- Dynamic Header / Sidebar / Theme Script -->
+  <script src="js/script.js" defer></script>
 
   <!-- Pako for client-side NBT decompression -->
   <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
 </head>
 <body>
 
-  <!-- Top Header Web Component -->
-  <cmc-header active="auction"></cmc-header>
+  <!-- Fullscreen / Layout Overlays -->
+  <div class="background"></div>
 
-  <!-- Page Layout -->
-  <div class="app-layout">
+  <!-- Top Navigation (Loaded dynamically from /components/navbar.html) -->
+  <div class="top"></div>
 
-    <!-- Left Sidebar Web Component -->
-    <cmc-sidebar active="auction"></cmc-sidebar>
+  <!-- Navigation Sidebar (Loaded dynamically from /components/sidebar.html) -->
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <!-- Main Content Area -->
-    <main class="main-content">
-      <section class="doc-section">
+  <!-- =========================================================
+       MAIN NEO-BRUTALISM PAGE CONTENT
+       ========================================================= -->
+  <main class="neo-container">
 
-        <!-- Breadcrumb -->
-        <div class="breadcrumb">
-          <a href="index.html">Guides</a>
-          <span class="breadcrumb-separator">/</span>
-          <a href="auction.html">Live Tools</a>
-          <span class="breadcrumb-separator">/</span>
-          <span>Auction House Explorer</span>
+    <!-- HERO WINDOW CARD -->
+    <section class="neo-hero-card" style="margin-bottom: 24px;">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
         </div>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px;">gavel</span>
+          CraftersMC-Guides-Project | Auction House Explorer
+        </div>
+      </div>
 
-        <!-- 1. All Auctions Explorer View -->
-        <div id="auctionListView">
-          <!-- Hero & Filter Card -->
-          <div class="auction-hero-card">
-            <div class="section-header" style="margin-bottom: 0;">
-              <h1 class="section-title" style="font-size: 1.6rem; margin-bottom: 6px;">Live Auction House Explorer</h1>
-              <p class="section-desc">Search active Buy-It-Now (BIN) listings, bidding auctions, recently ended sales, item rarities, and sellers across CraftersMC SkyBlock.</p>
-            </div>
+      <div class="neo-hero-content" style="padding: 24px 28px;">
+        <div class="neo-hero-heading-group">
+          <h1 class="neo-hero-title" style="font-size: clamp(1.8rem, 4vw, 2.6rem); margin-bottom: 8px;">
+            Live Auction <span class="neo-hero-highlight">House</span>
+          </h1>
+          <p class="neo-hero-subtitle" style="font-size: 14.5px; max-width: 800px; margin: 0;">
+            Search active Buy-It-Now (BIN) listings, bidding auctions, recently ended sales, item rarities, and sellers across CraftersMC SkyBlock.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1. All Auctions Explorer View -->
+    <div id="auctionListView">
+      <!-- Filter Card -->
+      <div class="auction-hero-card">
+        <div class="section-header" style="margin-bottom: 0;">
+          <h2 class="section-title" style="font-size: 1.25rem; margin-bottom: 6px;">Auction Filters &amp; Live Search</h2>
+          <p class="section-desc">Search active Buy-It-Now (BIN) listings, bidding auctions, recently ended sales, item rarities, and sellers.</p>
+        </div>
 
             <!-- Multi-filter bar -->
             <div class="auction-filter-grid">
@@ -441,12 +477,10 @@
           <span id="toastMessage">Copied to clipboard!</span>
         </div>
 
-      </section>
+    <!-- Reusable Site Footer -->
+    <div id="footer" style="margin-top: 40px;"></div>
 
-      <!-- Reusable Site Footer -->
-      <cmc-footer></cmc-footer>
-    </main>
-  </div>
+  </main>
 
   <!-- Client JavaScript Logic -->
   <script>
