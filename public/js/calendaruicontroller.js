@@ -158,7 +158,7 @@ getPetEmoji(name) {
                     const items = event.pets.map(p => `
                         <li class="zoo-pet-item">
                             <span class="zoo-pet-emoji">${this.getPetEmoji(p.name)}</span>
-                            <span class="zoo-pet-name" style="color:white;">${capitalize(p.name)}</span>
+                            <span class="zoo-pet-name">${capitalize(p.name)}</span>
                             ${this.getRarityLabel(p.rarity)}
                         </li>
                     `).join('');
@@ -172,7 +172,7 @@ getPetEmoji(name) {
                     <div class="event-timer-left">
                         <span class="event-icon">${this.getEventIcon(event)}</span>
                         <div class="event-timer-info">
-                            <p class="event-name" style="color:white;">${event.name}</p>
+                            <p class="event-name" style="color:var(--text-secondary);">${event.name}</p>
                             <div class="event-info">${info}</div>
                             <p class="expand-text">Click to see next 10 timings</p>
                         </div>
