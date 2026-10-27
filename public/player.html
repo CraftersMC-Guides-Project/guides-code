@@ -1210,9 +1210,7 @@
       const fairySouls = Array.isArray(member.fairies) ? member.fairies.length : 0;
       const fairyExchanges = member.fairyExchanges || 0;
       const visitedZonesCount = Array.isArray(member.visitedZones) ? member.visitedZones.length : 0;
-      const memberLevel = typeof member.level === 'number' ? member.level : 'N/A';
-      const memberExp = typeof member.exp === 'number' ? member.exp : 0;
-      const sbExpProgress = typeof member.level === 'number' ? Math.min(100, Math.max(0, memberExp)) : 0;
+      const memberExp = typeof member.exp === 'number' ? member.exp : (typeof member.experience === 'number' ? member.experience : 0);
 
       // Active Ranks with expiration
       const activeRanks = [];
@@ -1249,7 +1247,7 @@
       if (apisAllowedCount === 4) {
         overallApiBadge = '<span class="api-pill enabled"><span class="material-icons" style="font-size:0.85rem;">verified</span> Full Access (4/4)</span>';
       } else if (apisAllowedCount > 0) {
-        overallApiBadge = `<span class="api-pill enabled" style="background:#fefce8; color:#a16207; border-color:#ca8a04;"><span class="material-icons" style="font-size:0.85rem;">published_with_changes</span> Partial (${apisAllowedCount}/4)</span>`;
+        overallApiBadge = `<span class="api-pill partial"><span class="material-icons" style="font-size:0.85rem;">published_with_changes</span> Partial (${apisAllowedCount}/4)</span>`;
       } else {
         overallApiBadge = '<span class="api-pill disabled"><span class="material-icons" style="font-size:0.85rem;">lock</span> APIs Disabled</span>';
       }
@@ -1264,8 +1262,8 @@
             </div>
             <div class="data-item"><span class="data-label">Username</span><span class="data-value string" style="font-weight:700;">${playerData.name || playerData.username || 'N/A'}</span></div>
             <div class="data-item"><span class="data-label">Selected Rank</span><span class="data-value string">${playerData.selectedRank || 'DEFAULT'}</span></div>
-            <div class="data-item"><span class="data-label">Active Rank Details</span><span class="data-value string" style="font-size:0.8rem; color:var(--accent-color);">${rankDetailsStr}</span></div>
-            <div class="data-item"><span class="data-label">Network Level</span><span class="data-value string" style="color:var(--accent-color); font-weight:700;">${getNetworkLevelProgress(playerData.networkExp)}</span></div>
+            <div class="data-item"><span class="data-label">Active Rank Details</span><span class="data-value string text-accent" style="font-size:0.8rem;">${rankDetailsStr}</span></div>
+            <div class="data-item"><span class="data-label">Network Level</span><span class="data-value string text-accent" style="font-weight:700;">${getNetworkLevelProgress(playerData.networkExp)}</span></div>
             <div class="data-item"><span class="data-label">Network Exp</span><span class="data-value number">${formatNumber(playerData.networkExp || 0)}</span></div>
             <div class="data-item"><span class="data-label">Network Coins</span><span class="data-value number">${formatNumber(playerData.networkCoins || 0)}</span></div>
             <div class="data-item"><span class="data-label">Name History</span><span class="data-value string" style="font-size:0.8rem;">${nameHistoryStr}</span></div>
@@ -1280,16 +1278,11 @@
               <span class="material-icons" style="color:#16a34a;">account_balance_wallet</span>
               <span class="card-title">Economy &amp; Profile</span>
             </div>
-            <div class="data-item"><span class="data-label">Profile Cute Name</span><span class="data-value string" style="color:var(--accent-color); font-weight:700;">${cuteName}</span></div>
+            <div class="data-item"><span class="data-label">Profile Cute Name</span><span class="data-value string text-accent" style="font-weight:700;">${cuteName}</span></div>
             <div class="data-item"><span class="data-label">API Access</span><span class="data-value string">${overallApiBadge}</span></div>
-            <div class="data-item" style="flex-direction:column; align-items:stretch; gap:4px;">
-              <div style="display:flex; justify-content:space-between;">
-                <span class="data-label">SkyBlock Level</span>
-                <span class="data-value string" style="color:#16a34a; font-weight:700;">Level ${memberLevel} (${memberExp} / 100 XP)</span>
-              </div>
-              <div class="stats-bar-container" style="width:100%; height:8px;">
-                <div class="stats-bar-fill" style="width:${sbExpProgress}%; background:#16a34a;"></div>
-              </div>
+            <div class="data-item">
+              <span class="data-label">SkyBlock Experience</span>
+              <span class="data-value number text-green" style="font-weight:800;">${formatNumber(memberExp)} XP</span>
             </div>
             <div class="data-item"><span class="data-label">Coin Purse</span><span class="data-value number">${formatNumber(purseCoins)} coins</span></div>
             <div class="data-item"><span class="data-label">Bank Balance</span><span class="data-value number">${formatNumber(bankBalance)} coins</span></div>
@@ -1355,14 +1348,14 @@
             </div>
             <div class="data-item">
               <span class="data-label">Ender Chest &amp; Vaults</span>
-              <span class="data-value string" style="color:${member.enderContents ? '#16a34a' : 'var(--text-muted)'}; font-weight:700;">
+              <span class="data-value string ${member.enderContents ? 'text-green' : 'text-muted'}" style="font-weight:700;">
                 ${member.enderContents ? 'Accessible' : 'Not Provided'}
               </span>
             </div>
             <div class="data-item">
               <span class="data-label">REST API Gateway</span>
-              <span class="data-value string" style="color:#16a34a; font-weight:700;">
-                <span class="material-icons" style="font-size:0.85rem; vertical-align:middle; color:#16a34a;">wifi</span> Online (v1)
+              <span class="data-value string text-green" style="font-weight:700;">
+                <span class="material-icons text-green" style="font-size:0.85rem; vertical-align:middle;">wifi</span> Online (v1)
               </span>
             </div>
             <p style="color:var(--text-muted); font-size:0.75rem; margin-top:8px; line-height:1.4;">
@@ -1411,8 +1404,8 @@
                       <div style="font-weight:700; color:var(--text-bright); font-size:0.88rem;">${formatPlaytime(memPlaytime)}</div>
                     </div>
                     <div style="text-align:right;">
-                      <div style="font-size:0.75rem; color:var(--text-muted);">SkyBlock Level</div>
-                      <div style="font-weight:700; color:#16a34a; font-size:0.88rem;">Lv ${memData.level ?? 'N/A'}</div>
+                      <div style="font-size:0.75rem; color:var(--text-muted);">SkyBlock XP</div>
+                      <div style="font-weight:700; font-size:0.88rem;" class="text-green">${typeof memData.exp === 'number' ? formatNumber(memData.exp) + ' XP' : (typeof memData.experience === 'number' ? formatNumber(memData.experience) + ' XP' : 'N/A')}</div>
                     </div>
                   </div>
                 </div>
@@ -1451,7 +1444,7 @@
               <span class="card-title">Island Member Permissions</span>
             </div>
             ${permKeys.length > 0 ? `
-              <span class="profile-pill" style="font-size:0.8rem; font-weight:800; color:#d97706;">
+              <span class="profile-pill status-yellow" style="font-size:0.8rem; font-weight:800;">
                 ${permKeys.filter(k => permissionsObj[k] === true).length} / ${permKeys.length} Allowed
               </span>
             ` : ''}
@@ -1527,10 +1520,10 @@
           <div class="skill-card">
             <div class="skill-header">
               <span class="skill-name"><span class="material-icons" style="font-size:1rem; vertical-align:middle; color:var(--accent-color);">${s.icon}</span> ${s.name}</span>
-              <span class="skill-lvl" style="${isMax ? 'color:#16a34a;' : ''}">Lv ${level} / ${cap}</span>
+              <span class="skill-lvl ${isMax ? 'maxed' : ''}">Lv ${level} / ${cap}</span>
             </div>
             <div class="skill-bar-bg">
-              <div class="skill-bar-fill" style="width: ${progress}%; ${isMax ? 'background:#16a34a;' : ''}"></div>
+              <div class="skill-bar-fill ${isMax ? 'maxed' : ''}" style="width: ${progress}%;"></div>
             </div>
             <div class="skill-xp-text">${formatNumber(xp)} Total XP • ${subtext}</div>
           </div>
@@ -2276,7 +2269,7 @@
               <span style="font-weight:800; font-size:1.1rem; color:var(--text-bright);">Active / Recent Slayer Quest</span>
             </div>
             ${quest.status ? `
-              <span class="profile-pill" style="background:${statusBg}; color:${statusColor}; border-color:${statusColor}; font-weight:800; font-size:0.8rem;">
+              <span class="profile-pill ${quest.status === 'FAILED' ? 'status-red' : (quest.status === 'SUCCESS' || quest.status === 'COMPLETED') ? 'status-green' : 'status-blue'}" style="font-weight:800; font-size:0.8rem;">
                 Status: ${quest.status}
               </span>
             ` : '<span class="profile-pill" style="font-size:0.8rem;">No active quest</span>'}
@@ -2284,7 +2277,7 @@
 
           ${quest.type ? `
             <div class="cards-grid" style="margin-bottom: 12px;">
-              <div class="data-item"><span class="data-label">Boss Type &amp; Tier</span><span class="data-value string" style="color:var(--accent-color); font-weight:700;">${quest.type.toUpperCase()} (Tier ${quest.tier || 1})</span></div>
+              <div class="data-item"><span class="data-label">Boss Type &amp; Tier</span><span class="data-value string text-accent" style="font-weight:700;">${quest.type.toUpperCase()} (Tier ${quest.tier || 1})</span></div>
               <div class="data-item"><span class="data-label">Target XP</span><span class="data-value number">${formatNumber(quest.targetExperience || 0)} XP</span></div>
               <div class="data-item"><span class="data-label">Current XP Progress</span><span class="data-value number">${formatNumber(Math.floor(quest.currentExperience || 0))} XP (${questPercent}%)</span></div>
               <div class="data-item"><span class="data-label">Started At</span><span class="data-value date">${quest.startedAt ? formatDate(quest.startedAt * 1000) : 'N/A'}</span></div>
@@ -2298,7 +2291,7 @@
                 <span>${questPercent}%</span>
               </div>
               <div class="stats-bar-container" style="width:100%; height:10px;">
-                <div class="stats-bar-fill" style="width:${questPercent}%; background:#ef4444;"></div>
+                <div class="stats-bar-fill red" style="width:${questPercent}%;"></div>
               </div>
             </div>
           ` : '<p style="color:var(--text-muted); font-size:0.85rem;">No active or past slayer quest recorded for this profile.</p>'}
@@ -2362,8 +2355,8 @@
         <div class="cards-grid">
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#ef4444;">flash_on</span><span class="card-title">Damage Records</span></div>
-            <div class="data-item"><span class="data-label">Max Damage Hit</span><span class="data-value number" style="color:#ef4444; font-weight:800;">${formatNumber(member.maxDamage || 0)}</span></div>
-            <div class="data-item"><span class="data-label">Max Critical Damage Hit</span><span class="data-value number" style="color:#dc2626; font-weight:800;">${formatNumber(member.maxCritDamage || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Max Damage Hit</span><span class="data-value number text-red" style="font-weight:800;">${formatNumber(member.maxDamage || 0)}</span></div>
+            <div class="data-item"><span class="data-label">Max Critical Damage Hit</span><span class="data-value number text-red" style="font-weight:800;">${formatNumber(member.maxCritDamage || 0)}</span></div>
             <div class="data-item"><span class="data-label">Total Mob Kills</span><span class="data-value number">${formatNumber(totalKills)}</span></div>
             <div class="data-item"><span class="data-label">Total Deaths</span><span class="data-value number">${formatNumber(totalDeaths)}</span></div>
           </div>
@@ -2382,7 +2375,7 @@
               ${bossDamages.map(([boss, dmg]) => `
                 <div class="data-item data-item-box">
                   <span class="data-label" style="text-transform:capitalize;">${boss.replace(/^trpixel:/i, '').replace(/_/g, ' ')}</span>
-                  <span class="data-value number" style="color:#ea580c; font-weight:800;">${formatNumber(Math.floor(dmg))}</span>
+                  <span class="data-value number text-orange" style="font-weight:800;">${formatNumber(Math.floor(dmg))}</span>
                 </div>
               `).join('')}
             </div>
@@ -2416,7 +2409,7 @@
                     </div>
                     <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
                       <div class="stats-bar-container">
-                        <div class="stats-bar-fill" style="width:${Math.max(2, pct)}%; background:#ef4444;"></div>
+                        <div class="stats-bar-fill red" style="width:${Math.max(2, pct)}%;"></div>
                       </div>
                       <span style="font-family:var(--font-mono); font-weight:700; color:var(--text-bright); min-width:60px; text-align:right;">${formatNumber(count)}</span>
                       <span style="font-size:0.72rem; color:var(--text-muted); min-width:40px; text-align:right;">${pct}%</span>
@@ -2453,7 +2446,7 @@
                     </div>
                     <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
                       <div class="stats-bar-container">
-                        <div class="stats-bar-fill" style="width:${Math.max(2, pct)}%; background:#d97706;"></div>
+                        <div class="stats-bar-fill orange" style="width:${Math.max(2, pct)}%;"></div>
                       </div>
                       <span style="font-family:var(--font-mono); font-weight:700; color:var(--text-bright); min-width:55px; text-align:right;">${formatNumber(count)}</span>
                       <span style="font-size:0.72rem; color:var(--text-muted); min-width:40px; text-align:right;">${pct}%</span>
@@ -2500,9 +2493,9 @@
         <div class="cards-grid">
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#16a34a;">military_tech</span><span class="card-title">Jacob's Contest Medals</span></div>
-            <div class="data-item"><span class="data-label">Gold Medals</span><span class="data-value number" style="color:#eab308; font-weight:700;">${gold}</span></div>
-            <div class="data-item"><span class="data-label">Silver Medals</span><span class="data-value number" style="color:#94a3b8; font-weight:700;">${silver}</span></div>
-            <div class="data-item"><span class="data-label">Bronze Medals</span><span class="data-value number" style="color:#b45309; font-weight:700;">${bronze}</span></div>
+            <div class="data-item"><span class="data-label">Gold Medals</span><span class="data-value number text-yellow" style="font-weight:700;">${gold}</span></div>
+            <div class="data-item"><span class="data-label">Silver Medals</span><span class="data-value number text-muted" style="font-weight:700;">${silver}</span></div>
+            <div class="data-item"><span class="data-label">Bronze Medals</span><span class="data-value number text-orange" style="font-weight:700;">${bronze}</span></div>
             <div class="data-item"><span class="data-label">Diamond / Platinum</span><span class="data-value number">${diamond + platinum}</span></div>
             <div class="data-item"><span class="data-label">Total Participations</span><span class="data-value number">${totalContests}</span></div>
           </div>
@@ -2512,14 +2505,14 @@
             ${Object.keys(highestBrackets).length > 0 ? Object.entries(highestBrackets).map(([crop, bracket]) => `
               <div class="data-item">
                 <span class="data-label" style="text-transform:capitalize;">${crop.replace(/_/g, ' ')}</span>
-                <span class="data-value string" style="color:var(--accent-color); font-weight:600;">${FARMING_BRACKET_NAMES[String(bracket)] || bracket}</span>
+                <span class="data-value string text-accent" style="font-weight:600;">${FARMING_BRACKET_NAMES[String(bracket)] || bracket}</span>
               </div>
             `).join('') : '<p style="color:var(--text-muted); font-size:0.85rem;">No contest entries recorded yet.</p>'}
           </div>
 
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#0284c7;">flight</span><span class="card-title">Magical Mushroom Soup Flight</span></div>
-            <div class="data-item"><span class="data-label">Remaining Duration</span><span class="data-value string" style="color:#0284c7; font-weight:700;">${member.magicalMushroomSoupTime > 0 ? formatNumber(member.magicalMushroomSoupTime) + ' ticks (' + Math.round(member.magicalMushroomSoupTime / 20) + 's)' : 'Inactive'}</span></div>
+            <div class="data-item"><span class="data-label">Remaining Duration</span><span class="data-value string text-blue" style="font-weight:700;">${member.magicalMushroomSoupTime > 0 ? formatNumber(member.magicalMushroomSoupTime) + ' ticks (' + Math.round(member.magicalMushroomSoupTime / 20) + 's)' : 'Inactive'}</span></div>
             <p style="color:var(--text-muted); font-size:0.84rem; margin-top:8px;">
               Magical Mushroom Soup grants temporary creative flight on your private SkyBlock island.
             </p>
@@ -2543,10 +2536,10 @@
                   <span class="profile-pill" style="font-size:0.75rem; font-weight:800;">${cData.total} Contests</span>
                 </div>
                 <div style="display:flex; flex-wrap:wrap; gap:6px; font-size:0.8rem;">
-                  <span class="profile-pill" style="color:#eab308; border-color:#eab308;">Gold: ${cData.gold}</span>
-                  <span class="profile-pill" style="color:#94a3b8; border-color:#94a3b8;">Silver: ${cData.silver}</span>
-                  <span class="profile-pill" style="color:#b45309; border-color:#b45309;">Bronze: ${cData.bronze}</span>
-                  ${(cData.diamond > 0 || cData.platinum > 0) ? `<span class="profile-pill" style="color:#38bdf8; border-color:#38bdf8;">Dia/Plat: ${cData.diamond + cData.platinum}</span>` : ''}
+                  <span class="profile-pill status-yellow">Gold: ${cData.gold}</span>
+                  <span class="profile-pill">Silver: ${cData.silver}</span>
+                  <span class="profile-pill status-orange">Bronze: ${cData.bronze}</span>
+                  ${(cData.diamond > 0 || cData.platinum > 0) ? `<span class="profile-pill status-blue">Dia/Plat: ${cData.diamond + cData.platinum}</span>` : ''}
                 </div>
               </div>
             `).join('')}
@@ -2560,7 +2553,7 @@
               ${Object.entries(personalBests).map(([crop, amt]) => `
                 <div class="data-item data-item-box">
                   <span class="data-label" style="text-transform:capitalize;">${crop.replace(/_/g, ' ')}</span>
-                  <span class="data-value number" style="color:#16a34a; font-weight:800;">${formatNumber(amt)}</span>
+                  <span class="data-value number text-green" style="font-weight:800;">${formatNumber(amt)}</span>
                 </div>
               `).join('')}
             </div>
@@ -3027,8 +3020,8 @@
               <span class="card-title">SkyBlock Quests Explorer (${total} Total Quests)</span>
             </div>
             <div style="display:flex; gap:8px;">
-              <span class="profile-pill" style="color:#16a34a; border-color:#16a34a; font-weight:800;">${completed} Completed</span>
-              <span class="profile-pill" style="color:#0284c7; border-color:#0284c7; font-weight:800;">${active} In Progress</span>
+              <span class="profile-pill status-green" style="font-weight:800;">${completed} Completed</span>
+              <span class="profile-pill status-blue" style="font-weight:800;">${active} In Progress</span>
             </div>
           </div>
 
@@ -3043,11 +3036,11 @@
             </div>
             <div class="data-item data-item-box">
               <span class="data-label">Lifetime Daily Quests Done</span>
-              <span class="data-value number" style="color:var(--accent-color); font-weight:800;">${formatNumber(member.totalDailyQuests || 0)}</span>
+              <span class="data-value number text-accent" style="font-weight:800;">${formatNumber(member.totalDailyQuests || 0)}</span>
             </div>
             <div class="data-item data-item-box">
               <span class="data-label">Active Pinned Quest</span>
-              <span class="data-value string" style="color:#f59e0b; font-weight:800;">${pinned ? pinned.replace(/_/g, ' ').toUpperCase() : 'None'}</span>
+              <span class="data-value string text-yellow" style="font-weight:800;">${pinned ? pinned.replace(/_/g, ' ').toUpperCase() : 'None'}</span>
             </div>
           </div>
         </div>
@@ -3063,20 +3056,20 @@
               <div class="quest-detail-card ${isPinned ? 'pinned' : ''}">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
                   <span style="font-weight:800; font-size:1rem; color:var(--text-bright);">${cleanTitle}</span>
-                  <span class="profile-pill" style="${isComplete ? 'background:#f0fdf4; color:#15803d; border-color:#16a34a;' : 'background:#fefce8; color:#a16207; border-color:#ca8a04;'} font-size:0.75rem; font-weight:800;">
+                  <span class="profile-pill ${isComplete ? 'status-green' : 'status-yellow'}" style="font-size:0.75rem; font-weight:800;">
                     ${isComplete ? '✓ Complete' : '● Active'}
                   </span>
                 </div>
 
                 ${isPinned ? `
-                  <div style="font-size:0.75rem; font-weight:800; color:#d97706; display:flex; align-items:center; gap:4px;">
+                  <div style="font-size:0.75rem; font-weight:800;" class="text-orange" style="display:flex; align-items:center; gap:4px;">
                     <span class="material-icons" style="font-size:0.95rem;">push_pin</span> Pinned Quest on Profile
                   </div>
                 ` : ''}
 
                 <div style="font-size:0.8rem; color:var(--text-muted); display:flex; flex-direction:column; gap:2px;">
                   <div>Started: <span style="color:var(--text-bright); font-weight:600;">${q?.startedAt ? formatDate(q.startedAt * 1000) : 'N/A'}</span></div>
-                  ${q?.completedAt ? `<div>Completed: <span style="color:#16a34a; font-weight:600;">${formatDate(q.completedAt * 1000)}</span></div>` : ''}
+                  ${q?.completedAt ? `<div>Completed: <span class="text-green" style="font-weight:600;">${formatDate(q.completedAt * 1000)}</span></div>` : ''}
                 </div>
 
                 <div style="margin-top: 6px; border-top: 1px dashed var(--border-color); padding-top: 8px;">
@@ -3190,7 +3183,7 @@
           <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">Each claimed century cake grants permanent +1 Health to your SkyBlock character.</p>
           <div class="cakes-grid">
             ${cakes.map(c => `<span class="cake-chip"><span class="material-icons" style="font-size:0.95rem; vertical-align:middle; color:#d946ef; margin-right:4px;">cake</span> Year #${c} (+1 HP)</span>`).join('')}
-            ${profileCakes.map(c => `<span class="cake-chip" style="border-color:#38bdf8;"><span class="material-icons" style="font-size:0.95rem; vertical-align:middle; color:#38bdf8; margin-right:4px;">cake</span> Profile Year #${c} (+1 HP)</span>`).join('')}
+            ${profileCakes.map(c => `<span class="cake-chip profile-cake"><span class="material-icons" style="font-size:0.95rem; vertical-align:middle; margin-right:4px;">cake</span> Profile Year #${c} (+1 HP)</span>`).join('')}
             ${(cakes.length === 0 && profileCakes.length === 0) ? '<p style="color:var(--text-muted); font-size:0.85rem;">No century cakes claimed.</p>' : ''}
           </div>
         </div>
@@ -3208,13 +3201,13 @@
         <div class="cards-grid" style="margin-bottom: 16px;">
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#0284c7;">schedule</span><span class="card-title">Total Network Playtime</span></div>
-            <div class="data-item"><span class="data-label">All Server Playtime</span><span class="data-value string" style="color:#0284c7; font-weight:700;">${formatPlaytime(totalSec)}</span></div>
+            <div class="data-item"><span class="data-label">All Server Playtime</span><span class="data-value string text-blue" style="font-weight:700;">${formatPlaytime(totalSec)}</span></div>
             <div class="data-item"><span class="data-label">Raw Seconds</span><span class="data-value number">${formatNumber(totalSec)} sec</span></div>
           </div>
 
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#16a34a;">roofing</span><span class="card-title">Selected Island Playtime</span></div>
-            <div class="data-item"><span class="data-label">Current Island Time</span><span class="data-value string" style="color:#16a34a; font-weight:700;">${formatPlaytime(islandSec)}</span></div>
+            <div class="data-item"><span class="data-label">Current Island Time</span><span class="data-value string text-green" style="font-weight:700;">${formatPlaytime(islandSec)}</span></div>
             <div class="data-item"><span class="data-label">Raw Seconds</span><span class="data-value number">${formatNumber(islandSec)} sec</span></div>
           </div>
         </div>
