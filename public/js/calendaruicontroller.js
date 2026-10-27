@@ -217,7 +217,8 @@ getPetEmoji(name) {
                     </div>
                     <div class="day-body">${eventContent}</div>`;
                 dayCell.classList.add('neo-card');
-                dayCell.classList.add('cyan');
+                //dayCell.classList.add('cyan');
+                dayCell.id == 'today' ? dayCell.classList.add('cyan') : null;
                 dayCell.addEventListener('click', () => this.modalThing(day));
                 this.elements.calGrid.appendChild(dayCell);
             });
