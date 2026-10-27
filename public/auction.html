@@ -383,8 +383,8 @@
         <!-- 2. Dedicated Single Auction Detail View -->
         <div id="auctionDetailView" class="auction-detail-container" style="display: none;">
           <!-- Top Navigation Bar -->
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="auction-detail-nav-bar">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
               <button class="btn-detail-back" onclick="closeAuctionDetail()">
                 <span class="material-icons" style="font-size: 1.1rem;">arrow_back</span> Back to Live Auctions
               </button>
@@ -392,62 +392,74 @@
                 <span class="material-icons" style="font-size: 1.05rem;">share</span> Share Auction
               </button>
             </div>
-            <div id="detailAuctionIdTag" style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);"></div>
+            <div class="auction-id-chip" onclick="copyAuctionId()" title="Click to copy Auction ID">
+              <span class="material-icons id-icon">fingerprint</span>
+              <span class="id-label">Auction ID:</span>
+              <span id="detailAuctionIdTag" class="id-value">-</span>
+              <span class="material-icons copy-icon">content_copy</span>
+            </div>
           </div>
 
           <!-- Item Header Card -->
           <div class="auction-detail-header-card" id="detailHeaderCard">
-            <div>
-              <h1 id="detailItemTitle" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; color: var(--text-bright);">Item Name</h1>
-              <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <div class="detail-header-main">
+              <h1 id="detailItemTitle" class="detail-item-title">Item Name</h1>
+              <div class="detail-badge-group">
                 <span id="detailTierBadge" class="tier-badge tier-common">COMMON</span>
                 <span id="detailTypePill" class="type-pill bin">BIN</span>
-                <span id="detailCategoryBadge" style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">Category</span>
+                <span id="detailCategoryBadge" class="category-chip">Category</span>
               </div>
             </div>
-            <div style="text-align: right;">
-              <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">Current Price</div>
-              <div id="detailPriceDisplay" style="font-size: 1.8rem; font-weight: 700; font-family: var(--font-mono); color: #16a34a;">-</div>
+            <div class="detail-header-price-box">
+              <div class="detail-price-label">Current Price</div>
+              <div id="detailPriceDisplay" class="detail-price-value">-</div>
             </div>
           </div>
 
           <!-- Main Detail Grid -->
           <div class="auction-detail-grid">
             <!-- Left: Authentic In-Game Tooltip Box -->
-            <div>
-              <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-bright); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                <span class="material-icons" style="font-size: 1rem; color: var(--accent-color);">memory</span> In-Game Tooltip &amp; Stats
+            <div class="detail-column">
+              <div class="detail-section-title">
+                <span class="material-icons" style="color: #38bdf8;">memory</span> In-Game Tooltip &amp; Lore
               </div>
-              <div class="mc-tooltip-box" id="detailTooltipContent" style="min-height: 280px; max-height: none;">
+              <div class="mc-tooltip-box" id="detailTooltipContent">
                 Loading item information...
               </div>
             </div>
 
             <!-- Right: Auction Status, Seller & Live Bids History -->
-            <div>
-              <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-bright); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                <span class="material-icons" style="font-size: 1rem; color: var(--accent-color);">info</span> Auction Details
+            <div class="detail-column">
+              <div class="detail-section-title">
+                <span class="material-icons" style="color: #fde047;">info</span> Auction Overview
               </div>
-              <div style="display: flex; flex-direction: column; gap: 12px;">
+              
+              <!-- 3-Box Metadata Grid -->
+              <div class="detail-meta-grid">
                 <div class="modal-meta-card">
-                  <div class="modal-meta-label">Seller</div>
-                  <a id="detailSellerLink" href="#" class="auction-seller-link" style="font-size: 1.1rem; font-weight: 700; color: var(--accent-color);">
-                    <span class="material-icons" style="font-size: 1.2rem;">person</span>
+                  <div class="modal-meta-label">
+                    <span class="material-icons" style="font-size: 0.95rem;">person</span> Seller
+                  </div>
+                  <a id="detailSellerLink" href="#" class="auction-seller-link">
                     <span>Unknown</span>
                   </a>
                 </div>
 
                 <div class="modal-meta-card">
-                  <div class="modal-meta-label">Time Remaining</div>
-                  <div id="detailTimeRemaining" style="font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700; color: #0284c7;">
+                  <div class="modal-meta-label">
+                    <span class="material-icons" style="font-size: 0.95rem;">schedule</span> Time Remaining
+                  </div>
+                  <div id="detailTimeRemaining" class="meta-card-value">
                     -
                   </div>
-                  <div id="detailDatesInfo" style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;"></div>
+                  <div id="detailDatesInfo" class="meta-card-sub"></div>
                 </div>
 
                 <div class="modal-meta-card">
-                  <div class="modal-meta-label">Starting Price</div>
-                  <div id="detailStartingPrice" style="font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600; color: var(--text-bright);">
+                  <div class="modal-meta-label">
+                    <span class="material-icons" style="font-size: 0.95rem;">payments</span> Starting Price
+                  </div>
+                  <div id="detailStartingPrice" class="meta-card-value">
                     -
                   </div>
                 </div>
@@ -455,11 +467,11 @@
 
               <!-- Live Bids History Card -->
               <div class="bids-history-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                  <div style="font-size: 0.92rem; font-weight: 700; color: var(--text-bright); display: flex; align-items: center; gap: 6px;">
-                    <span class="material-icons" style="font-size: 1.05rem; color: #2563eb;">gavel</span> Bidding History
+                <div class="bids-card-header">
+                  <div class="bids-header-title">
+                    <span class="material-icons" style="font-size: 1.15rem; color: #2563eb;">gavel</span> Transaction History
                   </div>
-                  <span id="detailBidsCountBadge" style="font-size: 0.75rem; font-weight: 700; background: #eff6ff; color: #2563eb; padding: 2px 8px; border-radius: 12px;">0 bids</span>
+                  <span id="detailBidsCountBadge" class="bids-count-badge">0 bids</span>
                 </div>
                 <div id="detailBidsList">
                   <div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
@@ -1042,40 +1054,40 @@
       renderAuctionsView();
     }
 
-    // Minecraft Color Code to HTML Converter (Calibrated for clean white theme tooltip)
+    // Minecraft Color Code to HTML Converter (Calibrated for authentic dark tooltip box)
     const FEATHER_COLOR_MAP = {
-      '0': '#0f172a',
-      '1': '#1d4ed8',
-      '2': '#15803d',
-      '3': '#0e7490',
-      '4': '#b91c1c',
-      '5': '#7e22ce',
-      '6': '#d97706',
-      '7': '#64748b',
-      '8': '#334155',
-      '9': '#2563eb',
-      a: '#16a34a',
-      b: '#0284c7',
-      c: '#dc2626',
-      d: '#c026d3',
-      e: '#b45309',
-      f: '#0f172a',
-      g: '#b45309',
-      h: '#475569',
-      i: '#64748b',
-      j: '#1e293b',
-      m: '#991b1b',
-      n: '#b45309',
-      p: '#d97706',
-      q: '#15803d',
-      s: '#0d9488',
-      t: '#1e40af',
-      u: '#9333ea',
-      v: '#ea580c',
-      w: '#2563eb',
-      x: '#64748b',
-      y: '#e11d48',
-      z: '#92400e',
+      '0': '#1e293b',
+      '1': '#3b82f6',
+      '2': '#22c55e',
+      '3': '#06b6d4',
+      '4': '#ef4444',
+      '5': '#a855f7',
+      '6': '#f59e0b',
+      '7': '#94a3b8',
+      '8': '#64748b',
+      '9': '#60a5fa',
+      a: '#4ade80',
+      b: '#38bdf8',
+      c: '#f87171',
+      d: '#f472b6',
+      e: '#fde047',
+      f: '#ffffff',
+      g: '#fbbf24',
+      h: '#94a3b8',
+      i: '#cbd5e1',
+      j: '#94a3b8',
+      m: '#ef4444',
+      n: '#fbbf24',
+      p: '#fb923c',
+      q: '#4ade80',
+      s: '#2dd4bf',
+      t: '#38bdf8',
+      u: '#c084fc',
+      v: '#fb923c',
+      w: '#60a5fa',
+      x: '#94a3b8',
+      y: '#f43f5e',
+      z: '#d97706',
     };
 
     function minecraftColorToHtml(text) {
@@ -1087,7 +1099,7 @@
       if (!clean.trim()) return '&nbsp;';
 
       let html = '';
-      let currentColor = '#475569';
+      let currentColor = '#cbd5e1';
       let isBold = false;
       let isItalic = false;
 
@@ -1096,7 +1108,7 @@
         if (part.startsWith('§') && part.length === 2) {
           const code = part.charAt(1).toLowerCase();
           if (code === 'r') {
-            currentColor = '#475569';
+            currentColor = '#cbd5e1';
             isBold = false;
             isItalic = false;
           } else if (code === 'l') {
@@ -1240,7 +1252,7 @@
       detailView.style.display = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      document.getElementById('detailAuctionIdTag').textContent = `Auction ID: ${auctionId}`;
+      document.getElementById('detailAuctionIdTag').textContent = auctionId;
       document.getElementById('detailTooltipContent').innerHTML = `
         <div style="padding: 32px; text-align: center; color: var(--text-muted);">
           <span class="material-icons rotating" style="font-size: 2rem; color: var(--accent-color);">sync</span>
@@ -1412,25 +1424,25 @@
           const buyDate = buyTimestamp ? new Date((buyTimestamp < 10000000000 ? buyTimestamp * 1000 : buyTimestamp)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
 
           bidsListContainer.innerHTML = `
-            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 18px; margin-bottom: 8px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div class="bin-purchased-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <span class="type-pill bin" style="background: #16a34a; color: #ffffff;">
                   <span class="material-icons" style="font-size:0.75rem;">check_circle</span> INSTANT BOUGHT
                 </span>
-                <span style="font-family: var(--font-mono); font-size: 0.78rem; color: #16a34a; font-weight: 600;">${buyDate}</span>
+                <span style="font-family: var(--font-mono); font-size: 0.8rem; color: #16a34a; font-weight: 700;">${buyDate}</span>
               </div>
-              <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                 <div>
-                  <div style="font-size: 0.72rem; font-weight: 700; color: #166534; text-transform: uppercase; letter-spacing: 0.04em;">Buyer Profile</div>
-                  <a href="player.html?username=${encodeURIComponent(buyerName)}" class="auction-seller-link" style="font-size: 1.08rem; font-weight: 700; color: #15803d; margin-top: 2px;">
+                  <div style="font-size: 0.72rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.05em;">Buyer Profile</div>
+                  <a href="player.html?username=${encodeURIComponent(buyerName)}" class="auction-seller-link" style="font-size: 1.1rem; font-weight: 800; color: #15803d; margin-top: 2px;">
                     <span class="material-icons" style="font-size:1.15rem;">person</span>
                     <span>${buyerName}</span>
                   </a>
                 </div>
                 <div style="text-align: right;">
-                  <div style="font-size: 0.72rem; font-weight: 700; color: #166534; text-transform: uppercase; letter-spacing: 0.04em;">Purchase Price</div>
-                  <div style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; color: #16a34a;">
-                    ${formatNumber(price)} <span style="font-size: 0.75rem; color: #166534; font-weight: 500;">coins</span>
+                  <div style="font-size: 0.72rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.05em;">Purchase Price</div>
+                  <div style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 900; color: #16a34a;">
+                    ${formatNumber(price)} <span style="font-size: 0.75rem; color: #166534; font-weight: 600;">coins</span>
                   </div>
                 </div>
               </div>
@@ -1441,10 +1453,10 @@
           bidsCountBadge.style.background = '#dcfce7';
           bidsCountBadge.style.color = '#16a34a';
           bidsListContainer.innerHTML = `
-            <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem; background: #f8fafc; border-radius: 6px;">
-              <span class="material-icons" style="color: #16a34a; font-size: 1.8rem; margin-bottom: 4px;">bolt</span>
-              <div style="font-weight: 700; color: var(--text-bright);">Available for Instant Purchase</div>
-              <p style="margin-top: 4px;">Listed at fixed price of <strong>${formatNumber(price)} coins</strong>. Not yet purchased.</p>
+            <div class="bids-empty-state">
+              <span class="material-icons" style="color: #16a34a; font-size: 2rem; margin-bottom: 4px;">bolt</span>
+              <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-bright);">Available for Instant Purchase</div>
+              <p style="margin-top: 4px; font-size: 0.82rem;">Listed at fixed price of <strong>${formatNumber(price)} coins</strong>. Not yet purchased.</p>
             </div>
           `;
         }
@@ -1455,10 +1467,10 @@
 
         if (bidsList.length === 0) {
           bidsListContainer.innerHTML = `
-            <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem; background: #f8fafc; border-radius: 6px;">
-              <span class="material-icons" style="color: #94a3b8; font-size: 1.8rem; margin-bottom: 4px;">gavel</span>
-              <div style="font-weight: 700; color: var(--text-bright);">No Bids Placed Yet</div>
-              <p style="margin-top: 4px;">Starting bid is <strong>${formatNumber(auctionData.startingPrice)} coins</strong>.</p>
+            <div class="bids-empty-state">
+              <span class="material-icons" style="color: #94a3b8; font-size: 2rem; margin-bottom: 4px;">gavel</span>
+              <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-bright);">No Bids Placed Yet</div>
+              <p style="margin-top: 4px; font-size: 0.82rem;">Starting bid is <strong>${formatNumber(auctionData.startingPrice)} coins</strong>.</p>
             </div>
           `;
         } else {
@@ -1469,21 +1481,21 @@
             const isTop = idx === 0;
             const bidDate = bid.timestamp ? new Date(bid.timestamp * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
             return `
-              <div class="bid-history-item" style="${isTop ? 'background: #f0fdf4; border-radius: 6px; margin-bottom: 6px; border: 1px solid #bbf7d0;' : ''}">
+              <div class="bid-history-item ${isTop ? 'top-bid' : ''}">
                 <div style="display: flex; align-items: center; gap: 10px;">
                   <span class="bid-rank-pill ${isTop ? 'top' : ''}">${isTop ? '★' : idx + 1}</span>
                   <div>
-                    <a href="player.html?username=${encodeURIComponent(bid.bidderName)}" class="auction-seller-link" style="font-weight: 700; font-size: 0.9rem;">
+                    <a href="player.html?username=${encodeURIComponent(bid.bidderName)}" class="auction-seller-link" style="font-weight: 800; font-size: 0.92rem;">
                       ${bid.bidderName || 'Anonymous'}
                     </a>
                     <div style="font-size: 0.72rem; color: var(--text-muted);">${bidDate}</div>
                   </div>
                 </div>
                 <div style="text-align: right;">
-                  <div style="font-family: var(--font-mono); font-weight: 700; font-size: 0.95rem; color: ${isTop ? '#16a34a' : 'var(--text-bright)'};">
+                  <div style="font-family: var(--font-mono); font-weight: 800; font-size: 0.95rem; color: ${isTop ? '#16a34a' : 'var(--text-bright)'};">
                     ${formatNumber(bid.amount)} <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-muted);">coins</span>
                   </div>
-                  <div style="font-size: 0.7rem; font-weight: 600; color: ${isTop ? '#16a34a' : '#94a3b8'};">
+                  <div style="font-size: 0.72rem; font-weight: 700; color: ${isTop ? '#16a34a' : '#94a3b8'};">
                     ${isTop ? 'Top Bidder' : 'Outbid'}
                   </div>
                 </div>
@@ -1501,6 +1513,28 @@
       document.getElementById('auctionDetailView').style.display = 'none';
       document.getElementById('auctionListView').style.display = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Copy Auction ID Handler
+    function copyAuctionId() {
+      const targetId = currentAuctionDetailId || (new URLSearchParams(window.location.search).get('id'));
+      if (!targetId) {
+        showToast('No Auction ID to copy');
+        return;
+      }
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(targetId)
+          .then(() => {
+            showToast(`Copied Auction ID: ${targetId}`);
+          })
+          .catch(() => {
+            fallbackCopyAuctionLink(targetId);
+            showToast(`Copied Auction ID: ${targetId}`);
+          });
+      } else {
+        fallbackCopyAuctionLink(targetId);
+        showToast(`Copied Auction ID: ${targetId}`);
+      }
     }
 
     // Toast Notification Controller
