@@ -10,11 +10,11 @@ const CalendarEngine = {
     
     LEGENDARY_PATTERN: ['elephant','giraffe','tiger','lion','monkey'],
     LEGENDARY_ICONS: { 
-        'elephant':'<img src="img/pets/Elephant_Pet.webp" style="height:40px;width:40px;object-fit:contain;">',
-        'giraffe':'<img src="img/pets/Giraffe_Pet.webp" style="height:40px;width:40px;object-fit:contain;">',
-        'tiger':'<img src="img/pets/300px-Tiger_Pet.webp" style="height:40px;width:40px;object-fit:contain;">',
-        'lion':'<img src="img/pets/300px-Lion_Pet.webp" style="height:40px;width:40px;object-fit:contain;">',
-        'monkey':'<img src="img/pets/Monkey_Pet.webp" style="height:40px;width:40px;object-fit:contain;margin:4px;">'
+        'elephant':'<img src="img/pets/Elephant_Pet.webp" style="height:30px;width:auto;">',
+        'giraffe':'<img src="img/pets/Giraffe_Pet.webp" style="height:30px;width:auto;">',
+        'tiger':'<img src="img/pets/300px-Tiger_Pet.webp" style="height:30px;width:auto;">',
+        'lion':'<img src="img/pets/300px-Lion_Pet.webp" style="height:30px;width:auto;">',
+        'monkey':'<img src="img/pets/Monkey_Pet.webp" style="height:30px;width:auto;margin:4px;">'
     },
     PET_EMOJIS: {
         'elephant': '🐘',
