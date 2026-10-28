@@ -8,7 +8,7 @@
 
   // Cache duration: 5 minutes in sessionStorage
   const CACHE_PREFIX = 'cmc_comp_';
-  const CACHE_VERSION = 'v4_';
+  const CACHE_VERSION = 'v5_';
 
   async function loadComponentHtml(name) {
     const cacheKey = `${CACHE_PREFIX}${CACHE_VERSION}${name}`;
@@ -17,16 +17,29 @@
       return cached;
     }
 
-    try {
-      const res = await fetch(`/components/${name}.html`);
-      if (!res.ok) throw new Error(`Failed to load ${name} component: ${res.status}`);
-      const html = await res.text();
-      sessionStorage.setItem(cacheKey, html);
-      return html;
-    } catch (err) {
-      console.warn(`[CMC Components] Falling back for ${name}:`, err.message);
-      return '';
+    const candidateUrls = [
+      `/components/${name}.html`,
+      `../components/${name}.html`,
+      `../../components/${name}.html`,
+      `./components/${name}.html`,
+      `/public/components/${name}.html`
+    ];
+
+    for (const url of candidateUrls) {
+      try {
+        const res = await fetch(url);
+        if (res.ok) {
+          const html = await res.text();
+          if (html && html.trim().length > 40 && !html.includes("Cannot GET") && !html.includes("404")) {
+            sessionStorage.setItem(cacheKey, html);
+            return html;
+          }
+        }
+      } catch (err) {}
     }
+
+    console.warn(`[CMC Components] Falling back for ${name}`);
+    return '';
   }
 
   // Determine current active page identifier
@@ -151,8 +164,16 @@
     customElements.define('cmc-footer', CMCFooter);
   }
 
-  // Fallback for data-include attributes (e.g. <div data-include="sidebar"></div>)
+  // Hydrate #footer or data-include attributes (e.g. <div data-include="sidebar"></div>)
   document.addEventListener('DOMContentLoaded', async () => {
+    const footerEl = document.getElementById('footer');
+    if (footerEl && !footerEl.innerHTML.trim()) {
+      const html = await loadComponentHtml('footer');
+      if (html) {
+        footerEl.innerHTML = html;
+      }
+    }
+
     const includes = document.querySelectorAll('[data-include]');
     for (const el of includes) {
       const name = el.getAttribute('data-include');

@@ -164,7 +164,7 @@ function fetchAllPartials() {
   Promise.all([
     fetchPartial("/components/navbar.html", "navbarHtmlV10"),
     fetchPartial("/components/sidebar.html", "sidebarHtmlV8"),
-    fetchPartial("/components/footer.html", "footerHtmlV8"),
+    fetchPartial("/components/footer.html", "footerHtmlV9"),
     fetchPartial("/loader.html", "loaderHtml"),
   ])
     .then(([navbarHtml, sidebarHtml, footerHtml, loaderHtml]) => {
