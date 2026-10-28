@@ -124,13 +124,40 @@ document.addEventListener("click", (event) => {
 
 function fetchPartial(url, key) {
   const cached = localStorage.getItem(key);
-  if (cached) return Promise.resolve(cached);
-  return fetch(url)
-    .then((res) => res.text())
-    .then((html) => {
-      localStorage.setItem(key, html);
-      return html;
-    });
+  if (cached && !cached.includes("Cannot GET") && !cached.includes("404") && cached.trim().length > 40) {
+    return Promise.resolve(cached);
+  }
+
+  // Support root, subdirectory, and public-prefixed local hosting environments
+  const candidateUrls = [
+    url,
+    url.startsWith('/') ? '..' + url : '../' + url,
+    url.startsWith('/') ? '../..' + url : '../../' + url,
+    url.startsWith('/') ? '.' + url : './' + url,
+    '/public' + url
+  ];
+
+  const tryFetch = (index) => {
+    if (index >= candidateUrls.length) {
+      return Promise.reject(new Error("Failed to load partial: " + url));
+    }
+    const currentUrl = candidateUrls[index];
+    return fetch(currentUrl)
+      .then((res) => {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.text();
+      })
+      .then((html) => {
+        if (html && !html.includes("Cannot GET") && !html.includes("404") && html.trim().length > 40) {
+          try { localStorage.setItem(key, html); } catch(e) {}
+          return html;
+        }
+        throw new Error("Invalid HTML response");
+      })
+      .catch(() => tryFetch(index + 1));
+  };
+
+  return tryFetch(0);
 }
 
 function fetchAllPartials() {
