@@ -2,128 +2,497 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Achievements Leaderboard — CraftersMC Guides</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Top players with the highest number of completed achievements on CraftersMC." />
-  <link rel="icon" href="../assets/cmc-icon.png" type="image/png" />
-  <link rel="icon" href="../assets/cmc-guides.png" type="image/png" />
+  <title>Achievements Leaderboard | CraftersMC Guides</title>
+  <meta name="description" content="View top CraftersMC players ranked by unlocked achievements with real-time stats and rankings." />
 
-  <!-- Fonts & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <!-- Pre-render theme initialization to avoid flash -->
+  <script>
+    (function () {
+      try {
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+          document.documentElement.classList.add("darkmode");
+        } else {
+          document.documentElement.classList.remove("darkmode");
+        }
+      } catch (e) {}
+    })();
+  </script>
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="../better-api-docs/style.css" />
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="../css/essential.css" />
+  <link rel="stylesheet" href="../css/neo-brutalism.css" />
   <link rel="stylesheet" href="../css/leaderboards-theme.css" />
 
-  <!-- Core Scripts -->
-  <script src="../better-api-docs/app.js" defer></script>
-  <script src="../js/components.js" defer></script>
-  <script src="../js/api-proxy-client.js"></script>
-<script src="../js/multi-lb-data.js"></script>
-  <script src="../js/leaderboards-api.js"></script>
-  <script src="../js/leaderboard-theme-helper.js"></script>
+  <style>
+    /* Page specific adjustments */
+    .achievements-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #fef08a;
+      color: #713f12;
+      font-weight: 800;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 2px solid #111827;
+      box-shadow: 2px 2px 0 #111827;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      margin-bottom: 0.85rem;
+    }
+    .darkmode .achievements-hero-badge {
+      background: #854d0e;
+      color: #fef08a;
+      border-color: #fef08a;
+      box-shadow: 2px 2px 0 #fef08a;
+    }
+  </style>
 </head>
 <body>
+  <!-- Ambient background canvas -->
+  <div class="background"></div>
 
-  <header class="top-header">
-    <div class="header-left">
-      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
-        <span class="material-icons" style="font-size:1.25rem;">menu</span>
-      </button>
-      <a href="../index.html" class="header-brand">
-        <img src="../assets/cmc-guides.png" alt="CraftersMC Logo" />
-        <div class="brand-text">
-          <span class="brand-title">CraftersMC Guides</span>
-          <span class="version-badge">Leaderboards</span>
-        </div>
-      </a>
-    </div>
+  <!-- Global Header injected by script.js -->
+  <div class="top"></div>
 
-    <div class="search-box">
-      <span class="material-icons search-icon">search</span>
-      <input type="text" id="search-input" placeholder="Search leaderboards, guides, API..." />
-      <span class="search-kbd-shortcut">/</span>
-    </div>
+  <!-- Global Sidebar & Overlay injected by script.js -->
+  <div id="sidebar"></div>
+  <div id="sidebar-overlay"></div>
 
-    <div class="header-actions">
-      <a href="../better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
-      <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
-    </div>
-  </header>
+  <!-- Main Container -->
+  <main class="neo-container" style="padding-top: 1.5rem; padding-bottom: 4rem;">
 
-  <div class="app-layout">
-    <cmc-sidebar active="achievements-leaderboard"></cmc-sidebar>
-    <main class="main-content">
-
-      <div class="lb-hero-card">
-        <div class="lb-hero-info">
-          <h1>
-            <span class="material-icons" style="color:var(--accent-color);">emoji_events</span>
-            Achievements Leaderboard
-          </h1>
-          <p>Top players with the highest number of completed achievements on CraftersMC.</p>
-        </div>
-        <a href="index.html" class="lb-back-btn">
-          <span class="material-icons" style="font-size:1rem;">arrow_back</span>
-          All Leaderboards
-        </a>
+    <!-- Hero Card -->
+    <section class="neo-hero-card" style="margin-bottom: 2rem;">
+      <div class="neo-window-dots" aria-hidden="true">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
       </div>
 
-      <div class="lb-table-card">
-        <div class="lb-table-header">
-          <h2 class="lb-table-title" id="collectionTitle">Achievements Leaderboard</h2>
+      <div class="lb-header-nav" style="margin-bottom: 1rem;">
+        <a href="index.html" class="lb-back-link">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>All Leaderboards</span>
+        </a>
+        <span class="lb-header-sep">/</span>
+        <span style="font-weight: 700; font-size: 0.9rem; opacity: 0.85;">Achievements</span>
+      </div>
+
+      <div class="achievements-hero-badge">
+        <i class="fa-solid fa-trophy"></i>
+        <span>Official Hall of Fame</span>
+      </div>
+
+      <h1 class="neo-hero-title">Achievements Leaderboard</h1>
+      <p class="neo-hero-subtitle">
+        CraftersMC's top achievers ranked by verified milestone completions. Discover who holds the crown across the realm.
+      </p>
+
+      <div class="neo-hero-actions">
+        <a href="index.html" class="neo-btn neo-btn-secondary">
+          <i class="fa-solid fa-layer-group"></i>
+          <span>Browse All Categories</span>
+        </a>
+        <a href="leaderboard-submission.html" class="neo-btn neo-btn-primary">
+          <i class="fa-solid fa-plus-circle"></i>
+          <span>Submit Your Record</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Top 3 Podium Showcase -->
+    <section id="podiumSection" style="margin-bottom: 2.5rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+        <div>
+          <h2 style="font-size: 1.35rem; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: -0.01em;">
+            <i class="fa-solid fa-crown" style="color: #eab308; margin-right: 0.5rem;"></i>Top Podium
+          </h2>
+          <p style="font-size: 0.85rem; margin: 0.2rem 0 0; opacity: 0.75; font-weight: 600;">The current top 3 record holders</p>
         </div>
+        <span class="neo-badge neo-badge-lime" style="font-size: 0.75rem;">
+          <i class="fa-solid fa-circle-check"></i> Verified
+        </span>
+      </div>
+
+      <div class="lb-podium-grid" id="podiumGrid">
+        <!-- Rendered dynamically via JavaScript (2nd place, 1st place, 3rd place) -->
+        <div class="lb-loading-state" style="grid-column: 1 / -1; min-height: 180px;">
+          <i class="fa-solid fa-spinner fa-spin lb-loading-spinner"></i>
+          <span style="font-weight: 700;">Loading top podium winners...</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Leaderboard Table Section -->
+    <section>
+      <div class="lb-table-card">
+        <!-- Table Card Header & Search -->
+        <div class="lb-table-header">
+          <div>
+            <h2 class="lb-table-title">
+              <i class="fa-solid fa-list-ol" style="color: var(--neo-accent);"></i>
+              Full Standings
+            </h2>
+            <div style="font-size: 0.82rem; font-weight: 600; opacity: 0.7; margin-top: 0.2rem;">
+              Showing <span id="entryCount" style="font-weight: 800; color: var(--neo-accent);">0</span> registered players
+            </div>
+          </div>
+
+          <div class="lb-table-search-wrap">
+            <i class="fa-solid fa-magnifying-glass lb-table-search-icon" aria-hidden="true"></i>
+            <input
+              type="text"
+              id="playerSearchInput"
+              class="lb-table-search-input"
+              placeholder="Filter by username..."
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+        </div>
+
+        <!-- Scrollable Table -->
         <div class="lb-table-wrapper">
-          <table class="lb-table">
+          <table class="lb-table" id="achievementsTable">
             <thead>
               <tr>
-                <th style="width: 80px; text-align: center;">Rank</th>
+                <th style="width: 100px; text-align: center;">Rank</th>
                 <th>Player</th>
-                <th id="scoreHeader" style="text-align: right;">Achievements</th>
+                <th style="text-align: right; width: 220px;">Achievements</th>
+                <th style="text-align: center; width: 140px;">Status</th>
               </tr>
             </thead>
-            <tbody id="leaderboardData">
-              <tr><td style="text-align:center;">1</td><td>???</td><td style="text-align:right;">???</td></tr>
+            <tbody id="tableBody">
+              <tr>
+                <td colspan="4" style="text-align: center; padding: 3rem 1rem;">
+                  <div class="lb-loading-state">
+                    <i class="fa-solid fa-spinner fa-spin lb-loading-spinner"></i>
+                    <span style="font-weight: 700;">Loading leaderboard rankings...</span>
+                  </div>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
-      </div>
 
-      <footer class="site-footer">
-        <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
-        <div class="site-footer-right">
-          <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
+        <!-- Empty search results notice -->
+        <div id="noResultsNotice" style="display: none; padding: 3rem 1.5rem; text-align: center;">
+          <div style="font-size: 2.25rem; margin-bottom: 0.75rem; color: #9ca3af;">
+            <i class="fa-solid fa-user-slash"></i>
+          </div>
+          <div style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.35rem;">No players found</div>
+          <div style="font-size: 0.88rem; opacity: 0.75; font-weight: 600;">
+            No records matched your search query. Try clearing the filter.
+          </div>
         </div>
-      </footer>
-    </main>
-  </div>
+      </div>
+    </section>
 
+    <!-- Footer info notice -->
+    <div style="margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; font-size: 0.85rem; font-weight: 600; opacity: 0.75;">
+      <div>
+        <i class="fa-solid fa-circle-info" style="margin-right: 0.4rem;"></i>
+        Stats reflect verified in-game achievements submissions.
+      </div>
+      <div>
+        Think your score is missing? <a href="leaderboard-submission.html" style="font-weight: 800; text-decoration: underline; color: inherit;">Submit verification</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Site Footer injected if standard or scripts -->
+  <footer class="neo-footer" style="border-top: 3px solid #111827; margin-top: 4rem; padding: 2rem 1.5rem; text-align: center; font-weight: 700; font-size: 0.85rem; background: var(--neo-card-bg);">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+      <div>© 2026 CraftersMC Guides. Community powered, not affiliated with Mojang.</div>
+      <div style="display: flex; gap: 1rem;">
+        <a href="../privacy-policy.html" style="color: inherit; text-decoration: none;">Privacy Policy</a>
+        <span>•</span>
+        <a href="../terms.html" style="color: inherit; text-decoration: none;">Terms of Service</a>
+        <span>•</span>
+        <a href="index.html" style="color: inherit; text-decoration: none;">Leaderboards</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Core Site Scripts -->
+  <script src="../js/script.js" defer></script>
+  <script src="../js/api-proxy-client.js"></script>
+  <script src="../js/multi-lb-data.js"></script>
+  <script src="../js/leaderboards-api.js"></script>
+  <script src="../js/leaderboard-theme-helper.js"></script>
+
+  <!-- Leaderboard Controller Logic -->
   <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      const tbody = document.getElementById("leaderboardData");
-      let list = [];
-      try {
-        list = await leaderboardsApi.getLeaderboard("achievements");
-      } catch (e) {
-        console.warn("Using local fallback for achievements", e);
-        list = window.achievementsData || [];
+    (function () {
+      let leaderboardData = [];
+
+      // Helper to clean player names with alternate accounts / separators (e.g. "SphinxWraith/HeGzoStRqFe")
+      function cleanPlayerName(rawName) {
+        if (!rawName) return "Unknown";
+        return String(rawName).trim();
       }
 
-      if (Array.isArray(list) && list.length > 0) {
-        tbody.innerHTML = list.map((p, idx) => `
-          <tr>
-            <td style="text-align:center;">${formatRankBadge(p.rank ?? idx + 1)}</td>
-            ${createPlayerCell(p.name)}
-            <td class="score-cell" style="text-align:right;">${p.achievements ?? p.score ?? p.time ?? p.level ?? "???"}</td>
-          </tr>
-        `).join("");
-      } else {
-        tbody.innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
+      function getPrimaryIGN(rawName) {
+        if (!rawName) return "steve";
+        const cleaned = cleanPlayerName(rawName);
+        if (cleaned.includes("/")) {
+          return cleaned.split("/")[0].trim();
+        }
+        return cleaned;
       }
-    });
+
+      function getAvatarUrl(rawName) {
+        const primary = getPrimaryIGN(rawName);
+        return `https://mc-heads.net/avatar/${encodeURIComponent(primary)}/64`;
+      }
+
+      // Render the Top 3 Podium Cards
+      function renderPodium(top3) {
+        const podiumGrid = document.getElementById("podiumGrid");
+        if (!podiumGrid) return;
+
+        if (!top3 || top3.length === 0) {
+          podiumGrid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; font-weight: 700; opacity: 0.7;">
+              No podium players currently available.
+            </div>`;
+          return;
+        }
+
+        // Standard arrangement: 2nd Place (Silver, left), 1st Place (Gold, center elevated), 3rd Place (Bronze, right)
+        const rank1 = top3[0] || null;
+        const rank2 = top3[1] || null;
+        const rank3 = top3[2] || null;
+
+        function createPodiumCardHtml(player, rank) {
+          if (!player) return "";
+          const primaryName = getPrimaryIGN(player.name);
+          const fullName = cleanPlayerName(player.name);
+          const avatar = getAvatarUrl(player.name);
+          const count = player.achievements || player.score || "0";
+
+          let rankClass = "rank-1-card";
+          let badgeClass = "rank-1";
+          let crownIcon = '<i class="fa-solid fa-crown" style="color: #ca8a04;"></i>';
+          let placeTitle = "1st Place";
+
+          if (rank === 2) {
+            rankClass = "rank-2-card";
+            badgeClass = "rank-2";
+            crownIcon = '<i class="fa-solid fa-medal" style="color: #64748b;"></i>';
+            placeTitle = "2nd Place";
+          } else if (rank === 3) {
+            rankClass = "rank-3-card";
+            badgeClass = "rank-3";
+            crownIcon = '<i class="fa-solid fa-award" style="color: #ea580c;"></i>';
+            placeTitle = "3rd Place";
+          }
+
+          return `
+            <div class="lb-podium-card ${rankClass}">
+              <div class="lb-podium-rank-tag ${badgeClass}">
+                ${crownIcon}
+                <span>#${rank} ${placeTitle}</span>
+              </div>
+              <img
+                src="${avatar}"
+                alt="${primaryName}"
+                class="lb-podium-avatar"
+                loading="lazy"
+                onerror="this.onerror=null; this.src='https://mc-heads.net/avatar/steve/64';"
+              />
+              <div class="lb-podium-name" title="${fullName}">
+                ${fullName}
+              </div>
+              <div class="lb-podium-score">
+                <i class="fa-solid fa-trophy" style="font-size: 0.95rem;"></i>
+                <span>${count}</span>
+                <span style="font-size: 0.75rem; font-weight: 700; opacity: 0.85;">ACHIEVEMENTS</span>
+              </div>
+            </div>
+          `;
+        }
+
+        let html = "";
+        // Re-order visually: 2nd place on left, 1st place in middle, 3rd place on right
+        if (rank2) html += createPodiumCardHtml(rank2, 2);
+        if (rank1) html += createPodiumCardHtml(rank1, 1);
+        if (rank3) html += createPodiumCardHtml(rank3, 3);
+
+        podiumGrid.innerHTML = html;
+      }
+
+      // Render the Full Standings Table
+      function renderTable(players) {
+        const tableBody = document.getElementById("tableBody");
+        const noResultsNotice = document.getElementById("noResultsNotice");
+        const entryCount = document.getElementById("entryCount");
+
+        if (entryCount) {
+          entryCount.textContent = players.length;
+        }
+
+        if (!players || players.length === 0) {
+          if (tableBody) tableBody.innerHTML = "";
+          if (noResultsNotice) noResultsNotice.style.display = "block";
+          return;
+        }
+
+        if (noResultsNotice) noResultsNotice.style.display = "none";
+
+        let html = "";
+        players.forEach((player, index) => {
+          const rank = player.rank || (index + 1);
+          const fullName = cleanPlayerName(player.name);
+          const primaryName = getPrimaryIGN(player.name);
+          const avatar = getAvatarUrl(player.name);
+          const count = player.achievements || player.score || "0";
+
+          let rankBadgeClass = "rank-other";
+          let rankIcon = "";
+          if (rank === 1) {
+            rankBadgeClass = "rank-1";
+            rankIcon = '<i class="fa-solid fa-crown" style="margin-right: 3px; color: #ca8a04;"></i>';
+          } else if (rank === 2) {
+            rankBadgeClass = "rank-2";
+            rankIcon = '<i class="fa-solid fa-medal" style="margin-right: 3px; color: #64748b;"></i>';
+          } else if (rank === 3) {
+            rankBadgeClass = "rank-3";
+            rankIcon = '<i class="fa-solid fa-award" style="margin-right: 3px; color: #ea580c;"></i>';
+          }
+
+          let statusBadge = `
+            <span class="neo-badge neo-badge-lime" style="font-size: 0.72rem; padding: 0.2rem 0.5rem;">
+              <i class="fa-solid fa-check"></i> Verified
+            </span>
+          `;
+          if (rank <= 3) {
+            statusBadge = `
+              <span class="neo-badge neo-badge-yellow" style="font-size: 0.72rem; padding: 0.2rem 0.5rem;">
+                <i class="fa-solid fa-star"></i> Podium
+              </span>
+            `;
+          }
+
+          html += `
+            <tr>
+              <td style="text-align: center;">
+                <span class="rank-badge ${rankBadgeClass}">
+                  ${rankIcon}#${rank}
+                </span>
+              </td>
+              <td>
+                <div class="player-cell">
+                  <img
+                    src="${avatar}"
+                    alt="${primaryName}"
+                    class="player-avatar"
+                    loading="lazy"
+                    onerror="this.onerror=null; this.src='https://mc-heads.net/avatar/steve/64';"
+                  />
+                  <div class="player-name-wrap">
+                    <span class="player-name" title="${fullName}">${fullName}</span>
+                    ${fullName.includes("/") ? `<span class="player-sub">${primaryName}</span>` : ""}
+                  </div>
+                </div>
+              </td>
+              <td style="text-align: right;">
+                <div class="stat-value">
+                  <i class="fa-solid fa-trophy" style="font-size: 0.85rem; color: #ca8a04;"></i>
+                  <span>${count}</span>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                ${statusBadge}
+              </td>
+            </tr>
+          `;
+        });
+
+        if (tableBody) {
+          tableBody.innerHTML = html;
+        }
+      }
+
+      // Filter table based on user input
+      function filterPlayers(query) {
+        const q = (query || "").trim().toLowerCase();
+        if (!q) {
+          renderTable(leaderboardData);
+          return;
+        }
+
+        const filtered = leaderboardData.filter((player) => {
+          const name = String(player.name || "").toLowerCase();
+          const achievements = String(player.achievements || player.score || "").toLowerCase();
+          const rank = String(player.rank || "");
+          return name.includes(q) || achievements.includes(q) || rank === q;
+        });
+
+        renderTable(filtered);
+      }
+
+      // Initialize Data Fetching
+      async function initLeaderboard() {
+        let loaded = false;
+
+        // Try API first
+        if (window.leaderboardsApi && typeof leaderboardsApi.getLeaderboard === "function") {
+          try {
+            const apiRes = await leaderboardsApi.getLeaderboard("achievements");
+            if (apiRes && apiRes.data && Array.isArray(apiRes.data) && apiRes.data.length > 0) {
+              leaderboardData = apiRes.data;
+              loaded = true;
+            }
+          } catch (err) {
+            console.warn("API load failed, falling back to local dataset:", err);
+          }
+        }
+
+        // Fallback to window.achievementsData from multi-lb-data.js
+        if (!loaded && window.achievementsData && Array.isArray(window.achievementsData) && window.achievementsData.length > 0) {
+          leaderboardData = window.achievementsData;
+          loaded = true;
+        }
+
+        // Normalize ranks if not present
+        leaderboardData = leaderboardData.map((item, idx) => ({
+          rank: item.rank || (idx + 1),
+          name: item.name || "Unknown",
+          achievements: item.achievements || item.score || 0
+        }));
+
+        // Render podium & full table
+        renderPodium(leaderboardData.slice(0, 3));
+        renderTable(leaderboardData);
+
+        // Bind Search Input
+        const searchInput = document.getElementById("playerSearchInput");
+        if (searchInput) {
+          searchInput.addEventListener("input", (e) => {
+            filterPlayers(e.target.value);
+          });
+        }
+      }
+
+      // Run on DOM load
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initLeaderboard);
+      } else {
+        initLeaderboard();
+      }
+    })();
   </script>
 </body>
 </html>
