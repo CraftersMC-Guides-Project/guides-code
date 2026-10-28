@@ -2,137 +2,378 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Collections Leaderboards — CraftersMC Guides</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Top collection holders across all Farming, Mining, Combat, Foraging, and Fishing materials." />
+  <title>Collections Leaderboards — CraftersMC Guides</title>
+  <meta name="description" content="Top collection holders across all Farming, Mining, Combat, Foraging, and Fishing materials on CraftersMC SkyBlock." />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <link rel="icon" href="../assets/cmc-icon.png" type="image/png" />
   <link rel="icon" href="../assets/cmc-guides.png" type="image/png" />
 
-  <!-- Fonts & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <!-- Google Fonts & Material Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="../better-api-docs/style.css" />
+  <!-- Anti-flash Theme Init -->
+  <script>
+    (function () {
+      try {
+        var d = localStorage.getItem("darkMode");
+        if (d === "true" || (d === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("darkmode");
+        } else {
+          document.documentElement.classList.remove("darkmode");
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Core & Unified Stylesheets -->
+  <link rel="stylesheet" href="../css/essential.css" />
+  <link rel="stylesheet" href="../css/neo-brutalism.css" />
   <link rel="stylesheet" href="../css/leaderboards-theme.css" />
 
-  <!-- Core Scripts -->
-  <script src="../better-api-docs/app.js" defer></script>
-  <script src="../js/components.js" defer></script>
-  <script src="../js/api-proxy-client.js"></script>
-<script src="../js/updated_collections.js"></script>
-  <script src="../js/leaderboards-api.js"></script>
-  <script src="../js/leaderboard-theme-helper.js"></script>
+  <!-- Dynamic Header / Sidebar / Theme Script -->
+  <script src="../js/script.js" defer></script>
+
+  <style>
+    @keyframes spin-anim {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .spin-icon {
+      animation: spin-anim 1s linear infinite;
+      display: inline-block;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Top Header Navigation -->
-  <header class="top-header">
-    <div class="header-left">
-      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
-        <span class="material-icons" style="font-size:1.25rem;">menu</span>
-      </button>
-      <a href="../index.html" class="header-brand">
-        <img src="../assets/cmc-guides.png" alt="CraftersMC Logo" />
-        <div class="brand-text">
-          <span class="brand-title">CraftersMC Guides</span>
-          <span class="version-badge">Leaderboards</span>
-        </div>
-      </a>
-    </div>
+  <!-- Fullscreen / Layout Overlays -->
+  <div class="background"></div>
 
-    <!-- Search Box -->
-    <div class="search-box">
-      <span class="material-icons search-icon">search</span>
-      <input type="text" id="search-input" placeholder="Search leaderboards, guides, API..." />
-      <span class="search-kbd-shortcut">/</span>
-    </div>
-
-    <!-- Header Utility Links -->
-    <div class="header-actions">
-      <a href="../better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
-      <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
-    </div>
-  </header>
-
-  <!-- Application Layout -->
-  <div class="app-layout">
-    <cmc-sidebar active="collections-leaderboards"></cmc-sidebar>
-    <main class="main-content">
-
-      <!-- Hero Header -->
-      <div class="lb-hero-card">
-        <div class="lb-hero-info">
-          <h1>
-            <span class="material-icons" style="color:var(--accent-color);">inventory_2</span>
-            Collections Leaderboards
-          </h1>
-          <p>Top collection holders across all Farming, Mining, Combat, Foraging, and Fishing materials.</p>
-        </div>
-        <a href="index.html" class="lb-back-btn">
-          <span class="material-icons" style="font-size:1rem;">arrow_back</span>
-          All Leaderboards
+  <!-- Top Navigation (Dynamically hydrated from /components/navbar.html or inline fallback) -->
+  <div class="top">
+    <div class="navbar">
+      <div class="left navbar-left">
+        <button type="button" class="navbar-menu-btn menu-icon" onclick="toggleSidebar()" aria-label="Toggle navigation menu" title="Open Menu">
+          <span class="material-icons">menu</span>
+        </button>
+        <a href="../index.html" class="navbar-brand" title="CraftersMC Guides">
+          <img src="../assets/cmc-icon.png" alt="CraftersMC Logo" class="navbar-logo" onerror="this.src='/assets/cmc-icon.png'; this.onerror=null;" />
+          <div class="navbar-brand-info">
+            <span class="navbar-brand-title">CraftersMC Guides</span>
+          </div>
         </a>
       </div>
 
-      <!-- Category Selector -->
-      <div class="lb-categories-panel" id="categoryPanel">
-        <div class="lb-panel-header">
-          <h2 class="lb-panel-title"><span class="material-icons" style="color:var(--accent-color);">category</span> Select Collection Category</h2>
-        </div>
-        <div class="lb-tabs" id="categoryTabs" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;"></div>
-        <div class="lb-category-grid" id="collectionGrid"></div>
+      <div class="navbar-center">
+        <a href="../index.html" class="nav-item">Home</a>
+        <a href="../journey-guides.html" class="nav-item">Guides</a>
+        <a href="../tools.html" class="nav-item">Tools</a>
+        <a href="../bazaar.html" class="nav-item">Bazaar</a>
+        <a href="../auction.html" class="nav-item">Auctions</a>
+        <a href="../player.html" class="nav-item">Player</a>
+        <a href="index.html" class="nav-item active">Leaderboards</a>
+        <a href="../status.html" class="nav-item">Status</a>
       </div>
 
-      <!-- Leaderboard Table Card -->
-      <div class="lb-table-card">
-        <div class="lb-table-header">
-          <h2 class="lb-table-title" id="collectionTitle">Select a Collection</h2>
+      <div class="right navbar-right">
+        <a href="../status.html" class="navbar-online-badge" id="navbarOnlineBadge" title="CraftersMC Network Status (play.craftersmc.net)">
+          <span class="status-pulse-dot" id="navbarPulseDot"></span>
+          <span class="navbar-online-text"><span id="navbarOnlineCount">...</span> <span class="online-word">online</span></span>
+        </a>
+        <button type="button" class="navbar-icon-btn theme-toggle-btn" id="theme-switch" aria-label="Toggle dark mode" title="Toggle Dark/Light Mode">
+          <span class="material-icons" id="theme-switch-icon" style="font-size: 20px;">dark_mode</span>
+        </button>
+        <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" rel="noopener noreferrer" class="navbar-github-btn navbar-icon-btn github-button" aria-label="Open guides GitHub repo" title="GitHub Repository">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="width:20px;height:20px;fill:currentColor;">
+            <path d="M12 .5C5.65.5.5 5.65.5 12a11.49 11.49 0 0 0 7.8 10.9c.57.1.78-.25.78-.55v-1.9c-3.17.69-3.84-1.35-3.84-1.35-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.75 2.67 1.24 3.32.95.1-.74.4-1.24.72-1.52-2.53-.29-5.2-1.27-5.2-5.67 0-1.25.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.96 10.96 0 0 1 5.73 0c2.18-1.49 3.14-1.18 3.14-1.18.63 1.59.23 2.76.12 3.05.74.81 1.18 1.84 1.18 3.09 0 4.41-2.67 5.38-5.21 5.66.41.36.77 1.06.77 2.15v3.19c0 .31.21.66.78.55A11.49 11.49 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Sidebar (Loaded dynamically from /components/sidebar.html or inline fallback) -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <a class="sidebar-brand" href="../index.html" aria-label="Go to home page">
+        <img id="sidebarProfilePic" src="../assets/cmc-guides.png" alt="CMC Guides Logo" style="width: 38px; height: 38px; object-fit: contain; flex-shrink: 0;" onerror="this.src='/assets/cmc-guides.png'; this.onerror=null;">
+        <div class="sidebar-brand-text">
+          <span class="sidebar-brand-title">CraftersMC</span>
+          <span class="sidebar-brand-subtitle">Guides Project</span>
         </div>
+      </a>
+      <button type="button" class="sidebar-close" onclick="toggleSidebar()" aria-label="Close navigation menu" title="Close Menu">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="sidebar-content">
+      <div class="sidebar-category intel">Live Intelligence</div>
+      <a class="sidebar-link" href="../index.html"><span class="material-icons sidebar-link-icon">home</span><span>Overview</span></a>
+      <a class="sidebar-link" href="../status.html"><span class="material-icons sidebar-link-icon">lan</span><span>Network Status</span></a>
+      <a class="sidebar-link" href="../player.html"><span class="material-icons sidebar-link-icon">person_search</span><span>Player Viewer</span></a>
+      <a class="sidebar-link" href="../auction.html"><span class="material-icons sidebar-link-icon">gavel</span><span>Live Auctions</span></a>
+      <a class="sidebar-link" href="../bazaar.html"><span class="material-icons sidebar-link-icon">storefront</span><span>Bazaar Market</span></a>
+      <a class="sidebar-link" href="../bazaar-price-graph.html"><span class="material-icons sidebar-link-icon">show_chart</span><span>Bazaar Price Charts</span></a>
+      <a class="sidebar-link" href="../skycalendar.html"><span class="material-icons sidebar-link-icon">event</span><span>SkyCalendar</span></a>
+      <a class="sidebar-link" href="../bank-interest.html"><span class="material-icons sidebar-link-icon">account_balance</span><span>Bank Interest</span></a>
+
+      <div class="sidebar-category guides">Guides &amp; Progression</div>
+      <a class="sidebar-link" href="../journey-guides.html"><span class="material-icons sidebar-link-icon">map</span><span>Guides Hub</span></a>
+      <a class="sidebar-link" href="../guide/starter-guide.html"><span class="material-icons sidebar-link-icon">explore</span><span>Starter Guide</span></a>
+      <a class="sidebar-link" href="../guide/intermediate-guide.html"><span class="material-icons sidebar-link-icon">trending_up</span><span>Intermediate Guide</span></a>
+      <a class="sidebar-link" href="../guide/advanced-guide.html"><span class="material-icons sidebar-link-icon">military_tech</span><span>Advanced Guide</span></a>
+      <a class="sidebar-link" href="../guide/accessories-guide.html"><span class="material-icons sidebar-link-icon">diamond</span><span>Accessories Guide</span></a>
+      <a class="sidebar-link" href="../guide/bazaar-guide.html"><span class="material-icons sidebar-link-icon">insights</span><span>Bazaar Guide</span></a>
+
+      <div class="sidebar-category tools">Calculators &amp; Tools</div>
+      <a class="sidebar-link" href="../tools.html"><span class="material-icons sidebar-link-icon">build</span><span>Tools Hub</span></a>
+      <a class="sidebar-link" href="../tools/best-reforge.html"><span class="material-icons sidebar-link-icon">auto_fix_high</span><span>Best Reforge Calc</span></a>
+      <a class="sidebar-link" href="../tools/pet-exp-calculator.html"><span class="material-icons sidebar-link-icon">pets</span><span>Pet EXP Calc</span></a>
+      <a class="sidebar-link" href="../tools/skill-calculator.html"><span class="material-icons sidebar-link-icon">psychology</span><span>Skill Calculator</span></a>
+      <a class="sidebar-link" href="../tools/minion-production.html"><span class="material-icons sidebar-link-icon">precision_manufacturing</span><span>Minion Production</span></a>
+
+      <div class="sidebar-category leaderboards">Leaderboards</div>
+      <a class="sidebar-link" href="index.html"><span class="material-icons sidebar-link-icon">leaderboard</span><span>Leaderboard Hub</span></a>
+      <a class="sidebar-link" href="avg-skill-leaderboard.html"><span class="material-icons sidebar-link-icon">trending_up</span><span>Average Skill</span></a>
+      <a class="sidebar-link" href="skills-leaderboards.html"><span class="material-icons sidebar-link-icon">auto_awesome</span><span>Skills Rankings</span></a>
+      <a class="sidebar-link" href="coins-leaderboards.html"><span class="material-icons sidebar-link-icon">monetization_on</span><span>Coins Leaderboards</span></a>
+      <a class="sidebar-link" href="networth-leaderboard.html"><span class="material-icons sidebar-link-icon">account_balance_wallet</span><span>Networth Rankings</span></a>
+      <a class="sidebar-link" href="slayers-leaderboards.html"><span class="material-icons sidebar-link-icon">shield</span><span>Slayers Rankings</span></a>
+      <a class="sidebar-link" href="farming-contests-leaderboards.html"><span class="material-icons sidebar-link-icon">agriculture</span><span>Farming Contests</span></a>
+      <a class="sidebar-link" href="achievements-leaderboard.html"><span class="material-icons sidebar-link-icon">emoji_events</span><span>Achievements</span></a>
+      <a class="sidebar-link active" href="collections-leaderboards.html"><span class="material-icons sidebar-link-icon">inventory_2</span><span>Collections</span></a>
+
+      <div class="sidebar-category community">Community &amp; External</div>
+      <a class="sidebar-link" href="../rank-sellers.html"><span class="material-icons sidebar-link-icon">card_giftcard</span><span>Rank Sellers</span></a>
+      <a class="sidebar-link" href="../traveling-zoo.html"><span class="material-icons sidebar-link-icon">cruelty_free</span><span>Traveling Zoo</span></a>
+      <a class="sidebar-link" href="../games/craftle/index.html"><span class="material-icons sidebar-link-icon">sports_esports</span><span>Craftle Game</span></a>
+      <a class="sidebar-link" href="../better-api-docs/index.html"><span class="material-icons sidebar-link-icon">api</span><span>REST API Reference</span></a>
+      <a class="sidebar-link" href="https://craftersmc.net/" target="_blank" rel="noopener noreferrer"><span class="material-icons sidebar-link-icon">language</span><span>Server Website</span></a>
+      <a class="sidebar-link" href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" rel="noopener noreferrer" class="sidebar-link-icon">code</span><span>GitHub</span></a>
+    </div>
+  </div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- =========================================================
+       MAIN NEO-BRUTALISM PAGE CONTENT
+       ========================================================= -->
+  <main class="neo-container">
+
+    <!-- HERO WINDOW CARD -->
+    <section class="neo-hero-card" style="margin-bottom: 24px;">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
+        </div>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px;">inventory_2</span>
+          CraftersMC-Guides-Project | Official Collections Leaderboard
+        </div>
+      </div>
+
+      <div class="neo-hero-content" style="padding: 24px 28px;">
+        <div class="neo-hero-heading-group">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <a href="index.html" class="neo-stat-chip" style="padding: 4px 10px; font-size: 12px;">
+              <span class="material-icons" style="font-size: 15px !important;">arrow_back</span>
+              <span>All Leaderboards</span>
+            </a>
+            <span style="font-weight: 800; font-size: 14px; opacity: 0.5;">/</span>
+            <span class="neo-badge neo-badge-green" style="font-size: 11px;">
+              <span class="material-icons" style="font-size: 13px !important; margin-right: 4px;">inventory_2</span>
+              Materials Mastery
+            </span>
+          </div>
+
+          <h1 class="neo-hero-title" style="font-size: clamp(1.8rem, 4vw, 2.6rem); margin-bottom: 8px;">
+            Collections <span class="neo-hero-highlight">Leaderboards</span>
+          </h1>
+          <p class="neo-hero-subtitle" style="font-size: 14.5px; max-width: 820px; margin: 0;">
+            Top collection holders ranked by total gathered items across all Farming, Mining, Combat, and Foraging resources.
+          </p>
+        </div>
+
+        <!-- Action / Quick Links -->
+        <div class="neo-hero-stats" style="margin-top: 10px;">
+          <a href="index.html" class="button70-btn">
+            <span class="material-icons">grid_view</span>
+            <span>All Categories</span>
+          </a>
+          <a href="skills-leaderboards.html" class="button70-btn yellow">
+            <span class="material-icons">auto_awesome</span>
+            <span>Skills Rankings</span>
+          </a>
+          <a href="leaderboard-submission.html" class="button70-btn" style="background: #ffffff; color: #111827;">
+            <span class="material-icons">upload_file</span>
+            <span>Submit Your Record</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLLECTION CATEGORY & ITEM SELECTION PANEL -->
+    <section class="lb-categories-panel" id="categoryPanel" style="margin-bottom: 24px;">
+      <div class="lb-panel-header">
+        <h2 class="lb-panel-title">
+          <span class="material-icons" style="color: #0284c7;">category</span>
+          Select Collection Material
+        </h2>
+        <span class="neo-badge neo-badge-yellow" style="font-size: 11px;">
+          <span class="material-icons" style="font-size: 13px !important; margin-right: 4px;">touch_app</span>
+          Category Tabs
+        </span>
+      </div>
+
+      <!-- Category Filter Pills (Mining, Farming, Combat, Foraging) -->
+      <div class="lb-tabs" id="categoryTabs" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;"></div>
+
+      <!-- Specific Material Selector Grid -->
+      <div class="lb-category-grid" id="collectionGrid">
+        <div style="grid-column: 1 / -1; text-align: center; padding: 24px; font-weight: 700;">
+          <span class="material-icons spin-icon" style="font-size: 24px; color: #0284c7; margin-bottom: 6px;">sync</span>
+          <div>Loading collection materials...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOP 3 PODIUM SHOWCASE -->
+    <section id="podiumSection" style="margin-bottom: 28px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+        <div>
+          <h2 style="font-size: 1.25rem; font-weight: 900; margin: 0; display: flex; align-items: center; gap: 8px;">
+            <span class="material-icons" style="color: #eab308; font-size: 24px;">military_tech</span>
+            <span id="podiumHeaderTitle">Top 3 Collection Masters</span>
+          </h2>
+          <p style="font-size: 13px; margin: 3px 0 0; opacity: 0.75; font-weight: 600;">Reigning collectors holding the highest material counts</p>
+        </div>
+        <span class="neo-badge neo-badge-green" style="font-size: 11px;">
+          <span class="material-icons" style="font-size: 13px !important; margin-right: 4px;">verified</span>
+          Verified Standings
+        </span>
+      </div>
+
+      <div class="lb-podium-grid" id="podiumGrid">
+        <!-- Dynamically rendered via JS -->
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; border: 2px dashed #111827; border-radius: 12px; font-weight: 700;">
+          <span class="material-icons spin-icon" style="font-size: 28px; margin-bottom: 8px; color: #0284c7;">sync</span>
+          <div>Loading podium winners...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEADERBOARD TABLE SECTION -->
+    <section>
+      <div class="lb-table-card">
+        <!-- Header & Search Filter -->
+        <div class="lb-table-header">
+          <div>
+            <h2 class="lb-table-title" id="collectionTitle">
+              <span class="material-icons" style="color: #0284c7; font-size: 22px;">format_list_numbered</span>
+              <span>Collection Standings</span>
+            </h2>
+            <div style="font-size: 13px; font-weight: 700; opacity: 0.75; margin-top: 4px;">
+              Showing <span id="entryCount" style="font-weight: 900; color: #0284c7;">0</span> registered players
+            </div>
+          </div>
+
+          <div class="lb-table-search-wrap">
+            <span class="material-icons lb-table-search-icon">search</span>
+            <input
+              type="text"
+              id="playerSearchInput"
+              class="lb-table-search-input"
+              placeholder="Filter by username or collected amount..."
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+        </div>
+
+        <!-- Responsive Table -->
         <div class="lb-table-wrapper">
-          <table class="lb-table">
+          <table class="lb-table" id="collectionsTable">
             <thead>
               <tr>
-                <th style="width: 80px; text-align: center;">Rank</th>
+                <th style="width: 90px; text-align: center;">Rank</th>
                 <th>Player</th>
-                <th id="scoreHeader" style="text-align: right;">Collected</th>
+                <th id="scoreHeader" style="text-align: right; width: 220px;">Collected</th>
+                <th style="text-align: center; width: 140px;">Status</th>
               </tr>
             </thead>
-            <tbody id="leaderboardData">
-              <tr><td style="text-align:center;">1</td><td>???</td><td style="text-align:right;">???</td></tr>
+            <tbody id="tableBody">
+              <tr>
+                <td colspan="4" style="text-align: center; padding: 48px 16px;">
+                  <span class="material-icons spin-icon" style="font-size: 32px; color: #0284c7; margin-bottom: 8px;">sync</span>
+                  <div style="font-weight: 700; font-size: 14px;">Loading leaderboard rankings...</div>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
-      </div>
 
-      <!-- Footer -->
-      <footer class="site-footer">
-        <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
-        <div class="site-footer-right">
-          <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
+        <!-- No Results Fallback -->
+        <div id="noResultsNotice" style="display: none; padding: 48px 24px; text-align: center;">
+          <span class="material-icons" style="font-size: 40px; color: #9ca3af; margin-bottom: 12px;">person_off</span>
+          <div style="font-size: 1.1rem; font-weight: 900; margin-bottom: 4px;">No players found</div>
+          <div style="font-size: 13px; opacity: 0.75; font-weight: 600;">
+            No records matched your search query. Try clearing the filter.
+          </div>
         </div>
-      </footer>
-    </main>
-  </div>
+      </div>
+    </section>
 
+    <!-- Submission Banner -->
+    <div class="lb-submission-banner">
+      <div class="lb-submission-info">
+        <h3>
+          <span class="material-icons" style="font-size: 22px;">inventory_2</span>
+          Is your Collection count missing or outdated?
+        </h3>
+        <p>Submit your verified in-game profile screenshots or video links to claim or update your rank on the official CraftersMC leaderboards.</p>
+      </div>
+      <a href="leaderboard-submission.html" class="button70-btn" style="background: #ffffff; color: #111827;">
+        <span class="material-icons">send</span>
+        <span>Submit Score</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- Neo-Brutalism Global Footer -->
+  <footer class="site-footer" id="footer" style="margin-top: 40px; padding: 24px 0; border-top: 2px solid var(--border-color); text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <div>CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
+      <div style="display: flex; gap: 16px;">
+        <a href="../index.html" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">Home</a>
+        <a href="index.html" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">Leaderboards</a>
+        <a href="../bazaar.html" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">Bazaar</a>
+        <a href="../auction.html" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">Auctions</a>
+        <a href="../player.html" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">Player Viewer</a>
+        <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" rel="noopener noreferrer" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Core Data & API Scripts -->
+  <script src="../js/api-proxy-client.js"></script>
+  <script src="../js/updated_collections.js"></script>
+  <script src="../js/leaderboards-api.js"></script>
+  <script src="../js/leaderboard-theme-helper.js"></script>
+
+  <!-- Leaderboard Controller Logic -->
   <script>
-    let currentCollections = {};
-
-    document.addEventListener("DOMContentLoaded", async () => {
-      try {
-        currentCollections = await leaderboardsApi.getLeaderboard("collections");
-      } catch (error) {
-        console.warn("Using local collections data fallback", error);
-        currentCollections = window.collectionsData || {};
-      }
-
-      const categories = Object.keys(currentCollections);
-      if (!categories.length) {
-        document.getElementById("leaderboardData").innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
-        return;
-      }
+    (function () {
+      let currentCollections = {};
+      let currentActiveCollection = null;
+      let rawPlayerEntries = [];
 
       const categoryIcons = {
         "Mining": "../assets/mining/pickaxe.png",
@@ -142,8 +383,29 @@
         "Fishing": "../assets/images/Fishing_Rod.png"
       };
 
-      const tabsContainer = document.getElementById("categoryTabs");
-      const gridContainer = document.getElementById("collectionGrid");
+      function cleanPlayerName(rawName) {
+        if (!rawName) return "Unknown";
+        return String(rawName).trim();
+      }
+
+      function getPrimaryIGN(rawName) {
+        if (!rawName) return "steve";
+        const cleaned = cleanPlayerName(rawName);
+        if (cleaned.includes("/")) {
+          return cleaned.split("/")[0].trim();
+        }
+        return cleaned;
+      }
+
+      function getAvatarUrl(rawName) {
+        const primary = getPrimaryIGN(rawName);
+        return `https://mc-heads.net/avatar/${encodeURIComponent(primary)}/64`;
+      }
+
+      function getPlayerScore(player) {
+        if (!player) return "N/A";
+        return player.score ?? player.count ?? player.amount ?? "N/A";
+      }
 
       function normalizeImg(src) {
         if (!src) return "../assets/cmc-icon.png";
@@ -152,71 +414,311 @@
         return "../" + src;
       }
 
+      function renderPodium(players) {
+        const podiumGrid = document.getElementById("podiumGrid");
+        if (!podiumGrid) return;
+
+        const validTop = (players || []).filter(p => cleanPlayerName(p.name).toLowerCase() !== "unknown").slice(0, 3);
+
+        if (!validTop.length) {
+          podiumGrid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 36px 16px; border: 2px dashed #111827; border-radius: 12px; font-weight: 700;">
+              <span class="material-icons" style="font-size: 32px; color: #9ca3af; margin-bottom: 6px;">info</span>
+              <div>No registered champions for this collection yet.</div>
+            </div>
+          `;
+          return;
+        }
+
+        const rank1 = validTop[0] || null;
+        const rank2 = validTop[1] || null;
+        const rank3 = validTop[2] || null;
+
+        function createPodiumCardHtml(player, rank) {
+          if (!player) return "";
+          const primaryName = getPrimaryIGN(player.name);
+          const fullName = cleanPlayerName(player.name);
+          const avatar = getAvatarUrl(player.name);
+          const count = getPlayerScore(player);
+
+          let rankClass = "rank-1-card";
+          let badgeClass = "rank-1";
+          let iconName = "military_tech";
+          let placeTitle = "1st Place";
+
+          if (rank === 2) {
+            rankClass = "rank-2-card";
+            badgeClass = "rank-2";
+            iconName = "workspace_premium";
+            placeTitle = "2nd Place";
+          } else if (rank === 3) {
+            rankClass = "rank-3-card";
+            badgeClass = "rank-3";
+            iconName = "emoji_events";
+            placeTitle = "3rd Place";
+          }
+
+          return `
+            <div class="lb-podium-card ${rankClass}">
+              <div class="lb-podium-rank-tag ${badgeClass}">
+                <span class="material-icons" style="font-size: 15px; vertical-align: middle;">${iconName}</span>
+                <span>#${rank} ${placeTitle}</span>
+              </div>
+              <img
+                src="${avatar}"
+                alt="${primaryName}"
+                class="lb-podium-avatar"
+                loading="lazy"
+                onerror="this.onerror=null; this.src='https://mc-heads.net/avatar/steve/64';"
+              />
+              <a href="../player.html?player=${encodeURIComponent(primaryName)}" class="lb-podium-name" title="${fullName}">
+                ${fullName}
+              </a>
+              <div class="lb-podium-score">
+                <span class="material-icons" style="font-size: 18px; vertical-align: middle; color: inherit; margin-right: 2px;">inventory_2</span>
+                <span>${count}</span>
+                <span style="font-size: 0.75rem; font-weight: 700; opacity: 0.85; display: block; margin-top: 2px;">COLLECTED</span>
+              </div>
+            </div>
+          `;
+        }
+
+        let html = "";
+        // Visually: Rank 2 on Left, Rank 1 in Middle (Elevated), Rank 3 on Right
+        if (rank2) html += createPodiumCardHtml(rank2, 2);
+        if (rank1) html += createPodiumCardHtml(rank1, 1);
+        if (rank3) html += createPodiumCardHtml(rank3, 3);
+
+        podiumGrid.innerHTML = html;
+      }
+
+      function renderTable(players) {
+        const tbody = document.getElementById("tableBody");
+        const entryCount = document.getElementById("entryCount");
+        const noResults = document.getElementById("noResultsNotice");
+
+        if (!tbody) return;
+
+        if (entryCount) {
+          entryCount.textContent = players.length;
+        }
+
+        if (!players.length) {
+          tbody.innerHTML = "";
+          if (noResults) noResults.style.display = "block";
+          return;
+        }
+
+        if (noResults) noResults.style.display = "none";
+
+        tbody.innerHTML = players.map((player, index) => {
+          const rank = player.rank || (index + 1);
+          const fullName = cleanPlayerName(player.name);
+          const primaryName = getPrimaryIGN(player.name);
+          const avatar = getAvatarUrl(player.name);
+          const score = getPlayerScore(player);
+
+          let rankBadgeClass = "rank-other";
+          let rankBadgeContent = `#${rank}`;
+          if (rank === 1) {
+            rankBadgeClass = "rank-1";
+            rankBadgeContent = `<span class="material-icons" style="font-size: 15px; vertical-align: middle;">military_tech</span>1`;
+          } else if (rank === 2) {
+            rankBadgeClass = "rank-2";
+            rankBadgeContent = `<span class="material-icons" style="font-size: 15px; vertical-align: middle;">workspace_premium</span>2`;
+          } else if (rank === 3) {
+            rankBadgeClass = "rank-3";
+            rankBadgeContent = `<span class="material-icons" style="font-size: 15px; vertical-align: middle;">emoji_events</span>3`;
+          }
+
+          let statusBadge = `
+            <span class="neo-badge neo-badge-green" style="font-size: 11px; padding: 2px 7px;">
+              <span class="material-icons" style="font-size: 13px !important; margin-right: 3px;">check_circle</span>
+              Verified
+            </span>
+          `;
+          if (rank <= 3) {
+            statusBadge = `
+              <span class="neo-badge neo-badge-yellow" style="font-size: 11px; padding: 2px 7px;">
+                <span class="material-icons" style="font-size: 13px !important; margin-right: 3px;">star</span>
+                Podium
+              </span>
+            `;
+          }
+
+          return `
+            <tr>
+              <td style="text-align: center;">
+                <span class="rank-badge ${rankBadgeClass}">
+                  ${rankBadgeContent}
+                </span>
+              </td>
+              <td>
+                <div class="player-cell">
+                  <img
+                    src="${avatar}"
+                    alt="${primaryName}"
+                    class="player-avatar"
+                    loading="lazy"
+                    onerror="this.onerror=null; this.src='https://mc-heads.net/avatar/steve/64';"
+                  />
+                  <div>
+                    <a href="../player.html?player=${encodeURIComponent(primaryName)}" class="player-name-link" title="${fullName}">
+                      ${fullName}
+                    </a>
+                    ${fullName.includes("/") ? `<div style="font-size: 11px; opacity: 0.65; font-weight: 600;">${primaryName}</div>` : ""}
+                  </div>
+                </div>
+              </td>
+              <td style="text-align: right;">
+                <div class="score-cell">
+                  <span class="material-icons" style="font-size: 15px; vertical-align: middle; color: #0284c7; margin-right: 4px;">inventory_2</span>
+                  <span>${score}</span>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                ${statusBadge}
+              </td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      function filterTable() {
+        const query = (document.getElementById("playerSearchInput")?.value || "").trim().toLowerCase();
+        if (!query) {
+          renderTable(rawPlayerEntries);
+          return;
+        }
+
+        const filtered = rawPlayerEntries.filter(p => {
+          const name = cleanPlayerName(p.name).toLowerCase();
+          const score = String(getPlayerScore(p)).toLowerCase();
+          const rank = String(p.rank || "");
+          return name.includes(query) || score.includes(query) || rank === query;
+        });
+
+        renderTable(filtered);
+      }
+
+      function loadLeaderboard(item) {
+        if (!item) return;
+        currentActiveCollection = item;
+        rawPlayerEntries = item.players || [];
+
+        const collectionTitle = document.getElementById("collectionTitle");
+        if (collectionTitle) {
+          collectionTitle.innerHTML = `
+            <img src="${normalizeImg(item.image)}" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;object-fit:contain;" onerror="this.src='../assets/cmc-icon.png'" />
+            <span>${item.name} Standings</span>
+          `;
+        }
+
+        const podiumHeaderTitle = document.getElementById("podiumHeaderTitle");
+        if (podiumHeaderTitle) {
+          podiumHeaderTitle.textContent = `Top 3 ${item.name} Masters`;
+        }
+
+        const searchInput = document.getElementById("playerSearchInput");
+        if (searchInput) {
+          searchInput.value = "";
+        }
+
+        renderPodium(rawPlayerEntries);
+        renderTable(rawPlayerEntries);
+      }
+
       function switchCategory(catName) {
         // Highlight active tab
         document.querySelectorAll(".lb-category-tab").forEach(t => {
           t.classList.toggle("active", t.dataset.category === catName);
         });
 
-        // Load items into grid
+        const gridContainer = document.getElementById("collectionGrid");
+        if (!gridContainer) return;
+
         gridContainer.innerHTML = "";
         const items = currentCollections[catName] || [];
+
         items.forEach((item, idx) => {
           const btn = document.createElement("div");
-          btn.className = "lb-category-item";
-          btn.innerHTML = `<img src="${normalizeImg(item.image)}" alt="${item.name}" onerror="this.src='../assets/cmc-icon.png'"> <span>${item.name}</span>`;
+          btn.className = "lb-category-item" + (idx === 0 ? " active" : "");
+          btn.innerHTML = `
+            <img src="${normalizeImg(item.image)}" alt="${item.name}" onerror="this.src='../assets/cmc-icon.png'" style="width:22px;height:22px;object-fit:contain;">
+            <span>${item.name}</span>
+          `;
           btn.onclick = () => {
-            document.querySelectorAll(".lb-category-item").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll("#collectionGrid .lb-category-item").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
-            loadLeaderboard(catName, idx);
+            loadLeaderboard(item);
           };
           gridContainer.appendChild(btn);
         });
 
-        // Auto select first item
         if (items.length > 0) {
-          const firstBtn = gridContainer.firstElementChild;
-          if (firstBtn) firstBtn.classList.add("active");
-          loadLeaderboard(catName, 0);
-        }
-      }
-
-      function loadLeaderboard(catName, itemIdx) {
-        const item = currentCollections[catName][itemIdx];
-        if (!item) return;
-
-        document.getElementById("collectionTitle").innerHTML = `<img src="${normalizeImg(item.image)}" style="width:24px;height:24px;vertical-align:middle;margin-right:6px;" onerror="this.src='../assets/cmc-icon.png'"> ${item.name} Leaderboard`;
-        document.getElementById("scoreHeader").innerText = "Collected";
-
-        const tbody = document.getElementById("leaderboardData");
-        if (item.players && item.players.length) {
-          tbody.innerHTML = item.players.map(p => `
-            <tr>
-              <td style="text-align:center;">${formatRankBadge(p.rank)}</td>
-              ${createPlayerCell(p.name)}
-              <td class="score-cell" style="text-align:right;">${p.score || "???"}</td>
-            </tr>
-          `).join("");
+          loadLeaderboard(items[0]);
         } else {
-          tbody.innerHTML = leaderboardsApi.getPlaceholderRows(10, "???");
+          renderPodium([]);
+          renderTable([]);
         }
       }
 
-      // Render category tabs
-      tabsContainer.innerHTML = "";
-      categories.forEach((cat, idx) => {
-        const tab = document.createElement("button");
-        tab.className = "lb-category-tab lb-category-item" + (idx === 0 ? " active" : "");
-        tab.dataset.category = cat;
-        tab.style.padding = "8px 16px";
-        tab.innerHTML = `<img src="${normalizeImg(categoryIcons[cat])}" alt="${cat}" onerror="this.src='../assets/cmc-icon.png'" style="width:20px;height:20px;"> <span>${cat}</span>`;
-        tab.onclick = () => switchCategory(cat);
-        tabsContainer.appendChild(tab);
-      });
+      document.addEventListener("DOMContentLoaded", async () => {
+        const tabsContainer = document.getElementById("categoryTabs");
+        const searchInput = document.getElementById("playerSearchInput");
 
-      // Initialize with first category
-      switchCategory(categories[0]);
-    });
+        if (searchInput) {
+          searchInput.addEventListener("input", filterTable);
+        }
+
+        try {
+          currentCollections = await leaderboardsApi.getLeaderboard("collections");
+        } catch (error) {
+          console.warn("Using local collections data fallback", error);
+          currentCollections = window.collectionsData || {};
+        }
+
+        if (!currentCollections || !Object.keys(currentCollections).length) {
+          currentCollections = window.collectionsData || {};
+        }
+
+        const categories = Object.keys(currentCollections);
+        if (!categories.length) {
+          const grid = document.getElementById("collectionGrid");
+          if (grid) {
+            grid.innerHTML = `
+              <div style="grid-column: 1 / -1; text-align: center; padding: 24px; font-weight: 700;">
+                No collection categories currently available.
+              </div>
+            `;
+          }
+          renderTable([]);
+          return;
+        }
+
+        // Render Category Tabs
+        if (tabsContainer) {
+          tabsContainer.innerHTML = "";
+          categories.forEach((cat, idx) => {
+            const tab = document.createElement("button");
+            tab.type = "button";
+            tab.className = "lb-category-tab lb-category-item" + (idx === 0 ? " active" : "");
+            tab.dataset.category = cat;
+            tab.style.padding = "8px 16px";
+            const iconSrc = normalizeImg(categoryIcons[cat]);
+            tab.innerHTML = `
+              <img src="${iconSrc}" alt="${cat}" onerror="this.src='../assets/cmc-icon.png'" style="width:20px;height:20px;object-fit:contain;">
+              <span>${cat}</span>
+            `;
+            tab.onclick = () => switchCategory(cat);
+            tabsContainer.appendChild(tab);
+          });
+        }
+
+        // Initialize with first category
+        switchCategory(categories[0]);
+      });
+    })();
   </script>
 </body>
 </html>
