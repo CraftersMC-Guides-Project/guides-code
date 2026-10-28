@@ -2,228 +2,662 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <title>Network &amp; SkyBlock Leaderboards — CraftersMC Guides</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Explore CraftersMC SkyBlock rankings for skills, collections, slayers, economy, and seasonal events.">
-  <link rel="icon" href="../assets/cmc-icon.png" type="image/png">
-  <link rel="icon" href="../assets/cmc-guides.png" type="image/png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyBlock &amp; Network Leaderboards — CraftersMC Guides</title>
+  <meta name="description"
+    content="Browse verified CraftersMC SkyBlock rankings, speedrun records, and seasonal milestones across skills, collections, slayers, wealth, and community minigames." />
+  <link rel="icon" href="../assets/cmc-icon.png" type="image/png" />
+  <link rel="icon" href="../assets/cmc-guides.png" type="image/png" />
 
-  <!-- Fonts & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Google Fonts & Material Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="../better-api-docs/style.css">
+  <!-- Anti-flash Theme Init -->
+  <script>
+    (function () {
+      try {
+        var d = localStorage.getItem("darkMode");
+        if (d === "true" || (d === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("darkmode");
+        } else {
+          document.documentElement.classList.remove("darkmode");
+        }
+      } catch (e) {}
+    })();
+  </script>
 
-  <!-- Scripts -->
-  <script src="../better-api-docs/app.js" defer></script>
-  <script src="../js/components.js" defer></script>
+  <!-- Core & Unified Stylesheets -->
+  <link rel="stylesheet" href="../css/essential.css" />
+  <link rel="stylesheet" href="../css/neo-brutalism.css" />
+  <link rel="stylesheet" href="../css/leaderboards-theme.css" />
+
+  <!-- Dynamic Header / Sidebar / Theme Script -->
+  <script src="../js/script.js" defer></script>
 </head>
 
 <body>
 
-  <!-- Top Header Navigation -->
-  <header class="top-header">
-    <div class="header-left">
-      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
-        <span class="material-icons" style="font-size:1.25rem;">menu</span>
+  <!-- Fullscreen / Layout Overlays -->
+  <div class="background"></div>
+
+  <!-- Top Navigation (Loaded dynamically from /components/navbar.html) -->
+  <div class="top"></div>
+
+  <!-- Navigation Sidebar (Loaded dynamically from /components/sidebar.html) -->
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- =========================================================
+       MAIN NEO-BRUTALISM PAGE CONTENT
+       ========================================================= -->
+  <main class="neo-container">
+
+    <!-- HERO WINDOW CARD -->
+    <section class="neo-hero-card" style="margin-bottom: 24px;">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
+        </div>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px;">leaderboard</span>
+          CraftersMC-Guides-Project | Official Leaderboards Directory
+        </div>
+      </div>
+
+      <div class="neo-hero-content" style="padding: 24px 28px;">
+        <div class="neo-hero-heading-group">
+          <h1 class="neo-hero-title" style="font-size: clamp(1.8rem, 4vw, 2.6rem); margin-bottom: 8px;">
+            SkyBlock &amp; Network <span class="neo-hero-highlight">Leaderboards</span>
+          </h1>
+          <p class="neo-hero-subtitle" style="font-size: 14.5px; max-width: 820px; margin: 0;">
+            Browse verified player placements, records, and seasonal milestones across skills, collections, slayers, economy, and community minigames.
+          </p>
+        </div>
+
+        <!-- Quick Jump Filter Chips -->
+        <div class="neo-hero-stats" style="margin-top: 18px; margin-bottom: 20px;">
+          <a href="#section-skills" class="neo-stat-chip">
+            <span class="material-icons" style="color: #0284c7;">trending_up</span>
+            <span>Skills &amp; Progression (6)</span>
+          </a>
+          <a href="#section-combat" class="neo-stat-chip">
+            <span class="material-icons" style="color: #9333ea;">shield</span>
+            <span>Combat &amp; Slayers (4)</span>
+          </a>
+          <a href="#section-economy" class="neo-stat-chip">
+            <span class="material-icons" style="color: #16a34a;">payments</span>
+            <span>Economy &amp; Wealth (4)</span>
+          </a>
+          <a href="#section-events" class="neo-stat-chip">
+            <span class="material-icons" style="color: #ea580c;">celebration</span>
+            <span>Events &amp; Minigames (5)</span>
+          </a>
+          <a href="leaderboard-submission.html" class="neo-stat-chip" style="background: #fef08a; border-color: #111827;">
+            <span class="material-icons" style="color: #854d0e;">upload_file</span>
+            <span style="font-weight: 800; color: #854d0e;">Submit Score</span>
+          </a>
+        </div>
+
+        <!-- Real-Time Neo-Brutalist Search -->
+        <div class="neo-search-wrap">
+          <div class="neo-search-inner">
+            <span class="material-icons neo-search-icon">search</span>
+            <input type="text" id="lb-search-input" class="neo-search-input"
+              placeholder="Search leaderboards by name, skill, slayer, collection, or keyword..." autocomplete="off"
+              aria-label="Search leaderboards" />
+            <button type="button" id="lb-search-clear" class="neo-search-clear" title="Clear search"
+              aria-label="Clear search input" style="display: none;">
+              <span class="material-icons">close</span>
+            </button>
+            <span class="neo-search-shortcut" title="Press / to search">/</span>
+          </div>
+          <div class="neo-search-status" style="margin-top: 8px; font-size: 0.82rem; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between;">
+            <span>Showing <strong id="lb-results-count" style="color: var(--text-bright);">19</strong> leaderboard categories</span>
+            <span id="lb-search-hint" style="font-family: var(--font-mono); font-size: 0.75rem;">Press [Esc] to reset</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Empty Search State -->
+    <div id="lb-empty-state" class="bids-empty-state" style="display: none; margin-bottom: 32px; padding: 40px 20px;">
+      <span class="material-icons" style="color: #94a3b8; font-size: 3rem; margin-bottom: 8px;">search_off</span>
+      <div style="font-weight: 800; font-size: 1.15rem; color: var(--text-bright);">No Leaderboards Found</div>
+      <p style="margin-top: 6px; font-size: 0.9rem; color: var(--text-muted);">
+        No leaderboard categories match your search query: <strong id="lb-empty-query" style="color: var(--text-bright);">-</strong>
+      </p>
+      <button class="tactile-action-btn" onclick="clearLeaderboardSearch()" style="margin-top: 14px;">
+        <span class="material-icons">refresh</span> Reset Search Filter
       </button>
-      <a href="../index.html" class="header-brand">
-        <img src="../assets/cmc-guides.png" alt="CraftersMC Logo">
-        <div class="brand-text">
-          <span class="brand-title">CraftersMC Guides</span>
-          <span class="version-badge">Leaderboards</span>
+    </div>
+
+    <!-- =======================================================
+         SECTION 1: SKILLS & PROGRESSION
+         ======================================================= -->
+    <section class="neo-section" id="section-skills">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#bae6fd;">
+              <span class="material-icons" style="color:#0284c7;">trending_up</span>
+              SKILLS &amp; EXP
+            </span>
+            <h2 class="neo-section-title">Skills &amp; Progression</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Skill level averages, individual skill rankings, collections depth, and player profile milestones.
+          </p>
         </div>
+        <span class="neo-section-count">6 Leaderboards</span>
+      </div>
+
+      <div class="neo-grid">
+
+        <!-- Card 1: Average Skill Leaderboard -->
+        <div class="neo-card cyan"
+          data-search="average skill leaderboard stats rankings overall as avg skills mining combat farming foraging enchanting alchemy fishing">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">star</span> Top Overall</span>
+            <span class="material-icons neo-card-icon">auto_awesome</span>
+          </div>
+          <h3 class="neo-card-title">Average Skill Leaderboard</h3>
+          <p class="neo-card-desc">Top players with the highest average skill level across all skills on the SkyBlock server.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Calculated <span>/ Live Average</span></div>
+            <a href="avg-skill-leaderboard.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 2: Individual Skills Leaderboard -->
+        <div class="neo-card yellow"
+          data-search="individual skills leaderboard combat mining farming foraging enchanting alchemy fishing exp max">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">military_tech</span> All 7 Skills</span>
+            <span class="material-icons neo-card-icon">trending_up</span>
+          </div>
+          <h3 class="neo-card-title">Individual Skills Leaderboard</h3>
+          <p class="neo-card-desc">Detailed rankings and top XP placements for Combat, Mining, Farming, Foraging, Enchanting, Alchemy, and Fishing.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Skill XP <span>/ Individual</span></div>
+            <a href="skills-leaderboards.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 3: Collections Leaderboards -->
+        <div class="neo-card green"
+          data-search="collections leaderboards farming mining combat foraging materials items tier max collected">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">inventory_2</span> Materials</span>
+            <span class="material-icons neo-card-icon">inventory_2</span>
+          </div>
+          <h3 class="neo-card-title">Collections Leaderboards</h3>
+          <p class="neo-card-desc">Check who holds the top collection rankings and highest item counts for every resource material.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Item Counts <span>/ Collections</span></div>
+            <a href="collections-leaderboards.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 4: Crafters Level Leaderboard -->
+        <div class="neo-card purple"
+          data-search="crafters level leaderboard network level skyblock level profile xp progression">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">stars</span> Server Level</span>
+            <span class="material-icons neo-card-icon">stars</span>
+          </div>
+          <h3 class="neo-card-title">Crafters Level Leaderboard</h3>
+          <p class="neo-card-desc">Highest network and SkyBlock profile levels achieved across the CraftersMC server.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Profile Level <span>/ Network XP</span></div>
+            <a href="crafters-level-leaderboard.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 5: Achievements Leaderboard -->
+        <div class="neo-card orange"
+          data-search="achievements leaderboard quests completed server milestones trophies challenge">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">emoji_events</span> Quests</span>
+            <span class="material-icons neo-card-icon">emoji_events</span>
+          </div>
+          <h3 class="neo-card-title">Achievements Leaderboard</h3>
+          <p class="neo-card-desc">Players with the most completed server achievements, challenges, and quest milestones.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Achievements <span>/ Quests</span></div>
+            <a href="achievements-leaderboard.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 6: Playtime Leaderboard -->
+        <div class="neo-card pink"
+          data-search="playtime leaderboard hours active time logged server veteran dedication">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">schedule</span> Total Time</span>
+            <span class="material-icons neo-card-icon">schedule</span>
+          </div>
+          <h3 class="neo-card-title">Playtime Leaderboard</h3>
+          <p class="neo-card-desc">See who has logged the most total active playtime hours on the CraftersMC Network.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Hours Logged <span>/ Server Time</span></div>
+            <a href="playtime.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =======================================================
+         SECTION 2: COMBAT & SLAYERS
+         ======================================================= -->
+    <section class="neo-section" id="section-combat">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#e9d5ff;">
+              <span class="material-icons" style="color:#7e22ce;">shield</span>
+              COMBAT &amp; BOSSES
+            </span>
+            <h2 class="neo-section-title">Combat &amp; Slayers</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Slayer boss kill records, fastest spawn and kill times, single-hit damage records, and rare pet collections.
+          </p>
+        </div>
+        <span class="neo-section-count">4 Leaderboards</span>
+      </div>
+
+      <div class="neo-grid">
+
+        <!-- Card 7: Slayers Leaderboards -->
+        <div class="neo-card purple"
+          data-search="slayers leaderboards revenant horror tarantula broodfather sven packmaster boss combat exp">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">shield</span> Slayer Bosses</span>
+            <span class="material-icons neo-card-icon">shield</span>
+          </div>
+          <h3 class="neo-card-title">Slayers Leaderboards</h3>
+          <p class="neo-card-desc">Top placements for Revenant Horror, Tarantula Broodfather, and Sven Packmaster XP.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Slayer XP <span>/ Boss Kills</span></div>
+            <a href="slayers-leaderboards.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 8: Boss Time Leaderboards -->
+        <div class="neo-card yellow"
+          data-search="boss time leaderboards fastest speedrun kill time spawn speed record slayer">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">flash_on</span> Speedruns</span>
+            <span class="material-icons neo-card-icon">flash_on</span>
+          </div>
+          <h3 class="neo-card-title">Boss Time Leaderboards</h3>
+          <p class="neo-card-desc">Fastest boss spawn times and kill records across all slayer tiers and bosses.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Seconds <span>/ Speedrun</span></div>
+            <a href="boss-time-leaderboards.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 9: Damage Leaderboard -->
+        <div class="neo-card pink"
+          data-search="damage leaderboard single hit highest strike critical damage combat sword weapon">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">colorize</span> Max Hit</span>
+            <span class="material-icons neo-card-icon">colorize</span>
+          </div>
+          <h3 class="neo-card-title">Damage Leaderboard</h3>
+          <p class="neo-card-desc">Highest verified single-hit damage records achieved on CraftersMC SkyBlock.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Hit Damage <span>/ Single Strike</span></div>
+            <a href="damage-leaderboard.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 10: Pets Leaderboard -->
+        <div class="neo-card cyan"
+          data-search="pets leaderboard pet score level 100 legendary pets collection rarity">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">pets</span> Companions</span>
+            <span class="material-icons neo-card-icon">pets</span>
+          </div>
+          <h3 class="neo-card-title">Pets Leaderboard</h3>
+          <p class="neo-card-desc">Players with the highest pet score, total level 100 pets, and rarest pet collections.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Pet Score <span>/ Level 100</span></div>
+            <a href="pets-leaderboards.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =======================================================
+         SECTION 3: ECONOMY & WEALTH
+         ======================================================= -->
+    <section class="neo-section" id="section-economy">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#bbf7d0;">
+              <span class="material-icons" style="color:#15803d;">payments</span>
+              ECONOMY &amp; WEALTH
+            </span>
+            <h2 class="neo-section-title">Economy &amp; Wealth</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Server bank deposits, overall profile valuations, gem balances, and rare collectible server cakes.
+          </p>
+        </div>
+        <span class="neo-section-count">4 Leaderboards</span>
+      </div>
+
+      <div class="neo-grid">
+
+        <!-- Card 11: Bank Coins Leaderboard -->
+        <div class="neo-card green"
+          data-search="bank coins leaderboard coins purse wealth richest rich million billion balance economy">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">monetization_on</span> Bank Coins</span>
+            <span class="material-icons neo-card-icon">monetization_on</span>
+          </div>
+          <h3 class="neo-card-title">Bank Coins Leaderboard</h3>
+          <p class="neo-card-desc">Top player balances held in personal and co-op bank accounts across SkyBlock.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Coins <span>/ Bank Vault</span></div>
+            <a href="coins-leaderboards.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 12: Networth Leaderboard -->
+        <div class="neo-card cyan"
+          data-search="networth leaderboard total value equipment wardrobe items storage valuation economy">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">account_balance_wallet</span> Networth</span>
+            <span class="material-icons neo-card-icon">account_balance_wallet</span>
+          </div>
+          <h3 class="neo-card-title">Networth Leaderboard</h3>
+          <p class="neo-card-desc">Total profile networth including bank balance, equipped items, wardrobe, and storage.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Total Value <span>/ Assets</span></div>
+            <a href="networth-leaderboard.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 13: Gems Leaderboard -->
+        <div class="neo-card purple"
+          data-search="gems leaderboard premium currency donation store balance recorded">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">diamond</span> Premium</span>
+            <span class="material-icons neo-card-icon">diamond</span>
+          </div>
+          <h3 class="neo-card-title">Gems Leaderboard</h3>
+          <p class="neo-card-desc">Top players holding the highest recorded gems balance on CraftersMC.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Gems <span>/ Server Currency</span></div>
+            <a href="gems-leaderboard.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 14: Cakes Leaderboard -->
+        <div class="neo-card pink"
+          data-search="cakes leaderboard new year cakes collection collectible event century">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">cake</span> Collectibles</span>
+            <span class="material-icons neo-card-icon">cake</span>
+          </div>
+          <h3 class="neo-card-title">Cakes Leaderboard</h3>
+          <p class="neo-card-desc">Discover the top players with the highest number of New Year cakes collected.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Cakes <span>/ Bag Count</span></div>
+            <a href="cakes-leaderboard.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =======================================================
+         SECTION 4: EVENTS & MINIGAMES
+         ======================================================= -->
+    <section class="neo-section" id="section-events">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#fed7aa;">
+              <span class="material-icons" style="color:#c2410c;">celebration</span>
+              EVENTS &amp; MINIGAMES
+            </span>
+            <h2 class="neo-section-title">Events &amp; Minigames</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Farming contests, course time trials, minigame accuracy, and limited-time seasonal competitions.
+          </p>
+        </div>
+        <span class="neo-section-count">5 Leaderboards</span>
+      </div>
+
+      <div class="neo-grid">
+
+        <!-- Card 15: Farming Contests Leaderboards -->
+        <div class="neo-card orange"
+          data-search="farming contests leaderboards jacob ethan crops gold medals personal best wheat carrot potato melon pumpkin sugar cane cactus cocoa nether wart mushroom">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">agriculture</span> Contests</span>
+            <span class="material-icons neo-card-icon">agriculture</span>
+          </div>
+          <h3 class="neo-card-title">Farming Contests Leaderboards</h3>
+          <p class="neo-card-desc">Records for Ethan's farming contests, gold medals, and individual crop personal bests.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Crop PB <span>/ Gold Medals</span></div>
+            <a href="farming-contests-leaderboards.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 16: Ender Node Hunt Leaderboard -->
+        <div class="neo-card purple"
+          data-search="ender node hunt leaderboard end island mined nodes rare drops mite mites">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">radar</span> End Island</span>
+            <span class="material-icons neo-card-icon">radar</span>
+          </div>
+          <h3 class="neo-card-title">Ender Node Hunt Leaderboard</h3>
+          <p class="neo-card-desc">Rankings for the most ender nodes mined and highest rare drops obtained in the End.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Nodes Mined <span>/ Rare Drops</span></div>
+            <a href="ender-node-hunt-leaderboard.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 17: Arctic Cave Race Leaderboard -->
+        <div class="neo-card cyan"
+          data-search="arctic cave race leaderboard obstacle parkour speedrun course fastest completion time">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">speed</span> Parkour</span>
+            <span class="material-icons neo-card-icon">speed</span>
+          </div>
+          <h3 class="neo-card-title">Arctic Cave Race Leaderboard</h3>
+          <p class="neo-card-desc">Fastest completion times and course records for the Arctic Cave obstacle course.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Course Time <span>/ Time Trial</span></div>
+            <a href="arctic-cave-race-leaderboard.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 18: Target Practice Leaderboard -->
+        <div class="neo-card yellow"
+          data-search="target practice leaderboard minigame archery shooting accuracy score range bow">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">adjust</span> Archery Range</span>
+            <span class="material-icons neo-card-icon">adjust</span>
+          </div>
+          <h3 class="neo-card-title">Target Practice Leaderboard</h3>
+          <p class="neo-card-desc">Top scores and accuracy records in the Target Practice minigame shooting range.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Score <span>/ Accuracy</span></div>
+            <a href="target-practice-leaderboard.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 19: 2026 April Fools Melon Event -->
+        <div class="neo-card green"
+          data-search="april fools melon event 2026 seasonal event placements records limited time">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">celebration</span> Seasonal</span>
+            <span class="material-icons neo-card-icon">celebration</span>
+          </div>
+          <h3 class="neo-card-title">2026 April Fools Melon Event</h3>
+          <p class="neo-card-desc">Event leaderboard and placements for the 2026 April Fools Melon Event.</p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Event PB <span>/ Melon Kills</span></div>
+            <a href="april-fools-melon-event-leaderboard.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =======================================================
+         COMMUNITY SCORE SUBMISSION BANNER
+         ======================================================= -->
+    <section class="lb-submission-banner">
+      <div class="lb-submission-info">
+        <h3>
+          <span class="material-icons" style="color: #854d0e;">verified</span>
+          Hold a High Score or World Record on CraftersMC?
+        </h3>
+        <p>
+          Submit your verified in-game screenshots and run recordings to be ranked on the official community leaderboards. All entries are reviewed by community moderators.
+        </p>
+      </div>
+      <a href="leaderboard-submission.html" class="button49-btn yellow" style="text-decoration: none; padding: 12px 22px; font-weight: 800; font-size: 0.95rem; border-radius: 8px;">
+        <span class="material-icons" style="font-size: 1.1rem;">upload_file</span> Submit Your Record &rarr;
       </a>
+    </section>
+
+  </main>
+
+  <!-- Neo-Brutalism Global Footer -->
+  <footer class="site-footer" style="margin-top: 40px; padding: 24px 0; border-top: 2px solid var(--border-color); text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <div>CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
+      <div style="display: flex; gap: 16px;">
+        <a href="../index.html" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">Home</a>
+        <a href="../bazaar.html" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">Bazaar</a>
+        <a href="../auction.html" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">Auctions</a>
+        <a href="../player.html" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">Player Viewer</a>
+        <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" rel="noopener noreferrer" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">GitHub</a>
+      </div>
     </div>
+  </footer>
 
-    <!-- Search Box -->
-    <div class="search-box">
-      <span class="material-icons search-icon">search</span>
-      <input type="text" id="search-input" placeholder="Search leaderboards, skills, slayers...">
-      <span class="search-kbd-shortcut">/</span>
-    </div>
+  <!-- =========================================================
+       CLIENT-SIDE LIVE SEARCH FILTER ENGINE
+       ========================================================= -->
+  <script>
+    const searchInput = document.getElementById('lb-search-input');
+    const searchClear = document.getElementById('lb-search-clear');
+    const resultsCount = document.getElementById('lb-results-count');
+    const emptyState = document.getElementById('lb-empty-state');
+    const emptyQuerySpan = document.getElementById('lb-empty-query');
+    const cards = Array.from(document.querySelectorAll('.neo-card[data-search]'));
+    const sections = Array.from(document.querySelectorAll('.neo-section'));
 
-    <!-- Header Utility Links -->
-    <div class="header-actions">
-      <a href="../better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
-      <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
-    </div>
-  </header>
+    function filterLeaderboards(query) {
+      const q = query.trim().toLowerCase();
+      let visibleCount = 0;
 
-  <!-- Application Layout -->
-  <div class="app-layout">
+      cards.forEach(card => {
+        const searchKeywords = card.getAttribute('data-search') || '';
+        const title = card.querySelector('.neo-card-title')?.textContent || '';
+        const desc = card.querySelector('.neo-card-desc')?.textContent || '';
+        const fullContent = `${searchKeywords} ${title} ${desc}`.toLowerCase();
 
-    <!-- Left Sidebar Web Component -->
-    <cmc-sidebar active="leaderboards"></cmc-sidebar>
+        if (!q || fullContent.includes(q)) {
+          card.style.display = '';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
 
-    <!-- Main Content Area -->
-    <main class="main-content">
+      // Update Section visibility if all cards in a section are hidden
+      sections.forEach(sec => {
+        const secCards = sec.querySelectorAll('.neo-card');
+        const hasVisible = Array.from(secCards).some(c => c.style.display !== 'none');
+        sec.style.display = hasVisible ? '' : 'none';
+      });
 
-      <!-- Section Header -->
-      <section class="doc-section">
-        <div class="section-header">
-          <h1>CraftersMC Leaderboards Directory</h1>
-          <p>Browse verified player placements across skills, collections, slayers, economy, and seasonal events.</p>
-        </div>
+      // Update count & clear icon
+      if (resultsCount) {
+        resultsCount.textContent = visibleCount;
+      }
 
-        <!-- Category: Skills & Progression -->
-        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
-          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: var(--accent-color);">trending_up</span> Skills &amp; Progression</h2>
-        </div>
+      if (searchClear) {
+        searchClear.style.display = q.length > 0 ? 'inline-flex' : 'none';
+      }
 
-        <div class="schema-cards-grid" style="margin-bottom: 28px;">
-          <div class="schema-card">
-            <div class="schema-name"><a href="avg-skill-leaderboard.html">Average Skill Leaderboard</a></div>
-            <div class="schema-desc">Top players with the highest average skill level across all skills on the SkyBlock server.</div>
-            <div style="margin-top: auto;"><a href="avg-skill-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
+      if (emptyState) {
+        if (visibleCount === 0) {
+          emptyState.style.display = 'block';
+          if (emptyQuerySpan) emptyQuerySpan.textContent = `"${query.trim()}"`;
+        } else {
+          emptyState.style.display = 'none';
+        }
+      }
+    }
 
-          <div class="schema-card">
-            <div class="schema-name"><a href="skills-leaderboards.html">Individual Skills Leaderboard</a></div>
-            <div class="schema-desc">Detailed rankings for Combat, Mining, Farming, Foraging, Enchanting, Alchemy, and Fishing.</div>
-            <div style="margin-top: auto;"><a href="skills-leaderboards.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
+    function clearLeaderboardSearch() {
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+        filterLeaderboards('');
+      }
+    }
 
-          <div class="schema-card">
-            <div class="schema-name"><a href="collections-leaderboards.html">Collections Leaderboards</a></div>
-            <div class="schema-desc">Check who holds the top collection rankings and highest item counts for all materials.</div>
-            <div style="margin-top: auto;"><a href="collections-leaderboards.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        filterLeaderboards(e.target.value);
+      });
 
-          <div class="schema-card">
-            <div class="schema-name"><a href="crafters-level-leaderboard.html">Crafters Level Leaderboard</a></div>
-            <div class="schema-desc">Highest network and SkyBlock profile levels on the CraftersMC server.</div>
-            <div style="margin-top: auto;"><a href="crafters-level-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
+      if (searchClear) {
+        searchClear.addEventListener('click', clearLeaderboardSearch);
+      }
+    }
 
-          <div class="schema-card">
-            <div class="schema-name"><a href="achievements-leaderboard.html">Achievements Leaderboard</a></div>
-            <div class="schema-desc">Players with the most completed server achievements and quest milestones.</div>
-            <div style="margin-top: auto;"><a href="achievements-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
+    // Keyboard shortcut '/' to focus search, 'Escape' to clear
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement !== searchInput && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+        e.preventDefault();
+        if (searchInput) {
+          searchInput.focus();
+          searchInput.select();
+        }
+      } else if (e.key === 'Escape' && document.activeElement === searchInput) {
+        clearLeaderboardSearch();
+        searchInput.blur();
+      }
+    });
 
-          <div class="schema-card">
-            <div class="schema-name"><a href="playtime.html">Playtime Leaderboard</a></div>
-            <div class="schema-desc">See who has the most total active playtime logged on the CraftersMC Network.</div>
-            <div style="margin-top: auto;"><a href="playtime.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
-        </div>
-
-        <!-- Category: Combat & Slayers -->
-        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
-          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #9333ea;">shield</span> Combat &amp; Slayers</h2>
-        </div>
-
-        <div class="schema-cards-grid" style="margin-bottom: 28px;">
-          <div class="schema-card">
-            <div class="schema-name"><a href="slayers-leaderboards.html">Slayers Leaderboards</a></div>
-            <div class="schema-desc">Top placements for Revenant Horror, Tarantula Broodfather, and Sven Packmaster XP.</div>
-            <div style="margin-top: auto;"><a href="slayers-leaderboards.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="boss-time-leaderboards.html">Boss Time Leaderboards</a></div>
-            <div class="schema-desc">Fastest boss spawn times and kill records across all slayer tiers.</div>
-            <div style="margin-top: auto;"><a href="boss-time-leaderboards.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="damage-leaderboard.html">Damage Leaderboard</a></div>
-            <div class="schema-desc">Highest single-hit damage records achieved on CraftersMC SkyBlock.</div>
-            <div style="margin-top: auto;"><a href="damage-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="pets-leaderboards.html">Pets Leaderboard</a></div>
-            <div class="schema-desc">Players with the highest pet score, total level 100 pets, and rarest pet collections.</div>
-            <div style="margin-top: auto;"><a href="pets-leaderboards.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
-        </div>
-
-        <!-- Category: Economy & Networth -->
-        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
-          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #16a34a;">payments</span> Economy &amp; Wealth</h2>
-        </div>
-
-        <div class="schema-cards-grid" style="margin-bottom: 28px;">
-          <div class="schema-card">
-            <div class="schema-name"><a href="coins-leaderboards.html">Bank Coins Leaderboard</a></div>
-            <div class="schema-desc">Top player balances in personal and co-op bank accounts.</div>
-            <div style="margin-top: auto;"><a href="coins-leaderboards.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="networth-leaderboard.html">Networth Leaderboard</a></div>
-            <div class="schema-desc">Total profile networth including bank balance, equipped items, wardrobe, and storage.</div>
-            <div style="margin-top: auto;"><a href="networth-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="gems-leaderboard.html">Gems Leaderboard</a></div>
-            <div class="schema-desc">Top players holding the highest recorded gems balance on CraftersMC.</div>
-            <div style="margin-top: auto;"><a href="gems-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="cakes-leaderboard.html">Cakes Leaderboard</a></div>
-            <div class="schema-desc">Discover the top players with the highest number of New Year cakes collected.</div>
-            <div style="margin-top: auto;"><a href="cakes-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
-        </div>
-
-        <!-- Category: Seasonal Events & Minigames -->
-        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
-          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #ea580c;">celebration</span> Events &amp; Minigames</h2>
-        </div>
-
-        <div class="schema-cards-grid" style="margin-bottom: 28px;">
-          <div class="schema-card">
-            <div class="schema-name"><a href="farming-contests-leaderboards.html">Farming Contests Leaderboards</a></div>
-            <div class="schema-desc">Records for Jacob/Ethan's farming contests, gold medals, and individual crop personal bests.</div>
-            <div style="margin-top: auto;"><a href="farming-contests-leaderboards.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="ender-node-hunt-leaderboard.html">Ender Node Hunt Leaderboard</a></div>
-            <div class="schema-desc">Rankings for the most ender nodes mined and highest rare drops obtained.</div>
-            <div style="margin-top: auto;"><a href="ender-node-hunt-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="arctic-cave-race-leaderboard.html">Arctic Cave Race Leaderboard</a></div>
-            <div class="schema-desc">Fastest completion times and course records for the Arctic Cave obstacle course.</div>
-            <div style="margin-top: auto;"><a href="arctic-cave-race-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="target-practice-leaderboard.html">Target Practice Leaderboard</a></div>
-            <div class="schema-desc">Top scores and accuracy records in the Target Practice minigame range.</div>
-            <div style="margin-top: auto;"><a href="target-practice-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="april-fools-melon-event-leaderboard.html">2026 April Fools Melon Event</a></div>
-            <div class="schema-desc">Event leaderboard and placements for the 2026 April Fools Melon Event.</div>
-            <div style="margin-top: auto;"><a href="april-fools-melon-event-leaderboard.html" style="font-weight: 600;">View Rankings &rarr;</a></div>
-          </div>
-        </div>
-
-      </section>
-
-      <!-- Footer -->
-      <footer class="site-footer">
-        <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
-        <div class="site-footer-right">
-          <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
-        </div>
-      </footer>
-
-    </main>
-  </div>
+    // Make whole card clickable when clicked outside the direct button
+    cards.forEach(card => {
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('a')) return;
+        const link = card.querySelector('a.neo-card-btn');
+        if (link && link.href) {
+          window.location.href = link.href;
+        }
+      });
+    });
+  </script>
 
 </body>
 </html>
