@@ -5,101 +5,150 @@
   <title>Average Skill Leaderboard — CraftersMC Guides</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Top players with the highest average skill level across all skills on the SkyBlock server." />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <link rel="icon" href="../assets/cmc-icon.png" type="image/png" />
   <link rel="icon" href="../assets/cmc-guides.png" type="image/png" />
 
   <!-- Fonts & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="../better-api-docs/style.css" />
+  <!-- Anti-flash Theme Init -->
+  <script>
+    (function () {
+      try {
+        var d = localStorage.getItem("darkMode");
+        if (d === "true" || (d === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("darkmode");
+        } else {
+          document.documentElement.classList.remove("darkmode");
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Core & Unified Stylesheets -->
+  <link rel="stylesheet" href="../css/essential.css" />
+  <link rel="stylesheet" href="../css/neo-brutalism.css" />
   <link rel="stylesheet" href="../css/leaderboards-theme.css" />
 
-  <!-- Core Scripts -->
-  <script src="../better-api-docs/app.js" defer></script>
-  <script src="../js/components.js" defer></script>
+  <!-- Dynamic Header / Sidebar / Theme Script -->
+  <script src="../js/script.js" defer></script>
   <script src="../js/api-proxy-client.js"></script>
-<script src="../js/multi-lb-data.js"></script>
+  <script src="../js/multi-lb-data.js"></script>
   <script src="../js/leaderboards-api.js"></script>
   <script src="../js/leaderboard-theme-helper.js"></script>
 </head>
 <body>
 
-  <header class="top-header">
-    <div class="header-left">
-      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
-        <span class="material-icons" style="font-size:1.25rem;">menu</span>
-      </button>
-      <a href="../index.html" class="header-brand">
-        <img src="../assets/cmc-guides.png" alt="CraftersMC Logo" />
-        <div class="brand-text">
-          <span class="brand-title">CraftersMC Guides</span>
-          <span class="version-badge">Leaderboards</span>
-        </div>
-      </a>
-    </div>
+  <!-- Fullscreen / Layout Overlays -->
+  <div class="background"></div>
 
-    <div class="search-box">
-      <span class="material-icons search-icon">search</span>
-      <input type="text" id="search-input" placeholder="Search leaderboards, guides, API..." />
-      <span class="search-kbd-shortcut">/</span>
-    </div>
-
-    <div class="header-actions">
-      <a href="../better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
-      <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
-    </div>
-  </header>
-
-  <div class="app-layout">
-    <cmc-sidebar active="skills-leaderboards"></cmc-sidebar>
-    <main class="main-content">
-
-      <div class="lb-hero-card">
-        <div class="lb-hero-info">
-          <h1>
-            <span class="material-icons" style="color:var(--accent-color);">trending_up</span>
-            Average Skill Leaderboard
-          </h1>
-          <p>Top players with the highest average skill level across all skills on the SkyBlock server.</p>
-        </div>
-        <a href="index.html" class="lb-back-btn">
-          <span class="material-icons" style="font-size:1rem;">arrow_back</span>
-          All Leaderboards
+  <!-- Top Navigation (Loaded dynamically from /components/navbar.html or inline fallback) -->
+  <div class="top">
+    <div class="navbar">
+      <div class="left navbar-left">
+        <button type="button" class="navbar-menu-btn menu-icon" onclick="toggleSidebar()" aria-label="Toggle navigation menu" title="Open Menu">
+          <span class="material-icons">menu</span>
+        </button>
+        <a href="../index.html" class="navbar-brand" title="CraftersMC Guides">
+          <img src="../assets/cmc-icon.png" alt="CraftersMC Logo" class="navbar-logo" onerror="this.src='/assets/cmc-icon.png'; this.onerror=null;" />
+          <div class="navbar-brand-info">
+            <span class="navbar-brand-title">CraftersMC Guides</span>
+          </div>
         </a>
       </div>
 
-      <div class="lb-table-card">
-        <div class="lb-table-header">
-          <h2 class="lb-table-title" id="collectionTitle">Average Skill Leaderboard</h2>
-        </div>
-        <div class="lb-table-wrapper">
-          <table class="lb-table">
-            <thead>
-              <tr>
-                <th style="width: 80px; text-align: center;">Rank</th>
-                <th>Player</th>
-                <th id="scoreHeader" style="text-align: right;">Average Skill</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboardData">
-              <tr><td style="text-align:center;">1</td><td>???</td><td style="text-align:right;">???</td></tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="navbar-center">
+        <a href="../index.html" class="nav-item">Home</a>
+        <a href="../journey-guides.html" class="nav-item">Guides</a>
+        <a href="../tools.html" class="nav-item">Tools</a>
+        <a href="../bazaar.html" class="nav-item">Bazaar</a>
+        <a href="../auction.html" class="nav-item">Auctions</a>
+        <a href="../player.html" class="nav-item">Player</a>
+        <a href="index.html" class="nav-item active">Leaderboards</a>
+        <a href="../status.html" class="nav-item">Status</a>
       </div>
 
-      <footer class="site-footer">
-        <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
-        <div class="site-footer-right">
-          <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
-        </div>
-      </footer>
-    </main>
+      <div class="right navbar-right">
+        <a href="../status.html" class="navbar-online-badge" id="navbarOnlineBadge" title="CraftersMC Network Status (play.craftersmc.net)">
+          <span class="status-pulse-dot" id="navbarPulseDot"></span>
+          <span class="navbar-online-text"><span id="navbarOnlineCount">...</span> <span class="online-word">online</span></span>
+        </a>
+        <button type="button" class="navbar-icon-btn theme-toggle-btn" id="theme-switch" aria-label="Toggle dark mode" title="Toggle Dark/Light Mode">
+          <span class="material-icons" id="theme-switch-icon" style="font-size: 20px;">dark_mode</span>
+        </button>
+        <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" rel="noopener noreferrer" class="navbar-github-btn navbar-icon-btn github-button" aria-label="Open guides GitHub repo" title="GitHub Repository">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="width:20px;height:20px;fill:currentColor;">
+            <path d="M12 .5C5.65.5.5 5.65.5 12a11.49 11.49 0 0 0 7.8 10.9c.57.1.78-.25.78-.55v-1.9c-3.17.69-3.84-1.35-3.84-1.35-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.75 2.67 1.24 3.32.95.1-.74.4-1.24.72-1.52-2.53-.29-5.2-1.27-5.2-5.67 0-1.25.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.96 10.96 0 0 1 5.73 0c2.18-1.49 3.14-1.18 3.14-1.18.63 1.59.23 2.76.12 3.05.74.81 1.18 1.84 1.18 3.09 0 4.41-2.67 5.38-5.21 5.66.41.36.77 1.06.77 2.15v3.19c0 .31.21.66.78.55A11.49 11.49 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z" />
+          </svg>
+        </a>
+      </div>
+    </div>
   </div>
+
+  <!-- Navigation Sidebar (Loaded dynamically from /components/sidebar.html or inline fallback) -->
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Main Container -->
+  <main class="neo-container">
+    <div class="lb-hero-card" style="margin-bottom: 24px;">
+      <div class="lb-hero-info">
+        <h1 style="display: flex; align-items: center; gap: 10px;">
+          <span class="material-icons" style="color: #0284c7; font-size: 1.8rem;">trending_up</span>
+          Average Skill Leaderboard
+        </h1>
+        <p>Top players with the highest average skill level across all skills on the SkyBlock server.</p>
+      </div>
+      <a href="index.html" class="lb-back-btn">
+        <span class="material-icons" style="font-size:1.1rem;">arrow_back</span>
+        All Leaderboards
+      </a>
+    </div>
+
+    <div class="lb-table-card">
+      <div class="lb-table-header" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 2px solid var(--border-color, #111827);">
+        <h2 class="lb-table-title" id="collectionTitle" style="margin: 0; font-size: 1.15rem; font-weight: 800;">Average Skill Rankings</h2>
+        <span class="neo-badge" style="background: #bae6fd; color: #0369a1; font-weight: 800;">
+          <span class="material-icons" style="font-size: 14px;">insights</span> Live Data
+        </span>
+      </div>
+      <div class="lb-table-wrapper">
+        <table class="lb-table">
+          <thead>
+            <tr>
+              <th style="width: 80px; text-align: center;">Rank</th>
+              <th>Player</th>
+              <th id="scoreHeader" style="text-align: right;">Average Skill</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardData">
+            <tr><td style="text-align:center;">1</td><td>Loading rankings...</td><td style="text-align:right;">...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Neo-Brutalism Global Footer -->
+  <footer class="site-footer" id="footer" style="margin-top: 40px; padding: 24px 0; border-top: 2px solid var(--border-color); text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <div>CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
+      <div style="display: flex; gap: 16px;">
+        <a href="../index.html" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">Home</a>
+        <a href="index.html" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">Leaderboards</a>
+        <a href="../bazaar.html" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">Bazaar</a>
+        <a href="../auction.html" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">Auctions</a>
+        <a href="../player.html" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">Player Viewer</a>
+        <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" rel="noopener noreferrer" style="color: var(--text-bright); text-decoration: none; font-weight: 600;">GitHub</a>
+      </div>
+    </div>
+  </footer>
 
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
