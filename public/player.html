@@ -1489,13 +1489,8 @@
         { key: 'mining', fallbackKey: 'experience_skill_mining', name: 'Mining', icon: 'construction' },
         { key: 'combat', fallbackKey: 'experience_skill_combat', name: 'Combat', icon: 'sports_martial_arts' },
         { key: 'foraging', fallbackKey: 'experience_skill_foraging', name: 'Foraging', icon: 'park' },
-        { key: 'fishing', fallbackKey: 'experience_skill_fishing', name: 'Fishing', icon: 'phishing' },
         { key: 'enchanting', fallbackKey: 'experience_skill_enchanting', name: 'Enchanting', icon: 'auto_fix_high' },
-        { key: 'alchemy', fallbackKey: 'experience_skill_alchemy', name: 'Alchemy', icon: 'science' },
-        { key: 'taming', fallbackKey: 'experience_skill_taming', name: 'Taming', icon: 'pets' },
-        { key: 'carpentry', fallbackKey: 'experience_skill_carpentry', name: 'Carpentry', icon: 'handyman' },
-        { key: 'runecrafting', fallbackKey: 'experience_skill_runecrafting', name: 'Runecrafting', icon: 'blur_on' },
-        { key: 'social', fallbackKey: 'experience_skill_social', name: 'Social', icon: 'groups' }
+        { key: 'taming', fallbackKey: 'experience_skill_taming', name: 'Taming', icon: 'pets' }
       ];
 
       let totalLevels = 0;
@@ -1508,10 +1503,8 @@
         const cap = calc?.cap ?? 50;
         const progress = calc?.progressPercent ?? 0;
 
-        if (s.key !== 'runecrafting' && s.key !== 'social' && s.key !== 'carpentry') {
-          totalLevels += level;
-          countedSkills++;
-        }
+        totalLevels += level;
+        countedSkills++;
 
         const isMax = level >= cap;
         const subtext = isMax ? 'MAX LEVEL REACHED' : `${formatNumber(calc?.xpIntoLevel || 0)} / ${formatNumber(calc?.xpForNextLevel || 0)} XP (${progress}%)`;
@@ -1536,7 +1529,7 @@
         <div class="skill-avg-banner">
           <div>
             <span style="font-weight: 700; color: var(--text-bright);">True Skill Average:</span>
-            <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 8px;">(Farming, Mining, Combat, Foraging, Fishing, Enchanting, Alchemy, Taming)</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 8px;">(Farming, Mining, Combat, Foraging, Enchanting, Taming)</span>
           </div>
           <span style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; color: var(--accent-color);">${skillAvg}</span>
         </div>
@@ -2946,7 +2939,7 @@
           <!-- Daily Skill XP Tracker -->
           <div class="card">
             <div class="card-header"><span class="material-icons" style="color:#0284c7;">hourglass_bottom</span><span class="card-title">Daily Skill XP Reset Caps</span></div>
-            ${(member.dailySkillExperienceData && Object.keys(member.dailySkillExperienceData).length > 0) ? Object.entries(member.dailySkillExperienceData).map(([skill, sObj]) => `
+            ${(member.dailySkillExperienceData && Object.keys(member.dailySkillExperienceData).length > 0) ? Object.entries(member.dailySkillExperienceData).filter(([skill]) => !['fishing', 'runecrafting', 'alchemy', 'social', 'carpentry'].includes(skill.toLowerCase())).map(([skill, sObj]) => `
               <div class="data-item">
                 <span class="data-label" style="text-transform:capitalize;">${skill} Daily Earned</span>
                 <span class="data-value number">${formatNumber(Math.round(sObj.value || 0))} XP</span>

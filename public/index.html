@@ -70,23 +70,29 @@
           <span class="material-icons" style="font-size:15px; color:#111827;">stars</span>
           CraftersMC-Guides-Project
         </div>
-        <!-- <div style="font-size: 11px; font-weight: 800; font-family: var(--font-mono); color: #111827;">
-          v2.4 STABLE
-        </div> -->
       </div>
 
       <div class="neo-hero-content">
-        <div class="neo-hero-heading-group">
-          <!-- <div class="neo-badge" style="background: #fde047;">
-            <span class="material-icons" style="color: #b45309;">local_fire_department</span>
-            Verified Player Companion
-          </div> -->
-          <h1 class="neo-hero-title">
-            CraftersMC <span class="neo-hero-highlight">SkyBlock Guides</span>
-          </h1>
-          <p class="neo-hero-subtitle">
-            Everything you need to master CraftersMC, from your first steps to becoming one of the best.
-          </p>
+        <!-- Top Row: Heading on the left, Neo-Brutalist Clock on the top right -->
+        <div class="neo-hero-top-row">
+          <div class="neo-hero-heading-group">
+            <!-- <div class="neo-badge" style="background: #fde047;">
+              <span class="material-icons" style="color: #b45309;">local_fire_department</span>
+              Verified Player Companion
+            </div> -->
+            <h1 class="neo-hero-title">
+              CraftersMC <span class="neo-hero-highlight">SkyBlock Guides</span>
+            </h1>
+            <p class="neo-hero-subtitle">
+              Everything you need to master CraftersMC, from your first steps to becoming one of the best.
+            </p>
+          </div>
+
+          <!-- Plain SkyBlock Game Clock on Top Right (No Decoration) -->
+          <div class="neo-plain-clock" id="neo-plain-clock" title="SkyBlock Game Time">
+            <div class="neo-plain-clock-time" id="game-clock-time">--:--</div>
+            <div class="neo-plain-clock-date" id="game-clock-date">Year --, Season --</div>
+          </div>
         </div>
 
         <!-- Quick Metrics / Chips -->
@@ -879,6 +885,159 @@ console.log(`Online Players: ${data.playerCount}/${data.maxPlayerCount} | SkyBlo
     if (resultsCount) {
       resultsCount.textContent = cards.length;
     }
+
+    /* =========================================================
+       MediaWiki:Gadget-timer.js
+       Native & jQuery-compatible recurring event timer runner
+       ========================================================= */
+    if (typeof window.$ === 'undefined') {
+      window.$ = function (selector) {
+        if (typeof selector === 'function') {
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', selector);
+          } else {
+            selector();
+          }
+          return;
+        }
+        if (selector === document) {
+          return {
+            ready: function (fn) {
+              if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', fn);
+              } else {
+                fn();
+              }
+            }
+          };
+        }
+        var elements = [];
+        if (typeof selector === 'string') {
+          elements = Array.prototype.slice.call(document.querySelectorAll(selector));
+        } else if (selector instanceof NodeList || Array.isArray(selector)) {
+          elements = Array.prototype.slice.call(selector);
+        } else if (selector && selector.nodeType) {
+          elements = [selector];
+        }
+        return {
+          length: elements.length,
+          each: function (cb) {
+            elements.forEach(function (el, i) {
+              cb.call(el, i, el);
+            });
+            return this;
+          },
+          data: function (key) {
+            if (!elements[0]) return undefined;
+            return elements[0].dataset[key] !== undefined
+              ? elements[0].dataset[key]
+              : elements[0].getAttribute('data-' + key);
+          },
+          html: function (val) {
+            if (val === undefined) return elements[0] ? elements[0].innerHTML : '';
+            elements.forEach(function (el) {
+              el.innerHTML = val;
+            });
+            return this;
+          }
+        };
+      };
+    }
+
+    /*
+    MediaWiki:Gadget-timer.js
+    */
+    function updateEventTimers() {
+      // loop over every timer
+      $('.EventTimer').each(function() {
+        // read data attributes from html element
+        var interval = $(this).data('interval') * 60;
+        var offset = $(this).data('offset') * 60;
+        
+        // calculate remaining time until next event
+        var now = new Date();
+        var totalSeconds = Math.floor(now.getTime() / 1000) - 1735686000; // unix time in seconds since start of 2025
+        var countdown = interval - (totalSeconds + offset) % interval;
+
+        // array of time values
+        var timeParts = [
+          Math.floor(countdown / 86400),          // days
+          Math.floor((countdown % 86400) / 3600), // hours 
+          Math.floor((countdown % 3600) / 60),    // minutes
+          countdown % 60                          // seconds
+        ];
+        // shift out leading zeros
+        while (timeParts[0] === 0) timeParts.shift();
+
+        var timeWords = ['seconds', 'minutes', 'hours', 'days'];
+        var timeWordsSingular = ['second', 'minute', 'hour', 'day'];
+        timeParts = timeParts.map(function(v,i) { 
+          return v.toString() + ' '
+            + ((v === 1) ? timeWordsSingular[timeParts.length- i - 1] : timeWords[timeParts.length - i - 1]);
+        });
+        var returnString = timeParts.join(', ');
+
+        // write 0 if timer has run out
+        returnString = (returnString === '') ? '0 seconds' : returnString;
+        
+        $(this).html(returnString);
+      });
+    }
+
+    /* =========================================================
+       Live Clock Runner (Real-World & SkyBlock In-Game Time)
+       ========================================================= */
+    /* =========================================================
+       SkyBlock In-Game Clock Runner (Plain, No Decoration)
+       ========================================================= */
+    function updateGameClock() {
+      const now = new Date();
+      
+      const START_OF_TIMES = 1648800000;
+      const TIME_MULTIPLIER = 72;
+      const SEASON_LENGTH = 93;
+      const YEAR_LENGTH = 4;
+      const SEASON_NAMES = ['Spring', 'Summer', 'Autumn', 'Winter'];
+
+      // Official CraftersMC calendar.js time algorithm
+      const epochTime = Math.floor(now.getTime() / 1000) - START_OF_TIMES;
+      const skyBlockTime = epochTime * TIME_MULTIPLIER;
+
+      const totalMinutes = Math.floor(skyBlockTime / 60);
+      const totalHours = Math.floor(totalMinutes / 60);
+      const totalDays = Math.floor(totalHours / 24);
+      const totalSeasons = Math.floor(totalDays / SEASON_LENGTH);
+      const totalYears = Math.floor(totalSeasons / YEAR_LENGTH);
+
+      const currentMinute = totalMinutes % 60;
+      const currentHour = totalHours % 24;
+      const currentDay = (totalDays % SEASON_LENGTH) + 1;
+      const currentSeason = totalSeasons % YEAR_LENGTH;
+      const currentYear = totalYears + 1;
+
+      const ampm = currentHour >= 12 ? 'PM' : 'AM';
+      const displayHour = currentHour % 12 || 12;
+      const timeStr = `${displayHour}:${currentMinute < 10 ? '0' : ''}${currentMinute} ${ampm}`;
+      const dateStr = `Year ${currentYear}, ${SEASON_NAMES[currentSeason]} ${currentDay}`;
+
+      const timeEl = document.getElementById('game-clock-time');
+      const dateEl = document.getElementById('game-clock-date');
+      
+      if (timeEl) timeEl.textContent = timeStr;
+      if (dateEl) dateEl.textContent = dateStr;
+    }
+
+    $(document).ready(function() {
+      // Initialize in-game clock immediately and tick smoothly
+      updateGameClock();
+      setInterval(updateGameClock, 500);
+
+      // update every 1000ms if there are EventTimers on the page
+      if ($('.EventTimer').length !== 0) {
+        updateEventTimers();
+        setInterval(updateEventTimers, 1000);
+      }
+    });
   </script>
 
 </body>

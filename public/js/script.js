@@ -163,7 +163,7 @@ function fetchPartial(url, key) {
 function fetchAllPartials() {
   Promise.all([
     fetchPartial("/components/navbar.html", "navbarHtmlV10"),
-    fetchPartial("/components/sidebar.html", "sidebarHtmlV8"),
+    fetchPartial("/components/sidebar.html", "sidebarHtmlV9"),
     fetchPartial("/components/footer.html", "footerHtmlV9"),
     fetchPartial("/loader.html", "loaderHtml"),
   ])
@@ -516,4 +516,112 @@ window.initScrollToTop = initScrollToTop;
 if (document.readyState === "interactive" || document.readyState === "complete") {
     initScrollToTop();
 }
+
+/* =========================================================
+   MediaWiki:Gadget-timer.js
+   Native & jQuery-compatible recurring event timer runner
+   ========================================================= */
+if (typeof window.$ === 'undefined') {
+  window.$ = function (selector) {
+    if (typeof selector === 'function') {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', selector);
+      } else {
+        selector();
+      }
+      return;
+    }
+    if (selector === document) {
+      return {
+        ready: function (fn) {
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', fn);
+          } else {
+            fn();
+          }
+        }
+      };
+    }
+    var elements = [];
+    if (typeof selector === 'string') {
+      elements = Array.prototype.slice.call(document.querySelectorAll(selector));
+    } else if (selector instanceof NodeList || Array.isArray(selector)) {
+      elements = Array.prototype.slice.call(selector);
+    } else if (selector && selector.nodeType) {
+      elements = [selector];
+    }
+    return {
+      length: elements.length,
+      each: function (cb) {
+        elements.forEach(function (el, i) {
+          cb.call(el, i, el);
+        });
+        return this;
+      },
+      data: function (key) {
+        if (!elements[0]) return undefined;
+        return elements[0].dataset[key] !== undefined
+          ? elements[0].dataset[key]
+          : elements[0].getAttribute('data-' + key);
+      },
+      html: function (val) {
+        if (val === undefined) return elements[0] ? elements[0].innerHTML : '';
+        elements.forEach(function (el) {
+          el.innerHTML = val;
+        });
+        return this;
+      }
+    };
+  };
+}
+
+/*
+MediaWiki:Gadget-timer.js
+*/
+function updateEventTimers() {
+  // loop over every timer
+  $('.EventTimer').each(function() {
+    // read data attributes from html element
+    var interval = $(this).data('interval') * 60;
+    var offset = $(this).data('offset') * 60;
+    
+    // calculate remaining time until next event
+    var now = new Date();
+    var totalSeconds = Math.floor(now.getTime() / 1000) - 1735686000; // unix time in seconds since start of 2025
+    var countdown = interval - (totalSeconds + offset) % interval;
+
+    // array of time values
+    var timeParts = [
+      Math.floor(countdown / 86400),          // days
+      Math.floor((countdown % 86400) / 3600), // hours 
+      Math.floor((countdown % 3600) / 60),    // minutes
+      countdown % 60                          // seconds
+    ];
+    // shift out leading zeros
+    while (timeParts[0] === 0) timeParts.shift();
+
+    var timeWords = ['seconds', 'minutes', 'hours', 'days'];
+    var timeWordsSingular = ['second', 'minute', 'hour', 'day'];
+    timeParts = timeParts.map(function(v,i) { 
+      return v.toString() + ' '
+        + ((v === 1) ? timeWordsSingular[timeParts.length- i - 1] : timeWords[timeParts.length - i - 1]);
+    });
+    var returnString = timeParts.join(', ');
+
+    // write 0 if timer has run out
+    returnString = (returnString === '') ? '0 seconds' : returnString;
+    
+    $(this).html(returnString);
+  });
+}
+window.updateEventTimers = updateEventTimers;
+
+$(document).ready(function() {
+  // update every 1000ms if there are EventTimers on the page
+  if ($('.EventTimer').length !== 0) {
+    updateEventTimers();
+    setInterval(updateEventTimers, 1000);
+  }
+});
+
 
