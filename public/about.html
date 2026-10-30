@@ -2,294 +2,938 @@
 <html lang="en">
 
 <head>
-  <link rel="icon" href="assets/cmc-icon.png" type="image/png" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About Us - CraftersMC Guides</title>
+  <title>About Us — CraftersMC Guides &amp; Documentation</title>
+  <meta name="description"
+    content="Learn about the CraftersMC Guides project, our mission, tooling history, Feather Bot, and the team behind it." />
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png" />
+  <link rel="icon" href="assets/cmc-guides.png" type="image/png" />
+
+  <!-- Google Fonts & Material Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-  <script src="js/script.js"></script>
-  <link rel="stylesheet" href="css/essential.css">
-  <link rel="stylesheet" href="css/about.css">
+
+  <!-- Anti-flash Theme Init -->
+  <script>
+    (function () {
+      try {
+        var d = localStorage.getItem("darkMode");
+        if (d === "true" || (d === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("darkmode");
+        } else {
+          document.documentElement.classList.remove("darkmode");
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Core & Unified Stylesheets -->
+  <link rel="stylesheet" href="css/essential.css" />
+  <link rel="stylesheet" href="css/neo-brutalism.css" />
+  <link rel="stylesheet" href="css/about.css" />
+
+  <!-- Global Application Scripts -->
+  <script src="js/script.js" defer></script>
 </head>
 
-<body class="about">
-  <div id="loader">
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
-  <!-- Top Navbar -->
+<body>
+
+  <!-- Fullscreen / Layout Overlays -->
+  <div class="background"></div>
+
+  <!-- Top Navbar (Dynamically loaded from /components/navbar.html) -->
   <div class="top"></div>
 
-  <!-- Sidebar -->
+  <!-- Navigation Sidebar (Dynamically loaded from /components/sidebar.html) -->
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-  
-  <div class="gap"></div>
-  <!--  -->
-  <div class="container">
-    <div class="header">
-      <h1>About CraftersMC Guides</h1>
-      <p>
-        CraftersMC Guides is a living project built to help players understand the server faster,
-        make better decisions in SkyBlock, and find the right tools without jumping between a dozen pages.
-      </p>
-    </div>
 
-    <div class="section">
-      <h2 class="h2">What We Have Built</h2>
-      <p>
-        Over time, we turned the site into a full companion for CraftersMC players. The current version
-        combines guides, leaderboards, calculators, market tools, event tracking, and support pages in one place.
-      </p>
-      <ul class="about-list">
-        <li><strong>Guides:</strong> beginner, intermediate, advanced, and accessories help for players at every stage.</li>
-        <li><strong>Leaderboards:</strong> collections, slayers, skills, playtime, cakes, gems, and other ranking pages.</li>
-        <li><strong>Tools:</strong> calculators, minion helpers, pet XP, refines, and utility pages for daily play.</li>
-        <li><strong>Shared UI:</strong> a unified navbar, sidebar, footer, and home hero that now follow the same theme.</li>
-      </ul>
-    </div>
+  <!-- =========================================================
+       MAIN NEO-BRUTALISM PAGE CONTENT
+       ========================================================= -->
+  <main class="neo-container">
 
-    <div class="section">
-      <h2 class="h2">What We Removed</h2>
-      <p>
-        The current theme is cleaner because we trimmed the parts that felt disconnected or distracted from the content.
-      </p>
-      <ul class="about-list">
-        <li>Old mismatched header and footer styling that did not fit the darker glass look.</li>
-        <li>Floating or isolated layout pieces that made the homepage feel broken up.</li>
-        <li>Unstructured navigation blocks that made the sidebar harder to scan on mobile.</li>
-        <li>Extra visual clutter that pushed important content away from the center of the page.</li>
-      </ul>
-    </div>
-
-    <div class="section">
-      <h2 class="h2">What We Are Planning Next</h2>
-      <p>
-        The site is still evolving. The current direction is to keep the UI consistent while adding more useful pages and deeper bot documentation.
-      </p>
-      <ul class="about-list">
-        <li>More guides and calculators for early, mid, and late-game players.</li>
-        <li>More leaderboard categories and smarter filters for viewing results.</li>
-        <li>More Feather Bot documentation, examples, and changelog entries.</li>
-        <li>Better active-page highlights and small quality-of-life improvements across the sidebar.</li>
-        <li>More mobile-first polish so the same layout feels comfortable on smaller screens.</li>
-      </ul>
-    </div>
-
-    <div class="section">
-      <h2 class="h2">Feather Bot</h2>
-      <p>
-        Feather Bot is our Discord companion for CraftersMC. It is built to answer common questions quickly inside Discord instead of making users search across the website manually.
-        The bot is most useful for players who want fast access to profile data, market tools, reminders, and server utilities.
-      </p>
-      <p>
-        Pg Network built the Feather Bot project largely solo, and the docs on this site exist so players can understand
-        the bot, its commands, and its rules without guessing.
-      </p>
-      <ul class="about-list">
-        <li><strong>Player lookups:</strong> profile snapshots, playtime, rank history, cosmetics, and accessories.</li>
-        <li><strong>Economy tools:</strong> bazaar prices, bazaar graphs, flips, auctions, and player auction browsing.</li>
-        <li><strong>Server utilities:</strong> leaderboards, vote reminders, event reminders, reports, and general help.</li>
-        <li><strong>Account tools:</strong> account linking and unlinking, plus verification workflows for operators.</li>
-      </ul>
-      <p>
-        We also keep Feather Bot documentation in the site itself through a command guide, privacy policy, terms, and changelogs so users can see how the bot works before they use it.
-      </p>
-      <div class="feather-actions">
-        <button type="button" onclick="window.open('https://discord.com/oauth2/authorize?client_id=1469280391600017580', '_blank', 'noopener')">Invite</button>
-        <button type="button" onclick="window.location.href='feather-bot/terms-and-conditions.html'">TOS</button>
-        <button type="button" onclick="window.location.href='feather-bot/privacy-policy.html'">Privacy Policy</button>
-      </div>
-    </div>
-
-    <div class="section">
-      <h2 class="h2">Meet the Team</h2>
-      <p>
-        These are the people helping maintain the site and the broader project, along with the parts they focus on most.
-      </p>
-      <div class="team">
-        <div class="member writer">
-          <img class="pfp" src="assets/team/edu.png" alt="Edu's Profile Picture" />
-          <h3 class="h3">ieduoo</h3>
-          <p class="member-role">Writer and content editor</p>
-          <p>
-            Shapes the written guides, helps keep explanations clear, and makes sure the content feels easy to read.
-            <br />
-            <a href="https://discord.com/users/878545726014107698" target="_blank" rel="noopener noreferrer">Discord: ieduoo</a>
-            <br />
-            <a href="https://github.com/Zulfi-hub" target="_blank" rel="noopener noreferrer">Github: Zulfi-hub</a>
-          </p>
+    <!-- HERO SECTION -->
+    <section class="neo-hero-card" id="overview">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
         </div>
-        <div class="member coder">
-          <img class="pfp" src="assets/team/pgnetwork.png" alt="PgNetwork's Profile Picture" />
-          <h3 class="h3">Pg Network</h3>
-          <p class="member-role">Primary developer and project maintainer</p>
-          <p>
-            Built Feather Bot from the ground up and has driven a large part of the guides-code project, including core
-            site structure, theme updates, navigation, footer/sidebar work, and data-driven features.
-            <br />
-            <a href="https://discord.com/users/947868777528307742">Discord: pgnetwork01</a>
-            <br />
-            <a href="https://github.com/PgNetwork01">Github: PgNetwork01</a>
-          </p>
-        </div>
-        <div class="member coder">
-          <img class="pfp" src="assets/team/techon.png" alt="TechonTheDev's Profile Picture" />
-          <h3 class="h3">TechonTheDev</h3>
-          <p class="member-role">Coder and systems support</p>
-          <p>
-            Helps with features, fixes, and maintenance work across site pages and supporting tools.
-            <br />
-            <a href="https://discord.com/users/1099047739209293944">Discord: techonthedev</a>
-            <br />
-            <a href="https://github.com/TechonVS">Github: TechonVS</a>
-          </p>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px; color:#111827;">stars</span>
+          CraftersMC-Guides-Project / About
         </div>
       </div>
 
-    </div>
+      <div class="neo-hero-content">
+        <!-- Top Row: Heading on the left, Neo-Brutalist Clock on the top right -->
+        <div class="neo-hero-top-row">
+          <div class="neo-hero-heading-group">
+            <h1 class="neo-hero-title">
+              About <span class="neo-hero-highlight">CraftersMC Guides</span>
+            </h1>
+            <p class="neo-hero-subtitle">
+              CraftersMC Guides is a living project built to help players understand the server faster,
+              make better decisions in SkyBlock, and find the right tools without jumping between a dozen pages.
+            </p>
+          </div>
 
-    <div class="section">
-      <h2 class="h2">Former Members & Contributors</h2>
-      <p>
-        These people helped shape the project, either during its earlier stages or through focused contributions like design, data work, and advice.
-      </p>
-      <div class="team">
-        <div class="member coder">
-          <img class="pfp" src="assets/team/jassi.png" alt="Jassi's Profile Picture" />
-          <h3 class="h3">TGJASSIYT</h3>
-          <p class="member-role">Coder and feature builder</p>
-          <p>
-            Works on site functionality, page behavior, and the code that powers newer tools and layouts.
-            <br />
-            <a href="https://discord.com/users/835769112000593950">Discord: jassi_xc</a> <br />
-            <a href="https://github.com/TGJASSIYT">Github: TGJASSIYT</a>
+          <!-- Plain SkyBlock Game Clock on Top Right (No Decoration) -->
+          <div class="neo-plain-clock" id="neo-plain-clock" title="SkyBlock Game Time">
+            <div class="neo-plain-clock-time game-clock-time" id="game-clock-time">--:--</div>
+            <div class="neo-plain-clock-date game-clock-date" id="game-clock-date">Year --, Season --</div>
+          </div>
+        </div>
+
+        <!-- Quick Section Jump Chips -->
+        <div class="neo-hero-stats">
+          <a href="#section-built" class="neo-stat-chip">
+            <span class="material-icons">layers</span>
+            <span>What We Built</span>
+          </a>
+          <a href="#section-roadmap" class="neo-stat-chip">
+            <span class="material-icons">alt_route</span>
+            <span>Roadmap</span>
+          </a>
+          <a href="#section-feather" class="neo-stat-chip">
+            <span class="material-icons">smart_toy</span>
+            <span>Feather Bot</span>
+          </a>
+          <a href="#section-team" class="neo-stat-chip">
+            <span class="material-icons">groups</span>
+            <span>The Team</span>
+          </a>
+          <a href="#section-contributors" class="neo-stat-chip">
+            <span class="material-icons">history_edu</span>
+            <span>Contributors</span>
+          </a>
+          <a href="#section-tech" class="neo-stat-chip">
+            <span class="material-icons">build</span>
+            <span>Internal Tools</span>
+          </a>
+          <a href="#section-contribute" class="neo-stat-chip">
+            <span class="material-icons">handshake</span>
+            <span>Contribute</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 1: WHAT WE HAVE BUILT
+         ========================================================= -->
+    <section class="neo-section" id="section-built">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#bbf7d0;">
+              <span class="material-icons">layers</span>
+              ECOSYSTEM
+            </span>
+            <h2 class="neo-section-title">What We Have Built</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Over time, we turned the site into a full companion for CraftersMC players. The current version
+            combines guides, leaderboards, calculators, market tools, event tracking, and support pages in one place.
           </p>
         </div>
-        <div class="member coder">
-          <img class="pfp" src="assets/team/dev.webp" alt="Dev's Profile Picture" />
-          <h3 class="h3">Dev</h3>
-          <p class="member-role">Former coder</p>
-          <p>
+        <span class="neo-section-count">4 Key Pillars</span>
+      </div>
+
+      <div class="neo-grid">
+        <!-- Card 1: Guides -->
+        <div class="neo-card cyan">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">menu_book</span> Documentation</span>
+            <span class="material-icons neo-card-icon">auto_stories</span>
+          </div>
+          <h3 class="neo-card-title">Comprehensive Guides</h3>
+          <p class="neo-card-desc">
+            Beginner walkthroughs, mid-game combat progression, endgame builds, slayer tactics, and accessories optimization for players at every stage.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">9+ Guides <span>/ Published</span></div>
+            <a href="guides.html" class="neo-card-btn">Explore Guides &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 2: Leaderboards -->
+        <div class="neo-card yellow">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">leaderboard</span> Live Rankings</span>
+            <span class="material-icons neo-card-icon">trending_up</span>
+          </div>
+          <h3 class="neo-card-title">Live Leaderboards</h3>
+          <p class="neo-card-desc">
+            Track real-time rankings across collections, slayers, skills, playtime, cakes, gems, and the fastest recorded boss kill times.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">12+ Hubs <span>/ Real-Time</span></div>
+            <a href="leaderboards.html" class="neo-card-btn">View Rankings &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 3: Calculators & Tools -->
+        <div class="neo-card green">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">calculate</span> Interactive</span>
+            <span class="material-icons neo-card-icon">bolt</span>
+          </div>
+          <h3 class="neo-card-title">Calculators &amp; Tools</h3>
+          <p class="neo-card-desc">
+            Pet leveling estimators, minion output calculators, refine assistants, bazaar margin tools, and interactive utilities for daily play.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">8+ Utilities <span>/ Dynamic</span></div>
+            <a href="tools.html" class="neo-card-btn">Open Tools &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 4: Unified UI -->
+        <div class="neo-card purple">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">palette</span> Design System</span>
+            <span class="material-icons neo-card-icon">dashboard_customize</span>
+          </div>
+          <h3 class="neo-card-title">Unified Interface</h3>
+          <p class="neo-card-desc">
+            A cohesive Neo-Brutalism design system with unified navigation, sidebar drawer, instant theme toggle, and fast mobile-first ergonomics.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Neo-Brutalism <span>/ System</span></div>
+            <a href="index.html" class="neo-card-btn">Explore Home &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 2: DESIGN PHILOSOPHY & DIRECTION (ROADMAP)
+         ========================================================= -->
+    <section class="neo-section" id="section-roadmap">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#fef08a;">
+              <span class="material-icons">alt_route</span>
+              EVOLUTION
+            </span>
+            <h2 class="neo-section-title">Design Philosophy &amp; Direction</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            How we streamlined the site architecture to prioritize player data, and where the project is heading next.
+          </p>
+        </div>
+        <span class="neo-section-count">Changelog &amp; Vision</span>
+      </div>
+
+      <div class="neo-grid-2">
+        <!-- Card: What We Removed -->
+        <div class="neo-card">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#fecdd3; color:#be123c;">
+              <span class="material-icons" style="font-size:14px; color:#be123c;">remove_circle</span> Streamlined
+            </span>
+            <span class="material-icons neo-card-icon" style="color:#be123c;">delete_sweep</span>
+          </div>
+          <h3 class="neo-card-title">What We Removed</h3>
+          <p class="neo-card-desc">
+            We cleaned up unnecessary complexity to keep the focus strictly on speed, clarity, and gameplay data.
+          </p>
+          <ul class="neo-bullet-list">
+            <li class="neo-bullet-item">
+              <div class="neo-bullet-icon cross">
+                <span class="material-icons">close</span>
+              </div>
+              <div class="neo-bullet-text">
+                <strong>Old mismatched styling:</strong> Trimmed outdated low-contrast borders and inconsistent glassmorphism in favor of bold, readable Neo-Brutalism.
+              </div>
+            </li>
+            <li class="neo-bullet-item">
+              <div class="neo-bullet-icon cross">
+                <span class="material-icons">close</span>
+              </div>
+              <div class="neo-bullet-text">
+                <strong>Floating layout pieces:</strong> Consolidated isolated fragments and disjointed cards into a structured, unified container flow.
+              </div>
+            </li>
+            <li class="neo-bullet-item">
+              <div class="neo-bullet-icon cross">
+                <span class="material-icons">close</span>
+              </div>
+              <div class="neo-bullet-text">
+                <strong>Unstructured navigation:</strong> Rebuilt the sidebar drawer with categorized hubs, search indexing, and clear touch targets for mobile.
+              </div>
+            </li>
+            <li class="neo-bullet-item">
+              <div class="neo-bullet-icon cross">
+                <span class="material-icons">close</span>
+              </div>
+              <div class="neo-bullet-text">
+                <strong>Extra visual clutter:</strong> Removed decorative bloat that pushed important game data, guide steps, and metrics away from the center.
+              </div>
+            </li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Refactor <span>/ Streamlined</span></div>
+            <span class="neo-badge" style="background:#fee2e2; color:#991b1b;">
+              <span class="material-icons" style="font-size:13px; color:#be123c;">check_circle</span> 4 Areas Polished
+            </span>
+          </div>
+        </div>
+
+        <!-- Card: What We Are Planning Next -->
+        <div class="neo-card">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#bbf7d0; color:#15803d;">
+              <span class="material-icons" style="font-size:14px; color:#15803d;">rocket_launch</span> In Progress
+            </span>
+            <span class="material-icons neo-card-icon" style="color:#15803d;">upcoming</span>
+          </div>
+          <h3 class="neo-card-title">What We Are Planning Next</h3>
+          <p class="neo-card-desc">
+            Upcoming additions aimed at giving SkyBlock players deeper insights, quicker shortcuts, and faster workflows.
+          </p>
+          <ul class="neo-bullet-list">
+            <li class="neo-bullet-item">
+              <div class="neo-bullet-icon check">
+                <span class="material-icons">check</span>
+              </div>
+              <div class="neo-bullet-text">
+                <strong>More guides &amp; calculators:</strong> Expanding late-game builds, slayer mechanics, and minion efficiency models for veteran players.
+              </div>
+            </li>
+            <li class="neo-bullet-item">
+              <div class="neo-bullet-icon check">
+                <span class="material-icons">check</span>
+              </div>
+              <div class="neo-bullet-text">
+                <strong>Smarter leaderboard filters:</strong> Adding deeper cohort breakdowns, search enhancements, and category sorting across all rank tables.
+              </div>
+            </li>
+            <li class="neo-bullet-item">
+              <div class="neo-bullet-icon check">
+                <span class="material-icons">check</span>
+              </div>
+              <div class="neo-bullet-text">
+                <strong>Deeper Feather Bot docs:</strong> Expanding Discord bot documentation, syntax guides, permission workflows, and changelog archives.
+              </div>
+            </li>
+            <li class="neo-bullet-item">
+              <div class="neo-bullet-icon check">
+                <span class="material-icons">check</span>
+              </div>
+              <div class="neo-bullet-text">
+                <strong>Continuous mobile polish:</strong> Ensuring every calculator, table, and data grid remains lightning-fast and natural on handheld devices.
+              </div>
+            </li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Roadmap <span>/ Active Development</span></div>
+            <a href="https://github.com/CraftersMC-Guides-Project/" target="_blank" rel="noopener noreferrer" class="neo-card-btn">
+              Track on GitHub &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- =========================================================
+         SECTION 3: FEATHER BOT SPOTLIGHT
+         ========================================================= -->
+    <section class="neo-section" id="section-feather">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#e9d5ff;">
+              <span class="material-icons">smart_toy</span>
+              DISCORD BOT
+            </span>
+            <h2 class="neo-section-title">Feather Bot Spotlight</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Feather Bot is our dedicated Discord companion for CraftersMC, built largely solo by Pg Network to answer questions quickly inside Discord.
+          </p>
+        </div>
+        <a href="feather-bot/terms-and-conditions.html" class="button70-btn cyan" style="height: 38px; padding: 0 14px; font-size: 13px;">
+          <span class="material-icons" style="font-size: 16px;">gavel</span>
+          Terms &amp; Policies
+        </a>
+      </div>
+
+      <div class="neo-grid">
+        <div class="neo-card cyan">
+          <div class="neo-card-header">
+            <span class="neo-badge">Lookups</span>
+            <span class="material-icons neo-card-icon">person_search</span>
+          </div>
+          <h3 class="neo-card-title">Player Lookups</h3>
+          <p class="neo-card-desc">
+            Profile snapshots, playtime records, rank history, cosmetics, and accessories breakdown directly inside Discord channels.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Profiles <span>/ Instant</span></div>
+            <span class="neo-badge" style="background:#ffffff;">/player</span>
+          </div>
+        </div>
+
+        <div class="neo-card green">
+          <div class="neo-card-header">
+            <span class="neo-badge">Market &amp; Whale</span>
+            <span class="material-icons neo-card-icon">store</span>
+          </div>
+          <h3 class="neo-card-title">Economy &amp; Auctions</h3>
+          <p class="neo-card-desc">
+            Bazaar prices, live graph trends, flips, active auctions, and <code>/auction alert</code> notifications backed by our <strong>Whale</strong> engine.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Bazaar &amp; Whale <span>/ Real-Time</span></div>
+            <span class="neo-badge" style="background:#ffffff;">/auction</span>
+          </div>
+        </div>
+
+        <div class="neo-card yellow">
+          <div class="neo-card-header">
+            <span class="neo-badge">Alerts</span>
+            <span class="material-icons neo-card-icon">notifications_active</span>
+          </div>
+          <h3 class="neo-card-title">Server Utilities</h3>
+          <p class="neo-card-desc">
+            Live leaderboards, daily vote reminders, event alerts, player reports, and automated server reminders for community members.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Alerts <span>/ Automated</span></div>
+            <span class="neo-badge" style="background:#ffffff;">/remind</span>
+          </div>
+        </div>
+
+        <div class="neo-card purple">
+          <div class="neo-card-header">
+            <span class="neo-badge">Security</span>
+            <span class="material-icons neo-card-icon">verified_user</span>
+          </div>
+          <h3 class="neo-card-title">Account Tools</h3>
+          <p class="neo-card-desc">
+            Account linking and unlinking, plus identity verification workflows for community operators, staff, and guild leaders.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Auth <span>/ Secure</span></div>
+            <span class="neo-badge" style="background:#ffffff;">/link</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Whale Engine Showcase Banner -->
+      <div class="whale-showcase-banner">
+        <div class="whale-showcase-main">
+          <h3 class="whale-banner-heading">Feather Bot / Whale Engine</h3>
+          <p class="whale-banner-summary">
+            <strong>Whale</strong> (<em>Wide-scale Historical Auction Logging and Extraction</em>) powers Feather Bot's historical auction data. It records auction history, calculates 14-day rolling price averages, and evaluates real-time alert triggers for <code>/auction alert</code>.
+          </p>
+        </div>
+        <div class="whale-showcase-visual">
+          <img src="assets/whale.png" alt="Whale Engine Logo" class="whale-img-clean" />
+        </div>
+      </div>
+
+      <!-- Action Buttons Row -->
+      <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:20px;">
+        <a href="https://discord.com/oauth2/authorize?client_id=1469280391600017580" target="_blank" rel="noopener noreferrer" class="button70-btn cyan">
+          <span class="material-icons">add_circle</span>
+          Invite Feather Bot
+        </a>
+        <a href="feather-bot/terms-and-conditions.html" class="button70-btn">
+          <span class="material-icons">description</span>
+          Terms of Service
+        </a>
+        <a href="feather-bot/privacy-policy.html" class="button70-btn">
+          <span class="material-icons">privacy_tip</span>
+          Privacy Policy
+        </a>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 4: MEET THE TEAM
+         ========================================================= -->
+    <section class="neo-section" id="section-team">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#fbcfe8;">
+              <span class="material-icons">groups</span>
+              CORE TEAM
+            </span>
+            <h2 class="neo-section-title">Meet the Team</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            These are the people helping maintain the site and the broader project, along with the areas they focus on most.
+          </p>
+        </div>
+        <span class="neo-section-count">3 Core Members</span>
+      </div>
+
+      <div class="neo-team-grid">
+        <!-- Team Member 1: ieduoo -->
+        <div class="neo-team-card">
+          <div class="neo-team-top">
+            <img class="neo-team-pfp" src="assets/team/edu.png" alt="ieduoo Avatar"
+              onerror="this.src='assets/cmc-guides.png'; this.onerror=null;" />
+            <div class="neo-team-meta">
+              <div class="neo-team-name">ieduoo</div>
+              <span class="neo-team-role writer">Writer &amp; Content Editor</span>
+            </div>
+          </div>
+          <p class="neo-team-bio">
+            Shapes the written guides, helps keep explanations clear, and ensures gameplay strategies remain intuitive and accessible to read.
+          </p>
+          <div class="neo-team-links">
+            <a href="https://discord.com/users/878545726014107698" target="_blank" rel="noopener noreferrer"
+              class="neo-team-link">
+              <span class="material-icons">chat</span>
+              Discord
+            </a>
+            <a href="https://github.com/Zulfi-hub" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">code</span>
+              GitHub
+            </a>
+          </div>
+        </div>
+
+        <!-- Team Member 2: Pg Network -->
+        <div class="neo-team-card">
+          <div class="neo-team-top">
+            <img class="neo-team-pfp" src="assets/team/pgnetwork.png" alt="Pg Network Avatar"
+              onerror="this.src='assets/cmc-guides.png'; this.onerror=null;" />
+            <div class="neo-team-meta">
+              <div class="neo-team-name">Pg Network</div>
+              <span class="neo-team-role lead">Lead Developer &amp; Maintainer</span>
+            </div>
+          </div>
+          <p class="neo-team-bio">
+            Built Feather Bot from the ground up and has driven the guides-code project, including core site structure, theme updates, navigation, and data-driven tools.
+          </p>
+          <div class="neo-team-links">
+            <a href="https://discord.com/users/947868777528307742" target="_blank" rel="noopener noreferrer"
+              class="neo-team-link">
+              <span class="material-icons">chat</span>
+              Discord
+            </a>
+            <a href="https://github.com/PgNetwork01" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">code</span>
+              GitHub
+            </a>
+          </div>
+        </div>
+
+        <!-- Team Member 3: TechonTheDev -->
+        <div class="neo-team-card">
+          <div class="neo-team-top">
+            <img class="neo-team-pfp" src="assets/team/techon.png" alt="TechonTheDev Avatar"
+              onerror="this.src='assets/cmc-guides.png'; this.onerror=null;" />
+            <div class="neo-team-meta">
+              <div class="neo-team-name">TechonTheDev</div>
+              <span class="neo-team-role dev">Coder &amp; Systems Support</span>
+            </div>
+          </div>
+          <p class="neo-team-bio">
+            Helps build features, implement fixes, and support ongoing maintenance work across site pages and supporting utilities.
+          </p>
+          <div class="neo-team-links">
+            <a href="https://discord.com/users/1099047739209293944" target="_blank" rel="noopener noreferrer"
+              class="neo-team-link">
+              <span class="material-icons">chat</span>
+              Discord
+            </a>
+            <a href="https://github.com/TechonVS" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">code</span>
+              GitHub
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 5: FORMER MEMBERS & CONTRIBUTORS
+         ========================================================= -->
+    <section class="neo-section" id="section-contributors">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#fed7aa;">
+              <span class="material-icons">history_edu</span>
+              HERITAGE
+            </span>
+            <h2 class="neo-section-title">Former Members &amp; Contributors</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            These people helped shape the project, either during its earlier stages or through focused contributions like design, data collection, and advice.
+          </p>
+        </div>
+        <span class="neo-section-count">8 Contributors</span>
+      </div>
+
+      <div class="neo-team-grid">
+        <!-- Contributor 1: TGJASSIYT -->
+        <div class="neo-team-card">
+          <div class="neo-team-top">
+            <img class="neo-team-pfp" src="assets/team/jassi.png" alt="TGJASSIYT Avatar"
+              onerror="this.src='assets/cmc-guides.png'; this.onerror=null;" />
+            <div class="neo-team-meta">
+              <div class="neo-team-name">TGJASSIYT</div>
+              <span class="neo-team-role coder">Coder &amp; Feature Builder</span>
+            </div>
+          </div>
+          <p class="neo-team-bio">
+            Worked on site functionality, page behavior, and the code powering newer tools and layouts.
+          </p>
+          <div class="neo-team-links">
+            <a href="https://discord.com/users/835769112000593950" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">chat</span> Discord
+            </a>
+            <a href="https://github.com/TGJASSIYT" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">code</span> GitHub
+            </a>
+          </div>
+        </div>
+
+        <!-- Contributor 2: Dev -->
+        <div class="neo-team-card">
+          <div class="neo-team-top">
+            <img class="neo-team-pfp" src="assets/team/dev.webp" alt="Dev Avatar"
+              onerror="this.src='assets/cmc-guides.png'; this.onerror=null;" />
+            <div class="neo-team-meta">
+              <div class="neo-team-name">Dev</div>
+              <span class="neo-team-role coder">Former Coder</span>
+            </div>
+          </div>
+          <p class="neo-team-bio">
             Contributed to earlier development work and helped establish some of the early project structure.
-            <br />
-            <a href="https://discord.com/users/783972385882767400">Discord: dev.odf</a> <br />
-            <a href="https://github.com/PgNetwork01">Github: dev-odf</a>
           </p>
+          <div class="neo-team-links">
+            <a href="https://discord.com/users/783972385882767400" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">chat</span> Discord
+            </a>
+            <a href="https://github.com/PgNetwork01" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">code</span> GitHub
+            </a>
+          </div>
         </div>
-        <div class="member advisor">
-          <img class="pfp" src="assets/team/aakash.png" alt="Aakash's Profile Picture" />
-          <h3 class="h3">Aakash Gupta</h3>
-          <p class="member-role">Advisor</p>
-          <p>
-            Shared direction, feedback, and support during development and planning.
-            <br />
-            <a href="https://discord.com/users/845690488752832522">Discord: aakashgupta12</a>
+
+        <!-- Contributor 3: Aakash Gupta -->
+        <div class="neo-team-card">
+          <div class="neo-team-top">
+            <img class="neo-team-pfp" src="assets/team/aakash.png" alt="Aakash Gupta Avatar"
+              onerror="this.src='assets/cmc-guides.png'; this.onerror=null;" />
+            <div class="neo-team-meta">
+              <div class="neo-team-name">Aakash Gupta</div>
+              <span class="neo-team-role advisor">Project Advisor</span>
+            </div>
+          </div>
+          <p class="neo-team-bio">
+            Shared direction, strategic feedback, and ongoing support during development and planning.
           </p>
+          <div class="neo-team-links">
+            <a href="https://discord.com/users/845690488752832522" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">chat</span> Discord
+            </a>
+          </div>
         </div>
-        <div class="member coder">
-          <img class="pfp" src="assets/team/c69.png" alt="C69P2W's Profile Picture" />
-          <h3 class="h3">C69P2W</h3>
-          <p class="member-role">Former coder</p>
-          <p>
-            Helped with code contributions and maintenance during an earlier part of the project.
-            <br />
-            <a href="https://discord.com/users/992284684425904168">Discord: samadop3116</a>
+
+        <!-- Contributor 4: C69P2W -->
+        <div class="neo-team-card">
+          <div class="neo-team-top">
+            <img class="neo-team-pfp" src="assets/team/c69.png" alt="C69P2W Avatar"
+              onerror="this.src='assets/cmc-guides.png'; this.onerror=null;" />
+            <div class="neo-team-meta">
+              <div class="neo-team-name">C69P2W</div>
+              <span class="neo-team-role coder">Former Coder</span>
+            </div>
+          </div>
+          <p class="neo-team-bio">
+            Helped with code contributions and maintenance during an earlier phase of the project.
           </p>
+          <div class="neo-team-links">
+            <a href="https://discord.com/users/992284684425904168" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">chat</span> Discord
+            </a>
+          </div>
         </div>
-        <div class="member designer">
-          <img class="pfp" src="assets/team/dip.png" alt="Dipanshu's Profile Picture" />
-          <h3 class="h3">Dipanshu</h3>
-          <p class="member-role">Designer</p>
-          <p>
-            Focused on visuals, presentation, and the overall look of project pages.
-            <br />
-            <a href="https://discord.com/users/909654814651195423">Discord: dipanshuff</a>
-            <br />
-            <a href="https://github.com/DipanshuFF">Github: DipanshuFF</a>
+
+        <!-- Contributor 5: Dipanshu -->
+        <div class="neo-team-card">
+          <div class="neo-team-top">
+            <img class="neo-team-pfp" src="assets/team/dip.png" alt="Dipanshu Avatar"
+              onerror="this.src='assets/cmc-guides.png'; this.onerror=null;" />
+            <div class="neo-team-meta">
+              <div class="neo-team-name">Dipanshu</div>
+              <span class="neo-team-role designer">Designer</span>
+            </div>
+          </div>
+          <p class="neo-team-bio">
+            Focused on visuals, presentation styling, and the overall look of earlier project pages.
           </p>
+          <div class="neo-team-links">
+            <a href="https://discord.com/users/909654814651195423" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">chat</span> Discord
+            </a>
+            <a href="https://github.com/DipanshuFF" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">code</span> GitHub
+            </a>
+          </div>
         </div>
-        <div class="member data">
-          <img class="pfp" src="assets/team/lcky.png" alt="lcky's Profile Picture" />
-          <h3 class="h3">LCKY</h3>
-          <p class="member-role">Data skimmer</p>
-          <p>
-            Helped gather and organize data that powers some of the project’s more information-heavy pages.
-            <br />
-            <a href="https://discord.com/users/1275833464981032970">Discord: lckythakur</a>
+
+        <!-- Contributor 6: LCKY -->
+        <div class="neo-team-card">
+          <div class="neo-team-top">
+            <img class="neo-team-pfp" src="assets/team/lcky.png" alt="LCKY Avatar"
+              onerror="this.src='assets/cmc-guides.png'; this.onerror=null;" />
+            <div class="neo-team-meta">
+              <div class="neo-team-name">LCKY</div>
+              <span class="neo-team-role data">Data Skimmer</span>
+            </div>
+          </div>
+          <p class="neo-team-bio">
+            Helped gather, sanitize, and organize records that power some of our data-intensive pages.
           </p>
+          <div class="neo-team-links">
+            <a href="https://discord.com/users/1275833464981032970" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">chat</span> Discord
+            </a>
+          </div>
         </div>
-        <div class="member data">
-          <img class="pfp"
-            src="https://cdn.discordapp.com/avatars/994249322667450460/a61dab63ad61b017f218257a46699c9c.png"
-            alt="rubal_always's Profile Picture" />
-          <h3 class="h3">RUBAW</h3>
-          <p class="member-role">Data skimmer</p>
-          <p>
-            Contributed to data handling and helped keep some of the project datasets organized.
-            <br />
-            <a href="https://discord.com/users/994249322667450460">Discord: rubal_always</a>
+
+        <!-- Contributor 7: RUBAW -->
+        <div class="neo-team-card">
+          <div class="neo-team-top">
+            <img class="neo-team-pfp" src="https://cdn.discordapp.com/avatars/994249322667450460/a61dab63ad61b017f218257a46699c9c.png"
+              alt="RUBAW Avatar" onerror="this.src='assets/cmc-guides.png'; this.onerror=null;" />
+            <div class="neo-team-meta">
+              <div class="neo-team-name">RUBAW</div>
+              <span class="neo-team-role data">Data Skimmer</span>
+            </div>
+          </div>
+          <p class="neo-team-bio">
+            Contributed to data handling, verified player entries, and kept project records accurate.
           </p>
+          <div class="neo-team-links">
+            <a href="https://discord.com/users/994249322667450460" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">chat</span> Discord
+            </a>
+          </div>
         </div>
-        <div class="member data">
-          <img class="pfp"
-            src="https://cdn.discordapp.com/avatars/836642247948238888/1a4a6512340638a183f497c1f7198df0.png"
-            alt="Misty_Human's Profile Picture" />
-          <h3 class="h3">Misty_Human</h3>
-          <p class="member-role">Data skimmer</p>
-          <p>
-            Helped with data collection and cleanup for content that depends on accurate lists and records.
-            <br />
-            <a href="https://discord.com/users/836642247948238888">Discord: youtuberudit</a>
+
+        <!-- Contributor 8: Misty_Human -->
+        <div class="neo-team-card">
+          <div class="neo-team-top">
+            <img class="neo-team-pfp" src="https://cdn.discordapp.com/avatars/836642247948238888/1a4a6512340638a183f497c1f7198df0.png"
+              alt="Misty_Human Avatar" onerror="this.src='assets/cmc-guides.png'; this.onerror=null;" />
+            <div class="neo-team-meta">
+              <div class="neo-team-name">Misty_Human</div>
+              <span class="neo-team-role data">Data Skimmer</span>
+            </div>
+          </div>
+          <p class="neo-team-bio">
+            Assisted with data collection and cleanup for features requiring high-accuracy server logs.
           </p>
+          <div class="neo-team-links">
+            <a href="https://discord.com/users/836642247948238888" target="_blank" rel="noopener noreferrer" class="neo-team-link">
+              <span class="material-icons">chat</span> Discord
+            </a>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="section">
-      <h2 class="h2">How We Build It</h2>
-      <p>
-        The site is built with HTML, CSS, and JavaScript, but a lot of the useful parts are powered by our own tooling too.
-      </p>
-      <p>
-        <b>Tulip</b> is our data handler and reader, used to keep structured project data manageable.
-        <b>Marigold</b> is the secure editor layer we built so team members can update data without needing direct code access.
-      </p>
-      <img src="assets/tulip.jpeg" class="tech-img" /><br />
-      <p>
-        We used Tulip in
-        <a href="rank-sellers.html" class="link">Rank Sellers V3 and above</a>
-        to make it easier to add and manage sellers, and we plan to bring it to more data-heavy pages over time.
-      </p>
-      <img src="assets/marigold-js.jpeg" class="tech-img" /><br />
-      <p>
-        Marigold powers the
-        <a href="seller-edit.html" class="link">Seller profile editor</a>
-        and lets us update shared datasets in a controlled way, with cloud-backed automation for GitHub commits.
-      </p>
-      <p>
-        Feather Bot is built with Discord libraries and is tightly connected to the website’s guides and data pages,
-        which is why the bot docs now live alongside the rest of the project.
-      </p>
-      <img src="assets/marigold-py.jpeg" class="tech-img" /><br />
-    </div>
+    <!-- =========================================================
+         SECTION 6: INTERNAL TOOLING & ARCHIVE
+         ========================================================= -->
+    <section class="neo-section" id="section-tech">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#bae6fd; color:#0369a1;">
+              <span class="material-icons" style="color:#0369a1;">build</span>
+              ENGINEERING
+            </span>
+            <h2 class="neo-section-title">Internal Tooling &amp; Infrastructure</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            The specialized tools and internal data pipelines developed to power CraftersMC data systems — including our
+            active Whale auction engine alongside retired legacy experiments.
+          </p>
+        </div>
+        <span class="neo-section-count">4 Internal Tools</span>
+      </div>
 
-    <div class="section">
-      <h2 class="h2">Contribute</h2>
-      <p>
-        We welcome contributions. If you notice errors or have ideas for new pages, you can send feedback through the
-        <a href="feedback.html" class="link">feedback page</a>, open a discussion in our
-        <a href="https://discord.gg/tbHbnvdXKR" class="link" target="_blank">Discord server</a>, or contribute through our
-        <a href="https://github.com/CraftersMC-Guides-Project/" class="link" target="_blank">GitHub organization</a>.
-      </p>
-      <p>
-        If you want to join the team, check the available roles on the
-        <a href="applications.html" class="link">applications page</a>.
-      </p>
-    </div>
-  </div>
+      <div class="neo-grid">
+        <!-- Card 1: Whale Engine (Active) -->
+        <div class="neo-card cyan">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#bbf7d0; color:#15803d;">
+              <span class="material-icons" style="font-size:14px; color:#15803d;">bolt</span> Active
+            </span>
+            <span class="material-icons neo-card-icon" style="color:#0284c7;">water</span>
+          </div>
+          <h3 class="neo-card-title">Whale — Auction Engine</h3>
+          <p class="neo-card-desc">
+            <strong>Whale</strong> (<em>Wide-scale Historical Auction Logging and Extraction</em>) powers historical
+            auction tracking, stores snapshot records, computes 14-day rolling averages, and drives real-time
+            <code>/auction alert</code> notifications.
+          </p>
+          <div class="neo-img-frame" style="background: transparent; border: none; padding: 0;">
+            <img src="assets/whale.png" alt="Whale Auction Engine" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid #111827;" />
+          </div>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Feather Bot <span>/ Active Engine</span></div>
+            <span class="neo-badge" style="background:#ffffff;">/auction alert</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Tulip Data Engine (Discontinued) -->
+        <div class="neo-card legacy">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#fee2e2; color:#991b1b;">
+              <span class="material-icons" style="font-size:14px; color:#be123c;">archive</span> Discontinued
+            </span>
+            <span class="material-icons neo-card-icon" style="color:#9ca3af;">storage</span>
+          </div>
+          <h3 class="neo-card-title">Tulip — Data Engine</h3>
+          <p class="neo-card-desc">
+            Originally created as a custom data handler and reader to parse structured game items for Rank Sellers V3
+            and early market experiments. Tulip has been retired and discontinued.
+          </p>
+          <div class="neo-img-frame">
+            <img src="assets/tulip.jpeg" alt="Tulip data handler interface" />
+          </div>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Legacy Tool <span>/ Retired Reader</span></div>
+            <span class="neo-badge" style="background:#f3f4f6; color:#6b7280; font-size:11.5px;">
+              <span class="material-icons" style="font-size:13px;">history</span> Discontinued
+            </span>
+          </div>
+        </div>
+
+        <!-- Card 3: Marigold.js Web CMS (Discontinued) -->
+        <div class="neo-card legacy">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#fee2e2; color:#991b1b;">
+              <span class="material-icons" style="font-size:14px; color:#be123c;">archive</span> Discontinued
+            </span>
+            <span class="material-icons neo-card-icon" style="color:#9ca3af;">terminal</span>
+          </div>
+          <h3 class="neo-card-title">Marigold.js — Web CMS</h3>
+          <p class="neo-card-desc">
+            A legacy JavaScript web editor built so verified players could manage seller catalog records without direct
+            code access, equipped with Cloudflare headers. Discontinued alongside seller profile updates.
+          </p>
+          <div class="neo-img-frame">
+            <img src="assets/marigold-js.jpeg" alt="Marigold JS editor view" />
+          </div>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Legacy Tool <span>/ Retired Web CMS</span></div>
+            <span class="neo-badge" style="background:#f3f4f6; color:#6b7280; font-size:11.5px;">
+              <span class="material-icons" style="font-size:13px;">history</span> Discontinued
+            </span>
+          </div>
+        </div>
+
+        <!-- Card 4: Marigold.py Backend (Discontinued) -->
+        <div class="neo-card legacy">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#fee2e2; color:#991b1b;">
+              <span class="material-icons" style="font-size:14px; color:#be123c;">archive</span> Discontinued
+            </span>
+            <span class="material-icons neo-card-icon" style="color:#9ca3af;">code</span>
+          </div>
+          <h3 class="neo-card-title">Marigold.py — Automation</h3>
+          <p class="neo-card-desc">
+            A Python script written specifically for market project data amendment and automatic GitHub commits (never
+            used in Feather Bot). Now also discontinued and archived.
+          </p>
+          <div class="neo-img-frame">
+            <img src="assets/marigold-py.jpeg" alt="Marigold Python automation engine" />
+          </div>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Legacy Tool <span>/ Retired Automation</span></div>
+            <span class="neo-badge" style="background:#f3f4f6; color:#6b7280; font-size:11.5px;">
+              <span class="material-icons" style="font-size:13px;">history</span> Discontinued
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 7: CONTRIBUTE & JOIN US
+         ========================================================= -->
+    <section class="neo-hero-card" id="section-contribute" style="margin-top: 10px;">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
+        </div>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px; color:#111827;">volunteer_activism</span>
+          CraftersMC-Guides-Project / Community
+        </div>
+      </div>
+
+      <div class="neo-hero-content">
+        <div class="neo-hero-top-row">
+          <div class="neo-hero-heading-group">
+            <h2 class="neo-hero-title">
+              Want to Help Build <span class="neo-hero-highlight">CraftersMC Guides</span>?
+            </h2>
+            <p class="neo-hero-subtitle">
+              We welcome community contributions! If you notice an error in a guide, have an idea for a new calculator,
+              or want to contribute code to the website or Feather Bot, there are several ways to get involved:
+            </p>
+          </div>
+
+          <!-- Plain SkyBlock Game Clock on Top Right -->
+          <div class="neo-plain-clock" title="SkyBlock Game Time">
+            <div class="neo-plain-clock-time game-clock-time">--:--</div>
+            <div class="neo-plain-clock-date game-clock-date">Year --, Season --</div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:20px;">
+          <a href="feedback.html" class="button70-btn">
+            <span class="material-icons">rate_review</span>
+            Send Feedback
+          </a>
+          <a href="https://discord.gg/tbHbnvdXKR" target="_blank" rel="noopener noreferrer" class="button70-btn cyan">
+            <span class="material-icons">forum</span>
+            Join Discord
+          </a>
+          <a href="https://github.com/CraftersMC-Guides-Project/" target="_blank" rel="noopener noreferrer" class="button70-btn purple">
+            <span class="material-icons">code</span>
+            GitHub Organization
+          </a>
+          <a href="applications.html" class="button70-btn yellow">
+            <span class="material-icons">badge</span>
+            Staff Applications &rarr;
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer Container (Loaded dynamically from /components/footer.html) -->
   <div id="footer"></div>
+
 </body>
 
 </html>

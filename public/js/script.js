@@ -220,21 +220,33 @@ function fetchAllPartials() {
       }
 
       setupThemeSwitchers();
-      window.addEventListener('load', () => {
+      const hideLoader = () => {
         const o = document.getElementById('loader-wrapper');
-        o && (o.classList.add('hidden'), setTimeout(() => {
-          o && (o.style.display = 'none')
-        }, 500));
-      });
+        if (o) {
+          o.classList.add('hidden');
+          setTimeout(() => { if (o) o.style.display = 'none'; }, 500);
+        }
+      };
+      if (document.readyState === 'complete') {
+        hideLoader();
+      } else {
+        window.addEventListener('load', hideLoader);
+      }
     })
     .catch((error) => {
       console.error("Error loading partials:", error);
-      window.addEventListener('load', () => {
+      const hideLoader = () => {
         const o = document.getElementById('loader-wrapper');
-        o && (o.classList.add('hidden'), setTimeout(() => {
-          o && (o.style.display = 'none')
-        }, 500));
-      });
+        if (o) {
+          o.classList.add('hidden');
+          setTimeout(() => { if (o) o.style.display = 'none'; }, 500);
+        }
+      };
+      if (document.readyState === 'complete') {
+        hideLoader();
+      } else {
+        window.addEventListener('load', hideLoader);
+      }
     });
 }
 
@@ -252,21 +264,33 @@ function fetchAllLPartials() {
       const loaderEl = document.getElementById("loader");
       if (loaderEl) loaderEl.innerHTML = loaderHtml;
       setupThemeSwitchers();
-      window.addEventListener('load', () => {
+      const hideLoader = () => {
         const o = document.getElementById('loader-wrapper');
-        o && (o.classList.add('hidden'), setTimeout(() => {
-          o && (o.style.display = 'none')
-        }, 500));
-      });
+        if (o) {
+          o.classList.add('hidden');
+          setTimeout(() => { if (o) o.style.display = 'none'; }, 500);
+        }
+      };
+      if (document.readyState === 'complete') {
+        hideLoader();
+      } else {
+        window.addEventListener('load', hideLoader);
+      }
     })
     .catch((err) => {
       console.error("[Partials] Failed to load:", err);
-      window.addEventListener('load', () => {
+      const hideLoader = () => {
         const o = document.getElementById('loader-wrapper');
-        o && (o.classList.add('hidden'), setTimeout(() => {
-          o && (o.style.display = 'none')
-        }, 500));
-      });
+        if (o) {
+          o.classList.add('hidden');
+          setTimeout(() => { if (o) o.style.display = 'none'; }, 500);
+        }
+      };
+      if (document.readyState === 'complete') {
+        hideLoader();
+      } else {
+        window.addEventListener('load', hideLoader);
+      }
     });
 }
 
@@ -517,6 +541,121 @@ if (document.readyState === "interactive" || document.readyState === "complete")
     initScrollToTop();
 }
 
+// Buttery-smooth easing animation for in-page scrolling (matches index.html)
+function smoothScrollTo(targetPosition, duration) {
+  duration = duration || 650;
+  const startPosition = window.pageYOffset || document.documentElement.scrollTop;
+  const distance = targetPosition - startPosition;
+  if (Math.abs(distance) < 2) return;
+
+  let startTime = null;
+  let userInterrupted = false;
+
+  const stopOnInterrupt = () => {
+    userInterrupted = true;
+    cleanup();
+  };
+  const cleanup = () => {
+    window.removeEventListener('wheel', stopOnInterrupt);
+    window.removeEventListener('touchmove', stopOnInterrupt);
+  };
+  window.addEventListener('wheel', stopOnInterrupt, { passive: true });
+  window.addEventListener('touchmove', stopOnInterrupt, { passive: true });
+
+  // Cubic ease-in-out curve for natural gliding acceleration and deceleration
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+  }
+
+  function animation(currentTime) {
+    if (userInterrupted) return;
+    if (!startTime) startTime = currentTime;
+    const timeElapsed = currentTime - startTime;
+    const progress = Math.min(timeElapsed / duration, 1);
+    const ease = easeInOutCubic(progress);
+
+    window.scrollTo(0, startPosition + distance * ease);
+
+    if (progress < 1) {
+      requestAnimationFrame(animation);
+    } else {
+      cleanup();
+    }
+  }
+
+  requestAnimationFrame(animation);
+}
+window.smoothScrollTo = smoothScrollTo;
+
+// =========================================================
+// GLOBAL SMOOTH SCROLLING FOR ALL PAGES & IN-PAGE ANCHORS
+// =========================================================
+function initSmoothScrolling() {
+  document.addEventListener('click', function (e) {
+    const anchor = e.target.closest('a');
+    if (!anchor) return;
+    const href = anchor.getAttribute('href');
+    if (!href) return;
+
+    let hash = '';
+    if (href.startsWith('#') && href.length > 1) {
+      hash = href;
+    } else if (href.includes('#')) {
+      const split = href.split('#');
+      const page = split[0].toLowerCase();
+      const currentPath = window.location.pathname.toLowerCase();
+      const currentFile = currentPath.split('/').pop() || 'index.html';
+      if (page === '' || page === currentFile || currentPath.endsWith('/' + page)) {
+        hash = '#' + split[1];
+      }
+    }
+
+    if (hash && hash !== '#') {
+      const targetId = hash.slice(1);
+      const targetEl = document.getElementById(targetId) || document.querySelector(`[name="${targetId}"]`) || document.querySelector(hash);
+      if (targetEl) {
+        e.preventDefault();
+        const topNav = document.querySelector('.top') || document.querySelector('.navbar') || document.querySelector('header');
+        const topOffset = topNav ? topNav.offsetHeight + 16 : 84;
+        const startPosition = window.pageYOffset || document.documentElement.scrollTop;
+        const targetPosition = targetEl.getBoundingClientRect().top + startPosition - topOffset;
+
+        smoothScrollTo(targetPosition, 700);
+
+        if (window.history && window.history.pushState) {
+          window.history.pushState(null, '', hash);
+        } else {
+          window.location.hash = hash;
+        }
+      }
+    }
+  });
+
+  // Handle landing on page with an in-page hash
+  if (window.location.hash && window.location.hash !== '#') {
+    setTimeout(function() {
+      try {
+        const targetId = window.location.hash.slice(1);
+        const targetEl = document.getElementById(targetId) || document.querySelector(`[name="${targetId}"]`);
+        if (targetEl) {
+          const topNav = document.querySelector('.top') || document.querySelector('.navbar') || document.querySelector('header');
+          const topOffset = topNav ? topNav.offsetHeight + 16 : 84;
+          const startPosition = window.pageYOffset || document.documentElement.scrollTop;
+          const targetPosition = targetEl.getBoundingClientRect().top + startPosition - topOffset;
+          smoothScrollTo(targetPosition, 600);
+        }
+      } catch (err) {}
+    }, 200);
+  }
+}
+window.initSmoothScrolling = initSmoothScrolling;
+
+// Run if DOM is already ready (e.g. async/defer loaded)
+if (document.readyState === "interactive" || document.readyState === "complete") {
+    initScrollToTop();
+    initSmoothScrolling();
+}
+
 /* =========================================================
    MediaWiki:Gadget-timer.js
    Native & jQuery-compatible recurring event timer runner
@@ -616,11 +755,58 @@ function updateEventTimers() {
 }
 window.updateEventTimers = updateEventTimers;
 
+/* =========================================================
+   SkyBlock In-Game Clock Runner (Plain, Matching index.html)
+   ========================================================= */
+function updateGameClock() {
+  var timeElements = document.querySelectorAll('.game-clock-time, #game-clock-time');
+  var dateElements = document.querySelectorAll('.game-clock-date, #game-clock-date');
+  if (timeElements.length === 0 && dateElements.length === 0) return;
+
+  var now = new Date();
+  var START_OF_TIMES = 1648800000;
+  var TIME_MULTIPLIER = 72;
+  var SEASON_LENGTH = 93;
+  var YEAR_LENGTH = 4;
+  var SEASON_NAMES = ['Spring', 'Summer', 'Autumn', 'Winter'];
+
+  // Official CraftersMC calendar.js time algorithm
+  var epochTime = Math.floor(now.getTime() / 1000) - START_OF_TIMES;
+  var skyBlockTime = epochTime * TIME_MULTIPLIER;
+
+  var totalMinutes = Math.floor(skyBlockTime / 60);
+  var totalHours = Math.floor(totalMinutes / 60);
+  var totalDays = Math.floor(totalHours / 24);
+  var totalSeasons = Math.floor(totalDays / SEASON_LENGTH);
+  var totalYears = Math.floor(totalSeasons / YEAR_LENGTH);
+
+  var currentMinute = totalMinutes % 60;
+  var currentHour = totalHours % 24;
+  var currentDay = (totalDays % SEASON_LENGTH) + 1;
+  var currentSeason = totalSeasons % YEAR_LENGTH;
+  var currentYear = totalYears + 1;
+
+  var ampm = currentHour >= 12 ? 'PM' : 'AM';
+  var displayHour = currentHour % 12 || 12;
+  var timeStr = displayHour + ':' + (currentMinute < 10 ? '0' : '') + currentMinute + ' ' + ampm;
+  var dateStr = 'Year ' + currentYear + ', ' + SEASON_NAMES[currentSeason] + ' ' + currentDay;
+
+  timeElements.forEach(function(el) { el.textContent = timeStr; });
+  dateElements.forEach(function(el) { el.textContent = dateStr; });
+}
+window.updateGameClock = updateGameClock;
+
 $(document).ready(function() {
   // update every 1000ms if there are EventTimers on the page
   if ($('.EventTimer').length !== 0) {
     updateEventTimers();
     setInterval(updateEventTimers, 1000);
+  }
+
+  // Initialize in-game clock immediately and tick smoothly
+  if (document.querySelectorAll('.game-clock-time, #game-clock-time').length !== 0) {
+    updateGameClock();
+    setInterval(updateGameClock, 500);
   }
 });
 
