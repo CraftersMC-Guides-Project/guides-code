@@ -209,9 +209,21 @@ export async function onRequest(context) {
       const cleanPubKey = pubKey.replace(/["']/g, '').trim();
       const cleanPrivKey = privKey.replace(/["']/g, '').trim();
 
+      const seenEndpoints = new Set();
+      const seenDevices = new Set();
+
       for (const sub of eligibleSubscribers) {
         const targetEndpoint = sub.endpoint || (sub.token ? `https://fcm.googleapis.com/wp/${sub.token}` : null);
         if (!targetEndpoint) continue;
+
+        // Deduplication: prevent sending multiple notifications to the same device or endpoint
+        if (seenEndpoints.has(targetEndpoint)) continue;
+        seenEndpoints.add(targetEndpoint);
+
+        if (sub.device_id) {
+          if (seenDevices.has(sub.device_id)) continue;
+          seenDevices.add(sub.device_id);
+        }
 
         try {
           const sendRes = await sendWebPushNotification({
@@ -230,9 +242,10 @@ export async function onRequest(context) {
             // If subscription is expired or unsubscribed (410 Gone or 404 Not Found), prune immediately!
             if ((sendRes.status === 410 || sendRes.status === 404) && env.DB) {
               try {
-                await env.DB.prepare(
-                  'DELETE FROM fcm_subscribers WHERE token = ? OR endpoint = ?'
-                ).bind(sub.token || '', targetEndpoint).run();
+                await env.DB.prepare(`
+                  DELETE FROM fcm_subscribers 
+                  WHERE token = ? OR endpoint = ? OR (device_id IS NOT NULL AND device_id = ?)
+                `).bind(sub.token || '', targetEndpoint, sub.device_id || '').run();
                 eventSummary.prunedCount++;
                 eventSummary.errors.push(`Pruned dead subscriber ...${shortId} from database`);
               } catch (pruneErr) {

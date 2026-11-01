@@ -37,6 +37,15 @@ export async function ensureDbSchema(db) {
         await db.prepare("ALTER TABLE fcm_subscribers ADD COLUMN auth TEXT").run();
       } catch (e) {}
     }
+    if (!existingColumns.includes('device_id')) {
+      try {
+        await db.prepare("ALTER TABLE fcm_subscribers ADD COLUMN device_id TEXT").run();
+      } catch (e) {}
+    }
+
+    try {
+      await db.prepare("CREATE INDEX IF NOT EXISTS idx_fcm_device_id ON fcm_subscribers(device_id)").run();
+    } catch (e) {}
 
     // 4. Ensure sent alerts log table exists
     await db.prepare(`

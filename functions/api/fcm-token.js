@@ -50,7 +50,7 @@ export async function onRequest(context) {
   if (request.method === 'POST') {
     try {
       const data = await request.json();
-      const { token, preferences, subscription } = data;
+      const { device_id, token, preferences, subscription } = data;
 
       if (!token) {
         return new Response(JSON.stringify({ error: 'Token is required' }), {
@@ -63,19 +63,32 @@ export async function onRequest(context) {
       const p256dh = subscription?.keys?.p256dh || null;
       const auth = subscription?.keys?.auth || null;
 
-      // If D1 database is bound, store the token
+      // If D1 database is bound, store the token uniquely per device
       if (env.DB) {
         try {
+          // 1. Purge any previous row for this device_id, token, or endpoint
+          if (device_id || endpoint) {
+            await env.DB.prepare(`
+              DELETE FROM fcm_subscribers
+              WHERE (device_id IS NOT NULL AND device_id = ?)
+                 OR token = ?
+                 OR (endpoint IS NOT NULL AND endpoint = ?)
+            `).bind(device_id || '', token, endpoint || '').run();
+          }
+
+          // 2. Insert single unique subscription row
           await env.DB.prepare(`
-            INSERT INTO fcm_subscribers (token, endpoint, p256dh, auth, preferences, updated_at)
-            VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            INSERT INTO fcm_subscribers (device_id, token, endpoint, p256dh, auth, preferences, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
             ON CONFLICT(token) DO UPDATE SET
+              device_id = excluded.device_id,
               endpoint = excluded.endpoint,
               p256dh = excluded.p256dh,
               auth = excluded.auth,
               preferences = excluded.preferences,
               updated_at = CURRENT_TIMESTAMP
           `).bind(
+            device_id || null,
             token,
             endpoint,
             p256dh,
@@ -89,7 +102,8 @@ export async function onRequest(context) {
 
       return new Response(JSON.stringify({
         success: true,
-        message: 'Token registered successfully',
+        message: 'Token registered uniquely for device',
+        device_id: device_id || null,
         has_subscription: !!endpoint
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -105,12 +119,15 @@ export async function onRequest(context) {
   if (request.method === 'DELETE') {
     try {
       const data = await request.json().catch(() => ({}));
-      const { token, endpoint } = data;
+      const { device_id, token, endpoint } = data;
 
-      if (env.DB && (token || endpoint)) {
-        await env.DB.prepare(
-          'DELETE FROM fcm_subscribers WHERE token = ? OR endpoint = ?'
-        ).bind(token || '', endpoint || '').run();
+      if (env.DB && (device_id || token || endpoint)) {
+        await env.DB.prepare(`
+          DELETE FROM fcm_subscribers 
+          WHERE (device_id IS NOT NULL AND device_id = ?) 
+             OR token = ? 
+             OR (endpoint IS NOT NULL AND endpoint = ?)
+        `).bind(device_id || '', token || '', endpoint || '').run();
       }
 
       return new Response(JSON.stringify({

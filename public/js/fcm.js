@@ -58,10 +58,26 @@ class SkyCalendarFCMController {
     this.app = null;
     this.messaging = null;
     this.swRegistration = null;
+    this.deviceId = this.getOrCreateDeviceId();
     this.token = localStorage.getItem('cmc_fcm_token') || null;
     this.preferences = this.loadPreferences();
     this.isSupported = false;
     this.activeAlarms = new Map();
+  }
+
+  getOrCreateDeviceId() {
+    try {
+      let id = localStorage.getItem('cmc_device_id');
+      if (!id) {
+        id = 'cmc_' + (typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : (Date.now().toString(36) + Math.random().toString(36).substring(2)));
+        localStorage.setItem('cmc_device_id', id);
+      }
+      return id;
+    } catch (e) {
+      return 'cmc_fallback_' + Date.now().toString(36);
+    }
   }
 
   loadPreferences() {
@@ -288,11 +304,14 @@ class SkyCalendarFCMController {
           await sub.unsubscribe().catch(() => {});
         }
       }
-      if (oldToken) {
+      if (oldToken || this.deviceId) {
         await fetch('/api/fcm-token', {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: oldToken })
+          body: JSON.stringify({
+            device_id: this.deviceId,
+            token: oldToken
+          })
         }).catch(() => {});
       }
     } catch (e) {
@@ -406,6 +425,7 @@ class SkyCalendarFCMController {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          device_id: this.deviceId,
           token,
           subscription: subData,
           preferences: this.preferences
@@ -531,6 +551,12 @@ class SkyCalendarFCMController {
     const tokenInput = document.getElementById('fcm-token-display');
     if (tokenInput) {
       tokenInput.value = this.token || 'Notifications not enabled yet';
+    }
+
+    const deviceIdDisplay = document.getElementById('fcm-device-id-display');
+    if (deviceIdDisplay) {
+      deviceIdDisplay.textContent = this.deviceId ? this.deviceId.slice(0, 16) + '...' : 'None';
+      deviceIdDisplay.title = this.deviceId || '';
     }
   }
 
