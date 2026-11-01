@@ -2,155 +2,1061 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <title>Calculators &amp; Tools — CraftersMC Guides</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Interactive SkyBlock calculators for reforges, minion production, skill EXP, and accessory optimization.">
-  <link rel="icon" href="assets/cmc-icon.png" type="image/png">
-  <link rel="icon" href="assets/cmc-guides.png" type="image/png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyBlock Calculators &amp; Tools — CraftersMC Guides</title>
+  <meta name="description"
+    content="Complete suite of interactive SkyBlock calculators for reforges, minion production, skill progression, pet leveling, missing accessories, and live market intelligence." />
+  <meta property="og:title" content="SkyBlock Calculators &amp; Tools — CraftersMC Guides" />
+  <meta property="og:description"
+    content="Interactive SkyBlock calculators for gear reforges, minion production, skill EXP, pet progression, and accessory optimization." />
+  <meta property="og:image" content="https://craftersmc-guides.pages.dev/assets/cmc-guides.png" />
+  <meta property="og:url" content="https://craftersmc-guides.pages.dev/tools.html" />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png" />
+  <link rel="icon" href="assets/cmc-guides.png" type="image/png" />
 
-  <!-- Fonts & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Google Fonts & Material Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="better-api-docs/style.css">
+  <!-- Anti-flash Theme Init -->
+  <script>
+    (function () {
+      try {
+        var d = localStorage.getItem("darkMode");
+        if (d === "true" || (d === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("darkmode");
+        } else {
+          document.documentElement.classList.remove("darkmode");
+        }
+      } catch (e) { }
+    })();
+  </script>
 
-  <!-- Scripts -->
-  <script src="better-api-docs/app.js" defer></script>
+  <!-- Core & Unified Stylesheets -->
+  <link rel="stylesheet" href="css/essential.css" />
+  <link rel="stylesheet" href="css/neo-brutalism.css" />
+
+  <!-- Global Application Scripts -->
   <script src="js/components.js" defer></script>
+  <script src="js/script.js" defer></script>
+
+  <style>
+    /* =========================================================
+       TOOLS HUB SPECIFIC STYLES (NEO-BRUTALISM)
+       ========================================================= */
+
+    /* Featured Tools Grid */
+    .featured-tools-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 992px) {
+      .featured-tools-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .featured-tools-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+    }
+
+    .featured-tool-card {
+      background: #ffffff;
+      border: 3px solid #111827;
+      border-radius: 14px;
+      box-shadow: 5px 5px 0 #111827;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .featured-tool-card:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 7px 7px 0 #111827;
+    }
+
+    .darkmode .featured-tool-card {
+      background: #141416;
+      border-color: #27272a;
+      box-shadow: 5px 5px 0 #000000;
+    }
+
+    .darkmode .featured-tool-card:hover {
+      border-color: #38bdf8;
+      box-shadow: 7px 7px 0 #000000;
+    }
+
+    .featured-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .featured-icon-badge {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      border: 2px solid #111827;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 2px 2px 0 #111827;
+    }
+
+    .featured-icon-badge .material-icons {
+      font-size: 26px !important;
+      color: #111827 !important;
+    }
+
+    .darkmode .featured-icon-badge {
+      border-color: #000000;
+      box-shadow: 2px 2px 0 #000000;
+    }
+
+    .darkmode .featured-icon-badge .material-icons {
+      color: #000000 !important;
+    }
+
+    .featured-tool-card.cyan .featured-icon-badge {
+      background: #38bdf8;
+    }
+
+    .featured-tool-card.yellow .featured-icon-badge {
+      background: #fde047;
+    }
+
+    .featured-tool-card.green .featured-icon-badge {
+      background: #4ade80;
+    }
+
+    .featured-tool-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #111827;
+      margin: 0;
+      line-height: 1.25;
+    }
+
+    .darkmode .featured-tool-title {
+      color: #ffffff;
+    }
+
+    .featured-tool-desc {
+      font-size: 0.9rem;
+      color: #4b5563;
+      margin: 0;
+      line-height: 1.5;
+      flex-grow: 1;
+    }
+
+    .darkmode .featured-tool-desc {
+      color: #a1a1aa;
+    }
+
+    .featured-tool-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 2px dashed #e2e8f0;
+      padding-top: 12px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .darkmode .featured-tool-footer {
+      border-top-color: #27272a;
+      color: #38bdf8;
+    }
+
+    /* Filter Chips Bar */
+    .filter-chips-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .filter-chip-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      font-size: 12.5px;
+      font-weight: 800;
+      border: 2px solid #111827;
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 2.5px 2.5px 0 #111827;
+      cursor: pointer;
+      color: #111827;
+      user-select: none;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.08s ease;
+      font-family: inherit;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .filter-chip-btn:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 3.5px 3.5px 0 #111827;
+      background: #fef08a;
+    }
+
+    .filter-chip-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 0 0 0 #111827;
+    }
+
+    .filter-chip-btn.active {
+      background: #111827;
+      color: #ffffff;
+      box-shadow: 2.5px 2.5px 0 #38bdf8;
+    }
+
+    .filter-chip-btn.active .material-icons {
+      color: #38bdf8 !important;
+    }
+
+    .filter-chip-btn .chip-count {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: #f1f5f9;
+      color: #111827;
+      border: 1px solid #111827;
+    }
+
+    .filter-chip-btn.active .chip-count {
+      background: #38bdf8;
+      color: #000000;
+      border-color: #000000;
+    }
+
+    .darkmode .filter-chip-btn {
+      background: #18181b;
+      color: #ffffff;
+      border-color: #27272a;
+      box-shadow: 2.5px 2.5px 0 #000000;
+    }
+
+    .darkmode .filter-chip-btn:hover {
+      background: #27272a;
+      border-color: #38bdf8;
+    }
+
+    .darkmode .filter-chip-btn.active {
+      background: #38bdf8;
+      color: #000000;
+      border-color: #000000;
+      box-shadow: 2.5px 2.5px 0 #38bdf8;
+    }
+
+    .darkmode .filter-chip-btn.active .material-icons {
+      color: #000000 !important;
+    }
+
+    .darkmode .filter-chip-btn .chip-count {
+      background: #27272a;
+      color: #ffffff;
+      border-color: #3f3f46;
+    }
+
+    .darkmode .filter-chip-btn.active .chip-count {
+      background: #000000;
+      color: #ffffff;
+      border-color: #000000;
+    }
+
+    /* Tool Feature Bullet Chips inside Directory Cards */
+    .tool-features-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0 0;
+    }
+
+    .tool-feature-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 5px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #475569;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .darkmode .tool-feature-tag {
+      background: #1f1f23;
+      border-color: #27272a;
+      color: #cbd5e1;
+    }
+
+    /* Empty Search Results Container */
+    .neo-empty-state {
+      display: none;
+      background: #ffffff;
+      border: 3px solid #111827;
+      border-radius: 14px;
+      box-shadow: 5px 5px 0 #111827;
+      padding: 48px 24px;
+      text-align: center;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .neo-empty-state.active {
+      display: flex;
+    }
+
+    .darkmode .neo-empty-state {
+      background: #141416;
+      border-color: #27272a;
+      box-shadow: 5px 5px 0 #000000;
+    }
+
+    .neo-empty-icon {
+      font-size: 48px !important;
+      color: #f87171 !important;
+    }
+
+    .neo-empty-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #111827;
+      margin: 0;
+    }
+
+    .darkmode .neo-empty-title {
+      color: #ffffff;
+    }
+
+    .neo-empty-desc {
+      font-size: 0.95rem;
+      color: #4b5563;
+      margin: 0;
+      max-width: 500px;
+    }
+
+    .darkmode .neo-empty-desc {
+      color: #a1a1aa;
+    }
+
+    /* Responsive Tweaks */
+    @media (max-width: 640px) {
+      .featured-tool-card {
+        padding: 16px;
+      }
+
+      .filter-chips-bar {
+        gap: 6px;
+      }
+
+      .filter-chip-btn {
+        padding: 6px 10px;
+        font-size: 11.5px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-  <!-- Top Header Navigation -->
-  <header class="top-header">
-    <div class="header-left">
-      <button type="button" class="mobile-menu-btn" aria-label="Toggle navigation menu">
-        <span class="material-icons" style="font-size:1.25rem;">menu</span>
-      </button>
-      <a href="index.html" class="header-brand">
-        <img src="assets/cmc-guides.png" alt="CraftersMC Logo">
-        <div class="brand-text">
-          <span class="brand-title">CraftersMC Guides</span>
-          <span class="version-badge">Calculators</span>
+  <!-- Fullscreen / Layout Overlays -->
+  <div class="background"></div>
+
+  <!-- Top Navigation (Dynamically loaded from /components/navbar.html) -->
+  <div class="top"></div>
+
+  <!-- Navigation Sidebar (Dynamically loaded from /components/sidebar.html) -->
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- =========================================================
+       MAIN NEO-BRUTALISM PAGE CONTENT
+       ========================================================= -->
+  <main class="neo-container">
+
+    <!-- HERO SECTION -->
+    <section class="neo-hero-card" id="overview">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
         </div>
-      </a>
-    </div>
-
-    <!-- Search Box -->
-    <div class="search-box">
-      <span class="material-icons search-icon">search</span>
-      <input type="text" id="search-input" placeholder="Search guides, tools, calculators...">
-      <span class="search-kbd-shortcut">/</span>
-    </div>
-
-    <!-- Header Utility Links -->
-    <div class="header-actions">
-      <a href="better-api-docs/index.html" class="header-link" style="color: var(--accent-color); font-weight: 600;"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">api</span> <span class="header-link-text">API Docs</span></a>
-      <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank" class="header-link"><span class="material-icons" style="font-size:1rem; vertical-align:middle;">code</span> <span class="header-link-text">GitHub</span></a>
-    </div>
-  </header>
-
-  <!-- Application Layout -->
-  <div class="app-layout">
-
-    <!-- Left Sidebar Web Component -->
-    <cmc-sidebar active="tools"></cmc-sidebar>
-
-    <!-- Main Content Area -->
-    <main class="main-content">
-
-      <!-- Section Header -->
-      <section class="doc-section">
-        <div class="section-header">
-          <h1>SkyBlock Calculators &amp; Utilities</h1>
-          <p>Interactive tools to calculate reforge stats, minion output, skill progression, and gear optimization.</p>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px;">build</span>
+          CraftersMC-Guides-Project / Calculators &amp; Tools Hub
         </div>
+      </div>
 
-        <!-- Category: Gear & Optimization -->
-        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
-          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: var(--accent-color);">tune</span> Gear &amp; Stats Optimization</h2>
-        </div>
-
-        <div class="schema-cards-grid" style="margin-bottom: 28px;">
-          <div class="schema-card">
-            <div class="schema-name"><a href="tools/best-reforge.html">Best Reforge Calculator</a></div>
-            <div class="schema-desc">Find the optimal reforge combination for your weapon or armor based on desired stats.</div>
-            <div style="margin-top: auto;"><a href="tools/best-reforge.html" style="font-weight: 600;">Launch Calculator &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="tools/missing-acces-calc.html">Missing Accessories Calculator</a></div>
-            <div class="schema-desc">Check which talismans, rings, and artifacts you are missing to maximize your magical power.</div>
-            <div style="margin-top: auto;"><a href="tools/missing-acces-calc.html" style="font-weight: 600;">Launch Calculator &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="tools/calc.html">General SkyBlock Calculator</a></div>
-            <div class="schema-desc">Multi-purpose calculator for combat damage formulas, effective HP, and stat scaling.</div>
-            <div style="margin-top: auto;"><a href="tools/calc.html" style="font-weight: 600;">Launch Calculator &rarr;</a></div>
+      <div class="neo-hero-content">
+        <!-- Top Row: Heading and Subtitle -->
+        <div class="neo-hero-top-row">
+          <div class="neo-hero-heading-group">
+            <h1 class="neo-hero-title">
+              SkyBlock <span class="neo-hero-highlight">Calculators &amp; Tools</span>
+            </h1>
+            <p class="neo-hero-subtitle">
+              Precision calculation engines for gear reforges, minion outputs, skill progression, pet leveling, missing accessory tracking, and real-time market intelligence.
+            </p>
           </div>
         </div>
 
-        <!-- Category: Minions -->
-        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
-          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #16a34a;">precision_manufacturing</span> Minion Automation</h2>
-        </div>
-
-        <div class="schema-cards-grid" style="margin-bottom: 28px;">
-          <div class="schema-card">
-            <div class="schema-name"><a href="tools/minion-inv-time.html">Minion Inventory Filling Calculator</a></div>
-            <div class="schema-desc">Calculate exact hours until your minion's inventory fills up based on tier, fuel, and storage chests.</div>
-            <div style="margin-top: auto;"><a href="tools/minion-inv-time.html" style="font-weight: 600;">Launch Calculator &rarr;</a></div>
+        <!-- Quick Summary Chips -->
+        <div class="neo-hero-stats">
+          <div class="neo-stat-chip">
+            <span class="material-icons">calculate</span>
+            <span>8 Calculators</span>
           </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="tools/minion-production.html">Minion Production Calculator</a></div>
-            <div class="schema-desc">Estimate daily item yields and coin revenue per minion setup with different fuel upgrades.</div>
-            <div style="margin-top: auto;"><a href="tools/minion-production.html" style="font-weight: 600;">Launch Calculator &rarr;</a></div>
+          <div class="neo-stat-chip">
+            <span class="material-icons">monitoring</span>
+            <span>6 Live Trackers</span>
           </div>
-        </div>
-
-        <!-- Category: Progression & Pets -->
-        <div class="section-header" style="margin-top: 32px; border-bottom: none; padding-bottom: 0;">
-          <h2 style="font-size: 1.15rem;"><span class="material-icons" style="color: #9333ea;">pets</span> Progression &amp; Leveling</h2>
-        </div>
-
-        <div class="schema-cards-grid" style="margin-bottom: 28px;">
-          <div class="schema-card">
-            <div class="schema-name"><a href="tools/skill-calculator.html">Skill EXP Calculator</a></div>
-            <div class="schema-desc">Calculate remaining experience and total actions needed to reach your target skill level.</div>
-            <div style="margin-top: auto;"><a href="tools/skill-calculator.html" style="font-weight: 600;">Launch Calculator &rarr;</a></div>
+          <div class="neo-stat-chip">
+            <span class="material-icons">bolt</span>
+            <span>Instant Results</span>
           </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="tools/pet-exp-calculator.html">Pet EXP Calculator</a></div>
-            <div class="schema-desc">Estimate pet level progression and required candy / exp amounts to reach level 100.</div>
-            <div style="margin-top: auto;"><a href="tools/pet-exp-calculator.html" style="font-weight: 600;">Launch Calculator &rarr;</a></div>
-          </div>
-
-          <div class="schema-card">
-            <div class="schema-name"><a href="tools/missing-cakes-calc.html">Missing Cakes Calculator</a></div>
-            <div class="schema-desc">Track which New Year Celebration Cakes you still need for your Century Cake Bag collection.</div>
-            <div style="margin-top: auto;"><a href="tools/missing-cakes-calc.html" style="font-weight: 600;">Launch Calculator &rarr;</a></div>
+          <div class="neo-stat-chip">
+            <span class="material-icons">verified</span>
+            <span>Community Verified</span>
           </div>
         </div>
 
-      </section>
-
-      <!-- Footer -->
-      <footer class="site-footer">
-        <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
-        <div class="site-footer-right">
-          <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
+        <!-- Action Buttons (Button 70) -->
+        <div class="neo-hero-actions">
+          <a href="#tools-directory" class="button70-btn yellow">
+            <span class="material-icons">calculate</span>
+            Browse All Tools
+          </a>
+          <a href="skycalendar.html" class="button70-btn cyan">
+            <span class="material-icons">calendar_month</span>
+            SkyBlock Calendar
+          </a>
+          <a href="bazaar.html" class="button70-btn green">
+            <span class="material-icons">storefront</span>
+            Bazaar Tracker
+          </a>
+          <a href="index.html" class="button70-btn">
+            <span class="material-icons">home</span>
+            Return to Hub
+          </a>
         </div>
-      </footer>
+      </div>
+    </section>
 
-    </main>
-  </div>
+    <!-- =========================================================
+         SECTION 1: FEATURED CALCULATORS (QUICK PICKS)
+         ========================================================= -->
+    <section class="neo-section" id="featured-tools">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge cyan">
+              <span class="material-icons">star</span>
+              FEATURED
+            </span>
+            <h2 class="neo-section-title">Most Popular Calculators</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            The three essential calculators used daily by CraftersMC players to optimize gear, minion revenue, and magical power:
+          </p>
+        </div>
+        <span class="neo-section-count">Top 3 Tools</span>
+      </div>
+
+      <div class="featured-tools-grid">
+        <!-- Featured 1: Best Reforge Calculator -->
+        <a href="tools/best-reforge.html" class="featured-tool-card cyan">
+          <div class="featured-card-top">
+            <span class="neo-badge cyan">
+              <span class="material-icons">tune</span>
+              GEAR
+            </span>
+            <div class="featured-icon-badge">
+              <span class="material-icons">tune</span>
+            </div>
+          </div>
+          <h3 class="featured-tool-title">Best Reforge Calculator</h3>
+          <p class="featured-tool-desc">
+            Calculate the exact reforge combinations for your weapons and armor to hit target stats like 100% Critical Chance, maximum Strength, or Crit Damage.
+          </p>
+          <div class="featured-tool-footer">
+            <span>Launch Reforge Engine</span>
+            <span class="material-icons" style="font-size:18px;">arrow_forward</span>
+          </div>
+        </a>
+
+        <!-- Featured 2: Minion Production Calculator -->
+        <a href="tools/minion-production.html" class="featured-tool-card green">
+          <div class="featured-card-top">
+            <span class="neo-badge green">
+              <span class="material-icons">precision_manufacturing</span>
+              MINIONS
+            </span>
+            <div class="featured-icon-badge">
+              <span class="material-icons">precision_manufacturing</span>
+            </div>
+          </div>
+          <h3 class="featured-tool-title">Minion Production Calculator</h3>
+          <p class="featured-tool-desc">
+            Estimate hourly, daily, and weekly item outputs and coin profits across all minion tiers with customized fuels, hoppers, and super compactors.
+          </p>
+          <div class="featured-tool-footer">
+            <span>Calculate Minion Yields</span>
+            <span class="material-icons" style="font-size:18px;">arrow_forward</span>
+          </div>
+        </a>
+
+        <!-- Featured 3: Missing Accessories Calculator -->
+        <a href="tools/missing-acces-calc.html" class="featured-tool-card yellow">
+          <div class="featured-card-top">
+            <span class="neo-badge yellow">
+              <span class="material-icons">auto_fix_high</span>
+              ACCESSORIES
+            </span>
+            <div class="featured-icon-badge">
+              <span class="material-icons">auto_fix_high</span>
+            </div>
+          </div>
+          <h3 class="featured-tool-title">Missing Accessories Calculator</h3>
+          <p class="featured-tool-desc">
+            Audit your talisman bag, detect missing rings, talismans, and artifacts, and find the cheapest accessory upgrades to maximize your Magical Power.
+          </p>
+          <div class="featured-tool-footer">
+            <span>Find Missing Talismans</span>
+            <span class="material-icons" style="font-size:18px;">arrow_forward</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 2: ALL TOOLS DIRECTORY
+         ========================================================= -->
+    <section class="neo-section" id="tools-directory">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge orange">
+              <span class="material-icons">view_module</span>
+              CATALOG
+            </span>
+            <h2 class="neo-section-title">All Calculators &amp; Utilities</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Filter by category or search by keyword to launch any calculator or interactive tracker:
+          </p>
+        </div>
+        <span class="neo-section-count" id="badge-tools-count">14 Tools Available</span>
+      </div>
+
+      <!-- Live Search Bar -->
+      <div class="neo-search-inner" style="margin-bottom: 14px;">
+        <span class="material-icons neo-search-icon">search</span>
+        <input type="text" id="search-input" class="neo-search-input"
+          placeholder="Search calculators (e.g. reforge, minion, exp, pet, talisman, bazaar, cake)..."
+          aria-label="Search SkyBlock tools and calculators" autocomplete="off" />
+        <button type="button" id="search-clear-btn" class="neo-search-clear" style="display:none;"
+          title="Clear search query" aria-label="Clear search input">
+          <span class="material-icons" style="font-size: 16px;">close</span>
+        </button>
+        <span class="neo-search-shortcut" title="Press '/' to focus search">/</span>
+      </div>
+
+      <!-- Category Filter Chips -->
+      <div class="filter-chips-bar" id="category-filter-chips">
+        <button type="button" class="filter-chip-btn active" data-category="all">
+          <span class="material-icons" style="font-size:16px;">apps</span>
+          All Tools
+          <span class="chip-count">14</span>
+        </button>
+        <button type="button" class="filter-chip-btn" data-category="gear">
+          <span class="material-icons" style="font-size:16px;">tune</span>
+          Gear &amp; Stats
+          <span class="chip-count">3</span>
+        </button>
+        <button type="button" class="filter-chip-btn" data-category="minions">
+          <span class="material-icons" style="font-size:16px;">precision_manufacturing</span>
+          Minion Automation
+          <span class="chip-count">2</span>
+        </button>
+        <button type="button" class="filter-chip-btn" data-category="progression">
+          <span class="material-icons" style="font-size:16px;">trending_up</span>
+          Skills &amp; Leveling
+          <span class="chip-count">3</span>
+        </button>
+        <button type="button" class="filter-chip-btn" data-category="live">
+          <span class="material-icons" style="font-size:16px;">monitoring</span>
+          Live Trackers &amp; Reference
+          <span class="chip-count">6</span>
+        </button>
+      </div>
+
+      <!-- Tools Grid -->
+      <div class="neo-grid" id="tools-grid" style="margin-top: 18px;">
+
+        <!-- 1: Best Reforge Calculator -->
+        <div class="neo-card cyan" data-category="gear"
+          data-search="best reforge calculator gear weapon armor stats critical chance strength crit damage combat weapons optimal">
+          <div class="neo-card-header">
+            <span class="neo-badge cyan"><span class="material-icons">tune</span> REFORGES</span>
+            <span class="material-icons neo-card-icon">tune</span>
+          </div>
+          <h3 class="neo-card-title">Best Reforge Calculator</h3>
+          <p class="neo-card-desc">
+            Find the optimal reforge combination for your sword, bow, or armor set based on desired stats like 100% Crit Chance, Strength, and Crit Damage.
+          </p>
+          <ul class="tool-features-list">
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Armor &amp; Weapons</li>
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Stat Priority</li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Gear <span>/ Stats</span></div>
+            <a href="tools/best-reforge.html" class="neo-card-btn">Launch &rarr;</a>
+          </div>
+        </div>
+
+        <!-- 2: Missing Accessories Calculator -->
+        <div class="neo-card yellow" data-category="gear"
+          data-search="missing accessories calculator talismans rings artifacts magical power accessory bag reforges tuning points">
+          <div class="neo-card-header">
+            <span class="neo-badge yellow"><span class="material-icons">auto_fix_high</span> ACCESSORIES</span>
+            <span class="material-icons neo-card-icon">auto_fix_high</span>
+          </div>
+          <h3 class="neo-card-title">Missing Accessories Calculator</h3>
+          <p class="neo-card-desc">
+            Check which talismans, rings, and artifacts you are missing to maximize your Magical Power and unlock more tuning stats.
+          </p>
+          <ul class="tool-features-list">
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Magical Power</li>
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Cost Optimization</li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Gear <span>/ Talismans</span></div>
+            <a href="tools/missing-acces-calc.html" class="neo-card-btn">Launch &rarr;</a>
+          </div>
+        </div>
+
+        <!-- 3: General SkyBlock Calculator -->
+        <div class="neo-card purple" data-category="gear"
+          data-search="general skyblock calculator combat damage formulas effective hp ehp defense mitigation formulas base stats">
+          <div class="neo-card-header">
+            <span class="neo-badge purple"><span class="material-icons">calculate</span> FORMULAS</span>
+            <span class="material-icons neo-card-icon">calculate</span>
+          </div>
+          <h3 class="neo-card-title">General SkyBlock Calculator</h3>
+          <p class="neo-card-desc">
+            Multi-purpose calculator for combat damage formulas, effective hit points (EHP), defense scaling, and damage mitigation.
+          </p>
+          <ul class="tool-features-list">
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Combat Damage</li>
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> EHP Scaling</li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Combat <span>/ Formulas</span></div>
+            <a href="tools/calc.html" class="neo-card-btn">Launch &rarr;</a>
+          </div>
+        </div>
+
+        <!-- 4: Minion Production Calculator -->
+        <div class="neo-card green" data-category="minions"
+          data-search="minion production calculator daily item yields coin revenue fuel upgrades super compactor diamond spreading revenue profit">
+          <div class="neo-card-header">
+            <span class="neo-badge green"><span class="material-icons">precision_manufacturing</span> REVENUE</span>
+            <span class="material-icons neo-card-icon">precision_manufacturing</span>
+          </div>
+          <h3 class="neo-card-title">Minion Production Calculator</h3>
+          <p class="neo-card-desc">
+            Estimate daily item outputs and coin revenue per minion setup with different fuel upgrades, hoppers, and super compactors.
+          </p>
+          <ul class="tool-features-list">
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Daily Coin Yield</li>
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Fuel Comparison</li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Minions <span>/ Economy</span></div>
+            <a href="tools/minion-production.html" class="neo-card-btn">Launch &rarr;</a>
+          </div>
+        </div>
+
+        <!-- 5: Minion Inventory Filling Calculator -->
+        <div class="neo-card orange" data-category="minions"
+          data-search="minion inventory filling calculator exact hours inventory fills tier fuel storage chests compactor overflow timing">
+          <div class="neo-card-header">
+            <span class="neo-badge orange"><span class="material-icons">inventory_2</span> CAPACITY</span>
+            <span class="material-icons neo-card-icon">inventory_2</span>
+          </div>
+          <h3 class="neo-card-title">Minion Inventory Filling Calculator</h3>
+          <p class="neo-card-desc">
+            Calculate exact hours and minutes until your minion's inventory overflows based on minion tier, fuel speed, and chest storage size.
+          </p>
+          <ul class="tool-features-list">
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Storage Timers</li>
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Overflow Alert</li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Minions <span>/ Capacity</span></div>
+            <a href="tools/minion-inv-time.html" class="neo-card-btn">Launch &rarr;</a>
+          </div>
+        </div>
+
+        <!-- 6: Skill EXP Calculator -->
+        <div class="neo-card cyan" data-category="progression"
+          data-search="skill exp calculator experience remaining actions target skill level combat farming mining enchanting alchemy">
+          <div class="neo-card-header">
+            <span class="neo-badge cyan"><span class="material-icons">trending_up</span> SKILLS</span>
+            <span class="material-icons neo-card-icon">trending_up</span>
+          </div>
+          <h3 class="neo-card-title">Skill EXP Calculator</h3>
+          <p class="neo-card-desc">
+            Calculate remaining experience and total actions needed to reach your target skill level across Combat, Farming, Mining, and more.
+          </p>
+          <ul class="tool-features-list">
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> All 8 Skills</li>
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Actions Needed</li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Skills <span>/ Progression</span></div>
+            <a href="tools/skill-calculator.html" class="neo-card-btn">Launch &rarr;</a>
+          </div>
+        </div>
+
+        <!-- 7: Pet EXP Calculator -->
+        <div class="neo-card pink" data-category="progression"
+          data-search="pet exp calculator pet level progression candy exp required level 100 pet leveling legendary epic rare">
+          <div class="neo-card-header">
+            <span class="neo-badge pink"><span class="material-icons">pets</span> PETS</span>
+            <span class="material-icons neo-card-icon">pets</span>
+          </div>
+          <h3 class="neo-card-title">Pet EXP Calculator</h3>
+          <p class="neo-card-desc">
+            Estimate pet level progression and required candy / experience amounts to level up your combat, foraging, and farming pets to Level 100.
+          </p>
+          <ul class="tool-features-list">
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Level 1-100 Curve</li>
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Candy Calculator</li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Pets <span>/ Leveling</span></div>
+            <a href="tools/pet-exp-calculator.html" class="neo-card-btn">Launch &rarr;</a>
+          </div>
+        </div>
+
+        <!-- 8: Missing Cakes Calculator -->
+        <div class="neo-card yellow" data-category="progression"
+          data-search="missing cakes calculator new year celebration century cake bag collection bonus health hp cakes years">
+          <div class="neo-card-header">
+            <span class="neo-badge yellow"><span class="material-icons">cake</span> CAKES</span>
+            <span class="material-icons neo-card-icon">cake</span>
+          </div>
+          <h3 class="neo-card-title">Missing Cakes Calculator</h3>
+          <p class="neo-card-desc">
+            Track which New Year Celebration Cakes you still need for your Century Cake Bag collection to get bonus maximum health.
+          </p>
+          <ul class="tool-features-list">
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Century Cake Bag</li>
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Bonus HP Tracker</li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Collection <span>/ Health</span></div>
+            <a href="tools/missing-cakes-calc.html" class="neo-card-btn">Launch &rarr;</a>
+          </div>
+        </div>
+
+        <!-- 9: SkyBlock Calendar & Events -->
+        <div class="neo-card cyan" data-category="live"
+          data-search="skyblock calendar events live countdowns travelling zoo spooky festival jerry workshop jacob farming contest schedule timers">
+          <div class="neo-card-header">
+            <span class="neo-badge cyan"><span class="material-icons">calendar_month</span> LIVE</span>
+            <span class="material-icons neo-card-icon">calendar_month</span>
+          </div>
+          <h3 class="neo-card-title">SkyBlock Calendar &amp; Events</h3>
+          <p class="neo-card-desc">
+            Real-time in-game SkyBlock clock, 31-day event calendar, Travelling Zoo countdowns, Spooky Festivals, and Jacob's farming contest schedules.
+          </p>
+          <ul class="tool-features-list">
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Real-Time Clock</li>
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Event Timetables</li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Live <span>/ Events</span></div>
+            <a href="skycalendar.html" class="neo-card-btn">Open Calendar &rarr;</a>
+          </div>
+        </div>
+
+        <!-- 10: Bazaar Price Tracker -->
+        <div class="neo-card yellow" data-category="live"
+          data-search="bazaar price tracker market buy sell orders profit margins instant sell flipper economy prices">
+          <div class="neo-card-header">
+            <span class="neo-badge yellow"><span class="material-icons">storefront</span> BAZAAR</span>
+            <span class="material-icons neo-card-icon">storefront</span>
+          </div>
+          <h3 class="neo-card-title">Bazaar Price Tracker</h3>
+          <p class="neo-card-desc">
+            Real-time Bazaar price monitor with buy and sell order spreads, top margins, instant-sell analysis, and high-profit flipping alerts.
+          </p>
+          <ul class="tool-features-list">
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Real-Time Margins</li>
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Flip Opportunities</li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Live <span>/ Bazaar</span></div>
+            <a href="bazaar.html" class="neo-card-btn">Open Bazaar &rarr;</a>
+          </div>
+        </div>
+
+        <!-- 11: Live Auction House Tracker -->
+        <div class="neo-card purple" data-category="live"
+          data-search="live auction house tracker active auctions bin prices rarity bargains sniper equipment weapons armor">
+          <div class="neo-card-header">
+            <span class="neo-badge purple"><span class="material-icons">gavel</span> AUCTIONS</span>
+            <span class="material-icons neo-card-icon">gavel</span>
+          </div>
+          <h3 class="neo-card-title">Auction House Tracker</h3>
+          <p class="neo-card-desc">
+            Browse active auctions, filter by rarity and gear type, inspect BIN prices, and identify undervalued equipment bargains.
+          </p>
+          <ul class="tool-features-list">
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> BIN &amp; Bids</li>
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Rarity Filters</li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Live <span>/ Auctions</span></div>
+            <a href="auction.html" class="neo-card-btn">Open Auctions &rarr;</a>
+          </div>
+        </div>
+
+        <!-- 12: Player Viewer & Profile Inspector -->
+        <div class="neo-card pink" data-category="live"
+          data-search="player viewer profile inspector stats inventory accessories armor weapons skill levels slayers pets networth">
+          <div class="neo-card-header">
+            <span class="neo-badge pink"><span class="material-icons">person_search</span> PROFILES</span>
+            <span class="material-icons neo-card-icon">person_search</span>
+          </div>
+          <h3 class="neo-card-title">Player Viewer</h3>
+          <p class="neo-card-desc">
+            Inspect any player's SkyBlock profiles, equipped armor, inventory items, skill averages, slayer progression, and pet collections.
+          </p>
+          <ul class="tool-features-list">
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Full Profile Audit</li>
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Gear &amp; Slayers</li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Player <span>/ Viewer</span></div>
+            <a href="player.html" class="neo-card-btn">View Player &rarr;</a>
+          </div>
+        </div>
+
+        <!-- 13: Minecraft Unicode & Color Codes -->
+        <div class="neo-card orange" data-category="live"
+          data-search="minecraft unicode symbols color codes chat formatting symbols copy paste special characters font">
+          <div class="neo-card-header">
+            <span class="neo-badge orange"><span class="material-icons">format_quote</span> REFERENCE</span>
+            <span class="material-icons neo-card-icon">format_quote</span>
+          </div>
+          <h3 class="neo-card-title">Unicode &amp; Color Codes</h3>
+          <p class="neo-card-desc">
+            Complete quick-copy directory of Minecraft color codes (&amp;a, &amp;c, &amp;6), formatting codes, and custom symbols (❤, ✦, ☣, ❁).
+          </p>
+          <ul class="tool-features-list">
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> 1-Click Copy</li>
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Color Codes</li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Reference <span>/ Formatting</span></div>
+            <a href="unicode.html" class="neo-card-btn">Open Codes &rarr;</a>
+          </div>
+        </div>
+
+        <!-- 14: SkyBlock Texture Packs Hub -->
+        <div class="neo-card green" data-category="live"
+          data-search="skyblock texture packs resource packs download custom textures weapons armor 16x 32x fps boost">
+          <div class="neo-card-header">
+            <span class="neo-badge green"><span class="material-icons">palette</span> TEXTURES</span>
+            <span class="material-icons neo-card-icon">palette</span>
+          </div>
+          <h3 class="neo-card-title">SkyBlock Texture Packs</h3>
+          <p class="neo-card-desc">
+            Curated repository of top community SkyBlock resource packs with custom item textures, weapon models, and FPS-friendly options.
+          </p>
+          <ul class="tool-features-list">
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Direct Downloads</li>
+            <li class="tool-feature-tag"><span class="material-icons" style="font-size:12px;">check</span> Custom Textures</li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Client <span>/ Textures</span></div>
+            <a href="texture-packs.html" class="neo-card-btn">Browse Packs &rarr;</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Empty State for Search -->
+      <div class="neo-empty-state" id="empty-state">
+        <span class="material-icons neo-empty-icon">search_off</span>
+        <h3 class="neo-empty-title">No matching tools found</h3>
+        <p class="neo-empty-desc">
+          We couldn't find any calculator matching your query. Try searching for "reforge", "minion", "exp", "pet", "talisman", or reset filters:
+        </p>
+        <button type="button" class="button70-btn yellow" onclick="resetFilters()">
+          <span class="material-icons">restart_alt</span>
+          Reset Filters
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer Container (Loaded dynamically from /components/footer.html) -->
+  <div id="footer"></div>
+
+  <!-- Client-side Interactive Filter & Search Script -->
+  <script>
+    (function () {
+      const searchInput = document.getElementById('search-input');
+      const clearBtn = document.getElementById('search-clear-btn');
+      const filterChips = document.querySelectorAll('.filter-chip-btn');
+      const cards = document.querySelectorAll('#tools-grid .neo-card');
+      const emptyState = document.getElementById('empty-state');
+      const countBadge = document.getElementById('badge-tools-count');
+
+      let currentCategory = 'all';
+      let searchQuery = '';
+
+      function filterTools() {
+        let visibleCount = 0;
+        const q = searchQuery.toLowerCase().trim();
+
+        cards.forEach(card => {
+          const cat = card.getAttribute('data-category') || '';
+          const searchData = (card.getAttribute('data-search') || '').toLowerCase();
+          const title = (card.querySelector('.neo-card-title')?.textContent || '').toLowerCase();
+          const desc = (card.querySelector('.neo-card-desc')?.textContent || '').toLowerCase();
+
+          const matchesCategory = currentCategory === 'all' || cat.split(' ').includes(currentCategory);
+          const matchesSearch = !q || title.includes(q) || desc.includes(q) || searchData.includes(q);
+
+          if (matchesCategory && matchesSearch) {
+            card.style.display = '';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        if (countBadge) {
+          countBadge.textContent = `${visibleCount} Tool${visibleCount === 1 ? '' : 's'} Available`;
+        }
+
+        if (emptyState) {
+          if (visibleCount === 0) {
+            emptyState.classList.add('active');
+          } else {
+            emptyState.classList.remove('active');
+          }
+        }
+      }
+
+      // Filter chips click handler
+      filterChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          filterChips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          currentCategory = chip.getAttribute('data-category') || 'all';
+          filterTools();
+        });
+      });
+
+      // Search input handler
+      if (searchInput) {
+        searchInput.addEventListener('input', () => {
+          searchQuery = searchInput.value;
+          if (clearBtn) {
+            clearBtn.style.display = searchQuery ? 'flex' : 'none';
+          }
+          filterTools();
+        });
+      }
+
+      // Clear search button
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          if (searchInput) {
+            searchInput.value = '';
+            searchInput.focus();
+          }
+          searchQuery = '';
+          clearBtn.style.display = 'none';
+          filterTools();
+        });
+      }
+
+      // Global keyboard shortcut '/' to focus search, and 'Escape' to clear
+      document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement !== searchInput) {
+          e.preventDefault();
+          if (searchInput) searchInput.focus();
+        } else if (e.key === 'Escape' && document.activeElement === searchInput) {
+          if (searchInput) {
+            searchInput.value = '';
+            searchQuery = '';
+            if (clearBtn) clearBtn.style.display = 'none';
+            filterTools();
+            searchInput.blur();
+          }
+        }
+      });
+
+      // Global reset function
+      window.resetFilters = function () {
+        if (searchInput) {
+          searchInput.value = '';
+          searchQuery = '';
+        }
+        if (clearBtn) clearBtn.style.display = 'none';
+        currentCategory = 'all';
+        filterChips.forEach(c => {
+          if (c.getAttribute('data-category') === 'all') {
+            c.classList.add('active');
+          } else {
+            c.classList.remove('active');
+          }
+        });
+        filterTools();
+      };
+    })();
+  </script>
 
 </body>
+
 </html>
