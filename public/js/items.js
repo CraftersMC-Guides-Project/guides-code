@@ -33,24 +33,9 @@
   const gridViewBtn = document.getElementById('gridViewBtn');
   const listViewBtn = document.getElementById('listViewBtn');
 
-  // Modal Elements
-  const modalOverlay = document.getElementById('itemModalOverlay');
-  const modalCloseBtn = document.getElementById('modalCloseBtn');
-  const modalTitle = document.getElementById('modalTitle');
-  const modalImg = document.getElementById('modalImg');
-  const modalFallback = document.getElementById('modalFallback');
-  const modalIdentifier = document.getElementById('modalIdentifier');
-  const modalNumericId = document.getElementById('modalNumericId');
-  const modalNamespace = document.getElementById('modalNamespace');
-  const modalCategory = document.getElementById('modalCategory');
-  const modalCopyIdBtn = document.getElementById('modalCopyIdBtn');
-  const modalCopyGiveBtn = document.getElementById('modalCopyGiveBtn');
-  const modalAuctionLink = document.getElementById('modalAuctionLink');
-  const modalBazaarLink = document.getElementById('modalBazaarLink');
+  // Toast Elements
   const toast = document.getElementById('itemToast');
   const toastText = document.getElementById('itemToastText');
-
-  let activeModalItem = null;
 
   // Category Icon Map
   const categoryIcons = {
@@ -366,12 +351,12 @@
       `;
     }).join('');
 
-    // Attach click for opening modal
+    // Attach click for quick copying identifier
     gridContainer.querySelectorAll('.item-card').forEach(card => {
       card.addEventListener('click', () => {
         const id = parseInt(card.dataset.id, 10);
         const item = allItems.find(i => i.numericId === id);
-        if (item) openModal(item);
+        if (item) copyToClipboard(item.identifier, `Copied ${item.identifier}`);
       });
     });
   }
@@ -413,7 +398,7 @@
       row.addEventListener('click', () => {
         const id = parseInt(row.dataset.id, 10);
         const item = allItems.find(i => i.numericId === id);
-        if (item) openModal(item);
+        if (item) copyToClipboard(item.identifier, `Copied ${item.identifier}`);
       });
     });
   }
@@ -483,62 +468,6 @@
     copyToClipboard(ident, `Copied ${ident}`);
   };
 
-  // Open Modal Item Inspector
-  function openModal(item) {
-    activeModalItem = item;
-    if (!modalOverlay) return;
-
-    if (modalTitle) modalTitle.textContent = item.name;
-    if (modalIdentifier) modalIdentifier.textContent = item.identifier;
-    if (modalNumericId) modalNumericId.textContent = `#${item.numericId}`;
-    if (modalNamespace) {
-      modalNamespace.textContent = item.namespace;
-      modalNamespace.className = `item-badge-namespace ${item.namespace === 'trpixel' ? 'trpixel' : 'minecraft'}`;
-    }
-    if (modalCategory) modalCategory.textContent = item.categoryName;
-
-    // Image / Fallback
-    const fallbackIcon = getCategoryFallbackIcon(item.category);
-    if (item.image) {
-      if (modalImg) {
-        modalImg.src = item.image;
-        modalImg.style.display = 'block';
-        modalImg.onerror = () => {
-          modalImg.style.display = 'none';
-          if (modalFallback) {
-            modalFallback.textContent = fallbackIcon;
-            modalFallback.style.display = 'block';
-          }
-        };
-      }
-      if (modalFallback) modalFallback.style.display = 'none';
-    } else {
-      if (modalImg) modalImg.style.display = 'none';
-      if (modalFallback) {
-        modalFallback.textContent = fallbackIcon;
-        modalFallback.style.display = 'block';
-      }
-    }
-
-    // Auction & Bazaar quick search links
-    const cleanSearchTerm = encodeURIComponent(item.name.replace(/\s+Minion.*$/i, '').trim());
-    if (modalAuctionLink) {
-      modalAuctionLink.href = `/auction.html?search=${cleanSearchTerm}`;
-    }
-    if (modalBazaarLink) {
-      modalBazaarLink.href = `/bazaar.html?search=${cleanSearchTerm}`;
-    }
-
-    modalOverlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeModal() {
-    if (modalOverlay) modalOverlay.classList.remove('open');
-    document.body.style.overflow = '';
-    activeModalItem = null;
-  }
-
   // Event Listeners
   if (searchInput) {
     let debounceTimer;
@@ -596,37 +525,6 @@
       listViewBtn.classList.add('active');
       if (gridViewBtn) gridViewBtn.classList.remove('active');
       renderCurrentPage();
-    });
-  }
-
-  // Modal Actions
-  if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
-  if (modalOverlay) {
-    modalOverlay.addEventListener('click', (e) => {
-      if (e.target === modalOverlay) closeModal();
-    });
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modalOverlay && modalOverlay.classList.contains('open')) {
-      closeModal();
-    }
-  });
-
-  if (modalCopyIdBtn) {
-    modalCopyIdBtn.addEventListener('click', () => {
-      if (activeModalItem) {
-        copyToClipboard(activeModalItem.identifier, `Copied ${activeModalItem.identifier}`);
-      }
-    });
-  }
-
-  if (modalCopyGiveBtn) {
-    modalCopyGiveBtn.addEventListener('click', () => {
-      if (activeModalItem) {
-        const cmd = `/give @p ${activeModalItem.identifier} 1`;
-        copyToClipboard(cmd, `Copied give command: ${cmd}`);
-      }
     });
   }
 
