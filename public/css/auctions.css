@@ -237,6 +237,7 @@
 }
 
 .view-toggle-group {
+  position: relative;
   display: flex;
   gap: 4px;
   background: #f1f5f9;
@@ -244,6 +245,77 @@
   border: 2px solid #111827;
   border-radius: 8px;
   box-shadow: 2px 2px 0 #111827;
+}
+
+/* View Toggle Beacon Dot (Zooming low-opacity pulse point highlighting view switch) */
+.view-toggle-beacon {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+}
+
+.view-toggle-beacon .beacon-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #0284c7;
+  box-shadow: 0 0 0 1.5px #ffffff;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.darkmode .view-toggle-beacon .beacon-dot {
+  background: #38bdf8;
+  box-shadow: 0 0 0 1.5px #18181b;
+}
+
+.view-toggle-beacon .beacon-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #0284c7;
+  opacity: 0.5;
+  animation: beaconZoomPulse 1.8s ease-out infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.darkmode .view-toggle-beacon .beacon-ring {
+  background: #38bdf8;
+  opacity: 0.6;
+}
+
+@keyframes beaconZoomPulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  60% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+.view-toggle-beacon.beacon-hidden {
+  opacity: 0;
+  transform: scale(0.3);
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .view-btn {
@@ -415,6 +487,53 @@
 .rarity-badge-img.large {
   height: 26px;
   max-width: 125px;
+}
+
+/* ==========================================================================
+   AUCTION EMPTY / NO-RESULTS STATE
+   ========================================================================== */
+.auction-empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+  background: #ffffff;
+  border: 2px dashed #111827;
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 #111827;
+  color: #4b5563;
+  margin: 10px 0;
+  box-sizing: border-box;
+}
+
+.auction-empty-icon {
+  font-size: 2.8rem !important;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.auction-empty-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.auction-empty-desc {
+  font-size: 0.85rem;
+  color: #64748b;
+  max-width: 440px;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.auction-table-empty {
+  text-align: center;
+  padding: 36px 20px !important;
+  color: #64748b !important;
 }
 
 .type-pill {
@@ -1219,6 +1338,29 @@
 .darkmode .auction-card:hover {
   border-color: #38bdf8 !important;
   box-shadow: 6px 6px 0 #000000 !important;
+}
+
+.darkmode .auction-empty-state {
+  background: #000000 !important;
+  border-color: #27272a !important;
+  box-shadow: 4px 4px 0 #000000 !important;
+  color: #a1a1aa !important;
+}
+
+.darkmode .auction-empty-icon {
+  color: #64748b !important;
+}
+
+.darkmode .auction-empty-title {
+  color: #ffffff !important;
+}
+
+.darkmode .auction-empty-desc {
+  color: #a1a1aa !important;
+}
+
+.darkmode .auction-table-empty {
+  color: #a1a1aa !important;
 }
 
 .darkmode .auction-item-title {

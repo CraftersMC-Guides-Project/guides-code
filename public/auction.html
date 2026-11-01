@@ -302,7 +302,11 @@
                 <button class="btn-secondary-action" onclick="fetchAuctions(currentPage)" title="Refresh Auctions">
                   <span class="material-icons" style="font-size: 0.95rem;">refresh</span> Refresh
                 </button>
-                <div class="view-toggle-group">
+                <div class="view-toggle-group" id="viewToggleGroup">
+                  <div class="view-toggle-beacon" id="viewToggleBeacon" title="Switch view" aria-label="Switch view" onclick="dismissViewToggleBeacon(event)">
+                    <span class="beacon-ring"></span>
+                    <span class="beacon-dot"></span>
+                  </div>
                   <button class="view-btn active" id="btnViewGrid" onclick="setViewMode('grid')" title="Card Grid View">
                     <span class="material-icons" style="font-size: 1.1rem;">grid_view</span>
                   </button>
@@ -834,16 +838,26 @@
       if (filteredAuctions.length === 0) {
         if (currentView === 'grid') {
           gridEl.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-muted);">
-              <span class="material-icons" style="font-size: 2.5rem; color: #94a3b8; margin-bottom: 8px;">search_off</span>
-              <div style="font-size: 1.1rem; font-weight: 700; color: var(--text-bright);">No auctions match your filters</div>
-              <p style="font-size: 0.85rem; margin-top: 4px;">Try clearing your search query or adjusting your category and rarity filters.</p>
+            <div class="auction-empty-state">
+              <span class="material-icons auction-empty-icon">search_off</span>
+              <div class="auction-empty-title">No auctions match your filters</div>
+              <p class="auction-empty-desc">Try clearing your search query or adjusting your category and rarity filters.</p>
             </div>
           `;
           gridEl.style.display = 'grid';
           tableCardEl.style.display = 'none';
         } else {
-          tableBodyEl.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:32px; color:var(--text-muted);">No auctions match your filters.</td></tr>';
+          tableBodyEl.innerHTML = `
+            <tr>
+              <td colspan="8" class="auction-table-empty">
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;">
+                  <span class="material-icons auction-empty-icon" style="font-size: 2.2rem !important; margin-bottom: 2px;">search_off</span>
+                  <div class="auction-empty-title" style="font-size: 1.05rem;">No auctions match your filters</div>
+                  <p class="auction-empty-desc">Try clearing your search query or adjusting your category and rarity filters.</p>
+                </div>
+              </td>
+            </tr>
+          `;
           gridEl.style.display = 'none';
           tableCardEl.style.display = 'block';
         }
@@ -1054,8 +1068,18 @@
       fetchAuctions(0);
     }
 
+    // Dismiss the view-toggle beacon dot highlighting
+    function dismissViewToggleBeacon(e) {
+      if (e && e.stopPropagation) e.stopPropagation();
+      const beacon = document.getElementById('viewToggleBeacon');
+      if (beacon && !beacon.classList.contains('beacon-hidden')) {
+        beacon.classList.add('beacon-hidden');
+      }
+    }
+
     // Switch between Grid and Table View
     function setViewMode(mode) {
+      dismissViewToggleBeacon();
       currentView = mode;
       document.getElementById('btnViewGrid').classList.toggle('active', mode === 'grid');
       document.getElementById('btnViewTable').classList.toggle('active', mode === 'table');
@@ -1636,6 +1660,7 @@
     document.getElementById('filterCategory')?.addEventListener('change', applyFiltersAndRender);
     document.getElementById('filterTier')?.addEventListener('change', applyFiltersAndRender);
     document.getElementById('sortBy')?.addEventListener('change', applyFiltersAndRender);
+    document.getElementById('viewToggleGroup')?.addEventListener('click', dismissViewToggleBeacon);
 
     // Browser back/forward button router
     window.addEventListener('popstate', (e) => {
