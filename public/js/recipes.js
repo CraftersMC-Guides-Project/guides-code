@@ -139,7 +139,7 @@
       const count = counts[st.id] || 0;
       const isActive = selectedStation === st.id;
       return `
-        <button type="button" class="recipes-chip ${isActive ? 'active' : ''}" data-station="${st.id}">
+        <button type="button" class="filter-chip ${isActive ? 'active' : ''}" data-station="${st.id}">
           <span class="material-icons" style="font-size:16px;">${st.icon}</span>
           <span>${st.name}</span>
           <span class="chip-count">${count}</span>
@@ -147,7 +147,7 @@
       `;
     }).join('');
 
-    filterChipsContainer.querySelectorAll('.recipes-chip').forEach(btn => {
+    filterChipsContainer.querySelectorAll('.filter-chip').forEach(btn => {
       btn.addEventListener('click', () => {
         selectedStation = btn.getAttribute('data-station');
         if (stationSelect) stationSelect.value = selectedStation;
@@ -160,7 +160,7 @@
 
   function updateActiveChips() {
     if (!filterChipsContainer) return;
-    filterChipsContainer.querySelectorAll('.recipes-chip').forEach(btn => {
+    filterChipsContainer.querySelectorAll('.filter-chip').forEach(btn => {
       const id = btn.getAttribute('data-station');
       if (id === selectedStation) {
         btn.classList.add('active');
@@ -606,7 +606,7 @@
 
     // Prev Button
     html += `
-      <button type="button" class="recipes-page-btn" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}" title="Previous Page">
+      <button type="button" class="page-btn" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}" title="Previous Page">
         <span class="material-icons" style="font-size:18px;">chevron_left</span>
       </button>
     `;
@@ -621,7 +621,7 @@
     }
 
     if (startPage > 1) {
-      html += `<button type="button" class="recipes-page-btn" data-page="1">1</button>`;
+      html += `<button type="button" class="page-btn" data-page="1">1</button>`;
       if (startPage > 2) {
         html += `<span class="recipes-page-dots">&hellip;</span>`;
       }
@@ -629,7 +629,7 @@
 
     for (let p = startPage; p <= endPage; p++) {
       html += `
-        <button type="button" class="recipes-page-btn ${p === currentPage ? 'active' : ''}" data-page="${p}">
+        <button type="button" class="page-btn ${p === currentPage ? 'active' : ''}" data-page="${p}">
           ${p}
         </button>
       `;
@@ -639,12 +639,12 @@
       if (endPage < totalPages - 1) {
         html += `<span class="recipes-page-dots">&hellip;</span>`;
       }
-      html += `<button type="button" class="recipes-page-btn" data-page="${totalPages}">${totalPages}</button>`;
+      html += `<button type="button" class="page-btn" data-page="${totalPages}">${totalPages}</button>`;
     }
 
     // Next Button
     html += `
-      <button type="button" class="recipes-page-btn" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}" title="Next Page">
+      <button type="button" class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}" title="Next Page">
         <span class="material-icons" style="font-size:18px;">chevron_right</span>
       </button>
     `;
@@ -652,7 +652,7 @@
     paginationContainer.innerHTML = html;
 
     // Attach click events
-    paginationContainer.querySelectorAll('.recipes-page-btn').forEach(btn => {
+    paginationContainer.querySelectorAll('.page-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const page = parseInt(btn.getAttribute('data-page'), 10);
         if (page && page !== currentPage && page >= 1 && page <= totalPages) {

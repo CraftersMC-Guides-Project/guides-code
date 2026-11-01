@@ -232,7 +232,7 @@ function fetchAllPartials() {
         });
       }
 
-      const footerEl = document.getElementById("footer");
+      const footerEl = document.getElementById("footer") || document.querySelector(".footer");
       if (footerEl) {
         footerEl.innerHTML = footerHtml;
       }
@@ -277,7 +277,7 @@ function fetchAllLPartials() {
     .then(([sidebarHtml, footerHtml]) => {
       const sidebarEl = document.getElementById("sidebar");
       if (sidebarEl) sidebarEl.innerHTML = sidebarHtml;
-      const footerEl = document.getElementById("footer");
+      const footerEl = document.getElementById("footer") || document.querySelector(".footer");
       if (footerEl) footerEl.innerHTML = footerHtml;
       const loaderEl = document.getElementById("loader");
       if (loaderEl) loaderEl.innerHTML = loaderHtml;
