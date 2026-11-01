@@ -175,7 +175,7 @@ function fetchPartial(url, key) {
 
 function fetchAllPartials() {
   Promise.all([
-    fetchPartial("/components/navbar.html", "navbarHtmlV14").catch(e => { console.warn("Navbar partial failed:", e); return ""; }),
+    fetchPartial("/components/navbar.html", "navbarHtmlV15").catch(e => { console.warn("Navbar partial failed:", e); return ""; }),
     fetchPartial("/components/sidebar.html", "sidebarHtmlV9").catch(e => { console.warn("Sidebar partial failed:", e); return ""; }),
     fetchPartial("/components/footer.html", "footerHtmlV9").catch(e => { console.warn("Footer partial failed:", e); return ""; }),
       ])
