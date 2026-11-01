@@ -355,6 +355,76 @@
   box-shadow: 3px 3px 0 #000000 !important;
 }
 
+/* Today Pulse Beacon (Small Blue Ball with Zooming Low-Opacity Point) */
+.today-pulse-beacon {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 6;
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+}
+
+.today-pulse-beacon .beacon-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #0284c7;
+  box-shadow: 0 0 0 1.5px #ffffff;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.darkmode .today-pulse-beacon .beacon-dot {
+  background: #38bdf8;
+  box-shadow: 0 0 0 1.5px #18181b;
+}
+
+.today-pulse-beacon .beacon-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #0284c7;
+  opacity: 0.5;
+  animation: beaconZoomPulse 1.8s ease-out infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.darkmode .today-pulse-beacon .beacon-ring {
+  background: #38bdf8;
+  opacity: 0.6;
+}
+
+@keyframes beaconZoomPulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  60% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+.today-pulse-beacon.beacon-hidden {
+  opacity: 0;
+  transform: scale(0.3);
+  visibility: hidden;
+}
+
 /* Cell Header */
 .day-header {
   display: flex;

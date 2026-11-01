@@ -162,12 +162,11 @@ function fetchPartial(url, key) {
 
 function fetchAllPartials() {
   Promise.all([
-    fetchPartial("/components/navbar.html", "navbarHtmlV10"),
-    fetchPartial("/components/sidebar.html", "sidebarHtmlV9"),
-    fetchPartial("/components/footer.html", "footerHtmlV9"),
-    fetchPartial("/loader.html", "loaderHtml"),
-  ])
-    .then(([navbarHtml, sidebarHtml, footerHtml, loaderHtml]) => {
+    fetchPartial("/components/navbar.html", "navbarHtmlV10").catch(e => { console.warn("Navbar partial failed:", e); return ""; }),
+    fetchPartial("/components/sidebar.html", "sidebarHtmlV9").catch(e => { console.warn("Sidebar partial failed:", e); return ""; }),
+    fetchPartial("/components/footer.html", "footerHtmlV9").catch(e => { console.warn("Footer partial failed:", e); return ""; }),
+      ])
+    .then(([navbarHtml, sidebarHtml, footerHtml]) => {
       const topEl = document.querySelector(".top");
       if (topEl) {
         topEl.innerHTML = navbarHtml;
@@ -214,11 +213,6 @@ function fetchAllPartials() {
         footerEl.innerHTML = footerHtml;
       }
 
-      const loaderEl = document.getElementById("loader");
-      if (loaderEl) {
-        loaderEl.innerHTML = loaderHtml;
-      }
-
       setupThemeSwitchers();
       const hideLoader = () => {
         const o = document.getElementById('loader-wrapper');
@@ -254,9 +248,8 @@ function fetchAllLPartials() {
   Promise.all([
     fetch("/components/sidebar.html").then((res) => res.text()),
     fetch("/components/footer.html").then((res) => res.text()),
-    fetch("/loader.html").then((res) => res.text()),
-  ])
-    .then(([sidebarHtml, footerHtml, loaderHtml]) => {
+      ])
+    .then(([sidebarHtml, footerHtml]) => {
       const sidebarEl = document.getElementById("sidebar");
       if (sidebarEl) sidebarEl.innerHTML = sidebarHtml;
       const footerEl = document.getElementById("footer");

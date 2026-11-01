@@ -1,6 +1,7 @@
 const UIController = {
     currentPage: 1,
     todaySkyblock: 0,
+    todayBeaconDismissed: false,
     engine: null,
     elements: {},
     modalCount: null,
@@ -85,6 +86,18 @@ const UIController = {
                     e.preventDefault();
                     item.click();
                 }
+            }
+        });
+
+        // Click anywhere on screen to dismiss the today blue ball beacon
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#go-to-today-btn, .pagination-btn')) {
+                return;
+            }
+            const beacon = document.getElementById('today-beacon') || document.querySelector('.today-pulse-beacon');
+            if (beacon && !beacon.classList.contains('beacon-hidden')) {
+                beacon.classList.add('beacon-hidden');
+                this.todayBeaconDismissed = true;
             }
         });
     },
@@ -251,7 +264,8 @@ getPetEmoji(name) {
             page.forEach(day => {
                 const dayCell = document.createElement('div');
                 dayCell.className = 'day-cell neo-card';
-                if (day.totalDays === this.todaySkyblock) {
+                const isToday = day.totalDays === this.todaySkyblock;
+                if (isToday) {
                     dayCell.classList.add('today');
                     dayCell.id = 'today';
                 }
@@ -269,7 +283,14 @@ getPetEmoji(name) {
                     eventContent = `<div class="no-events" style="font-size: 8px; opacity:0.5;">None</div>`;
                 }
 
+                const beaconHtml = isToday && !this.todayBeaconDismissed ? `
+                    <div class="today-pulse-beacon" id="today-beacon" aria-hidden="true" title="Today">
+                        <span class="beacon-ring"></span>
+                        <span class="beacon-dot"></span>
+                    </div>` : '';
+
                 dayCell.innerHTML = `
+                    ${beaconHtml}
                     <div class="day-header">
                         <span class="day-season">${day.season.substring(0,3)} ${day.dayOfSeason}</span>
                         <span class="day-year">Y${day.year}</span>
@@ -732,9 +753,14 @@ getPetEmoji(name) {
         //THIS WAS A PAINNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
         toToday() {
             try {
+                this.todayBeaconDismissed = false;
                 if (!this.engine) {
                     const today = document.getElementById('today') || document.querySelector('.today');
-                    if (today) today.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (today) {
+                        today.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        const beacon = today.querySelector('.today-pulse-beacon');
+                        if (beacon) beacon.classList.remove('beacon-hidden');
+                    }
                     console.warn('missing engine');
                     return;
                 }
@@ -746,7 +772,11 @@ getPetEmoji(name) {
                 this.loadPageToday();
                 setTimeout(() => {
                     const today = document.getElementById('today') || document.querySelector('.today');
-                    if (today) today.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (today) {
+                        today.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        const beacon = today.querySelector('.today-pulse-beacon');
+                        if (beacon) beacon.classList.remove('beacon-hidden');
+                    }
                 }, 50);
             } catch (e) {
                 console.error('toToday error:', e);
