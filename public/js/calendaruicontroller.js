@@ -166,6 +166,15 @@ getPetEmoji(name) {
             return `<img src="assets/rarity/${key}.webp" class="rarity-icon" alt="${capitalize(key)}">`;
         },
 
+        getEventDisplayName(event) {
+            if (!event) return '';
+            const name = typeof event === 'string' ? event : event.name;
+            if (name === 'Farming Contest' || (event && event.type === 'farming')) {
+                return "Ethan's Farming Contest";
+            }
+            return name;
+        },
+
         getEventIcon(event) {
             if (event.name === 'Travelling Zoo') {
                 if (event.legendaryIcon) return event.legendaryIcon;
@@ -181,6 +190,7 @@ getPetEmoji(name) {
         this.currentUpcomingEvents = events;
         const accentColors = ['blue', 'yellow', 'green', 'purple', 'orange', 'pink'];
         this.elements.eventList.innerHTML = events.map((event, idx) => {
+            const displayName = this.getEventDisplayName(event);
             let info = 'Starts in...';
             if (event.type === 'farming' && event.crops) {
                 const cropsHtml = event.crops.map(c => {
@@ -205,12 +215,12 @@ getPetEmoji(name) {
             }
             const accent = accentColors[idx % accentColors.length];
             return `
-                <div class="event-timer-item neo-card accent-${accent}" data-event-index="${idx}" role="button" tabindex="0" aria-label="View schedule for ${event.name}">
+                <div class="event-timer-item neo-card accent-${accent}" data-event-index="${idx}" role="button" tabindex="0" aria-label="View schedule for ${displayName}">
                     <div class="event-card-top">
                         <div class="event-icon-badge">${this.getEventIcon(event)}</div>
                         <div class="event-title-block">
                             <div class="event-title-row">
-                                <h3 class="event-name">${event.name}</h3>
+                                <h3 class="event-name">${displayName}</h3>
                                 <span class="event-timing-tag">Upcoming</span>
                             </div>
                             <div class="event-info">${info}</div>
@@ -240,13 +250,17 @@ getPetEmoji(name) {
 
             page.forEach(day => {
                 const dayCell = document.createElement('div');
-                dayCell.className = 'day-cell';
+                dayCell.className = 'day-cell neo-card';
                 if (day.totalDays === this.todaySkyblock) {
                     dayCell.classList.add('today');
                     dayCell.id = 'today';
                 }
 
-                
+                dayCell.setAttribute('role', 'button');
+                dayCell.setAttribute('tabindex', '0');
+                const evCount = day.events ? day.events.length : 0;
+                dayCell.setAttribute('aria-label', `Year ${day.year}, ${day.season} ${day.dayOfSeason}${evCount > 0 ? ` (${evCount} event${evCount > 1 ? 's' : ''})` : ''} - Click to inspect`);
+
                 let eventContent = '';
                 if (day.events.length > 0) {
                     const icons = day.events.slice(0, 2).map(e => e.icon).join('');
@@ -261,10 +275,19 @@ getPetEmoji(name) {
                         <span class="day-year">Y${day.year}</span>
                     </div>
                     <div class="day-body">${eventContent}</div>`;
-                dayCell.classList.add('neo-card');
-                //dayCell.classList.add('cyan');
-                dayCell.id == 'today' ? dayCell.classList.add('cyan') : null;
+                
+                if (dayCell.id === 'today') {
+                    dayCell.classList.add('cyan');
+                }
+
                 dayCell.addEventListener('click', () => this.modalThing(day));
+                dayCell.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.modalThing(day);
+                    }
+                });
+
                 this.elements.calGrid.appendChild(dayCell);
             });
         },
@@ -281,23 +304,102 @@ getPetEmoji(name) {
 
         modalThing(day) {
             const realDate = this.engine.getRealTimeForDay(day.totalDays);
+            const startTime = realDate.getTime();
+            const dayDurationMs = (this.engine.MINUTES_PER_SKYBLOCK_DAY || 20) * 60 * 1000;
+            const endTime = startTime + dayDurationMs;
+            const endDate = new Date(endTime);
+
             const modalTitleEl = document.getElementById('modal-title');
             const modalSubtitleEl = document.getElementById('modal-subtitle');
             const countdownEl = document.getElementById('modal-timer');
+            const seasonBadgeEl = document.getElementById('modal-badge-season');
+            const dayBadgeEl = document.getElementById('modal-badge-day');
+            const statusBadgeEl = document.getElementById('modal-badge-status');
+            const eventsCountEl = document.getElementById('modal-events-count');
 
-            if (modalTitleEl) modalTitleEl.textContent = `Year ${day.year}, ${day.season} ${day.dayOfSeason}`;
-            if (modalSubtitleEl) modalSubtitleEl.textContent = `Local Time: ${realDate.toLocaleString()}`;
+            if (modalTitleEl) {
+                modalTitleEl.textContent = `Year ${day.year}, ${day.season} ${day.dayOfSeason}`;
+            }
+
+            // Season Badge
+            const seasonColorMap = {
+                'Spring': 'green',
+                'Summer': 'yellow',
+                'Autumn': 'orange',
+                'Winter': 'cyan'
+            };
+            const seasonIconMap = {
+                'Spring': 'filter_vintage',
+                'Summer': 'wb_sunny',
+                'Autumn': 'eco',
+                'Winter': 'ac_unit'
+            };
+            const sColor = seasonColorMap[day.season] || 'cyan';
+            const sIcon = seasonIconMap[day.season] || 'calendar_today';
+
+            if (seasonBadgeEl) {
+                seasonBadgeEl.className = `neo-badge ${sColor}`;
+                seasonBadgeEl.innerHTML = `<span class="material-icons" style="font-size:12px;">${sIcon}</span> ${day.season}`;
+            }
+            if (dayBadgeEl) {
+                dayBadgeEl.className = 'neo-badge pink';
+                dayBadgeEl.textContent = `Day ${day.dayOfSeason} of 93`;
+            }
+
+            // Real Time Window Subtitle
+            const dateStr = realDate.toLocaleDateString(undefined, {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+            const timeRangeStr = `${realDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} – ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            if (modalSubtitleEl) {
+                modalSubtitleEl.innerHTML = `<span class="modal-time-date">${dateStr}</span> <span class="modal-time-bullet">&bull;</span> <span class="modal-time-range">${timeRangeStr} (Local Time)</span>`;
+            }
 
             if (this.modalCount) clearInterval(this.modalCount);
 
             const updateCountdown = () => {
                 const now = Date.now();
-                const ms = realDate.getTime() - now;
-                if (ms > 0) {
-                    countdownEl.style.display = 'inline-flex';
-                    countdownEl.innerHTML = `<span class="material-icons" style="font-size:16px;">schedule</span> <span>Countdown: ${this.timeCorrect(ms)}</span>`;
+                if (now >= startTime && now < endTime) {
+                    // Active Now (Today)
+                    const msRemaining = Math.max(0, endTime - now);
+                    if (countdownEl) {
+                        countdownEl.style.display = 'inline-flex';
+                        countdownEl.className = 'modal-countdown-chip status-active';
+                        countdownEl.innerHTML = `<span class="pulse-indicator"></span> <span class="material-icons" style="font-size:16px;">radio_button_checked</span> <span>Happening Now &bull; ${this.timeCorrect(msRemaining)} remaining</span>`;
+                    }
+                    if (statusBadgeEl) {
+                        statusBadgeEl.style.display = 'inline-flex';
+                        statusBadgeEl.className = 'neo-badge green pulse-badge';
+                        statusBadgeEl.innerHTML = '<span class="pulse-indicator"></span> ACTIVE TODAY';
+                    }
+                } else if (now < startTime) {
+                    // Upcoming day in the future
+                    const msUntil = startTime - now;
+                    if (countdownEl) {
+                        countdownEl.style.display = 'inline-flex';
+                        countdownEl.className = 'modal-countdown-chip status-upcoming';
+                        countdownEl.innerHTML = `<span class="material-icons" style="font-size:16px;">hourglass_top</span> <span>Starts in: ${this.timeCorrect(msUntil)}</span>`;
+                    }
+                    if (statusBadgeEl) {
+                        statusBadgeEl.style.display = 'inline-flex';
+                        statusBadgeEl.className = 'neo-badge blue';
+                        statusBadgeEl.innerHTML = '<span class="material-icons" style="font-size:12px;">update</span> UPCOMING';
+                    }
                 } else {
-                    countdownEl.style.display = 'none';
+                    // Concluded day in the past
+                    if (countdownEl) {
+                        countdownEl.style.display = 'inline-flex';
+                        countdownEl.className = 'modal-countdown-chip status-past';
+                        countdownEl.innerHTML = `<span class="material-icons" style="font-size:16px;">history</span> <span>Day Concluded</span>`;
+                    }
+                    if (statusBadgeEl) {
+                        statusBadgeEl.style.display = 'inline-flex';
+                        statusBadgeEl.className = 'neo-badge gray';
+                        statusBadgeEl.innerHTML = '<span class="material-icons" style="font-size:12px;">check</span> CONCLUDED';
+                    }
                 }
             };
             updateCountdown();
@@ -305,37 +407,119 @@ getPetEmoji(name) {
 
             const eventListEl = document.getElementById('modal-event-list');
             const eventsTitleEl = document.getElementById('modal-events-title');
-            eventListEl.innerHTML = '';
-            
-            if (day.events.length > 0) {
+            if (eventListEl) eventListEl.innerHTML = '';
+
+            const numEvents = (day.events && day.events.length) || 0;
+            if (eventsCountEl) {
+                eventsCountEl.textContent = numEvents === 1 ? '1 Event' : `${numEvents} Events`;
+                eventsCountEl.className = numEvents > 0 ? 'neo-badge yellow' : 'neo-badge gray';
+            }
+
+            if (numEvents > 0) {
                 if (eventsTitleEl) eventsTitleEl.style.display = '';
                 day.events.forEach(event => {
                     const li = document.createElement('li');
                     li.className = 'modal-event-item';
-                    let info = '';
-                    if (event.type === 'farming' && event.crops) {
-                        const cropsHtml = event.crops.map(c => {
-                            const icon = this.engine.CROP_ICONS[c] || '';
-                            const cleanName = formatCropName(c);
-                            return `<span class="day-modal-crop-pill" title="${cleanName}">${icon} <span>${cleanName}</span></span>`;
-                        }).join(' ');
-                        info = ` <div class="modal-event-crops-row"><span class="modal-crops-mini-label">Contested Crops:</span> <div class="day-modal-crops-chips">${cropsHtml}</div></div>`;
-                    } else if (event.name === 'Travelling Zoo' && event.legendaryName) {
-                        if (event.pets && event.pets.length) {
-                            const items = event.pets.map(p => `<li class="zoo-pet-item"><span class="zoo-pet-emoji">${this.getPetEmoji(p.name)}</span> <span class="zoo-pet-name">${capitalize(p.name)}</span> ${this.getRarityLabel(p.rarity)}</li>`).join('');
-                            info = ` <div class="modal-zoo-pets"><ul class="zoo-pet-list">${items}</ul></div>`;
-                        } else {
-                            info = ` <span class="modal-event-legendary">(Legendary: ${this.getPetEmoji(event.legendaryName)} ${capitalize(event.legendaryName)})</span>`;
+                    const displayName = this.getEventDisplayName(event);
+
+                    let tagBadge = '<span class="neo-badge blue">SPECIAL EVENT</span>';
+                    let descHtml = '';
+                    let detailsHtml = '';
+
+                    if (event.type === 'farming' || event.name === 'Farming Contest') {
+                        tagBadge = '<span class="neo-badge orange">FARMING CONTEST</span>';
+                        if (event.crops && event.crops.length) {
+                            const cropsHtml = event.crops.map(c => {
+                                const icon = this.engine.CROP_ICONS[c] || '';
+                                const cleanName = formatCropName(c);
+                                return `<span class="day-modal-crop-pill" title="${cleanName}">${icon} <span>${cleanName}</span></span>`;
+                            }).join('');
+                            detailsHtml = `
+                                <div class="modal-event-crops-row">
+                                    <span class="modal-crops-mini-label">Contested Crops:</span>
+                                    <div class="day-modal-crops-chips">${cropsHtml}</div>
+                                </div>
+                            `;
                         }
+                    } else if (event.name === 'Travelling Zoo') {
+                        tagBadge = '<span class="neo-badge yellow">TRAVELLING ZOO</span>';
+                        let petsHtml = '';
+                        if (event.pets && event.pets.length) {
+                            const items = event.pets.map(p => `
+                                <li class="zoo-pet-item">
+                                    <span class="zoo-pet-emoji">${this.getPetEmoji(p.name)}</span>
+                                    <span class="zoo-pet-name">${capitalize(p.name)}</span>
+                                    ${this.getRarityLabel(p.rarity)}
+                                </li>
+                            `).join('');
+                            petsHtml = `<ul class="zoo-pet-list">${items}</ul>`;
+                        }
+                        let legHtml = '';
+                        if (event.legendaryName) {
+                            legHtml = `<div class="modal-zoo-legendary-row"><span class="modal-zoo-legendary-label">Legendary Pet:</span> <span class="modal-zoo-legendary-val">${this.getPetEmoji(event.legendaryName)} ${capitalize(event.legendaryName)}</span></div>`;
+                        }
+                        detailsHtml = `<div class="modal-zoo-block">${legHtml}${petsHtml}</div>`;
+                    } else if (event.name === 'Spooky Festival') {
+                        tagBadge = '<span class="neo-badge purple">SPOOKY FESTIVAL</span>';
+                        descHtml = '<p class="modal-event-desc">Fear Mongerer arrives! Trick-or-Treat across SkyBlock and collect Green and Purple Candies from all mobs.</p>';
+                    } else if (event.name === 'Season of the Pig') {
+                        tagBadge = '<span class="neo-badge pink">SEASON OF THE PIG</span>';
+                        descHtml = '<p class="modal-event-desc">Shiny Pigs appear across the Hub! Hit them to earn Shiny Orbs and rare celebratory loot.</p>';
+                    } else if (event.name === 'New Year Celebration') {
+                        tagBadge = '<span class="neo-badge cyan">NEW YEAR</span>';
+                        descHtml = `<p class="modal-event-desc">Baker visits the Hub distributing Year ${day.year} Cakes! Fireworks and celebration active throughout the day.</p>`;
                     }
-                    li.innerHTML = `<span class="event-icon">${event.icon}</span> <div class="modal-event-details"><span class="modal-event-name">${event.name}</span>${info}</div>`;
+
+                    li.innerHTML = `
+                        <div class="modal-event-icon-badge">${this.getEventIcon(event)}</div>
+                        <div class="modal-event-details">
+                            <div class="modal-event-header-row">
+                                <h4 class="modal-event-name">${displayName}</h4>
+                                <div class="modal-event-header-badges">
+                                    ${tagBadge}
+                                    <button type="button" class="modal-event-timetable-btn" title="View timetable for ${displayName}">
+                                        <span class="material-icons" style="font-size:13px;">event_repeat</span>
+                                        <span>Timetable</span>
+                                    </button>
+                                </div>
+                            </div>
+                            ${descHtml}
+                            ${detailsHtml}
+                        </div>
+                    `;
+
+                    // Clicking the timetable button or item opens the event timetable modal
+                    const ttBtn = li.querySelector('.modal-event-timetable-btn');
+                    if (ttBtn) {
+                        ttBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            this.closeModal();
+                            this.openEventModal(event);
+                        });
+                    }
+                    li.style.cursor = 'pointer';
+                    li.addEventListener('click', () => {
+                        this.closeModal();
+                        this.openEventModal(event);
+                    });
+
                     eventListEl.appendChild(li);
                 });
             } else {
-                if (eventsTitleEl) eventsTitleEl.style.display = 'none';
-                eventListEl.innerHTML = '<li class="modal-empty-state"><span class="material-icons" style="font-size:18px;">event_busy</span><span>No scheduled events on this day.</span></li>';
+                if (eventsTitleEl) eventsTitleEl.style.display = '';
+                eventListEl.innerHTML = `
+                    <li class="modal-empty-state">
+                        <div class="modal-empty-icon-wrap">
+                            <span class="material-icons" style="font-size:26px;">event_busy</span>
+                        </div>
+                        <div class="modal-empty-text-wrap">
+                            <h4 class="modal-empty-title">No Events Scheduled</h4>
+                            <p class="modal-empty-subtitle">Standard peaceful SkyBlock day with no active festivals or special contests.</p>
+                        </div>
+                    </li>
+                `;
             }
-            
+
             this.elements.modal.classList.add('visible');
         },
 
@@ -348,9 +532,10 @@ getPetEmoji(name) {
             const timerEl = document.getElementById('event-modal-timer');
             const bodyEl = document.getElementById('event-modal-body');
 
-            if (barTitleEl) barTitleEl.textContent = `Event Timetable • ${event.name}`;
+            const displayName = this.getEventDisplayName(event);
+            if (barTitleEl) barTitleEl.textContent = `Event Timetable • ${displayName}`;
             if (iconEl) iconEl.innerHTML = `<span class="event-icon">${this.getEventIcon(event)}</span>`;
-            if (titleEl) titleEl.textContent = event.name;
+            if (titleEl) titleEl.textContent = displayName;
 
             let subInfo = '';
             if (event.type === 'farming' && event.crops) {
@@ -366,7 +551,16 @@ getPetEmoji(name) {
             if (subtitleEl) subtitleEl.innerHTML = subInfo;
 
             if (this.eventModalCount) clearInterval(this.eventModalCount);
-            const targetTime = event.targetTime || (Date.now() + event.msUntil);
+            
+            let targetTime = event.targetTime;
+            if (!targetTime) {
+                if (typeof event.msUntil === 'number' && !isNaN(event.msUntil)) {
+                    targetTime = Date.now() + event.msUntil;
+                } else {
+                    const nextOcc = this.engine.getNextOccurrences(event.name, this.todaySkyblock, 1)[0];
+                    targetTime = nextOcc ? nextOcc.realDate.getTime() : Date.now();
+                }
+            }
 
             const updateEventCountdown = () => {
                 const now = Date.now();
