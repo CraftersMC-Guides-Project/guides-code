@@ -1,10 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>SkyBlock Calendar &amp; Event Timers — CraftersMC Guides</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Live SkyBlock event countdowns, calendar schedule, and seasonal festival timings for CraftersMC." />
+  <meta name="description"
+    content="Live SkyBlock event countdowns, calendar schedule, Travelling Zoo pets, and seasonal festival timings for CraftersMC." />
+  <meta property="og:title" content="SkyBlock Calendar &amp; Event Timers — CraftersMC Guides" />
+  <meta property="og:description"
+    content="Live countdowns, Travelling Zoo timings, Spooky Festivals, and full SkyBlock calendar schedule for CraftersMC." />
+  <meta property="og:image" content="https://craftersmc-guides.pages.dev/assets/cmc-guides.png" />
+  <meta property="og:url" content="https://craftersmc-guides.pages.dev/skycalendar.html" />
+  <meta property="og:type" content="website" />
   <link rel="icon" href="assets/cmc-icon.png" type="image/png" />
   <link rel="icon" href="assets/cmc-guides.png" type="image/png" />
 
@@ -23,24 +31,25 @@
         var d = localStorage.getItem("darkMode");
         if (d === "true" || (d === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
           document.documentElement.classList.add("darkmode");
+        } else {
+          document.documentElement.classList.remove("darkmode");
         }
-      } catch (e) {}
+      } catch (e) { }
     })();
   </script>
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/skycalendar.css" />
   <link rel="stylesheet" href="css/essential.css" />
   <link rel="stylesheet" href="css/neo-brutalism.css" />
+  <link rel="stylesheet" href="css/skycalendar.css" />
 
   <!-- Scripts -->
-   
-  <script src="better-api-docs/app.js" defer></script>
   <script src="js/components.js" defer></script>
   <script src="js/calendarengine.js" defer></script>
   <script src="js/calendaruicontroller.js" defer></script>
   <script src="js/script.js" defer></script>
 </head>
+
 <body>
 
   <!-- Fullscreen / Layout Overlays -->
@@ -53,73 +62,274 @@
   <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <!-- Main Content Area -->
-    <main class="neo-container" id="main-content">
+  <!-- Main Content Area -->
+  <main class="neo-container" id="main-content">
 
-      <!-- Top Overview Bar -->
-      <div class="calendar-top-card neo-hero-card">
-        <div class="calendar-top-info">
-          <h1>SkyBlock Calendar &amp; Event Timers</h1>
-          <p id="date-top">Loading current date...</p>
+    <!-- HERO SECTION -->
+    <section class="neo-hero-card" id="overview">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
         </div>
-        <button id="go-to-today-btn" class="btn-today neo-card-btn cyan" onclick="toToday()">
-          <span class="material-icons" style="font-size:1.1rem; color:black;">my_location</span>
-          Go to Today
-        </button>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px; color:#111827;">calendar_month</span>
+          CraftersMC-Guides-Project / SkyBlock Calendar &amp; Events
+        </div>
+      </div>
+
+      <div class="neo-hero-content">
+        <!-- Top Row: Heading on the left, Plain Game Clock on the top right -->
+        <div class="neo-hero-top-row">
+          <div class="neo-hero-heading-group">
+            <h1 class="neo-hero-title">
+              SkyBlock <span class="neo-hero-highlight">Calendar &amp; Events</span>
+            </h1>
+            <p class="neo-hero-subtitle" id="date-top">
+              Loading current date...
+            </p>
+          </div>
+
+          <!-- Plain SkyBlock Game Clock on Top Right -->
+          <div class="neo-plain-clock" id="neo-plain-clock" title="SkyBlock Game Time">
+            <div class="neo-plain-clock-time game-clock-time" id="game-clock-time">--:--</div>
+            <div class="neo-plain-clock-date game-clock-date" id="game-clock-date">Year --, Season --</div>
+          </div>
+        </div>
+
+        <!-- Quick Summary Chips -->
+        <div class="neo-hero-stats">
+          <a href="#calendar-section" class="neo-stat-chip">
+            <span class="material-icons">calendar_month</span>
+            <span>Year Calendar Grid</span>
+          </a>
+          <a href="#events-section" class="neo-stat-chip">
+            <span class="material-icons">timer</span>
+            <span>Live Countdowns</span>
+          </a>
+          <a href="bazaar.html" class="neo-stat-chip">
+            <span class="material-icons">storefront</span>
+            <span>Bazaar Tracker</span>
+          </a>
+          <a href="auction.html" class="neo-stat-chip">
+            <span class="material-icons">gavel</span>
+            <span>Live Auctions</span>
+          </a>
+        </div>
+
+        <!-- Action Buttons (Button 70) -->
+        <div class="neo-hero-actions">
+          <button id="go-to-today-btn" class="button70-btn cyan" onclick="toToday()" type="button">
+            <span class="material-icons">my_location</span>
+            Go to Today
+          </button>
+          <a href="#events-section" class="button70-btn yellow">
+            <span class="material-icons">schedule</span>
+            Upcoming Events
+          </a>
+          <a href="index.html" class="button70-btn">
+            <span class="material-icons">home</span>
+            Return to Hub
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 1: CALENDAR GRID
+         ========================================================= -->
+    <section class="neo-section" id="calendar-section">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#bae6fd;">
+              <span class="material-icons">date_range</span>
+              SCHEDULE
+            </span>
+            <h2 class="neo-section-title">
+              SkyBlock Calendar &bull; Year <span id="year">1</span>
+            </h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Click any day cell on the grid to inspect scheduled festivals, elections, and seasonal occurrences:
+          </p>
+        </div>
+        <span class="neo-section-count">Interactive Grid</span>
       </div>
 
       <!-- Calendar Grid Card -->
-      <div class="calendar-card neo-hero-card">
+      <div class="calendar-card">
         <div class="calendar-card-header">
-          <h2>
-            <span class="material-icons" style="color:var(--accent-color);">calendar_month</span>
-            Calendar &bull; Year <span id="year">1</span>
-          </h2>
-          <div class="pagination-controls">
-            <button id="prev-page" class="pagination-btn neo-card-btn cyan">&larr; Prev</button>
-            <span class="pagination-text">Page <span id="page-counter">1</span></span>
-            <button id="next-page" class="pagination-btn neo-card-btn cyan">Next &rarr;</button>
+          <div class="calendar-controls-bar">
+            <!-- Jump to Year Group -->
+            <div class="year-jump-group">
+              <span style="font-size: 13px; font-weight: 800; font-family: var(--font-mono);">Year:</span>
+              <input type="number" id="year-input" class="year-jump-input" min="1" max="9999" placeholder="Year"
+                aria-label="Jump to SkyBlock Year" />
+              <button type="button" id="year-go" class="pagination-btn" style="background: #fef08a;">
+                Go
+              </button>
+            </div>
+
+            <!-- Page Navigation Group -->
+            <div class="pagination-controls">
+              <button type="button" id="prev-page" class="pagination-btn">&larr; Prev</button>
+              <span class="pagination-text">Page <span id="page-counter">1</span></span>
+              <button type="button" id="next-page" class="pagination-btn">Next &rarr;</button>
+              <button type="button" class="pagination-btn" style="background:#bae6fd;" onclick="toToday()"
+                title="Jump to current in-game day">
+                <span class="material-icons" style="font-size:14px; vertical-align:middle;">my_location</span> Today
+              </button>
+            </div>
           </div>
         </div>
+
+        <!-- 31 Days Grid -->
         <div id="grid"></div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 2: UPCOMING EVENTS & COUNTDOWNS
+         ========================================================= -->
+    <section class="neo-section" id="events-section">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#fed7aa;">
+              <span class="material-icons">timer</span>
+              TIMERS
+            </span>
+            <h2 class="neo-section-title">Upcoming Events &amp; Countdowns</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Live real-time timers for the Travelling Zoo, Spooky Festival, Jerry's Workshop, and seasonal events:
+          </p>
+        </div>
+        <span class="neo-section-count">Live Timers</span>
       </div>
 
       <!-- Upcoming Events Card -->
-      <div class="calendar-card neo-hero-card">
-        <div class="calendar-card-header">
-          <h2>
-            <span class="material-icons" style="color:#ea580c;">timer</span>
-            Upcoming Events &amp; Countdowns
-          </h2>
+      <div class="calendar-card events-container-card">
+        <div class="events-card-header">
+          <div class="events-card-header-left">
+            <span class="material-icons" style="font-size: 20px; color: #111827;">notifications_active</span>
+            <span>Active &amp; Upcoming Event Timers</span>
+          </div>
+          <div class="events-card-hint">
+            <span class="material-icons" style="font-size: 15px;">touch_app</span>
+            <span>Click any event card to open its timetable modal</span>
+          </div>
         </div>
         <div id="events-list"></div>
       </div>
-    </main>
+    </section>
 
-    <!-- Footer -->
-    <footer class="site-footer">
-      <div class="site-footer-left">CraftersMC Guides Project &bull; Unofficial Community Guides &amp; Documentation</div>
-      <div class="site-footer-right">
-        <a href="https://github.com/CraftersMC-Guides-Project/guides-code" target="_blank">GitHub</a>
-      </div>
-    </footer>
-  </div>
+  </main>
 
-  <!-- Day Details Modal Dialog -->
-  <div id="day-modal" class="modal-overlay">
+  <!-- Day Details Modal Dialog (Neo-Brutalism Hero Window) -->
+  <div id="day-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-content neo-hero-card">
-      <button id="modal-close-btn" class="modal-close-btn neo-card-btn cyan" style="font-size:1.2rem; padding:5px 7px;">&times;</button>
-      <div class="modal-header">
-        <h3 id="modal-title"></h3>
-        <p id="modal-subtitle"></p>
-        <p id="modal-timer" style="color:var(--cal-countdown); font-family:var(--font-mono); font-weight:700; margin-top:0.5em;"></p>
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red" onclick="closeModal()" title="Close inspector"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
+        </div>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px; color:#111827;">event_note</span>
+          SkyBlock Day Inspector
+        </div>
+        <button id="modal-close-btn" class="modal-close-btn" aria-label="Close modal" type="button">
+          <span class="material-icons" style="font-size:18px;">close</span>
+        </button>
       </div>
-      <div class="modal-body">
-        <h4 id="modal-events-title">Scheduled Events</h4>
-        <ul id="modal-event-list"></ul>
+
+      <div class="modal-inner">
+        <div class="modal-header">
+          <div class="modal-badge-row">
+            <span class="neo-badge" style="background:#bae6fd;">
+              <span class="material-icons">calendar_today</span>
+              DAY INFO
+            </span>
+          </div>
+          <h3 id="modal-title">Day Details</h3>
+          <p id="modal-subtitle">Date: Loading...</p>
+          <div id="modal-timer" class="modal-countdown-chip"></div>
+        </div>
+
+        <div class="modal-body">
+          <div class="modal-section-heading">
+            <span class="material-icons" style="font-size:18px;">celebration</span>
+            <h4 id="modal-events-title">Scheduled Events</h4>
+          </div>
+          <ul id="modal-event-list"></ul>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="pagination-btn modal-action-btn" onclick="closeModal()">
+            <span class="material-icons" style="font-size:15px; vertical-align:middle;">done</span>
+            Done
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Event Details / Timetable Modal Dialog (Neo-Brutalism Hero Window) -->
+  <div id="event-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="event-modal-title">
+    <div class="modal-content modal-content-wide neo-hero-card">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red" onclick="closeEventModal()" title="Close timetable"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
+        </div>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px; color:#111827;">calendar_month</span>
+          <span id="event-modal-bar-title">Event Timetable</span>
+        </div>
+        <button id="event-modal-close-btn" class="modal-close-btn" aria-label="Close modal" type="button" onclick="closeEventModal()">
+          <span class="material-icons" style="font-size:18px;">close</span>
+        </button>
+      </div>
+
+      <div class="modal-inner">
+        <div class="modal-header">
+          <div class="event-modal-top-row">
+            <div class="event-modal-icon-wrap" id="event-modal-icon"></div>
+            <div class="event-modal-title-group">
+              <div class="modal-badge-row">
+                <span class="neo-badge" style="background:#fed7aa;">
+                  <span class="material-icons">timer</span>
+                  TIMETABLE &amp; COUNTDOWN
+                </span>
+              </div>
+              <h3 id="event-modal-title">Event Details</h3>
+              <div id="event-modal-subtitle" class="event-modal-subtitle"></div>
+            </div>
+          </div>
+          <div id="event-modal-timer" class="modal-countdown-chip"></div>
+        </div>
+
+        <div class="modal-body" id="event-modal-body">
+          <!-- Timetable and filters loaded dynamically -->
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="pagination-btn modal-action-btn" onclick="closeEventModal()">
+            <span class="material-icons" style="font-size:15px; vertical-align:middle;">done</span>
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Footer Container (Loaded dynamically from /components/footer.html) -->
+  <div id="footer"></div>
+
 </body>
+
 </html>

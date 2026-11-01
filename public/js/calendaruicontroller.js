@@ -32,7 +32,9 @@ const UIController = {
             dateHeader: document.getElementById('date-top'),
             eventList: document.getElementById('events-list'),
             modal: document.getElementById('day-modal'),
-            modalClose: document.getElementById('modal-close-btn')
+            modalClose: document.getElementById('modal-close-btn'),
+            eventModal: document.getElementById('event-modal'),
+            eventModalClose: document.getElementById('event-modal-close-btn')
         };
     },
 
@@ -44,18 +46,46 @@ const UIController = {
         this.elements.modal.addEventListener('click', (e) => { if (e.target === this.elements.modal) this.closeModal(); });
         this.elements.modalClose.addEventListener('click', () => this.closeModal());
 
+        if (this.elements.eventModal) {
+            this.elements.eventModal.addEventListener('click', (e) => {
+                if (e.target === this.elements.eventModal) this.closeEventModal();
+            });
+        }
+        if (this.elements.eventModalClose) {
+            this.elements.eventModalClose.addEventListener('click', () => this.closeEventModal());
+        }
+
+        // Keyboard accessibility: ESC key to close any open modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (this.elements.modal && this.elements.modal.classList.contains('visible')) {
+                    this.closeModal();
+                }
+                if (this.elements.eventModal && this.elements.eventModal.classList.contains('visible')) {
+                    this.closeEventModal();
+                }
+            }
+        });
+
         this.elements.eventList.addEventListener('click', (e) => {
             const item = e.target.closest('.event-timer-item');
             if (!item) return;
             const idx = Number(item.dataset.eventIndex);
             const ev = this.currentUpcomingEvents && this.currentUpcomingEvents[idx];
-
-            const next = item.nextElementSibling;
-            if (next && next.classList.contains('event-occurrences-wrapper')) {
-                next.remove();
-                return;
+            if (ev) {
+                this.openEventModal(ev);
             }
-            if (ev) this.eventOccurLoad(ev, item);
+        });
+
+        // Keyboard accessibility: Enter or Space on an event item
+        this.elements.eventList.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                const item = e.target.closest('.event-timer-item');
+                if (item) {
+                    e.preventDefault();
+                    item.click();
+                }
+            }
         });
     },
 
@@ -147,12 +177,13 @@ getPetEmoji(name) {
 
         },
 
-        upcomingEvents(events) {
+    upcomingEvents(events) {
         this.currentUpcomingEvents = events;
+        const accentColors = ['blue', 'yellow', 'green', 'purple', 'orange', 'pink'];
         this.elements.eventList.innerHTML = events.map((event, idx) => {
             let info = 'Starts in...';
             if (event.type === 'farming' && event.crops) {
-                info = `<div class="farming-crops-preview">${event.crops.map(c => this.engine.CROP_ICONS[c] || '?').join(' ')}</div>`;
+                info = `<div class="farming-crops-preview">${event.crops.map(c => `<span class="crop-preview-badge" title="${c}">${this.engine.CROP_ICONS[c] || '?'}</span>`).join('')}</div>`;
             } else if (event.name === 'Travelling Zoo' && event.legendaryName) {
                 if (event.pets && event.pets.length) {
                     const items = event.pets.map(p => `
@@ -164,20 +195,29 @@ getPetEmoji(name) {
                     `).join('');
                     info = `<ul class="zoo-pet-list">${items}</ul>`;
                 } else {
-                    info = `<div class="zoo-legendary-preview">Legendary pet: ${this.getEventIcon(event.legendaryName)} ${capitalize(event.legendaryName)}</div>`;
+                    info = `<div class="zoo-legendary-preview"><span class="legendary-label">Legendary:</span> ${this.getEventIcon(event.legendaryName)} <span class="legendary-name">${capitalize(event.legendaryName)}</span></div>`;
                 }
             }
+            const accent = accentColors[idx % accentColors.length];
             return `
-                <div class="event-timer-item neo-card cyan" style="text-align: left; align-items: flex-start;" data-event-index="${idx}">
-                    <div class="event-timer-left">
-                        <span class="event-icon">${this.getEventIcon(event)}</span>
-                        <div class="event-timer-info">
-                            <p class="event-name" style="color:var(--text-secondary);">${event.name}</p>
+                <div class="event-timer-item neo-card accent-${accent}" data-event-index="${idx}" role="button" tabindex="0" aria-label="View schedule for ${event.name}">
+                    <div class="event-card-top">
+                        <div class="event-icon-badge">${this.getEventIcon(event)}</div>
+                        <div class="event-title-block">
+                            <div class="event-title-row">
+                                <h3 class="event-name">${event.name}</h3>
+                                <span class="event-timing-tag">Upcoming</span>
+                            </div>
                             <div class="event-info">${info}</div>
-                            <p class="expand-text">Click to see next 10 timings</p>
                         </div>
                     </div>
-                    <div class="event-timer-countdown neo-stat-chip">${this.timeCorrect(event.msUntil)}</div>
+                    <div class="event-card-bottom">
+                        <div class="event-timer-countdown neo-stat-chip">${this.timeCorrect(event.msUntil)}</div>
+                        <div class="event-open-modal-hint">
+                            <span class="material-icons">event_repeat</span>
+                            <span>Timetable</span>
+                        </div>
+                    </div>
                 </div>
                 `;
         }).join('');
@@ -236,17 +276,21 @@ getPetEmoji(name) {
 
         modalThing(day) {
             const realDate = this.engine.getRealTimeForDay(day.totalDays);
-            document.getElementById('modal-title').textContent = `Year ${day.year}, ${day.season} ${day.dayOfSeason}`;
-            document.getElementById('modal-subtitle').textContent = `Date: ${realDate.toLocaleString()}`;
+            const modalTitleEl = document.getElementById('modal-title');
+            const modalSubtitleEl = document.getElementById('modal-subtitle');
             const countdownEl = document.getElementById('modal-timer');
+
+            if (modalTitleEl) modalTitleEl.textContent = `Year ${day.year}, ${day.season} ${day.dayOfSeason}`;
+            if (modalSubtitleEl) modalSubtitleEl.textContent = `Local Time: ${realDate.toLocaleString()}`;
+
             if (this.modalCount) clearInterval(this.modalCount);
 
             const updateCountdown = () => {
                 const now = Date.now();
                 const ms = realDate.getTime() - now;
                 if (ms > 0) {
-                    countdownEl.style.display = '';
-                    countdownEl.textContent = `Countdown: ${this.timeCorrect(ms)}`;
+                    countdownEl.style.display = 'inline-flex';
+                    countdownEl.innerHTML = `<span class="material-icons" style="font-size:16px;">schedule</span> <span>Countdown: ${this.timeCorrect(ms)}</span>`;
                 } else {
                     countdownEl.style.display = 'none';
                 }
@@ -259,172 +303,231 @@ getPetEmoji(name) {
             eventListEl.innerHTML = '';
             
             if (day.events.length > 0) {
-                eventsTitleEl.style.display = 'block';
+                if (eventsTitleEl) eventsTitleEl.style.display = '';
                 day.events.forEach(event => {
                     const li = document.createElement('li');
                     li.className = 'modal-event-item';
                     let info = '';
                     if (event.type === 'farming') {
-                        info = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(${event.crops.join(', ')})</span>`;
+                        info = ` <span class="modal-event-crops">(${event.crops.join(', ')})</span>`;
                     } else if (event.name === 'Travelling Zoo' && event.legendaryName) {
                         if (event.pets && event.pets.length) {
                             const items = event.pets.map(p => `<li class="zoo-pet-item"><span class="zoo-pet-emoji">${this.getPetEmoji(p.name)}</span> <span class="zoo-pet-name">${capitalize(p.name)}</span> ${this.getRarityLabel(p.rarity)}</li>`).join('');
-                            info = ` <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top:4px;"><ul class="zoo-pet-list">${items}</ul></div>`;
+                            info = ` <div class="modal-zoo-pets"><ul class="zoo-pet-list">${items}</ul></div>`;
                         } else {
-                            info = ` <span style="color: var(--text-secondary); font-size: 0.9rem;">(Legendary: ${this.getPetEmoji(event.legendaryName)} ${capitalize(event.legendaryName)})</span>`;
+                            info = ` <span class="modal-event-legendary">(Legendary: ${this.getPetEmoji(event.legendaryName)} ${capitalize(event.legendaryName)})</span>`;
                         }
                     }
-                    li.innerHTML = `<span class="event-icon" style="height: 24px; width: auto;">${event.icon}</span> <span>${event.name}${info}</span>`;
+                    li.innerHTML = `<span class="event-icon">${event.icon}</span> <div class="modal-event-details"><span class="modal-event-name">${event.name}</span>${info}</div>`;
                     eventListEl.appendChild(li);
                 });
             } else {
-                eventsTitleEl.style.display = 'none';
-                eventListEl.innerHTML = '<li>No events on this day.</li>';
+                if (eventsTitleEl) eventsTitleEl.style.display = 'none';
+                eventListEl.innerHTML = '<li class="modal-empty-state"><span class="material-icons" style="font-size:18px;">event_busy</span><span>No scheduled events on this day.</span></li>';
             }
             
             this.elements.modal.classList.add('visible');
         },
 
-        eventOccurLoad(event, itemEl) {
-        document.querySelectorAll('.event-occurrences-wrapper').forEach(el => el.remove());
-        const occ = this.engine.getNextOccurrences(event.name, this.todaySkyblock, 200);
-        const hasExtra = occ.some(o => (o.crops && o.crops.length) || o.legendaryName);
-        const wrapper = document.createElement('div');
-        wrapper.className = 'event-occurrences-wrapper accordion';
-        wrapper.classList.add('neo-hero-card');
-        const accItem = document.createElement('div');
-        accItem.className = 'accordion-item';
-        accItem.setAttribute('data-event-name', event.name);
-        const header = document.createElement('div');
-        header.className = 'accordion-header';
-        header.innerHTML = `
-            <div class="header-left" style="display:flex;align-items:center;gap:8px;">
-                <div>
-                    <h2>${event.name}</h2>
-                    <div style="font-size:0.85rem;color:var(--text-secondary)">${event.type === 'farming' && event.crops ? event.crops.map(c => this.engine.CROP_ICONS[c] || c).join(' ') : (event.legendaryName ? 'Legendary: ' + capitalize(event.legendaryName) : '')}</div>
-                </div>
-            </div>
-            <div style="font-size:0.85rem;color:var(--text-secondary)">Next 10 occurrences</div>
-        `;
+        openEventModal(event) {
+            if (!this.elements.eventModal) return;
+            const barTitleEl = document.getElementById('event-modal-bar-title');
+            const iconEl = document.getElementById('event-modal-icon');
+            const titleEl = document.getElementById('event-modal-title');
+            const subtitleEl = document.getElementById('event-modal-subtitle');
+            const timerEl = document.getElementById('event-modal-timer');
+            const bodyEl = document.getElementById('event-modal-body');
 
-        const body = document.createElement('div');
-        body.className = 'accordion-body';
+            if (barTitleEl) barTitleEl.textContent = `Event Timetable • ${event.name}`;
+            if (iconEl) iconEl.innerHTML = `<span class="event-icon">${this.getEventIcon(event)}</span>`;
+            if (titleEl) titleEl.textContent = event.name;
 
-        if (event.name === 'Farming Contest') {
-            const filterContainer = document.createElement('div');
-            filterContainer.className = 'farming-filters';
-            const filterLabel = document.createElement('div');
-            filterLabel.textContent = 'Filter by crop:';
-            this.engine.CropType.forEach(cropKey => {
-                const label = document.createElement('label');
-                label.className = 'farming-filter';
-                label.title = cropKey;
-                label.innerHTML = `<input type="checkbox" value="${cropKey}"><span class="crop-icon">${this.engine.CROP_ICONS[cropKey] || ''}</span><span class="crop-name">${cropKey.replace('_',' ')}</span>`;
-                filterContainer.appendChild(label);
-            });
+            let subInfo = '';
+            if (event.type === 'farming' && event.crops) {
+                subInfo = `Contested Crops: ${event.crops.map(c => this.engine.CROP_ICONS[c] || c).join(' ')}`;
+            } else if (event.legendaryName) {
+                subInfo = `Legendary Pet: ${this.getPetEmoji(event.legendaryName)} ${capitalize(event.legendaryName)}`;
+            }
+            if (subtitleEl) subtitleEl.textContent = subInfo;
 
-            body.appendChild(filterContainer);
+            if (this.eventModalCount) clearInterval(this.eventModalCount);
+            const targetTime = event.targetTime || (Date.now() + event.msUntil);
 
-            const table = document.createElement('table');
-            table.className = 'occurrences-table';
-            body.appendChild(table);
+            const updateEventCountdown = () => {
+                const now = Date.now();
+                const ms = targetTime - now;
+                if (timerEl) {
+                    if (ms > 0) {
+                        timerEl.style.display = 'inline-flex';
+                        timerEl.innerHTML = `<span class="material-icons" style="font-size:16px;">schedule</span> <span>Starts in: ${this.timeCorrect(ms)}</span>`;
+                    } else {
+                        timerEl.style.display = 'inline-flex';
+                        timerEl.innerHTML = `<span class="material-icons" style="font-size:16px;">celebration</span> <span>Event Active Now!</span>`;
+                    }
+                }
+            };
+            updateEventCountdown();
+            this.eventModalCount = setInterval(updateEventCountdown, 1000);
 
-            const renderTable = (list) => {
+            bodyEl.innerHTML = '';
+
+            const occ = this.engine.getNextOccurrences(event.name, this.todaySkyblock, 200);
+
+            if (event.name === 'Farming Contest') {
+                const filterContainer = document.createElement('div');
+                filterContainer.className = 'farming-filters-container';
+                filterContainer.innerHTML = `
+                    <div class="farming-filters-header">
+                        <span class="material-icons" style="font-size:16px;">filter_alt</span>
+                        <span class="farming-filters-title">Filter by Crop:</span>
+                        <span class="farming-filters-note">(select crops to filter timetable)</span>
+                    </div>
+                `;
+
+                const chipsWrapper = document.createElement('div');
+                chipsWrapper.className = 'farming-filters-chips';
+                this.engine.CropType.forEach(cropKey => {
+                    const label = document.createElement('label');
+                    label.className = 'farming-filter';
+                    label.title = cropKey;
+                    label.innerHTML = `<input type="checkbox" value="${cropKey}"><span class="crop-icon">${this.engine.CROP_ICONS[cropKey] || ''}</span><span class="crop-name">${cropKey.replace('_',' ')}</span>`;
+                    chipsWrapper.appendChild(label);
+                });
+                filterContainer.appendChild(chipsWrapper);
+                bodyEl.appendChild(filterContainer);
+
+                const tableWrap = document.createElement('div');
+                tableWrap.className = 'occurrences-table-wrapper';
+                const table = document.createElement('table');
+                table.className = 'occurrences-table';
+                tableWrap.appendChild(table);
+                bodyEl.appendChild(tableWrap);
+
+                const renderTable = (list) => {
+                    if (!list || list.length === 0) {
+                        table.innerHTML = `
+                            <thead>
+                                <tr>
+                                    <th>In-Game Date</th>
+                                    <th>Real Date (Local)</th>
+                                    <th>Time Until</th>
+                                    <th>Crops</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="4" style="text-align:center; padding: 24px; color: var(--text-secondary); font-weight: 700;">
+                                        No upcoming contests found matching selected crops in the next 1,000 SkyBlock days.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        `;
+                        return;
+                    }
+                    table.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th><div class="th-content"><span class="material-icons">calendar_today</span> In-Game Date</div></th>
+                                <th><div class="th-content"><span class="material-icons">schedule</span> Real Date (Local)</div></th>
+                                <th><div class="th-content"><span class="material-icons">hourglass_top</span> Time Until</div></th>
+                                <th><div class="th-content"><span class="material-icons">eco</span> Contested Crops</div></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${list.slice(0, 10).map(o => {
+                                const day = this.engine.getDayInfo(o.totalDays);
+                                const shortSeason = day.season.substring(0, 3);
+                                const realStr = o.realDate.toLocaleString();
+                                const until = this.timeCorrect(o.msUntil);
+                                const cropsHtml = (o.crops || []).map(c => `<span class="table-crop-badge" title="${c}">${this.engine.CROP_ICONS[c] || c}</span>`).join(' ');
+                                return `<tr>
+                                    <td><span class="table-date-badge">Year ${day.year}, ${shortSeason} ${day.dayOfSeason}</span></td>
+                                    <td class="table-real-date">${realStr}</td>
+                                    <td><span class="table-time-until">${until}</span></td>
+                                    <td><div class="table-crops-row">${cropsHtml}</div></td>
+                                </tr>`;
+                            }).join('')}
+                        </tbody>
+                    `;
+                };
+
+                const farmingOcc = occ.filter(o => o.crops && o.crops.length).slice(0, 1000);
+                renderTable(farmingOcc);
+
+                chipsWrapper.addEventListener('change', () => {
+                    const checked = Array.from(chipsWrapper.querySelectorAll('input:checked')).map(i => i.value);
+                    if (checked.length === 0) {
+                        renderTable(farmingOcc);
+                        return;
+                    }
+                    const matches = [];
+                    for (let i = 0; i < farmingOcc.length && matches.length < 10; i++) {
+                        const o = farmingOcc[i];
+                        if (o.crops && checked.some(c => o.crops.includes(c))) matches.push(o);
+                    }
+                    renderTable(matches);
+                });
+            } else {
+                const tableWrap = document.createElement('div');
+                tableWrap.className = 'occurrences-table-wrapper';
+                const table = document.createElement('table');
+                table.className = 'occurrences-table';
+                tableWrap.appendChild(table);
+                bodyEl.appendChild(tableWrap);
+
+                const filtered = occ.slice(0, 10);
+                const hasExtraNonFarm = filtered.some(o => o.legendaryName) || event.name === 'New Year Celebration';
+                const theadCols = [
+                    '<th><div class="th-content"><span class="material-icons">calendar_today</span> In-Game Date</div></th>',
+                    '<th><div class="th-content"><span class="material-icons">schedule</span> Real Date (Local)</div></th>',
+                    '<th><div class="th-content"><span class="material-icons">hourglass_top</span> Time Until</div></th>'
+                ];
+                if (hasExtraNonFarm) theadCols.push('<th><div class="th-content"><span class="material-icons">stars</span> Extra Details</div></th>');
+
                 table.innerHTML = `
                     <thead>
-                        <tr>
-                            <th>In-game date</th>
-                            <th>Real date (local)</th>
-                            <th>Time until</th>
-                            <th>Extra</th>
-                        </tr>
+                        <tr>${theadCols.join('')}</tr>
                     </thead>
                     <tbody>
-                        ${list.slice(0,10).map(o => {
+                        ${filtered.map(o => {
                             const day = this.engine.getDayInfo(o.totalDays);
-                            const shortSeason = day.season.substring(0,3);
+                            const shortSeason = day.season.substring(0, 3);
                             const realStr = o.realDate.toLocaleString();
                             const until = this.timeCorrect(o.msUntil);
-                            const cropsText = (o.crops || []).map(c => `${this.engine.CROP_ICONS[c] || ''}`);
-                            return `<tr>
-                                <td>Year ${day.year}, ${shortSeason} ${day.dayOfSeason}</td>
-                                <td>${realStr}</td>
-                                <td style="font-family:monospace;color:var(--highlight-color)">${until}</td>
-                                <td>${cropsText}</td>
-                            </tr>`;
+                            let extra = '';
+                            if (o.pets && o.pets.length) {
+                                const items = o.pets.map(p => `<li class="zoo-pet-item"><span class="zoo-pet-emoji">${this.getPetEmoji(p.name)}</span> <span class="zoo-pet-name">${capitalize(p.name)}</span> ${this.getRarityLabel(p.rarity)}</li>`).join('');
+                                extra = `<ul class="zoo-pet-list">${items}</ul>`;
+                            } else if (o.legendaryName) {
+                                const icon = this.getPetEmoji(o.legendaryName);
+                                extra = `<span class="occ-extra">${icon} ${capitalize(o.legendaryName)}</span>`;
+                            } else if (event.name === 'New Year Celebration') {
+                                extra = `<span class="neo-badge" style="background:#fef08a;">Year ${day.year}</span>`;
+                            }
+                            const baseCells = [
+                                `<td><span class="table-date-badge">Year ${day.year}, ${shortSeason} ${day.dayOfSeason}</span></td>`,
+                                `<td class="table-real-date">${realStr}</td>`,
+                                `<td><span class="table-time-until">${until}</span></td>`
+                            ];
+                            if (hasExtraNonFarm) baseCells.push(`<td>${extra}</td>`);
+                            return `<tr>${baseCells.join('')}</tr>`;
                         }).join('')}
                     </tbody>
                 `;
-            };
-            //if you are reading this noticable notice you may notice that this noticable notice is not worth noticing and has no noticable value
-            const farmingOcc = occ.filter(o => o.crops && o.crops.length).slice(0, 1000);
-            renderTable(farmingOcc);
+            }
 
-            filterContainer.addEventListener('change', () => {
-                const checked = Array.from(filterContainer.querySelectorAll('input:checked')).map(i => i.value);
-                if (checked.length === 0) {
-                    renderTable(farmingOcc);
-                    return;
-                }
-                const matches = [];
-                for (let i = 0; i < farmingOcc.length && matches.length < 10; i++) {
-                    const o = farmingOcc[i];
-                    if (o.crops && checked.some(c => o.crops.includes(c))) matches.push(o);
-                }
-                renderTable(matches);
-            });
-        } else {
-            const table = document.createElement('table');
-            table.className = 'occurrences-table';
+            this.elements.eventModal.classList.add('visible');
+        },
 
-            const filtered = occ.slice(0, 10);
-            const hasExtraNonFarm = filtered.some(o => o.legendaryName) || event.name === 'New Year Celebration';
-            const theadCols = [
-                '<th>In-game date</th>',
-                '<th>Real date (local)</th>',
-                '<th>Time until</th>'
-            ];
-            if (hasExtraNonFarm) theadCols.push('<th>Extra</th>');
-
-            table.innerHTML = `
-                <thead>
-                    <tr>${theadCols.join('')}</tr>
-                </thead>
-                <tbody>
-                    ${filtered.map(o => {
-                        const day = this.engine.getDayInfo(o.totalDays);
-                        const shortSeason = day.season.substring(0,3);
-                        const realStr = o.realDate.toLocaleString();
-                        const until = this.timeCorrect(o.msUntil);
-                        let extra = '';
-                        // If occurrence supplies full pet shop, display that
-                        if (o.pets && o.pets.length) {
-                            const items = o.pets.map(p => `<li class="zoo-pet-item"><span class="zoo-pet-emoji">${this.getPetEmoji(p.name)}</span> <span class="zoo-pet-name">${capitalize(p.name)}</span> ${this.getRarityLabel(p.rarity)}</li>`).join('');
-                            extra = `<ul class="zoo-pet-list">${items}</ul>`;
-                        } else if (o.legendaryName) {
-                            const icon = this.getPetEmoji(o.legendaryName);
-                            extra = `<span class="occ-extra">${icon} ${capitalize(o.legendaryName)}</span>`;
-                        } else if (event.name === 'New Year Celebration') {
-                            extra = `Y${day.year}`;
-                        }
-                        const baseCells = [
-                            `<td>Year ${day.year}, ${shortSeason} ${day.dayOfSeason}</td>`,
-                            `<td>${realStr}</td>`,
-                            `<td style="font-family:monospace;color:var(--highlight-color)">${until}</td>`
-                        ];
-                        if (hasExtraNonFarm) baseCells.push(`<td>${extra}</td>`);
-                        return `<tr>${baseCells.join('')}</tr>`;
-                    }).join('')}
-                </tbody>
-            `;
-            body.appendChild(table);
-        }
-        accItem.appendChild(header);
-        accItem.appendChild(body);
-        wrapper.appendChild(accItem);
-        itemEl.parentNode.insertBefore(wrapper, itemEl.nextSibling);
-        requestAnimationFrame(() => body.classList.add('expanded'));
-    },
+        closeEventModal() {
+            if (this.elements.eventModal) {
+                this.elements.eventModal.classList.remove('visible');
+            }
+            if (this.eventModalCount) {
+                clearInterval(this.eventModalCount);
+                this.eventModalCount = null;
+            }
+        },
 
         closeModal() {
             this.elements.modal.classList.remove('visible');
@@ -480,3 +583,20 @@ function capitalize(e) {
 function toToday() {
     UIController.toToday();
 }
+
+function closeModal() {
+    if (window.UIController) {
+        window.UIController.closeModal();
+    }
+}
+
+function closeEventModal() {
+    if (window.UIController) {
+        window.UIController.closeEventModal();
+    }
+}
+
+window.UIController = UIController;
+window.toToday = toToday;
+window.closeModal = closeModal;
+window.closeEventModal = closeEventModal;
