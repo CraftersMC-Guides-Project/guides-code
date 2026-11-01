@@ -275,10 +275,6 @@ getPetEmoji(name) {
                         <span class="day-year">Y${day.year}</span>
                     </div>
                     <div class="day-body">${eventContent}</div>`;
-                
-                if (dayCell.id === 'today') {
-                    dayCell.classList.add('cyan');
-                }
 
                 dayCell.addEventListener('click', () => this.modalThing(day));
                 dayCell.addEventListener('keydown', (e) => {
@@ -314,7 +310,6 @@ getPetEmoji(name) {
             const countdownEl = document.getElementById('modal-timer');
             const seasonBadgeEl = document.getElementById('modal-badge-season');
             const dayBadgeEl = document.getElementById('modal-badge-day');
-            const statusBadgeEl = document.getElementById('modal-badge-status');
             const eventsCountEl = document.getElementById('modal-events-count');
 
             if (modalTitleEl) {
@@ -370,11 +365,6 @@ getPetEmoji(name) {
                         countdownEl.className = 'modal-countdown-chip status-active';
                         countdownEl.innerHTML = `<span class="pulse-indicator"></span> <span class="material-icons" style="font-size:16px;">radio_button_checked</span> <span>Happening Now &bull; ${this.timeCorrect(msRemaining)} remaining</span>`;
                     }
-                    if (statusBadgeEl) {
-                        statusBadgeEl.style.display = 'inline-flex';
-                        statusBadgeEl.className = 'neo-badge green pulse-badge';
-                        statusBadgeEl.innerHTML = '<span class="pulse-indicator"></span> ACTIVE TODAY';
-                    }
                 } else if (now < startTime) {
                     // Upcoming day in the future
                     const msUntil = startTime - now;
@@ -383,22 +373,12 @@ getPetEmoji(name) {
                         countdownEl.className = 'modal-countdown-chip status-upcoming';
                         countdownEl.innerHTML = `<span class="material-icons" style="font-size:16px;">hourglass_top</span> <span>Starts in: ${this.timeCorrect(msUntil)}</span>`;
                     }
-                    if (statusBadgeEl) {
-                        statusBadgeEl.style.display = 'inline-flex';
-                        statusBadgeEl.className = 'neo-badge blue';
-                        statusBadgeEl.innerHTML = '<span class="material-icons" style="font-size:12px;">update</span> UPCOMING';
-                    }
                 } else {
                     // Concluded day in the past
                     if (countdownEl) {
                         countdownEl.style.display = 'inline-flex';
                         countdownEl.className = 'modal-countdown-chip status-past';
                         countdownEl.innerHTML = `<span class="material-icons" style="font-size:16px;">history</span> <span>Day Concluded</span>`;
-                    }
-                    if (statusBadgeEl) {
-                        statusBadgeEl.style.display = 'inline-flex';
-                        statusBadgeEl.className = 'neo-badge gray';
-                        statusBadgeEl.innerHTML = '<span class="material-icons" style="font-size:12px;">check</span> CONCLUDED';
                     }
                 }
             };
