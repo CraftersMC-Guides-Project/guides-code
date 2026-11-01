@@ -183,7 +183,12 @@ getPetEmoji(name) {
         this.elements.eventList.innerHTML = events.map((event, idx) => {
             let info = 'Starts in...';
             if (event.type === 'farming' && event.crops) {
-                info = `<div class="farming-crops-preview">${event.crops.map(c => `<span class="crop-preview-badge" title="${c}">${this.engine.CROP_ICONS[c] || '?'}</span>`).join('')}</div>`;
+                const cropsHtml = event.crops.map(c => {
+                    const icon = this.engine.CROP_ICONS[c] || '';
+                    const cleanName = formatCropName(c);
+                    return `<span class="crop-preview-badge" title="${cleanName}">${icon} <span class="crop-badge-name">${cleanName}</span></span>`;
+                }).join('');
+                info = `<div class="farming-crops-preview"><span class="farming-crops-label">Contested Crops:</span> <div class="farming-crops-chips">${cropsHtml}</div></div>`;
             } else if (event.name === 'Travelling Zoo' && event.legendaryName) {
                 if (event.pets && event.pets.length) {
                     const items = event.pets.map(p => `
@@ -308,8 +313,13 @@ getPetEmoji(name) {
                     const li = document.createElement('li');
                     li.className = 'modal-event-item';
                     let info = '';
-                    if (event.type === 'farming') {
-                        info = ` <span class="modal-event-crops">(${event.crops.join(', ')})</span>`;
+                    if (event.type === 'farming' && event.crops) {
+                        const cropsHtml = event.crops.map(c => {
+                            const icon = this.engine.CROP_ICONS[c] || '';
+                            const cleanName = formatCropName(c);
+                            return `<span class="day-modal-crop-pill" title="${cleanName}">${icon} <span>${cleanName}</span></span>`;
+                        }).join(' ');
+                        info = ` <div class="modal-event-crops-row"><span class="modal-crops-mini-label">Contested Crops:</span> <div class="day-modal-crops-chips">${cropsHtml}</div></div>`;
                     } else if (event.name === 'Travelling Zoo' && event.legendaryName) {
                         if (event.pets && event.pets.length) {
                             const items = event.pets.map(p => `<li class="zoo-pet-item"><span class="zoo-pet-emoji">${this.getPetEmoji(p.name)}</span> <span class="zoo-pet-name">${capitalize(p.name)}</span> ${this.getRarityLabel(p.rarity)}</li>`).join('');
@@ -344,11 +354,16 @@ getPetEmoji(name) {
 
             let subInfo = '';
             if (event.type === 'farming' && event.crops) {
-                subInfo = `Contested Crops: ${event.crops.map(c => this.engine.CROP_ICONS[c] || c).join(' ')}`;
+                const cropsHtml = event.crops.map(c => {
+                    const icon = this.engine.CROP_ICONS[c] || '';
+                    const cleanName = formatCropName(c);
+                    return `<span class="modal-crop-chip" title="${cleanName}">${icon} <span>${cleanName}</span></span>`;
+                }).join('');
+                subInfo = `<div class="modal-contested-crops-row"><span class="modal-crops-label">Contested Crops:</span> <div class="modal-crops-list">${cropsHtml}</div></div>`;
             } else if (event.legendaryName) {
-                subInfo = `Legendary Pet: ${this.getPetEmoji(event.legendaryName)} ${capitalize(event.legendaryName)}`;
+                subInfo = `<div class="modal-legendary-pet-row"><span class="modal-pet-label">Legendary Pet:</span> <span class="modal-pet-value">${this.getPetEmoji(event.legendaryName)} ${capitalize(event.legendaryName)}</span></div>`;
             }
-            if (subtitleEl) subtitleEl.textContent = subInfo;
+            if (subtitleEl) subtitleEl.innerHTML = subInfo;
 
             if (this.eventModalCount) clearInterval(this.eventModalCount);
             const targetTime = event.targetTime || (Date.now() + event.msUntil);
@@ -439,7 +454,11 @@ getPetEmoji(name) {
                                 const shortSeason = day.season.substring(0, 3);
                                 const realStr = o.realDate.toLocaleString();
                                 const until = this.timeCorrect(o.msUntil);
-                                const cropsHtml = (o.crops || []).map(c => `<span class="table-crop-badge" title="${c}">${this.engine.CROP_ICONS[c] || c}</span>`).join(' ');
+                                const cropsHtml = (o.crops || []).map(c => {
+                                    const icon = this.engine.CROP_ICONS[c] || '';
+                                    const cleanName = formatCropName(c);
+                                    return `<span class="table-crop-badge" title="${cleanName}">${icon} <span>${cleanName}</span></span>`;
+                                }).join(' ');
                                 return `<tr>
                                     <td><span class="table-date-badge">Year ${day.year}, ${shortSeason} ${day.dayOfSeason}</span></td>
                                     <td class="table-real-date">${realStr}</td>
@@ -502,7 +521,7 @@ getPetEmoji(name) {
                                 const icon = this.getPetEmoji(o.legendaryName);
                                 extra = `<span class="occ-extra">${icon} ${capitalize(o.legendaryName)}</span>`;
                             } else if (event.name === 'New Year Celebration') {
-                                extra = `<span class="neo-badge" style="background:#fef08a;">Year ${day.year}</span>`;
+                                extra = `<span class="neo-badge yellow">Year ${day.year}</span>`;
                             }
                             const baseCells = [
                                 `<td><span class="table-date-badge">Year ${day.year}, ${shortSeason} ${day.dayOfSeason}</span></td>`,
@@ -578,6 +597,10 @@ document.addEventListener('DOMContentLoaded', () => {
 function capitalize(e) {
     const s = String(e || '');
     return s.length === 0 ? '' : s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function formatCropName(c) {
+    return String(c || '').toLowerCase().split('_').map(w => capitalize(w)).join(' ');
 }
 
 function toToday() {
