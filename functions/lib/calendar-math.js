@@ -1,11 +1,12 @@
 /**
  * CraftersMC SkyBlock Calendar Engine - Server-Side Calculator
- * Deterministic calculation of current SkyBlock date and upcoming events.
+ * Exact deterministic calculation matching public/js/calendarengine.js
  */
 
 const START_OF_TIMES = 1648800000;
 const TIME_MULTIPLIER = 72;
 const SEASON_LENGTH = 93;
+const YEAR_LENGTH = 4;
 const DAYS_PER_YEAR = 372;
 const MINUTES_PER_SKYBLOCK_DAY = 20;
 
@@ -15,17 +16,50 @@ const CropType = [
   'MUSHROOM', 'BEETROOT'
 ];
 
-export function getCurrentTimeData(epochMs = Date.now()) {
-  const currentSeconds = Math.floor(epochMs / 1000);
-  const secondsSinceEpoch = currentSeconds - START_OF_TIMES;
-  const skyblockSeconds = secondsSinceEpoch * TIME_MULTIPLIER;
-  const skyblockDecimalDays = skyblockSeconds / 1200;
-  const daysSinceEpoch = Math.floor(skyblockDecimalDays);
+const JavaRandom = (function() {
+  const MUL = 0x5DEECE66Dn;
+  const ADD = 0xBn;
+  const MASK48 = (1n << 48n) - 1n;
 
-  const currentYear = Math.floor(daysSinceEpoch / DAYS_PER_YEAR) + 1;
-  const todayInYear = (daysSinceEpoch % DAYS_PER_YEAR);
-  const currentSeason = Math.floor(todayInYear / SEASON_LENGTH);
-  const todaySeason = (todayInYear % SEASON_LENGTH) + 1;
+  return class JavaRandom {
+    constructor(seedVal) {
+      this.seed = 0n;
+      this.setSeed(Number(seedVal) || 0);
+    }
+    setSeed(seedVal) {
+      const s = BigInt(seedVal);
+      this.seed = (s ^ MUL) & MASK48;
+    }
+    next(bits) {
+      this.seed = (this.seed * MUL + ADD) & MASK48;
+      return Number(this.seed >> (48n - BigInt(bits)));
+    }
+    nextInt(bound) {
+      if (bound === undefined) return this.next(32) | 0;
+      if (!Number.isInteger(bound) || bound <= 0) throw new RangeError('bound must be positive int');
+      if ((bound & (bound - 1)) === 0) {
+        return Math.floor(bound * (this.next(31) / 2147483648));
+      }
+      let bits, val;
+      do {
+        bits = this.next(31);
+        val = bits % bound;
+      } while (bits - val + (bound - 1) < 0);
+      return val;
+    }
+  };
+})();
+
+export function getCurrentTimeData(epochMs = Date.now()) {
+  const realSecondsSinceEpoch = (epochMs / 1000) - START_OF_TIMES;
+  const skyblockSeconds = realSecondsSinceEpoch * TIME_MULTIPLIER;
+  const skyblockDecimalDays = skyblockSeconds / 86400; // 86400 SkyBlock seconds per day (20 real minutes)
+
+  const daysSinceEpoch = Math.floor(skyblockDecimalDays);
+  const seasonsSinceEpoch = Math.floor(daysSinceEpoch / SEASON_LENGTH);
+  const currentYear = Math.floor(seasonsSinceEpoch / YEAR_LENGTH) + 1;
+  const currentSeason = seasonsSinceEpoch % YEAR_LENGTH;
+  const todaySeason = (daysSinceEpoch % SEASON_LENGTH) + 1;
 
   return {
     currentYear,
@@ -33,44 +67,30 @@ export function getCurrentTimeData(epochMs = Date.now()) {
     todaySeason,
     skyblockDecimalDays,
     todaySkyblock: daysSinceEpoch + 1,
-    todayInYear
+    todayInYear: (currentSeason * SEASON_LENGTH) + todaySeason
   };
 }
 
 export function getFarmingCrops(eventId) {
-  const MUL = 0x5DEECE66Dn;
-  const ADD = 0xBn;
-  const MASK48 = (1n << 48n) - 1n;
-  let seed = (BigInt(eventId) ^ MUL) & MASK48;
-
-  const next = (bits) => {
-    seed = (seed * MUL + ADD) & MASK48;
-    return Number(seed >> (48n - BigInt(bits)));
-  };
-
-  const nextInt = (bound) => {
-    let bits, val;
-    do {
-      bits = next(31);
-      val = bits % bound;
-    } while (bits - val + (bound - 1) < 0);
-    return val;
-  };
-
-  const pool = [...CropType];
-  const selected = [];
-  for (let i = 0; i < 3; i++) {
-    const idx = nextInt(pool.length);
-    selected.push(pool.splice(idx, 1)[0]);
+  const GOLDEN = 0x9E3779B97F4A7C15n;
+  const seed64 = (BigInt(eventId) ^ GOLDEN) & ((1n << 48n) - 1n);
+  const seed48 = Number(seed64);
+  const rng = new JavaRandom(seed48);
+  const arr = CropType.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = rng.nextInt(i + 1);
+    const tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
   }
-  return selected;
+  return arr.slice(0, 3);
 }
 
 export function getUpcomingEvents(epochMs = Date.now()) {
   const time = getCurrentTimeData(epochMs);
   const upcoming = [];
 
-  // 1. Ethan's Farming Contest (every 3 in-game days)
+  // 1. Ethan's Farming Contest (every 3 in-game days = 1 hour IRL)
   const nextContestDay = Math.floor(time.todaySkyblock / 3) * 3 + 1;
   const finalContestDay = nextContestDay > time.todaySkyblock ? nextContestDay : nextContestDay + 3;
   upcoming.push({
@@ -132,4 +152,3 @@ export function getUpcomingEvents(epochMs = Date.now()) {
 
   return upcoming.sort((a, b) => a.msUntil - b.msUntil);
 }
-
