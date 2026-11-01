@@ -50,7 +50,8 @@
     blocks: 'inventory_2',
     special: 'cake',
     items: 'category',
-    ui: 'widgets'
+    ui: 'widgets',
+    banned: 'block'
   };
 
   // Toast Function
@@ -110,6 +111,7 @@
       const totalCountEl = document.getElementById('heroTotalCount');
       const trpixelCountEl = document.getElementById('heroTrpixelCount');
       const mcCountEl = document.getElementById('heroMcCount');
+      const heroBannedCountEl = document.getElementById('heroBannedCount');
 
       if (totalCountEl) totalCountEl.textContent = allItems.length.toLocaleString();
       if (trpixelCountEl) {
@@ -119,6 +121,10 @@
       if (mcCountEl) {
         const mcCount = allItems.filter(i => i.namespace === 'minecraft').length;
         mcCountEl.textContent = mcCount.toLocaleString();
+      }
+      if (heroBannedCountEl) {
+        const bCount = allItems.filter(i => i.isBanned).length;
+        heroBannedCountEl.textContent = bCount.toLocaleString();
       }
 
       buildCategoryChips();
@@ -134,7 +140,7 @@
     if (!filterChipsContainer) return;
 
     // Count categories
-    const counts = { all: allItems.length };
+    const counts = { all: allItems.length, banned: allItems.filter(i => i.isBanned).length };
     allItems.forEach(item => {
       counts[item.category] = (counts[item.category] || 0) + 1;
     });
@@ -151,7 +157,8 @@
       { id: 'blocks', label: 'Blocks' },
       { id: 'special', label: 'Specials & Custom' },
       { id: 'items', label: 'General Items' },
-      { id: 'ui', label: 'UI & System' }
+      { id: 'ui', label: 'UI & System' },
+      { id: 'banned', label: 'Banned Items' }
     ];
 
     filterChipsContainer.innerHTML = categories.map(cat => {
@@ -185,12 +192,16 @@
 
     filteredItems = allItems.filter(item => {
       // Namespace filter
-      if (selectedNamespace !== 'all' && item.namespace !== selectedNamespace) {
+      if (selectedNamespace === 'banned') {
+        if (!item.isBanned) return false;
+      } else if (selectedNamespace !== 'all' && item.namespace !== selectedNamespace) {
         return false;
       }
 
       // Category filter
-      if (selectedCategory !== 'all' && item.category !== selectedCategory) {
+      if (selectedCategory === 'banned') {
+        if (!item.isBanned) return false;
+      } else if (selectedCategory !== 'all' && item.category !== selectedCategory) {
         return false;
       }
 
@@ -320,12 +331,16 @@
       const isTrpixel = item.namespace === 'trpixel';
       const badgeClass = isTrpixel ? 'trpixel' : 'minecraft';
       const fallbackIcon = getCategoryFallbackIcon(item.category);
+      const bannedBadge = item.isBanned ? `<span class="item-badge-banned" title="Banned Item"><span class="material-icons" style="font-size:11px;">block</span> Banned</span>` : '';
 
       return `
-        <div class="item-card" data-id="${item.numericId}">
+        <div class="item-card ${item.isBanned ? 'is-banned' : ''}" data-id="${item.numericId}">
           <div class="item-card-header">
             <span class="item-id-pill">#${item.numericId}</span>
-            <span class="item-badge-namespace ${badgeClass}">${item.namespace}</span>
+            <div style="display:flex; gap:5px; align-items:center;">
+              ${bannedBadge}
+              <span class="item-badge-namespace ${badgeClass}">${item.namespace}</span>
+            </div>
           </div>
           
           <div class="item-slot-wrapper">
@@ -370,9 +385,10 @@
       const isTrpixel = item.namespace === 'trpixel';
       const badgeClass = isTrpixel ? 'trpixel' : 'minecraft';
       const fallbackIcon = getCategoryFallbackIcon(item.category);
+      const bannedBadge = item.isBanned ? `<span class="item-badge-banned" title="Banned Item"><span class="material-icons" style="font-size:11px;">block</span> Banned</span>` : '';
 
       return `
-        <tr data-id="${item.numericId}">
+        <tr data-id="${item.numericId}" class="${item.isBanned ? 'is-banned-row' : ''}">
           <td class="items-table-icon-col">
             ${item.image
               ? `<img class="items-table-img" src="${item.image}" alt="${item.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
@@ -380,10 +396,18 @@
               : `<span class="material-icons" style="font-size:22px; color:var(--text-muted);">${fallbackIcon}</span>`
             }
           </td>
-          <td><strong>${item.name}</strong></td>
+          <td>
+            <strong>${item.name}</strong>
+            ${item.isBanned ? `<span style="color:#ef4444; font-size:0.75rem; font-weight:800; margin-left:6px;">(Banned)</span>` : ''}
+          </td>
           <td><code style="font-family:'JetBrains Mono',monospace; font-size:0.8rem;">${item.identifier}</code></td>
           <td><span class="item-id-pill">#${item.numericId}</span></td>
-          <td><span class="item-badge-namespace ${badgeClass}">${item.namespace}</span></td>
+          <td>
+            <div style="display:flex; gap:5px; align-items:center;">
+              ${bannedBadge}
+              <span class="item-badge-namespace ${badgeClass}">${item.namespace}</span>
+            </div>
+          </td>
           <td><span class="item-cat-label">${item.categoryName}</span></td>
           <td style="text-align:right;">
             <button type="button" class="item-copy-btn" title="Copy Item ID" onclick="event.stopPropagation(); window.copyItemId('${item.identifier}')">
