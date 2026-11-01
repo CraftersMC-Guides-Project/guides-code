@@ -1,0 +1,30 @@
+name: SkyBlock Event Alerts Cron
+
+on:
+  schedule:
+    # Runs every 5 minutes around the clock
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  check-and-dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger SkyBlock Calendar Event Dispatcher
+        run: |
+          echo "Triggering CraftersMC SkyBlock Event Alerts Dispatcher..."
+          RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" "https://craftersmc-guides.pages.dev/api/cron-dispatcher")
+          HTTP_STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS" | cut -d':' -f2)
+          BODY=$(echo "$RESPONSE" | sed '/HTTP_STATUS/d')
+          
+          echo "Response Status: $HTTP_STATUS"
+          echo "Response Body:"
+          echo "$BODY"
+          
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+            echo "Dispatcher triggered successfully!"
+          else
+            echo "Dispatcher returned non-200 status code: $HTTP_STATUS"
+            exit 1
+          fi
+

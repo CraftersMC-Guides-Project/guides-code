@@ -1,6 +1,6 @@
 /**
  * Cloudflare Pages Function: Store / Manage FCM registration tokens
- * Can persist device tokens to D1 (if available) or return success.
+ * Can persist device tokens and WebPush subscriptions to D1 (if available).
  */
 export async function onRequest(context) {
   const { request, env } = context;
@@ -16,10 +16,19 @@ export async function onRequest(context) {
   }
 
   if (request.method === 'GET') {
+    let subscriberCount = 0;
+    if (env.DB) {
+      try {
+        const countRes = await env.DB.prepare('SELECT COUNT(*) as total FROM fcm_subscribers').first();
+        subscriberCount = countRes ? countRes.total : 0;
+      } catch (e) {}
+    }
+
     return new Response(JSON.stringify({
       status: 'ready',
       vapid_public_key: env.key_pair_fcm ? 'Configured' : 'Missing in secrets',
       has_database: !!env.DB,
+      subscribers: subscriberCount,
       message: 'FCM Token endpoint is operational.'
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -29,7 +38,7 @@ export async function onRequest(context) {
   if (request.method === 'POST') {
     try {
       const data = await request.json();
-      const { token, preferences } = data;
+      const { token, preferences, subscription } = data;
 
       if (!token) {
         return new Response(JSON.stringify({ error: 'Token is required' }), {
@@ -38,12 +47,19 @@ export async function onRequest(context) {
         });
       }
 
+      const endpoint = subscription?.endpoint || null;
+      const p256dh = subscription?.keys?.p256dh || null;
+      const auth = subscription?.keys?.auth || null;
+
       // If D1 database is bound, store the token
       if (env.DB) {
         try {
           await env.DB.prepare(`
             CREATE TABLE IF NOT EXISTS fcm_subscribers (
               token TEXT PRIMARY KEY,
+              endpoint TEXT,
+              p256dh TEXT,
+              auth TEXT,
               preferences TEXT,
               created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
               updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -51,12 +67,30 @@ export async function onRequest(context) {
           `).run();
 
           await env.DB.prepare(`
-            INSERT INTO fcm_subscribers (token, preferences, updated_at)
-            VALUES (?, ?, CURRENT_TIMESTAMP)
+            CREATE TABLE IF NOT EXISTS fcm_sent_alerts (
+              id TEXT PRIMARY KEY,
+              event_key TEXT,
+              event_name TEXT,
+              sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+          `).run();
+
+          await env.DB.prepare(`
+            INSERT INTO fcm_subscribers (token, endpoint, p256dh, auth, preferences, updated_at)
+            VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
             ON CONFLICT(token) DO UPDATE SET
+              endpoint = excluded.endpoint,
+              p256dh = excluded.p256dh,
+              auth = excluded.auth,
               preferences = excluded.preferences,
               updated_at = CURRENT_TIMESTAMP
-          `).bind(token, JSON.stringify(preferences || {})).run();
+          `).bind(
+            token,
+            endpoint,
+            p256dh,
+            auth,
+            JSON.stringify(preferences || {})
+          ).run();
         } catch (dbErr) {
           console.warn('[fcm-token] DB write warning:', dbErr.message);
         }
@@ -64,7 +98,8 @@ export async function onRequest(context) {
 
       return new Response(JSON.stringify({
         success: true,
-        message: 'Token registered successfully'
+        message: 'Token registered successfully',
+        has_subscription: !!endpoint
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
@@ -78,4 +113,3 @@ export async function onRequest(context) {
 
   return new Response('Method Not Allowed', { status: 405, headers: corsHeaders });
 }
-

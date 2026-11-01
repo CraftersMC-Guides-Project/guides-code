@@ -275,11 +275,22 @@ class SkyCalendarFCMController {
   async syncTokenWithBackend(token) {
     if (!token) return;
     try {
+      let subData = null;
+      try {
+        if (this.swRegistration && this.swRegistration.pushManager) {
+          const sub = await this.swRegistration.pushManager.getSubscription();
+          if (sub) {
+            subData = sub.toJSON();
+          }
+        }
+      } catch (e) {}
+
       await fetch('/api/fcm-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           token,
+          subscription: subData,
           preferences: this.preferences
         })
       });
