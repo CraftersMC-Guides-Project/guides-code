@@ -16,6 +16,9 @@ const CropType = [
   'MUSHROOM', 'BEETROOT'
 ];
 
+const PET_TYPES = ['tiger', 'lion', 'monkey', 'elephant', 'giraffe'];
+const PET_RARITIES = ['COMMON', 'UNCOMMON', 'RARE', 'EPIC'];
+
 const JavaRandom = (function() {
   const MUL = 0x5DEECE66Dn;
   const ADD = 0xBn;
@@ -86,6 +89,27 @@ export function getFarmingCrops(eventId) {
   return arr.slice(0, 3);
 }
 
+export function getZooPets(totalDays) {
+  const daysSinceEpoch = totalDays - 1;
+  const seasonsSinceEpoch = Math.floor(daysSinceEpoch / SEASON_LENGTH);
+  const seed = Math.floor(seasonsSinceEpoch / 2);
+
+  const legendaryIndex = seed % PET_TYPES.length;
+  const picked = [legendaryIndex];
+  const rng = new JavaRandom(seed);
+  while (picked.length < 3) {
+    const idx = rng.nextInt(PET_TYPES.length);
+    if (!picked.includes(idx)) picked.push(idx);
+  }
+  const pets = picked.map((idx) => {
+    const name = PET_TYPES[idx];
+    const rarity = idx === legendaryIndex ? 'LEGENDARY' : PET_RARITIES[rng.nextInt(PET_RARITIES.length)];
+    return { name, rarity };
+  });
+
+  return { seed, pets, legendary: pets[0] };
+}
+
 export function getUpcomingEvents(epochMs = Date.now()) {
   const time = getCurrentTimeData(epochMs);
   const upcoming = [];
@@ -138,10 +162,14 @@ export function getUpcomingEvents(epochMs = Date.now()) {
   if (time.todayInYear < summerStart) nextZooDay = ((time.currentYear - 1) * DAYS_PER_YEAR) + summerStart;
   else if (time.todayInYear < winterStart) nextZooDay = ((time.currentYear - 1) * DAYS_PER_YEAR) + winterStart;
   else nextZooDay = (time.currentYear * DAYS_PER_YEAR) + summerStart;
+  
+  const zooData = getZooPets(nextZooDay);
   upcoming.push({
     key: 'zoo',
     name: "Travelling Zoo",
-    nextDay: nextZooDay
+    nextDay: nextZooDay,
+    pets: zooData.pets,
+    legendary: zooData.legendary
   });
 
   upcoming.forEach(event => {

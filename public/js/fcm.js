@@ -39,6 +39,36 @@ export const CROP_METADATA = {
   'BEETROOT': { name: 'Beetroot', icon: 'img/Beetroot.webp' }
 };
 
+// Travelling Zoo Pets & Rarities Catalog
+export const ALL_ZOO_PETS = ['elephant', 'giraffe', 'tiger', 'lion', 'monkey'];
+export const ALL_RARITIES = ['COMMON', 'UNCOMMON', 'RARE', 'EPIC', 'LEGENDARY'];
+
+export const ZOO_PET_METADATA = {
+  elephant: { name: 'Elephant', icon: 'img/pets/Elephant_Pet.webp', emoji: '🐘' },
+  giraffe:  { name: 'Giraffe',  icon: 'img/pets/Giraffe_Pet.webp',  emoji: '🦒' },
+  tiger:    { name: 'Tiger',    icon: 'img/pets/300px-Tiger_Pet.webp', emoji: '🐯' },
+  lion:     { name: 'Lion',     icon: 'img/pets/300px-Lion_Pet.webp', emoji: '🦁' },
+  monkey:   { name: 'Monkey',   icon: 'img/pets/Monkey_Pet.webp',   emoji: '🐵' }
+};
+
+export const RARITY_METADATA = {
+  COMMON:    { name: 'Common',    short: 'Com', icon: 'assets/rarity/common.webp',    color: '#64748b' },
+  UNCOMMON:  { name: 'Uncommon',  short: 'Unc', icon: 'assets/rarity/uncommon.webp',  color: '#16a34a' },
+  RARE:      { name: 'Rare',      short: 'Rare', icon: 'assets/rarity/rare.webp',      color: '#2563eb' },
+  EPIC:      { name: 'Epic',      short: 'Epic', icon: 'assets/rarity/epic.webp',      color: '#9333ea' },
+  LEGENDARY: { name: 'Legendary', short: 'Leg', icon: 'assets/rarity/legendary.webp', color: '#d97706' }
+};
+
+export function createDefaultZooPets() {
+  return {
+    elephant: [...ALL_RARITIES],
+    giraffe:  [...ALL_RARITIES],
+    tiger:    [...ALL_RARITIES],
+    lion:     [...ALL_RARITIES],
+    monkey:   [...ALL_RARITIES]
+  };
+}
+
 // Default Event Alert Subscriptions (CraftersMC SkyBlock Events)
 const DEFAULT_PREFERENCES = {
   farming: true,       // Ethan's Farming Contest
@@ -50,7 +80,8 @@ const DEFAULT_PREFERENCES = {
     '15': false,       // 15 minutes early
     '5': true          // 5 minutes early
   },
-  farming_crops: [...ALL_CROPS] // all 10 crops selected by default
+  farming_crops: [...ALL_CROPS], // all 10 crops selected by default
+  zoo_pets: createDefaultZooPets() // all pets & rarities selected by default
 };
 
 class SkyCalendarFCMController {
@@ -94,7 +125,10 @@ class SkyCalendarFCMController {
           },
           farming_crops: Array.isArray(parsed.farming_crops)
             ? parsed.farming_crops
-            : [...DEFAULT_PREFERENCES.farming_crops]
+            : [...DEFAULT_PREFERENCES.farming_crops],
+          zoo_pets: (parsed.zoo_pets && typeof parsed.zoo_pets === 'object')
+            ? { ...createDefaultZooPets(), ...parsed.zoo_pets }
+            : createDefaultZooPets()
         };
       }
     } catch (e) {
@@ -103,7 +137,8 @@ class SkyCalendarFCMController {
     return {
       ...DEFAULT_PREFERENCES,
       lead_time: { ...DEFAULT_PREFERENCES.lead_time },
-      farming_crops: [...DEFAULT_PREFERENCES.farming_crops]
+      farming_crops: [...DEFAULT_PREFERENCES.farming_crops],
+      zoo_pets: createDefaultZooPets()
     };
   }
 
@@ -176,6 +211,7 @@ class SkyCalendarFCMController {
       // 6. Update UI with current permission / token status
       this.updateUIStatus(this.getPermissionState());
       this.renderCropChips();
+      this.renderZooPets();
       this.syncPreferenceInputs();
 
       // 7. If permission already granted, verify subscription validity and re-sync
@@ -503,6 +539,72 @@ class SkyCalendarFCMController {
     }
   }
 
+  toggleZooPetRarity(petKey, rarity) {
+    if (!this.preferences.zoo_pets) {
+      this.preferences.zoo_pets = createDefaultZooPets();
+    }
+    const currentList = Array.isArray(this.preferences.zoo_pets[petKey])
+      ? this.preferences.zoo_pets[petKey]
+      : [...ALL_RARITIES];
+
+    if (currentList.includes(rarity)) {
+      this.preferences.zoo_pets[petKey] = currentList.filter(r => r !== rarity);
+    } else {
+      this.preferences.zoo_pets[petKey] = [...currentList, rarity];
+    }
+
+    this.savePreferences();
+    this.syncPreferenceInputs();
+    if (this.token) {
+      this.syncTokenWithBackend(this.token);
+    }
+  }
+
+  toggleZooPetAll(petKey) {
+    if (!this.preferences.zoo_pets) {
+      this.preferences.zoo_pets = createDefaultZooPets();
+    }
+    const currentList = Array.isArray(this.preferences.zoo_pets[petKey])
+      ? this.preferences.zoo_pets[petKey]
+      : [];
+
+    // If already has all rarities, clear; otherwise select all
+    if (currentList.length === ALL_RARITIES.length) {
+      this.preferences.zoo_pets[petKey] = [];
+    } else {
+      this.preferences.zoo_pets[petKey] = [...ALL_RARITIES];
+    }
+
+    this.savePreferences();
+    this.syncPreferenceInputs();
+    if (this.token) {
+      this.syncTokenWithBackend(this.token);
+    }
+  }
+
+  setZooBulk(mode) {
+    if (!this.preferences.zoo_pets) {
+      this.preferences.zoo_pets = createDefaultZooPets();
+    }
+    ALL_ZOO_PETS.forEach(petKey => {
+      if (mode === 'all') {
+        this.preferences.zoo_pets[petKey] = [...ALL_RARITIES];
+      } else if (mode === 'legendary') {
+        this.preferences.zoo_pets[petKey] = ['LEGENDARY'];
+      } else if (mode === 'epic_plus') {
+        this.preferences.zoo_pets[petKey] = ['EPIC', 'LEGENDARY'];
+      } else if (mode === 'clear') {
+        this.preferences.zoo_pets[petKey] = [];
+      }
+    });
+
+    this.savePreferences();
+    this.syncPreferenceInputs();
+    if (this.token) {
+      this.syncTokenWithBackend(this.token);
+    }
+  }
+
   renderCropChips() {
     const container = document.getElementById('fcm-crop-chips-container');
     if (!container) return;
@@ -520,6 +622,47 @@ class SkyCalendarFCMController {
           <span class="crop-icon"><img src="${meta.icon}" alt="${meta.name}" style="height:18px; width:auto; vertical-align:middle;" /></span>
           <span class="crop-name">${meta.name}</span>
         </label>
+      `;
+    }).join('');
+  }
+
+  renderZooPets() {
+    const container = document.getElementById('fcm-zoo-container');
+    if (!container) return;
+
+    const zooPets = this.preferences.zoo_pets || createDefaultZooPets();
+
+    container.innerHTML = ALL_ZOO_PETS.map(petKey => {
+      const petMeta = ZOO_PET_METADATA[petKey] || { name: petKey, icon: '' };
+      const petRarities = Array.isArray(zooPets[petKey]) ? zooPets[petKey] : [];
+      const isAnyActive = petRarities.length > 0;
+
+      const rarityButtons = ALL_RARITIES.map(rarity => {
+        const rMeta = RARITY_METADATA[rarity];
+        const isChecked = petRarities.includes(rarity);
+        const rarityClass = rarity.toLowerCase();
+        return `
+          <button 
+            type="button" 
+            class="fcm-rarity-chip ${rarityClass} ${isChecked ? 'active' : ''}" 
+            title="${petMeta.name} (${rMeta.name}) - Click to toggle"
+            onclick="window.SkyCalendarFCM && window.SkyCalendarFCM.toggleZooPetRarity('${petKey}', '${rarity}')">
+            ${rMeta.name}
+          </button>
+        `;
+      }).join('');
+
+      return `
+        <div class="fcm-zoo-row ${isAnyActive ? 'active' : 'inactive'}">
+          <div class="fcm-zoo-pet-info" onclick="window.SkyCalendarFCM && window.SkyCalendarFCM.toggleZooPetAll('${petKey}')" title="Click to toggle all rarities for ${petMeta.name}">
+            <img src="${petMeta.icon}" alt="${petMeta.name}" class="fcm-zoo-pet-icon" onerror="this.style.display='none'" />
+            <span class="fcm-zoo-pet-name">${petMeta.name}</span>
+            <span class="fcm-zoo-pet-count">${petRarities.length}/${ALL_RARITIES.length}</span>
+          </div>
+          <div class="fcm-zoo-rarity-group">
+            ${rarityButtons}
+          </div>
+        </div>
       `;
     }).join('');
   }
@@ -566,6 +709,41 @@ class SkyCalendarFCMController {
         badge.className = 'neo-badge cyan';
       }
     }
+
+    // 5. Update Travelling Zoo status badge text
+    const zooBadge = document.getElementById('fcm-zoo-count-badge');
+    if (zooBadge) {
+      const zooPets = this.preferences.zoo_pets || createDefaultZooPets();
+      let totalActive = 0;
+      const totalMax = ALL_ZOO_PETS.length * ALL_RARITIES.length; // 25
+      let legOnly = true;
+
+      ALL_ZOO_PETS.forEach(k => {
+        const rArr = Array.isArray(zooPets[k]) ? zooPets[k] : [];
+        totalActive += rArr.length;
+        if (rArr.length > 0 && (rArr.length !== 1 || rArr[0] !== 'LEGENDARY')) {
+          legOnly = false;
+        }
+      });
+
+      if (totalActive === totalMax) {
+        zooBadge.textContent = 'All 5 Pets Active';
+        zooBadge.className = 'neo-badge green';
+      } else if (totalActive === 0) {
+        zooBadge.textContent = 'No Pets (Alerts Paused)';
+        zooBadge.className = 'neo-badge red';
+      } else if (legOnly && totalActive > 0) {
+        zooBadge.textContent = 'Legendary Only';
+        zooBadge.className = 'neo-badge yellow';
+      } else {
+        zooBadge.textContent = `${totalActive}/25 Rarities Active`;
+        zooBadge.className = 'neo-badge cyan';
+      }
+    }
+
+    // Refresh dynamically rendered chip lists
+    this.renderCropChips();
+    this.renderZooPets();
 
     const tokenInput = document.getElementById('fcm-token-display');
     if (tokenInput) {
@@ -624,6 +802,21 @@ class SkyCalendarFCMController {
             }
           }
 
+          // Pet & Rarity filter for Travelling Zoo
+          if (eventKey === 'zoo' && ev.pets && Array.isArray(ev.pets)) {
+            const userZooPets = this.preferences.zoo_pets;
+            if (userZooPets && typeof userZooPets === 'object') {
+              const hasMatchingPet = ev.pets.some(p => {
+                const petName = (p.name || '').toLowerCase();
+                const petRarity = (p.rarity || '').toUpperCase();
+                const allowedRarities = userZooPets[petName];
+                if (!Array.isArray(allowedRarities) || allowedRarities.length === 0) return false;
+                return allowedRarities.includes(petRarity);
+              });
+              if (!hasMatchingPet) return;
+            }
+          }
+
           // Evaluate 15-minute lead stage (between 10m and 16m away)
           if (lead15Enabled && ev.msUntil > (10 * 60 * 1000) && ev.msUntil <= (16 * 60 * 1000)) {
             this.triggerLocalAlert(eventKey, displayName, ev, 15);
@@ -650,21 +843,32 @@ class SkyCalendarFCMController {
     this.alertedEvents.add(uniqueId);
     sessionStorage.setItem('cmc_alerted_events', JSON.stringify(Array.from(this.alertedEvents)));
 
-    let cropText = '';
-    if (ev.crops && ev.crops.length) {
+    let extraText = '';
+    if (eventKey === 'farming' && ev.crops && ev.crops.length) {
       const formattedCrops = ev.crops.map(c => c.charAt(0) + c.slice(1).toLowerCase().replace('_', ' ')).join(', ');
-      cropText = ` Contested crops: ${formattedCrops}.`;
+      extraText = ` Contested crops: ${formattedCrops}.`;
+    } else if (eventKey === 'zoo' && ev.pets && ev.pets.length) {
+      const formattedPets = ev.pets.map(p => {
+        const r = p.rarity ? (p.rarity.charAt(0) + p.rarity.slice(1).toLowerCase()) : '';
+        const n = p.name ? (p.name.charAt(0).toUpperCase() + p.name.slice(1)) : '';
+        return `${r} ${n}`.trim();
+      }).join(', ');
+      extraText = ` Oringo's Pets: ${formattedPets}.`;
     }
-    const bodyText = `Starting in ~${leadMinutes} minutes!${cropText}`;
+    const bodyText = `Starting in ~${leadMinutes} minutes!${extraText}`;
+    const iconUrl = eventKey === 'farming'
+      ? '/assets/farming/Farm-o-Matic.webp'
+      : (eventKey === 'zoo' ? '/img/pets/300px-Lion_Pet.webp' : '/assets/cmc-icon.png');
+    const symbol = eventKey === 'farming' ? '🌾' : (eventKey === 'zoo' ? '🦁' : '🔔');
 
     // 1. Show Foreground Neo-Brutalist toast
-    this.showToast(`🌾 ${displayName}`, bodyText, '/assets/cmc-icon.png');
+    this.showToast(`${symbol} ${displayName}`, bodyText, iconUrl);
 
     // 2. Trigger System / Service Worker Notification
     if (this.swRegistration && 'showNotification' in this.swRegistration) {
-      this.swRegistration.showNotification(`🌾 ${displayName} Alert!`, {
+      this.swRegistration.showNotification(`${symbol} ${displayName} Alert!`, {
         body: bodyText,
-        icon: '/assets/cmc-icon.png',
+        icon: iconUrl,
         badge: '/assets/cmc-icon.png',
         tag: uniqueId,
         vibrate: [200, 100, 200],
@@ -674,9 +878,9 @@ class SkyCalendarFCMController {
       });
     } else {
       try {
-        new Notification(`🌾 ${displayName} Alert!`, {
+        new Notification(`${symbol} ${displayName} Alert!`, {
           body: bodyText,
-          icon: '/assets/cmc-icon.png'
+          icon: iconUrl
         });
       } catch (e) {}
     }
@@ -823,6 +1027,8 @@ window.openNotificationModal = function () {
   if (modal) {
     modal.classList.add('visible');
     document.body.style.overflow = 'hidden';
+    fcmController.renderCropChips();
+    fcmController.renderZooPets();
     fcmController.syncPreferenceInputs();
     fcmController.updateUIStatus(fcmController.getPermissionState());
   }

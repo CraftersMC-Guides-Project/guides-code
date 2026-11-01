@@ -89,12 +89,19 @@ self.addEventListener('push', (event) => {
           if (info && info.currentEvent) {
             const ev = info.currentEvent;
             title = `🔔 ${ev.name} Alert!`;
-            let cropInfo = '';
-            if (ev.crops && ev.crops.length > 0) {
+            let extraInfo = '';
+            if (ev.key === 'farming' && ev.crops && ev.crops.length > 0) {
               const formattedCrops = ev.crops.map(c => c.charAt(0) + c.slice(1).toLowerCase().replace('_', ' ')).join(', ');
-              cropInfo = ` Contested crops: ${formattedCrops}.`;
+              extraInfo = ` Contested crops: ${formattedCrops}.`;
+            } else if (ev.key === 'zoo' && ev.pets && ev.pets.length > 0) {
+              const formattedPets = ev.pets.map(p => {
+                const r = p.rarity ? (p.rarity.charAt(0) + p.rarity.slice(1).toLowerCase()) : '';
+                const n = p.name ? (p.name.charAt(0).toUpperCase() + p.name.slice(1)) : '';
+                return `${r} ${n}`.trim();
+              }).join(', ');
+              extraInfo = ` Oringo's Pets: ${formattedPets}.`;
             }
-            body = `Starting in ${ev.inMinutes} minute${ev.inMinutes === 1 ? '' : 's'}!${cropInfo}`;
+            body = `Starting in ${ev.inMinutes} minute${ev.inMinutes === 1 ? '' : 's'}!${extraInfo}`;
             if (ev.icon) icon = ev.icon;
           }
         }

@@ -32,7 +32,11 @@ export async function onRequest(context) {
         key: closest.key,
         inMinutes: closest.minutesUntil,
         crops: closest.crops || [],
-        icon: closest.icon || (closest.key === 'farming' ? '/assets/farming/Farm-o-Matic.webp' : '/assets/cmc-icon.png')
+        pets: closest.pets || [],
+        icon: closest.icon || (
+          closest.key === 'farming' ? '/assets/farming/Farm-o-Matic.webp' :
+          (closest.key === 'zoo' ? '/img/pets/300px-Lion_Pet.webp' : '/assets/cmc-icon.png')
+        )
       } : null,
       upcoming: upcoming.slice(0, 3)
     }, null, 2), {
@@ -133,7 +137,8 @@ export async function onRequest(context) {
       name: e.name,
       key: e.key,
       inMinutes: e.minutesUntil,
-      crops: e.crops || undefined
+      crops: e.crops || undefined,
+      pets: e.pets || undefined
     })),
     triggered: []
   };
@@ -155,6 +160,7 @@ export async function onRequest(context) {
       alertId: alertId,
       minutesUntil: event.minutesUntil,
       crops: event.crops || [],
+      pets: event.pets || [],
       status: 'pending',
       dispatchedCount: 0,
       prunedCount: 0,
@@ -219,6 +225,21 @@ export async function onRequest(context) {
               const hasMatchingCrop = event.crops.some(c => userCrops.includes(c));
               if (!hasMatchingCrop) return false;
             }
+          }
+        }
+
+        // 4. Travelling Zoo pet & rarity check: if event is zoo, check pet & rarity filter
+        if (event.key === 'zoo' && event.pets && Array.isArray(event.pets)) {
+          const userZooPets = prefs.zoo_pets;
+          if (userZooPets && typeof userZooPets === 'object') {
+            const hasMatchingPet = event.pets.some(p => {
+              const petName = (p.name || '').toLowerCase();
+              const petRarity = (p.rarity || '').toUpperCase();
+              const allowedRarities = userZooPets[petName];
+              if (!Array.isArray(allowedRarities) || allowedRarities.length === 0) return false;
+              return allowedRarities.includes(petRarity);
+            });
+            if (!hasMatchingPet) return false;
           }
         }
 
