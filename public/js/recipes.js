@@ -96,7 +96,7 @@
     if (clearSearchBtn) clearSearchBtn.style.display = 'flex';
     currentPage = 1;
     applyFilters();
-    const toolbar = document.querySelector('.recipes-toolbar');
+    const toolbar = document.querySelector('.items-toolbar') || document.querySelector('.recipes-toolbar');
     if (toolbar) {
       toolbar.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -348,7 +348,9 @@
             ${slotsHtml.join('')}
           </div>
           <div class="recipe-arrow-divider">
-            <span class="material-icons recipe-arrow-icon">arrow_forward</span>
+            <span class="recipe-arrow-badge">
+              <span class="material-icons recipe-arrow-icon">arrow_forward</span>
+            </span>
           </div>
           <div class="recipe-output-slot-wrap">
             <div class="recipe-output-slot" title="${outputName} x${outputCount}">
@@ -383,8 +385,10 @@
           </div>
 
           <div class="recipe-smelt-process">
-            <span class="material-icons recipe-flame-icon">local_fire_department</span>
-            <span class="material-icons recipe-arrow-icon" style="font-size:20px;">arrow_forward</span>
+            <div class="recipe-process-badge flame">
+              <span class="material-icons recipe-flame-icon">local_fire_department</span>
+            </div>
+            <span class="material-icons recipe-process-arrow">arrow_forward</span>
           </div>
 
           <div class="recipe-smelt-node">
@@ -419,8 +423,10 @@
           </div>
 
           <div class="recipe-smelt-process">
-            <span class="material-icons recipe-stonecut-icon">content_cut</span>
-            <span class="material-icons recipe-arrow-icon" style="font-size:20px;">arrow_forward</span>
+            <div class="recipe-process-badge stonecutter">
+              <span class="material-icons recipe-stonecut-icon">content_cut</span>
+            </div>
+            <span class="material-icons recipe-process-arrow">arrow_forward</span>
           </div>
 
           <div class="recipe-smelt-node">
@@ -453,8 +459,10 @@
           </div>
 
           <div class="recipe-smelt-process">
-            <span class="material-icons recipe-carto-icon">map</span>
-            <span class="material-icons recipe-arrow-icon" style="font-size:20px;">arrow_forward</span>
+            <div class="recipe-process-badge cartography">
+              <span class="material-icons recipe-carto-icon">map</span>
+            </div>
+            <span class="material-icons recipe-process-arrow">arrow_forward</span>
           </div>
 
           <div class="recipe-smelt-node">
@@ -546,21 +554,35 @@
     const outputIdent = escapeHtml(r.output?.identifier || '');
     const outputImg = r.output?.image;
 
-    const ingredientsSummary = (r.ingredients || []).map(ing => {
-      return `${ing.totalCount || ing.count || 1}x ${escapeHtml(ing.name || 'Item')}`;
-    }).join(', ');
+    const ingredientsHtml = (r.ingredients || []).map(ing => {
+      const count = ing.totalCount || ing.count || 1;
+      const name = escapeHtml(ing.name || 'Material');
+      const safeIngAttr = (ing.name || '').replace(/'/g, "\\'");
+      return `
+        <span class="recipes-table-ing-badge" onclick="window.filterByIngredient('${safeIngAttr}')" title="Filter recipes using ${name}">
+          ${ing.image ? `<img class="recipes-table-ing-img" src="${ing.image}" alt="${name}" loading="lazy" onerror="this.style.display='none'">` : ''}
+          <strong class="recipes-table-ing-count">${count}x</strong>
+          <span>${name}</span>
+        </span>
+      `;
+    }).join(' ');
 
     return `
       <tr>
         <td class="recipes-table-icon-col">
-          ${outputImg
-            ? `<img class="recipes-table-img" src="${outputImg}" alt="${outputName}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
-               <span class="material-icons" style="display:none; font-size:24px; color:#64748b;">inventory_2</span>`
-            : `<span class="material-icons" style="font-size:24px; color:#64748b;">inventory_2</span>`
-          }
+          <div class="recipes-table-icon-box">
+            ${outputImg
+              ? `<img class="recipes-table-img" src="${outputImg}" alt="${outputName}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                 <span class="material-icons" style="display:none; font-size:24px; color:#64748b;">inventory_2</span>`
+              : `<span class="material-icons" style="font-size:24px; color:#64748b;">inventory_2</span>`
+            }
+          </div>
         </td>
         <td>
-          <span class="recipes-table-item-name">${outputName} ${outputCount > 1 ? `<span style="color:#0284c7;">(x${outputCount})</span>` : ''}</span>
+          <div class="recipes-table-item-name">
+            <span>${outputName}</span>
+            ${outputCount > 1 ? `<span class="recipes-table-qty-badge">x${outputCount}</span>` : ''}
+          </div>
           <span class="recipes-table-item-id">${outputIdent}</span>
         </td>
         <td>
@@ -569,24 +591,28 @@
             <span>${escapeHtml(r.stationName)}</span>
           </span>
         </td>
-        <td style="max-width:320px; font-size:0.85rem; line-height:1.4;">
-          ${ingredientsSummary}
+        <td class="recipes-table-ing-cell">
+          <div class="recipes-table-ing-list">
+            ${ingredientsHtml}
+          </div>
         </td>
         <td>
-          <span style="font-size:0.82rem; font-weight:700; color:var(--text-muted);">
+          <span class="recipes-table-type-pill">
             ${r.block === 'crafting_table' ? `${r.width || 3}x${r.height || 3} Grid` : (r.stationName || 'Station')}
           </span>
         </td>
         <td style="text-align:right; white-space:nowrap;">
-          ${outputIdent ? `
-            <button type="button" class="recipe-give-cmd-btn" onclick="window.copyGiveCommand('${outputIdent}', ${outputCount})" title="Copy /give command">
-              <span class="material-icons" style="font-size:14px;">terminal</span>
-              <span>/give</span>
-            </button>
-            <a href="/items.html?search=${encodeURIComponent(r.name)}" class="recipe-action-btn" title="View in Items DB" style="margin-left:4px;">
-              <span class="material-icons" style="font-size:16px;">open_in_new</span>
-            </a>
-          ` : ''}
+          <div class="recipes-table-actions">
+            ${outputIdent ? `
+              <button type="button" class="recipe-give-cmd-btn" onclick="window.copyGiveCommand('${outputIdent}', ${outputCount})" title="Copy /give command">
+                <span class="material-icons" style="font-size:14px;">terminal</span>
+                <span>/give</span>
+              </button>
+              <a href="/items.html?search=${encodeURIComponent(r.name)}" class="recipe-action-btn" title="View in Items DB" style="margin-left:4px;">
+                <span class="material-icons" style="font-size:16px;">open_in_new</span>
+              </a>
+            ` : ''}
+          </div>
         </td>
       </tr>
     `;
