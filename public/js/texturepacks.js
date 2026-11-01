@@ -86,9 +86,10 @@ function applyFilters() {
     const cardCat = card.getAttribute('data-category') || '';
     const title = (card.querySelector('.pack-title')?.textContent || '').toLowerCase();
     const desc = (card.querySelector('.pack-desc')?.textContent || '').toLowerCase();
+    const tags = (card.querySelector('.pack-meta-tags')?.textContent || '').toLowerCase();
 
     const matchesCat = (currentFilter === 'all' || cardCat === currentFilter);
-    const matchesSearch = (!currentSearch || title.includes(currentSearch) || desc.includes(currentSearch));
+    const matchesSearch = (!currentSearch || title.includes(currentSearch) || desc.includes(currentSearch) || tags.includes(currentSearch));
 
     if (matchesCat && matchesSearch) {
       card.style.display = 'flex';
