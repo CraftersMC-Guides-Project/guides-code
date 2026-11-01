@@ -341,17 +341,36 @@ class SkyCalendarFCMController {
   }
 
   async testServerPush() {
-    this.showToast('🚀 Testing Server Push...', 'Triggering Cloudflare dispatcher to send test alert...', '/assets/cmc-icon.png');
+    if (!this.token) {
+      this.showToast('No Token Available', 'Please enable notifications first before testing server push.', '/assets/cmc-icon.png');
+      return;
+    }
+
+    this.showToast('🚀 Testing Server Push...', 'Sending test alert directly to this device...', '/assets/cmc-icon.png');
     try {
-      const res = await fetch('/api/cron-dispatcher?test=true&force=true');
+      let subData = null;
+      try {
+        const registration = this.swRegistration || await navigator.serviceWorker?.ready;
+        if (registration?.pushManager) {
+          const sub = await registration.pushManager.getSubscription();
+          if (sub) subData = sub.toJSON();
+        }
+      } catch (e) {}
+
+      const res = await fetch('/api/test-push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: this.token,
+          endpoint: subData?.endpoint || null
+        })
+      });
+
       const data = await res.json();
-      const trig = data.triggered && data.triggered[0];
-      if (trig && trig.dispatchedCount > 0) {
-        this.showToast('✅ Push Dispatched!', `Delivered to ${trig.dispatchedCount} subscriber(s). Check your desktop banner tray!`, '/assets/cmc-icon.png');
-      } else if (trig && trig.errors && trig.errors.length > 0) {
-        this.showToast('⚠️ Dispatch Notice', trig.errors[0], '/assets/cmc-icon.png');
+      if (data.success) {
+        this.showToast('✅ Push Delivered!', 'Test notification sent directly to your device! Check your system banner.', '/assets/cmc-icon.png');
       } else {
-        this.showToast('ℹ️ Dispatch Status', trig?.status || 'No subscribers found. Click "Re-sync" first.', '/assets/cmc-icon.png');
+        this.showToast('⚠️ Test Notice', data.message || `Status: ${data.status}`, '/assets/cmc-icon.png');
       }
     } catch (e) {
       this.showToast('❌ Test Push Failed', e.message, '/assets/cmc-icon.png');

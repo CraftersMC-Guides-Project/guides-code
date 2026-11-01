@@ -40,6 +40,27 @@ export async function onRequest(context) {
     });
   }
 
+  // 2. Security Check: Authenticate cron dispatcher
+  const expectedSecret = env.CRON_SECRET || env.cron_secret || env.CMC_API_KEY || env.cmc_api_key;
+  if (expectedSecret) {
+    const authHeader = request.headers.get('Authorization') || '';
+    const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7).trim() : null;
+    const headerKey = request.headers.get('x-cron-key') || request.headers.get('x-api-key');
+    const queryKey = url.searchParams.get('key') || url.searchParams.get('secret');
+
+    const providedKey = bearerToken || headerKey || queryKey;
+
+    if (!providedKey || providedKey !== expectedSecret) {
+      return new Response(JSON.stringify({
+        error: 'Unauthorized',
+        message: 'Invalid or missing authorization secret. A valid key is required to trigger the event dispatcher.'
+      }, null, 2), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+  }
+
   // 2. Ensure DB schema exists and auto-migrates missing columns
   if (env.DB) {
     await ensureDbSchema(env.DB);
