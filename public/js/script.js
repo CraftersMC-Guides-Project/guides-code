@@ -11,6 +11,7 @@
     }
     const savedBrightness = localStorage.getItem("lightDimmerBrightness");
     const savedWarm = localStorage.getItem("lightDimmerWarm") === "true";
+    const savedBrightText = localStorage.getItem("lightDimmerBrightText") === "true";
     if (savedBrightness !== null) {
       const b = parseInt(savedBrightness, 10);
       if (!isNaN(b) && b >= 40 && b <= 100) {
@@ -175,7 +176,7 @@ function fetchPartial(url, key) {
 
 function fetchAllPartials() {
   Promise.all([
-    fetchPartial("/components/navbar.html", "navbarHtmlV11").catch(e => { console.warn("Navbar partial failed:", e); return ""; }),
+    fetchPartial("/components/navbar.html", "navbarHtmlV12").catch(e => { console.warn("Navbar partial failed:", e); return ""; }),
     fetchPartial("/components/sidebar.html", "sidebarHtmlV9").catch(e => { console.warn("Sidebar partial failed:", e); return ""; }),
     fetchPartial("/components/footer.html", "footerHtmlV9").catch(e => { console.warn("Footer partial failed:", e); return ""; }),
       ])
@@ -852,6 +853,7 @@ function setupDimmerControl() {
   const dimmerValueLabel = document.getElementById("dimmerValueLabel");
   const dimmerPresetChips = document.querySelectorAll(".dimmer-preset-chip");
   const dimmerWarmToggle = document.getElementById("dimmerWarmToggle");
+  const dimmerBrightTextToggle = document.getElementById("dimmerBrightTextToggle");
   const dimmerResetBtn = document.getElementById("dimmerResetBtn");
   const dimmerDarkNotice = document.getElementById("dimmerDarkNotice");
   const dimmerIcon = document.getElementById("dimmer-switch-icon");
@@ -874,6 +876,10 @@ function setupDimmerControl() {
 
   const getStoredWarm = () => {
     return localStorage.getItem("lightDimmerWarm") === "true";
+  };
+
+  const getStoredBrightText = () => {
+    return localStorage.getItem("lightDimmerBrightText") === "true";
   };
 
   const applyBrightness = (brightness, save) => {
@@ -925,6 +931,20 @@ function setupDimmerControl() {
     }
   };
 
+  const applyBrightText = (isBright, save) => {
+    if (save === undefined) save = true;
+    document.documentElement.classList.toggle("bright-text-mode", isBright);
+    if (document.body) {
+      document.body.classList.toggle("bright-text-mode", isBright);
+    }
+    if (save) {
+      try { localStorage.setItem("lightDimmerBrightText", isBright ? "true" : "false"); } catch(e) {}
+    }
+    if (dimmerBrightTextToggle) {
+      dimmerBrightTextToggle.checked = isBright;
+    }
+  };
+
   const syncDarkNotice = () => {
     const dark = isDarkMode();
     if (dimmerDarkNotice) {
@@ -940,8 +960,10 @@ function setupDimmerControl() {
   // Initialize UI with stored settings
   const initialBrightness = getStoredBrightness();
   const initialWarm = getStoredWarm();
+  const initialBrightText = getStoredBrightText();
   applyBrightness(initialBrightness, false);
   applyWarm(initialWarm, false);
+  applyBrightText(initialBrightText, false);
   syncDarkNotice();
 
   // Toggle popover on button click
@@ -960,7 +982,7 @@ function setupDimmerControl() {
     };
   }
 
-  // Prevent popover clicks from bubbling to document (which would close it)
+  // Prevent popover clicks from bubbling to document
   dimmerPopover.onclick = (e) => {
     e.stopPropagation();
   };
@@ -989,12 +1011,20 @@ function setupDimmerControl() {
     };
   }
 
+  // Bright text checkbox
+  if (dimmerBrightTextToggle) {
+    dimmerBrightTextToggle.onchange = (e) => {
+      applyBrightText(e.target.checked, true);
+    };
+  }
+
   // Reset to default 100% brightness
   if (dimmerResetBtn) {
     dimmerResetBtn.onclick = (e) => {
       e.stopPropagation();
       applyBrightness(100, true);
       applyWarm(false, true);
+      applyBrightText(false, true);
     };
   }
 
