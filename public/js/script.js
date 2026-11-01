@@ -10,16 +10,27 @@
       }
     }
     const savedBrightness = localStorage.getItem("lightDimmerBrightness");
-    const savedWarm = localStorage.getItem("lightDimmerWarm") === "true";
-    if (savedBrightness !== null) {
-      const b = parseInt(savedBrightness, 10);
-      if (!isNaN(b) && b >= 40 && b <= 100) {
-        const opacity = ((100 - b) / 100).toFixed(2);
-        document.documentElement.style.setProperty("--light-dim-opacity", opacity);
-      }
+    let savedWarmth = localStorage.getItem("lightDimmerWarmth");
+    if (savedWarmth === null && localStorage.getItem("lightDimmerWarm") === "true") {
+      savedWarmth = "60";
     }
-    if (savedWarm) {
-      document.documentElement.style.setProperty("--light-dim-color", "#2c1c0c");
+    const b = savedBrightness !== null ? parseInt(savedBrightness, 10) : 100;
+    const w = savedWarmth !== null ? parseInt(savedWarmth, 10) : 0;
+    if (!isNaN(b) && !isNaN(w) && (b < 100 || w > 0)) {
+      const dim = (100 - b) / 100;
+      const warmRatio = w / 100;
+      if (warmRatio === 0) {
+        document.documentElement.style.setProperty("--light-dim-color", "#000000");
+        document.documentElement.style.setProperty("--light-dim-opacity", dim.toFixed(2));
+      } else {
+        const r = Math.round(245 * (1 - dim * 0.7));
+        const g = Math.round(135 * (1 - dim * 0.7));
+        const bl = Math.round(15 * (1 - dim * 0.7));
+        const warmAlpha = warmRatio * 0.30;
+        const totalAlpha = Math.min(0.60, Math.max(dim, warmAlpha) + (dim > 0 && warmAlpha > 0 ? warmAlpha * 0.5 : 0));
+        document.documentElement.style.setProperty("--light-dim-color", "rgb(" + r + ", " + g + ", " + bl + ")");
+        document.documentElement.style.setProperty("--light-dim-opacity", totalAlpha.toFixed(2));
+      }
     }
   } catch (e) {}
 })();
@@ -175,7 +186,7 @@ function fetchPartial(url, key) {
 
 function fetchAllPartials() {
   Promise.all([
-    fetchPartial("/components/navbar.html", "navbarHtmlV15").catch(e => { console.warn("Navbar partial failed:", e); return ""; }),
+    fetchPartial("/components/navbar.html", "navbarHtmlV16").catch(e => { console.warn("Navbar partial failed:", e); return ""; }),
     fetchPartial("/components/sidebar.html", "sidebarHtmlV9").catch(e => { console.warn("Sidebar partial failed:", e); return ""; }),
     fetchPartial("/components/footer.html", "footerHtmlV9").catch(e => { console.warn("Footer partial failed:", e); return ""; }),
       ])
@@ -859,7 +870,9 @@ function setupDimmerControl() {
   const dimmerSlider = document.getElementById("dimmerSlider");
   const dimmerValueLabel = document.getElementById("dimmerValueLabel");
   const dimmerPresetChips = document.querySelectorAll(".dimmer-preset-chip");
-  const dimmerWarmToggle = document.getElementById("dimmerWarmToggle");
+  const dimmerWarmSlider = document.getElementById("dimmerWarmSlider");
+  const dimmerWarmValueLabel = document.getElementById("dimmerWarmValueLabel");
+  const dimmerWarmChips = document.querySelectorAll(".dimmer-warm-chip");
   const dimmerResetBtn = document.getElementById("dimmerResetBtn");
   const dimmerDarkNotice = document.getElementById("dimmerDarkNotice");
   const dimmerIcon = document.getElementById("dimmer-switch-icon");
@@ -880,16 +893,47 @@ function setupDimmerControl() {
     return 100;
   };
 
-  const getStoredWarm = () => {
-    return localStorage.getItem("lightDimmerWarm") === "true";
+  const getStoredWarmth = () => {
+    let val = localStorage.getItem("lightDimmerWarmth");
+    if (val === null && localStorage.getItem("lightDimmerWarm") === "true") {
+      val = "60";
+    }
+    if (val !== null) {
+      const num = parseInt(val, 10);
+      if (!isNaN(num) && num >= 0 && num <= 100) return num;
+    }
+    return 0;
+  };
+
+  const updateOverlayStyles = (brightness, warmth) => {
+    const dim = (100 - brightness) / 100;
+    const warmRatio = warmth / 100;
+
+    if (dim === 0 && warmRatio === 0) {
+      document.documentElement.style.setProperty("--light-dim-color", "#000000");
+      document.documentElement.style.setProperty("--light-dim-opacity", "0");
+      return;
+    }
+
+    if (warmRatio === 0) {
+      document.documentElement.style.setProperty("--light-dim-color", "#000000");
+      document.documentElement.style.setProperty("--light-dim-opacity", dim.toFixed(2));
+      return;
+    }
+
+    const r = Math.round(245 * (1 - dim * 0.7));
+    const g = Math.round(135 * (1 - dim * 0.7));
+    const bl = Math.round(15 * (1 - dim * 0.7));
+    const warmAlpha = warmRatio * 0.30;
+    const totalAlpha = Math.min(0.60, Math.max(dim, warmAlpha) + (dim > 0 && warmAlpha > 0 ? warmAlpha * 0.5 : 0));
+
+    document.documentElement.style.setProperty("--light-dim-color", "rgb(" + r + ", " + g + ", " + bl + ")");
+    document.documentElement.style.setProperty("--light-dim-opacity", totalAlpha.toFixed(2));
   };
 
   const applyBrightness = (brightness, save) => {
     if (save === undefined) save = true;
     const clamped = Math.max(50, Math.min(100, brightness));
-    const opacity = ((100 - clamped) / 100).toFixed(2);
-    document.documentElement.style.setProperty("--light-dim-opacity", opacity);
-
     if (save) {
       try { localStorage.setItem("lightDimmerBrightness", clamped.toString()); } catch(e) {}
     }
@@ -908,56 +952,75 @@ function setupDimmerControl() {
       chip.classList.toggle("active", b === clamped);
     });
 
-    // Update navbar dimmer button active state
-    if (dimmerSwitch) {
-      const isDimmed = clamped < 100 && !isDarkMode();
-      dimmerSwitch.classList.toggle("dimmer-active", isDimmed);
-      if (dimmerIcon) {
-        dimmerIcon.textContent = isDimmed ? "brightness_4" : "brightness_medium";
+    const currentWarmth = getStoredWarmth();
+    updateOverlayStyles(clamped, currentWarmth);
+    syncButtonAndNotice();
+  };
+
+  const applyWarmth = (warmth, save) => {
+    if (save === undefined) save = true;
+    const clamped = Math.max(0, Math.min(100, warmth));
+    if (save) {
+      try { localStorage.setItem("lightDimmerWarmth", clamped.toString()); } catch(e) {}
+    }
+
+    if (dimmerWarmSlider) dimmerWarmSlider.value = clamped;
+    if (dimmerWarmValueLabel) {
+      if (clamped === 0) {
+        dimmerWarmValueLabel.textContent = "0% (Off)";
+      } else if (clamped <= 35) {
+        dimmerWarmValueLabel.textContent = clamped + "% (Mild)";
+      } else if (clamped <= 70) {
+        dimmerWarmValueLabel.textContent = clamped + "% (Cozy)";
+      } else {
+        dimmerWarmValueLabel.textContent = clamped + "% (Sunset)";
       }
     }
+
+    dimmerWarmChips.forEach(chip => {
+      const w = parseInt(chip.getAttribute("data-warmth"), 10);
+      chip.classList.toggle("active", w === clamped);
+    });
+
+    const currentBrightness = getStoredBrightness();
+    updateOverlayStyles(currentBrightness, clamped);
+    syncButtonAndNotice();
   };
 
-  const applyWarm = (isWarm, save) => {
-    if (save === undefined) save = true;
-    if (isWarm) {
-      document.documentElement.style.setProperty("--light-dim-color", "#2c1c0c");
-    } else {
-      document.documentElement.style.removeProperty("--light-dim-color");
-    }
-    if (save) {
-      try { localStorage.setItem("lightDimmerWarm", isWarm ? "true" : "false"); } catch(e) {}
-    }
-    if (dimmerWarmToggle) {
-      dimmerWarmToggle.checked = isWarm;
-    }
-  };
-
-  const syncDarkNotice = () => {
+  const syncButtonAndNotice = () => {
     const dark = isDarkMode();
     if (dimmerDarkNotice) {
       dimmerDarkNotice.style.display = dark ? "flex" : "none";
     }
     if (dimmerSwitch) {
-      const brightness = getStoredBrightness();
-      const isDimmed = brightness < 100 && !dark;
-      dimmerSwitch.classList.toggle("dimmer-active", isDimmed);
+      const b = getStoredBrightness();
+      const w = getStoredWarmth();
+      const isActive = (b < 100 || w > 0) && !dark;
+      dimmerSwitch.classList.toggle("dimmer-active", isActive);
+      if (dimmerIcon) {
+        if (w > 0 && !dark) {
+          dimmerIcon.textContent = "wb_incandescent";
+        } else if (b < 100 && !dark) {
+          dimmerIcon.textContent = "brightness_4";
+        } else {
+          dimmerIcon.textContent = "brightness_medium";
+        }
+      }
     }
   };
 
   // Initialize UI with stored settings
   const initialBrightness = getStoredBrightness();
-  const initialWarm = getStoredWarm();
+  const initialWarmth = getStoredWarmth();
   applyBrightness(initialBrightness, false);
-  applyWarm(initialWarm, false);
-  syncDarkNotice();
+  applyWarmth(initialWarmth, false);
 
   // Toggle popover on button click
   dimmerSwitch.onclick = (e) => {
     e.stopPropagation();
     const isOpen = dimmerPopover.style.display === "block";
     dimmerPopover.style.display = isOpen ? "none" : "block";
-    syncDarkNotice();
+    syncButtonAndNotice();
   };
 
   // Close button inside popover
@@ -973,7 +1036,7 @@ function setupDimmerControl() {
     e.stopPropagation();
   };
 
-  // Slider continuous input event
+  // Brightness slider continuous input
   if (dimmerSlider) {
     dimmerSlider.oninput = (e) => {
       const b = parseInt(e.target.value, 10);
@@ -981,7 +1044,7 @@ function setupDimmerControl() {
     };
   }
 
-  // Preset chips click
+  // Brightness preset chips
   dimmerPresetChips.forEach(chip => {
     chip.onclick = (e) => {
       e.stopPropagation();
@@ -990,19 +1053,29 @@ function setupDimmerControl() {
     };
   });
 
-  // Warm amber tint checkbox
-  if (dimmerWarmToggle) {
-    dimmerWarmToggle.onchange = (e) => {
-      applyWarm(e.target.checked, true);
+  // Warmth slider continuous input
+  if (dimmerWarmSlider) {
+    dimmerWarmSlider.oninput = (e) => {
+      const w = parseInt(e.target.value, 10);
+      applyWarmth(w, true);
     };
   }
 
-  // Reset to default 100% brightness
+  // Warmth preset chips
+  dimmerWarmChips.forEach(chip => {
+    chip.onclick = (e) => {
+      e.stopPropagation();
+      const w = parseInt(chip.getAttribute("data-warmth"), 10);
+      applyWarmth(w, true);
+    };
+  });
+
+  // Reset to default
   if (dimmerResetBtn) {
     dimmerResetBtn.onclick = (e) => {
       e.stopPropagation();
       applyBrightness(100, true);
-      applyWarm(false, true);
+      applyWarmth(0, true);
     };
   }
 
