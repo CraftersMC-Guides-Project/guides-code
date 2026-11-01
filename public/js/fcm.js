@@ -498,6 +498,18 @@ class SkyCalendarFCMController {
     if (this.token) {
       this.syncTokenWithBackend(this.token);
     }
+    const eventNames = {
+      farming: "Ethan's Farming Contest",
+      zoo: "Travelling Zoo",
+      spooky: "Spooky Festival",
+      pig: "Season of the Pig",
+      new_year: "New Year Celebration"
+    };
+    const name = eventNames[eventId] || 'Event';
+    const icon = eventId === 'farming'
+      ? '/assets/farming/Farm-o-Matic.webp'
+      : (eventId === 'zoo' ? '/img/pets/300px-Lion_Pet.webp' : '/assets/cmc-icon.png');
+    this.showToast(enabled ? '🔔 Alert Enabled' : '🔕 Alert Turned Off', `${name} alerts are now ${enabled ? 'active' : 'turned off'}.`, icon);
   }
 
   setTiming(stage, enabled) {
@@ -510,6 +522,8 @@ class SkyCalendarFCMController {
     if (this.token) {
       this.syncTokenWithBackend(this.token);
     }
+    const stageName = stage === '15' ? '15 Minutes Early' : '5 Minutes Early';
+    this.showToast('⏰ Timing Updated', `${stageName} alerts ${enabled ? 'enabled' : 'disabled'}.`, '/assets/cmc-icon.png');
   }
 
   toggleCrop(cropKey, enabled) {
@@ -536,6 +550,11 @@ class SkyCalendarFCMController {
     this.syncPreferenceInputs();
     if (this.token) {
       this.syncTokenWithBackend(this.token);
+    }
+    if (select) {
+      this.showToast('🌾 Crops Selected', 'All 10 crops enabled for Ethan\'s Contest alerts.', '/assets/farming/Farm-o-Matic.webp');
+    } else {
+      this.showToast('🌾 Crops Cleared', 'All crops cleared. Farming contest alerts paused.', '/assets/farming/Farm-o-Matic.webp');
     }
   }
 
@@ -602,6 +621,16 @@ class SkyCalendarFCMController {
     this.syncPreferenceInputs();
     if (this.token) {
       this.syncTokenWithBackend(this.token);
+    }
+
+    if (mode === 'all') {
+      this.showToast('🦁 Travelling Zoo', 'All 5 pets and all rarities enabled for zoo alerts.', '/img/pets/300px-Lion_Pet.webp');
+    } else if (mode === 'legendary') {
+      this.showToast('⭐ Legendary Only', 'Alerts set for Legendary Travelling Zoo pets only.', '/assets/rarity/legendary.webp');
+    } else if (mode === 'epic_plus') {
+      this.showToast('🔮 Epic+ Pets', 'Alerts set for Epic and Legendary Travelling Zoo pets.', '/assets/rarity/epic.webp');
+    } else if (mode === 'clear') {
+      this.showToast('🦁 Pets Cleared', 'All pets cleared. Travelling Zoo alerts paused.', '/img/pets/300px-Lion_Pet.webp');
     }
   }
 
@@ -968,7 +997,7 @@ class SkyCalendarFCMController {
     this.syncPreferenceInputs();
   }
 
-  showToast(title, message, iconUrl = '/assets/cmc-icon.png', clickUrl = '/skycalendar.html') {
+  showToast(title, message, iconUrl = '/assets/cmc-icon.png', clickUrl = null) {
     let container = document.getElementById('fcm-toast-container');
     if (!container) {
       container = document.createElement('div');
@@ -977,11 +1006,16 @@ class SkyCalendarFCMController {
       document.body.appendChild(container);
     }
 
+    // Keep at most 4 toasts visible simultaneously
+    while (container.children.length >= 4) {
+      container.firstElementChild.remove();
+    }
+
     const toast = document.createElement('div');
     toast.className = 'neo-fcm-toast';
     toast.innerHTML = `
       <div class="fcm-toast-icon">
-        <img src="${iconUrl}" alt="" onerror="this.src='/assets/cmc-icon.png'" />
+        <img src="${iconUrl || '/assets/cmc-icon.png'}" alt="" onerror="this.src='/assets/cmc-icon.png'" />
       </div>
       <div class="fcm-toast-content">
         <div class="fcm-toast-title">${title}</div>
@@ -990,30 +1024,38 @@ class SkyCalendarFCMController {
       <button class="fcm-toast-close" type="button" aria-label="Close notification">&times;</button>
     `;
 
-    toast.querySelector('.fcm-toast-close').addEventListener('click', (e) => {
-      e.stopPropagation();
+    const closeBtn = toast.querySelector('.fcm-toast-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toast.classList.add('hide');
+        setTimeout(() => toast.remove(), 250);
+      });
+    }
+
+    toast.addEventListener('click', (e) => {
+      if (e.target.closest('.fcm-toast-close')) return;
+      if (clickUrl) {
+        const currentPath = window.location.pathname.replace(/\.html$/, '');
+        const targetPath = clickUrl.replace(/\.html$/, '');
+        if (currentPath !== targetPath && targetPath !== '') {
+          window.location.href = clickUrl;
+          return;
+        }
+      }
       toast.classList.add('hide');
       setTimeout(() => toast.remove(), 250);
     });
 
-    toast.addEventListener('click', () => {
-      if (clickUrl && window.location.pathname !== clickUrl) {
-        window.location.href = clickUrl;
-      } else {
-        toast.classList.add('hide');
-        setTimeout(() => toast.remove(), 250);
-      }
-    });
-
     container.appendChild(toast);
 
-    // Auto dismiss after 6.5s
+    // Auto dismiss after 4.5s
     setTimeout(() => {
       if (toast.parentNode) {
         toast.classList.add('hide');
         setTimeout(() => toast.remove(), 250);
       }
-    }, 6500);
+    }, 4500);
   }
 }
 
@@ -1034,11 +1076,32 @@ window.openNotificationModal = function () {
   }
 };
 
-window.closeNotificationModal = function () {
+window.closeNotificationModal = function (showToast = true) {
   const modal = document.getElementById('fcm-modal');
   if (modal) {
     modal.classList.remove('visible');
     document.body.style.overflow = '';
+  }
+  if (showToast && window.SkyCalendarFCM) {
+    window.SkyCalendarFCM.savePreferences();
+    if (window.SkyCalendarFCM.token) {
+      window.SkyCalendarFCM.syncTokenWithBackend(window.SkyCalendarFCM.token);
+    }
+    window.SkyCalendarFCM.showToast(
+      '💾 Preferences Saved',
+      'Your alert timing, crop filters, and Travelling Zoo preferences have been saved.',
+      '/assets/cmc-icon.png'
+    );
+  }
+};
+
+window.saveAndCloseNotificationModal = function () {
+  window.closeNotificationModal(true);
+};
+
+window.showSkyBlockToast = function (title, message, iconUrl, clickUrl) {
+  if (window.SkyCalendarFCM) {
+    window.SkyCalendarFCM.showToast(title, message, iconUrl, clickUrl);
   }
 };
 
