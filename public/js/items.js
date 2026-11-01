@@ -358,9 +358,14 @@
 
           <div class="item-card-footer">
             <span class="item-cat-label">${item.categoryName}</span>
-            <button type="button" class="item-copy-btn" title="Copy Item ID (${item.identifier})" onclick="event.stopPropagation(); window.copyItemId('${item.identifier}')">
-              <span class="material-icons" style="font-size:15px;">content_copy</span>
-            </button>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <a href="/recipes.html?search=${encodeURIComponent(item.name)}" class="item-copy-btn" title="View Recipes" onclick="event.stopPropagation();" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+                <span class="material-icons" style="font-size:15px;">handyman</span>
+              </a>
+              <button type="button" class="item-copy-btn" title="Copy Item ID (${item.identifier})" onclick="event.stopPropagation(); window.copyItemId('${item.identifier}')">
+                <span class="material-icons" style="font-size:15px;">content_copy</span>
+              </button>
+            </div>
           </div>
         </div>
       `;
@@ -409,7 +414,10 @@
             </div>
           </td>
           <td><span class="item-cat-label">${item.categoryName}</span></td>
-          <td style="text-align:right;">
+          <td style="text-align:right; white-space:nowrap;">
+            <a href="/recipes.html?search=${encodeURIComponent(item.name)}" class="item-copy-btn" title="View Recipes" onclick="event.stopPropagation();" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; margin-right:4px;">
+              <span class="material-icons" style="font-size:15px;">handyman</span>
+            </a>
             <button type="button" class="item-copy-btn" title="Copy Item ID" onclick="event.stopPropagation(); window.copyItemId('${item.identifier}')">
               <span class="material-icons" style="font-size:15px;">content_copy</span>
             </button>
