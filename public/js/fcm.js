@@ -299,7 +299,8 @@ class SkyCalendarFCMController {
       console.warn('[FCM] Disable cleanup warning:', e);
     }
 
-    this.showToast('🔕 Alerts Paused', 'SkyBlock event push notifications have been disabled on this device.', '/assets/cmc-icon.png');
+    this.syncPreferenceInputs();
+    this.showToast('🔕 Alerts Removed', 'Push notifications have been disabled and unsubscribed from Cloudflare D1.', '/assets/cmc-icon.png');
   }
 
   toggleNotifications() {
