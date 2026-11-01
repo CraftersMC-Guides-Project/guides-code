@@ -9,7 +9,7 @@ export async function onRequest(context) {
 
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   };
 
@@ -59,7 +59,7 @@ export async function onRequest(context) {
         });
       }
 
-      const endpoint = subscription?.endpoint || (token ? `https://fcm.googleapis.com/fcm/send/${token}` : null);
+      const endpoint = subscription?.endpoint || (token ? `https://fcm.googleapis.com/wp/${token}` : null);
       const p256dh = subscription?.keys?.p256dh || null;
       const auth = subscription?.keys?.auth || null;
 
@@ -91,6 +91,31 @@ export async function onRequest(context) {
         success: true,
         message: 'Token registered successfully',
         has_subscription: !!endpoint
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    } catch (err) {
+      return new Response(JSON.stringify({ error: err.message }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+  }
+
+  if (request.method === 'DELETE') {
+    try {
+      const data = await request.json().catch(() => ({}));
+      const { token, endpoint } = data;
+
+      if (env.DB && (token || endpoint)) {
+        await env.DB.prepare(
+          'DELETE FROM fcm_subscribers WHERE token = ? OR endpoint = ?'
+        ).bind(token || '', endpoint || '').run();
+      }
+
+      return new Response(JSON.stringify({
+        success: true,
+        message: 'Subscription removed successfully'
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });

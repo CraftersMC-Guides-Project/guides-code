@@ -39,14 +39,8 @@ messaging.onBackgroundMessage((payload) => {
       timestamp: Date.now()
     },
     actions: [
-      {
-        action: 'open-calendar',
-        title: 'Open Calendar'
-      },
-      {
-        action: 'dismiss',
-        title: 'Dismiss'
-      }
+      { action: 'open-calendar', title: 'Open Calendar' },
+      { action: 'dismiss', title: 'Dismiss' }
     ]
   };
 
@@ -55,50 +49,76 @@ messaging.onBackgroundMessage((payload) => {
   });
 });
 
-// Fallback listener for raw WebPush or server tickles
+// Primary & Fallback listener for raw WebPush or server tickles
 self.addEventListener('push', (event) => {
   console.log('[firebase-messaging-sw.js] Native push event received');
-  if (!event.data) {
-    event.waitUntil(
-      self.registration.showNotification("🌾 Ethan's Farming Contest Alert!", {
-        body: 'A SkyBlock event is starting soon! Click to check the calendar.',
-        icon: '/assets/cmc-icon.png',
-        badge: '/assets/cmc-icon.png',
-        data: { url: '/skycalendar.html' }
-      })
-    );
-    return;
-  }
 
-  try {
-    const payload = event.data.json();
-    // If it's an internal Firebase push message with notification field, Firebase's SDK may show it,
-    // but if it's a data payload or custom payload:
-    if (payload && (payload.title || payload.notification || payload.data)) {
-      const title = payload.notification?.title || payload.data?.title || payload.title || "SkyBlock Event Alert!";
-      const body = payload.notification?.body || payload.data?.body || payload.body || "Event starting soon.";
-      const icon = payload.notification?.icon || payload.data?.icon || payload.icon || '/assets/cmc-icon.png';
-      const targetUrl = payload.data?.url || payload.url || '/skycalendar.html';
+  let title = "🌾 SkyBlock Event Alert!";
+  let body = "A scheduled SkyBlock event is starting soon. Check the calendar!";
+  let icon = "/assets/cmc-icon.png";
+  let targetUrl = "/skycalendar.html";
 
-      event.waitUntil(
-        self.registration.showNotification(title, {
-          body,
-          icon,
-          badge: '/assets/cmc-icon.png',
-          data: { url: targetUrl }
-        })
-      );
+  // Check if push event brought payload data
+  let hasPayload = false;
+  if (event.data) {
+    try {
+      const payload = event.data.json();
+      if (payload && (payload.title || payload.notification || payload.data)) {
+        title = payload.notification?.title || payload.data?.title || payload.title || title;
+        body = payload.notification?.body || payload.data?.body || payload.body || body;
+        icon = payload.notification?.icon || payload.data?.icon || payload.icon || icon;
+        targetUrl = payload.data?.url || payload.url || targetUrl;
+        hasPayload = true;
+      }
+    } catch (e) {
+      const rawText = event.data.text();
+      if (rawText) {
+        body = rawText;
+        hasPayload = true;
+      }
     }
-  } catch (err) {
-    event.waitUntil(
-      self.registration.showNotification("SkyBlock Event Alert!", {
-        body: event.data.text() || "Event starting soon.",
-        icon: '/assets/cmc-icon.png',
-        badge: '/assets/cmc-icon.png',
-        data: { url: '/skycalendar.html' }
-      })
-    );
   }
+
+  // If no payload was delivered (standard WebPush tickle), query the live alert API
+  const handlePush = async () => {
+    if (!hasPayload) {
+      try {
+        const response = await fetch('/api/cron-dispatcher?info=true', { cache: 'no-store' });
+        if (response.ok) {
+          const info = await response.json();
+          if (info && info.currentEvent) {
+            const ev = info.currentEvent;
+            title = `🔔 ${ev.name} Alert!`;
+            body = `Starting in ${ev.inMinutes} minute${ev.inMinutes === 1 ? '' : 's'}! Check the calendar for details.`;
+            if (ev.icon) icon = ev.icon;
+          }
+        }
+      } catch (err) {
+        console.warn('[firebase-messaging-sw.js] Failed to fetch active event info:', err);
+      }
+    }
+
+    return self.registration.showNotification(title, {
+      body: body,
+      icon: icon,
+      badge: '/assets/cmc-icon.png',
+      tag: 'skycalendar-event-alert',
+      renotify: true,
+      vibrate: [200, 100, 200],
+      data: {
+        url: targetUrl,
+        timestamp: Date.now()
+      },
+      actions: [
+        { action: 'open-calendar', title: 'Open Calendar' },
+        { action: 'dismiss', title: 'Dismiss' }
+      ]
+    }).catch(err => {
+      console.warn('[firebase-messaging-sw.js] OS-level notification blocked:', err.message);
+    });
+  };
+
+  event.waitUntil(handlePush());
 });
 
 // Handle user clicking on a push notification

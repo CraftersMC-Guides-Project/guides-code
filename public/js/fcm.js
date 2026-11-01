@@ -4,7 +4,7 @@
  */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
-import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-messaging.js";
+import { getMessaging, getToken, deleteToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-messaging.js";
 
 // Firebase App Configuration
 export const firebaseConfig = {
@@ -120,9 +120,19 @@ class SkyCalendarFCMController {
       // 6. Update UI with current permission / token status
       this.updateUIStatus(this.getPermissionState());
 
-      // 7. If permission already granted but token not cached, attempt refresh
-      if (Notification.permission === 'granted' && !this.token) {
-        await this.retrieveToken(false);
+      // 7. If permission already granted, verify subscription validity and re-sync
+      if (Notification.permission === 'granted') {
+        try {
+          const registration = this.swRegistration || await navigator.serviceWorker.ready;
+          const sub = await registration.pushManager?.getSubscription();
+          if (!sub || !this.token) {
+            await this.retrieveToken(false, false);
+          } else {
+            await this.syncTokenWithBackend(this.token);
+          }
+        } catch (e) {
+          console.warn('[FCM] Auto-sync check warning:', e);
+        }
       }
 
       // 8. Start automatic SkyBlock event monitor for active alerts
@@ -143,12 +153,23 @@ class SkyCalendarFCMController {
     return 'default';
   }
 
-  async retrieveToken(interactive = true) {
+  async retrieveToken(interactive = true, forceRefresh = false) {
     if (!this.messaging) return null;
 
     try {
       // Ensure service worker is ready
       const registration = this.swRegistration || await navigator.serviceWorker.ready;
+
+      // If force refresh requested, delete cached token to guarantee fresh registration
+      if (forceRefresh) {
+        try {
+          await deleteToken(this.messaging);
+        } catch (delErr) {
+          console.debug('[FCM] deleteToken notice:', delErr.message);
+        }
+        localStorage.removeItem('cmc_fcm_token');
+        this.token = null;
+      }
 
       const currentToken = await getToken(this.messaging, {
         vapidKey: VAPID_KEY,
@@ -160,7 +181,7 @@ class SkyCalendarFCMController {
         localStorage.setItem('cmc_fcm_token', currentToken);
         console.log('[FCM] Registration token retrieved successfully:', currentToken);
         this.updateUIStatus('active');
-        this.syncTokenWithBackend(currentToken);
+        await this.syncTokenWithBackend(currentToken);
         if (interactive) {
           this.showToast('🔔 Event Alerts Enabled!', 'You will receive push notifications for your selected SkyBlock events.', '/assets/cmc-icon.png');
         }
@@ -193,7 +214,7 @@ class SkyCalendarFCMController {
     try {
       const permission = await Notification.requestPermission();
       if (permission === 'granted') {
-        await this.retrieveToken(true);
+        await this.retrieveToken(true, false);
         this.syncPreferenceInputs();
         this.startEventMonitor();
       } else if (permission === 'denied') {
@@ -208,10 +229,34 @@ class SkyCalendarFCMController {
     }
   }
 
-  disableNotifications() {
+  async disableNotifications() {
+    const oldToken = this.token;
     this.token = null;
     localStorage.removeItem('cmc_fcm_token');
     this.updateUIStatus('default');
+
+    try {
+      if (this.messaging && oldToken) {
+        await deleteToken(this.messaging).catch(() => {});
+      }
+      const registration = this.swRegistration || await navigator.serviceWorker?.ready;
+      if (registration?.pushManager) {
+        const sub = await registration.pushManager.getSubscription();
+        if (sub) {
+          await sub.unsubscribe().catch(() => {});
+        }
+      }
+      if (oldToken) {
+        await fetch('/api/fcm-token', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: oldToken })
+        }).catch(() => {});
+      }
+    } catch (e) {
+      console.warn('[FCM] Disable cleanup warning:', e);
+    }
+
     this.showToast('🔕 Alerts Paused', 'SkyBlock event push notifications have been disabled on this device.', '/assets/cmc-icon.png');
   }
 
@@ -220,6 +265,34 @@ class SkyCalendarFCMController {
       this.disableNotifications();
     } else {
       this.enableNotifications();
+    }
+  }
+
+  async reSync() {
+    this.showToast('🔄 Re-syncing Alerts...', 'Refreshing push subscription credentials with Google...', '/assets/cmc-icon.png');
+    const token = await this.retrieveToken(false, true);
+    if (token) {
+      this.showToast('✅ Re-sync Successful', 'Fresh push token registered and synced with alert dispatcher.', '/assets/cmc-icon.png');
+    } else {
+      this.showToast('⚠️ Re-sync Warning', 'Could not obtain fresh token. Please verify notification permissions.', '/assets/cmc-icon.png');
+    }
+  }
+
+  async testServerPush() {
+    this.showToast('🚀 Testing Server Push...', 'Triggering Cloudflare dispatcher to send test alert...', '/assets/cmc-icon.png');
+    try {
+      const res = await fetch('/api/cron-dispatcher?test=true&force=true');
+      const data = await res.json();
+      const trig = data.triggered && data.triggered[0];
+      if (trig && trig.dispatchedCount > 0) {
+        this.showToast('✅ Push Dispatched!', `Delivered to ${trig.dispatchedCount} subscriber(s). Check your desktop banner tray!`, '/assets/cmc-icon.png');
+      } else if (trig && trig.errors && trig.errors.length > 0) {
+        this.showToast('⚠️ Dispatch Notice', trig.errors[0], '/assets/cmc-icon.png');
+      } else {
+        this.showToast('ℹ️ Dispatch Status', trig?.status || 'No subscribers found. Click "Re-sync" first.', '/assets/cmc-icon.png');
+      }
+    } catch (e) {
+      this.showToast('❌ Test Push Failed', e.message, '/assets/cmc-icon.png');
     }
   }
 
@@ -277,8 +350,9 @@ class SkyCalendarFCMController {
     try {
       let subData = null;
       try {
-        if (this.swRegistration && this.swRegistration.pushManager) {
-          const sub = await this.swRegistration.pushManager.getSubscription();
+        const registration = this.swRegistration || await navigator.serviceWorker?.ready;
+        if (registration?.pushManager) {
+          const sub = await registration.pushManager.getSubscription();
           if (sub) {
             subData = sub.toJSON();
           }

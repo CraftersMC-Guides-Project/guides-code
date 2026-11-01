@@ -80,7 +80,8 @@ export async function sendWebPushNotification({ endpoint, vapidPublicKey, vapidP
   const headers = {
     'TTL': '86400',
     'Urgency': 'high',
-    'Authorization': `vapid t=${jwt}, k=${vapidPublicKey}`
+    'Authorization': `vapid t=${jwt}, k=${vapidPublicKey}`,
+    'Content-Length': '0'
   };
 
   const response = await fetch(endpoint, {
@@ -88,10 +89,13 @@ export async function sendWebPushNotification({ endpoint, vapidPublicKey, vapidP
     headers: headers
   });
 
+  const responseText = await response.text().catch(() => '');
+
   return {
     status: response.status,
     ok: response.ok,
-    statusText: response.statusText
+    statusText: response.statusText,
+    body: responseText
   };
 }
 
