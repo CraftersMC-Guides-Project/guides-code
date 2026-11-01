@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Items Database — CraftersMC Guides</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Search and explore all 3,500+ CraftersMC SkyBlock items, custom weapons, armor sets, minions, talismans, tools, pets, and vanilla Minecraft blocks." />
+  <meta name="keywords"
+    content="CraftersMC items, CraftersMC item database, CraftersMC item IDs, trpixel items, custom items, SkyBlock weapons, SkyBlock armor, minions, talismans, CraftersMC guides" />
+  <meta name="author" content="CraftersMC Guides Project" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#111827" />
+
+  <!-- Open Graph / Facebook Metadata -->
+  <meta property="og:title" content="Items Database — CraftersMC Guides" />
+  <meta property="og:description"
+    content="Comprehensive directory of all custom and vanilla items, blocks, weapons, and tools on CraftersMC SkyBlock." />
+  <meta property="og:image" content="https://craftersmc-guides.pages.dev/assets/cmc-guides.png" />
+  <meta property="og:url" content="https://craftersmc-guides.pages.dev/items.html" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter Card Metadata -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Items Database — CraftersMC Guides" />
+  <meta name="twitter:description"
+    content="Browse all CraftersMC SkyBlock items, numerical IDs, custom textures, and give commands." />
+  <meta name="twitter:image" content="https://craftersmc-guides.pages.dev/assets/cmc-guides.png" />
+
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png" />
+  <link rel="icon" href="assets/cmc-guides.png" type="image/png" />
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <!-- Anti-flash Theme Init -->
+  <script>
+    (function () {
+      try {
+        var d = localStorage.getItem("darkMode");
+        if (d === "true" || (d === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("darkmode");
+        } else {
+          document.documentElement.classList.remove("darkmode");
+        }
+      } catch (e) { }
+    })();
+  </script>
+
+  <!-- Core & Unified Stylesheets -->
+  <link rel="stylesheet" href="css/essential.css" />
+  <link rel="stylesheet" href="css/neo-brutalism.css" />
+  <link rel="stylesheet" href="css/items.css" />
+
+  <!-- Application Scripts -->
+  <script src="js/components.js" defer></script>
+  <script src="js/script.js" defer></script>
+  <script src="js/items.js" defer></script>
+</head>
+
+<body>
+
+  <!-- Fullscreen / Layout Overlays -->
+  <div class="background"></div>
+
+  <!-- Top Navigation (Loaded dynamically from /components/navbar.html) -->
+  <div class="top"></div>
+
+  <!-- Navigation Sidebar (Loaded dynamically from /components/sidebar.html) -->
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- =========================================================
+       MAIN NEO-BRUTALISM PAGE CONTENT
+       ========================================================= -->
+  <main class="neo-container items-page-container" id="main-content">
+
+    <!-- HERO SECTION -->
+    <section class="neo-hero-card" id="overview">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
+        </div>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px;">inventory_2</span>
+          CraftersMC-Guides-Project / Items Database
+        </div>
+      </div>
+
+      <div class="neo-hero-content">
+        <div class="neo-hero-heading-group">
+          <h1 class="neo-hero-title">
+            CraftersMC <span class="neo-hero-highlight">Items Database</span>
+          </h1>
+          <p class="neo-hero-subtitle">
+            Explore the complete directory of 3,500+ items, blocks, custom weapons, armor sets, minions, talismans, tools, and materials across CraftersMC SkyBlock.
+          </p>
+        </div>
+
+        <!-- HERO STAT PILLS -->
+        <div class="items-hero-stats">
+          <div class="items-stat-pill">
+            <span class="material-icons" style="color:var(--items-accent);">dataset</span>
+            <span><strong id="heroTotalCount">3,577</strong> Total Items</span>
+          </div>
+          <div class="items-stat-pill highlight-purple">
+            <span class="material-icons" style="color:var(--items-trpixel-badge);">stars</span>
+            <span><strong id="heroTrpixelCount">1,671</strong> Custom CraftersMC Items</span>
+          </div>
+          <div class="items-stat-pill highlight-green">
+            <span class="material-icons" style="color:var(--items-mc-badge);">view_in_ar</span>
+            <span><strong id="heroMcCount">1,906</strong> Vanilla Minecraft Items</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEARCH & CONTROLS TOOLBAR -->
+    <div class="items-toolbar">
+      <div class="items-search-row">
+        <!-- Search Input -->
+        <div class="items-search-box">
+          <span class="material-icons items-search-icon">search</span>
+          <input type="text" id="itemSearchInput" class="items-search-input"
+            placeholder="Search by name, ID (e.g. 14560), or identifier (e.g. aspect_of_the_dragons)..."
+            autocomplete="off" />
+          <button type="button" class="items-clear-btn" id="clearSearchBtn" title="Clear Search">
+            <span class="material-icons" style="font-size:16px;">close</span>
+          </button>
+        </div>
+
+        <!-- Namespace Selector -->
+        <div class="items-controls-group">
+          <select id="namespaceSelect" class="items-select" aria-label="Filter by Namespace">
+            <option value="all">All Sources</option>
+            <option value="trpixel">CraftersMC Custom (trpixel:*)</option>
+            <option value="minecraft">Vanilla Minecraft (minecraft:*)</option>
+          </select>
+
+          <!-- Sort Selector -->
+          <select id="sortSelect" class="items-select" aria-label="Sort Items">
+            <option value="default">Sort: Default (Custom First)</option>
+            <option value="id-asc">Sort: ID (Low to High)</option>
+            <option value="id-desc">Sort: ID (High to Low)</option>
+            <option value="name-asc">Sort: Name (A to Z)</option>
+            <option value="name-desc">Sort: Name (Z to A)</option>
+          </select>
+
+          <!-- View Mode Toggles -->
+          <div class="items-view-toggles" role="group" aria-label="View Mode">
+            <button type="button" class="items-view-btn active" id="gridViewBtn" title="Grid View">
+              <span class="material-icons" style="font-size:18px;">grid_view</span>
+            </button>
+            <button type="button" class="items-view-btn" id="listViewBtn" title="Table / List View">
+              <span class="material-icons" style="font-size:18px;">view_list</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Category Chips -->
+      <div class="items-filter-chips" id="filterChips">
+        <!-- Dynamically rendered by items.js -->
+      </div>
+    </div>
+
+    <!-- STATUS BAR (Results count & Active filter tags) -->
+    <div class="items-status-bar">
+      <div class="items-result-counter" id="resultsCounter">
+        Loading items database...
+      </div>
+      <div class="items-active-filters-tag" id="activeFiltersDesc" style="display:none;"></div>
+    </div>
+
+    <!-- GRID VIEW CONTAINER -->
+    <div class="items-grid" id="itemsGrid">
+      <!-- Item cards dynamically injected -->
+    </div>
+
+    <!-- LIST / TABLE VIEW CONTAINER -->
+    <div class="items-list-wrap" id="itemsList" style="display:none;">
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th class="items-table-icon-col">Icon</th>
+            <th>Item Name</th>
+            <th>Identifier</th>
+            <th>ID</th>
+            <th>Source</th>
+            <th>Category</th>
+            <th style="text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="itemsTableBody">
+          <!-- Rows dynamically injected -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- EMPTY SEARCH STATE -->
+    <div class="items-empty-state" id="emptyState" style="display:none;">
+      <span class="material-icons items-empty-icon">search_off</span>
+      <h3 class="items-empty-title">No matching items found</h3>
+      <p class="items-empty-desc">
+        We couldn't find any items matching your current filters or search term. Try checking for typos or resetting your search.
+      </p>
+      <button type="button" class="page-btn" onclick="document.getElementById('clearSearchBtn').click();">
+        <span class="material-icons" style="font-size:16px;">restart_alt</span> Reset Filters
+      </button>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="items-pagination" id="itemsPagination"></div>
+
+  </main>
+
+  <!-- =========================================================
+       ITEM INSPECTOR MODAL
+       ========================================================= -->
+  <div class="item-modal-overlay" id="itemModalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="item-modal-card">
+      <div class="item-modal-header">
+        <div class="item-modal-title-group">
+          <span class="material-icons" style="color:var(--items-accent); font-size:20px;">info</span>
+          <h3 class="item-modal-title" id="modalTitle">Item Details</h3>
+        </div>
+        <button type="button" class="item-modal-close" id="modalCloseBtn" aria-label="Close modal">
+          <span class="material-icons" style="font-size:18px;">close</span>
+        </button>
+      </div>
+
+      <div class="item-modal-body">
+        <div class="item-modal-preview-box">
+          <img class="item-modal-large-img" id="modalImg" src="" alt="Item Sprite" style="display:none;" />
+          <span class="material-icons item-fallback-icon" id="modalFallback" style="font-size:64px; display:none;">inventory</span>
+          <span class="item-badge-namespace" id="modalNamespace">trpixel</span>
+        </div>
+
+        <div class="item-modal-info-grid">
+          <div class="item-modal-info-item">
+            <div class="item-modal-info-label">Numerical ID</div>
+            <div class="item-modal-info-val" id="modalNumericId">#0</div>
+          </div>
+          <div class="item-modal-info-item">
+            <div class="item-modal-info-label">Category</div>
+            <div class="item-modal-info-val" id="modalCategory">General</div>
+          </div>
+        </div>
+
+        <div class="item-modal-info-item">
+          <div class="item-modal-info-label">Full Identifier</div>
+          <div class="item-modal-info-val" id="modalIdentifier">trpixel:item</div>
+        </div>
+
+        <div class="item-modal-actions">
+          <button type="button" class="modal-action-btn primary" id="modalCopyIdBtn">
+            <span class="material-icons" style="font-size:18px;">content_copy</span> Copy Item Identifier
+          </button>
+          <button type="button" class="modal-action-btn secondary" id="modalCopyGiveBtn">
+            <span class="material-icons" style="font-size:18px;">terminal</span> Copy /give Command
+          </button>
+          <a class="modal-action-btn secondary" id="modalAuctionLink" href="/auction.html" target="_blank">
+            <span class="material-icons" style="font-size:18px;">gavel</span> Search in Live Auctions
+          </a>
+          <a class="modal-action-btn secondary" id="modalBazaarLink" href="/bazaar.html" target="_blank">
+            <span class="material-icons" style="font-size:18px;">storefront</span> Search in Bazaar Market
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="item-toast" id="itemToast">
+    <span class="material-icons" style="font-size:18px; color:#22c55e;">check_circle</span>
+    <span id="itemToastText">Copied to clipboard!</span>
+  </div>
+
+  <!-- Footer (Loaded dynamically from /components/footer.html) -->
+  <div class="footer"></div>
+
+</body>
+
+</html>
+
