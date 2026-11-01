@@ -48,6 +48,9 @@
   <script src="js/calendarengine.js" defer></script>
   <script src="js/calendaruicontroller.js" defer></script>
   <script src="js/script.js" defer></script>
+
+  <!-- Firebase & Cloud Messaging (FCM) Integration -->
+  <script type="module" src="js/fcm.js"></script>
 </head>
 
 <body>
@@ -128,6 +131,10 @@
             <span class="material-icons">schedule</span>
             Upcoming Events
           </a>
+          <button id="fcm-notify-btn" class="button70-btn purple" type="button" onclick="openNotificationModal()" title="Setup SkyBlock Event Alerts">
+            <span class="material-icons">notifications_active</span>
+            Event Alerts
+          </button>
           <a href="index.html" class="button70-btn">
             <span class="material-icons">home</span>
             Return to Hub
@@ -204,7 +211,7 @@
             <h2 class="neo-section-title">Upcoming Events &amp; Countdowns</h2>
           </div>
           <p class="neo-section-subtitle">
-            Live real-time timers for the Travelling Zoo, Spooky Festival, Jerry's Workshop, and seasonal events:
+            Live real-time timers for Ethan's Farming Contests, Travelling Zoo, Spooky Festival, and seasonal events:
           </p>
         </div>
         <span class="neo-section-count">Live Timers</span>
@@ -276,6 +283,189 @@
       </div>
     </div>
   </div>
+
+  <!-- =========================================================
+       FCM NOTIFICATIONS MODAL (NEO-BRUTALISM)
+       ========================================================= -->
+  <div id="fcm-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="fcm-modal-title">
+    <div class="modal-content modal-content-wide neo-hero-card">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red" onclick="closeNotificationModal()" title="Close notifications modal"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
+        </div>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px;">notifications_active</span>
+          SkyBlock Event Alerts &bull; Firebase Cloud Messaging
+        </div>
+        <button class="modal-close-btn" aria-label="Close modal" type="button" onclick="closeNotificationModal()">
+          <span class="material-icons" style="font-size:18px;">close</span>
+        </button>
+      </div>
+
+      <div class="modal-inner">
+        <div class="modal-header">
+          <div class="event-modal-top-row">
+            <div class="event-modal-icon-wrap" style="background:#A855F7; border-color:#111827;">
+              <span class="material-icons" style="font-size:28px; color:#ffffff;">campaign</span>
+            </div>
+            <div class="event-modal-title-group">
+              <div class="modal-badge-row">
+                <span id="fcm-status-badge" class="neo-badge yellow">
+                  <span class="material-icons">notifications_paused</span> INACTIVE
+                </span>
+                <span class="neo-badge cyan">
+                  <span class="material-icons">cloud_queue</span> WEB PUSH
+                </span>
+              </div>
+              <h3 id="fcm-modal-title">Push Notification Alerts</h3>
+              <div class="event-modal-subtitle">
+                Receive browser alerts when Ethan's Contests, Spooky Festival, Travelling Zoo &amp; seasonal events begin.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-body">
+          <!-- Main Activation Box -->
+          <div class="fcm-status-box">
+            <div class="fcm-status-info">
+              <div class="fcm-status-heading">
+                <strong style="font-size:1rem;">Browser Push Status</strong>
+              </div>
+              <p class="fcm-status-desc" id="fcm-status-desc">
+                Enable alerts to get notified before Ethan's Contests, Spooky Festival, and more.
+              </p>
+            </div>
+            <button id="fcm-main-toggle-btn" type="button" class="button70-btn purple" onclick="window.SkyCalendarFCM && window.SkyCalendarFCM.toggleNotifications()">
+              <span class="material-icons">notifications_active</span>
+              Enable Push Notifications
+            </button>
+          </div>
+
+          <!-- Event Preferences -->
+          <div class="modal-section-heading" style="margin-top:16px; margin-bottom:12px;">
+            <span class="material-icons">tune</span>
+            Select Events To Subscribe:
+          </div>
+
+          <div class="fcm-pref-grid">
+            <!-- Ethan's Farming Contest -->
+            <div class="fcm-pref-card">
+              <div class="fcm-pref-left">
+                <div class="fcm-pref-icon">
+                  <img src="assets/farming/Farm-o-Matic.webp" alt="Farming" />
+                </div>
+                <div class="fcm-pref-details">
+                  <span class="fcm-pref-name">Ethan's Farming</span>
+                  <span class="fcm-pref-lead">5 min warning &bull; Every 3 in-game days</span>
+                </div>
+              </div>
+              <label class="neo-toggle-switch">
+                <input type="checkbox" id="fcm-pref-farming" checked onchange="window.SkyCalendarFCM && window.SkyCalendarFCM.setPreference('farming', this.checked)" />
+                <span class="neo-toggle-slider"></span>
+              </label>
+            </div>
+
+            <!-- Spooky Festival -->
+            <div class="fcm-pref-card">
+              <div class="fcm-pref-left">
+                <div class="fcm-pref-icon">
+                  <img src="img/Terrik.webp" alt="Spooky" />
+                </div>
+                <div class="fcm-pref-details">
+                  <span class="fcm-pref-name">Spooky Festival</span>
+                  <span class="fcm-pref-lead">Trick-or-treat &bull; Autumn 29-31</span>
+                </div>
+              </div>
+              <label class="neo-toggle-switch">
+                <input type="checkbox" id="fcm-pref-spooky" checked onchange="window.SkyCalendarFCM && window.SkyCalendarFCM.setPreference('spooky', this.checked)" />
+                <span class="neo-toggle-slider"></span>
+              </label>
+            </div>
+
+            <!-- Travelling Zoo -->
+            <div class="fcm-pref-card">
+              <div class="fcm-pref-left">
+                <div class="fcm-pref-icon">
+                  <span style="font-size:24px;">🦁</span>
+                </div>
+                <div class="fcm-pref-details">
+                  <span class="fcm-pref-name">Travelling Zoo</span>
+                  <span class="fcm-pref-lead">Oringo's legendary pets</span>
+                </div>
+              </div>
+              <label class="neo-toggle-switch">
+                <input type="checkbox" id="fcm-pref-zoo" checked onchange="window.SkyCalendarFCM && window.SkyCalendarFCM.setPreference('zoo', this.checked)" />
+                <span class="neo-toggle-slider"></span>
+              </label>
+            </div>
+
+            <!-- Season of the Pig -->
+            <div class="fcm-pref-card">
+              <div class="fcm-pref-left">
+                <div class="fcm-pref-icon">
+                  <img src="img/100px-Shiny_Orb.webp" alt="Shiny Pigs" />
+                </div>
+                <div class="fcm-pref-details">
+                  <span class="fcm-pref-name">Season of the Pig</span>
+                  <span class="fcm-pref-lead">Shiny Pigs &amp; Orbs &bull; Every 4 Years</span>
+                </div>
+              </div>
+              <label class="neo-toggle-switch">
+                <input type="checkbox" id="fcm-pref-pig" checked onchange="window.SkyCalendarFCM && window.SkyCalendarFCM.setPreference('pig', this.checked)" />
+                <span class="neo-toggle-slider"></span>
+              </label>
+            </div>
+
+            <!-- New Year Celebration -->
+            <div class="fcm-pref-card">
+              <div class="fcm-pref-left">
+                <div class="fcm-pref-icon">
+                  <img src="img/Enchanted_Cake.png" alt="Cake" />
+                </div>
+                <div class="fcm-pref-details">
+                  <span class="fcm-pref-name">New Year Celebration</span>
+                  <span class="fcm-pref-lead">Baker cake &bull; Late Winter</span>
+                </div>
+              </div>
+              <label class="neo-toggle-switch">
+                <input type="checkbox" id="fcm-pref-new_year" checked onchange="window.SkyCalendarFCM && window.SkyCalendarFCM.setPreference('new_year', this.checked)" />
+                <span class="neo-toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Device Token Preview & Testing -->
+          <div class="fcm-token-wrap">
+            <span class="fcm-token-label">FCM Device Registration Token (VAPID):</span>
+            <div class="fcm-token-box">
+              <input type="text" id="fcm-token-display" class="fcm-token-input" readonly value="Notifications not enabled yet" />
+              <button type="button" class="pagination-btn cyan" onclick="window.SkyCalendarFCM && window.SkyCalendarFCM.copyToken()" title="Copy FCM token to clipboard">
+                <span class="material-icons" style="font-size:15px; vertical-align:middle;">content_copy</span>
+                Copy
+              </button>
+              <button type="button" class="pagination-btn yellow" onclick="window.SkyCalendarFCM && window.SkyCalendarFCM.testNotification()" title="Send immediate test alert">
+                <span class="material-icons" style="font-size:15px; vertical-align:middle;">science</span>
+                Test
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="pagination-btn modal-action-btn" onclick="closeNotificationModal()">
+            <span class="material-icons" style="font-size:15px; vertical-align:middle;">done</span>
+            Save &amp; Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- In-App Notification Toast Container -->
+  <div id="fcm-toast-container" class="fcm-toast-container" aria-live="polite"></div>
 
   <!-- Event Details / Timetable Modal Dialog (Neo-Brutalism Hero Window) -->
   <div id="event-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="event-modal-title">

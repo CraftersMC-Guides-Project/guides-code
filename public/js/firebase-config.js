@@ -1,10 +1,17 @@
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyC9HDieVtkTu_PrSumxoDi1plXduu-J5pg",
-  authDomain: "craftersmc-guides.firebaseapp.com",
-  projectId: "craftersmc-guides",
-  storageBucket: "craftersmc-guides.firebasestorage.app",
-  messagingSenderId: "647290515320",
-  appId: "1:647290515320:web:44e1be1528c86af00d628d",
-  measurementId: "G-K3WGXSF9DQ"
+  apiKey: "AIzaSyAn7vfm3mQb1PR0ppAyBj_5dRsngCAlXnk",
+  authDomain: "craftersmc-guides-cab30.firebaseapp.com",
+  projectId: "craftersmc-guides-cab30",
+  storageBucket: "craftersmc-guides-cab30.firebasestorage.app",
+  messagingSenderId: "924655326351",
+  appId: "1:924655326351:web:bf07720a8f5787aec04cfa"
 };
+
+if (typeof window !== "undefined") {
+  window.firebaseConfig = firebaseConfig;
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = firebaseConfig;
+}
