@@ -2,196 +2,672 @@
 <html lang="en">
 
 <head>
-    <link rel="icon" href="assets/cmc-icon.png" type="image/png">
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Feedback - CraftersMC Guides</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="js/script.js"></script>
-    <link rel="stylesheet" href="css/essential.css">
-    <link rel="stylesheet" href="css/form.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Community Feedback &amp; Suggestions — CraftersMC Guides</title>
+  <meta name="description"
+    content="Have feedback, a guide correction, or a feature suggestion? Join our Discord server to connect directly with the CraftersMC Guides team." />
+  <meta property="og:title" content="Feedback &amp; Suggestions — CraftersMC Guides" />
+  <meta property="og:description"
+    content="Share feedback, report guide inaccuracies, or suggest new calculators for CraftersMC Guides directly on our Discord community." />
+  <meta property="og:image" content="https://craftersmc-guides.pages.dev/assets/cmc-guides.png" />
+  <meta property="og:url" content="https://craftersmc-guides.pages.dev/feedback.html" />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png" />
+  <link rel="icon" href="assets/cmc-guides.png" type="image/png" />
+
+  <!-- Google Fonts & Material Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <!-- Anti-flash Theme Init -->
+  <script>
+    (function () {
+      try {
+        var d = localStorage.getItem("darkMode");
+        if (d === "true" || (d === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("darkmode");
+        } else {
+          document.documentElement.classList.remove("darkmode");
+        }
+      } catch (e) { }
+    })();
+  </script>
+
+  <!-- Core & Unified Stylesheets -->
+  <link rel="stylesheet" href="css/essential.css" />
+  <link rel="stylesheet" href="css/neo-brutalism.css" />
+
+  <!-- Global Application Scripts -->
+  <script src="js/script.js" defer></script>
+
+  <style>
+    /* =========================================================
+       FEEDBACK PAGE STYLES (NEO-BRUTALISM)
+       ========================================================= */
+
+    /* Discord Notice Banner */
+    .feedback-banner {
+      background: #ffffff;
+      border: 3px solid #111827;
+      border-radius: 14px;
+      box-shadow: 5px 5px 0 #111827;
+      padding: 28px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .darkmode .feedback-banner {
+      background: #121214;
+      border-color: #3f3f46;
+      box-shadow: 5px 5px 0 #000000;
+    }
+
+    .feedback-banner-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      flex: 1;
+      min-width: min(100%, 320px);
+    }
+
+    .feedback-banner-icon {
+      width: 52px;
+      height: 52px;
+      min-width: 52px;
+      background: #bae6fd;
+      border: 2px solid #111827;
+      border-radius: 12px;
+      box-shadow: 2.5px 2.5px 0 #111827;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .feedback-banner-icon .material-icons {
+      font-size: 28px !important;
+      color: #0369a1 !important;
+    }
+
+    .darkmode .feedback-banner-icon {
+      background: #38bdf8;
+      border-color: #000000;
+    }
+
+    .darkmode .feedback-banner-icon .material-icons {
+      color: #000000 !important;
+    }
+
+    .feedback-banner-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #111827;
+      margin: 0 0 6px;
+      line-height: 1.25;
+    }
+
+    .darkmode .feedback-banner-title {
+      color: #ffffff;
+    }
+
+    .feedback-banner-desc {
+      font-size: 0.95rem;
+      color: #4b5563;
+      margin: 0;
+      line-height: 1.55;
+    }
+
+    .darkmode .feedback-banner-desc {
+      color: #a1a1aa;
+    }
+
+    /* Channels Bento Grid */
+    .feedback-channel-card {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .feedback-channel-perks {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .feedback-channel-perk {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #374151;
+    }
+
+    .darkmode .feedback-channel-perk {
+      color: #d1d5db;
+    }
+
+    .feedback-channel-perk .material-icons {
+      font-size: 16px !important;
+      color: #059669 !important;
+    }
+
+    .darkmode .feedback-channel-perk .material-icons {
+      color: #4ade80 !important;
+    }
+
+    /* Process Steps Grid */
+    .feedback-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 992px) {
+      .feedback-steps-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 580px) {
+      .feedback-steps-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .feedback-step-card {
+      background: #ffffff;
+      border: 2px solid #111827;
+      border-radius: 12px;
+      box-shadow: 4px 4px 0 #111827;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .darkmode .feedback-step-card {
+      background: #141416;
+      border-color: #3f3f46;
+      box-shadow: 4px 4px 0 #000000;
+    }
+
+    .feedback-step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #38bdf8;
+      color: #111827;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid #111827;
+      box-shadow: 2px 2px 0 #111827;
+    }
+
+    .darkmode .feedback-step-num {
+      background: #38bdf8;
+      color: #000000;
+      border-color: #000000;
+      box-shadow: 2px 2px 0 #000000;
+    }
+
+    .feedback-step-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #111827;
+      margin: 0;
+      line-height: 1.25;
+    }
+
+    .darkmode .feedback-step-title {
+      color: #ffffff;
+    }
+
+    .feedback-step-desc {
+      font-size: 13px;
+      color: #4b5563;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .darkmode .feedback-step-desc {
+      color: #a1a1aa;
+    }
+
+    /* FAQ Bento Grid */
+    .feedback-faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .feedback-faq-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .feedback-faq-card {
+      background: #ffffff;
+      border: 2px solid #111827;
+      border-radius: 12px;
+      box-shadow: 4px 4px 0 #111827;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .darkmode .feedback-faq-card {
+      background: #141416;
+      border-color: #3f3f46;
+      box-shadow: 4px 4px 0 #000000;
+    }
+
+    .feedback-faq-q {
+      font-size: 15px;
+      font-weight: 800;
+      color: #111827;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .darkmode .feedback-faq-q {
+      color: #ffffff;
+    }
+
+    .feedback-faq-q .material-icons {
+      font-size: 18px !important;
+      color: #38bdf8 !important;
+    }
+
+    .feedback-faq-a {
+      font-size: 13.5px;
+      color: #4b5563;
+      margin: 0;
+      line-height: 1.55;
+    }
+
+    .darkmode .feedback-faq-a {
+      color: #94a3b8;
+    }
+  </style>
 </head>
 
 <body>
-    <div class="top"></div>
-    <div class="sidebar" id="sidebar"></div>
-    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-    <div class="report-background"></div>
 
-    <div class="gap"></div>
-    <div class="success-message" id="successMessage">
-        <h1>Thank You!</h1>
-        <p>Your feedback has been submitted successfully.</p>
+  <!-- Fullscreen / Layout Overlays -->
+  <div class="background"></div>
+
+  <!-- Top Navigation (Dynamically loaded from /components/navbar.html) -->
+  <div class="top"></div>
+
+  <!-- Navigation Sidebar (Dynamically loaded from /components/sidebar.html) -->
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- =========================================================
+       MAIN NEO-BRUTALISM PAGE CONTENT
+       ========================================================= -->
+  <main class="neo-container">
+
+    <!-- HERO SECTION -->
+    <section class="neo-hero-card" id="overview">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
+        </div>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px; color:#111827;">rate_review</span>
+          CraftersMC-Guides-Project / Community Feedback
+        </div>
+      </div>
+
+      <div class="neo-hero-content">
+        <!-- Top Row: Heading on the left, Plain Game Clock on the top right -->
+        <div class="neo-hero-top-row">
+          <div class="neo-hero-heading-group">
+            <h1 class="neo-hero-title">
+              Send Us Your <span class="neo-hero-highlight">Feedback</span>
+            </h1>
+            <p class="neo-hero-subtitle">
+              We have centralized all community feedback, bug reports, and guide corrections on our official Discord!
+              This allows our developers, authors, and maintainers to respond to you in real time and roll out updates faster.
+            </p>
+          </div>
+
+          <!-- Plain SkyBlock Game Clock on Top Right -->
+          <div class="neo-plain-clock" id="neo-plain-clock" title="SkyBlock Game Time">
+            <div class="neo-plain-clock-time game-clock-time" id="game-clock-time">--:--</div>
+            <div class="neo-plain-clock-date game-clock-date" id="game-clock-date">Year --, Season --</div>
+          </div>
+        </div>
+
+        <!-- Quick Info Chips -->
+        <div class="neo-hero-stats">
+          <a href="https://discord.gg/vfE3y4uv7K" target="_blank" rel="noopener noreferrer" class="neo-stat-chip">
+            <span class="material-icons">forum</span>
+            <span>Discord Feedback Hub</span>
+          </a>
+          <a href="#section-channels" class="neo-stat-chip">
+            <span class="material-icons">chat</span>
+            <span>Dedicated Channels</span>
+          </a>
+          <a href="https://github.com/CraftersMC-Guides-Project/" target="_blank" rel="noopener noreferrer" class="neo-stat-chip">
+            <span class="material-icons">code</span>
+            <span>GitHub Issues</span>
+          </a>
+        </div>
+
+        <!-- Quick Jump Action Buttons (Button 70) -->
+        <div class="neo-hero-actions">
+          <a href="https://discord.gg/vfE3y4uv7K" target="_blank" rel="noopener noreferrer" class="button70-btn cyan">
+            <span class="material-icons">forum</span>
+            Join Our Discord
+          </a>
+          <a href="https://github.com/CraftersMC-Guides-Project/" target="_blank" rel="noopener noreferrer" class="button70-btn purple">
+            <span class="material-icons">bug_report</span>
+            File GitHub Issue
+          </a>
+          <a href="index.html" class="button70-btn yellow">
+            <span class="material-icons">home</span>
+            Return to Hub
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         DISCORD NOTICE BANNER
+         ========================================================= -->
+    <div class="feedback-banner">
+      <div class="feedback-banner-left">
+        <div class="feedback-banner-icon">
+          <span class="material-icons">chat_bubble</span>
+        </div>
+        <div>
+          <h2 class="feedback-banner-title">Please Use Discord for All Feedback &amp; Reports</h2>
+          <p class="feedback-banner-desc">
+            To ensure your suggestions are seen and answered directly by the maintainers, we do not use slow web forms.
+            Join our server and post in our dedicated feedback channels or open a private support ticket.
+          </p>
+        </div>
+      </div>
+      <a href="https://discord.gg/vfE3y4uv7K" target="_blank" rel="noopener noreferrer" class="button70-btn green">
+        <span class="material-icons">open_in_new</span>
+        Open Discord
+      </a>
     </div>
-    <div class="container" id="reportContainer">
-        <h3 class="h3">Send Us Your Feedback</h3>
-        <div class="panel" id="panel">✔ Feedback Submitted, Thank you!</div>
-        <form id="reportForm">
-            <div class="group">
-                <label class="label" for="username">Your In-Game Name:</label>
-                <input class="input" type="text" id="username" required>
-            </div>
-            <div class="group">
-                <label class="label" for="discord">Discord Username:</label>
-                <input class="input" type="text" id="discord">
-            </div>
-            <div class="group">
-                <label class="label" for="desc">Describe your issue or suggestion:</label>
-                <textarea class="textarea" id="desc" rows="5" required></textarea>
-            </div>
-            <div class="group">
-                <label class="label">Additional Contact Info (optional):</label>
-                <div id="contactFields"></div>
-                <button type="button" id="addContactBtn" class="btn">Add Contact</button>
-            </div>
-            <div class="group">
-                <label class="label">Comments (optional):</label>
-                <div id="commentFields"></div>
-                <button type="button" id="addCommentBtn" class="btn">Add Comment</button>
-            </div>
-            <div class="group">
-                <label class="label" for="file">Attach files (optional):</label>
-                <input class="btn" type="file" id="file" multiple>
-            </div>
-            <button type="submit" class="green-btn" id="submitBtn">Submit Feedback</button>
-        </form>
-    </div>
 
-    <div id="footer"></div>
-    <script>
-        document.getElementById('addContactBtn').onclick = () => {
-            const container = document.getElementById('contactFields');
-            const wrapper = document.createElement('div');
-            wrapper.style.display = "flex";
-            wrapper.style.alignItems = "center";
-            wrapper.style.gap = "6px";
-            const input = document.createElement('input');
-            input.type = "text";
-            input.name = "contact";
-            input.placeholder = "Additional contact info";
-            input.style.marginTop = "6px";
-            input.className = "input";
-            const removeBtn = document.createElement('button');
-            removeBtn.type = "button";
-            removeBtn.textContent = "Remove";
-            removeBtn.className = "btn";
-            removeBtn.style.marginLeft = "6px";
-            removeBtn.onclick = () => wrapper.remove();
-            wrapper.appendChild(input);
-            wrapper.appendChild(removeBtn);
-            container.appendChild(wrapper);
-        };
+    <!-- =========================================================
+         SECTION 1: DISCORD FEEDBACK CHANNELS
+         ========================================================= -->
+    <section class="neo-section" id="section-channels">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#bbf7d0;">
+              <span class="material-icons">alt_route</span>
+              CHANNELS
+            </span>
+            <h2 class="neo-section-title">Where to Post on Discord</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Depending on what you want to share, jump into the matching channel:
+          </p>
+        </div>
+        <span class="neo-section-count">4 Ways to Connect</span>
+      </div>
 
-        document.getElementById('addCommentBtn').onclick = () => {
-            const container = document.getElementById('commentFields');
-            const wrapper = document.createElement('div');
-            wrapper.style.display = "flex";
-            wrapper.style.alignItems = "center";
-            wrapper.style.gap = "6px";
-            const textarea = document.createElement('textarea');
-            textarea.name = "comments";
-            textarea.rows = 3;
-            textarea.placeholder = "Additional comment";
-            textarea.style.marginTop = "6px";
-            textarea.className = "textarea";
-            const removeBtn = document.createElement('button');
-            removeBtn.type = "button";
-            removeBtn.textContent = "Remove";
-            removeBtn.className = "btn";
-            removeBtn.style.marginLeft = "6px";
-            removeBtn.onclick = () => wrapper.remove();
-            wrapper.appendChild(textarea);
-            wrapper.appendChild(removeBtn);
-            container.appendChild(wrapper);
-        };
+      <div class="neo-grid">
+        <!-- Channel 1: Suggestions -->
+        <a href="https://discord.gg/vfE3y4uv7K" target="_blank" rel="noopener noreferrer" class="neo-card yellow feedback-channel-card">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#ffffff;">Ideas</span>
+            <span class="material-icons neo-card-icon">lightbulb</span>
+          </div>
+          <h3 class="neo-card-title">Feature Suggestions</h3>
+          <p class="neo-card-desc">
+            Have an idea for a new SkyBlock calculator, event timer widget, or Feather Bot command? Pitch it to the community!
+          </p>
+          <ul class="feedback-channel-perks">
+            <li class="feedback-channel-perk">
+              <span class="material-icons">check_circle</span>
+              Posted in <strong>#suggestions</strong>
+            </li>
+            <li class="feedback-channel-perk">
+              <span class="material-icons">check_circle</span>
+              Upvoted by community members
+            </li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Discord <span>/ #suggestions</span></div>
+            <span class="neo-card-btn">Suggest &rarr;</span>
+          </div>
+        </a>
 
-        const reportForm = document.getElementById("reportForm");
-        const panel = document.getElementById("panel");
-        const successMessage = document.getElementById("successMessage");
+        <!-- Channel 2: Bug Reports -->
+        <a href="https://discord.gg/vfE3y4uv7K" target="_blank" rel="noopener noreferrer" class="neo-card cyan feedback-channel-card">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#ffffff;">Errors</span>
+            <span class="material-icons neo-card-icon">pest_control</span>
+          </div>
+          <h3 class="neo-card-title">Bug Reports &amp; Typos</h3>
+          <p class="neo-card-desc">
+            Found an inaccurate item price, a broken calculation, or an outdated recipe? Let our authors and coders know right away.
+          </p>
+          <ul class="feedback-channel-perks">
+            <li class="feedback-channel-perk">
+              <span class="material-icons">check_circle</span>
+              Posted in <strong>#bug-reports</strong>
+            </li>
+            <li class="feedback-channel-perk">
+              <span class="material-icons">check_circle</span>
+              Tracked directly by developers
+            </li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Discord <span>/ #bug-reports</span></div>
+            <span class="neo-card-btn">Report &rarr;</span>
+          </div>
+        </a>
 
-        reportForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
+        <!-- Channel 3: Private Tickets -->
+        <a href="https://discord.gg/vfE3y4uv7K" target="_blank" rel="noopener noreferrer" class="neo-card purple feedback-channel-card">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#ffffff;">Support</span>
+            <span class="material-icons neo-card-icon">support_agent</span>
+          </div>
+          <h3 class="neo-card-title">Private Support Tickets</h3>
+          <p class="neo-card-desc">
+            Need 1-on-1 assistance with Feather Bot account verification, seller registration, or security inquiries? Open a private ticket.
+          </p>
+          <ul class="feedback-channel-perks">
+            <li class="feedback-channel-perk">
+              <span class="material-icons">check_circle</span>
+              Direct 1-on-1 staff support
+            </li>
+            <li class="feedback-channel-perk">
+              <span class="material-icons">check_circle</span>
+              Private and confidential
+            </li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Discord <span>/ #tickets</span></div>
+            <span class="neo-card-btn">Open Ticket &rarr;</span>
+          </div>
+        </a>
 
-            const inGameName = document.getElementById("username").value.trim();
-            const discord = document.getElementById("discord").value.trim();
-            const desc = document.getElementById("desc").value.trim();
+        <!-- Channel 4: GitHub -->
+        <a href="https://github.com/CraftersMC-Guides-Project/" target="_blank" rel="noopener noreferrer" class="neo-card green feedback-channel-card">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#ffffff;">Open Source</span>
+            <span class="material-icons neo-card-icon">code</span>
+          </div>
+          <h3 class="neo-card-title">GitHub Issue Tracker</h3>
+          <p class="neo-card-desc">
+            Developers can file detailed technical bug reports, inspect active code repositories, or submit pull requests directly.
+          </p>
+          <ul class="feedback-channel-perks">
+            <li class="feedback-channel-perk">
+              <span class="material-icons">check_circle</span>
+              Public repository issue tracking
+            </li>
+            <li class="feedback-channel-perk">
+              <span class="material-icons">check_circle</span>
+              PRs &amp; code reviews welcome
+            </li>
+          </ul>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">GitHub <span>/ Issues &amp; PRs</span></div>
+            <span class="neo-card-btn">View GitHub &rarr;</span>
+          </div>
+        </a>
+      </div>
+    </section>
 
-            const contactInputs = document.querySelectorAll('#contactFields input[name="contact"]');
-            const contacts = Array.from(contactInputs).map(input => input.value.trim()).filter(Boolean);
+    <!-- =========================================================
+         SECTION 2: HOW TO SUBMIT EFFECTIVE FEEDBACK
+         ========================================================= -->
+    <section class="neo-section" id="section-steps">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#fed7aa;">
+              <span class="material-icons">checklist</span>
+              GUIDELINES
+            </span>
+            <h2 class="neo-section-title">How to Submit Helpful Feedback</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Follow these tips to help us investigate and implement your feedback quickly:
+          </p>
+        </div>
+        <span class="neo-section-count">4 Tips</span>
+      </div>
 
-            const commentInputs = document.querySelectorAll('#commentFields textarea[name="comments"]');
-            const comments = Array.from(commentInputs).map(input => input.value.trim()).filter(Boolean);
+      <div class="feedback-steps-grid">
+        <div class="feedback-step-card">
+          <div class="feedback-step-num">01</div>
+          <h3 class="feedback-step-title">Specify the Page</h3>
+          <p class="feedback-step-desc">
+            Mention the exact page URL, guide chapter, or calculator where you noticed the issue.
+          </p>
+        </div>
 
-            const fileInput = document.getElementById("file");
-            const files = fileInput.files ? Array.from(fileInput.files) : [];
-            const base64Files = await Promise.all(files.map(file => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve({
-                        name: file.name,
-                        type: file.type,
-                        data: reader.result.split(',')[1]
-                    });
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-            }));
+        <div class="feedback-step-card">
+          <div class="feedback-step-num">02</div>
+          <h3 class="feedback-step-title">Attach Screenshots</h3>
+          <p class="feedback-step-desc">
+            In-game screenshots of updated recipes, prices, or NPC interfaces speed up corrections tremendously.
+          </p>
+        </div>
 
-            const payload = {
-                type: "feedback",
-                username: "Feedback Reporter",
-                content: {
-                    reporter: {
-                        in_game_name: inGameName,
-                        discord: discord,
-                        contacts: contacts
-                    },
-                    description: desc,
-                    comments: comments,
-                    timestamp: new Date().toISOString(),
-                    files: base64Files // Attach base64 files
-                }
-            };
+        <div class="feedback-step-card">
+          <div class="feedback-step-num">03</div>
+          <h3 class="feedback-step-title">Explain the Expected Result</h3>
+          <p class="feedback-step-desc">
+            Tell us what happened versus what you expected to see (e.g. correct formula vs current calculation).
+          </p>
+        </div>
 
-            try {
-                const res = await fetch("https://webhook-manager.craftersmcguides.workers.dev/report", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
+        <div class="feedback-step-card">
+          <div class="feedback-step-num">04</div>
+          <h3 class="feedback-step-title">Get Credited</h3>
+          <p class="feedback-step-desc">
+            Helpful bug finders and data contributors are recognized in our team and contributor records!
+          </p>
+        </div>
+      </div>
+    </section>
 
-                if (res.ok) {
-                    panel.classList.add("report-show");
-                    setTimeout(() => {
-                        panel.classList.remove("report-show");
-                        successMessage.style.display = "block";
-                        reportForm.reset();
-                        document.getElementById('contactFields').innerHTML = "";
-                        document.getElementById('commentFields').innerHTML = "";
-                    }, 2000);
-                } else {
-                    const errorText = await res.text();
-                    console.error("Server error:", errorText);
-                    alert("Error submitting feedback. Server responded with: " + res.status);
-                }
-            } catch (err) {
-                console.error("Error:", err);
-                alert("An error occurred. Check console.");
-            }
-        });
+    <!-- =========================================================
+         SECTION 3: FEEDBACK FAQ
+         ========================================================= -->
+    <section class="neo-section" id="section-faq">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#fbcfe8;">
+              <span class="material-icons">help</span>
+              FAQ
+            </span>
+            <h2 class="neo-section-title">Feedback FAQ</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Common questions about submitting feedback and suggestions:
+          </p>
+        </div>
+        <span class="neo-section-count">Questions</span>
+      </div>
 
-        async function testConnection() {
-            try {
-                const testRes = await fetch("https://webhook-manager.craftersmcguides.workers.dev/report", {
-                    method: "OPTIONS"
-                });
-                console.log("CORS test:", testRes.status);
-            } catch (err) {
-                console.error("Connection test failed:", err);
-            }
-        }
-        
-        testConnection();
-    </script>
+      <div class="feedback-faq-grid">
+        <div class="feedback-faq-card">
+          <h3 class="feedback-faq-q">
+            <span class="material-icons">help_outline</span>
+            Why did you stop using web form submissions?
+          </h3>
+          <p class="feedback-faq-a">
+            Web form submissions made it difficult to follow up with players, ask clarifying questions, or notify you when your issue was fixed. Discord allows instant, collaborative two-way conversation.
+          </p>
+        </div>
+
+        <div class="feedback-faq-card">
+          <h3 class="feedback-faq-q">
+            <span class="material-icons">help_outline</span>
+            How fast does the team review feedback?
+          </h3>
+          <p class="feedback-faq-a">
+            Active team members and developers monitor Discord channels every day. Most typos and simple inaccuracies are verified and patched within 24 to 48 hours.
+          </p>
+        </div>
+
+        <div class="feedback-faq-card">
+          <h3 class="feedback-faq-q">
+            <span class="material-icons">help_outline</span>
+            Can I suggest ideas for Feather Bot?
+          </h3>
+          <p class="feedback-faq-a">
+            Yes! Feature suggestions for Feather Bot (such as new slash commands, alert triggers, or price tracking options) are welcomed in <strong>#suggestions</strong>.
+          </p>
+        </div>
+
+        <div class="feedback-faq-card">
+          <h3 class="feedback-faq-q">
+            <span class="material-icons">help_outline</span>
+            Can I submit code changes directly?
+          </h3>
+          <p class="feedback-faq-a">
+            Yes! If you are a developer, our front-end codebase is hosted on GitHub. Feel free to open a pull request with your bug fix or UI improvement.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer Container (Loaded dynamically from /components/footer.html) -->
+  <div id="footer"></div>
+
 </body>
+
 </html>
