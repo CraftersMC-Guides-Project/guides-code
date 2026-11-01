@@ -1,118 +1,318 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>404 - Page Not Found</title>
-  <link rel="icon" href="assets/cmc-icon.png" type="image/png">
-  <link rel="stylesheet" href="css/essential.css">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 — Lost in the Void | CraftersMC Guides</title>
+  <meta name="description"
+    content="Oops! You fell into the void. The requested page was not found on CraftersMC Guides." />
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png" />
+  <link rel="icon" href="assets/cmc-guides.png" type="image/png" />
+
+  <!-- Google Fonts & Material Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <!-- Anti-flash Theme Init -->
+  <script>
+    (function () {
+      try {
+        var d = localStorage.getItem("darkMode");
+        if (d === "true" || (d === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("darkmode");
+        } else {
+          document.documentElement.classList.remove("darkmode");
+        }
+      } catch (e) { }
+    })();
+  </script>
+
+  <!-- Core & Unified Stylesheets -->
+  <link rel="stylesheet" href="css/essential.css" />
+  <link rel="stylesheet" href="css/neo-brutalism.css" />
+
+  <!-- Global Scripts -->
+  <script src="js/script.js" defer></script>
+
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    /* =========================================================
+       404 PAGE CUSTOM STYLING (NEO-BRUTALISM)
+       ========================================================= */
+    .neo-404-card {
+      margin-top: 8px;
     }
 
-    body {
-      background: url(Backgrounds/IMG_4499.webp);
-      color: #fff;
-      min-height: 100vh;
+    .neo-404-content {
+      padding: 48px 32px 40px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
       text-align: center;
-      padding: 20px;
+      gap: 22px;
     }
 
-    body::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8));
-      background-size: 400% 400%;
-      animation: gradientBG 4s ease infinite;
-      z-index: -1;
+    @media (max-width: 640px) {
+      .neo-404-content {
+        padding: 32px 18px 28px;
+        gap: 18px;
+      }
     }
 
-    .box {
-      background: rgba(20, 20, 20, 0.85);
-      padding: 52px 40px 36px 40px;
-      border-radius: 18px;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.7);
-      backdrop-filter: blur(14px);
-      max-width: 460px;
-      width: 100%;
-      animation: fadeIn 1.2s ease;
-      position: relative;
-    }
-
-    .icon-404 {
-      font-size: 6rem;
-      margin-bottom: 20px;
-      display: inline-block;
-      line-height: 1;
-      filter: drop-shadow(0 2px 8px #0008);
-      animation: float 3.5s ease-in-out infinite;
+    .neo-404-display {
+      font-family: var(--font-mono);
+      font-size: clamp(5rem, 16vw, 9.5rem);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      color: #111827;
       user-select: none;
+      margin: 0;
+      text-shadow: 5px 5px 0 #f87171, 10px 10px 0 #111827;
+      transition: text-shadow 0.2s ease, transform 0.2s ease;
     }
 
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 14px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      color: #f5f5f5;
+    .neo-404-display:hover {
+      transform: scale(1.02);
+      text-shadow: 6px 6px 0 #38bdf8, 12px 12px 0 #111827;
     }
 
-    p {
-      font-size: 1.15rem;
-      margin-bottom: 32px;
-      color: #cccccc;
-      line-height: 1.6;
+    .darkmode .neo-404-display {
+      color: #ffffff;
+      text-shadow: 5px 5px 0 #f87171, 10px 10px 0 #000000;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-18px);}
-      to { opacity: 1; transform: translateY(0);}
+    .darkmode .neo-404-display:hover {
+      text-shadow: 6px 6px 0 #38bdf8, 12px 12px 0 #000000;
     }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0px);}
-      50% { transform: translateY(-10px);}
+    .neo-404-tag {
+      background: #fecdd3;
+      color: #991b1b;
+      border: 2px solid #111827;
+      box-shadow: 3px 3px 0 #111827;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
     }
 
-    @keyframes gradientBG {
-      0% {background-position: 0% 50%;}
-      50% {background-position: 100% 50%;}
-      100% {background-position: 0% 50%;}
+    .darkmode .neo-404-tag {
+      background: #f87171;
+      color: #000000;
+      border-color: #000000;
+      box-shadow: 3px 3px 0 #000000;
     }
 
-    @media (max-width: 600px) {
-      .box {
-        padding: 28px 14px 24px 14px;
-        max-width: 95vw;
-      }
-      h1 {
-        font-size: 1.8rem;
-      }
-      .icon-404 {
-        font-size: 4rem;
-      }
+    .neo-404-message {
+      max-width: 640px;
+      font-size: clamp(1rem, 1.8vw, 1.15rem);
+      font-weight: 600;
+      color: #4b5563;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .darkmode .neo-404-message {
+      color: #cbd5e1;
+    }
+
+    .neo-404-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .neo-waypoint-card {
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .neo-waypoint-card:hover {
+      text-decoration: none;
     }
   </style>
 </head>
+
 <body>
-  <div class="box">
-    <div class="icon-404" aria-hidden="true">🚧</div>
-    <h1>Oops! Page Not Found</h1>
-    <p>The page you are looking for does not exist or failed to load.<br>
-    Let’s get you back to safety.</p>
-    <button onclick="location.href='index.html'">Return to Home</button>
-    </div>
-  </div>
+
+  <!-- Fullscreen / Layout Overlays -->
+  <div class="background"></div>
+
+  <!-- Top Navigation (Dynamically loaded from /components/navbar.html) -->
+  <div class="top"></div>
+
+  <!-- Navigation Sidebar (Dynamically loaded from /components/sidebar.html) -->
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- =========================================================
+       MAIN NEO-BRUTALISM PAGE CONTENT
+       ========================================================= -->
+  <main class="neo-container">
+
+    <!-- HERO 404 WINDOW CARD -->
+    <section class="neo-hero-card neo-404-card" id="overview">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
+        </div>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px; color:#111827;">error_outline</span>
+          CraftersMC-Guides-Project / HTTP 404
+        </div>
+      </div>
+
+      <div class="neo-hero-content neo-404-content">
+        <!-- Status Pill -->
+        <div class="neo-404-tag">
+          <span class="material-icons" style="font-size:15px;">warning</span>
+          Coordinates Uncharted &bull; Error 404
+        </div>
+
+        <!-- Big Brutalist 404 Number -->
+        <div class="neo-404-display" aria-label="Error 404">404</div>
+
+        <!-- Title & Explanatory Subtitle -->
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+          <h1 class="neo-hero-title" style="text-align: center;">
+            Oops! You Fell Into The <span class="neo-hero-highlight" style="background:#f87171;">Void</span>
+          </h1>
+          <p class="neo-404-message">
+            The page or resource you are looking for has been moved, renamed, or does not exist in this realm.
+            Don't worry — your profile is safe. Let's get you back on track!
+          </p>
+        </div>
+
+        <!-- Tactile Action Buttons (Button 70) -->
+        <div class="neo-404-actions">
+          <a href="index.html" class="button70-btn yellow">
+            <span class="material-icons">home</span>
+            Return to Hub
+          </a>
+          <button type="button" onclick="history.back()" class="button70-btn cyan">
+            <span class="material-icons">arrow_back</span>
+            Go Back
+          </button>
+          <a href="journey-guides.html" class="button70-btn green">
+            <span class="material-icons">explore</span>
+            Progression Guides
+          </a>
+          <a href="discord.html" class="button70-btn purple">
+            <span class="material-icons">help_outline</span>
+            Ask for Help
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         POPULAR WAYPOINTS (NEO-BRUTALISM GRID)
+         ========================================================= -->
+    <section class="neo-section" id="section-waypoints">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#bae6fd;">
+              <span class="material-icons">near_me</span>
+              WAYPOINTS
+            </span>
+            <h2 class="neo-section-title">Popular Destinations</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Quickly jump into our most frequented SkyBlock guides, tools, and calculators:
+          </p>
+        </div>
+        <span class="neo-section-count">4 Shortcuts</span>
+      </div>
+
+      <div class="neo-grid">
+        <!-- Card 1: Guides -->
+        <a href="journey-guides.html" class="neo-card yellow neo-waypoint-card">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#ffffff;">Guides</span>
+            <span class="material-icons neo-card-icon">menu_book</span>
+          </div>
+          <h3 class="neo-card-title">Progression Guides</h3>
+          <p class="neo-card-desc">
+            Complete walkthroughs from your first hours on the island to late-game slayers and gear mastery.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">9 Guides <span>/ Curated</span></div>
+            <span class="neo-card-btn">Explore &rarr;</span>
+          </div>
+        </a>
+
+        <!-- Card 2: Auctions -->
+        <a href="auction.html" class="neo-card cyan neo-waypoint-card">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#ffffff;">Economy</span>
+            <span class="material-icons neo-card-icon">gavel</span>
+          </div>
+          <h3 class="neo-card-title">Live Auction House</h3>
+          <p class="neo-card-desc">
+            Inspect real-time BIN listings, bidding auctions, recently ended sales, and item rarities.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Live BINs <span>/ Real-Time</span></div>
+            <span class="neo-card-btn">Browse &rarr;</span>
+          </div>
+        </a>
+
+        <!-- Card 3: Bazaar -->
+        <a href="bazaar.html" class="neo-card green neo-waypoint-card">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#ffffff;">Market</span>
+            <span class="material-icons neo-card-icon">storefront</span>
+          </div>
+          <h3 class="neo-card-title">Bazaar Tracker</h3>
+          <p class="neo-card-desc">
+            Track live commodity buy/sell orders, flip margins, and volume analytics in real time.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Order Books <span>/ Live</span></div>
+            <span class="neo-card-btn">View Market &rarr;</span>
+          </div>
+        </a>
+
+        <!-- Card 4: Player Viewer -->
+        <a href="player.html" class="neo-card purple neo-waypoint-card">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#ffffff;">Profiles</span>
+            <span class="material-icons neo-card-icon">person_search</span>
+          </div>
+          <h3 class="neo-card-title">Player Viewer</h3>
+          <p class="neo-card-desc">
+            Look up any CraftersMC SkyBlock player profile to inspect stats, skills, accessories, and gear.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Profiles <span>/ Inspector</span></div>
+            <span class="neo-card-btn">Lookup &rarr;</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Dynamic Footer (Loaded by script.js from /components/footer.html) -->
+  <div id="footer"></div>
+
 </body>
 </html>
