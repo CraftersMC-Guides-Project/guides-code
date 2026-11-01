@@ -240,6 +240,9 @@ class SkyCalendarFCMController {
             badge: '/assets/cmc-icon.png',
             tag: 'skyblock-test',
             vibrate: [150, 50, 150]
+          }).catch(err => {
+            console.warn('[FCM] OS-level notification blocked:', err.message);
+            this.showToast('⚠️ Desktop Banner Blocked by Windows', 'Your browser was denied OS-level permission. Enable notifications for your browser in Windows Settings > System > Notifications.', '/assets/cmc-icon.png');
           });
         } else {
           new Notification(`[TEST] ${sampleEvent}`, {
@@ -365,12 +368,16 @@ class SkyCalendarFCMController {
                   tag: uniqueId,
                   vibrate: [200, 100, 200],
                   data: { url: '/skycalendar.html' }
+                }).catch(err => {
+                  console.warn('[FCM] OS-level notification blocked:', err.message);
                 });
               } else {
-                new Notification(`🌾 ${displayName} Alert!`, {
-                  body: bodyText,
-                  icon: '/assets/cmc-icon.png'
-                });
+                try {
+                  new Notification(`🌾 ${displayName} Alert!`, {
+                    body: bodyText,
+                    icon: '/assets/cmc-icon.png'
+                  });
+                } catch (e) {}
               }
             }
           }

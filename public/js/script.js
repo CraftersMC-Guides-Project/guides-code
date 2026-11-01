@@ -460,11 +460,9 @@ function initNavbarPlayerCount() {
             } catch (e) {}
         }
 
-        // Direct fallback for local development preview
+        // Fallback for local development preview via Cloudflare Pages proxy
         try {
-            const res = await fetch("https://api.craftersmc.net/v1/network/status", {
-                headers: { "x-api-key": "e89b4eb6-1776-4fb5-9a25-812c2ce1f8d8" }
-            });
+            const res = await fetch("https://craftersmc-guides.pages.dev/api/network/status", { cache: "no-store" });
             if (res.ok) {
                 const data = await res.json();
                 if (data && (data.success || data.playerCount !== undefined)) {

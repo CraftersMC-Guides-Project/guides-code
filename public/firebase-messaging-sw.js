@@ -50,7 +50,9 @@ messaging.onBackgroundMessage((payload) => {
     ]
   };
 
-  self.registration.showNotification(title, notificationOptions);
+  self.registration.showNotification(title, notificationOptions).catch(err => {
+    console.warn('[SW] showNotification rejected by OS:', err.message);
+  });
 });
 
 // Fallback listener for raw WebPush or server tickles
