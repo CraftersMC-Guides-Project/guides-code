@@ -40,25 +40,33 @@ export async function onRequest(context) {
     });
   }
 
-  // 2. Security Check: Authenticate cron dispatcher
-  const expectedSecret = env.CRON_SECRET || env.cron_secret || env.CMC_API_KEY || env.cmc_api_key;
-  if (expectedSecret) {
-    const authHeader = request.headers.get('Authorization') || '';
-    const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7).trim() : null;
-    const headerKey = request.headers.get('x-cron-key') || request.headers.get('x-api-key');
-    const queryKey = url.searchParams.get('key') || url.searchParams.get('secret');
+  // 2. Security Check: Authenticate cron dispatcher with dedicated CRON_SECRET
+  const expectedSecret = env.CRON_SECRET || env.cron_secret;
+  if (!expectedSecret) {
+    return new Response(JSON.stringify({
+      error: 'Server Misconfiguration',
+      message: 'CRON_SECRET is not configured in Cloudflare Pages Environment Variables.'
+    }, null, 2), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
 
-    const providedKey = bearerToken || headerKey || queryKey;
+  const authHeader = request.headers.get('Authorization') || '';
+  const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7).trim() : null;
+  const headerKey = request.headers.get('x-cron-key');
+  const queryKey = url.searchParams.get('key') || url.searchParams.get('secret');
 
-    if (!providedKey || providedKey !== expectedSecret) {
-      return new Response(JSON.stringify({
-        error: 'Unauthorized',
-        message: 'Invalid or missing authorization secret. A valid key is required to trigger the event dispatcher.'
-      }, null, 2), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
+  const providedKey = bearerToken || headerKey || queryKey;
+
+  if (!providedKey || providedKey !== expectedSecret) {
+    return new Response(JSON.stringify({
+      error: 'Unauthorized',
+      message: 'Invalid or missing authorization secret. A valid CRON_SECRET key is required to trigger the event dispatcher.'
+    }, null, 2), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
   }
 
   // 2. Ensure DB schema exists and auto-migrates missing columns

@@ -14,7 +14,7 @@ jobs:
         run: |
           echo "Triggering CraftersMC SkyBlock Event Alerts Dispatcher..."
           RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET || secrets.CMC_API_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             "https://craftersmc-guides.pages.dev/api/cron-dispatcher")
           HTTP_STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS" | cut -d':' -f2)
           BODY=$(echo "$RESPONSE" | sed '/HTTP_STATUS/d')
@@ -29,4 +29,3 @@ jobs:
             echo "Dispatcher returned non-200 status code: $HTTP_STATUS"
             exit 1
           fi
-
