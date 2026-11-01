@@ -1,97 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-<link rel="icon" href="assets/cmc-icon.png" type="image/png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="CraftersMC Journey Guides">
-    <meta property="og:description" content="Explore various journey guides that will help you in the adventurous journey of CraftersMC Skyblock.">
-    <meta property="og:image" content="https://cdn.discordapp.com/attachments/1320310626232569887/1346182175426613379/journeyguides.png?ex=67c74159&is=67c5efd9&hm=0dbe039881ee4b9645e096c30397a94a68b9e5e8ed31053fdcf166217931fc43&">
-    <meta property="og:url" content="https://craftersmc-guides.pages.dev/journey-guides.html">
-    <meta property="og:type" content="website">
-    <meta name="theme-color" content="#007bff">
-    <meta name="twitter:card" content="summary_large_image">
-    <title>CraftersMC Guides</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="js/script.js"></script>
-    <link rel="stylesheet" href="css/essential.css">
-    <link rel="stylesheet" href="css/event.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyBlock Journey Guides &amp; Progression — CraftersMC Guides</title>
+  <meta name="description"
+    content="Complete SkyBlock progression roadmap for CraftersMC. Walkthroughs for early game foundations, mid-game combat, slayers, accessories, bazaar trading, and late-game meta." />
+  <meta property="og:title" content="CraftersMC SkyBlock Journey Guides" />
+  <meta property="og:description"
+    content="Explore comprehensive progression guides, combat strategies, and economy tutorials for CraftersMC SkyBlock." />
+  <meta property="og:image" content="https://craftersmc-guides.pages.dev/assets/cmc-guides.png" />
+  <meta property="og:url" content="https://craftersmc-guides.pages.dev/journey-guides.html" />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png" />
+  <link rel="icon" href="assets/cmc-guides.png" type="image/png" />
+
+  <!-- Google Fonts & Material Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <!-- Anti-flash Theme Init -->
+  <script>
+    (function () {
+      try {
+        var d = localStorage.getItem("darkMode");
+        if (d === "true" || (d === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("darkmode");
+        } else {
+          document.documentElement.classList.remove("darkmode");
+        }
+      } catch (e) { }
+    })();
+  </script>
+
+  <!-- Core & Unified Stylesheets -->
+  <link rel="stylesheet" href="css/essential.css" />
+  <link rel="stylesheet" href="css/neo-brutalism.css" />
+
+  <!-- Global Application Scripts -->
+  <script src="js/script.js" defer></script>
+
+  <style>
+    /* =========================================================
+       JOURNEY GUIDES SPECIFIC STYLES (NEO-BRUTALISM)
+       ========================================================= */
+
+    /* Progression Track / Roadmap Horizontal Grid */
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 992px) {
+      .roadmap-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 580px) {
+      .roadmap-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .roadmap-step-card {
+      background: #ffffff;
+      border: 2px solid #111827;
+      border-radius: 12px;
+      box-shadow: 4px 4px 0 #111827;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .roadmap-step-card:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 #111827;
+    }
+
+    .darkmode .roadmap-step-card {
+      background: #141416;
+      border-color: #3f3f46;
+      box-shadow: 4px 4px 0 #000000;
+    }
+
+    .darkmode .roadmap-step-card:hover {
+      border-color: #38bdf8;
+      box-shadow: 6px 6px 0 #000000;
+    }
+
+    .roadmap-step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .roadmap-tier-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1.5px solid #111827;
+      box-shadow: 1.5px 1.5px 0 #111827;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #111827;
+    }
+
+    .darkmode .roadmap-tier-badge {
+      border-color: #000000;
+      box-shadow: 1.5px 1.5px 0 #000000;
+    }
+
+    .roadmap-step-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #111827;
+      margin: 0;
+      line-height: 1.25;
+    }
+
+    .darkmode .roadmap-step-title {
+      color: #ffffff;
+    }
+
+    .roadmap-step-desc {
+      font-size: 13px;
+      color: #4b5563;
+      margin: 0;
+      line-height: 1.5;
+      flex-grow: 1;
+    }
+
+    .darkmode .roadmap-step-desc {
+      color: #a1a1aa;
+    }
+
+    .roadmap-step-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1.5px dashed #111827;
+      padding-top: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .darkmode .roadmap-step-footer {
+      border-top-color: #3f3f46;
+      color: #38bdf8;
+    }
+
+    /* Filter Chips Bar */
+    .filter-chips-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .filter-chip-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      font-size: 12.5px;
+      font-weight: 800;
+      border: 2px solid #111827;
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 2.5px 2.5px 0 #111827;
+      cursor: pointer;
+      color: #111827;
+      user-select: none;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.08s ease;
+      font-family: inherit;
+    }
+
+    .filter-chip-btn:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 3.5px 3.5px 0 #111827;
+      background: #fef08a;
+    }
+
+    .filter-chip-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 0 0 0 #111827;
+    }
+
+    .filter-chip-btn.active {
+      background: #111827;
+      color: #ffffff;
+      box-shadow: 2.5px 2.5px 0 #38bdf8;
+    }
+
+    .filter-chip-btn.active .material-icons {
+      color: #38bdf8 !important;
+    }
+
+    .darkmode .filter-chip-btn {
+      background: #18181b;
+      color: #ffffff;
+      border-color: #3f3f46;
+      box-shadow: 2.5px 2.5px 0 #000000;
+    }
+
+    .darkmode .filter-chip-btn:hover {
+      background: #38bdf8;
+      color: #000000;
+      border-color: #000000;
+    }
+
+    .darkmode .filter-chip-btn:hover .material-icons {
+      color: #000000 !important;
+    }
+
+    .darkmode .filter-chip-btn.active {
+      background: #38bdf8;
+      color: #000000;
+      border-color: #000000;
+      box-shadow: 2.5px 2.5px 0 #000000;
+    }
+
+    .darkmode .filter-chip-btn.active .material-icons {
+      color: #000000 !important;
+    }
+
+    /* Empty Search State */
+    .neo-empty-state {
+      display: none;
+      background: #ffffff;
+      border: 3px solid #111827;
+      border-radius: 14px;
+      box-shadow: 5px 5px 0 #111827;
+      padding: 48px 24px;
+      text-align: center;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .neo-empty-state.active {
+      display: flex;
+    }
+
+    .darkmode .neo-empty-state {
+      background: #141416;
+      border-color: #3f3f46;
+      box-shadow: 5px 5px 0 #000000;
+    }
+
+    .neo-empty-icon {
+      font-size: 48px !important;
+      color: #f87171 !important;
+    }
+
+    .neo-empty-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #111827;
+      margin: 0;
+    }
+
+    .darkmode .neo-empty-title {
+      color: #ffffff;
+    }
+
+    .neo-empty-desc {
+      font-size: 0.95rem;
+      color: #4b5563;
+      margin: 0;
+      max-width: 500px;
+    }
+
+    .darkmode .neo-empty-desc {
+      color: #a1a1aa;
+    }
+  </style>
 </head>
 
 <body>
-<!--
-    <div id="loader">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-    <div class="journey-guides-background"></div>
-    <div class="top"></div>
 
-  COMMENT THIS LATER →  Sidebar
-    <div class="sidebar" id="sidebar"></div>
+  <!-- Fullscreen / Layout Overlays -->
+  <div class="background"></div>
+
+  <!-- Top Navigation (Dynamically loaded from /components/navbar.html) -->
+  <div class="top"></div>
+
+  <!-- Navigation Sidebar (Dynamically loaded from /components/sidebar.html) -->
+  <div class="sidebar" id="sidebar"></div>
   <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-  <span class="material-icons" id="scrollToTopBtn">north</span>
-  <div class="gap"></div>
-    <div class="event-log-card-container">
-        <div class="event-log-card">
-            <img src="Backgrounds/image8299.webp" alt="Card Image">
-            <div class="event-log-card-content">
-                <h3>Starter Guide</h3>
-                <p>A new journey begins...</p>
-                <button onclick="window.location.href = 'guide/starter-guide.html';">Read More</button>
-            </div>
-        </div>
-        <div class="event-log-card">
-            <img src="Backgrounds/image8298.webp" alt="Card Image">
-            <div class="event-log-card-content">
-                <h3>Intermediate Guide</h3>
-                <p>You are not new, neither the veteran...</p>
-                <button onclick="window.location.href = 'guide/intermediate-guide.html';">Read More</button>
-            </div>
-        </div>
-        <div class="event-log-card">
-            <img src="Backgrounds/IMG_4502.webp" alt="Card Image">
-            <div class="event-log-card-content">
-                <h3>Intermediate Guide Part 2 - Slayers Edition</h3>
-                <p>You are still not new, neither the veteran...</p>
-                <button onclick="window.location.href = 'guide/intermediate-guide2.html';">Read More</button>
-            </div>
-        </div>
-        <div class="event-log-card">
-            <img src="Backgrounds/image8297.webp" alt="Card Image">
-            <div class="event-log-card-content">
-                <h3>Advanced Guide</h3>
-                <p>The journey does not end here, it continues...</p>
-                <button onclick="window.location.href = 'guide/advanced-guide.html';">Read More</button>
-            </div>
-        </div>
-        <div class="event-log-card">
-            <img src="Backgrounds/image8307.webp" alt="Card Image">
-            <div class="event-log-card-content">
-                <h3>Accessories Guide</h3>
-                <p>Find out which reforges are the best to use for each rarity.</p>
-                <button onclick="window.location.href = 'guide/accessories-guide.html';">Read More</button>
-            </div>
-        </div>
-        <div class="event-log-card">
-            <img src="Backgrounds/bazaarCardImage.webp" alt="Card Image">
-            <div class="event-log-card-content">
-                <h3>Bazaar Guide</h3>
-                <p>Find out what is bazaar and what to do in it.</p>
-                <button onclick="window.location.href = 'guide/bazaar-guide.html';">Read More</button>
-            </div>
-        </div>
-        <div class="event-log-card">
-            <img src="Backgrounds/IMG_4504.webp" alt="Card Image">
-            <div class="event-log-card-content">
-                <h3>Queries</h3>
-                <p>Frequently asked questions and quick links related to the guides above.</p>
-                <button onclick="window.location.href = 'guide/queries.html';">Read More</button>
-            </div>
-        </div>
-    </div>
 
-    <div id="footer" style="margin: 0;"></div>
-  -->Under Maintenance 
+  <!-- =========================================================
+       MAIN NEO-BRUTALISM PAGE CONTENT
+       ========================================================= -->
+  <main class="neo-container">
+
+    <!-- HERO SECTION -->
+    <section class="neo-hero-card" id="overview">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
+        </div>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px; color:#111827;">menu_book</span>
+          CraftersMC-Guides-Project / Journey Guides
+        </div>
+      </div>
+
+      <div class="neo-hero-content">
+        <!-- Top Row: Heading on the left, Plain Game Clock on the top right -->
+        <div class="neo-hero-top-row">
+          <div class="neo-hero-heading-group">
+            <h1 class="neo-hero-title">
+              SkyBlock <span class="neo-hero-highlight">Journey Guides</span>
+            </h1>
+            <p class="neo-hero-subtitle">
+              Structured progression roadmaps, slayer strategies, talisman optimization, and economic masterclasses.
+              Follow our community-curated guides from your first hour on the island to late-game mastery!
+            </p>
+          </div>
+
+          <!-- Plain SkyBlock Game Clock on Top Right -->
+          <div class="neo-plain-clock" id="neo-plain-clock" title="SkyBlock Game Time">
+            <div class="neo-plain-clock-time game-clock-time" id="game-clock-time">--:--</div>
+            <div class="neo-plain-clock-date game-clock-date" id="game-clock-date">Year --, Season --</div>
+          </div>
+        </div>
+
+        <!-- Quick Stats Chips -->
+        <div class="neo-hero-stats">
+          <a href="#section-roadmap" class="neo-stat-chip">
+            <span class="material-icons">route</span>
+            <span>4 Progression Tiers</span>
+          </a>
+          <a href="#section-all-guides" class="neo-stat-chip">
+            <span class="material-icons">menu_book</span>
+            <span>9 Specialized Guides</span>
+          </a>
+          <a href="bazaar.html" class="neo-stat-chip">
+            <span class="material-icons">storefront</span>
+            <span>Live Bazaar Tracker</span>
+          </a>
+          <a href="auction.html" class="neo-stat-chip">
+            <span class="material-icons">gavel</span>
+            <span>Auction House Explorer</span>
+          </a>
+        </div>
+
+        <!-- Real-Time Neo-Brutalist Search -->
+        <div class="neo-search-wrap">
+          <div class="neo-search-inner">
+            <span class="material-icons neo-search-icon">search</span>
+            <input type="text" id="search-input" class="neo-search-input"
+              placeholder="Search guides, armor sets, bosses, weapons, reforges, bazaar strategies..."
+              autocomplete="off" aria-label="Search progression guides" />
+            <button type="button" id="search-clear" class="neo-search-clear" title="Clear search"
+              aria-label="Clear search input">
+              <span class="material-icons">close</span>
+            </button>
+            <span class="neo-search-shortcut" title="Press / to search">/</span>
+          </div>
+          <div class="neo-search-meta">
+            <span>Filter guides in real time</span>
+            <span>Showing <strong id="results-count">9</strong> guides</span>
+          </div>
+        </div>
+
+        <!-- Quick Action Buttons (Button 70) -->
+        <div class="neo-hero-actions">
+          <a href="#section-roadmap" class="button70-btn yellow">
+            <span class="material-icons">timeline</span>
+            Progression Roadmap
+          </a>
+          <a href="#section-all-guides" class="button70-btn cyan">
+            <span class="material-icons">auto_stories</span>
+            Browse All Guides
+          </a>
+          <a href="player.html" class="button70-btn purple">
+            <span class="material-icons">person_search</span>
+            Player Viewer
+          </a>
+          <a href="index.html" class="button70-btn">
+            <span class="material-icons">home</span>
+            Return to Hub
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 1: PROGRESSION ROADMAP (4 TIERS)
+         ========================================================= -->
+    <section class="neo-section" id="section-roadmap">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#fed7aa;">
+              <span class="material-icons">alt_route</span>
+              ROADMAP
+            </span>
+            <h2 class="neo-section-title">The Recommended Career Path</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Not sure what to do next? Follow the 4-tier milestone path recommended for CraftersMC players:
+          </p>
+        </div>
+        <span class="neo-section-count">4 Key Milestones</span>
+      </div>
+
+      <div class="roadmap-grid">
+        <!-- Tier 1: Early Game -->
+        <a href="guide/starter-guide.html" class="roadmap-step-card">
+          <div class="roadmap-step-header">
+            <span class="roadmap-tier-badge" style="background:#fef08a;">Tier 01 &bull; Early</span>
+            <span class="material-icons" style="color:#ca8a04;">explore</span>
+          </div>
+          <h3 class="roadmap-step-title">Starter Foundations</h3>
+          <p class="roadmap-step-desc">
+            Island layouts, minion slot automation, essential collection unlocks, and generating your first 1,000,000 coins.
+          </p>
+          <div class="roadmap-step-footer">
+            <span>Starter Guide</span>
+            <span class="material-icons" style="font-size:16px;">arrow_forward</span>
+          </div>
+        </a>
+
+        <!-- Tier 2: Mid Game -->
+        <a href="guide/intermediate-guide.html" class="roadmap-step-card">
+          <div class="roadmap-step-header">
+            <span class="roadmap-tier-badge" style="background:#bae6fd;">Tier 02 &bull; Mid</span>
+            <span class="material-icons" style="color:#0284c7;">military_tech</span>
+          </div>
+          <h3 class="roadmap-step-title">Dragon Gear &amp; Combat</h3>
+          <p class="roadmap-step-desc">
+            Acquiring dragon armor, upgrading to Aspect of the Dragons, reaching 100% Critical Chance, and minion slot scaling.
+          </p>
+          <div class="roadmap-step-footer">
+            <span>Intermediate Guide</span>
+            <span class="material-icons" style="font-size:16px;">arrow_forward</span>
+          </div>
+        </a>
+
+        <!-- Tier 3: Slayers -->
+        <a href="guide/intermediate-guide2.html" class="roadmap-step-card">
+          <div class="roadmap-step-header">
+            <span class="roadmap-tier-badge" style="background:#fbcfe8;">Tier 03 &bull; Bosses</span>
+            <span class="material-icons" style="color:#db2777;">shield</span>
+          </div>
+          <h3 class="roadmap-step-title">Slayers &amp; Minibosses</h3>
+          <p class="roadmap-step-desc">
+            Defeating Revenant Horror, Tarantula Broodfather, and Sven Packmaster T1–T4. Armor loadouts and healing wands.
+          </p>
+          <div class="roadmap-step-footer">
+            <span>Slayer Edition</span>
+            <span class="material-icons" style="font-size:16px;">arrow_forward</span>
+          </div>
+        </a>
+
+        <!-- Tier 4: Endgame -->
+        <a href="guide/advanced-guide.html" class="roadmap-step-card">
+          <div class="roadmap-step-header">
+            <span class="roadmap-tier-badge" style="background:#e9d5ff;">Tier 04 &bull; Endgame</span>
+            <span class="material-icons" style="color:#9333ea;">auto_awesome</span>
+          </div>
+          <h3 class="roadmap-step-title">Endgame Meta &amp; Wealth</h3>
+          <p class="roadmap-step-desc">
+            Talisman bag maximization, optimal pet leveling, high-tier boss DPS optimization, and late-game economy scaling.
+          </p>
+          <div class="roadmap-step-footer">
+            <span>Advanced Guide</span>
+            <span class="material-icons" style="font-size:16px;">arrow_forward</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 2: ALL GUIDES DIRECTORY
+         ========================================================= -->
+    <section class="neo-section" id="section-all-guides">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#bbf7d0;">
+              <span class="material-icons">menu_book</span>
+              DIRECTORY
+            </span>
+            <h2 class="neo-section-title">All Progression Guides</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Browse our full catalog or use the category buttons below to narrow your focus:
+          </p>
+        </div>
+        <span class="neo-section-count" id="badge-guide-count">9 Guides Available</span>
+      </div>
+
+      <!-- Category Filter Chips -->
+      <div class="filter-chips-bar" id="category-filter-chips">
+        <button type="button" class="filter-chip-btn active" data-category="all">
+          <span class="material-icons" style="font-size:16px;">apps</span>
+          All Guides
+        </button>
+        <button type="button" class="filter-chip-btn" data-category="progression">
+          <span class="material-icons" style="font-size:16px;">trending_up</span>
+          Progression
+        </button>
+        <button type="button" class="filter-chip-btn" data-category="combat">
+          <span class="material-icons" style="font-size:16px;">local_fire_department</span>
+          Combat &amp; Slayers
+        </button>
+        <button type="button" class="filter-chip-btn" data-category="economy">
+          <span class="material-icons" style="font-size:16px;">paid</span>
+          Economy &amp; Reforges
+        </button>
+        <button type="button" class="filter-chip-btn" data-category="reference">
+          <span class="material-icons" style="font-size:16px;">help_outline</span>
+          Tools &amp; Reference
+        </button>
+      </div>
+
+      <!-- Guides Grid -->
+      <div class="neo-grid" id="guides-grid" style="margin-top: 16px;">
+
+        <!-- Card 1: Starter Guide -->
+        <div class="neo-card yellow"
+          data-category="progression"
+          data-search="starter guide early game island layout coin generation fairy souls minion automation beginner collection deep caverns">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#ffffff;"><span class="material-icons">star</span> Early Game</span>
+            <span class="material-icons neo-card-icon">explore</span>
+          </div>
+          <h3 class="neo-card-title">Starter Guide</h3>
+          <p class="neo-card-desc">
+            Where every CraftersMC journey begins. Essential early collections, island setup, minion automation, and quick coin generation.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Early Game <span>/ Foundations</span></div>
+            <a href="guide/starter-guide.html" class="neo-card-btn">Open Guide &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 2: Intermediate Guide -->
+        <div class="neo-card cyan"
+          data-category="progression combat"
+          data-search="intermediate guide dragon armor combat skill minion slot expansion progression weapons mid-game critical chance aotd aspect of the dragons">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#ffffff;"><span class="material-icons">trending_up</span> Mid Game</span>
+            <span class="material-icons neo-card-icon">military_tech</span>
+          </div>
+          <h3 class="neo-card-title">Intermediate Guide</h3>
+          <p class="neo-card-desc">
+            Level up your damage and defense. Dragon armors, Aspect of the Dragons, reaching 100% Critical Chance, and expanding minion slots.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Mid Game <span>/ Combat</span></div>
+            <a href="guide/intermediate-guide.html" class="neo-card-btn">Open Guide &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 3: Slayer Edition Guide -->
+        <div class="neo-card pink"
+          data-category="combat"
+          data-search="slayer edition guide boss mechanics loadouts revenant horror tarantula broodfather sven packmaster zombie spider wolf combat tier 1 2 3 4">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#ffffff;"><span class="material-icons">local_fire_department</span> Bosses</span>
+            <span class="material-icons neo-card-icon">shield</span>
+          </div>
+          <h3 class="neo-card-title">Slayer Edition Guide</h3>
+          <p class="neo-card-desc">
+            The most efficient setups for taking down Slayer bosses. Loadouts, armor perks, healing wands, and drops across Revenant, Tarantula, and Sven.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Tier 1-4 <span>/ Bosses</span></div>
+            <a href="guide/intermediate-guide2.html" class="neo-card-btn">Open Guide &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 4: Advanced Guide -->
+        <div class="neo-card purple"
+          data-category="progression combat"
+          data-search="advanced guide endgame combat setups high-tier slayer pet optimization economy late-game superior armor high damage meta">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#ffffff;"><span class="material-icons">diamond</span> Endgame</span>
+            <span class="material-icons neo-card-icon">auto_awesome</span>
+          </div>
+          <h3 class="neo-card-title">Advanced Guide</h3>
+          <p class="neo-card-desc">
+            Where all your grinding pays off. Late-game combat meta, superior setups, maxing pet buffs, and dominating high-tier challenges.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Late Game <span>/ Meta</span></div>
+            <a href="guide/advanced-guide.html" class="neo-card-btn">Open Guide &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 5: Accessories & Reforges -->
+        <div class="neo-card orange"
+          data-category="economy"
+          data-search="accessories reforges talismans optimal stones common uncommon rare epic legendary stat boosts critical damage strength magical power">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#ffffff;"><span class="material-icons">tune</span> Stats</span>
+            <span class="material-icons neo-card-icon">toll</span>
+          </div>
+          <h3 class="neo-card-title">Accessories &amp; Reforges</h3>
+          <p class="neo-card-desc">
+            The secret to massive damage. Maximize your talisman bag with the best reforges across Common, Uncommon, Rare, Epic, and Legendary accessories.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Stats <span>/ Talismans</span></div>
+            <a href="guide/accessories-guide.html" class="neo-card-btn">Open Guide &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 6: Bazaar Trading Guide -->
+        <div class="neo-card green"
+          data-category="economy"
+          data-search="bazaar trading guide buy sell orders spread margin flipping economy market coins profit tax saving instant buy sell">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#ffffff;"><span class="material-icons">storefront</span> Economy</span>
+            <span class="material-icons neo-card-icon">paid</span>
+          </div>
+          <h3 class="neo-card-title">Bazaar Trading Guide</h3>
+          <p class="neo-card-desc">
+            Learn how to use the Bazaar to make millions in coins. Master buy and sell order spreads, market taxes, and flipping techniques.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Economy <span>/ Trading</span></div>
+            <a href="guide/bazaar-guide.html" class="neo-card-btn">Open Guide &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 7: Common Queries & FAQ -->
+        <div class="neo-card"
+          data-category="reference"
+          data-search="common queries faq questions answers custom features craftersmc mechanics rules help minion caps islands">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#ffffff;"><span class="material-icons">help_outline</span> Q&amp;A</span>
+            <span class="material-icons neo-card-icon">psychology</span>
+          </div>
+          <h3 class="neo-card-title">Common Queries &amp; FAQ</h3>
+          <p class="neo-card-desc">
+            Clear answers to common questions about server-specific rules, minion limits, custom enchants, and SkyBlock mechanics.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Reference <span>/ Support</span></div>
+            <a href="guide/queries.html" class="neo-card-btn">Open FAQ &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 8: Unicode & Formatting -->
+        <div class="neo-card yellow"
+          data-category="reference"
+          data-search="unicode formatting color codes symbols glyphs book quills item signs chat formatting minecraft colors">
+          <div class="neo-card-header">
+            <span class="neo-badge" style="background:#ffffff;"><span class="material-icons">palette</span> Glyphs</span>
+            <span class="material-icons neo-card-icon">format_shapes</span>
+          </div>
+          <h3 class="neo-card-title">Unicode &amp; Formatting</h3>
+          <p class="neo-card-desc">
+            Minecraft color code reference (&amp;6, &amp;a, &amp;e) and custom unicode symbols for Book &amp; Quills, chat banners, and item signs.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price">Formatting <span>/ Chat</span></div>
+            <a href="unicode.html" class="neo-card-btn">Open Guide &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Card 9: Feather Bot Guide -->
+        <div class="neo-card dark"
+          data-category="reference"
+          data-search="feather bot discord slash commands documentation syntax player lookup verification bot guide auction alert reminders">
+          <div class="neo-card-header">
+            <span class="neo-badge"><span class="material-icons">terminal</span> Discord Bot</span>
+            <span class="material-icons neo-card-icon">smart_toy</span>
+          </div>
+          <h3 class="neo-card-title" style="color: #ffffff !important;">Feather Bot Documentation</h3>
+          <p class="neo-card-desc">
+            A mini version of the website on Discord. Check player stats, auction prices, event schedules, and set up reminders right inside your server.
+          </p>
+          <div class="neo-card-footer">
+            <div class="neo-card-price" style="color: #ffffff !important;">Bot <span>/ Commands</span></div>
+            <a href="feather-bot/index.html" class="neo-card-btn">View Bot Guide &rarr;</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Empty State -->
+      <div id="neo-empty-state" class="neo-empty-state">
+        <span class="material-icons neo-empty-icon">search_off</span>
+        <h3 class="neo-empty-title">No Guides Found</h3>
+        <p class="neo-empty-desc">
+          We couldn't find any guides matching your search query. Try searching for broader terms like "starter", "slayer", "bazaar", or "accessories".
+        </p>
+        <button type="button" class="button70-btn cyan" onclick="clearGuideSearch()">
+          <span class="material-icons">refresh</span>
+          Reset Filters
+        </button>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 3: ESSENTIAL PROGRESSION RULES
+         ========================================================= -->
+    <section class="neo-section" id="section-protips">
+      <div class="neo-section-header">
+        <div class="neo-section-header-left">
+          <div class="neo-section-title-wrap">
+            <span class="neo-badge" style="background:#fbcfe8;">
+              <span class="material-icons">tips_and_updates</span>
+              PRO-TIPS
+            </span>
+            <h2 class="neo-section-title">4 Golden Rules for Fast Progression</h2>
+          </div>
+          <p class="neo-section-subtitle">
+            Keep these core principles in mind to maximize your efficiency and coin generation:
+          </p>
+        </div>
+        <span class="neo-section-count">Best Practices</span>
+      </div>
+
+      <div class="roadmap-grid">
+        <div class="roadmap-step-card" style="cursor: default;">
+          <div class="roadmap-step-header">
+            <span class="roadmap-tier-badge" style="background:#bbf7d0;">Rule 01</span>
+            <span class="material-icons" style="color:#059669;">schedule</span>
+          </div>
+          <h3 class="roadmap-step-title">Automate With Minions</h3>
+          <p class="roadmap-step-desc">
+            Minions work while you are offline. Prioritize unlocking minion slots early to generate millions of coins and passive collection exp every day.
+          </p>
+        </div>
+
+        <div class="roadmap-step-card" style="cursor: default;">
+          <div class="roadmap-step-header">
+            <span class="roadmap-tier-badge" style="background:#fef08a;">Rule 02</span>
+            <span class="material-icons" style="color:#ca8a04;">toll</span>
+          </div>
+          <h3 class="roadmap-step-title">Accessories = Free Stats</h3>
+          <p class="roadmap-step-desc">
+            A legendary weapon is weak without talismans. Collect every talisman you can afford; the passive magical power scales all your damage.
+          </p>
+        </div>
+
+        <div class="roadmap-step-card" style="cursor: default;">
+          <div class="roadmap-step-header">
+            <span class="roadmap-tier-badge" style="background:#bae6fd;">Rule 03</span>
+            <span class="material-icons" style="color:#0284c7;">storefront</span>
+          </div>
+          <h3 class="roadmap-step-title">Never Instant Sell</h3>
+          <p class="roadmap-step-desc">
+            Instant selling to the Bazaar or NPCs throws away 10%–30% in profits. Always place Sell Offers to maximize coin returns on materials.
+          </p>
+        </div>
+
+        <div class="roadmap-step-card" style="cursor: default;">
+          <div class="roadmap-step-header">
+            <span class="roadmap-tier-badge" style="background:#e9d5ff;">Rule 04</span>
+            <span class="material-icons" style="color:#9333ea;">event</span>
+          </div>
+          <h3 class="roadmap-step-title">Track Live Events</h3>
+          <p class="roadmap-step-desc">
+            Spooky Festivals, Jerry events, and Traveling Zoo visits yield exclusive items and heavy market profits. Use our SkyCalendar tool to never miss one.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer Container (Loaded dynamically from /components/footer.html) -->
+  <div id="footer"></div>
+
+  <!-- Interactive Search & Category Filter Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('search-input');
+      const searchClear = document.getElementById('search-clear');
+      const resultsCount = document.getElementById('results-count');
+      const emptyState = document.getElementById('neo-empty-state');
+      const cards = document.querySelectorAll('#guides-grid .neo-card');
+      const filterChips = document.querySelectorAll('.filter-chip-btn');
+
+      let currentCategory = 'all';
+
+      function applyFilters() {
+        const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+          const searchData = (card.getAttribute('data-search') || '' + ' ' + card.innerText).toLowerCase();
+          const categories = (card.getAttribute('data-category') || '').toLowerCase().split(' ');
+
+          const matchesQuery = !query || searchData.includes(query);
+          const matchesCategory = currentCategory === 'all' || categories.includes(currentCategory);
+
+          if (matchesQuery && matchesCategory) {
+            card.style.display = '';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        if (resultsCount) {
+          resultsCount.textContent = visibleCount;
+        }
+
+        if (searchClear) {
+          searchClear.style.display = query.length > 0 ? 'inline-flex' : 'none';
+        }
+
+        if (emptyState) {
+          emptyState.classList.toggle('active', visibleCount === 0);
+        }
+      }
+
+      window.clearGuideSearch = function () {
+        if (searchInput) {
+          searchInput.value = '';
+        }
+        currentCategory = 'all';
+        filterChips.forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('data-category') === 'all');
+        });
+        applyFilters();
+        if (searchInput) searchInput.focus();
+      };
+
+      if (searchInput) {
+        searchInput.addEventListener('input', applyFilters);
+      }
+
+      if (searchClear) {
+        searchClear.addEventListener('click', () => {
+          if (searchInput) {
+            searchInput.value = '';
+            applyFilters();
+            searchInput.focus();
+          }
+        });
+      }
+
+      filterChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          filterChips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          currentCategory = chip.getAttribute('data-category') || 'all';
+          applyFilters();
+        });
+      });
+
+      // Keyboard shortcut '/' to search
+      window.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement !== searchInput && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+          e.preventDefault();
+          if (searchInput) {
+            searchInput.focus();
+            searchInput.select();
+          }
+        } else if (e.key === 'Escape' && document.activeElement === searchInput) {
+          searchInput.value = '';
+          applyFilters();
+          searchInput.blur();
+        }
+      });
+    });
+  </script>
+
 </body>
 
 </html>
