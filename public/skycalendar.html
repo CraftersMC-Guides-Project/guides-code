@@ -477,39 +477,14 @@
             </div>
           </div>
 
-          <!-- Device Token Preview & Testing -->
-          <div class="fcm-token-wrap">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:4px;">
-              <span class="fcm-token-label" style="margin-bottom:0;">Device Registration Token (VAPID):</span>
-              <span style="font-size:11px; font-family:var(--font-mono); opacity:0.85;">ID: <code id="fcm-device-id-display" style="background:rgba(0,0,0,0.25); padding:2px 6px; border-radius:4px; font-weight:700;"></code></span>
-            </div>
-            <div class="fcm-token-box">
-              <input type="text" id="fcm-token-display" class="fcm-token-input" readonly value="Notifications not enabled yet" />
-              <button type="button" class="pagination-btn cyan" onclick="window.SkyCalendarFCM && window.SkyCalendarFCM.copyToken()" title="Copy FCM token to clipboard">
-                <span class="material-icons" style="font-size:15px; vertical-align:middle;">content_copy</span>
-                Copy
-              </button>
-              <button type="button" class="pagination-btn purple" onclick="window.SkyCalendarFCM && window.SkyCalendarFCM.reSync()" title="Refresh push subscription credentials with Google">
-                <span class="material-icons" style="font-size:15px; vertical-align:middle;">sync</span>
-                Re-sync
-              </button>
-              <button type="button" class="pagination-btn yellow" onclick="window.SkyCalendarFCM && window.SkyCalendarFCM.testServerPush()" title="Trigger immediate test push from Cloudflare dispatcher">
-                <span class="material-icons" style="font-size:15px; vertical-align:middle;">send</span>
-                Test Push
-              </button>
-              <button type="button" class="pagination-btn red" onclick="window.SkyCalendarFCM && window.SkyCalendarFCM.disableNotifications()" title="Completely remove device subscription and delete from server">
-                <span class="material-icons" style="font-size:15px; vertical-align:middle;">delete_outline</span>
-                Remove Device
-              </button>
-            </div>
-            <div class="fcm-os-hint" style="margin-top: 10px; font-size: 11px; opacity: 0.9; line-height: 1.4; background: rgba(0,0,0,0.25); padding: 8px 10px; border-radius: 6px; border-left: 3px solid var(--accent, #f59e0b);">
-              💡 <strong>Closed-Tab Alerts:</strong> Push notifications are delivered by Google Cloud to your system tray even if browser tabs are closed. If banners do not appear, ensure notifications for your browser are toggled <strong>ON</strong> in <em>Windows Settings &gt; System &gt; Notifications</em>.
-            </div>
+          <!-- Closed-Tab Notification Info Hint -->
+          <div class="fcm-os-hint" style="margin-top: 18px; font-size: 11px; opacity: 0.9; line-height: 1.4; background: rgba(0,0,0,0.25); padding: 10px 12px; border-radius: 6px; border-left: 3px solid var(--accent, #f59e0b);">
+            💡 <strong>Closed-Tab Alerts:</strong> Push notifications are delivered by Google Cloud to your system tray even if browser tabs are closed. If banners do not appear, ensure notifications for your browser are toggled <strong>ON</strong> in <em>Windows Settings &gt; System &gt; Notifications</em>.
           </div>
         </div>
 
         <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-          <button type="button" class="pagination-btn red" onclick="window.SkyCalendarFCM && window.SkyCalendarFCM.disableNotifications()" title="Turn off alerts and remove device from notifications">
+          <button id="fcm-unsubscribe-btn" type="button" class="pagination-btn red" onclick="window.SkyCalendarFCM && window.SkyCalendarFCM.disableNotifications()" title="Turn off alerts and remove device from notifications">
             <span class="material-icons" style="font-size:15px; vertical-align:middle;">notifications_off</span>
             Unsubscribe &amp; Remove
           </button>

@@ -756,6 +756,11 @@ class SkyCalendarFCMController {
       }
     }
 
+    const unsubBtn = document.getElementById('fcm-unsubscribe-btn');
+    if (unsubBtn) {
+      unsubBtn.style.display = (status === 'active' || !!this.token) ? 'inline-flex' : 'none';
+    }
+
     this.syncPreferenceInputs();
   }
 
