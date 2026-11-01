@@ -31,7 +31,8 @@ export async function onRequest(context) {
         name: closest.name,
         key: closest.key,
         inMinutes: closest.minutesUntil,
-        icon: closest.icon || '/assets/cmc-icon.png'
+        crops: closest.crops || [],
+        icon: closest.icon || (closest.key === 'farming' ? '/assets/farming/Farm-o-Matic.webp' : '/assets/cmc-icon.png')
       } : null,
       upcoming: upcoming.slice(0, 3)
     }, null, 2), {
@@ -62,10 +63,36 @@ export async function onRequest(context) {
   // 3. Calculate upcoming SkyBlock events
   const upcomingEvents = getUpcomingEvents();
 
-  // 4. Identify events starting in the 0-6 minute window (or next event if test)
-  const activeAlertEvents = isTest
-    ? [upcomingEvents[0]] // in test mode, trigger the closest event
-    : upcomingEvents.filter(ev => ev.minutesUntil > 0 && ev.minutesUntil <= 6);
+  // 4. Identify events in the 15-minute or 5-minute alert windows
+  const candidates = [];
+  if (isTest) {
+    // In test mode, evaluate the closest upcoming event
+    const testEv = upcomingEvents[0];
+    candidates.push({
+      event: testEv,
+      stage: '5',
+      leadMinutes: 5
+    });
+  } else {
+    for (const ev of upcomingEvents) {
+      // 15-minute alert window (11 to 16 minutes away)
+      if (ev.minutesUntil >= 11 && ev.minutesUntil <= 16) {
+        candidates.push({
+          event: ev,
+          stage: '15',
+          leadMinutes: 15
+        });
+      }
+      // 5-minute alert window (1 to 6 minutes away)
+      if (ev.minutesUntil >= 1 && ev.minutesUntil <= 6) {
+        candidates.push({
+          event: ev,
+          stage: '5',
+          leadMinutes: 5
+        });
+      }
+    }
+  }
 
   const results = {
     timestamp: new Date().toISOString(),
@@ -73,24 +100,32 @@ export async function onRequest(context) {
     testMode: isTest,
     has_db: !!env.DB,
     has_vapid: !!(pubKey && privKey),
-    upcoming: upcomingEvents.map(e => ({ name: e.name, key: e.key, inMinutes: e.minutesUntil })),
+    upcoming: upcomingEvents.map(e => ({
+      name: e.name,
+      key: e.key,
+      inMinutes: e.minutesUntil,
+      crops: e.crops || undefined
+    })),
     triggered: []
   };
 
-  if (activeAlertEvents.length === 0) {
-    results.message = 'No events currently in the 5-minute alert window.';
+  if (candidates.length === 0) {
+    results.message = 'No events currently in the 15-minute or 5-minute alert windows.';
     return new Response(JSON.stringify(results, null, 2), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
 
-  // 5. For each active event, check if already alerted & dispatch
-  for (const event of activeAlertEvents) {
-    const alertId = `${event.key}_${event.nextDay}`;
+  // 5. For each candidate, check if already alerted & dispatch
+  for (const candidate of candidates) {
+    const { event, stage, leadMinutes } = candidate;
+    const alertId = `${event.key}_${event.nextDay}_${stage}m`;
     const eventSummary = {
       event: event.name,
+      stage: `${stage}m`,
       alertId: alertId,
       minutesUntil: event.minutesUntil,
+      crops: event.crops || [],
       status: 'pending',
       dispatchedCount: 0,
       prunedCount: 0,
@@ -133,11 +168,32 @@ export async function onRequest(context) {
       }
     }
 
-    // Filter subscribers who have this event enabled
+    // Filter subscribers who have this event enabled AND match timing & crop filters
     const eligibleSubscribers = subscribers.filter(sub => {
       try {
         const prefs = JSON.parse(sub.preferences || '{}');
-        return prefs[event.key] !== false; // default true if not explicitly false
+
+        // 1. Is the event enabled? (default true)
+        if (prefs[event.key] === false) return false;
+
+        // 2. Lead time check: default { '5': true, '15': false } if not configured
+        const leadPrefs = prefs.lead_time || { '5': true, '15': false };
+        if (!leadPrefs[stage]) return false;
+
+        // 3. Farming crop check: if event is farming, check crop filter
+        if (event.key === 'farming' && event.crops && Array.isArray(event.crops)) {
+          const userCrops = prefs.farming_crops;
+          // If user specifically filtered crops (non-empty and not all 10), contest MUST have at least one chosen crop
+          if (Array.isArray(userCrops)) {
+            if (userCrops.length === 0) return false; // user disabled all crops
+            if (userCrops.length < 10) {
+              const hasMatchingCrop = event.crops.some(c => userCrops.includes(c));
+              if (!hasMatchingCrop) return false;
+            }
+          }
+        }
+
+        return true;
       } catch (e) {
         return true;
       }
@@ -148,13 +204,12 @@ export async function onRequest(context) {
       eventSummary.errors.push('Missing VAPID keys: key_pair_fcm and private_key_fcm must be configured in Cloudflare Pages Environment Variables');
       eventSummary.status = 'missing_vapid_keys';
     } else if (eligibleSubscribers.length === 0) {
-      eventSummary.status = 'no_subscribers';
+      eventSummary.status = 'no_eligible_subscribers';
     } else {
       const cleanPubKey = pubKey.replace(/["']/g, '').trim();
       const cleanPrivKey = privKey.replace(/["']/g, '').trim();
 
       for (const sub of eligibleSubscribers) {
-        // Standard WebPush endpoint resolution (Chrome: /wp/<token>, Firefox: /wpush/v2/...)
         const targetEndpoint = sub.endpoint || (sub.token ? `https://fcm.googleapis.com/wp/${sub.token}` : null);
         if (!targetEndpoint) continue;
 
@@ -172,7 +227,7 @@ export async function onRequest(context) {
             const shortId = targetEndpoint.slice(-15);
             eventSummary.errors.push(`Endpoint ...${shortId} responded with status ${sendRes.status}`);
 
-            // If subscription is expired or unsubscribed (410 Gone or 404 Not Found), prune it from D1 immediately!
+            // If subscription is expired or unsubscribed (410 Gone or 404 Not Found), prune immediately!
             if ((sendRes.status === 410 || sendRes.status === 404) && env.DB) {
               try {
                 await env.DB.prepare(

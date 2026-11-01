@@ -19,13 +19,38 @@ export const firebaseConfig = {
 // VAPID Public Key for Web Push (from .dev.vars)
 export const VAPID_KEY = "BK_C5v-NUeL1hWaJ7Zzx3xkaxCKxk6bDLZXvAsV2KuEHK-FK4R4uUtgmezWalpRlG8Bdxy-XNLtM5JcFukc1d-4";
 
+// SkyBlock Contested Crop Catalog
+export const ALL_CROPS = [
+  'WHEAT', 'SUGAR_CANE', 'CARROT', 'POTATO',
+  'MELON', 'PUMPKIN', 'COCOA_BEANS', 'CACTUS',
+  'MUSHROOM', 'BEETROOT'
+];
+
+export const CROP_METADATA = {
+  'WHEAT': { name: 'Wheat', icon: 'img/Wheat.webp' },
+  'SUGAR_CANE': { name: 'Sugar Cane', icon: 'img/Sugar_Cane.webp' },
+  'CARROT': { name: 'Carrot', icon: 'img/Carrot.webp' },
+  'POTATO': { name: 'Potato', icon: 'img/Potato.webp' },
+  'MELON': { name: 'Melon', icon: 'img/Melon.webp' },
+  'PUMPKIN': { name: 'Pumpkin', icon: 'img/Pumpkin.webp' },
+  'COCOA_BEANS': { name: 'Cocoa Beans', icon: 'img/Cocoa_Beans.webp' },
+  'CACTUS': { name: 'Cactus', icon: 'img/Cactus.webp' },
+  'MUSHROOM': { name: 'Mushroom', icon: 'img/Mushroom.gif' },
+  'BEETROOT': { name: 'Beetroot', icon: 'img/Beetroot.webp' }
+};
+
 // Default Event Alert Subscriptions (CraftersMC SkyBlock Events)
 const DEFAULT_PREFERENCES = {
   farming: true,       // Ethan's Farming Contest
   spooky: true,        // Spooky Festival
   zoo: true,           // Travelling Zoo
   pig: true,           // Season of the Pig (Shiny Pigs)
-  new_year: true       // New Year Celebration
+  new_year: true,      // New Year Celebration
+  lead_time: {
+    '15': false,       // 15 minutes early
+    '5': true          // 5 minutes early
+  },
+  farming_crops: [...ALL_CROPS] // all 10 crops selected by default
 };
 
 class SkyCalendarFCMController {
@@ -43,12 +68,27 @@ class SkyCalendarFCMController {
     try {
       const saved = localStorage.getItem('cmc_fcm_preferences');
       if (saved) {
-        return { ...DEFAULT_PREFERENCES, ...JSON.parse(saved) };
+        const parsed = JSON.parse(saved);
+        return {
+          ...DEFAULT_PREFERENCES,
+          ...parsed,
+          lead_time: {
+            ...DEFAULT_PREFERENCES.lead_time,
+            ...(parsed.lead_time || {})
+          },
+          farming_crops: Array.isArray(parsed.farming_crops)
+            ? parsed.farming_crops
+            : [...DEFAULT_PREFERENCES.farming_crops]
+        };
       }
     } catch (e) {
       console.warn('[FCM] Failed to parse saved preferences:', e);
     }
-    return { ...DEFAULT_PREFERENCES };
+    return {
+      ...DEFAULT_PREFERENCES,
+      lead_time: { ...DEFAULT_PREFERENCES.lead_time },
+      farming_crops: [...DEFAULT_PREFERENCES.farming_crops]
+    };
   }
 
   savePreferences() {
@@ -119,6 +159,8 @@ class SkyCalendarFCMController {
 
       // 6. Update UI with current permission / token status
       this.updateUIStatus(this.getPermissionState());
+      this.renderCropChips();
+      this.syncPreferenceInputs();
 
       // 7. If permission already granted, verify subscription validity and re-sync
       if (Notification.permission === 'granted') {
@@ -382,13 +424,108 @@ class SkyCalendarFCMController {
     }
   }
 
+  setTiming(stage, enabled) {
+    if (!this.preferences.lead_time) {
+      this.preferences.lead_time = { '15': false, '5': true };
+    }
+    this.preferences.lead_time[stage] = !!enabled;
+    this.savePreferences();
+    this.syncPreferenceInputs();
+    if (this.token) {
+      this.syncTokenWithBackend(this.token);
+    }
+  }
+
+  toggleCrop(cropKey, enabled) {
+    if (!Array.isArray(this.preferences.farming_crops)) {
+      this.preferences.farming_crops = [...ALL_CROPS];
+    }
+    if (enabled) {
+      if (!this.preferences.farming_crops.includes(cropKey)) {
+        this.preferences.farming_crops.push(cropKey);
+      }
+    } else {
+      this.preferences.farming_crops = this.preferences.farming_crops.filter(c => c !== cropKey);
+    }
+    this.savePreferences();
+    this.syncPreferenceInputs();
+    if (this.token) {
+      this.syncTokenWithBackend(this.token);
+    }
+  }
+
+  selectAllCrops(select) {
+    this.preferences.farming_crops = select ? [...ALL_CROPS] : [];
+    this.savePreferences();
+    this.syncPreferenceInputs();
+    if (this.token) {
+      this.syncTokenWithBackend(this.token);
+    }
+  }
+
+  renderCropChips() {
+    const container = document.getElementById('fcm-crop-chips-container');
+    if (!container) return;
+
+    const userCrops = Array.isArray(this.preferences.farming_crops)
+      ? this.preferences.farming_crops
+      : ALL_CROPS;
+
+    container.innerHTML = ALL_CROPS.map(cropKey => {
+      const meta = CROP_METADATA[cropKey] || { name: cropKey, icon: '' };
+      const isChecked = userCrops.includes(cropKey);
+      return `
+        <label class="farming-filter fcm-crop-chip ${isChecked ? 'active' : ''}" title="${meta.name}">
+          <input type="checkbox" id="fcm-crop-${cropKey}" value="${cropKey}" ${isChecked ? 'checked' : ''} onchange="window.SkyCalendarFCM && window.SkyCalendarFCM.toggleCrop('${cropKey}', this.checked)" />
+          <span class="crop-icon"><img src="${meta.icon}" alt="${meta.name}" style="height:18px; width:auto; vertical-align:middle;" /></span>
+          <span class="crop-name">${meta.name}</span>
+        </label>
+      `;
+    }).join('');
+  }
+
   syncPreferenceInputs() {
+    // 1. Sync event switches
     Object.keys(this.preferences).forEach(eventId => {
       const checkbox = document.getElementById(`fcm-pref-${eventId}`);
       if (checkbox) {
         checkbox.checked = this.preferences[eventId];
       }
     });
+
+    // 2. Sync lead timing checkboxes
+    const leadPrefs = this.preferences.lead_time || { '15': false, '5': true };
+    const timing15 = document.getElementById('fcm-timing-15');
+    if (timing15) timing15.checked = !!leadPrefs['15'];
+    const timing5 = document.getElementById('fcm-timing-5');
+    if (timing5) timing5.checked = leadPrefs['5'] !== false;
+
+    // 3. Sync crop checkboxes
+    const userCrops = Array.isArray(this.preferences.farming_crops)
+      ? this.preferences.farming_crops
+      : ALL_CROPS;
+    ALL_CROPS.forEach(cropKey => {
+      const input = document.getElementById(`fcm-crop-${cropKey}`);
+      if (input) {
+        input.checked = userCrops.includes(cropKey);
+      }
+    });
+
+    // 4. Update crop status badge text
+    const badge = document.getElementById('fcm-crops-count-badge');
+    if (badge) {
+      const count = userCrops.length;
+      if (count === 10) {
+        badge.textContent = 'All 10 Crops Active';
+        badge.className = 'neo-badge green';
+      } else if (count === 0) {
+        badge.textContent = 'No Crops (Contests Paused)';
+        badge.className = 'neo-badge red';
+      } else {
+        badge.textContent = `${count} of 10 Crops Selected`;
+        badge.className = 'neo-badge cyan';
+      }
+    }
 
     const tokenInput = document.getElementById('fcm-token-display');
     if (tokenInput) {
@@ -407,7 +544,8 @@ class SkyCalendarFCMController {
         const upcoming = window.CalendarEngine.getUpcomingEventsData();
         if (!Array.isArray(upcoming)) return;
 
-        const WARNING_WINDOW_MS = 5 * 60 * 1000; // 5 minutes before event
+        const lead15Enabled = this.preferences.lead_time && this.preferences.lead_time['15'];
+        const lead5Enabled = this.preferences.lead_time ? (this.preferences.lead_time['5'] !== false) : true;
 
         upcoming.forEach(ev => {
           let eventKey = null;
@@ -428,43 +566,26 @@ class SkyCalendarFCMController {
 
           if (!eventKey || !this.preferences[eventKey]) return;
 
-          // Check if event is within 5 minutes
-          if (ev.msUntil > 0 && ev.msUntil <= WARNING_WINDOW_MS) {
-            const uniqueId = `${eventKey}_${ev.nextDay}`;
-            if (!this.alertedEvents.has(uniqueId)) {
-              this.alertedEvents.add(uniqueId);
-              sessionStorage.setItem('cmc_alerted_events', JSON.stringify(Array.from(this.alertedEvents)));
-
-              const minsLeft = Math.max(1, Math.ceil(ev.msUntil / 60000));
-              let bodyText = `Starts in ~${minsLeft} minute${minsLeft > 1 ? 's' : ''}!`;
-              if (ev.crops && ev.crops.length) {
-                bodyText += ` Contested crops: ${ev.crops.join(', ')}.`;
-              }
-
-              // 1. Show Foreground Neo-Brutalist toast
-              this.showToast(`🌾 ${displayName}`, bodyText, '/assets/cmc-icon.png');
-
-              // 2. Trigger Real System / Service Worker Notification
-              if (this.swRegistration && 'showNotification' in this.swRegistration) {
-                this.swRegistration.showNotification(`🌾 ${displayName} Alert!`, {
-                  body: bodyText,
-                  icon: '/assets/cmc-icon.png',
-                  badge: '/assets/cmc-icon.png',
-                  tag: uniqueId,
-                  vibrate: [200, 100, 200],
-                  data: { url: '/skycalendar.html' }
-                }).catch(err => {
-                  console.warn('[FCM] OS-level notification blocked:', err.message);
-                });
-              } else {
-                try {
-                  new Notification(`🌾 ${displayName} Alert!`, {
-                    body: bodyText,
-                    icon: '/assets/cmc-icon.png'
-                  });
-                } catch (e) {}
+          // Crop filter for Ethan's Farming Contest
+          if (eventKey === 'farming' && ev.crops && Array.isArray(ev.crops)) {
+            const userCrops = this.preferences.farming_crops;
+            if (Array.isArray(userCrops)) {
+              if (userCrops.length === 0) return;
+              if (userCrops.length < 10) {
+                const matches = ev.crops.some(c => userCrops.includes(c));
+                if (!matches) return;
               }
             }
+          }
+
+          // Evaluate 15-minute lead stage (between 10m and 16m away)
+          if (lead15Enabled && ev.msUntil > (10 * 60 * 1000) && ev.msUntil <= (16 * 60 * 1000)) {
+            this.triggerLocalAlert(eventKey, displayName, ev, 15);
+          }
+
+          // Evaluate 5-minute lead stage (between 0m and 6m away)
+          if (lead5Enabled && ev.msUntil > 0 && ev.msUntil <= (6 * 60 * 1000)) {
+            this.triggerLocalAlert(eventKey, displayName, ev, 5);
           }
         });
       } catch (err) {
@@ -473,7 +594,46 @@ class SkyCalendarFCMController {
     };
 
     setTimeout(checkEvents, 2000);
-    this.monitorInterval = setInterval(checkEvents, 25000);
+    this.monitorInterval = setInterval(checkEvents, 20000);
+  }
+
+  triggerLocalAlert(eventKey, displayName, ev, leadMinutes) {
+    const uniqueId = `${eventKey}_${ev.nextDay}_${leadMinutes}m`;
+    if (this.alertedEvents.has(uniqueId)) return;
+
+    this.alertedEvents.add(uniqueId);
+    sessionStorage.setItem('cmc_alerted_events', JSON.stringify(Array.from(this.alertedEvents)));
+
+    let cropText = '';
+    if (ev.crops && ev.crops.length) {
+      const formattedCrops = ev.crops.map(c => c.charAt(0) + c.slice(1).toLowerCase().replace('_', ' ')).join(', ');
+      cropText = ` Contested crops: ${formattedCrops}.`;
+    }
+    const bodyText = `Starting in ~${leadMinutes} minutes!${cropText}`;
+
+    // 1. Show Foreground Neo-Brutalist toast
+    this.showToast(`🌾 ${displayName}`, bodyText, '/assets/cmc-icon.png');
+
+    // 2. Trigger System / Service Worker Notification
+    if (this.swRegistration && 'showNotification' in this.swRegistration) {
+      this.swRegistration.showNotification(`🌾 ${displayName} Alert!`, {
+        body: bodyText,
+        icon: '/assets/cmc-icon.png',
+        badge: '/assets/cmc-icon.png',
+        tag: uniqueId,
+        vibrate: [200, 100, 200],
+        data: { url: '/skycalendar.html' }
+      }).catch(err => {
+        console.warn('[FCM] OS-level notification blocked:', err.message);
+      });
+    } else {
+      try {
+        new Notification(`🌾 ${displayName} Alert!`, {
+          body: bodyText,
+          icon: '/assets/cmc-icon.png'
+        });
+      } catch (e) {}
+    }
   }
 
   updateUIStatus(status) {

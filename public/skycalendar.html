@@ -344,6 +344,24 @@
             </button>
           </div>
 
+          <!-- Alert Timing Lead Time -->
+          <div class="modal-section-heading" style="margin-top:16px; margin-bottom:10px;">
+            <span class="material-icons">alarm</span>
+            Alert Timing (Lead Time):
+          </div>
+          <div class="fcm-timing-row">
+            <label class="farming-filter fcm-timing-pill" title="Receive alert 15 minutes before the event begins">
+              <input type="checkbox" id="fcm-timing-15" onchange="window.SkyCalendarFCM && window.SkyCalendarFCM.setTiming('15', this.checked)">
+              <span class="material-icons" style="font-size:16px; vertical-align:middle;">timer</span>
+              <span>15 Minutes Early</span>
+            </label>
+            <label class="farming-filter fcm-timing-pill" title="Receive alert 5 minutes before the event begins">
+              <input type="checkbox" id="fcm-timing-5" checked onchange="window.SkyCalendarFCM && window.SkyCalendarFCM.setTiming('5', this.checked)">
+              <span class="material-icons" style="font-size:16px; vertical-align:middle;">notifications_active</span>
+              <span>5 Minutes Early</span>
+            </label>
+          </div>
+
           <!-- Event Preferences -->
           <div class="modal-section-heading" style="margin-top:16px; margin-bottom:12px;">
             <span class="material-icons">tune</span>
@@ -352,20 +370,42 @@
 
           <div class="fcm-pref-grid">
             <!-- Ethan's Farming Contest -->
-            <div class="fcm-pref-card">
-              <div class="fcm-pref-left">
-                <div class="fcm-pref-icon">
-                  <img src="assets/farming/Farm-o-Matic.webp" alt="Farming" />
+            <div class="fcm-pref-card fcm-farming-card">
+              <div class="fcm-farming-main">
+                <div class="fcm-pref-left">
+                  <div class="fcm-pref-icon">
+                    <img src="assets/farming/Farm-o-Matic.webp" alt="Farming" />
+                  </div>
+                  <div class="fcm-pref-details">
+                    <span class="fcm-pref-name">Ethan's Farming Contest</span>
+                    <span class="fcm-pref-lead">Every 3 in-game days &bull; 1 hr IRL</span>
+                  </div>
                 </div>
-                <div class="fcm-pref-details">
-                  <span class="fcm-pref-name">Ethan's Farming</span>
-                  <span class="fcm-pref-lead">5 min warning &bull; Every 3 in-game days</span>
+                <label class="neo-toggle-switch">
+                  <input type="checkbox" id="fcm-pref-farming" checked onchange="window.SkyCalendarFCM && window.SkyCalendarFCM.setPreference('farming', this.checked)" />
+                  <span class="neo-toggle-slider"></span>
+                </label>
+              </div>
+
+              <!-- Crop Selection Filter (Contested Crops) -->
+              <div class="fcm-crop-filter-box" id="fcm-farming-crops-box">
+                <div class="fcm-crop-header">
+                  <div class="fcm-crop-title-row">
+                    <span class="fcm-crop-title">🌾 Contested Crops Filter:</span>
+                    <span class="neo-badge green" id="fcm-crops-count-badge">All 10 Crops Active</span>
+                  </div>
+                  <div class="fcm-crop-btn-group">
+                    <button type="button" class="fcm-crop-action-btn" onclick="window.SkyCalendarFCM && window.SkyCalendarFCM.selectAllCrops(true)">All</button>
+                    <button type="button" class="fcm-crop-action-btn" onclick="window.SkyCalendarFCM && window.SkyCalendarFCM.selectAllCrops(false)">Clear</button>
+                  </div>
+                </div>
+                <div class="fcm-crop-note">
+                  Only alerts you when the contest contains at least one of your chosen crops:
+                </div>
+                <div class="farming-filters-chips fcm-crop-chips" id="fcm-crop-chips-container">
+                  <!-- Populated dynamically by FCM controller -->
                 </div>
               </div>
-              <label class="neo-toggle-switch">
-                <input type="checkbox" id="fcm-pref-farming" checked onchange="window.SkyCalendarFCM && window.SkyCalendarFCM.setPreference('farming', this.checked)" />
-                <span class="neo-toggle-slider"></span>
-              </label>
             </div>
 
             <!-- Spooky Festival -->

@@ -89,7 +89,12 @@ self.addEventListener('push', (event) => {
           if (info && info.currentEvent) {
             const ev = info.currentEvent;
             title = `🔔 ${ev.name} Alert!`;
-            body = `Starting in ${ev.inMinutes} minute${ev.inMinutes === 1 ? '' : 's'}! Check the calendar for details.`;
+            let cropInfo = '';
+            if (ev.crops && ev.crops.length > 0) {
+              const formattedCrops = ev.crops.map(c => c.charAt(0) + c.slice(1).toLowerCase().replace('_', ' ')).join(', ');
+              cropInfo = ` Contested crops: ${formattedCrops}.`;
+            }
+            body = `Starting in ${ev.inMinutes} minute${ev.inMinutes === 1 ? '' : 's'}!${cropInfo}`;
             if (ev.icon) icon = ev.icon;
           }
         }
