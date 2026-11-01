@@ -1,5 +1,6 @@
 import { getUpcomingEvents } from '../lib/calendar-math.js';
 import { sendWebPushNotification } from '../lib/webpush.js';
+import { ensureDbSchema } from '../lib/db.js';
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -18,13 +19,18 @@ export async function onRequest(context) {
     return new Response(null, { status: 204, headers: corsHeaders });
   }
 
+  // 1. Ensure DB schema exists and auto-migrates missing columns
+  if (env.DB) {
+    await ensureDbSchema(env.DB);
+  }
+
   const pubKey = env.key_pair_fcm;
   const privKey = env.private_key_fcm;
 
-  // 1. Calculate upcoming SkyBlock events
+  // 2. Calculate upcoming SkyBlock events
   const upcomingEvents = getUpcomingEvents();
 
-  // 2. Identify events starting in the 0-6 minute window
+  // 3. Identify events starting in the 0-6 minute window (or next event if test)
   const activeAlertEvents = isTest
     ? [upcomingEvents[0]] // in test mode, trigger the closest event
     : upcomingEvents.filter(ev => ev.minutesUntil > 0 && ev.minutesUntil <= 6);
@@ -46,7 +52,7 @@ export async function onRequest(context) {
     });
   }
 
-  // 3. For each active event, check if already alerted & dispatch
+  // 4. For each active event, check if already alerted & dispatch
   for (const event of activeAlertEvents) {
     const alertId = `${event.key}_${event.nextDay}`;
     const eventSummary = {
@@ -60,15 +66,6 @@ export async function onRequest(context) {
 
     if (env.DB) {
       try {
-        await env.DB.prepare(`
-          CREATE TABLE IF NOT EXISTS fcm_sent_alerts (
-            id TEXT PRIMARY KEY,
-            event_key TEXT,
-            event_name TEXT,
-            sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-          )
-        `).run();
-
         // Check if already sent (unless in test mode)
         if (!isTest) {
           const alreadySent = await env.DB.prepare(
@@ -92,13 +89,11 @@ export async function onRequest(context) {
       continue;
     }
 
-    // 4. Fetch subscribers for this event
+    // 5. Fetch all subscribers safely with SELECT *
     let subscribers = [];
     if (env.DB) {
       try {
-        const queryRes = await env.DB.prepare(
-          'SELECT token, endpoint, p256dh, auth, preferences FROM fcm_subscribers WHERE endpoint IS NOT NULL'
-        ).all();
+        const queryRes = await env.DB.prepare('SELECT * FROM fcm_subscribers').all();
         subscribers = queryRes.results || [];
       } catch (subErr) {
         eventSummary.errors.push(`Failed to fetch subscribers: ${subErr.message}`);
@@ -115,15 +110,19 @@ export async function onRequest(context) {
       }
     });
 
-    // 5. Dispatch WebPush to eligible subscribers
+    // 6. Dispatch WebPush to eligible subscribers
     if (pubKey && privKey && eligibleSubscribers.length > 0) {
       const cleanPubKey = pubKey.replace(/["']/g, '').trim();
       const cleanPrivKey = privKey.replace(/["']/g, '').trim();
 
       for (const sub of eligibleSubscribers) {
+        // Resolve push endpoint (fallback to Google FCM endpoint if subscriber only had token)
+        const targetEndpoint = sub.endpoint || (sub.token ? `https://fcm.googleapis.com/fcm/send/${sub.token}` : null);
+        if (!targetEndpoint) continue;
+
         try {
           const sendRes = await sendWebPushNotification({
-            endpoint: sub.endpoint,
+            endpoint: targetEndpoint,
             vapidPublicKey: cleanPubKey,
             vapidPrivateKey: cleanPrivKey,
             subject: 'mailto:alerts@craftersmc-guides.pages.dev'
@@ -132,7 +131,7 @@ export async function onRequest(context) {
           if (sendRes.ok) {
             eventSummary.dispatchedCount++;
           } else {
-            eventSummary.errors.push(`Endpoint ${sub.endpoint.slice(-12)} responded with ${sendRes.status}`);
+            eventSummary.errors.push(`Endpoint ${targetEndpoint.slice(-15)} responded with status ${sendRes.status}`);
           }
         } catch (pushErr) {
           eventSummary.errors.push(`Push failed: ${pushErr.message}`);
@@ -140,7 +139,7 @@ export async function onRequest(context) {
       }
     }
 
-    // 6. Record sent alert in D1
+    // 7. Record sent alert in D1 to prevent repeat spam
     if (env.DB && !isTest) {
       try {
         await env.DB.prepare(`
@@ -161,4 +160,3 @@ export async function onRequest(context) {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' }
   });
 }
-

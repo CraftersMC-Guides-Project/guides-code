@@ -1,7 +1,9 @@
 /**
  * Cloudflare Pages Function: Store / Manage FCM registration tokens
- * Can persist device tokens and WebPush subscriptions to D1 (if available).
+ * Automatically repairs D1 database schema and persists subscribers.
  */
+import { ensureDbSchema } from '../lib/db.js';
+
 export async function onRequest(context) {
   const { request, env } = context;
 
@@ -15,12 +17,21 @@ export async function onRequest(context) {
     return new Response(null, { status: 204, headers: corsHeaders });
   }
 
+  // Auto-migrate / ensure table structure
+  if (env.DB) {
+    await ensureDbSchema(env.DB);
+  }
+
   if (request.method === 'GET') {
     let subscriberCount = 0;
+    let sampleColumns = [];
     if (env.DB) {
       try {
         const countRes = await env.DB.prepare('SELECT COUNT(*) as total FROM fcm_subscribers').first();
         subscriberCount = countRes ? countRes.total : 0;
+
+        const info = await env.DB.prepare("PRAGMA table_info(fcm_subscribers)").all();
+        sampleColumns = (info.results || []).map(c => c.name);
       } catch (e) {}
     }
 
@@ -28,6 +39,7 @@ export async function onRequest(context) {
       status: 'ready',
       vapid_public_key: env.key_pair_fcm ? 'Configured' : 'Missing in secrets',
       has_database: !!env.DB,
+      columns: sampleColumns,
       subscribers: subscriberCount,
       message: 'FCM Token endpoint is operational.'
     }), {
@@ -47,34 +59,13 @@ export async function onRequest(context) {
         });
       }
 
-      const endpoint = subscription?.endpoint || null;
+      const endpoint = subscription?.endpoint || (token ? `https://fcm.googleapis.com/fcm/send/${token}` : null);
       const p256dh = subscription?.keys?.p256dh || null;
       const auth = subscription?.keys?.auth || null;
 
       // If D1 database is bound, store the token
       if (env.DB) {
         try {
-          await env.DB.prepare(`
-            CREATE TABLE IF NOT EXISTS fcm_subscribers (
-              token TEXT PRIMARY KEY,
-              endpoint TEXT,
-              p256dh TEXT,
-              auth TEXT,
-              preferences TEXT,
-              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-          `).run();
-
-          await env.DB.prepare(`
-            CREATE TABLE IF NOT EXISTS fcm_sent_alerts (
-              id TEXT PRIMARY KEY,
-              event_key TEXT,
-              event_name TEXT,
-              sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-          `).run();
-
           await env.DB.prepare(`
             INSERT INTO fcm_subscribers (token, endpoint, p256dh, auth, preferences, updated_at)
             VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
@@ -92,7 +83,7 @@ export async function onRequest(context) {
             JSON.stringify(preferences || {})
           ).run();
         } catch (dbErr) {
-          console.warn('[fcm-token] DB write warning:', dbErr.message);
+          console.warn('[fcm-token] DB write error:', dbErr.message);
         }
       }
 
