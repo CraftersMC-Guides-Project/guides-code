@@ -1779,3 +1779,644 @@ footer h2 {
         display: none !important;
     }
 }
+
+/* =========================================================
+   LIGHT MODE BRIGHTNESS DIMMER (EYE COMFORT)
+   ========================================================= */
+
+#lightmode-dimmer-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    pointer-events: none !important;
+    z-index: 2147483647 !important;
+    background-color: var(--light-dim-color, #000000);
+    opacity: var(--light-dim-opacity, 0);
+    transition: opacity 0.15s ease, background-color 0.15s ease;
+}
+
+.darkmode #lightmode-dimmer-overlay,
+html.darkmode #lightmode-dimmer-overlay,
+body.darkmode #lightmode-dimmer-overlay {
+    display: none !important;
+}
+
+.dimmer-control-wrapper {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+.dimmer-toggle-btn {
+    position: static !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: 38px !important;
+    height: 38px !important;
+    border: 2px solid #111827 !important;
+    background-color: #ffffff !important;
+    box-shadow: 2px 2px 0 #111827 !important;
+    border-radius: 8px !important;
+    color: #111827 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+    flex-shrink: 0 !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, border-color 0.15s ease !important;
+}
+
+.dimmer-toggle-btn:hover {
+    transform: translate(-1px, -1px) !important;
+    background-color: #fef08a !important;
+    box-shadow: 3px 3px 0 #111827 !important;
+}
+
+.dimmer-toggle-btn:active {
+    transform: translate(1px, 1px) !important;
+    box-shadow: 1px 1px 0 #111827 !important;
+}
+
+.dimmer-toggle-btn .material-icons {
+    font-size: 20px !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: inherit !important;
+    transition: transform 0.2s ease !important;
+}
+
+.dimmer-toggle-btn:hover .material-icons {
+    transform: scale(1.1);
+}
+
+.dimmer-toggle-btn.dimmer-active {
+    background-color: #fef08a !important;
+    border-color: #ca8a04 !important;
+    box-shadow: 2px 2px 0 #ca8a04 !important;
+}
+
+.dimmer-toggle-btn.dimmer-active .material-icons {
+    color: #854d0e !important;
+}
+
+/* Dimmer Popover Card */
+.dimmer-popover {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 285px;
+    max-width: calc(100vw - 24px);
+    background: #ffffff;
+    color: #111827;
+    border: 2px solid #111827;
+    box-shadow: 4px 4px 0 #111827;
+    border-radius: 12px;
+    padding: 14px;
+    z-index: 2147483645;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    text-align: left;
+    user-select: none;
+    animation: dimmerFadeIn 0.15s ease-out;
+}
+
+@keyframes dimmerFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.darkmode .dimmer-popover {
+    background: #141416;
+    color: #ffffff;
+    border: 2px solid #333333;
+    box-shadow: 4px 4px 0 #000000;
+}
+
+.darkmode .dimmer-toggle-btn {
+    background-color: #000000 !important;
+    color: #38bdf8 !important;
+    border: 2px solid #333333 !important;
+    box-shadow: 2px 2px 0 #1a1a1a !important;
+}
+
+.darkmode .dimmer-toggle-btn:hover {
+    background-color: #38bdf8 !important;
+    color: #000000 !important;
+    border-color: #38bdf8 !important;
+    box-shadow: 3px 3px 0 #38bdf8 !important;
+}
+
+.darkmode .dimmer-toggle-btn.dimmer-active {
+    background-color: #000000 !important;
+    color: #38bdf8 !important;
+    border-color: #333333 !important;
+    box-shadow: 2px 2px 0 #1a1a1a !important;
+}
+
+.dimmer-popover-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.darkmode .dimmer-popover-header {
+    border-bottom-color: #27272a;
+}
+
+.dimmer-header-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -0.01em;
+}
+
+.darkmode .dimmer-header-title {
+    color: #ffffff;
+}
+
+.dimmer-header-title .material-icons {
+    font-size: 18px;
+    color: #ca8a04;
+}
+
+.darkmode .dimmer-header-title .material-icons {
+    color: #38bdf8;
+}
+
+.dimmer-close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0 4px;
+    font-weight: 700;
+}
+
+.dimmer-close-btn:hover {
+    color: #ef4444;
+}
+
+.darkmode .dimmer-close-btn:hover {
+    color: #f87171;
+}
+
+.dimmer-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.dimmer-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+}
+
+.darkmode .dimmer-label {
+    color: #a1a1aa;
+}
+
+.dimmer-value {
+    font-size: 12px;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    color: #111827;
+    background: #f8fafc;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1.5px solid #e2e8f0;
+}
+
+.darkmode .dimmer-value {
+    color: #38bdf8;
+    background: #18181b;
+    border-color: #27272a;
+}
+
+.dimmer-slider-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.dimmer-icon-low,
+.dimmer-icon-high {
+    font-size: 18px;
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+.darkmode .dimmer-icon-low,
+.darkmode .dimmer-icon-high {
+    color: #71717a;
+}
+
+.dimmer-range-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 6px;
+    outline: none;
+    border: 1.5px solid #111827;
+    cursor: pointer;
+}
+
+.darkmode .dimmer-range-slider {
+    background: #27272a;
+    border-color: #3f3f46;
+}
+
+.dimmer-range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fef08a;
+    border: 2px solid #111827;
+    box-shadow: 1.5px 1.5px 0 #111827;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.dimmer-range-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+.darkmode .dimmer-range-slider::-webkit-slider-thumb {
+    background: #38bdf8;
+    border-color: #000000;
+    box-shadow: 1.5px 1.5px 0 #000000;
+}
+
+.dimmer-presets-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.darkmode .dimmer-presets-label {
+    color: #a1a1aa;
+}
+
+.dimmer-presets {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.dimmer-preset-chip {
+    background: #ffffff;
+    color: #111827;
+    border: 1.5px solid #111827;
+    box-shadow: 1.5px 1.5px 0 #111827;
+    border-radius: 6px;
+    padding: 5px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.06s ease, background 0.08s ease, box-shadow 0.06s ease;
+}
+
+.dimmer-preset-chip:hover {
+    background: #fef08a;
+    transform: translate(-0.5px, -0.5px);
+    box-shadow: 2px 2px 0 #111827;
+}
+
+.dimmer-preset-chip:active {
+    transform: translate(0.5px, 0.5px);
+    box-shadow: 1px 1px 0 #111827;
+}
+
+.dimmer-preset-chip.active {
+    background: #fde047;
+    border-color: #111827;
+    font-weight: 800;
+}
+
+.darkmode .dimmer-preset-chip {
+    background: #18181b;
+    color: #e4e4e7;
+    border-color: #3f3f46;
+    box-shadow: 1.5px 1.5px 0 #000000;
+}
+
+.darkmode .dimmer-preset-chip:hover {
+    background: #27272a;
+    color: #38bdf8;
+    border-color: #38bdf8;
+}
+
+.darkmode .dimmer-preset-chip.active {
+    background: #38bdf8;
+    color: #000000;
+    border-color: #38bdf8;
+}
+
+.dimmer-warm-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    background: #fffbeb;
+    border: 1.5px solid #fde68a;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.darkmode .dimmer-warm-row {
+    background: #1c1917;
+    border-color: #44403c;
+}
+
+.dimmer-warm-row input[type="checkbox"] {
+    accent-color: #d97706;
+    cursor: pointer;
+    width: 14px;
+    height: 14px;
+}
+
+.dimmer-warm-row span {
+    font-size: 11px;
+    font-weight: 600;
+    color: #92400e;
+}
+
+.darkmode .dimmer-warm-row span {
+    color: #fde68a;
+}
+
+.dimmer-darkmode-notice {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #eff6ff;
+    border: 1.5px solid #93c5fd;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #1e40af;
+    margin-bottom: 10px;
+}
+
+.darkmode .dimmer-darkmode-notice {
+    background: #1e1b4b;
+    border-color: #4338ca;
+    color: #c7d2fe;
+}
+
+.dimmer-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1.5px solid #f1f5f9;
+}
+
+.darkmode .dimmer-footer {
+    border-top-color: #27272a;
+}
+
+.dimmer-reset-btn {
+    width: 100%;
+    background: #f8fafc;
+    color: #475569;
+    border: 1.5px solid #cbd5e1;
+    box-shadow: 1.5px 1.5px 0 #cbd5e1;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.08s ease;
+}
+
+.dimmer-reset-btn:hover {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-color: #ef4444;
+    box-shadow: 2px 2px 0 #ef4444;
+}
+
+.darkmode .dimmer-reset-btn {
+    background: #18181b;
+    color: #a1a1aa;
+    border-color: #3f3f46;
+    box-shadow: 1.5px 1.5px 0 #000000;
+}
+
+.darkmode .dimmer-reset-btn:hover {
+    background: #27272a;
+    color: #ffffff;
+    border-color: #71717a;
+}
+
+@media (max-width: 600px) {
+    .dimmer-toggle-btn {
+        width: 34px !important;
+        height: 34px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .dimmer-popover {
+        right: -30px;
+        width: 270px;
+    }
+}
+
+@media (max-width: 360px) {
+    .dimmer-popover {
+        right: -60px;
+        width: 250px;
+    }
+}
+
+/* Dimmer Toggle Card (Warm Amber Tint & Settings) */
+.dimmer-toggle-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 10px;
+    background: #fffbeb;
+    border: 1.5px solid #fde68a;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.dimmer-toggle-row:hover {
+    background: #fef3c7;
+    border-color: #fcd34d;
+}
+
+.dimmer-toggle-row input[type="checkbox"] {
+    accent-color: #d97706;
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.dimmer-toggle-col {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dimmer-toggle-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #92400e;
+    line-height: 1.3;
+}
+
+.dimmer-toggle-subtitle {
+    font-size: 10px;
+    font-weight: 500;
+    color: #b45309;
+    line-height: 1.35;
+}
+
+/* Dark Mode Overrides for Dimmer Toggle */
+.darkmode .dimmer-toggle-row {
+    background: #1c1917;
+    border-color: #44403c;
+}
+
+.darkmode .dimmer-toggle-row:hover {
+    background: #292524;
+    border-color: #78716c;
+}
+
+.darkmode .dimmer-toggle-row input[type="checkbox"] {
+    accent-color: #f59e0b;
+}
+
+.darkmode .dimmer-toggle-title {
+    color: #fef08a;
+}
+
+.darkmode .dimmer-toggle-subtitle {
+    color: #a8a29e;
+}
+
+/* Warm Light Controller Slider & Chips */
+.dimmer-warm-section {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1.5px solid #f1f5f9;
+}
+
+.darkmode .dimmer-warm-section {
+    border-top-color: #27272a;
+}
+
+.dimmer-warm-slider {
+    background: linear-gradient(to right, #e2e8f0 0%, #fde68a 35%, #fb923c 70%, #ea580c 100%) !important;
+}
+
+.darkmode .dimmer-warm-slider {
+    background: linear-gradient(to right, #27272a 0%, #78350f 35%, #9a3412 70%, #c2410c 100%) !important;
+}
+
+.dimmer-warm-slider::-webkit-slider-thumb {
+    background: #f59e0b !important;
+    border-color: #111827 !important;
+}
+
+.darkmode .dimmer-warm-slider::-webkit-slider-thumb {
+    background: #f59e0b !important;
+    border-color: #000000 !important;
+}
+
+.dimmer-warm-chip {
+    background: #ffffff;
+    color: #111827;
+    border: 1.5px solid #111827;
+    box-shadow: 1.5px 1.5px 0 #111827;
+    border-radius: 6px;
+    padding: 5px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.06s ease, background 0.08s ease, box-shadow 0.06s ease;
+}
+
+.dimmer-warm-chip:hover {
+    background: #fed7aa;
+    transform: translate(-0.5px, -0.5px);
+    box-shadow: 2px 2px 0 #111827;
+}
+
+.dimmer-warm-chip:active {
+    transform: translate(0.5px, 0.5px);
+    box-shadow: 1px 1px 0 #111827;
+}
+
+.dimmer-warm-chip.active {
+    background: #f97316;
+    color: #ffffff;
+    border-color: #111827;
+    font-weight: 800;
+}
+
+.darkmode .dimmer-warm-chip {
+    background: #18181b;
+    color: #e4e4e7;
+    border-color: #3f3f46;
+    box-shadow: 1.5px 1.5px 0 #000000;
+}
+
+.darkmode .dimmer-warm-chip:hover {
+    background: #27272a;
+    color: #fb923c;
+    border-color: #fb923c;
+}
+
+.darkmode .dimmer-warm-chip.active {
+    background: #ea580c;
+    color: #ffffff;
+    border-color: #ea580c;
+}
+

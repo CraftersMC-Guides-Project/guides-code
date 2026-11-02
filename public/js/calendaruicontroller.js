@@ -251,7 +251,8 @@ getPetEmoji(name) {
             page.forEach(day => {
                 const dayCell = document.createElement('div');
                 dayCell.className = 'day-cell neo-card';
-                if (day.totalDays === this.todaySkyblock) {
+                const isToday = day.totalDays === this.todaySkyblock;
+                if (isToday) {
                     dayCell.classList.add('today');
                     dayCell.id = 'today';
                 }
@@ -734,7 +735,9 @@ getPetEmoji(name) {
             try {
                 if (!this.engine) {
                     const today = document.getElementById('today') || document.querySelector('.today');
-                    if (today) today.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (today) {
+                        today.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
                     console.warn('missing engine');
                     return;
                 }
@@ -746,7 +749,9 @@ getPetEmoji(name) {
                 this.loadPageToday();
                 setTimeout(() => {
                     const today = document.getElementById('today') || document.querySelector('.today');
-                    if (today) today.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (today) {
+                        today.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
                 }, 50);
             } catch (e) {
                 console.error('toToday error:', e);
