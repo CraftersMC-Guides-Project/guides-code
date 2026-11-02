@@ -11,7 +11,7 @@
   let filteredRecipes = [];
   let currentPage = 1;
   const recipesPerPage = 36;
-  let viewMode = 'grid'; // 'grid' or 'list'
+  let viewMode = 'list'; // 'grid' or 'list'
   let searchQuery = '';
   let selectedStation = 'all';
   let sortBy = 'default';
@@ -80,13 +80,12 @@
     }
   }
 
-  window.copyGiveCommand = function (identifier, count) {
+  window.copyItemId = function (identifier) {
     if (!identifier) {
       showToast('Item identifier not available');
       return;
     }
-    const cmd = `/give @p ${identifier} ${count || 1}`;
-    copyToClipboard(cmd, `Copied: ${cmd}`);
+    copyToClipboard(identifier, `Copied: ${identifier}`);
   };
 
   window.filterByIngredient = function (ingName) {
@@ -343,6 +342,13 @@
       }
 
       visualAreaHtml = `
+        <div class="mc-container-header">
+          <span class="mc-container-title">
+            <span class="material-icons">${stationIcon}</span>
+            <span>${escapeHtml(r.stationName || 'Crafting Table')}</span>
+          </span>
+          <span class="recipe-output-slot-label">3x3 Grid</span>
+        </div>
         <div class="recipe-matrix-wrapper">
           <div class="recipe-crafting-grid">
             ${slotsHtml.join('')}
@@ -371,6 +377,13 @@
       const inputTitle = escapeHtml(`${input.name} (x${input.count || 1})`);
 
       visualAreaHtml = `
+        <div class="mc-container-header">
+          <span class="mc-container-title">
+            <span class="material-icons">${stationIcon}</span>
+            <span>${escapeHtml(r.stationName || 'Smelting')}</span>
+          </span>
+          <span class="recipe-output-slot-label">Smelting</span>
+        </div>
         <div class="recipe-smelt-wrapper">
           <div class="recipe-smelt-node">
             <div class="recipe-grid-slot filled" title="${inputTitle}">
@@ -400,7 +413,7 @@
               }
               ${outputCount > 1 ? `<span class="recipe-slot-qty">${outputCount}</span>` : ''}
             </div>
-            <span class="recipe-smelt-label">Product</span>
+            <span class="recipe-output-slot-label">Product</span>
           </div>
         </div>
       `;
@@ -410,6 +423,13 @@
       const inputTitle = escapeHtml(`${input.name} (x${input.count || 1})`);
 
       visualAreaHtml = `
+        <div class="mc-container-header">
+          <span class="mc-container-title">
+            <span class="material-icons">${stationIcon}</span>
+            <span>Stonecutter</span>
+          </span>
+          <span class="recipe-output-slot-label">Cutting</span>
+        </div>
         <div class="recipe-smelt-wrapper">
           <div class="recipe-smelt-node">
             <div class="recipe-grid-slot filled" title="${inputTitle}">
@@ -446,6 +466,13 @@
       // Cartography / Generic Layout
       const input = (r.ingredients && r.ingredients[0]) || { name: 'Map / Paper', count: 1 };
       visualAreaHtml = `
+        <div class="mc-container-header">
+          <span class="mc-container-title">
+            <span class="material-icons">${stationIcon}</span>
+            <span>Cartography</span>
+          </span>
+          <span class="recipe-output-slot-label">Blueprint</span>
+        </div>
         <div class="recipe-smelt-wrapper">
           <div class="recipe-smelt-node">
             <div class="recipe-grid-slot filled" title="${escapeHtml(input.name)}">
@@ -501,7 +528,7 @@
           </div>
           <div class="recipe-card-actions">
             ${outputIdent ? `
-              <button type="button" class="recipe-action-btn" title="Copy /give command" onclick="window.copyGiveCommand('${outputIdent}', ${outputCount})">
+              <button type="button" class="recipe-action-btn" title="Copy Item ID (${outputIdent})" onclick="window.copyItemId('${outputIdent}')">
                 <span class="material-icons" style="font-size:16px;">content_copy</span>
               </button>
               <a href="/items.html?search=${encodeURIComponent(r.name)}" class="recipe-action-btn" title="View in Items DB">
@@ -534,12 +561,6 @@
 
         <div class="recipe-card-footer">
           <span class="recipe-id-pill" title="Recipe ID">${escapeHtml(r.recipeId || `#${r.id}`)}</span>
-          ${outputIdent ? `
-            <button type="button" class="recipe-give-cmd-btn" onclick="window.copyGiveCommand('${outputIdent}', ${outputCount})">
-              <span class="material-icons" style="font-size:14px;">terminal</span>
-              <span>/give</span>
-            </button>
-          ` : ''}
         </div>
       </div>
     `;
@@ -604,9 +625,8 @@
         <td style="text-align:right; white-space:nowrap;">
           <div class="recipes-table-actions">
             ${outputIdent ? `
-              <button type="button" class="recipe-give-cmd-btn" onclick="window.copyGiveCommand('${outputIdent}', ${outputCount})" title="Copy /give command">
-                <span class="material-icons" style="font-size:14px;">terminal</span>
-                <span>/give</span>
+              <button type="button" class="recipe-action-btn" onclick="window.copyItemId('${outputIdent}')" title="Copy Item ID (${outputIdent})">
+                <span class="material-icons" style="font-size:16px;">content_copy</span>
               </button>
               <a href="/items.html?search=${encodeURIComponent(r.name)}" class="recipe-action-btn" title="View in Items DB" style="margin-left:4px;">
                 <span class="material-icons" style="font-size:16px;">open_in_new</span>

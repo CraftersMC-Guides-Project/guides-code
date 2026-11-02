@@ -224,18 +224,52 @@
 }
 
 /* ==========================================================================
-   VISUAL WORKBENCH CONSOLE (Arcade / Retro Minecraft Console Frame)
+   MINECRAFT INVENTORY CONTAINER THEME (from player.html + Neo-Brutalism)
    ========================================================================== */
 .recipe-visual-area {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  padding: 0.9rem;
-  background: #18181b;
+  justify-content: center;
+  padding: 0.85rem 1rem;
+  background-color: #c6c6c6; /* Classic Minecraft GUI container stone gray */
   border: 2.5px solid var(--border, #111827);
-  border-radius: 12px;
-  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  /* Authentic 3D pixel bevel highlight on top/left, shadow on bottom/right, plus Neo-Brutalist offset shadow */
+  box-shadow:
+    inset 2.5px 2.5px 0 0 #ffffff,
+    inset -2.5px -2.5px 0 0 #555555,
+    4px 4px 0 var(--shadow, #111827);
   position: relative;
+  user-select: none;
+  box-sizing: border-box;
+  gap: 0.65rem;
+}
+
+/* Minecraft Container Title Header */
+.mc-container-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.mc-container-title {
+  font-family: 'Minecraft', 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #3f3f3f; /* Classic Minecraft GUI text color */
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mc-container-title .material-icons {
+  font-size: 15px;
+  color: #555555;
 }
 
 .recipe-matrix-wrapper {
@@ -243,66 +277,88 @@
   align-items: center;
   justify-content: center;
   gap: 1.25rem;
+  width: 100%;
 }
 
 /* 3x3 Minecraft Crafting Grid */
 .recipe-crafting-grid {
   display: grid;
-  grid-template-columns: repeat(3, 44px);
-  grid-template-rows: repeat(3, 44px);
-  gap: 4px;
-  padding: 6px;
-  background: #121214;
-  border: 2.5px solid #27272a;
-  border-radius: 8px;
-  box-shadow: inset 2px 2px 0 #000000;
+  grid-template-columns: repeat(3, 40px);
+  grid-template-rows: repeat(3, 40px);
+  gap: 2px;
+  padding: 4px;
+  background-color: #a0a0a0;
+  border: 2px solid #555555;
+  box-shadow: inset 1.5px 1.5px 0 0 #373737, inset -1.5px -1.5px 0 0 #ffffff;
+  border-radius: 4px;
 }
 
-/* Crafting Slot */
+/* Crafting Slot (Matches .mc-bazaar-container .cell from player.html) */
 .recipe-grid-slot {
-  width: 44px;
-  height: 44px;
-  background: #27272a;
-  border-top: 2px solid #1a1a1d;
-  border-left: 2px solid #1a1a1d;
-  border-right: 2px solid #3f3f46;
-  border-bottom: 2px solid #3f3f46;
-  border-radius: 4px;
+  width: 40px;
+  height: 40px;
+  background-color: #8b8b8b;
+  box-shadow: inset 2px 2px 0 0 #373737, inset -2px -2px 0 0 #ffffff;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   box-sizing: border-box;
-  transition: transform 0.1s ease, border-color 0.1s ease;
+  cursor: pointer;
+  transition: background-color 0.1s ease, transform 0.1s ease;
 }
 
 .recipe-grid-slot.empty {
-  background: #202024;
+  background-color: #8b8b8b;
 }
 
 .recipe-grid-slot.filled {
-  background: #323238;
+  background-color: #8b8b8b;
 }
 
 .recipe-grid-slot.filled:hover {
-  transform: scale(1.12);
+  background-color: #a1a1a1;
+  transform: scale(1.08);
   z-index: 2;
-  border-color: #38bdf8;
+}
+
+/* Diagonal shadow break notches from player.html */
+.recipe-grid-slot::before,
+.recipe-grid-slot::after {
+  content: "";
+  height: 2px;
+  width: 2px;
+  background-color: #8b8b8b;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.recipe-grid-slot::after {
+  top: auto;
+  right: auto;
+  left: 0;
+  bottom: 0;
 }
 
 .recipe-slot-img {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
-  filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.45));
   transition: transform 0.1s ease;
 }
 
+.recipe-grid-slot:hover .recipe-slot-img {
+  transform: scale(1.12);
+}
+
 .recipe-slot-fallback {
-  color: #71717a;
+  color: #555555;
   font-size: 20px;
 }
 
@@ -310,16 +366,16 @@
   position: absolute;
   right: 2px;
   bottom: 1px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Minecraft', 'JetBrains Mono', monospace;
   font-size: 0.72rem;
-  font-weight: 900;
+  font-weight: 800;
   color: #ffffff;
-  text-shadow: 1.5px 1.5px 0 #000000, -1px -1px 0 #000000;
+  text-shadow: 1px 1px 0 #000000, 1.5px 1.5px 0 #000000;
   line-height: 1;
   pointer-events: none;
 }
 
-/* Crafting Arrow (Neo-Brutalist Arrow Badge) */
+/* Crafting Arrow (Matches Minecraft GUI Button .mc-page-btn + Neo-Brutalism) */
 .recipe-arrow-divider {
   display: flex;
   align-items: center;
@@ -330,18 +386,23 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
+  width: 36px;
   height: 34px;
-  border-radius: 50%;
-  background: #fde047;
-  color: #111827;
+  background-color: #c6c6c6;
   border: 2px solid #111827;
-  box-shadow: 2px 2px 0 #111827;
-  transition: transform 0.15s ease;
+  border-radius: 4px;
+  box-shadow:
+    inset 2px 2px 0 0 #ffffff,
+    inset -2px -2px 0 0 #555555,
+    2px 2px 0 #111827;
+  color: #373737;
+  transition: transform 0.1s ease, background-color 0.1s ease;
 }
 
 .recipe-arrow-badge:hover {
-  transform: scale(1.12) rotate(5deg);
+  background-color: #d8d8d8;
+  color: #111827;
+  transform: translateX(2px);
 }
 
 .recipe-arrow-icon {
@@ -349,7 +410,7 @@
   font-weight: 900;
 }
 
-/* Output Slot */
+/* Output Slot (Large Minecraft Crafting Output Cell) */
 .recipe-output-slot-wrap {
   display: flex;
   flex-direction: column;
@@ -358,48 +419,66 @@
 }
 
 .recipe-output-slot {
-  width: 58px;
-  height: 58px;
-  background: #27272a;
-  border: 3px solid #f59e0b;
-  border-radius: 10px;
+  width: 56px;
+  height: 56px;
+  background-color: #8b8b8b;
+  border: 2.5px solid #111827;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  box-shadow: 3.5px 3.5px 0 #111827, 0 0 12px rgba(245, 158, 11, 0.35);
+  box-shadow:
+    inset 3px 3px 0 0 #373737,
+    inset -3px -3px 0 0 #ffffff,
+    3px 3px 0 #111827;
   box-sizing: border-box;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  cursor: pointer;
+  transition: transform 0.12s ease, background-color 0.1s ease;
 }
 
 .recipe-output-slot:hover {
-  transform: scale(1.08);
-  box-shadow: 4.5px 4.5px 0 #111827, 0 0 16px rgba(245, 158, 11, 0.6);
+  background-color: #a1a1a1;
+  transform: scale(1.06);
+}
+
+.recipe-output-slot::before,
+.recipe-output-slot::after {
+  content: "";
+  height: 3px;
+  width: 3px;
+  background-color: #8b8b8b;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.recipe-output-slot::after {
+  top: auto;
+  right: auto;
+  left: 0;
+  bottom: 0;
 }
 
 .recipe-output-slot .recipe-slot-img {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
 }
 
 .recipe-output-slot .recipe-slot-qty {
-  font-size: 0.85rem;
-  right: 4px;
+  font-size: 0.84rem;
+  right: 3px;
   bottom: 2px;
-  color: #fef08a;
 }
 
 .recipe-output-slot-label {
-  font-size: 0.65rem;
-  font-weight: 900;
+  font-family: 'Minecraft', 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  background: #fef08a;
-  color: #111827;
-  border: 1.5px solid #111827;
-  border-radius: 4px;
-  padding: 1px 6px;
-  box-shadow: 1px 1px 0 #111827;
+  letter-spacing: 0.5px;
+  color: #3f3f3f;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 /* Smelting / Cooking / Cutting Layout */
@@ -409,7 +488,7 @@
   justify-content: center;
   gap: 1.5rem;
   width: 100%;
-  padding: 0.5rem 0;
+  padding: 0.25rem 0;
 }
 
 .recipe-smelt-node {
@@ -420,11 +499,13 @@
 }
 
 .recipe-smelt-label {
+  font-family: 'Minecraft', 'JetBrains Mono', monospace;
   font-size: 0.68rem;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #a1a1aa;
+  color: #3f3f3f;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .recipe-smelt-process {
@@ -436,34 +517,35 @@
 
 .recipe-process-badge {
   width: 36px;
-  height: 36px;
-  border-radius: 50%;
+  height: 34px;
+  border-radius: 4px;
   border: 2px solid #111827;
-  box-shadow: 2px 2px 0 #111827;
+  background-color: #c6c6c6;
+  box-shadow:
+    inset 2px 2px 0 0 #ffffff,
+    inset -2px -2px 0 0 #555555,
+    2px 2px 0 #111827;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
 .recipe-process-badge.flame {
-  background: #ffedd5;
-  border-color: #111827;
+  background-color: #fed7aa;
 }
 
 .recipe-process-badge.stonecutter {
-  background: #f3e8ff;
-  border-color: #111827;
+  background-color: #e9d5ff;
 }
 
 .recipe-process-badge.cartography {
-  background: #dcfce7;
-  border-color: #111827;
+  background-color: #bbf7d0;
 }
 
 .recipe-process-arrow {
   font-size: 18px;
   font-weight: 900;
-  color: #ffffff;
+  color: #373737;
   margin-top: 2px;
 }
 
@@ -683,22 +765,22 @@
 }
 
 .recipes-table-icon-box {
-  width: 44px;
-  height: 44px;
-  background: var(--bg, #f8fafc);
-  border: 2px solid var(--border, #111827);
-  border-radius: 8px;
-  box-shadow: 2px 2px 0 var(--shadow, #111827);
+  width: 42px;
+  height: 42px;
+  background-color: #8b8b8b;
+  box-shadow: inset 2px 2px 0 0 #373737, inset -2px -2px 0 0 #ffffff, 2px 2px 0 var(--shadow, #111827);
+  border: 1.5px solid var(--border, #111827);
+  border-radius: 4px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform 0.1s ease, background-color 0.1s ease;
 }
 
 tr:hover .recipes-table-icon-box {
+  background-color: #a1a1a1;
   transform: scale(1.08);
-  box-shadow: 3px 3px 0 var(--shadow, #111827);
 }
 
 /* EXPLICIT IMAGE SIZING FOR LIST VIEW */
@@ -846,52 +928,113 @@ tr:hover .recipes-table-icon-box {
 }
 
 .darkmode .recipe-visual-area {
-  background: #09090b !important;
+  background-color: #212124 !important;
   border-color: #27272a !important;
-  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.7) !important;
+  box-shadow:
+    inset 2.5px 2.5px 0 0 #3e3e46,
+    inset -2.5px -2.5px 0 0 #121214,
+    4px 4px 0 #000000 !important;
+}
+
+.darkmode .mc-container-title {
+  color: #f1f5f9 !important;
+  text-shadow: 1px 1px 0 #000000 !important;
+}
+
+.darkmode .mc-container-title .material-icons {
+  color: #a1a1aa !important;
 }
 
 .darkmode .recipe-crafting-grid {
-  background: #121214 !important;
-  border-color: #27272a !important;
-  box-shadow: inset 2px 2px 0 #000000 !important;
+  background-color: #141416 !important;
+  border-color: #121214 !important;
+  box-shadow: inset 1.5px 1.5px 0 0 #000000, inset -1.5px -1.5px 0 0 #2a2a30 !important;
 }
 
 .darkmode .recipe-grid-slot {
-  background: #27272a !important;
-  border-top-color: #18181b !important;
-  border-left-color: #18181b !important;
-  border-right-color: #3f3f46 !important;
-  border-bottom-color: #3f3f46 !important;
+  background-color: #141416 !important;
+  box-shadow: inset 2px 2px 0 0 #000000, inset -2px -2px 0 0 #3a3a44 !important;
 }
 
-.darkmode .recipe-grid-slot.filled {
-  background: #323238 !important;
+.darkmode .recipe-grid-slot.filled:hover {
+  background-color: #282830 !important;
+}
+
+.darkmode .recipe-grid-slot::before,
+.darkmode .recipe-grid-slot::after {
+  background-color: #141416 !important;
 }
 
 .darkmode .recipe-output-slot {
-  background: #18181b !important;
+  background-color: #141416 !important;
   border-color: #38bdf8 !important;
-  box-shadow: 3.5px 3.5px 0 #000000, 0 0 12px rgba(56, 189, 248, 0.35) !important;
+  box-shadow:
+    inset 3px 3px 0 0 #000000,
+    inset -3px -3px 0 0 #3a3a44,
+    3px 3px 0 #000000,
+    0 0 10px rgba(56, 189, 248, 0.25) !important;
+}
+
+.darkmode .recipe-output-slot:hover {
+  background-color: #282830 !important;
+}
+
+.darkmode .recipe-output-slot::before,
+.darkmode .recipe-output-slot::after {
+  background-color: #141416 !important;
 }
 
 .darkmode .recipe-output-slot-label {
-  background: #0284c7 !important;
-  color: #ffffff !important;
-  border-color: #38bdf8 !important;
-  box-shadow: 1px 1px 0 #000000 !important;
+  color: #f1f5f9 !important;
+  text-shadow: 1px 1px 0 #000000 !important;
 }
 
 .darkmode .recipe-arrow-badge {
-  background: #38bdf8 !important;
-  color: #111827 !important;
-  border-color: #0284c7 !important;
-  box-shadow: 2px 2px 0 #000000 !important;
+  background-color: #212124 !important;
+  border-color: #111827 !important;
+  box-shadow:
+    inset 2px 2px 0 0 #3e3e46,
+    inset -2px -2px 0 0 #121214,
+    2px 2px 0 #000000 !important;
+  color: #38bdf8 !important;
+}
+
+.darkmode .recipe-arrow-badge:hover {
+  background-color: #2a2a30 !important;
+  color: #7dd3fc !important;
 }
 
 .darkmode .recipe-process-badge {
-  box-shadow: 2px 2px 0 #000000 !important;
-  border-color: #27272a !important;
+  background-color: #212124 !important;
+  border-color: #111827 !important;
+  box-shadow:
+    inset 2px 2px 0 0 #3e3e46,
+    inset -2px -2px 0 0 #121214,
+    2px 2px 0 #000000 !important;
+}
+
+.darkmode .recipe-process-badge.flame {
+  background-color: rgba(234, 88, 12, 0.25) !important;
+  border-color: #ea580c !important;
+}
+
+.darkmode .recipe-process-badge.stonecutter {
+  background-color: rgba(124, 58, 237, 0.25) !important;
+  border-color: #7c3aed !important;
+}
+
+.darkmode .recipe-process-badge.cartography {
+  background-color: rgba(5, 150, 105, 0.25) !important;
+  border-color: #059669 !important;
+}
+
+.darkmode .recipe-process-arrow {
+  color: #38bdf8 !important;
+}
+
+.darkmode .recipe-smelt-label {
+  color: #f1f5f9 !important;
+  text-shadow: 1px 1px 0 #000000 !important;
 }
 
 .darkmode .recipe-output-title {
@@ -968,9 +1111,13 @@ tr:hover .recipes-table-icon-box {
 
 /* Dark Mode Table View Overrides */
 .darkmode .recipes-table-icon-box {
-  background: #18181b !important;
+  background-color: #141416 !important;
   border-color: #27272a !important;
-  box-shadow: 2px 2px 0 #000000 !important;
+  box-shadow: inset 2px 2px 0 0 #000000, inset -2px -2px 0 0 #3a3a44, 2px 2px 0 #000000 !important;
+}
+
+.darkmode tr:hover .recipes-table-icon-box {
+  background-color: #282830 !important;
 }
 
 .darkmode .recipes-table-qty-badge {
