@@ -167,6 +167,24 @@ function extractSubPath(context) {
   return "";
 }
 
+function decodeChunkedBody(headerPart, bodyPart) {
+  if (!/transfer-encoding:\s*chunked/i.test(headerPart)) {
+    return bodyPart;
+  }
+  let unchunked = "";
+  let pos = 0;
+  while (pos < bodyPart.length) {
+    const nextCrLf = bodyPart.indexOf("\r\n", pos);
+    if (nextCrLf === -1) break;
+    const hex = bodyPart.slice(pos, nextCrLf).trim();
+    const chunkSize = parseInt(hex, 16);
+    if (isNaN(chunkSize) || chunkSize === 0) break;
+    unchunked += bodyPart.slice(nextCrLf + 2, nextCrLf + 2 + chunkSize);
+    pos = nextCrLf + 2 + chunkSize + 2;
+  }
+  return unchunked;
+}
+
 /**
  * TCP Socket HTTP fetcher for non-standard ports (e.g. 3993) on Cloudflare Workers/Pages
  * Cloudflare's standard fetch() strips non-standard ports, but cloudflare:sockets allows any port.
@@ -260,21 +278,7 @@ async function fetchViaSocket(targetUrl, options = {}) {
       const statusMatch = headerPart.match(/^HTTP\/[0-9.]+\s+(\d+)/i);
       const status = statusMatch ? parseInt(statusMatch[1], 10) : 200;
 
-      if (/transfer-encoding:\s*chunked/i.test(headerPart)) {
-        let unchunked = "";
-        let pos = 0;
-        while (pos < bodyPart.length) {
-          const nextCrLf = bodyPart.indexOf("\r\n", pos);
-          if (nextCrLf === -1) break;
-          const hex = bodyPart.slice(pos, nextCrLf).trim();
-          const chunkSize = parseInt(hex, 16);
-          if (isNaN(chunkSize) || chunkSize === 0) break;
-          unchunked += bodyPart.slice(nextCrLf + 2, nextCrLf + 2 + chunkSize);
-          pos = nextCrLf + 2 + chunkSize + 2;
-        }
-        bodyPart = unchunked;
-      }
-
+      bodyPart = decodeChunkedBody(headerPart, bodyPart);
       return { status, text: bodyPart };
     })();
 
@@ -327,16 +331,26 @@ async function fetchViaSocket(targetUrl, options = {}) {
       let raw = "";
       client.on("data", (chunk) => { raw += chunk.toString("utf-8"); });
       client.on("end", () => {
+        client.setTimeout(0);
         const splitIdx = raw.indexOf("\r\n\r\n");
-        if (splitIdx === -1) return reject(new Error("Invalid HTTP response over socket"));
+        if (splitIdx === -1) {
+          client.destroy();
+          return reject(new Error("Invalid HTTP response over socket"));
+        }
         const headerPart = raw.slice(0, splitIdx);
         let bodyPart = raw.slice(splitIdx + 4);
         const statusMatch = headerPart.match(/^HTTP\/[0-9.]+\s+(\d+)/i);
         const status = statusMatch ? parseInt(statusMatch[1], 10) : 200;
+        bodyPart = decodeChunkedBody(headerPart, bodyPart);
+        client.destroy();
         resolve({ status, text: bodyPart });
       });
-      client.on("error", reject);
-      client.setTimeout(options.timeout || 60000, () => {
+      client.on("error", (err) => {
+        client.setTimeout(0);
+        client.destroy();
+        reject(err);
+      });
+      client.setTimeout(options.timeout || 15000, () => {
         client.destroy();
         reject(new Error("TCP connection timed out"));
       });
@@ -349,7 +363,7 @@ async function fetchViaSocket(targetUrl, options = {}) {
 /**
  * Dispatches request using TCP socket on non-standard ports, with fallback to standard fetch()
  */
-async function dispatchUpstreamRequest(targetUrl, options = {}) {
+export async function dispatchUpstreamRequest(targetUrl, options = {}) {
   const parsed = new URL(targetUrl);
   const isNonStandardPort = parsed.port && parsed.port !== "80" && parsed.port !== "443";
 

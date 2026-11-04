@@ -135,7 +135,7 @@ function isInternalWebsiteRequest(request) {
   const hasValidReferer = isAllowedDomain(referer);
   const isSameSite = secFetchSite === "same-origin" || secFetchSite === "same-site";
 
-  if (clientHeader === "craftersmc-web" && (isSameSite || hasValidReferer)) {
+  if (clientHeader === "craftersmc-web" && (isSameSite || hasValidReferer || (!origin && !referer))) {
     return true;
   }
 

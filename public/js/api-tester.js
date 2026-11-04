@@ -17,21 +17,62 @@
   let lastResponseTime = 0;
   let lastResponseSize = 0;
 
-  // Local Storage Keys
+  // Local Storage Keys & Config
   const STORAGE_BASE_URL = 'feather_api_base_url';
+  const STORAGE_USE_PROXY = 'feather_api_use_proxy';
+  const DEFAULT_BASE_URL = 'http://135.125.9.81:4994';
 
   function getBaseUrl() {
     const saved = localStorage.getItem(STORAGE_BASE_URL);
-    if (!saved || saved === 'http://localhost:3000') {
-      return 'http://localhost:4994';
+    if (!saved || saved === 'http://localhost:3000' || saved === 'http://localhost:4994') {
+      return DEFAULT_BASE_URL;
     }
-    return saved.trim().replace(/\/+$/, '');
+    let clean = saved.trim().replace(/\/+$/, '');
+    if (!/^https?:\/\//i.test(clean)) {
+      clean = 'http://' + clean;
+    }
+    return clean;
   }
 
   function setBaseUrl(url) {
-    const clean = (url || 'http://localhost:4994').trim().replace(/\/+$/, '');
+    let clean = (url || DEFAULT_BASE_URL).trim().replace(/\/+$/, '');
+    if (!/^https?:\/\//i.test(clean)) {
+      clean = 'http://' + clean;
+    }
     localStorage.setItem(STORAGE_BASE_URL, clean);
     return clean;
+  }
+
+  function shouldUseProxy() {
+    const checkbox = document.getElementById('useProxyCheckbox');
+    if (checkbox) {
+      return checkbox.checked;
+    }
+    return window.location.protocol === 'https:';
+  }
+
+  function resolveRequestTarget(rawTargetUrl) {
+    const useProxy = shouldUseProxy();
+    const isHttpsPage = window.location.protocol === 'https:';
+    const isInsecureTarget = rawTargetUrl.startsWith('http://');
+
+    // Route via Cloudflare Edge Proxy if proxy is checked or if on HTTPS calling insecure HTTP
+    if (useProxy || (isHttpsPage && isInsecureTarget)) {
+      const proxyUrl = `/api/tester-proxy?target=${encodeURIComponent(rawTargetUrl)}`;
+      return {
+        url: proxyUrl,
+        proxied: true,
+        headers: {
+          'X-Guides-Client': 'craftersmc-web'
+        }
+      };
+    }
+
+    return {
+      url: rawTargetUrl,
+      proxied: false,
+      headers: {}
+    };
   }
 
   // --- TOAST NOTIFICATIONS ---
@@ -199,12 +240,32 @@
 
   // --- INITIALIZATION ---
   function init() {
-    // 1. Load Base URL from Storage (defaults to http://localhost:4994)
+    // 1. Load Base URL from Storage (defaults to http://135.125.9.81:4994)
     if (serverBaseUrlInput) {
       serverBaseUrlInput.value = getBaseUrl();
-      serverBaseUrlInput.addEventListener('change', () => {
+      const onUrlChange = () => {
         setBaseUrl(serverBaseUrlInput.value);
         updateLiveUrlPreview();
+        testServerConnection();
+      };
+      serverBaseUrlInput.addEventListener('change', onUrlChange);
+      serverBaseUrlInput.addEventListener('input', () => {
+        updateLiveUrlPreview();
+      });
+    }
+
+    // 1b. Load and bind HTTPS Proxy Checkbox
+    const useProxyCheckbox = document.getElementById('useProxyCheckbox');
+    if (useProxyCheckbox) {
+      const savedProxy = localStorage.getItem(STORAGE_USE_PROXY);
+      if (savedProxy !== null) {
+        useProxyCheckbox.checked = savedProxy === 'true';
+      } else {
+        useProxyCheckbox.checked = window.location.protocol === 'https:';
+      }
+      useProxyCheckbox.addEventListener('change', () => {
+        localStorage.setItem(STORAGE_USE_PROXY, useProxyCheckbox.checked ? 'true' : 'false');
+        testServerConnection();
       });
     }
 
@@ -818,29 +879,80 @@
     serverStatusBadge.innerHTML = '<span class="api-status-dot"></span> Checking...';
 
     const baseUrl = getBaseUrl();
+    const rawTarget = `${baseUrl}/api/health`;
+    const resolved = resolveRequestTarget(rawTarget);
+
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2500);
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     try {
-      // Ping /api/health directly
-      const res = await fetch(`${baseUrl}/api/health`, {
+      let res = await fetch(resolved.url, {
         method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          ...resolved.headers
+        },
         signal: controller.signal
       });
       clearTimeout(timeoutId);
 
       if (res.ok) {
         const d = await res.json().catch(() => ({}));
+        let label = 'Online';
+        if (typeof d.uptime === 'number') {
+          label = `Online (${Math.round(d.uptime)}s uptime)`;
+        } else if (d.version) {
+          label = `Online (v${d.version})`;
+        } else if (d.status === 'healthy') {
+          label = 'Online (Healthy)';
+        }
+
         serverStatusBadge.className = 'api-status-badge online';
-        serverStatusBadge.innerHTML = `<span class="api-status-dot"></span> Online (v${d.version || '1.0'})`;
+        serverStatusBadge.innerHTML = `<span class="api-status-dot"></span> ${label}${resolved.proxied ? ' (Proxy)' : ''}`;
+        return;
       } else {
         serverStatusBadge.className = 'api-status-badge offline';
         serverStatusBadge.innerHTML = '<span class="api-status-dot"></span> Status ' + res.status;
       }
     } catch (err) {
       clearTimeout(timeoutId);
+
+      // If direct fetch was attempted and failed (e.g. Mixed Content), auto fallback to proxy!
+      if (!resolved.proxied) {
+        try {
+          const proxyController = new AbortController();
+          const proxyTimeoutId = setTimeout(() => proxyController.abort(), 10000);
+          const proxyRes = await fetch(`/api/tester-proxy?target=${encodeURIComponent(rawTarget)}`, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'X-Guides-Client': 'craftersmc-web'
+            },
+            signal: proxyController.signal
+          });
+          clearTimeout(proxyTimeoutId);
+
+          if (proxyRes.ok) {
+            const d = await proxyRes.json().catch(() => ({}));
+            const checkbox = document.getElementById('useProxyCheckbox');
+            if (checkbox) checkbox.checked = true;
+            localStorage.setItem(STORAGE_USE_PROXY, 'true');
+
+            let label = 'Online (via Proxy)';
+            if (typeof d.uptime === 'number') {
+              label = `Online (${Math.round(d.uptime)}s uptime via Proxy)`;
+            }
+            serverStatusBadge.className = 'api-status-badge online';
+            serverStatusBadge.innerHTML = `<span class="api-status-dot"></span> ${label}`;
+            showToast('Direct HTTP blocked by browser; switched to HTTPS Proxy.');
+            return;
+          }
+        } catch (_) {}
+      }
+
       serverStatusBadge.className = 'api-status-badge offline';
-      serverStatusBadge.innerHTML = '<span class="api-status-dot"></span> Offline / CORS';
+      const isMixedContent = window.location.protocol === 'https:' && baseUrl.startsWith('http://');
+      serverStatusBadge.innerHTML = `<span class="api-status-dot"></span> ${isMixedContent ? 'Mixed-Content Blocked' : 'Offline / Timed Out'}`;
     }
   }
 
@@ -862,21 +974,43 @@
 
     // LIVE FETCH
     try {
-      let url = getFullRequestUrl();
+      let targetUrl = getFullRequestUrl();
+      if (activeHttpMode === 'POST') {
+        targetUrl = `${baseUrl}${ep.path}`;
+      }
+
+      const resolved = resolveRequestTarget(targetUrl);
       const options = {
         method: activeHttpMode,
         headers: {
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          ...resolved.headers
         }
       };
 
       if (activeHttpMode === 'POST') {
-        url = `${baseUrl}${ep.path}`;
         options.headers['Content-Type'] = 'application/json';
         options.body = JSON.stringify(params);
       }
 
-      const response = await fetch(url, options);
+      let response;
+      try {
+        response = await fetch(resolved.url, options);
+      } catch (fetchErr) {
+        // If direct fetch failed (e.g. Mixed Content) and wasn't proxied, auto retry via proxy
+        if (!resolved.proxied) {
+          const retryUrl = `/api/tester-proxy?target=${encodeURIComponent(targetUrl)}`;
+          options.headers['X-Guides-Client'] = 'craftersmc-web';
+          response = await fetch(retryUrl, options);
+          const checkbox = document.getElementById('useProxyCheckbox');
+          if (checkbox) checkbox.checked = true;
+          localStorage.setItem(STORAGE_USE_PROXY, 'true');
+          showToast('Direct fetch blocked by browser; auto-routed via Cloudflare Proxy.');
+        } else {
+          throw fetchErr;
+        }
+      }
+
       const tEnd = performance.now();
       const latency = Math.round(tEnd - tStart);
 
@@ -968,11 +1102,17 @@
       resSizeBadge.style.display = 'none';
     }
 
+    const baseUrl = getBaseUrl();
+    const isMixedContent = window.location.protocol === 'https:' && baseUrl.startsWith('http://');
+
     if (rawJsonOutput) {
       rawJsonOutput.textContent = JSON.stringify({
         error: "Failed to fetch from Feather Bot REST API",
         message: err.message,
-        hint: `Ensure Feather Bot API server is running on ${getBaseUrl()} with CORS enabled`,
+        isMixedContentBlocked: isMixedContent,
+        hint: isMixedContent
+          ? "Browsers block direct HTTP requests from HTTPS pages (Mixed Content). Enable 'HTTPS Proxy' to connect seamlessly via Cloudflare Edge."
+          : `Ensure Feather Bot API server is running on ${baseUrl} with port open`,
         command: "npm run api  # or: node api/server.js"
       }, null, 2);
     }
@@ -982,18 +1122,23 @@
         <div class="api-troubleshoot-banner">
           <div class="api-troubleshoot-header">
             <span class="material-icons" style="font-size:20px;">error_outline</span>
-            <span>Could not connect to Feather Bot API at <code>${escapeHtml(getBaseUrl())}</code></span>
+            <span>Could not connect to Feather Bot API at <code>${escapeHtml(baseUrl)}</code></span>
           </div>
           <p style="margin:0; font-size:0.86rem; color:var(--api-text); line-height:1.5;">
-            The browser was unable to complete the request. Common causes:
-            <br>&bull; The API server on port <strong>4994</strong> is currently stopped.
-            <br>&bull; CORS was blocked by your browser because the server wasn't restarted after CORS configuration.
+            ${isMixedContent ? `
+              <strong>Mixed Content Blocked:</strong> Your browser blocked this request because this page was loaded securely over HTTPS, but the API endpoint is plain HTTP (<code>${escapeHtml(baseUrl)}</code>).
+              <br>Turn on the <strong>HTTPS Proxy</strong> toggle in the server bar to route requests safely through Cloudflare edge.
+            ` : `
+              The browser was unable to complete the request. Common causes:
+              <br>&bull; The API server on port <strong>4994</strong> is currently stopped or firewalled.
+              <br>&bull; CORS was blocked by your browser because the server wasn't configured for this origin.
+            `}
           </p>
-          <pre class="api-troubleshoot-code"># Start or restart Feather Bot API server:
-npm run api
-# or
-node api/server.js</pre>
-          <div style="display:flex; flex-wrap:wrap; gap:0.6rem; align-items:center; margin-top:0.4rem;">
+          <div style="display:flex; flex-wrap:wrap; gap:0.6rem; align-items:center; margin-top:0.6rem;">
+            <button type="button" class="api-server-btn" onclick="const cb = document.getElementById('useProxyCheckbox'); if(cb) { cb.checked = true; localStorage.setItem('feather_api_use_proxy', 'true'); } window.testServerConnection();">
+              <span class="material-icons" style="font-size:16px;">shield</span>
+              <span>Enable Proxy &amp; Ping</span>
+            </button>
             <button type="button" class="api-server-btn" onclick="window.testServerConnection();">
               <span class="material-icons" style="font-size:16px;">refresh</span>
               <span>Retry Ping</span>

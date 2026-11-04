@@ -140,7 +140,12 @@
         </span>
         <div class="api-server-input-wrap">
           <span class="material-icons api-server-input-icon">link</span>
-          <input type="url" id="serverBaseUrl" class="api-server-input" value="http://localhost:3000" placeholder="http://localhost:3000" aria-label="API Server Base URL" />
+          <input type="url" id="serverBaseUrl" class="api-server-input" value="http://135.125.9.81:4994" placeholder="http://135.125.9.81:4994" list="serverPresets" aria-label="API Server Base URL" />
+          <datalist id="serverPresets">
+            <option value="http://135.125.9.81:4994">Production Feather Bot (135.125.9.81:4994)</option>
+            <option value="http://localhost:4994">Local Feather Bot (localhost:4994)</option>
+            <option value="http://localhost:3000">Local Dev Server (localhost:3000)</option>
+          </datalist>
         </div>
         <button type="button" class="api-server-btn" id="pingServerBtn" title="Test server health &amp; ping">
           <span class="material-icons" style="font-size:16px;">network_check</span>
@@ -149,6 +154,13 @@
       </div>
 
       <div class="api-server-right">
+        <!-- HTTPS Proxy Toggle -->
+        <label class="api-proxy-toggle" id="proxyToggleLabel" title="Route requests via Cloudflare Edge Proxy to bypass browser HTTPS Mixed Content restrictions on remote HTTP servers">
+          <input type="checkbox" id="useProxyCheckbox" checked />
+          <span class="material-icons" style="font-size:15px; color:var(--api-accent);">shield</span>
+          <span>HTTPS Proxy</span>
+        </label>
+
         <!-- Live Status Pill -->
         <div class="api-status-badge checking" id="serverStatusBadge">
           <span class="api-status-dot"></span> Checking...
