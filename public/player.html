@@ -168,6 +168,8 @@
                 <div class="player-subpanel-nav">
                   <button class="player-subpanel-btn active" onclick="switchTab('overview')"><span
                       class="material-icons">dashboard</span> Overview</button>
+                  <button class="player-subpanel-btn" onclick="switchTab('networth')"><span
+                      class="material-icons">account_balance_wallet</span> Networth &amp; Wealth</button>
                   <button class="player-subpanel-btn" onclick="switchTab('skills')"><span
                       class="material-icons">auto_awesome</span> Skills</button>
                   <button class="player-subpanel-btn" onclick="switchTab('slayers')"><span
@@ -233,6 +235,7 @@
             <!-- Tab Contents Area -->
             <div class="player-tab-content-wrapper">
               <div id="overviewTab" class="tab-content active"></div>
+              <div id="networthTab" class="tab-content" style="display: none;"></div>
               <div id="skillsTab" class="tab-content" style="display: none;"></div>
               <div id="slayersTab" class="tab-content" style="display: none;"></div>
 
@@ -411,6 +414,16 @@
     function formatNumber(num) {
       if (num === null || num === undefined || isNaN(num)) return '0';
       return Number(num).toLocaleString();
+    }
+
+    function formatShortNumber(num) {
+      if (num === null || num === undefined || isNaN(num)) return '0';
+      const n = Number(num);
+      const abs = Math.abs(n);
+      if (abs >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+      if (abs >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+      if (abs >= 1e3) return (n / 1e3).toFixed(1) + 'k';
+      return formatNumber(n);
     }
 
     function formatDate(dateStr) {
@@ -643,6 +656,7 @@
       renderPlayerStats();
       renderPlaytime();
       renderJSON();
+      renderNetworth();
       logAllLoadedItems();
 
       // Automatically sync player stats to global leaderboards in background
@@ -1422,6 +1436,7 @@
             </div>
             <div class="data-item"><span class="data-label">Coin Purse</span><span class="data-value number">${formatNumber(purseCoins)} coins</span></div>
             <div class="data-item"><span class="data-label">Bank Balance</span><span class="data-value number">${formatNumber(bankBalance)} coins</span></div>
+            <div class="data-item"><span class="data-label">Estimated Networth</span><span class="data-value number text-accent" id="overviewNetworthVal" style="font-weight:800;">Calculating...</span></div>
             <div class="data-item"><span class="data-label">Gamemode</span><span class="data-value string">${gameMode}</span></div>
             <div class="data-item"><span class="data-label">Fairy Souls</span><span class="data-value number">${fairySouls} collected (${fairyExchanges} exchanges with Tia)</span></div>
             <div class="data-item"><span class="data-label">Mining Milestone</span><span class="data-value number">${formatNumber(member.miningMilestone || 0)} blocks</span></div>
@@ -3557,6 +3572,631 @@
       `;
     }
 
+    // =========================================================
+    // 15. Networth & Wealth Breakdown Tab (Feather Bot & Local Engine)
+    // =========================================================
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    let cachedBazaarData = null;
+    let isFetchingBazaar = false;
+
+    async function fetchBazaarData() {
+      if (cachedBazaarData) return cachedBazaarData;
+      if (isFetchingBazaar) {
+        for (let i = 0; i < 20; i++) {
+          await new Promise(r => setTimeout(r, 100));
+          if (cachedBazaarData) return cachedBazaarData;
+        }
+      }
+      isFetchingBazaar = true;
+      try {
+        const res = await fetch('/api/latest-bazaar-backup', {
+          headers: { 'X-Guides-Client': 'craftersmc-web' }
+        });
+        if (res.ok) {
+          const json = await res.json();
+          cachedBazaarData = json.data || json.products || json || {};
+        }
+      } catch (err) {
+        console.warn('Bazaar backup fetch error:', err);
+      } finally {
+        isFetchingBazaar = false;
+      }
+      return cachedBazaarData || {};
+    }
+
+    // Comprehensive CraftersMC known valuations lookup dictionary
+    const CRAFTERS_KNOWN_VALUATIONS = {
+      // Armor Sets & Pieces
+      superior_dragon_helmet: 8500000, superior_dragon_chestplate: 14000000,
+      superior_dragon_leggings: 11000000, superior_dragon_boots: 7000000,
+      wise_dragon_helmet: 1200000, wise_dragon_chestplate: 2500000,
+      wise_dragon_leggings: 2000000, wise_dragon_boots: 1100000,
+      strong_dragon_helmet: 1500000, strong_dragon_chestplate: 3000000,
+      strong_dragon_leggings: 2200000, strong_dragon_boots: 1300000,
+      unstable_dragon_helmet: 600000, unstable_dragon_chestplate: 1100000,
+      unstable_dragon_leggings: 900000, unstable_dragon_boots: 500000,
+      young_dragon_helmet: 750000, young_dragon_chestplate: 1400000,
+      young_dragon_leggings: 1100000, young_dragon_boots: 650000,
+      old_dragon_helmet: 400000, old_dragon_chestplate: 800000,
+      old_dragon_leggings: 600000, old_dragon_boots: 350000,
+      protector_dragon_helmet: 400000, protector_dragon_chestplate: 800000,
+      protector_dragon_leggings: 600000, protector_dragon_boots: 350000,
+      shadow_assassin_chestplate: 28000000, shadow_assassin_helmet: 4500000,
+      shadow_assassin_leggings: 6500000, shadow_assassin_boots: 3500000,
+      necron_chestplate: 45000000, necron_leggings: 22000000,
+      necron_boots: 16000000, necron_helmet: 14000000,
+
+      // Weapons & Slayer Gear
+      hyper_cleaver: 18000000, super_cleaver: 1500000, cleaver: 80000,
+      aspect_of_the_end: 250000, aote: 250000,
+      aspect_of_the_dragons: 1800000, aotd: 1800000,
+      livid_dagger: 7500000, shadow_fury: 22000000, flower_of_truth: 3000000,
+      runaans_bow: 1200000, magma_bow: 200000, savanna_bow: 50000,
+      reaper_falchion: 6500000, revenant_falchion: 800000, undead_sword: 5000,
+      scorpion_foil: 8000000, spider_sword: 5000, pooch_sword: 9500000, shaman_sword: 1200000,
+      emerald_blade: 2500000, leaping_sword: 1500000, silk_edge_sword: 4000000,
+      treecapitator: 1800000, jungle_axe: 15000, stonk: 499999, promising_pickaxe: 1000,
+
+      // Minion Upgrades & Equipment
+      super_compactor_3000: 450000, compactor: 10000,
+      enchanted_lava_bucket: 220000, plasma_bucket: 12000000, magma_bucket: 4500000,
+      potato_spreader: 150000, flycatcher: 14000000, diamond_spreading: 25000,
+
+      // Dolores Pet Care Speedups & Items (CraftersMC Specific)
+      dolores_flower: 1500000, dolores_bouquet: 8000000, beetroot_candy: 250000,
+
+      // Accessories & Rare Talismans
+      seal_of_the_family: 15000000, shady_ring: 500000, crooked_artifact: 2000000,
+      reaper_orb: 18000000, scythe_blade: 12000000, overflux_capacitor: 45000000,
+      auto_recombobulator: 16000000, recombobulator_3000: 5500000,
+      tarantula_talisman: 4000000, spider_ring: 400000, spider_talisman: 50000,
+      red_claw_artifact: 12000000, red_claw_ring: 2500000, red_claw_talisman: 300000,
+      survivor_cube: 10000000, sea_creature_artifact: 3500000, sea_creature_ring: 600000,
+      experience_artifact: 1200000, melody_hair: 5000000, day_crystal: 200000, night_crystal: 200000,
+      piggy_bank: 75000, cracked_piggy_bank: 50000, broken_piggy_bank: 25000,
+      candy_artifact: 4000000, candy_ring: 750000, candy_talisman: 100000,
+      bat_artifact: 6500000, bat_ring: 1200000, bat_person_talisman: 250000,
+      feather_artifact: 500000, feather_ring: 100000, feather_talisman: 15000,
+      potion_affinity_artifact: 600000, potion_affinity_ring: 120000, potion_affinity_talisman: 20000,
+      healing_ring: 350000, healing_talisman: 50000,
+      wood_affinity_talisman: 150000, farmer_orb: 200000, haste_ring: 250000
+    };
+
+    function estimateItemPrice(item, bazaarData) {
+      if (!item) return { unitPrice: 0, totalPrice: 0, source: 'None' };
+      const count = Math.max(1, Number(item.count || item.Count || 1));
+      const cleanId = (item.extraId || '').toLowerCase().replace(/^minecraft:/, '').replace(/^trpixel:/, '').trim();
+      const cleanName = (item.name || '').toLowerCase().replace(/§[0-9a-fk-or]/gi, '').replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+
+      // 1. Check Bazaar
+      if (bazaarData) {
+        const bz = bazaarData[cleanId] || bazaarData[cleanName];
+        if (bz) {
+          const p = bz.buyPrice || bz.weeklyAveragePrice || bz.sellPrice || 0;
+          if (p > 0) {
+            return {
+              unitPrice: Math.round(p),
+              totalPrice: Math.round(p * count),
+              source: 'Bazaar'
+            };
+          }
+        }
+      }
+
+      // 2. Check Known Items Dictionary
+      const known = CRAFTERS_KNOWN_VALUATIONS[cleanId] || CRAFTERS_KNOWN_VALUATIONS[cleanName];
+      if (known) {
+        return {
+          unitPrice: known,
+          totalPrice: Math.round(known * count),
+          source: 'Crafters Valuation'
+        };
+      }
+
+      // 3. Pet Valuation
+      const isPet = (item.rawPetRarity || (item.lore && item.lore.some(l => /Pet\s*EXP|Level\s*\d+/i.test(l))) || (item.name && item.name.includes('[Lvl')));
+      if (isPet) {
+        let petLvl = 1;
+        const lvlMatch = (item.name || '').match(/\[Lvl\s*(\d+)\]/i);
+        if (lvlMatch) petLvl = parseInt(lvlMatch[1], 10) || 1;
+        const rarity = (item.rawPetRarity || item.itemRarity || 'COMMON').toUpperCase();
+        const PET_RARITY_BASE = {
+          'COMMON': 50000,
+          'UNCOMMON': 250000,
+          'RARE': 1000000,
+          'EPIC': 4000000,
+          'LEGENDARY': 15000000,
+          'MYTHIC': 35000000,
+          'DIVINE': 50000000
+        };
+        const PET_RARITY_SCALE = {
+          'COMMON': 2000,
+          'UNCOMMON': 5000,
+          'RARE': 15000,
+          'EPIC': 40000,
+          'LEGENDARY': 100000,
+          'MYTHIC': 200000,
+          'DIVINE': 300000
+        };
+        const base = PET_RARITY_BASE[rarity] || 50000;
+        const scale = PET_RARITY_SCALE[rarity] || 2000;
+        const val = base + (petLvl * scale);
+        return {
+          unitPrice: Math.round(val),
+          totalPrice: Math.round(val * count),
+          source: 'Pet Valuation'
+        };
+      }
+
+      // 4. Rarity-Based Baseline Fallback
+      const rarity = (item.itemRarity || '').toUpperCase();
+      const RARITY_FALLBACK = {
+        'VERY SPECIAL': 5000000,
+        'SPECIAL': 4000000,
+        'DIVINE': 12000000,
+        'MYTHIC': 8000000,
+        'LEGENDARY': 2500000,
+        'EPIC': 500000,
+        'RARE': 100000,
+        'UNCOMMON': 15000,
+        'COMMON': 2500
+      };
+      const unit = RARITY_FALLBACK[rarity] || (item.lore && item.lore.length > 2 ? 10000 : 1000);
+      return {
+        unitPrice: unit,
+        totalPrice: Math.round(unit * count),
+        source: rarity ? `${rarity} Tier` : 'Estimated'
+      };
+    }
+
+    function calculateLocalNetworth(bazaarData) {
+      const member = profileData?.members?.[selectedMemberId] || {};
+      const purseCoins = Number(member.coinPurse ?? member.coin_purse ?? 0) || 0;
+      const bankCoins = Number(profileData?.banking?.balance ?? 0) || 0;
+      const liquidCoins = purseCoins + bankCoins;
+
+      const categories = {
+        armor: { label: 'Equipped Armor & Gear', totalValue: 0, itemCount: 0, items: [] },
+        wardrobe: { label: 'Wardrobe Sets', totalValue: 0, itemCount: 0, items: [] },
+        inventory: { label: 'Main Inventory', totalValue: 0, itemCount: 0, items: [] },
+        ender: { label: 'Ender Chest', totalValue: 0, itemCount: 0, items: [] },
+        accessories: { label: 'Accessory Bag', totalValue: 0, itemCount: 0, items: [] },
+        pets: { label: 'Pets & Dolores Care', totalValue: 0, itemCount: 0, items: [] },
+        bags: { label: 'Special Bags & Storage', totalValue: 0, itemCount: 0, items: [] }
+      };
+
+      const allValuedAssets = [];
+
+      function processItemCategory(categoryKey, containerName, items) {
+        if (!Array.isArray(items) || items.length === 0) return;
+        items.forEach(it => {
+          if (!it || it.id === 0 || it.name === 'air' || it.id === 'minecraft:air') return;
+          const evaluation = estimateItemPrice(it, bazaarData);
+          categories[categoryKey].totalValue += evaluation.totalPrice;
+          categories[categoryKey].itemCount += (it.count || 1);
+          categories[categoryKey].items.push({
+            ...it,
+            unitPrice: evaluation.unitPrice,
+            totalPrice: evaluation.totalPrice,
+            priceSource: evaluation.source,
+            container: containerName
+          });
+          allValuedAssets.push({
+            name: it.name || 'Item',
+            rawName: it.rawName || it.name || 'Item',
+            count: it.count || 1,
+            unitPrice: evaluation.unitPrice,
+            totalPrice: evaluation.totalPrice,
+            container: containerName,
+            source: evaluation.source
+          });
+        });
+      }
+
+      // 1. Equipped Armor & Equipment
+      const armorItems = extractItemsFromNbt(member.armorContents);
+      const equipNbt = member.extra_equipment || member.otherInventories?.extra_equipment;
+      const equipItems = extractItemsFromNbt(equipNbt);
+      processItemCategory('armor', 'Equipped Armor', armorItems);
+      processItemCategory('armor', 'Equipment', equipItems);
+
+      // 2. Wardrobe
+      const wardrobeNbt = member.wardrobeContents || member.otherInventories?.wardrobe_inventory || member.wardrobe_contents || member.wardrobeInventory || member.otherInventories?.wardrobeContents;
+      const wardrobeItems = extractItemsFromNbt(wardrobeNbt);
+      processItemCategory('wardrobe', 'Wardrobe', wardrobeItems);
+
+      // 3. Main Inventory
+      const invItems = extractItemsFromNbt(member.inventoryContents);
+      processItemCategory('inventory', 'Main Inventory', invItems);
+
+      // 4. Ender Chest
+      const enderNbt = member.enderContents || member.enderChest || member.ender_chest || member.ender_chest_contents || member.otherInventories?.ender_chest;
+      const enderItems = extractItemsFromNbt(enderNbt);
+      processItemCategory('ender', 'Ender Chest', enderItems);
+
+      // 5. Accessory Bag
+      const accessoryItems = extractItemsFromNbt(member.accessoryBag);
+      processItemCategory('accessories', 'Accessory Bag', accessoryItems);
+
+      // 6. Pets & Dolores Pet Care
+      const petItems = extractItemsFromNbt(member.petInventory);
+      processItemCategory('pets', 'Pet Storage', petItems);
+
+      const petSitter = member.petSitter;
+      if (petSitter) {
+        if (petSitter.pet) {
+          const sitterPets = extractItemsFromNbt(petSitter.pet);
+          if (sitterPets.length > 0) {
+            processItemCategory('pets', "Dolores' Care", sitterPets);
+          }
+        }
+        const paidCoins = Number(petSitter.paidCoins) || 0;
+        if (paidCoins > 0) {
+          categories.pets.totalValue += paidCoins;
+          allValuedAssets.push({
+            name: 'Dolores Pet Care (Coins Deposit)',
+            count: 1,
+            unitPrice: paidCoins,
+            totalPrice: paidCoins,
+            container: "Dolores' Care",
+            source: 'Deposit Coins'
+          });
+        }
+        const rawPaidItems = Array.isArray(petSitter.paidItems) ? petSitter.paidItems : (petSitter.paidItems ? [petSitter.paidItems] : []);
+        const paidItems = rawPaidItems.map(pi => parsePaidItem(pi)).filter(Boolean);
+        processItemCategory('pets', "Dolores' Care (Materials)", paidItems);
+      }
+
+      // 7. Special Bags & Extra Inventories
+      const bags = [
+        { name: 'Trick-or-Treat Bag', nbt: member.otherInventories?.trick_or_treat_bag || member.trickOrTreatBag },
+        { name: 'Pumpkin Launcher Ammo', nbt: member.otherInventories?.pumpkin_launcher_ammo || member.pumpkinLauncherAmmo },
+        { name: 'Seeds Inventory', nbt: member.otherInventories?.seeds_inventory },
+        { name: 'New Year Cake Bag', nbt: member.newYearCakeBag || member.new_year_cake_bag || member.otherInventories?.new_year_cake_bag },
+        { name: 'Quiver', nbt: member.quiver || member.otherInventories?.quiver },
+        { name: 'Medal Inventory', nbt: member.otherInventories?.medal_inventory },
+        { name: 'Candy Bag', nbt: member.candyBag || member.otherInventories?.candy_bag },
+        { name: 'Backpack Storage', nbt: member.backpackContents || member.otherInventories?.backpack_contents }
+      ];
+
+      bags.forEach(b => {
+        if (b.nbt) {
+          const items = extractItemsFromNbt(b.nbt);
+          processItemCategory('bags', b.name, items);
+        }
+      });
+
+      let storageItemsTotal = 0;
+      Object.values(categories).forEach(cat => {
+        storageItemsTotal += cat.totalValue;
+      });
+
+      const totalNetworth = liquidCoins + storageItemsTotal;
+      allValuedAssets.sort((a, b) => (b.totalPrice || 0) - (a.totalPrice || 0));
+      const topItems = allValuedAssets.slice(0, 15);
+
+      return {
+        totalNetworth,
+        purseCoins,
+        bankCoins,
+        liquidCoins,
+        storageItemsTotal,
+        categories,
+        topItems,
+        totalItemCount: allValuedAssets.reduce((sum, it) => sum + (it.count || 1), 0),
+        source: 'Live Client Engine (Bazaar & Containers)'
+      };
+    }
+
+    async function fetchRemoteNetworth(username, profileCuteName) {
+      if (!username) return null;
+      const ctrl = new AbortController();
+      const timeoutId = setTimeout(() => ctrl.abort(), 4500);
+      try {
+        const queryParams = new URLSearchParams({ player: username });
+        if (profileCuteName) queryParams.set('profile', profileCuteName);
+        const res = await fetch(`/api/networth?${queryParams.toString()}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'X-Guides-Client': 'craftersmc-web'
+          },
+          signal: ctrl.signal
+        });
+        clearTimeout(timeoutId);
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (data && (data.networth || data.totalNetworth || data.total)) {
+          return data;
+        }
+        return null;
+      } catch (e) {
+        clearTimeout(timeoutId);
+        return null;
+      }
+    }
+
+    function renderNetworthVisual(d, sourceTag) {
+      const container = document.getElementById('networthTab');
+      if (!container) return;
+
+      const nw = d.networth || d;
+      const playerName = playerData?.name || playerData?.username || (typeof d.player === 'string' ? d.player : d.player?.username) || 'Player';
+      const profileName = profileData?.cuteName || profileData?.cute_name || d.profile?.name || d.profile?.cuteName || currentProfileId || 'Profile';
+      const gameMode = profileData?.gameMode || profileData?.game_mode || d.profile?.gameMode || 'NORMAL';
+      const categories = nw.categories || d.categories || {};
+      const topItems = nw.topItems || d.topItems || [];
+
+      const totalCoins = Number(nw.totalNetworth ?? nw.total ?? 0);
+      const purseCoins = Number(nw.purseCoins ?? 0);
+      const bankCoins = Number(nw.bankCoins ?? 0);
+      const liquidCoins = Number(nw.liquidCoins ?? (purseCoins + bankCoins));
+      const storageCoins = Number(nw.storageItemsTotal ?? Math.max(0, totalCoins - liquidCoins));
+
+      const liquidPct = totalCoins > 0 ? ((liquidCoins / totalCoins) * 100).toFixed(1) : '0.0';
+      const itemsPct = totalCoins > 0 ? ((storageCoins / totalCoins) * 100).toFixed(1) : '0.0';
+      const totalItemCount = nw.totalItemCount || d.totalItemCount || Object.values(categories).reduce((sum, c) => sum + (c.itemCount || c.items?.length || 0), 0);
+
+      // Update Overview Tab's Estimated Networth row
+      const overviewEl = document.getElementById('overviewNetworthVal');
+      if (overviewEl) {
+        overviewEl.innerHTML = `<span style="font-weight:800; color:#ca8a04;">${formatShortNumber(totalCoins)}</span> <span style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">(${formatNumber(totalCoins)} coins)</span>`;
+      }
+
+      // Build Categories HTML
+      const catOrder = ['armor', 'wardrobe', 'inventory', 'ender', 'accessories', 'pets', 'bags'];
+      let catHtml = '';
+      const allCatKeys = Array.from(new Set([...catOrder, ...Object.keys(categories)]));
+
+      allCatKeys.forEach(catKey => {
+        const c = categories[catKey];
+        if (!c) return;
+        const val = Number(c.totalValue || 0);
+        const count = c.itemCount || (c.items ? c.items.length : 0);
+        const pct = totalCoins > 0 ? ((val / totalCoins) * 100).toFixed(1) : '0.0';
+        const label = c.label || catKey.replace(/_/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
+
+        catHtml += `
+          <div class="networth-cat-row">
+            <div class="networth-cat-header">
+              <span style="display:flex; align-items:center; gap:6px;">
+                <span>${escapeHtml(label)}</span>
+                <span style="font-size:0.78rem; color:var(--text-muted); font-weight:600;">(${formatNumber(count)} items)</span>
+              </span>
+              <span style="font-family:'JetBrains Mono', monospace; font-weight:800;">
+                ${formatNumber(val)} coins <span style="font-size:0.8rem; color:var(--text-muted); font-weight:600;">(${pct}%)</span>
+              </span>
+            </div>
+            <div class="networth-cat-bar-bg">
+              <div class="networth-cat-bar-fill" style="width: ${Math.min(100, Math.max(val > 0 ? 1.5 : 0, parseFloat(pct)))}%;"></div>
+            </div>
+          </div>
+        `;
+      });
+
+      // Build Top Items Rows
+      let topItemsRows = '';
+      if (topItems && topItems.length > 0) {
+        topItemsRows = topItems.map((item, idx) => {
+          const count = item.count || 1;
+          const unit = item.unitPrice || (count > 0 ? Math.round((item.totalPrice || item.price || 0) / count) : 0);
+          const total = item.totalPrice ?? item.price ?? (unit * count);
+          const nameClean = stripFormatting(item.name || item.rawName || 'Unknown Asset');
+          const containerName = item.container || 'Inventory';
+          const source = item.source || item.priceSource || 'Valuation';
+
+          return `
+            <tr>
+              <td>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700; width:18px;">#${idx + 1}</span>
+                  <span style="font-weight:700; color:var(--text-bright);">${escapeHtml(nameClean)}</span>
+                </div>
+              </td>
+              <td style="text-align:center; font-family:'JetBrains Mono', monospace; font-weight:600;">x${formatNumber(count)}</td>
+              <td style="text-align:right; font-family:'JetBrains Mono', monospace; color:var(--text-muted); font-size:0.85rem;">${formatNumber(unit)}</td>
+              <td style="text-align:right; font-family:'JetBrains Mono', monospace; font-weight:800; color:#ca8a04;">${formatNumber(total)}</td>
+              <td>
+                <span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:700; font-size:0.75rem; padding:2px 8px; border-radius:4px; border:1px solid #bae6fd;">
+                  ${escapeHtml(containerName)}
+                </span>
+              </td>
+              <td>
+                <span class="badge" style="background:#f3e8ff; color:#7e22ce; font-weight:700; font-size:0.75rem; padding:2px 8px; border-radius:4px; border:1px solid #e9d5ff;">
+                  ${escapeHtml(source)}
+                </span>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } else {
+        topItemsRows = `
+          <tr>
+            <td colspan="6" style="text-align:center; padding:20px; color:var(--text-muted);">
+              No valued items discovered in active profile inventories.
+            </td>
+          </tr>
+        `;
+      }
+
+      container.innerHTML = `
+        <!-- Hero Total Networth Banner -->
+        <div class="networth-hero-card" style="margin-bottom: 24px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                <span class="material-icons" style="color:#eab308; font-size:1.6rem;">account_balance_wallet</span>
+                <h2 style="font-size:1.4rem; font-weight:800; margin:0; color:var(--text-bright);">Total Networth &bull; ${escapeHtml(playerName)} <span style="color:var(--accent-color); font-weight:700;">[${escapeHtml(profileName)}]</span></h2>
+              </div>
+              <div style="font-family:'JetBrains Mono', monospace; font-size:2.2rem; font-weight:900; color:#ca8a04; line-height:1.2;">
+                ${formatNumber(totalCoins)} <span style="font-size:1.1rem; font-weight:700; color:var(--text-muted);">coins</span>
+              </div>
+              <div style="margin-top:6px;">
+                <span class="badge" style="background:#fef08a; color:#854d0e; font-weight:800; padding:4px 12px; border-radius:6px; font-size:0.95rem; border:1px solid #ca8a04;">
+                  ${formatShortNumber(totalCoins)} Coins Total
+                </span>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+              <span class="api-pill enabled" style="font-size:0.8rem;">
+                <span class="material-icons" style="font-size:0.85rem;">verified</span> ${escapeHtml(sourceTag || 'Valuation Engine')}
+              </span>
+              <span style="font-size:0.8rem; color:var(--text-muted);">Total Assets Valued: <strong>${formatNumber(totalItemCount)}</strong> items</span>
+            </div>
+          </div>
+
+          <div style="margin-top:16px; padding-top:14px; border-top:1px dashed var(--border-color, #cbd5e1); display:flex; flex-wrap:wrap; gap:20px; font-size:0.85rem; color:var(--text-muted);">
+            <div>Liquid Wealth: <strong style="color:var(--text-bright);">${formatShortNumber(liquidCoins)} (${liquidPct}%)</strong></div>
+            <div>Physical Assets: <strong style="color:var(--text-bright);">${formatShortNumber(storageCoins)} (${itemsPct}%)</strong></div>
+            <div>Profile Mode: <strong style="color:var(--text-bright);">${escapeHtml(gameMode.toUpperCase())}</strong></div>
+          </div>
+        </div>
+
+        <!-- 4 Key Wealth KPI Cards Grid -->
+        <div class="cards-grid" style="margin-bottom: 24px;">
+          <!-- Purse -->
+          <div class="card" style="border-top: 4px solid #22c55e;">
+            <div class="card-header">
+              <span class="material-icons" style="color:#22c55e;">savings</span>
+              <span class="card-title">Coin Purse</span>
+            </div>
+            <div style="font-family:'JetBrains Mono', monospace; font-size:1.5rem; font-weight:800; color:#16a34a; margin-bottom:4px;">
+              ${formatShortNumber(purseCoins)}
+            </div>
+            <div style="font-size:0.82rem; color:var(--text-muted);">${formatNumber(purseCoins)} coins</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Available in player wallet</div>
+          </div>
+
+          <!-- Bank -->
+          <div class="card" style="border-top: 4px solid #0284c7;">
+            <div class="card-header">
+              <span class="material-icons" style="color:#0284c7;">account_balance</span>
+              <span class="card-title">Bank Balance</span>
+            </div>
+            <div style="font-family:'JetBrains Mono', monospace; font-size:1.5rem; font-weight:800; color:#0284c7; margin-bottom:4px;">
+              ${formatShortNumber(bankCoins)}
+            </div>
+            <div style="font-size:0.82rem; color:var(--text-muted);">${formatNumber(bankCoins)} coins</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Co-op shared bank account</div>
+          </div>
+
+          <!-- Item Assets -->
+          <div class="card" style="border-top: 4px solid #9333ea;">
+            <div class="card-header">
+              <span class="material-icons" style="color:#9333ea;">inventory_2</span>
+              <span class="card-title">Item Assets</span>
+            </div>
+            <div style="font-family:'JetBrains Mono', monospace; font-size:1.5rem; font-weight:800; color:#9333ea; margin-bottom:4px;">
+              ${formatShortNumber(storageCoins)}
+            </div>
+            <div style="font-size:0.82rem; color:var(--text-muted);">${formatNumber(storageCoins)} coins</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Equipment, inventories &amp; pets</div>
+          </div>
+
+          <!-- Liquidity Ratio -->
+          <div class="card" style="border-top: 4px solid #eab308;">
+            <div class="card-header">
+              <span class="material-icons" style="color:#eab308;">pie_chart</span>
+              <span class="card-title">Liquidity Ratio</span>
+            </div>
+            <div style="font-family:'JetBrains Mono', monospace; font-size:1.5rem; font-weight:800; color:#ca8a04; margin-bottom:4px;">
+              ${liquidPct}%
+            </div>
+            <div style="font-size:0.82rem; color:var(--text-muted);">${formatShortNumber(liquidCoins)} liquid coins</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Purse &amp; Bank share of wealth</div>
+          </div>
+        </div>
+
+        <!-- Category Valuations Card -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <span class="material-icons" style="color:var(--accent-color);">bar_chart</span>
+            <span class="card-title">Category Valuations Breakdown</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:16px; margin-top:12px;">
+            ${catHtml}
+          </div>
+        </div>
+
+        <!-- Top Valued Assets Table Card -->
+        <div class="card">
+          <div class="card-header">
+            <span class="material-icons" style="color:#eab308;">star</span>
+            <span class="card-title">Top Valued Assets</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">
+            The most valuable items, equipment, talismans, and pets identified in this profile.
+          </p>
+          <div class="networth-table-wrap">
+            <table class="networth-table">
+              <thead>
+                <tr>
+                  <th>Asset</th>
+                  <th style="text-align:center;">Qty</th>
+                  <th style="text-align:right;">Unit Price</th>
+                  <th style="text-align:right;">Total Value</th>
+                  <th>Container</th>
+                  <th>Valuation Source</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${topItemsRows}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    async function renderNetworth() {
+      const container = document.getElementById('networthTab');
+      if (!container) return;
+
+      if (!playerData || !profileData) {
+        container.innerHTML = `
+          <div class="card" style="text-align: center; padding: 36px 16px;">
+            <span class="material-icons" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 8px;">account_balance_wallet</span>
+            <h3 style="font-size: 1.15rem; color: var(--text-bright); margin-bottom: 4px;">No Player Profile Selected</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">Search for a player above to inspect their live SkyBlock Networth and wealth breakdown.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Step 1: Instant local estimation
+      const initialLocalNw = calculateLocalNetworth(cachedBazaarData);
+      renderNetworthVisual(initialLocalNw, 'Quick Asset Scan');
+
+      // Step 2: In parallel, fetch fresh Bazaar data and check Feather Bot Networth proxy
+      const username = playerData.name || playerData.username || '';
+      const cuteName = profileData.cuteName || profileData.cute_name || '';
+
+      try {
+        const [bazaarData, remoteNw] = await Promise.all([
+          fetchBazaarData().catch(() => null),
+          fetchRemoteNetworth(username, cuteName).catch(() => null)
+        ]);
+
+        if (remoteNw && (remoteNw.networth || remoteNw.totalNetworth || remoteNw.total)) {
+          renderNetworthVisual(remoteNw, 'Feather Bot Networth API');
+        } else {
+          const accurateLocalNw = calculateLocalNetworth(bazaarData || cachedBazaarData);
+          renderNetworthVisual(accurateLocalNw, 'Live Bazaar & Assets Engine');
+        }
+      } catch (err) {
+        console.warn('Networth background update error:', err);
+      }
+    }
+
     // Missing Reality Shards Modal Logic
     function openMissingShardsModal() {
       const member = profileData?.members?.[selectedMemberId] || {};
@@ -3636,6 +4276,10 @@
       document.getElementById('mainData').style.display = 'none';
       document.getElementById('profileSelector').style.display = 'none';
       document.getElementById('memberSelector').style.display = 'none';
+      const nwTab = document.getElementById('networthTab');
+      if (nwTab) nwTab.innerHTML = '';
+      const nwOverview = document.getElementById('overviewNetworthVal');
+      if (nwOverview) nwOverview.textContent = 'N/A';
       hideStatus();
       playerData = null;
       profileData = null;
