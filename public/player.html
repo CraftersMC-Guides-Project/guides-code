@@ -3613,64 +3613,6 @@
       return cachedBazaarData || {};
     }
 
-    // Comprehensive CraftersMC known valuations lookup dictionary
-    const CRAFTERS_KNOWN_VALUATIONS = {
-      // Armor Sets & Pieces
-      superior_dragon_helmet: 8500000, superior_dragon_chestplate: 14000000,
-      superior_dragon_leggings: 11000000, superior_dragon_boots: 7000000,
-      wise_dragon_helmet: 1200000, wise_dragon_chestplate: 2500000,
-      wise_dragon_leggings: 2000000, wise_dragon_boots: 1100000,
-      strong_dragon_helmet: 1500000, strong_dragon_chestplate: 3000000,
-      strong_dragon_leggings: 2200000, strong_dragon_boots: 1300000,
-      unstable_dragon_helmet: 600000, unstable_dragon_chestplate: 1100000,
-      unstable_dragon_leggings: 900000, unstable_dragon_boots: 500000,
-      young_dragon_helmet: 750000, young_dragon_chestplate: 1400000,
-      young_dragon_leggings: 1100000, young_dragon_boots: 650000,
-      old_dragon_helmet: 400000, old_dragon_chestplate: 800000,
-      old_dragon_leggings: 600000, old_dragon_boots: 350000,
-      protector_dragon_helmet: 400000, protector_dragon_chestplate: 800000,
-      protector_dragon_leggings: 600000, protector_dragon_boots: 350000,
-      shadow_assassin_chestplate: 28000000, shadow_assassin_helmet: 4500000,
-      shadow_assassin_leggings: 6500000, shadow_assassin_boots: 3500000,
-      necron_chestplate: 45000000, necron_leggings: 22000000,
-      necron_boots: 16000000, necron_helmet: 14000000,
-
-      // Weapons & Slayer Gear
-      hyper_cleaver: 18000000, super_cleaver: 1500000, cleaver: 80000,
-      aspect_of_the_end: 250000, aote: 250000,
-      aspect_of_the_dragons: 1800000, aotd: 1800000,
-      livid_dagger: 7500000, shadow_fury: 22000000, flower_of_truth: 3000000,
-      runaans_bow: 1200000, magma_bow: 200000, savanna_bow: 50000,
-      reaper_falchion: 6500000, revenant_falchion: 800000, undead_sword: 5000,
-      scorpion_foil: 8000000, spider_sword: 5000, pooch_sword: 9500000, shaman_sword: 1200000,
-      emerald_blade: 2500000, leaping_sword: 1500000, silk_edge_sword: 4000000,
-      treecapitator: 1800000, jungle_axe: 15000, stonk: 499999, promising_pickaxe: 1000,
-
-      // Minion Upgrades & Equipment
-      super_compactor_3000: 450000, compactor: 10000,
-      enchanted_lava_bucket: 220000, plasma_bucket: 12000000, magma_bucket: 4500000,
-      potato_spreader: 150000, flycatcher: 14000000, diamond_spreading: 25000,
-
-      // Dolores Pet Care Speedups & Items (CraftersMC Specific)
-      dolores_flower: 1500000, dolores_bouquet: 8000000, beetroot_candy: 250000,
-
-      // Accessories & Rare Talismans
-      seal_of_the_family: 15000000, shady_ring: 500000, crooked_artifact: 2000000,
-      reaper_orb: 18000000, scythe_blade: 12000000, overflux_capacitor: 45000000,
-      auto_recombobulator: 16000000, recombobulator_3000: 5500000,
-      tarantula_talisman: 4000000, spider_ring: 400000, spider_talisman: 50000,
-      red_claw_artifact: 12000000, red_claw_ring: 2500000, red_claw_talisman: 300000,
-      survivor_cube: 10000000, sea_creature_artifact: 3500000, sea_creature_ring: 600000,
-      experience_artifact: 1200000, melody_hair: 5000000, day_crystal: 200000, night_crystal: 200000,
-      piggy_bank: 75000, cracked_piggy_bank: 50000, broken_piggy_bank: 25000,
-      candy_artifact: 4000000, candy_ring: 750000, candy_talisman: 100000,
-      bat_artifact: 6500000, bat_ring: 1200000, bat_person_talisman: 250000,
-      feather_artifact: 500000, feather_ring: 100000, feather_talisman: 15000,
-      potion_affinity_artifact: 600000, potion_affinity_ring: 120000, potion_affinity_talisman: 20000,
-      healing_ring: 350000, healing_talisman: 50000,
-      wood_affinity_talisman: 150000, farmer_orb: 200000, haste_ring: 250000
-    };
-
     function estimateItemPrice(item, bazaarData) {
       if (!item) return { unitPrice: 0, totalPrice: 0, source: 'None' };
       const count = Math.max(1, Number(item.count || item.Count || 1));
@@ -3692,17 +3634,7 @@
         }
       }
 
-      // 2. Check Known Items Dictionary
-      const known = CRAFTERS_KNOWN_VALUATIONS[cleanId] || CRAFTERS_KNOWN_VALUATIONS[cleanName];
-      if (known) {
-        return {
-          unitPrice: known,
-          totalPrice: Math.round(known * count),
-          source: 'Crafters Valuation'
-        };
-      }
-
-      // 3. Pet Valuation
+      // 2. Pet Valuation
       const isPet = (item.rawPetRarity || (item.lore && item.lore.some(l => /Pet\s*EXP|Level\s*\d+/i.test(l))) || (item.name && item.name.includes('[Lvl')));
       if (isPet) {
         let petLvl = 1;
@@ -3737,7 +3669,7 @@
         };
       }
 
-      // 4. Rarity-Based Baseline Fallback
+      // 3. Rarity-Based Baseline Fallback
       const rarity = (item.itemRarity || '').toUpperCase();
       const RARITY_FALLBACK = {
         'VERY SPECIAL': 5000000,
