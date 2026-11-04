@@ -61,7 +61,7 @@ var CATEGORIES_CONFIG = {
       ]
     },
     "farming-bests": {
-      "name": "Farming Bests",
+      "name": "Personal Bests",
       "items": [
         {
           "slug": "beetroot",
@@ -116,7 +116,7 @@ var CATEGORIES_CONFIG = {
       ]
     },
     "farming-contests": {
-      "name": "Farming Contests",
+      "name": "Ethan Contests",
       "items": [
         {
           "slug": "bronze",
@@ -626,11 +626,11 @@ var CATEGORIES_CONFIG = {
       ]
     },
     "miningmilestone": {
-      "name": "Miningmilestone",
+      "name": "Mining Milestone",
       "items": [
         {
           "slug": "miningmilestone",
-          "name": "Miningmilestone",
+          "name": "Mining Milestone",
           "scoreLabel": "Milestone"
         }
       ]
@@ -1252,7 +1252,94 @@ var CATEGORIES_CONFIG = {
         }
       ]
     }
-  }
+  },
+  "hierarchy": [
+    {
+      "num": 1,
+      "id": "combat",
+      "name": "Combat",
+      "icon": "sports_kabaddi",
+      "categories": ["boss-kills", "slayer"]
+    },
+    {
+      "num": 2,
+      "id": "kills",
+      "name": "Kills",
+      "icon": "pest_control",
+      "categories": ["kills"]
+    },
+    {
+      "num": 3,
+      "id": "collections",
+      "name": "Collections",
+      "icon": "inventory_2",
+      "isCollection": true,
+      "subCats": ["farming", "mining", "combat", "foraging"]
+    },
+    {
+      "num": 4,
+      "id": "skills",
+      "name": "Skills",
+      "icon": "trending_up",
+      "categories": ["skills"]
+    },
+    {
+      "num": 5,
+      "id": "mining",
+      "name": "Mining Milestone",
+      "icon": "construction",
+      "categories": ["miningmilestone"]
+    },
+    {
+      "num": 6,
+      "id": "races",
+      "name": "Races",
+      "icon": "timer",
+      "categories": ["races"]
+    },
+    {
+      "num": 7,
+      "id": "quests",
+      "name": "Quests",
+      "icon": "assignment",
+      "categories": ["daily-quests"]
+    },
+    {
+      "num": 8,
+      "id": "events",
+      "name": "Events",
+      "icon": "celebration",
+      "categories": ["farming-contests", "farming-bests", "shiny-pigs", "spooky-festival"]
+    },
+    {
+      "num": 9,
+      "id": "summoning",
+      "name": "Summoning",
+      "icon": "visibility",
+      "categories": ["summoning-eyes"]
+    },
+    {
+      "num": 10,
+      "id": "network-stats",
+      "name": "Network Stats",
+      "icon": "hub",
+      "categories": ["network-coins", "network-exp"]
+    },
+    {
+      "num": 11,
+      "id": "superpairs",
+      "name": "Superpairs",
+      "icon": "casino",
+      "categories": ["superpairs"]
+    },
+    {
+      "num": 12,
+      "id": "profile",
+      "name": "Profile",
+      "icon": "account_circle",
+      "categories": ["networth", "total-playtime", "skyblock-level", "crafters-level", "damage", "crit-damage"]
+    }
+  ]
 };
 
 if (typeof window !== "undefined") {
