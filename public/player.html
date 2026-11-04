@@ -169,7 +169,7 @@
                   <button class="player-subpanel-btn active" onclick="switchTab('overview')"><span
                       class="material-icons">dashboard</span> Overview</button>
                   <button class="player-subpanel-btn" onclick="switchTab('networth')"><span
-                      class="material-icons">account_balance_wallet</span> Networth &amp; Wealth</button>
+                      class="material-icons">account_balance_wallet</span> Networth</button>
                   <button class="player-subpanel-btn" onclick="switchTab('skills')"><span
                       class="material-icons">auto_awesome</span> Skills</button>
                   <button class="player-subpanel-btn" onclick="switchTab('slayers')"><span
@@ -3949,7 +3949,7 @@
       // Update Overview Tab's Estimated Networth row
       const overviewEl = document.getElementById('overviewNetworthVal');
       if (overviewEl) {
-        overviewEl.innerHTML = `<span style="font-weight:800; color:#ca8a04;">${formatShortNumber(totalCoins)}</span> <span style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">(${formatNumber(totalCoins)} coins)</span>`;
+        overviewEl.innerHTML = `<span class="overview-networth-val">${formatShortNumber(totalCoins)}</span> <span class="overview-networth-sub">(${formatNumber(totalCoins)} coins)</span>`;
       }
 
       // Build Categories HTML
@@ -3968,12 +3968,12 @@
         catHtml += `
           <div class="networth-cat-row">
             <div class="networth-cat-header">
-              <span style="display:flex; align-items:center; gap:6px;">
-                <span>${escapeHtml(label)}</span>
-                <span style="font-size:0.78rem; color:var(--text-muted); font-weight:600;">(${formatNumber(count)} items)</span>
+              <span class="networth-cat-title-group">
+                <span class="networth-cat-name">${escapeHtml(label)}</span>
+                <span class="networth-cat-count">(${formatNumber(count)} items)</span>
               </span>
-              <span style="font-family:'JetBrains Mono', monospace; font-weight:800;">
-                ${formatNumber(val)} coins <span style="font-size:0.8rem; color:var(--text-muted); font-weight:600;">(${pct}%)</span>
+              <span class="networth-cat-val">
+                ${formatNumber(val)} coins <span class="networth-cat-pct">(${pct}%)</span>
               </span>
             </div>
             <div class="networth-cat-bar-bg">
@@ -3997,21 +3997,21 @@
           return `
             <tr>
               <td>
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700; width:18px;">#${idx + 1}</span>
-                  <span style="font-weight:700; color:var(--text-bright);">${escapeHtml(nameClean)}</span>
+                <div class="networth-asset-cell">
+                  <span class="networth-rank-num">#${idx + 1}</span>
+                  <span class="networth-asset-name">${escapeHtml(nameClean)}</span>
                 </div>
               </td>
-              <td style="text-align:center; font-family:'JetBrains Mono', monospace; font-weight:600;">x${formatNumber(count)}</td>
-              <td style="text-align:right; font-family:'JetBrains Mono', monospace; color:var(--text-muted); font-size:0.85rem;">${formatNumber(unit)}</td>
-              <td style="text-align:right; font-family:'JetBrains Mono', monospace; font-weight:800; color:#ca8a04;">${formatNumber(total)}</td>
+              <td class="networth-qty-col">x${formatNumber(count)}</td>
+              <td class="networth-unit-col">${formatNumber(unit)}</td>
+              <td class="networth-total-col">${formatNumber(total)}</td>
               <td>
-                <span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:700; font-size:0.75rem; padding:2px 8px; border-radius:4px; border:1px solid #bae6fd;">
+                <span class="networth-badge container-badge">
                   ${escapeHtml(containerName)}
                 </span>
               </td>
               <td>
-                <span class="badge" style="background:#f3e8ff; color:#7e22ce; font-weight:700; font-size:0.75rem; padding:2px 8px; border-radius:4px; border:1px solid #e9d5ff;">
+                <span class="networth-badge source-badge">
                   ${escapeHtml(source)}
                 </span>
               </td>
@@ -4031,88 +4031,75 @@
       container.innerHTML = `
         <!-- Hero Total Networth Banner -->
         <div class="networth-hero-card" style="margin-bottom: 24px;">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+          <div class="networth-hero-top">
             <div>
-              <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
-                <span class="material-icons" style="color:#eab308; font-size:1.6rem;">account_balance_wallet</span>
-                <h2 style="font-size:1.4rem; font-weight:800; margin:0; color:var(--text-bright);">Total Networth &bull; ${escapeHtml(playerName)} <span style="color:var(--accent-color); font-weight:700;">[${escapeHtml(profileName)}]</span></h2>
+              <div class="networth-hero-header">
+                <span class="material-icons networth-hero-icon">account_balance_wallet</span>
+                <h2 class="networth-hero-title">Total Networth &bull; ${escapeHtml(playerName)} <span class="networth-profile-tag">[${escapeHtml(profileName)}]</span></h2>
               </div>
-              <div style="font-family:'JetBrains Mono', monospace; font-size:2.2rem; font-weight:900; color:#ca8a04; line-height:1.2;">
-                ${formatNumber(totalCoins)} <span style="font-size:1.1rem; font-weight:700; color:var(--text-muted);">coins</span>
+              <div class="networth-hero-coins">
+                ${formatNumber(totalCoins)} <span class="networth-hero-coins-unit">coins</span>
               </div>
               <div style="margin-top:6px;">
-                <span class="badge" style="background:#fef08a; color:#854d0e; font-weight:800; padding:4px 12px; border-radius:6px; font-size:0.95rem; border:1px solid #ca8a04;">
+                <span class="networth-hero-badge">
                   ${formatShortNumber(totalCoins)} Coins Total
                 </span>
               </div>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+            <div class="networth-hero-meta-right">
               <span class="api-pill enabled" style="font-size:0.8rem;">
                 <span class="material-icons" style="font-size:0.85rem;">verified</span> ${escapeHtml(sourceTag || 'Valuation Engine')}
               </span>
-              <span style="font-size:0.8rem; color:var(--text-muted);">Total Assets Valued: <strong>${formatNumber(totalItemCount)}</strong> items</span>
+              <span class="networth-assets-count">Total Assets Valued: <strong>${formatNumber(totalItemCount)}</strong> items</span>
             </div>
           </div>
 
-          <div style="margin-top:16px; padding-top:14px; border-top:1px dashed var(--border-color, #cbd5e1); display:flex; flex-wrap:wrap; gap:20px; font-size:0.85rem; color:var(--text-muted);">
-            <div>Liquid Wealth: <strong style="color:var(--text-bright);">${formatShortNumber(liquidCoins)} (${liquidPct}%)</strong></div>
-            <div>Physical Assets: <strong style="color:var(--text-bright);">${formatShortNumber(storageCoins)} (${itemsPct}%)</strong></div>
-            <div>Profile Mode: <strong style="color:var(--text-bright);">${escapeHtml(gameMode.toUpperCase())}</strong></div>
+          <div class="networth-hero-subbar">
+            <div>Liquid Wealth: <strong>${formatShortNumber(liquidCoins)} coins</strong></div>
+            <div>Physical Assets: <strong>${formatShortNumber(storageCoins)} coins</strong></div>
+            <div>Profile Mode: <strong>${escapeHtml(gameMode.toUpperCase())}</strong></div>
           </div>
         </div>
 
-        <!-- 4 Key Wealth KPI Cards Grid -->
+        <!-- Wealth Breakdown Cards Grid -->
         <div class="cards-grid" style="margin-bottom: 24px;">
           <!-- Purse -->
-          <div class="card" style="border-top: 4px solid #22c55e;">
+          <div class="card networth-kpi-card purse">
             <div class="card-header">
-              <span class="material-icons" style="color:#22c55e;">savings</span>
+              <span class="material-icons kpi-icon purse">savings</span>
               <span class="card-title">Coin Purse</span>
             </div>
-            <div style="font-family:'JetBrains Mono', monospace; font-size:1.5rem; font-weight:800; color:#16a34a; margin-bottom:4px;">
+            <div class="networth-kpi-val purse">
               ${formatShortNumber(purseCoins)}
             </div>
-            <div style="font-size:0.82rem; color:var(--text-muted);">${formatNumber(purseCoins)} coins</div>
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Available in player wallet</div>
+            <div class="networth-kpi-sub">${formatNumber(purseCoins)} coins</div>
+            <div class="networth-kpi-desc">Available in player wallet</div>
           </div>
 
           <!-- Bank -->
-          <div class="card" style="border-top: 4px solid #0284c7;">
+          <div class="card networth-kpi-card bank">
             <div class="card-header">
-              <span class="material-icons" style="color:#0284c7;">account_balance</span>
+              <span class="material-icons kpi-icon bank">account_balance</span>
               <span class="card-title">Bank Balance</span>
             </div>
-            <div style="font-family:'JetBrains Mono', monospace; font-size:1.5rem; font-weight:800; color:#0284c7; margin-bottom:4px;">
+            <div class="networth-kpi-val bank">
               ${formatShortNumber(bankCoins)}
             </div>
-            <div style="font-size:0.82rem; color:var(--text-muted);">${formatNumber(bankCoins)} coins</div>
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Co-op shared bank account</div>
+            <div class="networth-kpi-sub">${formatNumber(bankCoins)} coins</div>
+            <div class="networth-kpi-desc">Co-op shared bank account</div>
           </div>
 
           <!-- Item Assets -->
-          <div class="card" style="border-top: 4px solid #9333ea;">
+          <div class="card networth-kpi-card items">
             <div class="card-header">
-              <span class="material-icons" style="color:#9333ea;">inventory_2</span>
+              <span class="material-icons kpi-icon items">inventory_2</span>
               <span class="card-title">Item Assets</span>
             </div>
-            <div style="font-family:'JetBrains Mono', monospace; font-size:1.5rem; font-weight:800; color:#9333ea; margin-bottom:4px;">
+            <div class="networth-kpi-val items">
               ${formatShortNumber(storageCoins)}
             </div>
-            <div style="font-size:0.82rem; color:var(--text-muted);">${formatNumber(storageCoins)} coins</div>
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Equipment, inventories &amp; pets</div>
-          </div>
-
-          <!-- Liquidity Ratio -->
-          <div class="card" style="border-top: 4px solid #eab308;">
-            <div class="card-header">
-              <span class="material-icons" style="color:#eab308;">pie_chart</span>
-              <span class="card-title">Liquidity Ratio</span>
-            </div>
-            <div style="font-family:'JetBrains Mono', monospace; font-size:1.5rem; font-weight:800; color:#ca8a04; margin-bottom:4px;">
-              ${liquidPct}%
-            </div>
-            <div style="font-size:0.82rem; color:var(--text-muted);">${formatShortNumber(liquidCoins)} liquid coins</div>
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Purse &amp; Bank share of wealth</div>
+            <div class="networth-kpi-sub">${formatNumber(storageCoins)} coins</div>
+            <div class="networth-kpi-desc">Equipment, inventories &amp; pets</div>
           </div>
         </div>
 
@@ -4166,7 +4153,7 @@
           <div class="card" style="text-align: center; padding: 36px 16px;">
             <span class="material-icons" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 8px;">account_balance_wallet</span>
             <h3 style="font-size: 1.15rem; color: var(--text-bright); margin-bottom: 4px;">No Player Profile Selected</h3>
-            <p style="color: var(--text-muted); font-size: 0.88rem;">Search for a player above to inspect their live SkyBlock Networth and wealth breakdown.</p>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">Search for a player above to inspect their live SkyBlock Networth breakdown.</p>
           </div>
         `;
         return;
