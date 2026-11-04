@@ -108,7 +108,9 @@ function getApiKey(env = {}) {
     env.LEADERBOARDS_API_KEY ||
     env.leaderboards_api_key ||
     env.LB_API_KEY ||
-    env.lb_api_key
+    env.lb_api_key ||
+    env.NEST_API_KEY ||
+    env.nest_api_key
   );
 }
 
@@ -367,16 +369,42 @@ export async function dispatchUpstreamRequest(targetUrl, options = {}) {
   const parsed = new URL(targetUrl);
   const isNonStandardPort = parsed.port && parsed.port !== "80" && parsed.port !== "443";
 
-  // If non-standard port (like 3993), try raw TCP socket
+  // If non-standard port (like 3993 or 4994), try raw TCP socket with auto-retry
   if (isNonStandardPort) {
+    let lastErr = null;
     try {
       return await fetchViaSocket(targetUrl, options);
     } catch (sockErr) {
-      // If socket failed, try standard fetch as fallback
+      lastErr = sockErr;
+    }
+
+    // Auto-retry once on transient network drop or handshake timeout
+    try {
+      return await fetchViaSocket(targetUrl, options);
+    } catch (retryErr) {
+      lastErr = retryErr;
+    }
+
+    // Fallback to standard fetch if socket provider wasn't available
+    try {
+      const upstreamResponse = await fetch(targetUrl, {
+        method: options.method || "GET",
+        headers: options.headers || {},
+        body: options.body || undefined,
+        signal: options.signal
+      });
+
+      const text = await upstreamResponse.text();
+      return {
+        status: upstreamResponse.status,
+        text
+      };
+    } catch (_) {
+      throw lastErr || new Error(`Failed to reach ${parsed.hostname}:${parsed.port}`);
     }
   }
 
-  // Standard fetch for port 80/443 or fallback
+  // Standard fetch for port 80/443
   const upstreamResponse = await fetch(targetUrl, {
     method: options.method || "GET",
     headers: options.headers || {},

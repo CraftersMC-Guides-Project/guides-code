@@ -97,7 +97,12 @@ function getValidServerKeys(env = {}) {
     env.CMCG_BAZAAR_KEY,
     env.cmcg_bazaar_key,
     env.CRON_SECRET,
-    env.cron_secret
+    env.cron_secret,
+    env.NEST_API_KEY,
+    env.nest_api_key,
+    env['nest-api-key'],
+    env['NEST-API-KEY'],
+    env.NestApiKey
   ];
 
   for (const k of candidates) {

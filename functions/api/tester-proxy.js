@@ -73,7 +73,7 @@ function isAllowedTarget(targetUrl) {
 }
 
 export async function onRequest(context) {
-  const { request } = context;
+  const { request, env = {} } = context;
 
   // Handle CORS preflight
   if (request.method === "OPTIONS") {
@@ -143,9 +143,29 @@ export async function onRequest(context) {
     upstreamHeaders["Content-Type"] = contentType;
   }
 
-  const clientApiKey = request.headers.get("x-api-key") || request.headers.get("X-API-Key");
-  if (clientApiKey) {
-    upstreamHeaders["x-api-key"] = clientApiKey;
+  // Retrieve NEST_API_KEY from Cloudflare secrets / environment variables
+  const nestApiKey = (
+    env.NEST_API_KEY ||
+    env.nest_api_key ||
+    env["NEST-API-KEY"] ||
+    env["nest-api-key"] ||
+    env.NestApiKey ||
+    ""
+  ).trim();
+
+  // Check if client provided a custom key via header or query params
+  const clientApiKey = (
+    request.headers.get("x-api-key") ||
+    request.headers.get("X-API-Key") ||
+    url.searchParams.get("apiKey") ||
+    url.searchParams.get("api_key") ||
+    url.searchParams.get("key") ||
+    ""
+  ).trim();
+
+  const apiKeyToUse = clientApiKey || nestApiKey;
+  if (apiKeyToUse) {
+    upstreamHeaders["x-api-key"] = apiKeyToUse;
   }
 
   const authHeader = request.headers.get("authorization") || request.headers.get("Authorization");
@@ -158,7 +178,7 @@ export async function onRequest(context) {
       method: request.method,
       headers: upstreamHeaders,
       body,
-      timeout: 15000
+      timeout: 25000
     });
 
     return new Response(upstreamResult.text, {

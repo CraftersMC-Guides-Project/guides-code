@@ -20,6 +20,7 @@
   // Local Storage Keys & Config
   const STORAGE_BASE_URL = 'feather_api_base_url';
   const STORAGE_USE_PROXY = 'feather_api_use_proxy';
+  const STORAGE_API_KEY = 'feather_api_custom_key';
   const DEFAULT_BASE_URL = 'http://135.125.9.81:4994';
 
   function getBaseUrl() {
@@ -43,6 +44,14 @@
     return clean;
   }
 
+  function getApiKeyOverride() {
+    const el = document.getElementById('serverApiKey');
+    if (el && el.value && el.value.trim()) {
+      return el.value.trim();
+    }
+    return (localStorage.getItem(STORAGE_API_KEY) || '').trim();
+  }
+
   function shouldUseProxy() {
     const checkbox = document.getElementById('useProxyCheckbox');
     if (checkbox) {
@@ -55,6 +64,12 @@
     const useProxy = shouldUseProxy();
     const isHttpsPage = window.location.protocol === 'https:';
     const isInsecureTarget = rawTargetUrl.startsWith('http://');
+    const customKey = getApiKeyOverride();
+
+    const headers = {};
+    if (customKey) {
+      headers['x-api-key'] = customKey;
+    }
 
     // Route via Cloudflare Edge Proxy if proxy is checked or if on HTTPS calling insecure HTTP
     if (useProxy || (isHttpsPage && isInsecureTarget)) {
@@ -63,7 +78,8 @@
         url: proxyUrl,
         proxied: true,
         headers: {
-          'X-Guides-Client': 'craftersmc-web'
+          'X-Guides-Client': 'craftersmc-web',
+          ...headers
         }
       };
     }
@@ -71,7 +87,7 @@
     return {
       url: rawTargetUrl,
       proxied: false,
-      headers: {}
+      headers
     };
   }
 
@@ -266,6 +282,24 @@
       useProxyCheckbox.addEventListener('change', () => {
         localStorage.setItem(STORAGE_USE_PROXY, useProxyCheckbox.checked ? 'true' : 'false');
         testServerConnection();
+      });
+    }
+
+    // 1c. Load and bind custom API key input
+    const serverApiKeyInput = document.getElementById('serverApiKey');
+    if (serverApiKeyInput) {
+      serverApiKeyInput.value = localStorage.getItem(STORAGE_API_KEY) || '';
+      serverApiKeyInput.addEventListener('change', () => {
+        const val = serverApiKeyInput.value.trim();
+        if (val) {
+          localStorage.setItem(STORAGE_API_KEY, val);
+        } else {
+          localStorage.removeItem(STORAGE_API_KEY);
+        }
+        updateLiveUrlPreview();
+      });
+      serverApiKeyInput.addEventListener('input', () => {
+        updateLiveUrlPreview();
       });
     }
 
@@ -854,15 +888,18 @@
 
   function generateCurlCommand() {
     const url = getFullRequestUrl();
+    const apiKey = getApiKeyOverride() || 'YOUR_NEST_API_KEY';
     if (activeHttpMode === 'POST') {
       const baseUrl = getBaseUrl();
       const ep = ENDPOINTS[activeEndpointKey];
       const params = getEndpointParams();
       return `curl -X POST "${baseUrl}${ep.path}" \\
+  -H "x-api-key: ${apiKey}" \\
   -H "Content-Type: application/json" \\
   -d '${JSON.stringify(params, null, 2)}'`;
     }
-    return `curl -X GET "${url}"`;
+    return `curl -X GET "${url}" \\
+  -H "x-api-key: ${apiKey}"`;
   }
 
   function updateLiveUrlPreview() {
