@@ -189,7 +189,7 @@
                   <button class="player-subpanel-btn" onclick="switchTab('accessory')"><span
                       class="material-icons">auto_awesome</span> Accessory Bag</button>
                   <button class="player-subpanel-btn" onclick="switchTab('pet')"><span
-                      class="material-icons">pets</span> Pet Storage</button>
+                      class="material-icons">pets</span> Pets &amp; Dolores Pet Care</button>
                   <button class="player-subpanel-btn" onclick="switchTab('bags')"><span
                       class="material-icons">work</span> Special Bags</button>
                 </div>
@@ -430,6 +430,21 @@
       }
     }
 
+    function formatTimeRemaining(targetTimestamp) {
+      if (!targetTimestamp) return 'N/A';
+      const diffMs = Number(targetTimestamp) - Date.now();
+      if (diffMs <= 0) return 'Ready to Collect';
+      const totalSecs = Math.floor(diffMs / 1000);
+      const days = Math.floor(totalSecs / 86400);
+      const hours = Math.floor((totalSecs % 86400) / 3600);
+      const mins = Math.floor((totalSecs % 3600) / 60);
+      const parts = [];
+      if (days > 0) parts.push(`${days}d`);
+      if (hours > 0 || days > 0) parts.push(`${hours}h`);
+      parts.push(`${mins}m`);
+      return parts.join(' ');
+    }
+
     // Proxy Fetch Helper
     async function fetchFromProxy(endpoint) {
       const candidateUrls = [
@@ -653,7 +668,8 @@
         { name: 'Pumpkin Launcher Ammo', nbt: member.pumpkinLauncherAmmo || member.otherInventories?.pumpkin_launcher_ammo },
         { name: 'New Year Cake Bag', nbt: member.newYearCakeBag || member.new_year_cake_bag || member.otherInventories?.new_year_cake_bag },
         { name: 'Seed Bag', nbt: member.otherInventories?.seeds_inventory },
-        { name: 'Medal Bag', nbt: member.otherInventories?.medal_inventory }
+        { name: 'Medal Bag', nbt: member.otherInventories?.medal_inventory },
+        { name: "Dolores' Pet Care (Pet in Care)", nbt: member.petSitter?.pet }
       ];
 
       if (member.otherInventories && typeof member.otherInventories === 'object') {
@@ -874,10 +890,22 @@
         const raw = atob(b64Data);
         const u8 = new Uint8Array(raw.length);
         for (let i = 0; i < raw.length; i++) u8[i] = raw.charCodeAt(i);
-        const decomp = pako.ungzip(u8);
+        let decomp = null;
+        try {
+          decomp = pako.ungzip(u8);
+        } catch (_) {
+          try {
+            decomp = pako.inflate(u8);
+          } catch (_) {
+            try {
+              decomp = pako.inflateRaw(u8.subarray(10));
+            } catch (_) {}
+          }
+        }
+        if (!decomp) return [];
         const root = parseBinaryNbt(decomp);
 
-        const items = root?.items || root?.i || (Array.isArray(root) ? root : []);
+        const items = root?.items || root?.i || (Array.isArray(root) ? root : (root && typeof root === 'object' && (root.id !== undefined || root.tag || root.display || root.name || root.Name) ? [root] : []));
         if (Array.isArray(items)) {
           return items.map(it => {
             let inner = null;
@@ -1125,6 +1153,56 @@
       }
     }
 
+    // Parse paid upgrade item from Dolores Pet Care (NBT or trpixel identifier string)
+    function parsePaidItem(itemData) {
+      if (!itemData) return null;
+      if (typeof itemData === 'object' && itemData.name) return itemData;
+      if (typeof itemData === 'string') {
+        const extracted = extractItemsFromNbt(itemData);
+        if (extracted && extracted.length > 0) return extracted[0];
+
+        try {
+          const raw = atob(itemData);
+          const idMatch = raw.match(/(?:trpixel|minecraft):([a-z0-9_]+)/i);
+          if (idMatch) {
+            const fullId = idMatch[0].toLowerCase();
+            const cleanSlug = idMatch[1];
+            let name = cleanSlug.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+            if (typeof resolveItemName === 'function') {
+              const res = resolveItemName(fullId);
+              if (res && !res.startsWith('Item #')) name = res;
+            }
+            let count = 1;
+            const matchIdx = idMatch.index;
+            if (matchIdx >= 8) {
+              const b1 = raw.charCodeAt(matchIdx - 8);
+              const b2 = raw.charCodeAt(matchIdx - 7);
+              const b3 = raw.charCodeAt(matchIdx - 6);
+              const b4 = raw.charCodeAt(matchIdx - 5);
+              const val = (b1 << 24) | (b2 << 16) | (b3 << 8) | b4;
+              if (val > 0 && val <= 64000) count = val;
+            }
+            return {
+              id: fullId,
+              name: name,
+              rawName: name,
+              count: count,
+              slot: 0,
+              lore: [`§7Upgrade material provided to Dolores.`]
+            };
+          }
+        } catch (_) {}
+      }
+      return {
+        id: 0,
+        name: 'Upgrade Material',
+        rawName: 'Upgrade Material',
+        count: 1,
+        slot: 0,
+        lore: [`§7Paid item for pet upgrade.`]
+      };
+    }
+
     // Skill Math & Level Curves
     const SKILL_XP_PER_LEVEL = [
       50, 125, 200, 300, 500, 750, 1000, 1500, 2000, 3500,
@@ -1287,6 +1365,29 @@
         overallApiBadge = '<span class="api-pill disabled"><span class="material-icons" style="font-size:0.85rem;">lock</span> APIs Disabled</span>';
       }
 
+      const petSitter = member.petSitter;
+      const hasPetSitter = !!(petSitter && (
+        (petSitter.pet && String(petSitter.pet).length > 0) ||
+        (petSitter.finishTime && Number(petSitter.finishTime) > 0) ||
+        (petSitter.paidCoins && Number(petSitter.paidCoins) > 0) ||
+        (petSitter.startRarity && petSitter.endRarity)
+      ));
+
+      let doloresOverviewHtml = '';
+      if (hasPetSitter) {
+        const finishTime = Number(petSitter.finishTime) || 0;
+        const now = Date.now();
+        const isReady = finishTime > 0 && now >= finishTime;
+        const endRarity = (petSitter.endRarity || 'UPGRADE').toUpperCase();
+        if (isReady) {
+          doloresOverviewHtml = `<span class="badge" style="background:#16a34a; color:#fff; font-weight:700; padding:2px 8px; border-radius:6px; font-size:0.8rem;">Ready to Collect! (${endRarity})</span>`;
+        } else {
+          doloresOverviewHtml = `<span class="badge" style="background:#0284c7; color:#fff; font-weight:700; padding:2px 8px; border-radius:6px; font-size:0.8rem;">Upgrading to ${endRarity} (${formatTimeRemaining(finishTime)})</span>`;
+        }
+      } else {
+        doloresOverviewHtml = `<span style="color:var(--text-muted); font-size:0.85rem;">Idle (Hub Pet Care)</span>`;
+      }
+
       container.innerHTML = `
         <div class="cards-grid">
           <!-- Identity & Network -->
@@ -1327,6 +1428,7 @@
             <div class="data-item"><span class="data-label">Magical Soup Flight</span><span class="data-value string">${member.magicalMushroomSoupTime > 0 ? formatNumber(member.magicalMushroomSoupTime) + ' ticks' : 'Inactive'}</span></div>
             <div class="data-item"><span class="data-label">Visited Zones</span><span class="data-value number">${visitedZonesCount}</span></div>
             <div class="data-item"><span class="data-label">Pinned Quest</span><span class="data-value string">${member.pinnedQuest ? member.pinnedQuest.replace(/_/g, ' ') : 'None'}</span></div>
+            <div class="data-item"><span class="data-label">Dolores' Pet Care</span><span class="data-value string">${doloresOverviewHtml}</span></div>
             <div class="data-item"><span class="data-label">Profile ID</span><span class="data-value string" style="font-size:0.75rem;">${profileIdStr || 'N/A'}</span></div>
           </div>
 
@@ -2140,14 +2242,197 @@
       `;
     }
 
-    // 5. Pet Storage Tab in Grid Form
+    // Dolores' Pet Care (Hub Pet Sitter) Renderer
+    function renderDoloresPetCare(petSitter) {
+      const hasUpgrade = !!(petSitter && (
+        (petSitter.pet && String(petSitter.pet).length > 0) ||
+        (petSitter.finishTime && Number(petSitter.finishTime) > 0) ||
+        (petSitter.paidCoins && Number(petSitter.paidCoins) > 0) ||
+        (petSitter.startRarity && petSitter.endRarity)
+      ));
+
+      if (hasUpgrade) {
+        const startRarity = String(petSitter.startRarity || 'COMMON').toUpperCase();
+        const endRarity = String(petSitter.endRarity || 'UNCOMMON').toUpperCase();
+        const finishTime = Number(petSitter.finishTime) || 0;
+        const now = Date.now();
+        const isReady = finishTime > 0 && now >= finishTime;
+        const paidCoins = Number(petSitter.paidCoins) || 0;
+        const rawPaidItems = Array.isArray(petSitter.paidItems) ? petSitter.paidItems : (petSitter.paidItems ? [petSitter.paidItems] : []);
+        const paidItems = rawPaidItems.map(pi => parsePaidItem(pi)).filter(Boolean);
+
+        const extractedPet = petSitter.pet ? extractItemsFromNbt(petSitter.pet) : [];
+        const petItem = (extractedPet && extractedPet.length > 0) ? extractedPet[0] : {
+          id: 14388,
+          name: `[${endRarity}] Pet in Dolores' Care`,
+          rawName: `§6[${endRarity}] Pet in Dolores' Care`,
+          count: 1,
+          slot: 0,
+          lore: [
+            `§7Currently undergoing rarity evolution with Dolores.`,
+            `§7`,
+            `§7Initial Rarity: §a${startRarity}`,
+            `§7Target Rarity: §d${endRarity}`,
+            paidCoins > 0 ? `§7Coins Paid: §6${formatNumber(paidCoins)}` : null,
+            finishTime > 0 ? `§7Completion Time: §e${new Date(finishTime).toLocaleString()}` : null
+          ].filter(Boolean)
+        };
+
+        const petSlotHtml = renderMcSlot(petItem);
+        const paidItemsHtml = paidItems.length > 0
+          ? paidItems.map(it => {
+              const slotHtml = renderMcSlot(it);
+              return `
+                <div style="display:inline-flex; align-items:center; gap:8px; background:var(--card-inner-bg); padding:4px 10px; border-radius:8px; border:1px solid var(--border-color);">
+                  <div style="transform:scale(0.85); transform-origin:left center; margin-right:-4px;">${slotHtml}</div>
+                  <span style="font-weight:700; font-size:0.85rem; color:var(--text-bright);">${it.count > 1 ? `${it.count}x ` : ''}${it.name}</span>
+                </div>
+              `;
+            }).join(' ')
+          : '<span style="color:var(--text-muted); font-size:0.85rem;">None</span>';
+
+        const statusBadgeHtml = isReady
+          ? `<span class="dolores-status-badge ready"><span class="material-icons" style="font-size:1rem;">check_circle</span> Ready to Collect!</span>`
+          : `<span class="dolores-status-badge upgrading"><span class="material-icons" style="font-size:1rem;">hourglass_top</span> Upgrading (${formatTimeRemaining(finishTime)})</span>`;
+
+        return `
+          <div class="dolores-card-container">
+            <div class="dolores-card-header">
+              <div class="dolores-header-left">
+                <div class="dolores-avatar-icon">
+                  <span class="material-icons">pets</span>
+                </div>
+                <div>
+                  <div class="dolores-header-title">
+                    Dolores' Pet Care
+                    <span style="font-size:0.75rem; background:rgba(217,119,6,0.15); color:#d97706; padding:2px 8px; border-radius:6px; font-weight:700; border:1px solid #d97706;">Hub Building</span>
+                  </div>
+                  <div class="dolores-header-subtitle">Pet Sitter &amp; Rarity Upgrades (CraftersMC)</div>
+                </div>
+              </div>
+              <div>${statusBadgeHtml}</div>
+            </div>
+
+            <div class="dolores-active-grid">
+              <div class="dolores-pet-showcase">
+                <div style="transform:scale(1.3); margin:12px 0;">
+                  ${petSlotHtml}
+                </div>
+                <div style="font-weight:800; font-size:0.95rem; text-align:center; color:var(--text-bright);">
+                  ${petItem.name || 'Pet in Care'}
+                </div>
+                <div class="dolores-rarity-flow">
+                  <span class="dolores-rarity-pill rarity-pill-${startRarity.toLowerCase()}">${startRarity}</span>
+                  <span class="material-icons" style="font-size:1rem; color:var(--text-muted);">arrow_forward</span>
+                  <span class="dolores-rarity-pill rarity-pill-${endRarity.toLowerCase()}">${endRarity}</span>
+                </div>
+              </div>
+
+              <div class="dolores-details-grid">
+                <div class="dolores-detail-row">
+                  <span class="dolores-detail-label">Status:</span>
+                  <span class="dolores-detail-val">
+                    ${isReady
+                      ? '<span style="color:#16a34a; font-weight:800;">Completed! Ready to be collected in the Hub.</span>'
+                      : `<span style="color:#0284c7; font-weight:800;">${formatTimeRemaining(finishTime)} remaining</span>`}
+                  </span>
+                </div>
+
+                <div class="dolores-detail-row">
+                  <span class="dolores-detail-label">Finish Time:</span>
+                  <span class="dolores-detail-val" style="font-size:0.88rem;">
+                    ${finishTime > 0 ? new Date(finishTime).toLocaleString() : 'N/A'}
+                  </span>
+                </div>
+
+                <div class="dolores-detail-row">
+                  <span class="dolores-detail-label">Coins Paid:</span>
+                  <span class="dolores-detail-val text-yellow" style="font-weight:800;">
+                    <span class="material-icons" style="font-size:1rem; vertical-align:middle; color:#eab308;">monetization_on</span>
+                    ${formatNumber(paidCoins)} Coins
+                  </span>
+                </div>
+
+                <div class="dolores-detail-row" style="align-items:flex-start;">
+                  <span class="dolores-detail-label" style="padding-top:4px;">Items Paid:</span>
+                  <div class="dolores-detail-val" style="flex-wrap:wrap; gap:6px;">
+                    ${paidItemsHtml}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dolores-speedup-box">
+              <div class="dolores-speedup-title">
+                <span class="material-icons" style="font-size:1rem;">local_florist</span>
+                CraftersMC Dolores Upgrade Helpers
+              </div>
+              <div class="dolores-speedup-list">
+                <div>🌸 <strong>Dolores Flower</strong>: Reduces upgrade time by <strong>24 Hours</strong> (1 Day).</div>
+                <div>💐 <strong>Dolores Bouquet</strong>: Reduces upgrade time by <strong>120 Hours</strong> (5 Days).</div>
+                <div>🍬 <strong>Beetroot Candies</strong>: Give your pet instant Pet EXP (up to 10 candies per pet).</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Idle State: Dolores is available
+      return `
+        <div class="dolores-card-container">
+          <div class="dolores-card-header">
+            <div class="dolores-header-left">
+              <div class="dolores-avatar-icon">
+                <span class="material-icons">pets</span>
+              </div>
+              <div>
+                <div class="dolores-header-title">
+                  Dolores' Pet Care
+                  <span style="font-size:0.75rem; background:rgba(217,119,6,0.15); color:#d97706; padding:2px 8px; border-radius:6px; font-weight:700; border:1px solid #d97706;">Hub Building</span>
+                </div>
+                <div class="dolores-header-subtitle">Pet Sitter &amp; Rarity Upgrades (CraftersMC)</div>
+              </div>
+            </div>
+            <div>
+              <span class="dolores-status-badge idle">
+                <span class="material-icons" style="font-size:1rem;">bedtime</span>
+                Dolores is Idle (No Pet in Care)
+              </span>
+            </div>
+          </div>
+
+          <div style="font-size:0.9rem; color:var(--text-muted); line-height:1.6; margin-bottom:14px;">
+            Dolores is currently waiting in the <strong>Pet Care Building</strong> in the Hub. Bring any upgradable pet along with the required coins and materials to upgrade its rarity tier!
+          </div>
+
+          <div class="dolores-speedup-box">
+            <div class="dolores-speedup-title">
+              <span class="material-icons" style="font-size:1rem;">info</span>
+              Pet Care Guide &amp; Speedup Items
+            </div>
+            <div class="dolores-speedup-list">
+              <div>🌸 <strong>Dolores Flower</strong>: Reduces upgrade time by <strong>24 Hours</strong> (1 Day).</div>
+              <div>💐 <strong>Dolores Bouquet</strong>: Reduces upgrade time by <strong>120 Hours</strong> (5 Days).</div>
+              <div>🍬 <strong>Beetroot Candies</strong>: Feed your pet Beetroot Candies for instant EXP (up to 10 candies max).</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 5. Pets & Dolores' Pet Care Tab
     function renderPetStorage() {
       const container = document.getElementById('petTab');
+      if (!container) return;
       const member = profileData?.members?.[selectedMemberId] || {};
+      const petSitter = member.petSitter || {};
       const petItems = extractItemsFromNbt(member.petInventory);
 
+      const doloresHtml = renderDoloresPetCare(petSitter);
+
+      let storageHtml = '';
       if (!petItems || petItems.length === 0) {
-        container.innerHTML = `
+        storageHtml = `
           <div style="margin-bottom: 24px;">
             ${wrapMinecraftContainer('Pet Storage (0 pets)', `
               <div class="mc-empty-notice">
@@ -2156,39 +2441,47 @@
             `)}
           </div>
         `;
-        return;
-      }
+      } else {
+        const SLOTS_PER_PAGE = 45; // 5 rows × 9 columns
+        const highestSlot = petItems.reduce((max, it) => Math.max(max, it.slot >= 0 ? it.slot : 0), 0);
+        const totalPages = Math.max(1, Math.ceil((highestSlot + 1) / SLOTS_PER_PAGE));
+        const totalSlots = totalPages * SLOTS_PER_PAGE;
+        const slots = new Array(totalSlots).fill(null);
 
-      const SLOTS_PER_PAGE = 45; // 5 rows × 9 columns
-      const highestSlot = petItems.reduce((max, it) => Math.max(max, it.slot >= 0 ? it.slot : 0), 0);
-      const totalPages = Math.max(1, Math.ceil((highestSlot + 1) / SLOTS_PER_PAGE));
-      const totalSlots = totalPages * SLOTS_PER_PAGE;
-      const slots = new Array(totalSlots).fill(null);
+        petItems.forEach((it, idx) => {
+          if (it.slot >= 0 && it.slot < totalSlots) slots[it.slot] = it;
+          else {
+            const firstEmpty = slots.findIndex(s => s === null);
+            if (firstEmpty !== -1) slots[firstEmpty] = it;
+          }
+        });
 
-      petItems.forEach((it, idx) => {
-        if (it.slot >= 0 && it.slot < totalSlots) slots[it.slot] = it;
-        else {
-          const firstEmpty = slots.findIndex(s => s === null);
-          if (firstEmpty !== -1) slots[firstEmpty] = it;
+        const pagesHtml = [];
+        for (let p = 0; p < totalPages; p++) {
+          const pageSlots = slots.slice(p * SLOTS_PER_PAGE, (p + 1) * SLOTS_PER_PAGE);
+          const hasAnyItem = pageSlots.some(it => it !== null);
+          if (p > 0 && !hasAnyItem) continue;
+
+          const pageCells = pageSlots.map(it => renderMcSlot(it)).join('');
+          const pageTitle = totalPages > 1 ? `Pet Storage — Page ${p + 1}` : 'Pet Storage';
+          pagesHtml.push(wrapMinecraftContainer(pageTitle, `
+            <div class="extreme-inner-container" style="grid-template-rows: repeat(5, auto);">${pageCells}</div>
+          `));
         }
-      });
 
-      const pagesHtml = [];
-      for (let p = 0; p < totalPages; p++) {
-        const pageSlots = slots.slice(p * SLOTS_PER_PAGE, (p + 1) * SLOTS_PER_PAGE);
-        const hasAnyItem = pageSlots.some(it => it !== null);
-        if (p > 0 && !hasAnyItem) continue;
-
-        const pageCells = pageSlots.map(it => renderMcSlot(it)).join('');
-        const pageTitle = totalPages > 1 ? `Pet Storage — Page ${p + 1}` : 'Pet Storage';
-        pagesHtml.push(wrapMinecraftContainer(pageTitle, `
-          <div class="extreme-inner-container" style="grid-template-rows: repeat(5, auto);">${pageCells}</div>
-        `));
+        storageHtml = `
+          <div class="mc-grid-container">
+            ${pagesHtml.join('')}
+          </div>
+        `;
       }
 
       container.innerHTML = `
-        <div class="mc-grid-container">
-          ${pagesHtml.join('')}
+        <div style="margin-bottom: 28px;">
+          ${doloresHtml}
+        </div>
+        <div>
+          ${storageHtml}
         </div>
       `;
     }
