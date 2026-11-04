@@ -921,29 +921,44 @@
               if (rawExtraId) break;
             }
 
+            const isPlaceholder = (val) => {
+              if (typeof isPlaceholderItemName === 'function') return isPlaceholderItemName(val);
+              if (!val) return true;
+              const s = String(val).replace(/§[0-9a-fk-or]/gi, '').trim();
+              if (!s) return true;
+              if (/^-?\d+$/.test(s)) return true;
+              if (/^item\s*#?-?\d+$/i.test(s)) return true;
+              if (/^(unknown|unknown item|item|null|undefined)$/i.test(s)) return true;
+              return false;
+            };
+
             const cleanName = String(rawDisplayName || '').replace(/§[0-9a-fk-or]/gi, '').trim();
-            const isNumericDisplayName = cleanName && /^-?\d+$/.test(cleanName);
-            const effectiveDisplayName = isNumericDisplayName ? null : cleanName;
+            const effectiveDisplayName = isPlaceholder(cleanName) ? null : cleanName;
 
             const extraId = rawExtraId ? String(rawExtraId).trim().toLowerCase() : null;
+            const formattedExtraId = extraId ? extraId.replace(/^minecraft:/i, '').replace(/^trpixel:/i, '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : null;
+            const effectiveExtraName = isPlaceholder(formattedExtraId) ? null : formattedExtraId;
 
-            // Prioritize text names (displayName, extraId) FIRST. Only look up numeric ID if no text name exists.
-            let name = effectiveDisplayName || (extraId ? extraId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : null);
+            // Prioritize text names (displayName, extraId) FIRST. Only look up numeric ID if no valid text name exists.
+            let name = effectiveDisplayName || effectiveExtraName;
 
-            if (!name) {
+            if (!name || isPlaceholder(name)) {
               const rawBaseId = it.id;
               const damage = it.meta ?? it.damage ?? it.Damage;
               if (typeof resolveItemName === 'function') {
-                name = resolveItemName(rawBaseId, damage);
+                name = resolveItemName(it, damage);
+                if (isPlaceholder(name)) {
+                  name = resolveItemName(rawBaseId, damage);
+                }
               } else if (typeof getItemNameFromNumericId === 'function') {
-                name = getItemNameFromNumericId(rawBaseId);
+                name = getItemNameFromNumericId(rawBaseId, damage);
               } else if (typeof MINECRAFT_NUMERIC_IDS !== 'undefined') {
                 name = MINECRAFT_NUMERIC_IDS[String(rawBaseId)];
               }
             }
 
-            if (!name) {
-              name = String(it.id || 'Item');
+            if (!name || isPlaceholder(name)) {
+              name = (it.id !== undefined && it.id !== null) ? `Item #${it.id}` : 'Item';
             }
 
             // 1. Extract Kills (matching feather-bot: exclude farming tools, axes, pickaxes, drills, rods)
@@ -1081,12 +1096,16 @@
               }
             }
 
+            const finalRawName = (rawDisplayName && !isPlaceholder(rawDisplayName))
+              ? rawDisplayName
+              : name;
+
             return {
               id: it.id,
               meta: it.meta || 0,
               count: it.count || it.Count || 1,
               slot: it.slot !== undefined ? it.slot : -1,
-              rawName: rawDisplayName || name,
+              rawName: finalRawName || name,
               name: name || 'Item',
               lore: lore,
               extraId: extraId
@@ -1575,9 +1594,26 @@
     // Item Image Resolver from assets/images/
     function getItemImageUrl(item) {
       if (!item) return null;
-      const rawName = stripFormatting(item.rawName !== undefined && item.rawName !== null ? item.rawName : (item.name !== undefined && item.name !== null ? item.name : ''));
+      const isPlaceholder = (val) => {
+        if (typeof isPlaceholderItemName === 'function') return isPlaceholderItemName(val);
+        if (!val) return true;
+        const s = String(val).replace(/§[0-9a-fk-or]/gi, '').trim();
+        return !s || /^-?\d+$/.test(s) || /^item\s*#?-?\d+$/i.test(s) || /^(unknown|unknown item|item|null|undefined)$/i.test(s);
+      };
+
+      let rawName = stripFormatting(item.rawName !== undefined && item.rawName !== null ? item.rawName : (item.name !== undefined && item.name !== null ? item.name : ''));
       const id = String(item.id !== undefined && item.id !== null ? item.id : '').trim();
       const loreText = Array.isArray(item.lore) ? item.lore.map(l => stripFormatting(l)).join(' ') : '';
+
+      if (isPlaceholder(rawName)) {
+        const damage = item.meta ?? item.damage ?? item.Damage;
+        const resolved = (typeof resolveItemName === 'function' ? resolveItemName(item, damage) : null) ||
+                         (typeof resolveItemName === 'function' ? resolveItemName(id, damage) : null) ||
+                         (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(id, damage) : null);
+        if (resolved && !isPlaceholder(resolved)) {
+          rawName = resolved;
+        }
+      }
 
       // 1. Special case: Cake Soul (can have player head names like "iPhyruss" with "Cake Soul" in lore)
       if (/cake soul/i.test(rawName) || /cake soul/i.test(loreText) || id === '4766' || id === '4769') {
@@ -1722,7 +1758,7 @@
       }
 
       // 11. Standard candidate
-      if (candidate && !/^-?\d+$/.test(candidate)) {
+      if (candidate && !isPlaceholder(candidate)) {
         const sanitized = candidate.replace(/[^a-zA-Z0-9.\-']/g, '_').replace(/_+/g, '_');
         return `assets/images/${encodeURIComponent(sanitized)}.png`;
       }
@@ -1735,14 +1771,14 @@
       }
 
       // 13. Vanilla numeric ID fallback
-      if (!candidate || /^-?\d+$/.test(candidate)) {
-        const lookupKey = candidate && /^-?\d+$/.test(candidate) ? candidate : id;
+      if (!candidate || isPlaceholder(candidate)) {
+        const lookupKey = (candidate && /^-?\d+$/.test(candidate)) ? candidate : id;
         const damage = item.meta ?? item.damage ?? item.Damage;
         const mappedName = (typeof resolveItemName === 'function' ? resolveItemName(lookupKey, damage) : null) ||
-                           (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(lookupKey) : null) ||
+                           (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(lookupKey, damage) : null) ||
                            (typeof MINECRAFT_NUMERIC_IDS !== 'undefined' ? MINECRAFT_NUMERIC_IDS[lookupKey] : null) ||
                            (typeof window !== 'undefined' && window.MINECRAFT_NUMERIC_IDS ? window.MINECRAFT_NUMERIC_IDS[lookupKey] : null);
-        if (mappedName && mappedName !== 'Unknown Item') {
+        if (mappedName && !isPlaceholder(mappedName)) {
           if (/end.*stone.*brick.*slab/i.test(mappedName)) {
             return 'assets/images/End_Stone_Bricks.png';
           }
@@ -1760,20 +1796,32 @@
         return `<div class="cell"></div>`;
       }
 
+      const isPlaceholder = (val) => {
+        if (typeof isPlaceholderItemName === 'function') return isPlaceholderItemName(val);
+        if (!val) return true;
+        const s = String(val).replace(/§[0-9a-fk-or]/gi, '').trim();
+        return !s || /^-?\d+$/.test(s) || /^item\s*#?-?\d+$/i.test(s) || /^(unknown|unknown item|item|null|undefined)$/i.test(s);
+      };
+
       let titleName = item.rawName || item.name;
       const strippedTitle = stripFormatting(titleName);
-      if (!strippedTitle || /^-?\d+$/.test(strippedTitle)) {
-        const mapped = (typeof resolveItemName === 'function' ? resolveItemName(item.id, item.meta) : null) ||
-          (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(item.id) : null) ||
+      if (isPlaceholder(strippedTitle)) {
+        const mapped = (typeof resolveItemName === 'function' ? resolveItemName(item) : null) ||
+          (typeof resolveItemName === 'function' ? resolveItemName(item.id, item.meta) : null) ||
+          (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(item.id, item.meta) : null) ||
           (typeof getItemNameFromNumericId === 'function' ? getItemNameFromNumericId(titleName) : null) ||
           (typeof MINECRAFT_NUMERIC_IDS !== 'undefined' ? (MINECRAFT_NUMERIC_IDS[String(item.id)] || MINECRAFT_NUMERIC_IDS[String(titleName)]) : null) ||
           (typeof window !== 'undefined' && window.MINECRAFT_NUMERIC_IDS ? (window.MINECRAFT_NUMERIC_IDS[String(item.id)] || window.MINECRAFT_NUMERIC_IDS[String(titleName)]) : null);
-        if (mapped && mapped !== 'Unknown Item') titleName = mapped;
+        if (mapped && !isPlaceholder(mapped)) {
+          titleName = mapped;
+          item.name = mapped;
+          item.rawName = mapped;
+        }
       }
       const itemTitleHtml = renderMinecraftLore(titleName);
       const loreHtml = item.lore && item.lore.length > 0 ? renderMinecraftLore(item.lore) : '';
       const imgUrl = getItemImageUrl(item);
-      const safeItemName = String(item.name || item.rawName || item.id || 'Unknown Item').replace(/['"\\]/g, ' ');
+      const safeItemName = String(titleName || item.name || item.rawName || item.id || 'Unknown Item').replace(/['"\\]/g, ' ');
       const safeItemId = String(item.id !== undefined && item.id !== null ? item.id : '').replace(/['"\\]/g, ' ');
 
       if (!imgUrl && item.id && item.id !== 0 && item.id !== 'minecraft:air') {
