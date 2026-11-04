@@ -9,52 +9,96 @@
   // Category Configuration from leaderboards-config.js
   const CONFIG = window.CATEGORIES_CONFIG || { categories: {}, collections: {} };
 
-  // Organize categories into high-level navigation sections
-  const SECTIONS = [
-    {
-      id: "skills-progression",
-      name: "Skills & Progression",
-      icon: "trending_up",
-      categories: ["skills", "crafters-level", "skyblock-level", "total-playtime", "achievements"]
-    },
-    {
-      id: "slayers-combat",
-      name: "Slayer & Combat",
-      icon: "shield",
-      categories: ["slayer", "boss-kills", "kills", "damage", "crit-damage"]
-    },
-    {
-      id: "collections",
-      name: "Collections",
-      icon: "inventory_2",
-      isCollection: true,
-      subCats: ["mining", "farming", "combat", "foraging"]
-    },
-    {
-      id: "farming-contests",
-      name: "Farming Contests",
-      icon: "agriculture",
-      categories: ["farming-contests", "farming-bests"]
-    },
-    {
-      id: "economy-wealth",
-      name: "Economy & Wealth",
-      icon: "monetization_on",
-      categories: ["networth", "network-coins", "gems", "cakes"]
-    },
-    {
-      id: "races-speedruns",
-      name: "Races & Speedruns",
-      icon: "timer",
-      categories: ["races"]
-    },
-    {
-      id: "events-milestones",
-      name: "Events & Milestones",
-      icon: "celebration",
-      categories: ["spooky-festival", "shiny-pigs", "superpairs", "daily-quests", "miningmilestone", "summoning-eyes"]
-    }
-  ];
+  // 12-category hierarchical taxonomy matching Feather-Bot
+  const SECTIONS = (CONFIG.hierarchy && Array.isArray(CONFIG.hierarchy) && CONFIG.hierarchy.length > 0)
+    ? CONFIG.hierarchy
+    : [
+        {
+          num: 1,
+          id: "combat",
+          name: "Combat",
+          icon: "sports_kabaddi",
+          categories: ["boss-kills", "slayer"]
+        },
+        {
+          num: 2,
+          id: "kills",
+          name: "Kills",
+          icon: "pest_control",
+          categories: ["kills"]
+        },
+        {
+          num: 3,
+          id: "collections",
+          name: "Collections",
+          icon: "inventory_2",
+          isCollection: true,
+          subCats: ["farming", "mining", "combat", "foraging"]
+        },
+        {
+          num: 4,
+          id: "skills",
+          name: "Skills",
+          icon: "trending_up",
+          categories: ["skills"]
+        },
+        {
+          num: 5,
+          id: "mining",
+          name: "Mining Milestone",
+          icon: "construction",
+          categories: ["miningmilestone"]
+        },
+        {
+          num: 6,
+          id: "races",
+          name: "Races",
+          icon: "timer",
+          categories: ["races"]
+        },
+        {
+          num: 7,
+          id: "quests",
+          name: "Quests",
+          icon: "assignment",
+          categories: ["daily-quests"]
+        },
+        {
+          num: 8,
+          id: "events",
+          name: "Events",
+          icon: "celebration",
+          categories: ["farming-contests", "farming-bests", "shiny-pigs", "spooky-festival"]
+        },
+        {
+          num: 9,
+          id: "summoning",
+          name: "Summoning",
+          icon: "visibility",
+          categories: ["summoning-eyes"]
+        },
+        {
+          num: 10,
+          id: "network-stats",
+          name: "Network Stats",
+          icon: "hub",
+          categories: ["network-coins", "network-exp"]
+        },
+        {
+          num: 11,
+          id: "superpairs",
+          name: "Superpairs",
+          icon: "casino",
+          categories: ["superpairs"]
+        },
+        {
+          num: 12,
+          id: "profile",
+          name: "Profile",
+          icon: "account_circle",
+          categories: ["networth", "total-playtime", "skyblock-level", "crafters-level", "damage", "crit-damage"]
+        }
+      ];
 
   // Profile Colors for cute Fruit profiles
   const PROFILE_COLORS = {
@@ -214,17 +258,20 @@
   function findSectionForCategory(catKey) {
     if (catKey === "collections") return "collections";
     for (const sec of SECTIONS) {
+      if (sec.id === catKey) return sec.id;
       if (sec.categories && sec.categories.includes(catKey)) {
         return sec.id;
       }
     }
-    return "skills-progression";
+    return "skills";
   }
 
   // Parse location.hash
   // Supported patterns:
   // #collections/mining/diamond
   // #skills/combat
+  // #combat/boss-kills/superior-dragon
+  // #events/spooky-festival/14
   // #networth
   // #boss-kills/superior-dragon
   function parseRouteFromHash() {
@@ -233,24 +280,58 @@
       return { catKey: "skills", subCat: null, itemSlug: "combat" };
     }
 
+    const legacySectionMap = {
+      "skills-progression": "skills",
+      "slayers-combat": "combat",
+      "economy-wealth": "profile",
+      "races-speedruns": "races",
+      "events-milestones": "events"
+    };
+
     const parts = hash.split("/").map(decodeURIComponent).map((p) => p.trim());
+    let [first, second, third] = parts;
 
-    if (parts[0] === "collections") {
-      const subCat = parts[1] || "mining";
-      const itemSlug = parts[2] || (CONFIG.collections?.[subCat]?.items?.[0]?.slug || "diamond");
+    if (legacySectionMap[first]) {
+      first = legacySectionMap[first];
+    }
+
+    // Direct collection shortcut (e.g. #collections/mining/diamond)
+    if (first === "collections") {
+      const subCat = second || "farming";
+      const itemSlug = third || (CONFIG.collections?.[subCat]?.items?.[0]?.slug || "wheat");
       return { catKey: "collections", subCat, itemSlug };
     }
 
-    // Direct collection shortcut (e.g. #mining/diamond)
-    if (CONFIG.collections?.[parts[0]]) {
-      const subCat = parts[0];
-      const itemSlug = parts[1] || (CONFIG.collections[subCat]?.items?.[0]?.slug || "diamond");
+    if (CONFIG.collections?.[first]) {
+      const subCat = first;
+      const itemSlug = second || (CONFIG.collections[subCat]?.items?.[0]?.slug || "wheat");
       return { catKey: "collections", subCat, itemSlug };
     }
 
-    const catKey = parts[0] || "skills";
-    const itemSlug = parts[1] || (CONFIG.categories?.[catKey]?.items?.[0]?.slug || "");
-    return { catKey, subCat: null, itemSlug };
+    // Check if first is a Section ID (e.g. #combat/boss-kills/superior-dragon or #events/spooky-festival/12)
+    const matchedSec = SECTIONS.find((s) => s.id === first);
+    if (matchedSec) {
+      if (second && CONFIG.categories?.[second]) {
+        const catKey = second;
+        const itemSlug = third || (CONFIG.categories[catKey]?.items?.[0]?.slug || catKey);
+        return { catKey, subCat: null, itemSlug };
+      }
+      const defaultCat = matchedSec.categories ? matchedSec.categories[0] : first;
+      const catObj = CONFIG.categories?.[defaultCat];
+      if (catObj) {
+        const itemSlug = second || (catObj.items?.[0]?.slug || defaultCat);
+        return { catKey: defaultCat, subCat: null, itemSlug };
+      }
+    }
+
+    // Check if first is direct category key (e.g. #boss-kills/superior-dragon or #networth)
+    if (CONFIG.categories?.[first]) {
+      const catKey = first;
+      const itemSlug = second || (CONFIG.categories[catKey]?.items?.[0]?.slug || catKey);
+      return { catKey, subCat: null, itemSlug };
+    }
+
+    return { catKey: "skills", subCat: null, itemSlug: "combat" };
   }
 
   // Set location.hash without triggering infinite loops
@@ -258,10 +339,15 @@
     let newHash = "";
     if (catKey === "collections") {
       newHash = `#collections/${subCat}/${itemSlug}`;
-    } else if (itemSlug && itemSlug !== catKey) {
-      newHash = `#${catKey}/${itemSlug}`;
     } else {
-      newHash = `#${catKey}`;
+      const secId = findSectionForCategory(catKey);
+      if (secId && secId !== catKey) {
+        newHash = `#${secId}/${catKey}/${itemSlug}`;
+      } else if (itemSlug && itemSlug !== catKey) {
+        newHash = `#${catKey}/${itemSlug}`;
+      } else {
+        newHash = `#${catKey}`;
+      }
     }
 
     if (window.location.hash !== newHash) {
@@ -335,9 +421,9 @@
 
     if (sec.isCollection) {
       state.categoryKey = "collections";
-      state.subCatKey = sec.subCats[0];
+      state.subCatKey = sec.subCats[0] || "farming";
       const items = CONFIG.collections?.[state.subCatKey]?.items || [];
-      state.itemSlug = items[0]?.slug || "diamond";
+      state.itemSlug = items[0]?.slug || "wheat";
     } else {
       state.categoryKey = sec.categories[0];
       state.subCatKey = null;
@@ -361,6 +447,7 @@
 
     // 1. Secondary Categories Bar
     if (sec.isCollection) {
+      catContainer.style.display = "flex";
       catContainer.innerHTML = sec.subCats.map((sub) => {
         const subObj = CONFIG.collections[sub] || { name: sub, items: [] };
         const isActive = state.subCatKey === sub;
@@ -381,7 +468,8 @@
           loadCurrentLeaderboard();
         });
       });
-    } else {
+    } else if (sec.categories.length > 1) {
+      catContainer.style.display = "flex";
       catContainer.innerHTML = sec.categories.map((cKey) => {
         const cObj = CONFIG.categories[cKey] || { name: cKey, items: [] };
         const isActive = state.categoryKey === cKey;
@@ -404,6 +492,8 @@
           loadCurrentLeaderboard();
         });
       });
+    } else {
+      catContainer.style.display = "none";
     }
 
     // 2. Sub-items Bar
@@ -695,9 +785,31 @@
     const metaElem = document.getElementById("lbCurrentMeta");
     const scoreHeaderElem = document.getElementById("lbTableScoreHeader");
 
-    if (titleElem) {
-      titleElem.textContent = `${resolved.categoryName}: ${state.itemName}`;
+    const sec = SECTIONS.find((s) => s.id === state.sectionId) || SECTIONS[0];
+    let breadcrumbTitle = `${sec.num ? `${sec.num}. ` : ""}${sec.name}`;
+
+    if (sec.isCollection && state.subCatKey) {
+      const collName = CONFIG.collections[state.subCatKey]?.name || state.subCatKey;
+      breadcrumbTitle += ` › ${collName} › ${state.itemName}`;
+    } else if (sec.categories && sec.categories.length > 1) {
+      const catObj = CONFIG.categories[state.categoryKey];
+      const catDisplayName = catObj?.name || state.categoryKey;
+      if (catDisplayName.toLowerCase() !== sec.name.toLowerCase()) {
+        breadcrumbTitle += ` › ${catDisplayName}`;
+      }
+      if (state.itemName && state.itemName.toLowerCase() !== catDisplayName.toLowerCase()) {
+        breadcrumbTitle += ` › ${state.itemName}`;
+      }
+    } else {
+      if (state.itemName && state.itemName.toLowerCase() !== sec.name.toLowerCase()) {
+        breadcrumbTitle += ` › ${state.itemName}`;
+      }
     }
+
+    if (titleElem) {
+      titleElem.textContent = breadcrumbTitle;
+    }
+    document.title = `${state.itemName} - Leaderboards | CraftersMC Guides`;
     if (scoreHeaderElem) {
       scoreHeaderElem.textContent = state.scoreLabel.toUpperCase();
     }
@@ -843,7 +955,7 @@
       for (const item of subObj.items || []) {
         catalog.push({
           title: cleanItemName(item.name),
-          category: `Collections > ${subObj.name}`,
+          category: `3. Collections › ${subObj.name}`,
           catKey: "collections",
           subCat: subKey,
           slug: item.slug
@@ -853,10 +965,17 @@
 
     // 2. Standard Categories
     for (const [catKey, catObj] of Object.entries(CONFIG.categories || {})) {
+      const secId = findSectionForCategory(catKey);
+      const sec = SECTIONS.find((s) => s.id === secId);
+      const prefix = sec ? `${sec.num ? `${sec.num}. ` : ""}${sec.name}` : catObj.name;
+      const categoryLabel = (sec && catObj.name.toLowerCase() !== sec.name.toLowerCase())
+        ? `${prefix} › ${catObj.name}`
+        : prefix;
+
       for (const item of catObj.items || []) {
         catalog.push({
           title: cleanItemName(item.name),
-          category: catObj.name,
+          category: categoryLabel,
           catKey,
           subCat: null,
           slug: item.slug
