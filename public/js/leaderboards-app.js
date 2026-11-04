@@ -501,12 +501,12 @@
         : "";
 
       const formattedScore = formatScore(player.score ?? player.value, isRace);
-      const avatarUrl = `https://mc-api.io/render/HEAD/${encodeURIComponent(pName)}/BEDROCK?size=64`;
+      const avatarUrl = `https://mc-api.io/render/BUST/${encodeURIComponent(pName)}/BEDROCK?size=160`;
 
       return `
         <div class="lb-podium-card ${rankClass}">
           <div class="lb-podium-rank-tag">${medalIcon} ${rankLabel}</div>
-          <img class="lb-podium-avatar" src="${avatarUrl}" alt="${pName}" onerror="this.src='https://mc-api.io/render/HEAD/steve/BEDROCK?size=64'; this.onerror=null;" />
+          <img class="lb-podium-avatar" src="${avatarUrl}" alt="${pName}" onerror="this.src='https://mc-api.io/render/BUST/steve/BEDROCK?size=160'; this.onerror=null;" />
           <a class="lb-podium-name" href="/player.html?player=${encodeURIComponent(pName)}" title="View ${pName}'s SkyBlock Profile">
             ${pName}
           </a>

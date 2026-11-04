@@ -824,11 +824,6 @@ var CATEGORIES_CONFIG = {
           "scoreLabel": "Level / XP"
         },
         {
-          "slug": "fishing",
-          "name": "Fishing",
-          "scoreLabel": "Level / XP"
-        },
-        {
           "slug": "foraging",
           "name": "Foraging",
           "scoreLabel": "Level / XP"
@@ -841,26 +836,6 @@ var CATEGORIES_CONFIG = {
         {
           "slug": "taming",
           "name": "Taming",
-          "scoreLabel": "Level / XP"
-        },
-        {
-          "slug": "alchemy",
-          "name": "Alchemy",
-          "scoreLabel": "Level / XP"
-        },
-        {
-          "slug": "carpentry",
-          "name": "Carpentry",
-          "scoreLabel": "Level / XP"
-        },
-        {
-          "slug": "runecrafting",
-          "name": "Runecrafting",
-          "scoreLabel": "Level / XP"
-        },
-        {
-          "slug": "social",
-          "name": "Social",
           "scoreLabel": "Level / XP"
         }
       ]
