@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Feather Bot REST API Tester &amp; Studio — CraftersMC Guides</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Interactive testing studio and live debugger for Feather Bot calculation, valuation, and market engine REST API endpoints." />
+  <meta name="keywords"
+    content="Feather Bot API, CraftersMC API, networth api, skyblock price api, minion calculator api, pet exp api, crafting recipe api, REST API tester, swagger, endpoint debugger" />
+  <meta name="author" content="CraftersMC Guides Project" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#111827" />
+
+  <!-- Open Graph / Facebook Metadata -->
+  <meta property="og:title" content="Feather Bot REST API Tester &amp; Studio — CraftersMC Guides" />
+  <meta property="og:description"
+    content="Live testing studio for Feather Bot's zero-dependency REST API: Networth, Unified Item Price, XP/Skill, Minion Yields, Pet XP, and Recipe blueprints." />
+  <meta property="og:image" content="https://craftersmc-guides.pages.dev/assets/cmc-guides.png" />
+  <meta property="og:url" content="https://craftersmc-guides.pages.dev/api-tester.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="CraftersMC Guides" />
+
+  <!-- Twitter Card Metadata -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Feather Bot REST API Tester &amp; Studio — CraftersMC Guides" />
+  <meta name="twitter:description"
+    content="Directly test, benchmark, and debug all 6 Feather Bot calculation, valuation, and market engine REST endpoints in real-time." />
+  <meta name="twitter:image" content="https://craftersmc-guides.pages.dev/assets/cmc-guides.png" />
+
+  <link rel="icon" href="assets/cmc-icon.png" type="image/png" />
+  <link rel="icon" href="assets/cmc-guides.png" type="image/png" />
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <!-- Anti-flash Theme Init -->
+  <script>
+    (function () {
+      try {
+        var d = localStorage.getItem("darkMode");
+        if (d === "true" || (d === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("darkmode");
+        } else {
+          document.documentElement.classList.remove("darkmode");
+        }
+      } catch (e) { }
+    })();
+  </script>
+
+  <!-- Core & Unified Stylesheets -->
+  <link rel="stylesheet" href="css/essential.css" />
+  <link rel="stylesheet" href="css/neo-brutalism.css" />
+  <link rel="stylesheet" href="css/items.css" />
+  <link rel="stylesheet" href="css/api-tester.css" />
+
+  <!-- Application Scripts -->
+  <script src="js/components.js" defer></script>
+  <script src="js/script.js" defer></script>
+  <script src="js/api-tester.js" defer></script>
+</head>
+
+<body>
+
+  <!-- Fullscreen / Layout Overlays -->
+  <div class="background"></div>
+
+  <!-- Top Navigation (Loaded dynamically from /components/navbar.html) -->
+  <div class="top"></div>
+
+  <!-- Navigation Sidebar (Loaded dynamically from /components/sidebar.html) -->
+  <div class="sidebar" id="sidebar"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- =========================================================
+       MAIN NEO-BRUTALISM PAGE CONTENT
+       ========================================================= -->
+  <main class="neo-container api-tester-container" id="main-content">
+
+    <!-- HERO SECTION -->
+    <section class="neo-hero-card" id="overview">
+      <div class="neo-hero-bar">
+        <div class="neo-hero-window-dots">
+          <span class="neo-hero-dot red"></span>
+          <span class="neo-hero-dot yellow"></span>
+          <span class="neo-hero-dot green"></span>
+        </div>
+        <div class="neo-hero-bar-title">
+          <span class="material-icons" style="font-size:15px;">terminal</span>
+          CraftersMC-Guides-Project / Feather Bot REST API Studio
+        </div>
+      </div>
+
+      <div class="neo-hero-content">
+        <div class="neo-hero-heading-group">
+          <h1 class="neo-hero-title">
+            Feather Bot <span class="neo-hero-highlight">REST API Tester</span>
+          </h1>
+          <p class="neo-hero-subtitle">
+            Directly test, benchmark, and debug all 6 Feather Bot calculation, valuation, and market engine REST endpoints with real-time HTTP requests, visual payload inspects, and cURL generation.
+          </p>
+        </div>
+
+        <!-- HERO STAT PILLS -->
+        <div class="items-hero-stats">
+          <div class="items-stat-pill">
+            <span class="material-icons" style="color:var(--api-accent);">api</span>
+            <span><strong>6 Core</strong> Endpoints</span>
+          </div>
+          <div class="items-stat-pill highlight-blue">
+            <span class="material-icons" style="color:#0284c7;">bolt</span>
+            <span><strong>Zero</strong> Dependencies</span>
+          </div>
+          <div class="items-stat-pill highlight-orange">
+            <span class="material-icons" style="color:#f97316;">sync_alt</span>
+            <span><strong>GET &amp; POST</strong> Supported</span>
+          </div>
+          <div class="items-stat-pill highlight-purple">
+            <span class="material-icons" style="color:#8b5cf6;">speed</span>
+            <span><strong>120 req/min</strong> Rate Limit</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         API SERVER CONNECTION BAR
+         ========================================================= -->
+    <section class="api-server-bar">
+      <div class="api-server-left">
+        <span class="api-server-label">
+          <span class="material-icons" style="font-size:16px;">dns</span>
+          <span>Target Host:</span>
+        </span>
+        <div class="api-server-input-wrap">
+          <span class="material-icons api-server-input-icon">link</span>
+          <input type="url" id="serverBaseUrl" class="api-server-input" value="http://localhost:3000" placeholder="http://localhost:3000" aria-label="API Server Base URL" />
+        </div>
+        <button type="button" class="api-server-btn" id="pingServerBtn" title="Test server health &amp; ping">
+          <span class="material-icons" style="font-size:16px;">network_check</span>
+          <span>Test Connection</span>
+        </button>
+      </div>
+
+      <div class="api-server-right">
+        <!-- Live Status Pill -->
+        <div class="api-status-badge checking" id="serverStatusBadge">
+          <span class="api-status-dot"></span> Checking...
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         ENDPOINT NAVIGATION TABS
+         ========================================================= -->
+    <nav class="api-tabs-container" id="endpointTabs" role="tablist" aria-label="Endpoint Selector">
+      <!-- Injected dynamically by api-tester.js -->
+    </nav>
+
+    <!-- =========================================================
+         STUDIO WORKSPACE: REQUEST BUILDER (LEFT) & RESPONSE (RIGHT)
+         ========================================================= -->
+    <div class="api-studio-grid">
+
+      <!-- LEFT COLUMN: REQUEST BUILDER FORM -->
+      <div class="api-panel" id="endpointFormContainer">
+        <!-- Injected dynamically by api-tester.js based on selected endpoint -->
+      </div>
+
+      <!-- RIGHT COLUMN: RESPONSE INSPECTOR & LIVE OUTPUT -->
+      <div class="api-panel" id="responseInspectorPanel">
+        <!-- Response Header -->
+        <div class="api-panel-header">
+          <div class="api-panel-title-group">
+            <span class="material-icons api-panel-icon" style="color:var(--api-green);">output</span>
+            <h2 class="api-panel-title">Response Inspector</h2>
+          </div>
+
+          <div class="api-response-meta">
+            <span class="api-res-badge status-200" id="resStatusBadge" style="display:none;">200 OK</span>
+            <span class="api-res-badge time" id="resTimeBadge" style="display:none;">0 ms</span>
+            <span class="api-res-badge size" id="resSizeBadge" style="display:none;">0 B</span>
+          </div>
+        </div>
+
+        <!-- View Switcher Tabs -->
+        <div class="api-view-tabs" role="tablist">
+          <button type="button" class="api-view-tab active" id="viewTabVisual" role="tab" aria-selected="true">
+            <span class="material-icons" style="font-size:16px;">dashboard</span>
+            <span>Visual Cards</span>
+          </button>
+          <button type="button" class="api-view-tab" id="viewTabJson" role="tab" aria-selected="false">
+            <span class="material-icons" style="font-size:16px;">code</span>
+            <span>Raw JSON</span>
+          </button>
+          <button type="button" class="api-view-tab" id="viewTabDocs" role="tab" aria-selected="false">
+            <span class="material-icons" style="font-size:16px;">description</span>
+            <span>Docs &amp; Schema</span>
+          </button>
+        </div>
+
+        <!-- Response Body Containers -->
+        <div class="api-panel-body" style="min-height:380px;">
+
+          <!-- 1. Visual Cards View Container -->
+          <div id="responseVisualWrap">
+            <div class="api-empty-state">
+              <span class="material-icons api-empty-icon">play_circle_outline</span>
+              <h3 class="api-empty-title">Ready to Test Endpoint</h3>
+              <p class="api-empty-desc">
+                Select your endpoint parameters on the left and click <strong>Send API Request</strong> (or press <code>Ctrl+Enter</code>) to inspect live valuation results.
+              </p>
+              <div style="display:flex; gap:0.5rem; margin-top:0.4rem;">
+                <button type="button" class="api-server-btn" onclick="document.getElementById('sendRequestBtn').click();">
+                  <span class="material-icons" style="font-size:16px;">rocket_launch</span>
+                  <span>Send Sample Request</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Raw JSON View Container -->
+          <div id="responseJsonWrap" style="display:none;">
+            <div class="api-raw-json-wrap">
+              <button type="button" class="api-raw-json-copy-btn" id="copyJsonBtn" title="Copy formatted JSON to clipboard">
+                <span class="material-icons" style="font-size:15px;">content_copy</span>
+                <span>Copy JSON</span>
+              </button>
+              <pre class="api-raw-json" id="rawJsonOutput">// Click "Send API Request" to view raw JSON payload...</pre>
+            </div>
+          </div>
+
+          <!-- 3. Documentation View Container -->
+          <div id="responseDocsWrap" style="display:none;">
+            <!-- Dynamically rendered -->
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- =========================================================
+         ACTION BAR & LIVE REQUEST PREVIEW (BOTTOM)
+         ========================================================= -->
+    <div style="margin-top:1.5rem; display:flex; flex-direction:column; gap:0.85rem;">
+      <div class="api-request-preview-wrap">
+        <div class="api-request-preview-header">
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <span class="api-request-method-tag" id="requestMethodTag">GET</span>
+            <span style="font-size:0.75rem; font-weight:800; color:#94a3b8; text-transform:uppercase;">Live Request URL</span>
+          </div>
+          <div class="api-request-actions">
+            <button type="button" class="api-btn-small" id="copyUrlBtn" title="Copy live URL to clipboard">
+              <span class="material-icons" style="font-size:14px;">link</span> Copy URL
+            </button>
+            <button type="button" class="api-btn-small" id="copyCurlBtn" title="Copy ready-to-run cURL command">
+              <span class="material-icons" style="font-size:14px;">terminal</span> Copy cURL
+            </button>
+            <button type="button" class="api-btn-small" id="openUrlBtn" title="Open request directly in new tab">
+              <span class="material-icons" style="font-size:14px;">open_in_new</span> Open Tab
+            </button>
+          </div>
+        </div>
+        <pre class="api-request-preview-url" id="requestUrlPreview">http://localhost:3000/api/networth?player=T30ki&profile=POMEGRANTE</pre>
+      </div>
+
+      <button type="button" class="api-send-btn" id="sendRequestBtn" title="Execute API request (Shortcut: Ctrl + Enter)">
+        <span class="material-icons">send</span>
+        <span>Send API Request</span>
+        <span style="font-size:0.75rem; opacity:0.8; font-weight:600; text-transform:none;">(Ctrl + Enter)</span>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="item-toast" id="apiToast">
+    <span class="material-icons" style="font-size:18px; color:#22c55e;">check_circle</span>
+    <span id="apiToastText">Action completed</span>
+  </div>
+
+  <!-- Global Footer Container (Loaded dynamically from /components/footer.html) -->
+  <div id="footer"></div>
+
+</body>
+
+</html>
+
