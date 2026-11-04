@@ -8,7 +8,7 @@ const DEFAULT_BASE_URL = "http://135.125.9.81:3993/api/leaderboards";
 function corsHeaders() {
   return {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS, POST, PUT, PATCH",
     "Access-Control-Allow-Headers": "Content-Type, Authorization, x-api-key, X-Requested-With",
     "Access-Control-Max-Age": "86400"
   };
@@ -122,6 +122,10 @@ async function fetchViaSocket(targetUrl, options = {}) {
       const writer = socket.writable.getWriter();
       const encoder = new TextEncoder();
 
+      const encodedBody = options.body
+        ? (typeof options.body === "string" ? encoder.encode(options.body) : options.body)
+        : null;
+
       const headers = {
         "Host": `${hostname}:${port}`,
         "User-Agent": "CraftersMC-Guides/1.0",
@@ -130,6 +134,13 @@ async function fetchViaSocket(targetUrl, options = {}) {
         ...(options.headers || {})
       };
 
+      if (encodedBody) {
+        headers["Content-Length"] = String(encodedBody.length);
+        if (!headers["Content-Type"]) {
+          headers["Content-Type"] = "application/json";
+        }
+      }
+
       let requestStr = `${options.method || "GET"} ${path} HTTP/1.1\r\n`;
       for (const [k, v] of Object.entries(headers)) {
         requestStr += `${k}: ${v}\r\n`;
@@ -137,12 +148,8 @@ async function fetchViaSocket(targetUrl, options = {}) {
       requestStr += "\r\n";
 
       await writer.write(encoder.encode(requestStr));
-      if (options.body) {
-        if (typeof options.body === "string") {
-          await writer.write(encoder.encode(options.body));
-        } else {
-          await writer.write(options.body);
-        }
+      if (encodedBody) {
+        await writer.write(encodedBody);
       }
       writer.releaseLock();
 
@@ -215,6 +222,10 @@ async function fetchViaSocket(targetUrl, options = {}) {
     return new Promise((resolve, reject) => {
       const client = net.createConnection({ host: hostname, port }, () => {
         let req = `${options.method || "GET"} ${path} HTTP/1.1\r\n`;
+        let bodyBuf = null;
+        if (options.body) {
+          bodyBuf = Buffer.isBuffer(options.body) ? options.body : Buffer.from(options.body, "utf-8");
+        }
         const headers = {
           "Host": `${hostname}:${port}`,
           "User-Agent": "CraftersMC-Guides/1.0",
@@ -222,12 +233,18 @@ async function fetchViaSocket(targetUrl, options = {}) {
           "Connection": "close",
           ...(options.headers || {})
         };
+        if (bodyBuf) {
+          headers["Content-Length"] = String(bodyBuf.length);
+          if (!headers["Content-Type"]) {
+            headers["Content-Type"] = "application/json";
+          }
+        }
         for (const [k, v] of Object.entries(headers)) {
           req += `${k}: ${v}\r\n`;
         }
         req += "\r\n";
         client.write(req);
-        if (options.body) client.write(options.body);
+        if (bodyBuf) client.write(bodyBuf);
       });
 
       let raw = "";
@@ -272,6 +289,7 @@ async function dispatchUpstreamRequest(targetUrl, options = {}) {
   const upstreamResponse = await fetch(targetUrl, {
     method: options.method || "GET",
     headers: options.headers || {},
+    body: options.body || undefined,
     signal: options.signal
   });
 
@@ -329,16 +347,28 @@ export async function handleLeaderboardProxy(context) {
     targetUrl += (targetUrl.includes("?") ? "&" : "?") + queryString;
   }
 
+  const method = request.method || "GET";
+  let requestBody = null;
+  if (method === "POST" || method === "PUT" || method === "PATCH") {
+    try {
+      requestBody = await request.text();
+    } catch (e) {
+      requestBody = null;
+    }
+  }
+
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60500);
 
     const { status, text } = await dispatchUpstreamRequest(targetUrl, {
-      method: "GET",
+      method,
       headers: {
         "Accept": "application/json",
-        "x-api-key": apiKey
+        "x-api-key": apiKey,
+        ...(requestBody ? { "Content-Type": "application/json" } : {})
       },
+      body: requestBody,
       signal: controller.signal,
       timeout: 60000
     });
