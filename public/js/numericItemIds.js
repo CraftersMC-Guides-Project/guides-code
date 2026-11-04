@@ -7170,24 +7170,113 @@ const NUMERIC_ITEM_IDENTIFIERS = {
   "30068": "trpixel:easter_wreath",
 };
 
-function getItemNameFromNumericId(numericId) {
+function getItemNameFromNumericId(numericId, damage) {
   if (numericId === undefined || numericId === null) return "Unknown Item";
-  const idStr = String(numericId);
-  return MINECRAFT_NUMERIC_IDS[idStr] || `Item #${numericId}`;
-}
-
-function resolveItemName(item) {
-  if (!item) return "Unknown Item";
-  if (item.customName) return item.customName;
-  if (item.name && item.name !== "Unknown") return item.name;
-  if (item.numericId !== undefined && item.numericId !== null) {
-    const fromId = getItemNameFromNumericId(item.numericId);
-    if (fromId && !fromId.startsWith("Item #")) return fromId;
+  const idStr = String(numericId).trim();
+  if (damage !== undefined && damage !== null && damage !== 0) {
+    const withDamage = `${idStr}:${damage}`;
+    if (MINECRAFT_NUMERIC_IDS[withDamage]) return MINECRAFT_NUMERIC_IDS[withDamage];
   }
-  if (item.pureId) {
-    const clean = String(item.pureId).replace(/^minecraft:/i, "").replace(/^trpixel:/i, "");
+  if (MINECRAFT_NUMERIC_IDS[idStr]) {
+    return MINECRAFT_NUMERIC_IDS[idStr];
+  }
+  if (typeof NUMERIC_ITEM_IDENTIFIERS !== "undefined" && NUMERIC_ITEM_IDENTIFIERS[idStr]) {
+    const clean = String(NUMERIC_ITEM_IDENTIFIERS[idStr]).replace(/^minecraft:/i, "").replace(/^trpixel:/i, "");
     return clean.split("_").map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
   }
+  return `Item #${numericId}`;
+}
+
+function isPlaceholderItemName(name) {
+  if (!name) return true;
+  const s = String(name).replace(/§[0-9a-fk-or]/gi, "").trim();
+  if (!s) return true;
+  if (/^-?\d+$/.test(s)) return true;
+  if (/^item\s*#?-?\d+$/i.test(s)) return true;
+  if (/^(unknown|unknown item|item|null|undefined)$/i.test(s)) return true;
+  return false;
+}
+
+function resolveItemName(item, metaOrDamage) {
+  if (item === undefined || item === null) return "Unknown Item";
+
+  // Case 1: item is a scalar (numeric ID, negative ID, or numeric string)
+  if (typeof item === "number" || (typeof item === "string" && /^-?\d+$/.test(item.trim()))) {
+    const numId = typeof item === "number" ? item : parseInt(item.trim(), 10);
+    const fromId = getItemNameFromNumericId(numId, metaOrDamage);
+    if (fromId && !fromId.startsWith("Item #")) return fromId;
+    return fromId || `Item #${item}`;
+  }
+
+  // Case 2: item is an identifier string (e.g. "minecraft:diamond_sword" or "trpixel:pointed_obsidian" or "diamond_sword")
+  if (typeof item === "string") {
+    const trimmed = item.trim();
+    if (isPlaceholderItemName(trimmed)) {
+      return "Unknown Item";
+    }
+    if (trimmed.includes(":") || trimmed.includes("_")) {
+      const clean = trimmed.replace(/^minecraft:/i, "").replace(/^trpixel:/i, "");
+      return clean.split("_").map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+    }
+    return trimmed;
+  }
+
+  // Case 3: item is an object
+  if (typeof item === "object") {
+    // 3a. Custom / Display Name
+    const customName = item.customName || item.custom_name || item.displayName || item.rawDisplayName;
+    if (customName && !isPlaceholderItemName(customName)) {
+      return customName;
+    }
+
+    // 3b. Extra Attributes ID (SkyBlock Item ID, e.g. "HYPERION", "ASPECT_OF_THE_END")
+    const rawExtra = item.extraId || item.extra_attributes?.id || item.ExtraAttributes?.id || item.attributes?.id;
+    if (rawExtra && typeof rawExtra === "string") {
+      const cleanExtra = rawExtra.replace(/^minecraft:/i, "").replace(/^trpixel:/i, "");
+      const formatted = cleanExtra.toLowerCase().replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      if (!isPlaceholderItemName(formatted)) {
+        return formatted;
+      }
+    }
+
+    // 3c. Explicit name / rawName (if not a placeholder)
+    if (item.name && !isPlaceholderItemName(item.name)) {
+      return item.name;
+    }
+    if (item.rawName && !isPlaceholderItemName(item.rawName)) {
+      return item.rawName;
+    }
+
+    // 3d. Numeric ID lookup
+    const rawId = item.numericId !== undefined && item.numericId !== null
+      ? item.numericId
+      : (item.id !== undefined && item.id !== null ? item.id : (item.itemId !== undefined ? item.itemId : item.item_id));
+
+    const damage = item.meta ?? item.damage ?? item.Damage ?? metaOrDamage;
+
+    if (rawId !== undefined && rawId !== null) {
+      if (typeof rawId === "number" || /^-?\d+$/.test(String(rawId).trim())) {
+        const fromId = getItemNameFromNumericId(rawId, damage);
+        if (fromId && !fromId.startsWith("Item #")) return fromId;
+      } else if (typeof rawId === "string" && (rawId.includes(":") || rawId.includes("_"))) {
+        const clean = String(rawId).replace(/^minecraft:/i, "").replace(/^trpixel:/i, "");
+        return clean.split("_").map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+      }
+    }
+
+    // 3e. pureId or identifier
+    const pureId = item.pureId || item.identifier;
+    if (pureId) {
+      const clean = String(pureId).replace(/^minecraft:/i, "").replace(/^trpixel:/i, "");
+      return clean.split("_").map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+    }
+
+    // Fallback to "Item #ID" if ID exists
+    if (rawId !== undefined && rawId !== null && rawId !== 0) {
+      return `Item #${rawId}`;
+    }
+  }
+
   return "Unknown Item";
 }
 
@@ -7204,6 +7293,7 @@ if (typeof window !== "undefined") {
   window.NUMERIC_ITEM_IDS = NUMERIC_ITEM_IDS;
   window.NUMERIC_ITEM_IDENTIFIERS = NUMERIC_ITEM_IDENTIFIERS;
   window.getItemNameFromNumericId = getItemNameFromNumericId;
+  window.isPlaceholderItemName = isPlaceholderItemName;
   window.resolveItemName = resolveItemName;
   window.getItemIdentifier = getItemIdentifier;
   window.getItemIdentifierFromNumericId = getItemIdentifierFromNumericId;
@@ -7216,6 +7306,7 @@ if (typeof module !== "undefined" && module.exports) {
     NUMERIC_ITEM_IDS,
     NUMERIC_ITEM_IDENTIFIERS,
     getItemNameFromNumericId,
+    isPlaceholderItemName,
     resolveItemName,
     getItemIdentifier,
     getItemIdentifierFromNumericId
