@@ -373,7 +373,10 @@
 
     const primaryUrl = buildApiUrl(catKey, subCat, itemSlug);
     const res = await fetch(primaryUrl, {
-      headers: { "Accept": "application/json" }
+      headers: {
+        "Accept": "application/json",
+        "X-Guides-Client": "craftersmc-web"
+      }
     });
 
     if (!res.ok) {

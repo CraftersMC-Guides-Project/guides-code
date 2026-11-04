@@ -5,25 +5,102 @@
 
 const DEFAULT_BASE_URL = "http://135.125.9.81:3993/api/leaderboards";
 
-function corsHeaders() {
+function isAllowedDomain(urlStr) {
+  if (!urlStr) return false;
+  try {
+    const parsed = new URL(urlStr);
+    const host = parsed.hostname.toLowerCase();
+    return (
+      host === "craftersmc-guides.pages.dev" ||
+      host.endsWith(".craftersmc-guides.pages.dev") ||
+      host.endsWith(".pages.dev") ||
+      host === "localhost" ||
+      host === "127.0.0.1"
+    );
+  } catch (_) {
+    return false;
+  }
+}
+
+function corsHeaders(request = null, isAllowed = false) {
+  const origin = request ? request.headers.get("origin") : null;
+  let allowOrigin = "https://craftersmc-guides.pages.dev";
+  if (isAllowed && origin) {
+    allowOrigin = origin;
+  } else if (origin && isAllowedDomain(origin)) {
+    allowOrigin = origin;
+  }
+
   return {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": allowOrigin,
     "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS, POST, PUT, PATCH",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, x-api-key, X-Requested-With",
-    "Access-Control-Max-Age": "86400"
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, x-api-key, X-Requested-With, X-Guides-Client",
+    "Access-Control-Max-Age": "86400",
+    "Vary": "Origin"
   };
 }
 
-function jsonResponse(body, status = 200, extraHeaders = {}) {
+function jsonResponse(body, status = 200, extraHeaders = {}, request = null, isAllowed = false) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       "Content-Type": "application/json; charset=utf-8",
-      ...corsHeaders(),
+      ...corsHeaders(request, isAllowed),
       "Cache-Control": status === 200 ? "public, max-age=60, s-maxage=120, stale-while-revalidate=300" : "no-store",
       ...extraHeaders
     }
   });
+}
+
+function extractClientApiKey(request, url) {
+  const headerKey = request.headers.get("x-api-key") || request.headers.get("X-API-Key");
+  if (headerKey) return headerKey.trim();
+
+  const authHeader = request.headers.get("authorization") || request.headers.get("Authorization");
+  if (authHeader) {
+    if (authHeader.startsWith("Bearer ")) {
+      return authHeader.slice(7).trim();
+    }
+    return authHeader.trim();
+  }
+
+  const queryKey =
+    url.searchParams.get("apiKey") ||
+    url.searchParams.get("api_key") ||
+    url.searchParams.get("key");
+  if (queryKey) return queryKey.trim();
+
+  return null;
+}
+
+function isInternalWebsiteRequest(request) {
+  const secFetchDest = (request.headers.get("sec-fetch-dest") || "").toLowerCase();
+  const secFetchMode = (request.headers.get("sec-fetch-mode") || "").toLowerCase();
+  const secFetchSite = (request.headers.get("sec-fetch-site") || "").toLowerCase();
+  const origin = request.headers.get("origin") || "";
+  const referer = request.headers.get("referer") || "";
+  const clientHeader = (request.headers.get("x-guides-client") || "").toLowerCase();
+
+  // 1. Direct browser URL navigation (typing/clicking the URL in address bar)
+  // Browsers strictly send sec-fetch-dest: "document" and sec-fetch-mode: "navigate"
+  if (secFetchDest === "document" || secFetchMode === "navigate") {
+    return false;
+  }
+
+  // 2. If origin is present, it MUST match an allowed website domain
+  if (origin && !isAllowedDomain(origin)) {
+    return false;
+  }
+
+  // 3. Must have the internal client header AND originate from the website
+  const hasValidReferer = isAllowedDomain(referer);
+  const isSameSite = secFetchSite === "same-origin" || secFetchSite === "same-site";
+
+  if (clientHeader === "craftersmc-web" && isSameSite && hasValidReferer) {
+    return true;
+  }
+
+  return false;
 }
 
 function getApiKey(env = {}) {
@@ -305,27 +382,62 @@ async function dispatchUpstreamRequest(targetUrl, options = {}) {
  */
 export async function handleLeaderboardProxy(context) {
   const { request, env } = context;
+  const url = new URL(request.url);
 
   // Handle CORS Preflight
   if (request.method === "OPTIONS") {
+    const origin = request.headers.get("origin");
+    const isAllowedOrigin = isAllowedDomain(origin);
     return new Response(null, {
       status: 204,
-      headers: corsHeaders()
+      headers: corsHeaders(request, isAllowedOrigin)
     });
   }
 
-  const url = new URL(request.url);
   const subPath = extractSubPath(context);
   const baseUrl = getBaseUrl(env);
-  const apiKey = getApiKey(env);
+  const serverApiKey = getApiKey(env);
 
-  if (!apiKey) {
+  if (!serverApiKey) {
     return jsonResponse(
       {
         ok: false,
         error: "Missing LEADERBOARDS_API_KEY or LB_API_KEY secret in Cloudflare environment"
       },
-      500
+      500,
+      {},
+      request,
+      false
+    );
+  }
+
+  // Client authorization check
+  const clientKey = extractClientApiKey(request, url);
+  const isInternal = isInternalWebsiteRequest(request);
+
+  if (clientKey) {
+    if (clientKey !== serverApiKey) {
+      return jsonResponse(
+        {
+          ok: false,
+          error: "Unauthorized: Invalid API key."
+        },
+        401,
+        {},
+        request,
+        false
+      );
+    }
+  } else if (!isInternal) {
+    return jsonResponse(
+      {
+        ok: false,
+        error: "Unauthorized: API key required. Provide a valid API key via the 'x-api-key' header, Authorization header, or '?apiKey=' query parameter to access the Leaderboards API."
+      },
+      401,
+      {},
+      request,
+      false
     );
   }
 
@@ -336,9 +448,19 @@ export async function handleLeaderboardProxy(context) {
   }
 
   // Forward query parameters (limit, page, search, etc.)
+  // Strip apiKey parameters so they are not leaked in upstream logs
   const forwardParams = new URLSearchParams();
   for (const [key, value] of url.searchParams.entries()) {
-    if (key !== "category" && key !== "cat" && key !== "item" && key !== "subId" && key !== "subCat") {
+    if (
+      key !== "category" &&
+      key !== "cat" &&
+      key !== "item" &&
+      key !== "subId" &&
+      key !== "subCat" &&
+      key !== "apiKey" &&
+      key !== "api_key" &&
+      key !== "key"
+    ) {
       forwardParams.append(key, value);
     }
   }
@@ -365,7 +487,7 @@ export async function handleLeaderboardProxy(context) {
       method,
       headers: {
         "Accept": "application/json",
-        "x-api-key": apiKey,
+        "x-api-key": serverApiKey,
         ...(requestBody ? { "Content-Type": "application/json" } : {})
       },
       body: requestBody,
@@ -387,7 +509,7 @@ export async function handleLeaderboardProxy(context) {
       };
     }
 
-    return jsonResponse(data, status);
+    return jsonResponse(data, status, {}, request, true);
   } catch (err) {
     const isTimeout = err.name === "AbortError" || err.message?.includes("timed out");
     return jsonResponse(
@@ -397,7 +519,10 @@ export async function handleLeaderboardProxy(context) {
         detail: err.message,
         targetUrl
       },
-      504
+      504,
+      {},
+      request,
+      false
     );
   }
 }

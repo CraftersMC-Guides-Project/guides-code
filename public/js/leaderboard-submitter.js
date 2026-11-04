@@ -483,7 +483,8 @@
       fetch('/api/leaderboards/update', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-Guides-Client': 'craftersmc-web'
         },
         body: JSON.stringify(updates)
       })
