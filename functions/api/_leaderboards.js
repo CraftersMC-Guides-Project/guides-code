@@ -1,264 +1,189 @@
-const REMOTE_BASE_URL = "https://leaderboards.craftersmcguides.workers.dev";
+/**
+ * Cloudflare Pages Functions Proxy for CraftersMC Leaderboards API
+ * Proxies requests to LEADERBOARDS_API_BASE_URL with LEADERBOARDS_API_KEY
+ */
 
-const LEADERBOARD_DEFINITIONS = {
-  achievements: {
-    name: "Achievements",
-    page: "/achievements-leaderboard.html",
-    remoteId: "multi",
-    property: "achievementsData",
-    aliases: ["achievements", "achievement", "achievements-leaderboard"]
-  },
-  "avg-skill": {
-    name: "Average Skill",
-    page: "/avg-skill-leaderboard.html",
-    remoteId: "multi",
-    property: "skillData",
-    aliases: ["avg-skill", "average-skill", "average-skill-leaderboard"]
-  },
-  cakes: {
-    name: "Cakes",
-    page: "/cakes-leaderboard.html",
-    remoteId: "multi",
-    property: "cakeData",
-    aliases: ["cakes", "cake", "cakes-leaderboard"]
-  },
-  gems: {
-    name: "Gems",
-    page: "/gems-leaderboard.html",
-    remoteId: "multi",
-    property: "gemsData",
-    aliases: ["gems", "gems-leaderboard"]
-  },
-  "crafters-level": {
-    name: "Crafters Level",
-    page: "/crafters-level-leaderboard.html",
-    remoteId: "multi",
-    property: "levelsData",
-    aliases: ["crafters-level", "levels", "crafters-level-leaderboard"]
-  },
-  playtime: {
-    name: "Playtime",
-    page: "/playtime.html",
-    remoteId: "multi",
-    property: "playtimeData",
-    aliases: ["playtime", "playtime-leaderboard"]
-  },
-  slayers: {
-    name: "Slayers",
-    page: "/slayers-leaderboards.html",
-    remoteId: "multi",
-    property: "collectionsData",
-    aliases: ["slayers", "slayer", "slayers-leaderboards"]
-  },
-  damage: {
-    name: "Damage",
-    page: "/damage-leaderboard.html",
-    remoteId: "multi",
-    property: "damageData",
-    aliases: ["damage", "damage-leaderboard"]
-  },
-  networth: {
-    name: "Networth",
-    page: "/networth-leaderboard.html",
-    remoteId: "multi",
-    property: "networthData",
-    aliases: ["networth", "net-worth", "networth-leaderboard"]
-  },
-  pets: {
-    name: "Pets",
-    page: "/pets-leaderboards.html",
-    remoteId: "multi",
-    property: "petsData",
-    aliases: ["pets", "pets-leaderboards", "pet-leaderboards"]
-  },
-  coins: {
-    name: "Coins",
-    page: "/coins-leaderboards.html",
-    remoteId: "multi",
-    property: "coinsData",
-    aliases: ["coins", "coins-leaderboards", "coins-leaderboard"]
-  },
-  skills: {
-    name: "Skills",
-    page: "/skills-leaderboards.html",
-    remoteId: "multi",
-    property: "skillsLeaderboards",
-    aliases: ["skills", "skills-leaderboards", "skill-leaderboards"]
-  },
-  "target-practice": {
-    name: "Target Practice",
-    page: "/target-practice-leaderboard.html",
-    remoteId: "multi",
-    property: "targetPracticeLeaderboard",
-    aliases: ["target-practice", "target-practice-leaderboard"]
-  },
-  "arctic-cave-race": {
-    name: "Arctic Cave Race",
-    page: "/arctic-cave-race-leaderboard.html",
-    remoteId: "multi",
-    property: "arcticCaveRace",
-    aliases: ["arctic-cave-race", "arctic-race", "arctic-cave-race-leaderboard"]
-  },
-  "ender-node-hunt": {
-    name: "Ender Node Hunt",
-    page: "/ender-node-hunt-leaderboard.html",
-    remoteId: "multi",
-    property: "enderNodeHunt",
-    aliases: ["ender-node-hunt", "ender-node-hunt-leaderboard"]
-  },
-  collections: {
-    name: "Collections",
-    page: "/collections-leaderboards.html",
-    remoteId: "collections",
-    property: "collectionsData",
-    aliases: ["collections", "collections-leaderboards", "collection-leaderboards"]
-  },
-  "farming-contests": {
-    name: "Farming Contests",
-    page: "/farming-contests-leaderboards.html",
-    remoteId: "farming-contests",
-    property: "collectionsData",
-    aliases: ["farming-contests", "farming-contests-leaderboards", "farming-contest-leaderboard"]
-  },
-  "boss-time": {
-    name: "Boss Time",
-    page: "/boss-time-leaderboards.html",
-    remoteId: "boss-time",
-    property: "collectionsData",
-    aliases: ["boss-time", "boss-time-leaderboards", "boss-time-leaderboard"]
-  }
-};
+const DEFAULT_BASE_URL = "http://135.125.9.81:3993/api/leaderboards";
 
-function jsonResponse(body, status = 200) {
+function corsHeaders() {
+  return {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, x-api-key, X-Requested-With",
+    "Access-Control-Max-Age": "86400"
+  };
+}
+
+function jsonResponse(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-      "Cache-Control": "no-store"
+      "Content-Type": "application/json; charset=utf-8",
+      ...corsHeaders(),
+      "Cache-Control": status === 200 ? "public, max-age=60, s-maxage=120, stale-while-revalidate=300" : "no-store",
+      ...extraHeaders
     }
   });
 }
 
 function getApiKey(env = {}) {
-  return env.LB_API_KEY || env.lb_api_key || env["lb-api-key"] || null;
+  return (
+    env.LEADERBOARDS_API_KEY ||
+    env.leaderboards_api_key ||
+    env.LB_API_KEY ||
+    env.lb_api_key
+  );
 }
 
-function getDefinition(id) {
-  const requestedId = String(id || "").trim();
-  if (!requestedId) return null;
+function getBaseUrl(env = {}) {
+  const url =
+    env.LEADERBOARDS_API_BASE_URL ||
+    env.leaderboards_api_base_url ||
+    env.LB_BASE_URL ||
+    DEFAULT_BASE_URL;
+  return url.replace(/\/+$/, "");
+}
 
-  const directMatch = LEADERBOARD_DEFINITIONS[requestedId];
-  if (directMatch) return { id: requestedId, definition: directMatch };
+/**
+ * Normalizes and extracts the sub-path from context.params or URL pathname
+ */
+function extractSubPath(context) {
+  const { request, params } = context;
+  const url = new URL(request.url);
 
-  const normalized = requestedId.toLowerCase();
-  for (const [leaderboardId, definition] of Object.entries(LEADERBOARD_DEFINITIONS)) {
-    if ((definition.aliases || []).includes(normalized)) {
-      return { id: leaderboardId, definition };
+  // 1. If path param array is provided by Cloudflare Pages [[path]].js
+  if (params && params.path) {
+    if (Array.isArray(params.path)) {
+      return params.path.filter(Boolean).map(encodeURIComponent).join("/");
+    }
+    if (typeof params.path === "string") {
+      return params.path.replace(/^\/+|\/+$/g, "");
     }
   }
 
-  return null;
+  // 2. If single [id].js param is provided
+  if (params && params.id) {
+    return encodeURIComponent(params.id);
+  }
+
+  // 3. Fallback: Parse from pathname after /api/leaderboards
+  const pathname = url.pathname;
+  const match = pathname.match(/\/api\/leaderboards(?:\/(.*))?$/);
+  if (match && match[1]) {
+    return match[1].replace(/^\/+|\/+$/g, "");
+  }
+
+  // 4. Query param fallback (?category=skills&item=combat)
+  const cat = url.searchParams.get("category") || url.searchParams.get("cat");
+  const item = url.searchParams.get("item") || url.searchParams.get("subId");
+  const subCat = url.searchParams.get("subCat");
+
+  if (cat && item) {
+    if (cat.toLowerCase() === "collections" && subCat) {
+      return `collections/${encodeURIComponent(subCat)}/${encodeURIComponent(item)}`;
+    }
+    return `${encodeURIComponent(cat)}/${encodeURIComponent(item)}`;
+  } else if (cat) {
+    return encodeURIComponent(cat);
+  }
+
+  return "";
 }
 
-async function fetchRemoteJson(path, env) {
+/**
+ * Universal Proxy Handler for all leaderboards requests
+ */
+export async function handleLeaderboardProxy(context) {
+  const { request, env } = context;
+
+  // Handle CORS Preflight
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders()
+    });
+  }
+
+  const url = new URL(request.url);
+  const subPath = extractSubPath(context);
+  const baseUrl = getBaseUrl(env);
   const apiKey = getApiKey(env);
+
   if (!apiKey) {
-    throw new Error("Missing LB_API_KEY secret");
-  }
-
-  const response = await fetch(`${REMOTE_BASE_URL}${path}`, {
-    headers: {
-      "x-api-key": apiKey
-    }
-  });
-
-  const text = await response.text();
-  let json = null;
-
-  try {
-    json = text ? JSON.parse(text) : null;
-  } catch (error) {
-    json = { ok: false, error: "Invalid JSON from upstream", detail: text };
-  }
-
-  if (!response.ok) {
-    const detail = json && typeof json === "object" ? json.error || json.detail : text;
-    throw new Error(`Remote request failed (${response.status}): ${detail || response.statusText}`);
-  }
-
-  return json;
-}
-
-function extractRemoteData(remote, definition) {
-  const payload = remote && typeof remote === "object" ? remote.data ?? remote.leaderboard ?? remote : remote;
-  return definition.property ? payload?.[definition.property] ?? payload : payload;
-}
-
-export async function buildLeaderboardIndex(request) {
-  const origin = new URL(request.url).origin;
-
-  return Object.entries(LEADERBOARD_DEFINITIONS).map(([id, definition]) => ({
-    id,
-    name: definition.name,
-    page: `${origin}${definition.page}`
-  }));
-}
-
-export async function handleLeaderboardIndex({ request, env }) {
-  try {
-    const remote = await fetchRemoteJson("/api/leaderboards", env);
-    const items = Array.isArray(remote?.items)
-      ? remote.items
-      : await buildLeaderboardIndex(request);
-
-    return jsonResponse({
-      ok: true,
-      source: "remote",
-      generatedAt: new Date().toISOString(),
-      items
-    });
-  } catch (error) {
-    return jsonResponse({
-      ok: false,
-      error: "Failed to load leaderboards index",
-      detail: error.message
-    }, 502);
-  }
-}
-
-export async function handleLeaderboardDetail({ request, env, params }) {
-  const requestedId = params.id;
-  const match = getDefinition(requestedId);
-
-  if (!match) {
-    return jsonResponse({
-      ok: false,
-      error: `Unknown leaderboard id: ${requestedId}`
-    }, 404);
-  }
-
-  try {
-    const remote = await fetchRemoteJson(
-      `/api/leaderboards/${encodeURIComponent(match.definition.remoteId || match.id)}`,
-      env
+    return jsonResponse(
+      {
+        ok: false,
+        error: "Missing LEADERBOARDS_API_KEY or LB_API_KEY secret in Cloudflare environment"
+      },
+      500
     );
-    const leaderboard = extractRemoteData(remote, match.definition);
-
-    return jsonResponse({
-      ok: true,
-      id: match.id,
-      name: match.definition.name,
-      page: match.definition.page,
-      source: "remote",
-      generatedAt: new Date().toISOString(),
-      leaderboard
-    });
-  } catch (error) {
-    return jsonResponse({
-      ok: false,
-      error: "Failed to load leaderboard",
-      detail: error.message
-    }, 502);
   }
+
+  // Construct target upstream URL
+  let targetUrl = baseUrl;
+  if (subPath) {
+    targetUrl += `/${subPath}`;
+  }
+
+  // Forward query parameters (limit, page, search, etc.)
+  const forwardParams = new URLSearchParams();
+  for (const [key, value] of url.searchParams.entries()) {
+    if (key !== "category" && key !== "cat" && key !== "item" && key !== "subId" && key !== "subCat") {
+      forwardParams.append(key, value);
+    }
+  }
+  const queryString = forwardParams.toString();
+  if (queryString) {
+    targetUrl += (targetUrl.includes("?") ? "&" : "?") + queryString;
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8500);
+
+    const upstreamResponse = await fetch(targetUrl, {
+      method: "GET",
+      headers: {
+        "Accept": "application/json",
+        "x-api-key": apiKey
+      },
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    const text = await upstreamResponse.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (parseError) {
+      data = {
+        ok: false,
+        error: "Non-JSON response from leaderboards upstream",
+        raw: text.slice(0, 500)
+      };
+    }
+
+    return jsonResponse(data, upstreamResponse.status);
+  } catch (err) {
+    const isTimeout = err.name === "AbortError" || err.message?.includes("timeout");
+    return jsonResponse(
+      {
+        ok: false,
+        error: isTimeout ? "Leaderboard upstream timed out" : "Leaderboard upstream unreachable",
+        detail: err.message,
+        targetUrl
+      },
+      504
+    );
+  }
+}
+
+// Backward-compatible exports
+export async function handleLeaderboardIndex(context) {
+  return handleLeaderboardProxy(context);
+}
+
+export async function handleLeaderboardDetail(context) {
+  return handleLeaderboardProxy(context);
 }

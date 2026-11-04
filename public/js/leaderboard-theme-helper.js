@@ -22,7 +22,7 @@
     return `
       <td>
         <div class="player-cell">
-          <img class="player-avatar" src="https://mc-heads.net/avatar/${encodeURIComponent(cleanName)}/28" alt="${cleanName}" onerror="this.onerror=null;this.src='../assets/cmc-icon.png';">
+          <img class="player-avatar" src="https://mc-api.io/render/HEAD/${encodeURIComponent(cleanName)}/BEDROCK?size=28" alt="${cleanName}" onerror="this.onerror=null;this.src='../assets/cmc-icon.png';">
           <a href="../player.html?player=${encodeURIComponent(cleanName)}" class="player-name-link" title="View Profile">${cleanName}</a>
         </div>
       </td>
