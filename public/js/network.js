@@ -170,7 +170,7 @@ async function fetchInfo(force = false) {
     const refreshBtn = document.getElementById('refreshBtn');
     try {
         if (refreshBtn) { refreshBtn.disabled = true; refreshBtn.textContent = 'Refreshing...'; }
-        const resp = await fetch(apiPath, { cache: 'no-store' });
+        const resp = await fetch(apiPath, { cache: 'no-store', headers: { 'X-Guides-Client': 'craftersmc-web' } });
         if (!resp.ok) throw new Error(`API error: ${resp.status}`);
         const data = await resp.json();
         const now = Date.now();

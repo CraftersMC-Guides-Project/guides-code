@@ -475,7 +475,7 @@ function initNavbarPlayerCount() {
         const endpoints = ["/api/network/status", "/network-status"];
         for (const ep of endpoints) {
             try {
-                const res = await fetch(ep, { cache: "no-store" });
+                const res = await fetch(ep, { cache: "no-store", headers: { "X-Guides-Client": "craftersmc-web" } });
                 if (res.ok) {
                     const data = await res.json();
                     if (data && (data.success || data.playerCount !== undefined)) {
@@ -491,7 +491,7 @@ function initNavbarPlayerCount() {
 
         // Fallback for local development preview via Cloudflare Pages proxy
         try {
-            const res = await fetch("https://craftersmc-guides.pages.dev/api/network/status", { cache: "no-store" });
+            const res = await fetch("https://craftersmc-guides.pages.dev/api/network/status", { cache: "no-store", headers: { "X-Guides-Client": "craftersmc-web" } });
             if (res.ok) {
                 const data = await res.json();
                 if (data && (data.success || data.playerCount !== undefined)) {

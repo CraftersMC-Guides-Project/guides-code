@@ -84,7 +84,8 @@ var APIProxyClient = window.APIProxyClient || class APIProxyClient {
     console.log('Endpoint:', endpoint);
     console.log('Full URL:', url);
     console.log('Method:', options.method || 'GET');
-    console.log('Headers:', { 'Content-Type': 'application/json', ...options.headers });
+    console.log('Headers:', { 'Content-Type': 'application/json',
+          'X-Guides-Client': 'craftersmc-web', ...options.headers });
 
     try {
       console.log('Fetching...');

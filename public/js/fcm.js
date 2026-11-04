@@ -343,7 +343,7 @@ class SkyCalendarFCMController {
       if (oldToken || this.deviceId) {
         await fetch('/api/fcm-token', {
           method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-Guides-Client': 'craftersmc-web' },
           body: JSON.stringify({
             device_id: this.deviceId,
             token: oldToken
@@ -395,7 +395,7 @@ class SkyCalendarFCMController {
 
       const res = await fetch('/api/test-push', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Guides-Client': 'craftersmc-web' },
         body: JSON.stringify({
           token: this.token,
           endpoint: subData?.endpoint || null
@@ -478,7 +478,7 @@ class SkyCalendarFCMController {
 
       await fetch('/api/fcm-token', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Guides-Client': 'craftersmc-web' },
         body: JSON.stringify({
           device_id: this.deviceId,
           token,
