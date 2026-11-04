@@ -91,6 +91,198 @@ function extractSubPath(context) {
 }
 
 /**
+ * TCP Socket HTTP fetcher for non-standard ports (e.g. 3993) on Cloudflare Workers/Pages
+ * Cloudflare's standard fetch() strips non-standard ports, but cloudflare:sockets allows any port.
+ */
+async function fetchViaSocket(targetUrl, options = {}) {
+  const parsed = new URL(targetUrl);
+  const hostname = parsed.hostname;
+  const port = parseInt(parsed.port || (parsed.protocol === "https:" ? "443" : "80"), 10);
+  const path = parsed.pathname + parsed.search;
+
+  // 1. Check for cloudflare:sockets (Cloudflare Pages/Workers environment)
+  let connectFn = null;
+  try {
+    const cs = await import("cloudflare:sockets");
+    connectFn = cs.connect;
+  } catch (e) {}
+
+  if (connectFn) {
+    const socket = connectFn({ hostname, port });
+    const timeoutMs = options.timeout || 60000;
+    let timer;
+    const timeoutPromise = new Promise((_, reject) => {
+      timer = setTimeout(() => {
+        try { socket.close(); } catch (e) {}
+        reject(new Error(`Socket connection to ${hostname}:${port} timed out after ${timeoutMs}ms`));
+      }, timeoutMs);
+    });
+
+    const requestPromise = (async () => {
+      const writer = socket.writable.getWriter();
+      const encoder = new TextEncoder();
+
+      const headers = {
+        "Host": `${hostname}:${port}`,
+        "User-Agent": "CraftersMC-Guides/1.0",
+        "Accept": "application/json",
+        "Connection": "close",
+        ...(options.headers || {})
+      };
+
+      let requestStr = `${options.method || "GET"} ${path} HTTP/1.1\r\n`;
+      for (const [k, v] of Object.entries(headers)) {
+        requestStr += `${k}: ${v}\r\n`;
+      }
+      requestStr += "\r\n";
+
+      await writer.write(encoder.encode(requestStr));
+      if (options.body) {
+        if (typeof options.body === "string") {
+          await writer.write(encoder.encode(options.body));
+        } else {
+          await writer.write(options.body);
+        }
+      }
+      writer.releaseLock();
+
+      const reader = socket.readable.getReader();
+      const chunks = [];
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value) chunks.push(value);
+      }
+      reader.releaseLock();
+
+      let totalLen = 0;
+      for (const ch of chunks) totalLen += ch.length;
+      const merged = new Uint8Array(totalLen);
+      let offset = 0;
+      for (const ch of chunks) {
+        merged.set(ch, offset);
+        offset += ch.length;
+      }
+
+      const raw = new TextDecoder("utf-8").decode(merged);
+      const splitIdx = raw.indexOf("\r\n\r\n");
+      if (splitIdx === -1) {
+        throw new Error("Invalid socket HTTP response from upstream");
+      }
+
+      const headerPart = raw.slice(0, splitIdx);
+      let bodyPart = raw.slice(splitIdx + 4);
+
+      const statusMatch = headerPart.match(/^HTTP\/[0-9.]+\s+(\d+)/i);
+      const status = statusMatch ? parseInt(statusMatch[1], 10) : 200;
+
+      if (/transfer-encoding:\s*chunked/i.test(headerPart)) {
+        let unchunked = "";
+        let pos = 0;
+        while (pos < bodyPart.length) {
+          const nextCrLf = bodyPart.indexOf("\r\n", pos);
+          if (nextCrLf === -1) break;
+          const hex = bodyPart.slice(pos, nextCrLf).trim();
+          const chunkSize = parseInt(hex, 16);
+          if (isNaN(chunkSize) || chunkSize === 0) break;
+          unchunked += bodyPart.slice(nextCrLf + 2, nextCrLf + 2 + chunkSize);
+          pos = nextCrLf + 2 + chunkSize + 2;
+        }
+        bodyPart = unchunked;
+      }
+
+      return { status, text: bodyPart };
+    })();
+
+    try {
+      const result = await Promise.race([requestPromise, timeoutPromise]);
+      clearTimeout(timer);
+      return result;
+    } catch (err) {
+      clearTimeout(timer);
+      try { socket.close(); } catch (e) {}
+      throw err;
+    }
+  }
+
+  // 2. Check for node:net (Node.js runtime / local test environment)
+  let net = null;
+  try {
+    net = await import("node:net");
+  } catch (e) {}
+
+  if (net && net.createConnection) {
+    return new Promise((resolve, reject) => {
+      const client = net.createConnection({ host: hostname, port }, () => {
+        let req = `${options.method || "GET"} ${path} HTTP/1.1\r\n`;
+        const headers = {
+          "Host": `${hostname}:${port}`,
+          "User-Agent": "CraftersMC-Guides/1.0",
+          "Accept": "application/json",
+          "Connection": "close",
+          ...(options.headers || {})
+        };
+        for (const [k, v] of Object.entries(headers)) {
+          req += `${k}: ${v}\r\n`;
+        }
+        req += "\r\n";
+        client.write(req);
+        if (options.body) client.write(options.body);
+      });
+
+      let raw = "";
+      client.on("data", (chunk) => { raw += chunk.toString("utf-8"); });
+      client.on("end", () => {
+        const splitIdx = raw.indexOf("\r\n\r\n");
+        if (splitIdx === -1) return reject(new Error("Invalid HTTP response over socket"));
+        const headerPart = raw.slice(0, splitIdx);
+        let bodyPart = raw.slice(splitIdx + 4);
+        const statusMatch = headerPart.match(/^HTTP\/[0-9.]+\s+(\d+)/i);
+        const status = statusMatch ? parseInt(statusMatch[1], 10) : 200;
+        resolve({ status, text: bodyPart });
+      });
+      client.on("error", reject);
+      client.setTimeout(options.timeout || 60000, () => {
+        client.destroy();
+        reject(new Error("TCP connection timed out"));
+      });
+    });
+  }
+
+  throw new Error("No socket provider available for non-standard port");
+}
+
+/**
+ * Dispatches request using TCP socket on non-standard ports, with fallback to standard fetch()
+ */
+async function dispatchUpstreamRequest(targetUrl, options = {}) {
+  const parsed = new URL(targetUrl);
+  const isNonStandardPort = parsed.port && parsed.port !== "80" && parsed.port !== "443";
+
+  // If non-standard port (like 3993), try raw TCP socket
+  if (isNonStandardPort) {
+    try {
+      return await fetchViaSocket(targetUrl, options);
+    } catch (sockErr) {
+      // If socket failed, try standard fetch as fallback
+    }
+  }
+
+  // Standard fetch for port 80/443 or fallback
+  const upstreamResponse = await fetch(targetUrl, {
+    method: options.method || "GET",
+    headers: options.headers || {},
+    signal: options.signal
+  });
+
+  const text = await upstreamResponse.text();
+  return {
+    status: upstreamResponse.status,
+    text
+  };
+}
+
+/**
  * Universal Proxy Handler for all leaderboards requests
  */
 export async function handleLeaderboardProxy(context) {
@@ -139,20 +331,20 @@ export async function handleLeaderboardProxy(context) {
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8500);
+    const timeoutId = setTimeout(() => controller.abort(), 60500);
 
-    const upstreamResponse = await fetch(targetUrl, {
+    const { status, text } = await dispatchUpstreamRequest(targetUrl, {
       method: "GET",
       headers: {
         "Accept": "application/json",
         "x-api-key": apiKey
       },
-      signal: controller.signal
+      signal: controller.signal,
+      timeout: 60000
     });
 
     clearTimeout(timeoutId);
 
-    const text = await upstreamResponse.text();
     let data;
     try {
       data = JSON.parse(text);
@@ -160,13 +352,14 @@ export async function handleLeaderboardProxy(context) {
       data = {
         ok: false,
         error: "Non-JSON response from leaderboards upstream",
-        raw: text.slice(0, 500)
+        raw: text.slice(0, 500),
+        targetUrl
       };
     }
 
-    return jsonResponse(data, upstreamResponse.status);
+    return jsonResponse(data, status);
   } catch (err) {
-    const isTimeout = err.name === "AbortError" || err.message?.includes("timeout");
+    const isTimeout = err.name === "AbortError" || err.message?.includes("timed out");
     return jsonResponse(
       {
         ok: false,
