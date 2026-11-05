@@ -266,6 +266,8 @@
     return "skills";
   }
 
+  let isInternalHashChange = false;
+
   // Parse location.hash
   // Supported patterns:
   // #collections/mining/diamond
@@ -295,40 +297,59 @@
       first = legacySectionMap[first];
     }
 
-    // Direct collection shortcut (e.g. #collections/mining/diamond)
+    // 1. Explicit collections route: #collections or #collections/mining/diamond
     if (first === "collections") {
       const subCat = second || "farming";
       const itemSlug = third || (CONFIG.collections?.[subCat]?.items?.[0]?.slug || "wheat");
       return { catKey: "collections", subCat, itemSlug };
     }
 
-    if (CONFIG.collections?.[first]) {
-      const subCat = first;
-      const itemSlug = second || (CONFIG.collections[subCat]?.items?.[0]?.slug || "wheat");
-      return { catKey: "collections", subCat, itemSlug };
-    }
-
-    // Check if first is a Section ID (e.g. #combat/boss-kills/superior-dragon or #events/spooky-festival/12)
+    // 2. High-level section route (e.g. #combat/boss-kills/superior-dragon, #mining/miningmilestone, #skills/combat)
     const matchedSec = SECTIONS.find((s) => s.id === first);
     if (matchedSec) {
+      if (matchedSec.isCollection) {
+        const subCat = second || matchedSec.subCats?.[0] || "farming";
+        const itemSlug = third || (CONFIG.collections?.[subCat]?.items?.[0]?.slug || "wheat");
+        return { catKey: "collections", subCat, itemSlug };
+      }
+
+      // Case A: second is explicitly a category in CONFIG.categories (e.g. #combat/boss-kills/old-dragon)
       if (second && CONFIG.categories?.[second]) {
         const catKey = second;
         const itemSlug = third || (CONFIG.categories[catKey]?.items?.[0]?.slug || catKey);
         return { catKey, subCat: null, itemSlug };
       }
+
+      // Case B: second is an item slug in one of the section's categories (e.g. #skills/combat, #kills/zombie, #combat/old-dragon)
+      if (second && matchedSec.categories?.length > 0) {
+        for (const cKey of matchedSec.categories) {
+          const catObj = CONFIG.categories?.[cKey];
+          if (catObj && catObj.items?.some((i) => i.slug.toLowerCase() === second.toLowerCase())) {
+            return { catKey: cKey, subCat: null, itemSlug: second };
+          }
+        }
+      }
+
+      // Case C: Section only or default category
       const defaultCat = matchedSec.categories ? matchedSec.categories[0] : first;
       const catObj = CONFIG.categories?.[defaultCat];
       if (catObj) {
-        const itemSlug = second || (catObj.items?.[0]?.slug || defaultCat);
-        return { catKey: defaultCat, subCat: null, itemSlug };
+        return { catKey: defaultCat, subCat: null, itemSlug: catObj.items?.[0]?.slug || defaultCat };
       }
     }
 
-    // Check if first is direct category key (e.g. #boss-kills/superior-dragon or #networth)
+    // 3. Direct category key (e.g. #boss-kills/superior-dragon or #networth)
     if (CONFIG.categories?.[first]) {
       const catKey = first;
       const itemSlug = second || (CONFIG.categories[catKey]?.items?.[0]?.slug || catKey);
       return { catKey, subCat: null, itemSlug };
+    }
+
+    // 4. Standalone collection shortcut (e.g. #farming/wheat or #foraging/oak)
+    if (CONFIG.collections?.[first]) {
+      const subCat = first;
+      const itemSlug = second || (CONFIG.collections[subCat]?.items?.[0]?.slug || "wheat");
+      return { catKey: "collections", subCat, itemSlug };
     }
 
     return { catKey: "skills", subCat: null, itemSlug: "combat" };
@@ -351,6 +372,7 @@
     }
 
     if (window.location.hash !== newHash) {
+      isInternalHashChange = true;
       window.location.hash = newHash;
     }
   }
@@ -874,6 +896,10 @@
   function setupEventListeners() {
     // Hash change routing
     window.addEventListener("hashchange", () => {
+      if (isInternalHashChange) {
+        isInternalHashChange = false;
+        return;
+      }
       const route = parseRouteFromHash();
       state.categoryKey = route.catKey;
       state.subCatKey = route.subCat;
