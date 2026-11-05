@@ -53,7 +53,7 @@ export async function onRequest(context) {
     ""
   ).trim();
 
-  const apiKeyToUse = clientApiKey || nestApiKey;
+  const apiKeyToUse = nestApiKey || clientApiKey;
   const upstreamHeaders = {
     "Accept": "application/json",
     "User-Agent": "CraftersMC-Guides-Networth/1.0"

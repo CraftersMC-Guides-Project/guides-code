@@ -136,10 +136,16 @@ function isInternalWebsiteRequest(request) {
     return false;
   }
 
-  // 3. Must have internal client header AND originate from the website
+  // 3. Must have valid referer from the website or be verified same-origin/same-site
   const hasValidReferer = isAllowedDomain(referer);
   const isSameSite = secFetchSite === "same-origin" || secFetchSite === "same-site";
 
+  // Case A: Legitimate browser fetch originating from the official website
+  if (hasValidReferer && (isSameSite || !secFetchSite)) {
+    return true;
+  }
+
+  // Case B: Explicit internal website header from official app scripts
   if (clientHeader === "craftersmc-web" && (isSameSite || hasValidReferer || (!origin && !referer))) {
     return true;
   }

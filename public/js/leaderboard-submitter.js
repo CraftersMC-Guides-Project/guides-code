@@ -165,41 +165,87 @@
 
   const DRAGON_BOSS_TARGETS = {
     'trpixel:protector_dragon': 'boss-kills/protector-dragon',
+    'trpixel:protector-dragon': 'boss-kills/protector-dragon',
     'protector_dragon': 'boss-kills/protector-dragon',
+    'protector-dragon': 'boss-kills/protector-dragon',
+    'protector': 'boss-kills/protector-dragon',
     'trpixel:strong_dragon': 'boss-kills/strong-dragon',
+    'trpixel:strong-dragon': 'boss-kills/strong-dragon',
     'strong_dragon': 'boss-kills/strong-dragon',
+    'strong-dragon': 'boss-kills/strong-dragon',
+    'strong': 'boss-kills/strong-dragon',
     'trpixel:superior_dragon': 'boss-kills/superior-dragon',
+    'trpixel:superior-dragon': 'boss-kills/superior-dragon',
     'superior_dragon': 'boss-kills/superior-dragon',
+    'superior-dragon': 'boss-kills/superior-dragon',
+    'superior': 'boss-kills/superior-dragon',
     'trpixel:unstable_dragon': 'boss-kills/unstable-dragon',
+    'trpixel:unstable-dragon': 'boss-kills/unstable-dragon',
     'unstable_dragon': 'boss-kills/unstable-dragon',
+    'unstable-dragon': 'boss-kills/unstable-dragon',
+    'unstable': 'boss-kills/unstable-dragon',
     'trpixel:wise_dragon': 'boss-kills/wise-dragon',
+    'trpixel:wise-dragon': 'boss-kills/wise-dragon',
     'wise_dragon': 'boss-kills/wise-dragon',
+    'wise-dragon': 'boss-kills/wise-dragon',
+    'wise': 'boss-kills/wise-dragon',
     'trpixel:young_dragon': 'boss-kills/young-dragon',
+    'trpixel:young-dragon': 'boss-kills/young-dragon',
     'young_dragon': 'boss-kills/young-dragon',
+    'young-dragon': 'boss-kills/young-dragon',
+    'young': 'boss-kills/young-dragon',
     'trpixel:old_dragon': 'boss-kills/old-dragon',
+    'trpixel:old-dragon': 'boss-kills/old-dragon',
     'old_dragon': 'boss-kills/old-dragon',
+    'old-dragon': 'boss-kills/old-dragon',
+    'old': 'boss-kills/old-dragon',
     'trpixel:end_stone_protector': 'boss-kills/end-stone-protector',
+    'trpixel:end-stone-protector': 'boss-kills/end-stone-protector',
     'end_stone_protector': 'boss-kills/end-stone-protector',
+    'end-stone-protector': 'boss-kills/end-stone-protector',
     'total_dragon': 'boss-kills/total-dragon',
+    'total-dragon': 'boss-kills/total-dragon',
     'total': 'boss-kills/total-dragon'
   };
 
   const DRAGON_EYE_TARGETS = {
     'trpixel:protector_dragon': 'summoning-eyes/protector-dragon',
+    'trpixel:protector-dragon': 'summoning-eyes/protector-dragon',
     'protector_dragon': 'summoning-eyes/protector-dragon',
+    'protector-dragon': 'summoning-eyes/protector-dragon',
+    'protector': 'summoning-eyes/protector-dragon',
     'trpixel:strong_dragon': 'summoning-eyes/strong-dragon',
+    'trpixel:strong-dragon': 'summoning-eyes/strong-dragon',
     'strong_dragon': 'summoning-eyes/strong-dragon',
+    'strong-dragon': 'summoning-eyes/strong-dragon',
+    'strong': 'summoning-eyes/strong-dragon',
     'trpixel:superior_dragon': 'summoning-eyes/superior-dragon',
+    'trpixel:superior-dragon': 'summoning-eyes/superior-dragon',
     'superior_dragon': 'summoning-eyes/superior-dragon',
+    'superior-dragon': 'summoning-eyes/superior-dragon',
+    'superior': 'summoning-eyes/superior-dragon',
     'trpixel:unstable_dragon': 'summoning-eyes/unstable-dragon',
+    'trpixel:unstable-dragon': 'summoning-eyes/unstable-dragon',
     'unstable_dragon': 'summoning-eyes/unstable-dragon',
+    'unstable-dragon': 'summoning-eyes/unstable-dragon',
+    'unstable': 'summoning-eyes/unstable-dragon',
     'trpixel:wise_dragon': 'summoning-eyes/wise-dragon',
+    'trpixel:wise-dragon': 'summoning-eyes/wise-dragon',
     'wise_dragon': 'summoning-eyes/wise-dragon',
+    'wise-dragon': 'summoning-eyes/wise-dragon',
+    'wise': 'summoning-eyes/wise-dragon',
     'trpixel:young_dragon': 'summoning-eyes/young-dragon',
+    'trpixel:young-dragon': 'summoning-eyes/young-dragon',
     'young_dragon': 'summoning-eyes/young-dragon',
+    'young-dragon': 'summoning-eyes/young-dragon',
+    'young': 'summoning-eyes/young-dragon',
     'trpixel:old_dragon': 'summoning-eyes/old-dragon',
+    'trpixel:old-dragon': 'summoning-eyes/old-dragon',
     'old_dragon': 'summoning-eyes/old-dragon',
+    'old-dragon': 'summoning-eyes/old-dragon',
+    'old': 'summoning-eyes/old-dragon',
     'total_dragon': 'summoning-eyes/total',
+    'total-dragon': 'summoning-eyes/total',
     'total': 'summoning-eyes/total'
   };
 
@@ -333,20 +379,50 @@
       // 6. Boss Kills & Summoning Eyes
       const endData = member.endData || member.dragonData || {};
       const bossKills = member.bossKillCounts || endData.bossKillCounts || {};
+      const memberKills = member.kills || {};
       let totalDragons = 0;
+
+      function resolveDragonBossTarget(key) {
+        if (!key) return null;
+        const raw = String(key).toLowerCase().trim();
+        if (DRAGON_BOSS_TARGETS[raw]) return DRAGON_BOSS_TARGETS[raw];
+        const withUnderscore = raw.replace(/[\s-]+/g, '_').replace(/[^a-z0-9_:]+/g, '');
+        if (DRAGON_BOSS_TARGETS[withUnderscore]) return DRAGON_BOSS_TARGETS[withUnderscore];
+        const withHyphen = raw.replace(/[\s_]+/g, '-').replace(/[^a-z0-9:-]+/g, '');
+        if (DRAGON_BOSS_TARGETS[withHyphen]) return DRAGON_BOSS_TARGETS[withHyphen];
+        const noNs = raw.replace(/^trpixel:/, '').replace(/^minecraft:/, '');
+        const noNsUnder = noNs.replace(/[\s-]+/g, '_').replace(/[^a-z0-9_]+/g, '');
+        if (DRAGON_BOSS_TARGETS[noNsUnder]) return DRAGON_BOSS_TARGETS[noNsUnder];
+        return null;
+      }
 
       for (const [rawKey, countVal] of Object.entries(bossKills)) {
         const count = Math.round(Number(countVal || 0));
         if (count <= 0) continue;
-        const normKey = String(rawKey || '').toLowerCase().replace(/[^a-z0-9_:]+/g, '');
-        const target = DRAGON_BOSS_TARGETS[normKey];
+        const target = resolveDragonBossTarget(rawKey);
         if (target) {
           addTarget(target, count);
         }
-        if (normKey.includes('dragon') && !normKey.includes('total')) {
+        const lowerKey = String(rawKey).toLowerCase();
+        if (lowerKey.includes('dragon') && !lowerKey.includes('total')) {
           totalDragons += count;
         }
       }
+
+      // Fallback: If bossKillCounts was empty or missing dragons, extract from member.kills
+      for (const [rawKey, countVal] of Object.entries(memberKills)) {
+        const count = Math.round(Number(countVal || 0));
+        if (count <= 0) continue;
+        const target = resolveDragonBossTarget(rawKey);
+        if (target && !updates.some(u => u.target === target)) {
+          addTarget(target, count);
+          const lowerKey = String(rawKey).toLowerCase();
+          if (lowerKey.includes('dragon') && !lowerKey.includes('total')) {
+            totalDragons += count;
+          }
+        }
+      }
+
       if (totalDragons > 0 && !bossKills['total_dragon']) {
         addTarget('boss-kills/total-dragon', totalDragons);
       }
@@ -360,11 +436,25 @@
       // Summoning Eyes
       const eyeContrib = member.summoningEyeContribution || endData.summoningEyeContribution || {};
       let totalEyes = 0;
+
+      function resolveDragonEyeTarget(key) {
+        if (!key) return null;
+        const raw = String(key).toLowerCase().trim();
+        if (DRAGON_EYE_TARGETS[raw]) return DRAGON_EYE_TARGETS[raw];
+        const withUnderscore = raw.replace(/[\s-]+/g, '_').replace(/[^a-z0-9_:]+/g, '');
+        if (DRAGON_EYE_TARGETS[withUnderscore]) return DRAGON_EYE_TARGETS[withUnderscore];
+        const withHyphen = raw.replace(/[\s_]+/g, '-').replace(/[^a-z0-9:-]+/g, '');
+        if (DRAGON_EYE_TARGETS[withHyphen]) return DRAGON_EYE_TARGETS[withHyphen];
+        const noNs = raw.replace(/^trpixel:/, '').replace(/^minecraft:/, '');
+        const noNsUnder = noNs.replace(/[\s-]+/g, '_').replace(/[^a-z0-9_]+/g, '');
+        if (DRAGON_EYE_TARGETS[noNsUnder]) return DRAGON_EYE_TARGETS[noNsUnder];
+        return null;
+      }
+
       for (const [rawKey, countVal] of Object.entries(eyeContrib)) {
         const count = Math.round(Number(countVal || 0));
         if (count <= 0) continue;
-        const normKey = String(rawKey || '').toLowerCase().replace(/[^a-z0-9_:]+/g, '');
-        const target = DRAGON_EYE_TARGETS[normKey];
+        const target = resolveDragonEyeTarget(rawKey);
         if (target) {
           addTarget(target, count);
         }

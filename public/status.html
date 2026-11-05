@@ -337,7 +337,10 @@
 
       for (const ep of endpoints) {
         try {
-          const res = await fetch(ep, { cache: 'no-store' });
+          const res = await fetch(ep, {
+            cache: 'no-store',
+            headers: { 'Accept': 'application/json', 'X-Guides-Client': 'craftersmc-web' }
+          });
           if (res.ok) {
             const data = await res.json();
             if (data && (data.success || data.playerCount !== undefined)) {
@@ -385,7 +388,10 @@
 
       for (const ep of endpoints) {
         try {
-          const res = await fetch(ep, { cache: 'no-store' });
+          const res = await fetch(ep, {
+            cache: 'no-store',
+            headers: { 'Accept': 'application/json', 'X-Guides-Client': 'craftersmc-web' }
+          });
           if (res.ok) {
             const data = await res.json();
             if (data && (data.success || Array.isArray(data.voters))) {

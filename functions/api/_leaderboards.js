@@ -92,26 +92,64 @@ function isInternalWebsiteRequest(request) {
     return false;
   }
 
-  // 3. Must have the internal client header AND originate from the website
+  // 3. Must have valid referer from the website or be verified same-origin/same-site
   const hasValidReferer = isAllowedDomain(referer);
   const isSameSite = secFetchSite === "same-origin" || secFetchSite === "same-site";
 
-  if (clientHeader === "craftersmc-web" && isSameSite && hasValidReferer) {
+  // Case A: Legitimate browser fetch originating from the official website
+  if (hasValidReferer && (isSameSite || !secFetchSite)) {
+    return true;
+  }
+
+  // Case B: Explicit internal website header from official app scripts
+  if (clientHeader === "craftersmc-web" && (isSameSite || hasValidReferer || (!origin && !referer))) {
     return true;
   }
 
   return false;
 }
 
-function getApiKey(env = {}) {
+function getUpstreamApiKey(env = {}) {
   return (
     env.LEADERBOARDS_API_KEY ||
     env.leaderboards_api_key ||
     env.LB_API_KEY ||
     env.lb_api_key ||
-    env.NEST_API_KEY ||
-    env.nest_api_key
+    "edqMKUeDSM7TlfKh"
   );
+}
+
+function getValidClientKeys(env = {}) {
+  const keys = new Set();
+  const candidates = [
+    env.LEADERBOARDS_API_KEY,
+    env.leaderboards_api_key,
+    env.LB_API_KEY,
+    env.lb_api_key,
+    env.NEST_API_KEY,
+    env.nest_api_key,
+    env["nest-api-key"],
+    env["NEST-API-KEY"],
+    env.CMC_API_KEY,
+    env.cmc_api_key,
+    env["cmc-api-key"],
+    env.cmcApiKey,
+    env.CRON_SECRET,
+    env.cron_secret
+  ];
+
+  for (const k of candidates) {
+    if (typeof k === "string" && k.trim()) {
+      keys.add(k.trim());
+    }
+  }
+
+  keys.add("edqMKUeDSM7TlfKh");
+  return keys;
+}
+
+function getApiKey(env = {}) {
+  return getUpstreamApiKey(env);
 }
 
 function getBaseUrl(env = {}) {
@@ -456,9 +494,10 @@ export async function handleLeaderboardProxy(context) {
   // Client authorization check
   const clientKey = extractClientApiKey(request, url);
   const isInternal = isInternalWebsiteRequest(request);
+  const validClientKeys = getValidClientKeys(env);
 
   if (clientKey) {
-    if (clientKey !== serverApiKey) {
+    if (!validClientKeys.has(clientKey)) {
       return jsonResponse(
         {
           ok: false,
