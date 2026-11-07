@@ -20,6 +20,7 @@ export async function onRequest(context) {
     const headers = {
         'Authorization': `token ${token}`,
         'Accept': 'application/vnd.github.v3+json',
+        'X-GitHub-Api-Version': '2026-03-10',
         'Content-Type': 'application/json',
         'User-Agent': 'Cloudflare-Pages-Proxy',
     };
